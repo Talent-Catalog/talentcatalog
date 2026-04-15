@@ -14,20 +14,22 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<div class="card">
+<tc-card>
 
-  <div class="card-header">
+  <tc-card-header>
     Anything else we should know?
-    <div class="float-end" *ngIf="editable">
-      <button class="btn btn-sm btn-secondary" (click)="editAdditionalInfo()">
-        <i class="fas fa-edit"></i></button>
+    <div class="d-flex justify-content-end" *ngIf="editable">
+      <tc-button (onClick)="editAdditionalInfo()"
+                 [size]="'sm'"
+                 [color]="'primary'"
+                 [type]="'solid'"
+      >
+        <i class="fas fa-edit"></i></tc-button>
     </div>
-  </div>
+  </tc-card-header>
 
-  <div class="card-body">
-    <p [innerHtml]="candidate?.additionalInfo"
-       appHighlightSearch>
-    </p>
-  </div>
+  <tc-description-item [innerHtml]="candidate?.additionalInfo"
+                       appHighlightSearch
+  ></tc-description-item>
 
-</div>
+</tc-card>

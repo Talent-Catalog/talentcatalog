@@ -14,9 +14,9 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<div *ngIf="error">
+<tc-alert type="danger" *ngIf="error">
   {{error}}
-</div>
+</tc-alert>
 <form [formGroup]="form">
   <div class="mb-3">
     <label class="form-label" for="unhcrStatus">
@@ -28,7 +28,7 @@
         [typing]="typing">
       </app-autosave-status>
     </div>
-    <ng-select id="unhcrStatus" [formControlName]="'unhcrStatus'" (clear)="setNoResponse('unhcrStatus')"
+    <ng-select class="tc-select" id="unhcrStatus" [formControlName]="'unhcrStatus'" (clear)="setNoResponse('unhcrStatus')"
                [items]="unhcrStatusOptions" [clearOnBackspace]="false"
                placeholder="Select" bindLabel="stringValue" bindValue="key"></ng-select>
     <div class="form-text">If registered but no status provided select 'Registered with UNHCR but status unknown'</div>
@@ -38,17 +38,17 @@
     <div *ngIf="isRegistered">
       <div class="mb-3">
         <label class="form-label" for="unhcrNumber">What is your UNHCR ID number?</label>
-        <input type="text" class="form-control" id="unhcrNumber" [formControlName]="'unhcrNumber'">
+        <tc-input id="unhcrNumber" [formControlName]="'unhcrNumber'"></tc-input>
       </div>
       <div class="mb-3">
         <label class="form-label" for="unhcrFile">How many people are included on your UNHCR file?</label>
-        <input type="number" class="form-control" id="unhcrFile" [formControlName]="'unhcrFile'">
+        <tc-input id="unhcrFile" [formControlName]="'unhcrFile'"></tc-input>
       </div>
       <div class="mb-3">
         <label class="form-label" for="unhcrConsent">
           Permission to share with UNHCR?
         </label>
-        <ng-select id="unhcrConsent" [formControlName]="'unhcrConsent'" (clear)="setNoResponse('unhcrConsent')"
+        <ng-select class="tc-select" id="unhcrConsent" [formControlName]="'unhcrConsent'" (clear)="setNoResponse('unhcrConsent')"
                    [items]="unhcrConsentOptions" [clearOnBackspace]="false"
                    placeholder="Select" bindLabel="stringValue" bindValue="key"></ng-select>
       </div>
@@ -59,7 +59,7 @@
         <label class="form-label" for="unhcrNotRegStatus">
           What best describes your status not being registered?
         </label>
-        <ng-select id="unhcrNotRegStatus" [formControlName]="'unhcrNotRegStatus'" (clear)="setNoResponse('unhcrNotRegStatus')"
+        <ng-select class="tc-select" id="unhcrNotRegStatus" [formControlName]="'unhcrNotRegStatus'" (clear)="setNoResponse('unhcrNotRegStatus')"
                    [items]="NotRegisteredStatusOptions" [clearOnBackspace]="false"
                    placeholder="Select" bindLabel="stringValue" bindValue="key"></ng-select>
       </div>
@@ -70,9 +70,9 @@
   <div *ngIf="hasNotes">
     <div class="mb-3">
       <label class="form-label" for="unhcrNotes">Additional Notes</label>
-      <textarea type="text" class="md-textarea-auto form-control" rows="3"
+      <tc-textarea rows="3"
                 id="unhcrNotes" [formControlName]="'unhcrNotes'"
-                placeholder=""></textarea>
+                placeholder=""></tc-textarea>
     </div>
   </div>
 

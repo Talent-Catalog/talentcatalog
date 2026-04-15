@@ -13,159 +13,152 @@
   ~ You should have received a copy of the GNU Affero General Public License
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
+<tc-modal [heading]="title"
+          actionText="Save"
+          (onAction)="onSave()"
+          [disableAction]="userForm.invalid || working"
+          [showClose]="true"
+>
 
-<div class="modal-header">
-
-  <h4 class="modal-title">{{title}}</h4>
-
-  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" (click)="dismiss()"></button>
-
-</div>
-
-<div class="modal-body">
-
-  <div *ngIf="working">
-    <i class="fas fa-spinner fa-spin"></i>
-  </div>
+  <tc-loading [loading]="working"></tc-loading>
 
   <div *ngIf="!working">
-    <div class="alert alert-danger" *ngIf="error">
-      {{error}}
-    </div>
+    <tc-alert *ngIf="error">{{error}}</tc-alert>
 
     <form [formGroup]="userForm">
-      <div class="mb-3">
-        <label class="form-label" for="email">Email *</label>
-        <input type="email" class="form-control" id="email" formControlName="email" pattern="{{emailRegex}}">
-        <div *ngIf="userForm.get('email').touched || userForm.get('email').dirty">
-          <small *ngIf="userForm.get('email').errors?.['pattern']" class="text-danger">
+      <tc-fieldset>
+        <tc-field>
+          <tc-label for="email">Email *</tc-label>
+          <tc-input [type]="'email'" id="email" [formControlName]="'email'"></tc-input>
+          <tc-error-message *ngIf="(email.touched || email.dirty) && email.invalid">
             Please enter valid email address
-          </small>
-        </div>
-      </div>
-      <div class="mb-3">
-        <label class="form-label" for="username">Username *</label>
-        <input type="text" class="form-control" id="username" formControlName="username">
-      </div>
-      <div class="mb-3" *ngIf="create">
-        <label class="form-label" for="password">Password *</label>
-        <input type="text" class="form-control" id="password" formControlName="password">
-      </div>
-      <div class="mb-3">
-        <label class="form-label" for="firstName">First Name *</label>
-        <input type="text" class="form-control" id="firstName" formControlName="firstName">
-      </div>
-      <div class="mb-3">
-        <label class="form-label" for="lastName">Last Name *</label>
-        <input type="text" class="form-control" id="lastName" formControlName="lastName">
-      </div>
+          </tc-error-message>
+        </tc-field>
 
-      <!-- Partner  -->
-      <div class="mb-3" *ngIf="canAssignPartner()">
-        <label class="form-label">Partner *</label>
-        <ng-select
-          id="partner"
-          [items]="partners"
-          [multiple]="false"
-          [closeOnSelect]="true"
-          [searchable]="true"
-          placeholder="Select or type..."
-          bindLabel="name"
-          bindValue="id"
-          [formControlName]="'partnerId'">
-        </ng-select>
-      </div>
+        <tc-field>
+          <tc-label for="username">Username *</tc-label>
+          <tc-input type="text" id="username" formControlName="username"></tc-input>
+        </tc-field>
 
-      <div class="mb-3" *ngIf="!create">
-        <label class="form-label" for="status">Status</label>
-        <ng-select id="status" [formControlName]="'status'" placeholder="Select">
-          <ng-option value="active">Active</ng-option>
-          <ng-option value="inactive">Inactive</ng-option>
-        </ng-select>
-      </div>
 
-      <div class="mb-3">
-        <label class="form-label" for="role">Role *</label>
-        <ng-select
-          id="role"
-          [items]="roleOptions"
-          [formControlName]="'role'"
-          [clearable]="false"
-          placeholder="Select"
-          bindValue="key"
-          bindLabel="stringValue">
-        </ng-select>
-      </div>
+        <tc-field *ngIf="create">
+          <tc-label for="password">Password *</tc-label>
+          <tc-input type="text" id="password" formControlName="password"></tc-input>
+        </tc-field>
+        <tc-field>
+          <tc-label for="firstName">First Name *</tc-label>
+          <tc-input type="text" id="firstName" formControlName="firstName"></tc-input>
+        </tc-field>
+        <tc-field>
+          <tc-label for="lastName">Last Name *</tc-label>
+          <tc-input type="text" id="lastName" formControlName="lastName"></tc-input>
+        </tc-field>
 
-      <div class="form-check mb-3">
-        <input class="form-check-input" type="checkbox" id="jobCreator" formControlName="jobCreator">
-        <label class="form-check-label" for="jobCreator">Job Creator?</label>
-      </div>
+        <!-- Partner  -->
+        <tc-field *ngIf="canAssignPartner()">
+          <tc-label>Partner *</tc-label>
+          <ng-select
+            id="partner"
+            class="tc-select"
+            [items]="partners"
+            [multiple]="false"
+            [closeOnSelect]="true"
+            [searchable]="true"
+            placeholder="Select or type..."
+            bindLabel="name"
+            bindValue="id"
+            [formControlName]="'partnerId'">
+          </ng-select>
+        </tc-field>
 
-      <!-- Approver if required — will be a TC admin user -->
-      <div class="mb-3">
-        <label class="form-label">Approver</label>
-        <ng-select
-          id="approver"
-          [items]="approvers"
-          [multiple]="false"
-          [closeOnSelect]="true"
-          [searchable]="true"
-          placeholder="Select or type..."
-          bindLabel="firstName"
-          bindValue="id"
-          [formControlName]="'approverId'">
-          <!-- MODEL concatenate two properties for display in form - Enables viewing and searching potential approvers (admin users) by full name -->
-          <ng-template ng-label-tmp let-item="item">
-            {{item.firstName}} {{item.lastName}}
-          </ng-template>
-          <ng-template ng-option-tmp let-item="item" let-search="searchTerm">
-            {{item.firstName}} {{item.lastName}}
-          </ng-template>
-        </ng-select>
-        <p class="text-muted">If required, who approved this registration?</p>
-      </div>
+        <tc-field *ngIf="!create">
+          <tc-label for="status">Status</tc-label>
+          <ng-select id="status" class="tc-select" [formControlName]="'status'" placeholder="Select">
+            <ng-option value="active">Active</ng-option>
+            <ng-option value="inactive">Inactive</ng-option>
+          </ng-select>
+        </tc-field>
 
-      <!-- If approval was required for this user registration, what was the reason given? -->
-      <div class="mb-3">
-        <label class="form-label" for="purpose">Purpose</label>
-        <input type="text" class="form-control" id="purpose" formControlName="purpose">
-        <p class="text-muted">And what is the reason for their TC use?</p>
-      </div>
+        <tc-field>
+          <tc-label for="role">Role *</tc-label>
+          <ng-select
+            id="role"
+            class="tc-select"
+            [items]="roleOptions"
+            [formControlName]="'role'"
+            [clearable]="false"
+            placeholder="Select"
+            bindValue="key"
+            bindLabel="stringValue">
+          </ng-select>
+        </tc-field>
 
-      <!-- SOURCE COUNTRIES  -->
-      <div class="mb-3">
-        <label class="form-label">Source Country</label>
-        <ng-select
-          id="sourceCountry"
-          [items]="countries"
-          [multiple]="true"
-          [closeOnSelect]="false"
-          [searchable]="true"
-          placeholder="Select or type..."
-          bindLabel="name"
-          [formControlName]="'sourceCountries'">
-        </ng-select>
-        <p class="text-muted">Leave blank if there are no restrictions, otherwise add one or more countries to which admin is restricted.</p>
-      </div>
+        <tc-field [checkbox]="true">
+          <tc-label for="jobCreator">Job Creator?</tc-label>
+          <tc-input type="checkbox" id="jobCreator" formControlName="jobCreator"></tc-input>
+        </tc-field>
 
-      <div class="form-check mb-3">
-        <input class="form-check-input" type="checkbox" id="readOnly" formControlName="readOnly">
-        <label class="form-check-label" for="readOnly">Read Only?</label>
-      </div>
+        <!-- Approver if required — will be a TC admin user -->
+        <tc-field>
+          <tc-label>Approver</tc-label>
+          <ng-select
+            id="approver"
+            class="tc-select"
+            [items]="approvers"
+            [multiple]="false"
+            [closeOnSelect]="true"
+            [searchable]="true"
+            placeholder="Select or type..."
+            bindLabel="firstName"
+            bindValue="id"
+            [formControlName]="'approverId'">
+            <!-- MODEL concatenate two properties for display in form - Enables viewing and searching potential approvers (admin users) by full name -->
+            <ng-template ng-label-tmp let-item="item">
+              {{item.firstName}} {{item.lastName}}
+            </ng-template>
+            <ng-template ng-option-tmp let-item="item" let-search="searchTerm">
+              {{item.firstName}} {{item.lastName}}
+            </ng-template>
+          </ng-select>
+          <tc-description>
+            If required, who approved this registration?
+          </tc-description>
+        </tc-field>
 
-      <div class="form-check mb-3">
-        <input class="form-check-input" type="checkbox" id="usingMfa" formControlName="usingMfa">
-        <label class="form-check-label" for="usingMfa">Authentication app?</label>
-      </div>
+        <!-- If approval was required for this user registration, what was the reason given? -->
+        <tc-field>
+          <tc-label for="purpose">Purpose</tc-label>
+          <tc-input type="text" id="purpose" formControlName="purpose"></tc-input>
+          <tc-description>What is the reason for their TC use?</tc-description>
+        </tc-field>
 
-      <div class="modal-footer">
-        <button type="button" class="btn btn-primary" (click)="onSave()"
-                [disabled]="userForm.invalid || working">
-          <i class="fas fa-spinner fa-spin" *ngIf="working"></i>
-          Save
-        </button>
-      </div>
+        <!-- SOURCE COUNTRIES  -->
+        <tc-field>
+          <tc-label>Source Country</tc-label>
+          <ng-select
+            id="sourceCountry"
+            class="tc-select"
+            [items]="countries"
+            [multiple]="true"
+            [closeOnSelect]="false"
+            [searchable]="true"
+            placeholder="Select or type..."
+            bindLabel="name"
+            [formControlName]="'sourceCountries'">
+          </ng-select>
+          <tc-description>Leave blank if there are no restrictions, otherwise add one or more countries to which admin is restricted.</tc-description>
+        </tc-field>
+
+        <tc-field [checkbox]="true">
+          <tc-label for="readOnly">Read Only?</tc-label>
+          <tc-input type="checkbox" id="readOnly" formControlName="readOnly"></tc-input>
+        </tc-field>
+
+        <tc-field [checkbox]="true">
+          <tc-label for="usingMfa">Authentication app?</tc-label>
+          <tc-input type="checkbox" id="usingMfa" formControlName="usingMfa"></tc-input>
+        </tc-field>
+      </tc-fieldset>
     </form>
   </div>
-</div>
+</tc-modal>

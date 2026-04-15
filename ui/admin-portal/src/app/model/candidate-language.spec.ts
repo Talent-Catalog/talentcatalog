@@ -30,8 +30,9 @@ describe('CandidateLanguage Interface', () => {
 
     const languageLevel: LanguageLevel = {
       id: 1,
-      name: 'France',
+      name: 'Beginner',
       level: 1,
+      cefrLevel: 'A1',
       status: 'active'
     };
 
@@ -65,8 +66,9 @@ describe('CandidateLanguage Interface', () => {
 
     const languageLevel: LanguageLevel = {
       id: 1,
-      name: 'France',
+      name: 'Elementary',
       level: 2,
+      cefrLevel: 'A2',
       status: 'active'
     };
 

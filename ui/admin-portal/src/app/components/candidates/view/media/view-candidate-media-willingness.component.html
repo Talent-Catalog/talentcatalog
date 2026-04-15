@@ -14,15 +14,20 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<div class="card">
+<tc-card>
 
-  <div class="card-header">
+  <tc-card-header>
     Is candidate open to media?
-    <div class="float-end" *ngIf="editable">
-      <button class="btn btn-sm btn-secondary" (click)="editMediaWillingness()">
-        <i class="fas fa-edit"></i></button>
+    <div class="d-flex justify-content-end" *ngIf="editable">
+      <tc-button (onClick)="editMediaWillingness()"
+                 [type]="'solid'"
+                 [color]="'primary'"
+                 [size]="'sm'"
+      >
+        <i class="fas fa-edit"></i>
+      </tc-button>
     </div>
-  </div>
+  </tc-card-header>
 
   <div class="card-body">
     <p [innerHtml]="candidate?.mediaWillingness"
@@ -30,4 +35,4 @@
     </p>
   </div>
 
-</div>
+</tc-card>

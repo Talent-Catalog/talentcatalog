@@ -13,4 +13,36 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
+@import 'src/scss/color-mixins';
+@import 'src/scss/_color-classes.scss';
 
+.job-summary-container {
+  background-color: color(gray, 100);
+  padding: 1rem;
+  border-radius: 5px;
+  margin-bottom: 1rem;
+  &.from-url {
+    width: 50%;
+    margin-bottom: 0;
+  }
+  &.prep-item-highlight {
+    @include background-color-red;
+  }
+}
+
+.job-header-container {
+  flex: 1 1 auto;
+  align-self: start;
+  .job-name-container {
+    display: flex;
+    align-items: center;
+    tc-icon {
+      padding-left: 14px;
+      position: relative;
+    }
+  }
+}
+
+tc-dropdown-button {
+  position: relative;
+}

@@ -29,8 +29,8 @@ import org.tctalent.server.service.db.PostService;
 import org.tctalent.server.util.RegexHelpers;
 
 /**
- * Post service which will try to create {@link LinkPreview}s from any urls found in the post
- * content
+ * Post service which will try to create {@link LinkPreview}s from any urls found in the post's
+ * content.
  */
 @Slf4j
 @RequiredArgsConstructor
@@ -38,7 +38,6 @@ import org.tctalent.server.util.RegexHelpers;
 public class PostServiceImpl implements PostService {
 
     private final LinkPreviewService linkPreviewService;
-    private final RegexHelpers regexHelpers;
 
     @NonNull
     @Override
@@ -63,7 +62,7 @@ public class PostServiceImpl implements PostService {
             final List<LinkPreview> linkPreviews = post.getLinkPreviews();
             linkPreviews.clear();
 
-            List<String> urls = regexHelpers.extractLinkUrlsFromHtml(content);
+            List<String> urls = RegexHelpers.extractLinkUrlsFromHtml(content);
 
             //Loop through all urls found in content, building link previews
             for (String url : urls) {

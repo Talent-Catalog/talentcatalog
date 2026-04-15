@@ -30,7 +30,7 @@ describe('CreateLanguageLevelComponent', () => {
   let languageLevelServiceSpy: jasmine.SpyObj<LanguageLevelService>;
   let ngbActiveModalSpy: jasmine.SpyObj<NgbActiveModal>;
   let formBuilder: UntypedFormBuilder;
-  const languageLevel: LanguageLevel = { id: 1, level: 5, name: 'Advanced', status: 'active' };
+  const languageLevel: LanguageLevel = { id: 1, level: 5, name: 'Advanced', cefrLevel: 'B2', status: 'active' };
 
   beforeEach(async () => {
     const languageLevelServiceSpyObj = jasmine.createSpyObj('LanguageLevelService', ['create']);
@@ -63,7 +63,7 @@ describe('CreateLanguageLevelComponent', () => {
   });
 
   it('should call onSave and close modal when language level is successfully created', fakeAsync(() => {
-    component.languageLevelForm.patchValue({ level: 5, name: 'Advanced', status: 'active' });
+    component.languageLevelForm.patchValue({ level: 5, name: 'Advanced', cefrLevel: 'B2', status: 'active' });
 
     component.onSave();
     tick(); // Waiting for async operation to complete
@@ -71,6 +71,7 @@ describe('CreateLanguageLevelComponent', () => {
     expect(languageLevelServiceSpy.create).toHaveBeenCalledWith({
       level: 5,
       name: 'Advanced',
+      cefrLevel: 'B2',
       status: 'active'
     });
     expect(ngbActiveModalSpy.close).toHaveBeenCalledWith(languageLevel);

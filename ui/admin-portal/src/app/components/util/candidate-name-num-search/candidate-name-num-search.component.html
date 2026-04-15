@@ -14,15 +14,15 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<input id="quickNumberOrNameSearch"
-       type="text" class="form-control" #input
+<tc-input id="quickNumberOrNameSearch"
+        #input
        [ngbTypeahead]="doNumberOrNameSearch"
        [resultTemplate]="rt"
        [inputFormatter]="renderCandidateRow"
        [value]="displayValue"
        [editable]="false"
        (selectItem)="selectSearchResult($event, input)"
-       [placeholder]="placeholderText"/>
+          [placeholder]="placeholderText"></tc-input>
 <!--We need this ng-template to do the highlighting (using ngb-highlight).
 But not sure why we need the t.split. Just t does OK. - JC
 See https://ng-bootstrap.github.io/#/components/typeahead/examples#template

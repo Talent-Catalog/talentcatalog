@@ -39,10 +39,14 @@ public class LanguageLevel extends AbstractTranslatableDomainObject<Long> {
     @Enumerated(EnumType.STRING)
     private Status status;
 
-    public LanguageLevel(String name, Status status, int level) {
+    @Enumerated(EnumType.STRING)
+    private CefrLevel cefrLevel;
+
+    public LanguageLevel(String name, Status status, int level, CefrLevel cefrLevel) {
         setName(name);
         this.status = status;
         this.level = level;
+        this.cefrLevel = cefrLevel;
     }
 
 }

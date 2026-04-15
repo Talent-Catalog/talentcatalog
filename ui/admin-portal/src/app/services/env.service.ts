@@ -73,13 +73,25 @@ export class EnvService {
       this._allCandidatesDashboardId =  '86f9d8cb-44a9-48fc-b516-eab1f87fc097';
       this._presetWorkspaceId = '987e2e02';
 
-    } else if ((/^tctalent-test.org/.test(hostname))) {
+    } else if ((/^tctalent-test\.org/.test(hostname))) {
       this._env = Environment.Staging;
       this._sfLightningUrl = 'https://talentbeyondboundaries--sfstaging.sandbox.lightning.force.com/';
       this._allCandidatesDashboardId = '86f9d8cb-44a9-48fc-b516-eab1f87fc097';
       this._presetWorkspaceId = '987e2e02';
 
-    } else if ((/^tctalent.org/.test(hostname))) {
+    } else if ((/^test\.plus\.tctalent\.org/.test(hostname))) {
+      this._env = Environment.Staging;
+      this._sfLightningUrl = 'https://talentbeyondboundaries--sfstaging.sandbox.lightning.force.com/';
+      this._allCandidatesDashboardId = '86f9d8cb-44a9-48fc-b516-eab1f87fc097';
+      this._presetWorkspaceId = '987e2e02';
+
+    } else if ((/^tctalent\.org/.test(hostname))) {
+      this._env = Environment.Prod;
+      this._sfLightningUrl = 'https://talentbeyondboundaries.lightning.force.com/';
+      this._allCandidatesDashboardId = '3d577f48-a4db-4e7d-95ed-6590d76829cc';
+      this._presetWorkspaceId = 'effaaec0';
+
+    } else if ((/^plus\.tctalent\.org/.test(hostname))) {
       this._env = Environment.Prod;
       this._sfLightningUrl = 'https://talentbeyondboundaries.lightning.force.com/';
       this._allCandidatesDashboardId = '3d577f48-a4db-4e7d-95ed-6590d76829cc';

@@ -28,7 +28,11 @@ import {CandidateDependantService} from "../../../../../services/candidate-depen
 import {CountryService} from "../../../../../services/country.service";
 import {MockCandidate} from "../../../../../MockData/MockCandidate";
 import {of} from "rxjs";
-import {NgbAccordion, NgbAccordionModule, NgbDatepickerModule, NgbTooltipModule} from "@ng-bootstrap/ng-bootstrap";
+import {
+  NgbAccordionModule,
+  NgbDatepickerModule,
+  NgbTooltipModule
+} from "@ng-bootstrap/ng-bootstrap";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {NgSelectModule} from "@ng-select/ng-select";
@@ -55,9 +59,6 @@ import {MockJob} from "../../../../../MockData/MockJob";
 import {
   CandidateCitizenshipCardComponent
 } from "../../../intake/citizenships/card/candidate-citizenship-card.component";
-import {
-  MonitoringEvaluationConsentComponent
-} from "../../../intake/monitoring-evaluation-consent/monitoring-evaluation-consent.component";
 import {CrimeComponent} from "../../../intake/crime/crime.component";
 import {ConflictComponent} from "../../../intake/conflict/conflict.component";
 import {FinalAgreementComponent} from "../../../intake/final-agreement/final-agreement.component";
@@ -69,24 +70,39 @@ import {CandidateExamCardComponent} from "../../../intake/exams/card/candidate-e
 import {LangAssessmentComponent} from "../../../intake/lang-assessment/lang-assessment.component";
 import {ViewCandidateLanguageComponent} from "../../language/view-candidate-language.component";
 import {DependantsComponent} from "../../../intake/dependants/dependants.component";
-import {ResidenceStatusComponent} from "../../../intake/residence-status/residence-status.component";
+import {
+  ResidenceStatusComponent
+} from "../../../intake/residence-status/residence-status.component";
 import {WorkPermitComponent} from "../../../intake/work-permit/work-permit.component";
 import {WorkStatusComponent} from "../../../intake/work-status/work-status.component";
-import {MilitaryServiceComponent} from "../../../intake/military-service/military-service.component";
+import {
+  MilitaryServiceComponent
+} from "../../../intake/military-service/military-service.component";
 import {FamilyComponent} from "../../../intake/family/family.component";
 import {MaritalStatusComponent} from "../../../intake/marital-status/marital-status.component";
-import {RegistrationUnhcrComponent} from "../../../intake/registration-unhcr/registration-unhcr.component";
+import {
+  RegistrationUnhcrComponent
+} from "../../../intake/registration-unhcr/registration-unhcr.component";
 import {HostChallengesComponent} from "../../../intake/host-challenges/host-challenges.component";
 import {HomeLocationComponent} from "../../../intake/home-location/home-location.component";
-import {ResettlementThirdComponent} from "../../../intake/resettlement-third/resettlement-third.component";
+import {
+  ResettlementThirdComponent
+} from "../../../intake/resettlement-third/resettlement-third.component";
 import {HostEntryComponent} from "../../../intake/host-entry/host-entry.component";
 import {DatePickerComponent} from "../../../../util/date-picker/date-picker.component";
 import {WorkAbroadComponent} from "../../../intake/work-abroad/work-abroad.component";
-import {NclcScoreValidationComponent} from "../../../../util/nclc-score-validation/nclc-score-validation.component";
-import {IeltsScoreValidationComponent} from "../../../../util/ielts-score-validation/ielts-score-validation.component";
-import {DetScoreValidationComponent} from "../../../../util/det-score-validation/det-score-validation.component";
+import {
+  NclcScoreValidationComponent
+} from "../../../../util/nclc-score-validation/nclc-score-validation.component";
+import {
+  IeltsScoreValidationComponent
+} from "../../../../util/ielts-score-validation/ielts-score-validation.component";
+import {
+  DetScoreValidationComponent
+} from "../../../../util/det-score-validation/det-score-validation.component";
 import {AuthorizationService} from "../../../../../services/authorization.service";
 import {DirectiveModule} from "../../../../../directives/directive.module";
+import {MockUser} from "../../../../../MockData/MockUser";
 
 const mockCitizenship: CandidateCitizenship = {
   id: 1,
@@ -139,7 +155,7 @@ describe('CandidateIntakeTabComponent', () => {
   const mockCandidate = new MockCandidate();
 
   beforeEach(async () => {
-    const candidateSpy = jasmine.createSpyObj('CandidateService', ['get','getIntakeData']);
+    const candidateSpy = jasmine.createSpyObj('CandidateService', ['get','getIntakeData',  'candidateUpdated', 'updateCandidate']);
     const countrySpy = jasmine.createSpyObj('CountryService', ['isPalestine','listCountries','listTCDestinations']);
     const educationSpy = jasmine.createSpyObj('EducationLevelService', ['listEducationLevels']);
     const occupationSpy = jasmine.createSpyObj('OccupationService', ['listOccupations']);
@@ -147,8 +163,7 @@ describe('CandidateIntakeTabComponent', () => {
     const noteSpy = jasmine.createSpyObj('CandidateNoteService', ['getIntakeData']);
     const authSpy = jasmine.createSpyObj('AuthenticationService', ['getLoggedInUser']);
     const authorizationSpy = jasmine.createSpyObj('AuthorizationService', ['isEditableCandidate', 'canAccessSalesforce']);
-
-    authSpy.getLoggedInUser.and.returnValue(of({ id: 1, name: 'Test User' }));
+    candidateSpy.candidateUpdated.and.returnValue(of(null));
 
     const citizenshipSpy = jasmine.createSpyObj('CandidateCitizenshipService', ['create']);
     citizenshipSpy.create.and.returnValue(of(null));
@@ -162,7 +177,7 @@ describe('CandidateIntakeTabComponent', () => {
     await TestBed.configureTestingModule({
       declarations: [CandidateIntakeTabComponent,ExamsComponent,
         CandidateCitizenshipCardComponent,CitizenshipsComponent,IntRecruitmentComponent,
-        RuralComponent,MonitoringEvaluationConsentComponent,ConfirmContactComponent,
+        RuralComponent,ConfirmContactComponent,
         CrimeComponent,ConflictComponent,FinalAgreementComponent,CovidVaccinationComponent,
         CandidateExamCardComponent,LangAssessmentComponent,ViewCandidateLanguageComponent,
         DependantsComponent,ResidenceStatusComponent,WorkPermitComponent,WorkStatusComponent,
@@ -183,8 +198,7 @@ describe('CandidateIntakeTabComponent', () => {
         { provide: CandidateCitizenshipService, useValue: citizenshipSpy },
         { provide: CandidateExamService, useValue: examSpy },
         { provide: CandidateDependantService, useValue: dependantSpy },
-        { provide: AuthorizationService, useValue: authorizationSpy },
-        NgbAccordion
+        { provide: AuthorizationService, useValue: authorizationSpy }
       ]
     }).compileComponents();
   });
@@ -210,6 +224,7 @@ describe('CandidateIntakeTabComponent', () => {
     component.candidate = mockCandidate;
     component.candidateIntakeData = mockCandidateIntakeData;
     candidateCitizenshipServiceSpy.create.and.returnValue(of(mockCitizenship));
+    authServiceSpy.getLoggedInUser.and.returnValue(new MockUser());
     fixture.detectChanges();
   });
 

@@ -73,7 +73,7 @@ import {
   SavedSearch,
   SearchCandidateRequestPaged
 } from '../../../model/saved-search';
-import {CandidateSource, CandidateSourceType, SearchPartnerRequest} from '../../../model/base';
+import {CandidateSource, CandidateSourceType} from '../../../model/base';
 import {ConfirmationComponent} from '../../util/confirm/confirmation.component';
 import {User} from '../../../model/user';
 import {AuthorizationService} from '../../../services/authorization.service';
@@ -81,12 +81,14 @@ import {enumKeysToEnumOptions, EnumOption, enumOptions, isEnumOption} from "../.
 import {SearchCandidateRequest} from "../../../model/search-candidate-request";
 import {SurveyTypeService} from "../../../services/survey-type.service";
 import {SurveyType} from "../../../model/survey-type";
-import {SavedListService} from "../../../services/saved-list.service";
 import {Partner} from "../../../model/partner";
 import {PartnerService} from "../../../services/partner.service";
 import {AuthenticationService} from "../../../services/authentication.service";
 import {SearchQueryService} from "../../../services/search-query.service";
 import {first} from "rxjs/operators";
+import {JobService} from "../../../services/job.service";
+import {SkillName} from "../../../model/skill";
+import {CandidateNumberParser} from "../../../util/candidate-number-parser";
 
 /**
  * This component contains all the search fields for saved and unsaved searches. It communicates
@@ -115,6 +117,7 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
   @ViewChild('formWrapper', {static: true}) formWrapper: ElementRef;
   @ViewChild('downloadCsvErrorModal', {static: true}) downloadCsvErrorModal;
 
+  @Input() jobId: number;
   @Input() savedSearch: SavedSearch;
   @Input() pageNumber: number;
   @Input() pageSize: number;
@@ -146,6 +149,7 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
   notElastic;
 
   candidateStatusOptions: EnumOption[] = enumOptions(CandidateStatus);
+  currentSearchTerms: string[] = [];
   genderOptions: EnumOption[] = enumOptions(Gender);
   selectedCandidate: Candidate;
   selectedCandidates: Candidate[];
@@ -171,10 +175,10 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
               private educationMajorService: EducationMajorService,
               private candidateOccupationService: CandidateOccupationService,
               private surveyTypeService: SurveyTypeService,
+              private jobService: JobService,
               private languageLevelService: LanguageLevelService,
               private modalService: NgbModal,
               private router: Router,
-              private savedListService: SavedListService,
               private authorizationService: AuthorizationService,
               private authenticationService: AuthenticationService,
               private searchQueryService: SearchQueryService
@@ -184,6 +188,7 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
     this.searchForm = this.fb.group({
       savedSearchId: [null],
       simpleQueryString: [null],
+      candidateNumbers: [''],
       keyword: [null],
       statuses: [[]],
       gender: [null],
@@ -208,6 +213,7 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
       minAge: [null],
       maxAge: [null],
       minEducationLevel: [],
+      maxEducationLevel: [],
       educationMajorIds: [[]],
       surveyTypeIds: [[]],
       miniIntakeCompleted: [null],
@@ -221,6 +227,9 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
       educationMajors: [[]],
       nationalities: [[]],
       regoReferrerParam: [null],
+      regoUtmCampaign: [null],
+      regoUtmSource: [null],
+      regoUtmMedium: [null],
       statusesDisplay: [[]],
       surveyTypes: [[]],
       exclusionListId: [null],
@@ -229,7 +238,7 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
       listAllIds: [[]],
       listAllSearchType: [null],
       unhcrStatusesDisplay: [[]],
-      includeUploadedFiles: [false],
+      includePendingTermsCandidates: [false],
       potentialDuplicate: [null]
     }, {validator: this.validateDuplicateSearches('savedSearchId')});
 
@@ -250,13 +259,16 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
     this.loading = true;
     this.error = null;
 
+    this.searchQueryService.currentSearchTerms$.subscribe(searchTerms => {
+      this.currentSearchTerms = searchTerms;
+    })
+
     this.searchForm.get('simpleQueryString').valueChanges.pipe(
         first()
     ).subscribe(initialValue => {
       this.searchQueryService.changeSearchQuery(initialValue || '');
     });
 
-    const partnerRequest: SearchPartnerRequest = {sourcePartner: true};
     forkJoin({
       'nationalities': this.countryService.listCountries(),
       'countriesRestricted': this.countryService.listCountriesRestricted(),
@@ -291,7 +303,6 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
         //showing the default search (ie an unsaved search).
         this.showSearchRequest = this.savedSearch.defaultSearch;
       }
-
     }, error => {
       this.loading = false;
       this.error = error;
@@ -303,6 +314,23 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
     this.searchForm.valueChanges.subscribe(() => {
       this.onFormChange.emit(this.searchForm.dirty);
     });
+  }
+
+  private runSearchWithSkills(skills: SkillName[]) {
+    this.clearForm();
+    this.initializeQueryStringWithJobSkills(skills);
+    this.onSubmit();
+  }
+
+  private initializeQueryStringWithJobSkills(skills: SkillName[]) {
+    if (skills && skills.length > 0) {
+      let queryString = skills
+      .map(
+        s => s.name.indexOf(' ') < 0 ? s.name : '"' + s.name + '"'
+      ).join(' ');
+      this.searchForm.controls['simpleQueryString'].patchValue(queryString);
+      this.searchForm.markAsDirty();
+    }
   }
 
   // Stops Keyword Search tooltip from opening on keydown.enter in inputs
@@ -331,7 +359,7 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
         if (this.savedSearch) {
           this.savedSearchId = this.savedSearch.id;
 
-          //The very first change will be loaded after ngInit finishes.
+          //The very first change will be loaded after ngOnInit finishes.
           if (!changes.savedSearch.isFirstChange()) {
             this.loadSavedSearch(this.savedSearchId);
           }
@@ -365,13 +393,19 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
     }
   }
 
-  checkSelectionsAndApply() {
+  onSubmit() {
+   //checkSelectionsAndApply
    // If there are candidates selected, run a check before applying search.
     if (this.selectedCandidates.length > 0) {
       this.confirmClearSelectionAndApply();
     } else {
       this.apply();
     }
+  }
+
+  runKeywordSearchOnEnter(event: KeyboardEvent) {
+    event.preventDefault(); // Stop unintended effect (Keyword Search tooltip opening)
+    this.apply();
   }
 
   apply() {
@@ -387,7 +421,7 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
     request.sortDirection = this.sortDirection;
 
     //Note that just changing searchRequest triggers the display of the results
-    //See the html of this component, for which <app-show-candidates takes
+    //See the html of this component, for which app-show-candidates takes
     //searchRequest as an input.
     this.searchRequest = request;
 
@@ -399,6 +433,8 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
    * @param request Form data
    */
   getIdsMultiSelect(request): SearchCandidateRequestPaged {
+    request.candidateNumbers = CandidateNumberParser.parseCandidateNumbers(request.candidateNumbers);
+
     if (request.countries != null) {
       request.countryIds = request.countries.map(c => c.id);
       delete request.countries;
@@ -449,7 +485,7 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
     // We need to add back the saved search id because we are always working with a saved search object,
     // either it's a default saved search or saved search.
     this.searchForm.controls['savedSearchId'].patchValue(this.savedSearchId);
-
+    this.searchForm.controls['candidateNumbers'].patchValue('');
     this.searchForm.controls['countrySearchType'].patchValue('or');
     this.searchForm.controls['nationalitySearchType'].patchValue('or');
     this.searchForm.controls['listAllSearchType'].patchValue(null);
@@ -478,8 +514,10 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
     });
 
     clearSelectionModal.componentInstance.title = "Your selections will be cleared";
-    clearSelectionModal.componentInstance.message = "Changing the search filters will clear any candidate's selected. " +
-      "If you would like to keep your selections please save selections to a list before searching. Or to proceed without saving selections just click OK.";
+    clearSelectionModal.componentInstance.message =
+      "Changing the search filters will clear any candidates selected. " +
+      "<br><br>If you would like to keep your selections please save selections to a list before searching. " +
+      "Or to proceed without saving selections just click OK.";
 
     return clearSelectionModal.result
       .then((confirmation) => {
@@ -523,6 +561,17 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
     this.savedSearchService.load(id).subscribe(
       (request) => {
         this.populateFormWithSavedSearch(request);
+
+        //If this a new search generated from a job, clear any existing search params and
+        //automatically run a search using the job skills.
+        //We don't want to keep any previous search details from earlier searches.
+        if (this.jobId) {
+          //Load the job skills
+          this.jobService.getSkills(this.jobId).subscribe({
+            next: (skills) => this.runSearchWithSkills(skills),
+            error: (error) => this.error = error
+          })
+        }
         this.loading = false;
       },
       error => {
@@ -614,7 +663,7 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
       .then((result) => {
         if (result === true) {
           this.savedSearchService.delete(this.savedSearch.id).subscribe(
-            (found) => {
+            () => {
               this.router.navigate(['search']);
               this.loading = false;
             },
@@ -927,5 +976,17 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
     return this.authorizationService.isEmployerPartner();
   }
 
+  public isEmptySearchTerms(): boolean {
+    return !(this.currentSearchTerms && this.currentSearchTerms.length > 0);
+  }
+
+  /** Hides/shows the search request and scrolls to top */
+  toggleSearchRequest() {
+    this.showSearchRequest = !this.showSearchRequest;
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    });
+  }
   public readonly CandidateSourceType = CandidateSourceType;
 }

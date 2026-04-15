@@ -24,6 +24,7 @@ import {Component, Input, OnInit} from '@angular/core';
 export class AutosaveStatusComponent implements OnInit {
   @Input() saving: boolean;
   @Input() typing: boolean;
+  @Input() size: 'sm' | 'md' | 'lg' | 'xl' | 'inherit' = 'inherit';
 
   constructor() { }
 

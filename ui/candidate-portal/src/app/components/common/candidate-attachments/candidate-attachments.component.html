@@ -27,13 +27,15 @@
   <div class="mb-3" *ngFor="let attachment of attachments; let i = index;" [class.card]="!preview">
 
     <div class="text-end" *ngIf="!preview && attachment.createdBy.id == user?.id">
-      <button class="btn btn-secondary btn-card"
-              (click)="editCandidateAttachment(attachment)">
-        <fa-icon class="d-flex" icon="edit" size="xs"></fa-icon></button>
+      <tc-button color="info"  class="me-2"
+              (onClick)="editCandidateAttachment(attachment)"
+      >
+        <i class="d-flex fas fa-edit fa-xs"></i>
+      </tc-button>
 
-      <button class="btn btn-danger btn-card"
+      <tc-button color="error"
               [disabled]="deleting"
-              (click)="deleteAttachment(attachment)">&times;</button>
+              (onClick)="deleteAttachment(attachment)">&times;</tc-button>
 
 
     </div>
@@ -43,12 +45,11 @@
       <div class="col-12">
 
         <div *ngIf="editTarget?.id !== attachment.id" class="mb-3">
-          <h6>{{ 'REGISTRATION.ATTACHMENTS.LABEL.NAME' | translate }}
-            <span *ngIf="downloading">
-                ...
-            </span>
-          </h6>
-          <p>
+          <tc-description-list direction="column" compact size="lg">
+            <tc-description-item [label]="'REGISTRATION.ATTACHMENTS.LABEL.NAME' | translate">
+              <span *ngIf="downloading">
+                  ...
+              </span>
             <!-- Non Google files - ie links and AWS files -
              we can just follow their urls-->
             <a *ngIf="attachment.type!==AttachmentType.googlefile"
@@ -64,19 +65,24 @@
                target="_blank" class="is-link">
               {{attachment.name}}
             </a>
-          </p>
+            </tc-description-item>
+          </tc-description-list>
         </div>
 
         <div *ngIf="editTarget?.id == attachment.id" class="mb-3">
-          <h6>{{ 'REGISTRATION.ATTACHMENTS.LABEL.EDIT' | translate }}</h6>
+          <tc-label for="attachmentName">{{ 'REGISTRATION.ATTACHMENTS.LABEL.EDIT' | translate }}</tc-label>
           <div class="d-flex">
-            <input type="text" class="form-control" placeholder="" id="attachmentName" [(ngModel)]="attachment.name">
+            <tc-input type="text"
+                   placeholder="" id="attachmentName"
+                   [(ngModel)]="attachment.name"
+            ></tc-input>
             <div>
-              <button class="btn btn-sm"
-                      (click)="updateAttachmentName(attachment, i)">
+              <tc-button class="ms-2"
+                      (onClick)="updateAttachmentName(attachment, i)"
+              >
                 <span *ngIf="!saving">{{ 'FORM.LABEL.SAVE' | translate }}</span>
-                <fa-icon *ngIf="saving" [spin]="true" icon="spinner"></fa-icon>
-              </button>
+                <i *ngIf="saving" class="fas fa-spinner fa-spin"></i>
+              </tc-button>
 
             </div>
           </div>
@@ -89,10 +95,13 @@
       <div class="col-12 col-md-6">
 
         <div class="mb-3 m-md-0">
-          <h6>{{ 'REGISTRATION.ATTACHMENTS.LABEL.CREATEDBY' | translate }}</h6>
-          <p *ngIf="attachment.createdBy && attachment.createdBy.id == user?.id">{{attachment.createdBy.firstName}} {{attachment.createdBy.lastName}}</p>
-          <p *ngIf="attachment.createdBy && attachment.createdBy.id !== user?.id">Admin</p>
-          <p *ngIf="!attachment.createdBy">Unknown</p>
+          <tc-description-list direction="column" compact size="lg">
+            <tc-description-item [label]="'REGISTRATION.ATTACHMENTS.LABEL.CREATEDBY' | translate">
+              <span *ngIf="attachment.createdBy && attachment.createdBy.id == user?.id">{{attachment.createdBy.firstName}} {{attachment.createdBy.lastName}}</span>
+              <span *ngIf="attachment.createdBy && attachment.createdBy.id !== user?.id">Admin</span>
+              <span *ngIf="!attachment.createdBy">Unknown</span>
+            </tc-description-item>
+          </tc-description-list>
         </div>
 
       </div>
@@ -100,8 +109,11 @@
       <div class="col-12 col-md-6">
 
         <div class="mb-3 m-md-0">
-          <h6>{{ 'REGISTRATION.ATTACHMENTS.LABEL.CREATEDDATE' | translate }}</h6>
-          <p>{{attachment.createdDate | date: 'customDateTime'}}</p>
+          <tc-description-list direction="column" compact size="lg">
+            <tc-description-item [label]="'REGISTRATION.ATTACHMENTS.LABEL.CREATEDDATE' | translate">
+              {{attachment.createdDate | date: 'customDateTime'}}
+            </tc-description-item>
+          </tc-description-list>
         </div>
 
       </div>
@@ -114,7 +126,5 @@
 </div>
 
 <app-error [error]="error"></app-error>
-
-
 
 

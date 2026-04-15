@@ -15,7 +15,7 @@
  */
 
 import {ComponentFixture, TestBed} from '@angular/core/testing';
-import {UntypedFormBuilder, ReactiveFormsModule} from '@angular/forms';
+import {ReactiveFormsModule, UntypedFormBuilder} from '@angular/forms';
 import {RelocatingDependantsComponent} from './relocating-dependants.component';
 import {CandidateVisaCheckService} from '../../../../../services/candidate-visa-check.service';
 import {By} from '@angular/platform-browser';
@@ -120,7 +120,7 @@ describe('RelocatingDependantsComponent', () => {
   });
 
   it('should display the correct helper text', () => {
-    const helperText: HTMLElement = fixture.nativeElement.querySelector('.form-text');
+    const helperText: HTMLElement = fixture.nativeElement.querySelector('tc-description');
     expect(helperText.textContent).toContain("If a dependant isn't listed in the dropdown, you may need to add the dependant to the Dependants section under the Full Intake tab.");
   });
 

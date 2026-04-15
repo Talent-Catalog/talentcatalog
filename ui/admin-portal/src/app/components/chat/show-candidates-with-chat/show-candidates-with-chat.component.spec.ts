@@ -18,7 +18,7 @@ import {ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing'
 
 import {ShowCandidatesWithChatComponent} from './show-candidates-with-chat.component';
 import {HttpClientTestingModule} from "@angular/common/http/testing";
-import {UntypedFormBuilder, FormsModule, ReactiveFormsModule} from "@angular/forms";
+import {FormsModule, ReactiveFormsModule, UntypedFormBuilder} from "@angular/forms";
 import {SortedByComponent} from "../../util/sort/sorted-by.component";
 import {NgbPagination} from "@ng-bootstrap/ng-bootstrap";
 import {By} from "@angular/platform-browser";
@@ -101,7 +101,7 @@ describe('ShowCandidatesWithChatComponent', () => {
     spyOn(component, 'fetchCandidatesWithActiveChat');
     // Simulate user input of search term
     const inputElement =
-      fixture.debugElement.query(By.css('input[formControlName="keyword"]')).nativeElement;
+      fixture.debugElement.query(By.css('tc-input[formControlName="keyword"] input')).nativeElement;
     inputElement.value = 'test keyword';
     inputElement.dispatchEvent(new Event('input'));
 
@@ -114,33 +114,31 @@ describe('ShowCandidatesWithChatComponent', () => {
     expect(component.fetchCandidatesWithActiveChat).toHaveBeenCalledWith(true);
   }))
 
-  it('should fetch candidates again when unreadOnly checkbox is checked',
-    fakeAsync(() => {
+  it('should fetch candidates again when unreadOnly checkbox is checked', fakeAsync(() => {
     spyOn(component, 'fetchCandidatesWithActiveChat');
-    // Simulate user checking box
-    const checkboxElement =
-      fixture.debugElement.query(By.css('input[formControlName="unreadOnly"]')).nativeElement;
-    checkboxElement.checked = true;
-    checkboxElement.dispatchEvent(new Event('change'));
+
+    // Update the FormControl directly
+    component.searchForm.get('unreadOnly')?.setValue(true);
 
     fixture.detectChanges();
-    tick(1000) // Replicate the filter subscription's debounce time
+    tick(1000); // debounce
 
-    // Check that the form control's value has been updated
-    expect(component.searchForm.get('unreadOnly').value).toBeTrue();
+    // FormControl updated
+    expect(component.searchForm.get('unreadOnly')?.value).toBeTrue();
 
+    // Subscription fired
     expect(component.fetchCandidatesWithActiveChat).toHaveBeenCalledWith(true);
-  }))
+  }));
 
   it('should fetch candidates again when Refresh button is clicked',() => {
       spyOn(component, 'fetchCandidatesWithActiveChat');
-      spyOn(component, 'refresh');
+      spyOn(component, 'refresh').and.callThrough();
 
       // Simulate user clicking button
       const buttonElement =
-        fixture.debugElement.query(By.css('button.btn-accent-3')).nativeElement;
-      buttonElement.click();
-
+        fixture.debugElement.query(By.css('tc-button'));
+      buttonElement.triggerEventHandler('onClick', null);
+      fixture.detectChanges();
       expect(component.refresh).toHaveBeenCalled();
 
       expect(component.fetchCandidatesWithActiveChat).toHaveBeenCalledWith(true);

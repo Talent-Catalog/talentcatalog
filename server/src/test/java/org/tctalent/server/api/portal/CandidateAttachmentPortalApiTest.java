@@ -1,8 +1,12 @@
 package org.tctalent.server.api.portal;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import jakarta.servlet.ServletOutputStream;
 import jakarta.servlet.http.HttpServletResponse;
@@ -18,6 +22,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
+import org.tctalent.server.files.UploadType;
 import org.tctalent.server.model.db.AttachmentType;
 import org.tctalent.server.model.db.CandidateAttachment;
 import org.tctalent.server.model.db.User;
@@ -88,7 +93,7 @@ class CandidateAttachmentPortalApiTest {
   }
 
   @Test
-  void testCreateCandidateAttachment_Success() {
+  void testCreateCandidateAttachment_Success() throws IOException {
     CreateCandidateAttachmentRequest request = new CreateCandidateAttachmentRequest();
     CandidateAttachment attachment = createSampleAttachment();
     when(candidateAttachmentService.createCandidateAttachment(request)).thenReturn(attachment);
@@ -164,10 +169,10 @@ class CandidateAttachmentPortalApiTest {
     attachment.setId(1L);
     attachment.setName("test.pdf");
     attachment.setType(AttachmentType.file);
-    attachment.setLocation("path/to/test.pdf");
+    attachment.setUrl("path/to/test.pdf");
     attachment.setFileType("application/pdf");
     attachment.setMigrated(true);
-    attachment.setCv(true);
+    attachment.setUploadType(UploadType.cv);
     User createdBy = new User();
     createdBy.setId(1L);
     createdBy.setFirstName("John");

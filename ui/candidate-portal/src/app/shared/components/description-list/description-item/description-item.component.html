@@ -1,0 +1,9 @@
+<div class="tc-description-item">
+  <dt class="tc-description-term">
+    <ng-container *ngIf="icon"><i [class]="icon"></i></ng-container>
+    {{ label }}
+  </dt>
+  <dd class="tc-description-details">
+    <ng-content></ng-content>
+  </dd>
+</div>

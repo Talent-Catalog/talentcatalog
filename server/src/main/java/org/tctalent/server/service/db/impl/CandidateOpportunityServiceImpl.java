@@ -33,6 +33,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -72,9 +73,9 @@ import org.tctalent.server.service.db.CandidateOpportunityService;
 import org.tctalent.server.service.db.CandidateService;
 import org.tctalent.server.service.db.FileSystemService;
 import org.tctalent.server.service.db.NextStepProcessingService;
-import org.tctalent.server.service.db.OppNotificationService;
 import org.tctalent.server.service.db.SalesforceJobOppService;
 import org.tctalent.server.service.db.SalesforceService;
+import org.tctalent.server.service.db.SystemNotificationService;
 import org.tctalent.server.service.db.UserService;
 import org.tctalent.server.util.SalesforceHelper;
 import org.tctalent.server.util.filesystem.GoogleFileSystemDrive;
@@ -91,7 +92,7 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
     private final FileSystemService fileSystemService;
     private final GoogleDriveConfig googleDriveConfig;
     private final NextStepProcessingService nextStepProcessingService;
-    private final OppNotificationService oppNotificationService;
+    private final SystemNotificationService systemNotificationService;
     private final SalesforceJobOppService salesforceJobOppService;
     private final SalesforceService salesforceService;
     private final UserService userService;
@@ -154,7 +155,7 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
 
         if (create) {
             //Create the automated post to notify that a new has been created for a candidate.
-            oppNotificationService.notifyNewCase(opp);
+            systemNotificationService.notifyNewCase(opp);
         }
 
         return opp;
@@ -174,18 +175,55 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
     @Override
     public void createUpdateCandidateOpportunities(UpdateCandidateOppsRequest request)
         throws NoSuchObjectException, SalesforceException, WebClientException {
-
+        // Get the logged-in user and their partner
+        User loggedInUser = userService.getLoggedInUser();
+        assert loggedInUser != null;
+        Partner userPartner = loggedInUser.getPartner();
+        if (userPartner == null) {
+            throw new InvalidRequestException("User is not associated with a partner");
+        }
         List<Candidate> candidates = candidateService.findByIds(request.getCandidateIds());
 
         final String sfJobOppId = request.getSfJobOppId();
         final SalesforceJobOpp sfJobOpp =
             salesforceJobOppService.getOrCreateJobOppFromId(sfJobOppId);
+        // Validate that the user's partner is authorized to manage all candidates
+        for (Candidate candidate : candidates) {
+            if (!isPartnerAuthorizedForCandidate(userPartner, candidate)) {
+                LogBuilder.builder(log)
+                    .user(Optional.of(loggedInUser))
+                    .action("createUpdateCandidateOpportunities")
+                    .message("Unauthorized attempt to update opportunity for candidate " + candidate.getCandidateNumber() + " by partner " + userPartner.getName())
+                    .logWarn();
+                throw new InvalidRequestException("User's partner is not authorized to update opportunities for candidate " + candidate.getCandidateNumber());
+            }
+        }
+
         createUpdateCandidateOpportunities(candidates, sfJobOpp, request.getCandidateOppParams());
     }
 
     public void createUpdateCandidateOpportunities(Collection<Candidate> candidates,
         @Nullable SalesforceJobOpp sfJobOpp, @Nullable CandidateOpportunityParams candidateOppParams)
         throws SalesforceException, WebClientException {
+        // Get the logged-in user and their partner
+        User loggedInUser = userService.getLoggedInUser();
+        assert loggedInUser != null;
+        Partner userPartner = loggedInUser.getPartner();
+        if (userPartner == null) {
+            throw new InvalidRequestException("User is not associated with a partner");
+        }
+
+        // Validate candidates
+        for (Candidate candidate : candidates) {
+            if (!isPartnerAuthorizedForCandidate(userPartner, candidate)) {
+                LogBuilder.builder(log)
+                    .user(Optional.of(loggedInUser))
+                    .action("createUpdateCandidateOpportunities")
+                    .message("Unauthorized attempt to update opportunity for candidate " + candidate.getCandidateNumber() + " by partner " + userPartner.getName())
+                    .logWarn();
+                throw new InvalidRequestException("User's partner is not authorized to update opportunities for candidate " + candidate.getCandidateNumber());
+            }
+        }
         //Need ordered list so that can match with returned contacts.
         List<Candidate> orderedCandidates = new ArrayList<>(candidates);
 
@@ -232,6 +270,35 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
             opps = new ArrayList<>();
         }
         return opps;
+    }
+
+    @NonNull
+    @Override
+    public Set<Long> findFullyVisibleCandidateIds(@Nullable Partner partner) {
+        // CandidateBuilderSelector needs a fast way to know which candidates can bypass
+        // role/partner property filtering. Returning ids avoids loading full CandidateOpportunity
+        // and Candidate entities (which previously triggered N+1 lazy-load queries).
+      Set<Long> candidateIds;
+        if (partner != null && partner.isJobCreator()) {
+            candidateIds = candidateOpportunityRepository.findFullyVisibleCandidateIds(partner.getId());
+        } else {
+            candidateIds = Set.of();
+        }
+        return candidateIds;
+    }
+
+    @NonNull
+    @Override
+    public Set<Long> findFullyVisibleUserIds(@Nullable Partner partner) {
+        // Same optimization as findFullyVisibleCandidateIds, but for User DTO filtering.
+        // We resolve user ids directly in one query so filters do constant-time membership checks.
+        Set<Long> userIds;
+        if (partner != null && partner.isJobCreator()) {
+            userIds = candidateOpportunityRepository.findFullyVisibleUserIds(partner.getId());
+        } else {
+            userIds = Set.of();
+        }
+        return userIds;
     }
 
     @NonNull
@@ -437,22 +504,29 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
         }
     }
 
+    /**
+     * Returns Candidate's status, possibly auto-updated based on the given new stage.
+     * @param newStage New opportunity stage
+     * @param candidate Candidate
+     * @return New status if it should be updated, otherwise null.
+     */
     @Nullable
-    private static CandidateStatus checkForNewStatus(CandidateOpportunityStage stage,
-        Candidate candidate) {
+    private static CandidateStatus checkForNewStatus(
+        CandidateOpportunityStage newStage, Candidate candidate) {
+
         CandidateStatus status = candidate.getStatus();
         CandidateStatus newStatus = null;
-        if (stage.isEmployed() && status != CandidateStatus.employed) {
+        if (newStage.isEmployed() && status != CandidateStatus.employed) {
             //Auto set status to employed
             newStatus = CandidateStatus.employed;
-        } else if (stage == CandidateOpportunityStage.notEligibleForTC
+        } else if (newStage == CandidateOpportunityStage.notEligibleForTC
             && status != CandidateStatus.ineligible) {
             //Auto set status
             newStatus = CandidateStatus.ineligible;
-        } else if (stage == CandidateOpportunityStage.relocatedNoJobOfferPathway
-            && status != CandidateStatus.withdrawn) {
+        } else if (newStage == CandidateOpportunityStage.relocatedNoJobOfferPathway
+            && status != CandidateStatus.relocatedIndependently) {
             //Auto set status
-            newStatus = CandidateStatus.withdrawn;
+            newStatus = CandidateStatus.relocatedIndependently;
         }
         return newStatus;
     }
@@ -641,7 +715,7 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
 
         if (oppParams != null) {
 
-            oppNotificationService.notifyCaseChanges(opp, oppParams);
+            systemNotificationService.notifyCaseChanges(opp, oppParams);
 
             final CandidateOpportunityStage newStage = oppParams.getStage();
             if (newStage != null) {
@@ -718,14 +792,10 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
         MultipartFile file) throws IOException {
 
         //Save to a temporary file
-        InputStream is = file.getInputStream();
         File tempFile = File.createTempFile("offer", ".tmp");
-        try (FileOutputStream outputStream = new FileOutputStream(tempFile)) {
-            int read;
-            byte[] bytes = new byte[1024];
-            while ((read = is.read(bytes)) != -1) {
-                outputStream.write(bytes, 0, read);
-            }
+        try (FileOutputStream outputStream = new FileOutputStream(tempFile);
+            InputStream inputStream = file.getInputStream()) {
+            inputStream.transferTo(outputStream);
         }
 
         final GoogleFileSystemDrive candidateDataDrive = googleDriveConfig.getCandidateDataDrive();
@@ -768,7 +838,7 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
             candidateService.auditNoteIfRelocatedAddressChange(candidate, null,
                     null, null, opp.getJobOpp().getCountry().getName());
             candidate.setRelocatedCountry(jobOpp.getCountry());
-            candidateService.save(candidate, false);
+            candidateService.save(candidate);
         }
     }
 
@@ -890,6 +960,16 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
     @Override
     public List<String> findAllNonNullSfIdsByClosedFalse() {
         return candidateOpportunityRepository.findAllNonNullSfIdsByClosedFalse();
+    }
+
+    public boolean isPartnerAuthorizedForCandidate(Partner userPartner, Candidate candidate) {
+        Partner candidatePartner = candidate.getUser().getPartner();
+        // If the user is a source partner, they can only access their own candidates
+        // Unless they are the default source partner, in which case there are no restrictions
+        if (userPartner.isSourcePartner() && !userPartner.isDefaultSourcePartner()) {
+            return userPartner.getId().equals(candidatePartner.getId());
+        }
+        return true;
     }
 
 }

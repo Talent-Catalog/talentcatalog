@@ -18,5 +18,6 @@ export interface LanguageLevel {
   id: number;
   name: string;
   level: number;
+  cefrLevel: string;
   status: string;
 }

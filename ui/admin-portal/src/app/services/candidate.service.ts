@@ -57,8 +57,12 @@ export class CandidateService implements IntakeService {
 
   constructor(private http: HttpClient) {}
 
-  search(request): Observable<SearchResults<Candidate>> {
-    return this.http.post<SearchResults<Candidate>>(`${this.apiUrl}/search`, request);
+  search(request, useOldFetch: boolean): Observable<SearchResults<Candidate>> {
+    let suffix = "search";
+    if (useOldFetch) {
+      suffix += "-old-fetch";
+    }
+    return this.http.post<SearchResults<Candidate>>(`${this.apiUrl}/${suffix}`, request);
   }
 
   findByCandidateEmail(request): Observable<SearchResults<Candidate>> {
@@ -75,6 +79,10 @@ export class CandidateService implements IntakeService {
 
   findByExternalId(request): Observable<SearchResults<Candidate>> {
     return this.http.post<SearchResults<Candidate>>(`${this.apiUrl}/findbyexternalid`, request);
+  }
+
+  findByPublicId(request): Observable<SearchResults<Candidate>> {
+    return this.http.post<SearchResults<Candidate>>(`${this.apiUrl}/findbypublicid`, request);
   }
 
   getByNumber(number: string): Observable<Candidate> {
@@ -122,6 +130,10 @@ export class CandidateService implements IntakeService {
 
   updateSurvey(id: number, details): Observable<Candidate>  {
     return this.http.put<Candidate>(`${this.apiUrl}/${id}/survey`, details);
+  }
+
+  updateMaxEducationLevel(id: number, details): Observable<Candidate>  {
+    return this.http.put<Candidate>(`${this.apiUrl}/${id}/education`, details);
   }
 
   updateMedia(id: number, details): Observable<Candidate>  {
@@ -230,9 +242,11 @@ export class CandidateService implements IntakeService {
     );
   }
 
-  // In the candidate-search-card we pass in the updated candidate object to merge with the extended candidate DTO,
-  // this reduces an additional API call to fetch the updated extended candidate object. But in candidate profile we fetch
-  // the updated object so we don't need the updated object, just need to refetch the current candidate.
+  // In the candidate-search-card we pass in the updated candidate object to merge with the extended
+  // candidate DTO.
+  // This reduces an additional API call to fetch the updated extended candidate object.
+  // But in candidate profile we fetch the updated object so we don't need the updated object,
+  // just need to refetch the current candidate.
   updateCandidate(candidate?: Candidate) {
     candidate ? this.candidateUpdatedSource.next(candidate) : this.candidateUpdatedSource.next();
   }

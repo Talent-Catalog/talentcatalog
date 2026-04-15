@@ -34,9 +34,11 @@ import org.tctalent.server.model.db.SalesforceJobOpp;
 import org.tctalent.server.model.db.SavedList;
 import org.tctalent.server.model.db.TaskImpl;
 import org.tctalent.server.model.db.User;
+import org.tctalent.server.repository.db.read.dto.CandidateReadDto;
 import org.tctalent.server.request.IdsRequest;
 import org.tctalent.server.request.candidate.PublishListRequest;
 import org.tctalent.server.request.candidate.PublishedDocImportReport;
+import org.tctalent.server.request.candidate.SavedListGetRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateListOppsRequest;
 import org.tctalent.server.request.candidate.UpdateDisplayedFieldPathsRequest;
 import org.tctalent.server.request.candidate.source.UpdateCandidateSourceDescriptionRequest;
@@ -216,12 +218,32 @@ public interface SavedListService {
     Set<Long> fetchCandidateIds(long listId);
 
     /**
+     * Fetches the public ids of candidates in the given list, note that the list id provided
+     * must be the public id of the list, not the internal id.
+     *
+     * @param publicListId public Id of list
+     * @return public Ids of candidates contained in the list
+     */
+    @NonNull
+    Set<String> fetchCandidatePublicIds(String publicListId);
+
+    /**
      * Fetches the ids of the union of all candidates in all the given lists
      * @param listIds Ids of lists
      * @return Ids of candidates contained in the lists or null if ids is null
      */
     @Nullable
     Set<Long> fetchUnionCandidateIds(@Nullable List<Long> listIds);
+
+    /**
+     * Fetches the public ids of the union of all candidates in all the given lists, note that the
+     * list ids provided must be the public ids of the lists, not the internal ids.
+     *
+     * @param publicListIds public ids of saved lists
+     * @return public ids of candidates contained in the lists, or null if input is null
+     */
+    @Nullable
+    Set<String> fetchUnionCandidatePublicIds(@Nullable List<String> publicListIds);
 
     /**
      * Fetches the ids of candidates which appear in all the given lists
@@ -231,6 +253,15 @@ public interface SavedListService {
     @Nullable
     Set<Long> fetchIntersectionCandidateIds(@Nullable List<Long> listIds);
 
+    /**
+     * Fetches the public ids of the intersection of all candidates in all the given lists, note
+     * that the list ids provided must be the public ids of the lists, not the internal ids.
+     *
+     * @param publicListIds public ids of saved lists
+     * @return public ids of candidates common to all the lists, or null if input is null
+     */
+    @Nullable
+    Set<String> fetchIntersectionCandidatePublicIds(@Nullable List<String> publicListIds);
 
     /**
      * Get the SavedList with the given id.
@@ -242,6 +273,15 @@ public interface SavedListService {
     SavedList get(long savedListId) throws NoSuchObjectException;
 
     /**
+     * Get the SavedList with the given public id.
+     * @param publicId public ID of the SavedList to get
+     * @return Saved list
+     * @throws NoSuchObjectException if there is no saved list with this public id.
+     */
+    @NonNull
+    SavedList getByPublicId(@NonNull String publicId) throws NoSuchObjectException;
+
+    /**
      * Get the SavedList, if any, with the given name (ignoring case), owned by the given user.
      * @param user Owner of list
      * @param listName Name of list (case insensitive - eg "test" will match "Test")
@@ -249,6 +289,24 @@ public interface SavedListService {
      */
     @Nullable
     SavedList get(@NonNull User user, String listName);
+
+    /**
+     * Returns the candidate ids in the saved list with the given id.
+     * Or empty set if there is no saved list with that id.
+     * @param savedListId Saved list id
+     * @return Set of candidate ids
+     */
+    @NonNull
+    Set<Long> getCandidateIds(long savedListId);
+
+    /**
+     * Fetches candidate dtos from the given list according the given request.
+     * @param savedList Saved List whose candidates are to be fetched
+     * @param request Defines which candidates to fetch (if not all)
+     * @return Candidate dtos.
+     */
+    Page<CandidateReadDto> getSavedListCandidateDtos(
+        @NonNull SavedList savedList, SavedListGetRequest request);
 
     /**
      * Returns true if there are no candidates in the list
@@ -302,11 +360,13 @@ public interface SavedListService {
 
     /**
      * Merge the contents of the SavedList with the given id with the
-     * candidates whose candidate numbers (NOT ids) appear in the given input stream.
-     * @param savedListId ID of saved list to be updated
-     * @param is Input stream containing candidate numbers, one to a line
-     * @throws NoSuchObjectException if there is no saved list with this id
-     * or if any of the candidate numbers are not numeric or do not correspond to a candidate
+     * candidates whose candidate numbers (NOT ids) or publicIds appear in the given input stream.
+     * @param savedListId ID of the saved list to be updated
+     * @param is Input stream formatted as csv containing candidate numbers or publicIds, in the
+     *           first column.
+     * @throws NoSuchObjectException if there is no saved list with this id,
+     * or if any of the candidate numbers are not numeric, or is not a publicId or does not
+     * correspond to a candidate.
      * @throws IOException If there is a problem reading the input stream
      */
     void mergeSavedListFromInputStream(long savedListId, InputStream is)
@@ -329,8 +389,9 @@ public interface SavedListService {
      * list will be returned through {@link Candidate#getContextNote()}
      * @param savedListId ID of saved list
      * @param candidates Candidate objects to be marked with the list context. Note that this
-     *                   is a transient property only found on the given objects (ie it is not
-     *                   stored in the database).
+     *                   is a transient property on the candidate objects because it depends on
+     *                   the list context. It does not come from the Candidate table, it comes
+     *                   from the CandidateSavedList table, depending on the particular list.
      */
     void setCandidateContext(long savedListId, Iterable<Candidate> candidates);
 

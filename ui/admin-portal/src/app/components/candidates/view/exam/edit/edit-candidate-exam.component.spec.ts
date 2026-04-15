@@ -87,11 +87,10 @@ describe('EditCandidateExamComponent', () => {
     expect(component.hasSelectedExam).toBeTrue();
   });
 
-  it('should disable the save button if form is invalid', () => {
+  it('should reflect when form is invalid', () => {
     component.candidateForm.controls['score'].setValue(null);
     fixture.detectChanges();
-    const saveButton = fixture.nativeElement.querySelector('.modal-footer button[type="button"]');
-    expect(saveButton.disabled).toBeTrue();
+    expect(component.candidateForm.valid).toBeFalse();
   });
 
   it('should call the update service when saving', () => {

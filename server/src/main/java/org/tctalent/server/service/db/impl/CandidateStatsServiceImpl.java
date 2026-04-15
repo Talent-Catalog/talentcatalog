@@ -35,11 +35,38 @@ import org.tctalent.server.model.db.Gender;
 import org.tctalent.server.service.db.CandidateStatsService;
 
 /**
- * Methods performing our standard candidate stats.
- * <p/>
- * Note that I have been forced to go to native queries for these more complex queries.
- * The non-native queries seem a bit buggy.
- * Anyway - I couldn't get them working. Simpler to use normal SQL. JC.
+ * <p>
+ * Our basic approach to collecting stats is to start by constructing a query which returns all
+ * the candidate ids that match the candidates whose stats are being collected.
+ * </p><p>
+ *   This query will be like the following (note that this is the same basic query used
+ *   when retrieving a saved search - we are reusing that SQL code generation):
+ *   <p>
+ *       <code>
+ *           select distinct candidate.id from candidate where ...eg all female candidates...
+ *       </code>
+ *   </p>
+ *   <p>
+ *       Then another query will collect statistics on those candidates, for example:
+ *       <p>
+ *           <code>
+ *               select language.name, count(distinct candidate) as PeopleCount
+ *               <br>
+ *               where candidate.id in (...the above select...)
+ *               <br>
+ *               group by language.name order by PeopleCount desc
+ *           </code>
+ *       </p>
+ *   </p>
+ *   <p>
+ *       The returned results of all those queries will be a list of some value - eg a language
+ *       name in the above example, and a count of people associated with that value - eg the
+ *       number of candidates with that language.
+ *   </p><p>
+ *      The above two values make up a {@link DataRow}. As you can see below, all the stats return
+ *      a List of DataRows.
+ *   </p>
+ * </p>
  */
 @Service
 @RequiredArgsConstructor

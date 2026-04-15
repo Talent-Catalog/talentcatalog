@@ -14,29 +14,18 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<div *ngIf="error">
-  {{error}}
-</div>
-
-
-
+<tc-alert *ngIf="error">{{error}}</tc-alert>
 <form [formGroup]="form">
-
-  <div class="mb-3">
-    <label class="form-label" for="ieltsLevel">
+  <tc-field>
+    <tc-label for="ieltsLevel">
       Estimated IELTS Level?
-    </label>
-    <div class="float-end">
       <app-autosave-status
         [saving]="saving"
         [typing]="typing">
       </app-autosave-status>
-    </div>
-    <input type="number" class="form-control"
-           id="ieltsLevel" [formControlName]="'ieltsLevel'">
-    <small>Must be minimum 4.5 IELTS, average across all bands.</small>
-  </div>
-
-
+    </tc-label>
+    <tc-input type="number" id="ieltsLevel" [formControlName]="'ieltsLevel'"></tc-input>
+    <tc-description>Must be minimum 4.5 IELTS, average across all bands.</tc-description>
+  </tc-field>
 </form>
 

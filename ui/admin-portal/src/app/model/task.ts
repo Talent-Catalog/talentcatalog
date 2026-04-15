@@ -39,6 +39,7 @@ export interface Task extends Auditable {
 }
 
 export enum TaskType {
+  Form = "Form",
   Question = "Question",
   Simple = "Simple",
   Upload = "Upload",

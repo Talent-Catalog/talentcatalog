@@ -25,6 +25,7 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.MapKey;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.OrderBy;
@@ -42,6 +43,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -53,8 +56,8 @@ import org.hibernate.annotations.Formula;
 import org.springframework.lang.Nullable;
 import org.tctalent.server.api.admin.SavedSearchAdminApi;
 import org.tctalent.server.api.admin.SystemAdminApi;
+import org.tctalent.server.configuration.SystemAdminConfiguration;
 import org.tctalent.server.logging.LogBuilder;
-import org.tctalent.server.model.es.CandidateEs;
 import org.tctalent.server.service.db.BackgroundProcessingService;
 import org.tctalent.server.service.db.CandidateSavedListService;
 import org.tctalent.server.util.SalesforceHelper;
@@ -78,7 +81,14 @@ public class Candidate extends AbstractAuditableDomainObject<Long> implements Ha
      */
     private OffsetDateTime acceptedPrivacyPolicyDate;
 
-
+    /**
+     * Partner associated with the accepted privacy policy.
+     * Nullable because it may not be set initially.
+     */
+    @Nullable
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "accepted_privacy_policy_partner_id")
+    private PartnerImpl acceptedPrivacyPolicyPartner;
 
     /**
      * True if candidate wants to receive all notifications.
@@ -90,8 +100,9 @@ public class Candidate extends AbstractAuditableDomainObject<Long> implements Ha
     @Transient
     private Long contextSavedListId;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "candidateId", cascade = CascadeType.MERGE)
-    private Set<CandidateProperty> candidateProperties;
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "candidate", cascade = CascadeType.MERGE)
+    @MapKey(name="name")
+    private Map<String, CandidateProperty> candidateProperties;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "candidate", cascade = CascadeType.MERGE)
     @OrderBy("activatedDate DESC")
@@ -111,7 +122,7 @@ public class Candidate extends AbstractAuditableDomainObject<Long> implements Ha
     private String additionalInfo;
     private String candidateMessage;
     private String linkedInLink;
-
+    private String aspirations;
     /**
      * If true, candidate cannot post to chats. Effectively any chats they see are read only.
      * <p/>
@@ -139,6 +150,14 @@ public class Candidate extends AbstractAuditableDomainObject<Long> implements Ha
      */
     @Nullable
     private String partnerRef;
+
+    /**
+     * This can be set to define an optional ranking associated with the candidate as a result
+     * of some kind of sorting logic.
+     */
+    @Transient
+    @Nullable
+    private Number rank;
 
     /**
      * If null the candidate registered themselves.
@@ -220,10 +239,11 @@ public class Candidate extends AbstractAuditableDomainObject<Long> implements Ha
     private CandidateStatus status;
 
     /**
-     * ID of corresponding candidate record in Elasticsearch
-     * @see CandidateEs#getId()
+     * Computed field of all searchable text associated with the candidate.
+     * <p/>
+     * Updated in {@link #updateText}
      */
-    private String textSearchId;
+    private String text;
 
     /**
      * Even though we would prefer CascadeType.ALL with 'orphanRemoval' so that
@@ -632,10 +652,6 @@ public class Candidate extends AbstractAuditableDomainObject<Long> implements Ha
 
     @Enumerated(EnumType.STRING)
     @Nullable
-    private YesNo monitoringEvaluationConsent;
-
-    @Enumerated(EnumType.STRING)
-    @Nullable
     private YesNoUnsure partnerRegistered;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -888,6 +904,14 @@ public class Candidate extends AbstractAuditableDomainObject<Long> implements Ha
 
     public void setAcceptedPrivacyPolicyDate(OffsetDateTime acceptedPrivacyPolicyDate) {
         this.acceptedPrivacyPolicyDate = acceptedPrivacyPolicyDate;
+    }
+
+    public PartnerImpl getAcceptedPrivacyPolicyPartner() {
+        return acceptedPrivacyPolicyPartner;
+    }
+
+    public void setAcceptedPrivacyPolicyPartner(PartnerImpl acceptedPrivacyPolicyPartner) {
+        this.acceptedPrivacyPolicyPartner = acceptedPrivacyPolicyPartner;
     }
 
     public String getCandidateNumber() {
@@ -1210,7 +1234,13 @@ public class Candidate extends AbstractAuditableDomainObject<Long> implements Ha
     }
 
     public void setAdditionalInfo(String additionalInfo) { this.additionalInfo = additionalInfo; }
+    public String getAspirations() {
+        return aspirations;
+    }
 
+    public void setAspirations(String aspirations) {
+        this.aspirations = aspirations;
+    }
     public String getCandidateMessage() {
         return candidateMessage;
     }
@@ -1253,14 +1283,6 @@ public class Candidate extends AbstractAuditableDomainObject<Long> implements Ha
 
     public void setStatus(CandidateStatus status) {
         this.status = status;
-    }
-
-    public String getTextSearchId() {
-        return textSearchId;
-    }
-
-    public void setTextSearchId(String textSearchId) {
-        this.textSearchId = textSearchId;
     }
 
     public Country getCountry() {
@@ -1324,11 +1346,11 @@ public class Candidate extends AbstractAuditableDomainObject<Long> implements Ha
         }
     }
 
-    public Set<CandidateProperty> getCandidateProperties() {
+    public Map<String,CandidateProperty> getCandidateProperties() {
         return candidateProperties;
     }
 
-    public void setCandidateProperties(Set<CandidateProperty> properties) {
+    public void setCandidateProperties(Map<String,CandidateProperty> properties) {
         this.candidateProperties = properties;
     }
 
@@ -1446,7 +1468,9 @@ public class Candidate extends AbstractAuditableDomainObject<Long> implements Ha
     }
 
     public List<CandidateVisaCheck> getCandidateVisaChecks() {
-        candidateVisaChecks.sort(null);
+        if (candidateVisaChecks != null) {
+            candidateVisaChecks.sort(null);
+        }
         return candidateVisaChecks;
     }
 
@@ -1962,6 +1986,14 @@ public class Candidate extends AbstractAuditableDomainObject<Long> implements Ha
 
     public void setLeftHomeNotes(@Nullable String leftHomeNotes) { this.leftHomeNotes = leftHomeNotes; }
 
+    public @Nullable Number getRank() {
+        return rank;
+    }
+
+    public void setRank(@Nullable Number rank) {
+        this.rank = rank;
+    }
+
     @Nullable
     public PartnerImpl getRegisteredBy() {
         return registeredBy;
@@ -2077,13 +2109,6 @@ public class Candidate extends AbstractAuditableDomainObject<Long> implements Ha
     public String getMaritalStatusNotes() { return maritalStatusNotes; }
 
     public void setMaritalStatusNotes(@Nullable String maritalStatusNotes) { this.maritalStatusNotes = maritalStatusNotes; }
-
-    @Nullable
-    public YesNo getMonitoringEvaluationConsent() {return monitoringEvaluationConsent;}
-
-    public void setMonitoringEvaluationConsent(@Nullable YesNo monitoringEvaluationConsent) {
-        this.monitoringEvaluationConsent = monitoringEvaluationConsent;
-    }
 
     @Nullable
     public String getPartnerRef() {
@@ -2483,6 +2508,38 @@ public class Candidate extends AbstractAuditableDomainObject<Long> implements Ha
         return savedLists;
     }
 
+    /**
+     * True if this candidate has been presented with our terms but has not yet accepted them.
+     * <p/>
+     * This is equivalent to the candidate being in the PendingTermsAcceptance list.
+     * @return True if the candidate has not accepted our terms.
+     */
+    public boolean isPendingTerms() {
+        return isTagged(SystemAdminConfiguration.PENDING_TERMS_ACCEPTANCE_LIST_ID);
+    }
+
+    /**
+     * True if this is a test candidate.
+     * <p/>
+     * This is equivalent to the candidate being in the TestCandidates list.
+     * @return True if the candidate is a test candidate.
+     */
+    public boolean isTestCandidate() {
+        return isTagged(SystemAdminConfiguration.TEST_CANDIDATE_LIST_ID);
+    }
+
+    /**
+     * True if this candidate is in (ie tagged by) the given list
+     * @param savedListId Saved list id
+     * @return True if in list (ie tagged by that list)
+     */
+    public boolean isTagged(long savedListId) {
+        Optional<CandidateSavedList> optional = candidateSavedLists.stream()
+            .filter(sl -> sl.getSavedList().getId() == savedListId)
+            .findAny();
+        return optional.isPresent();
+    }
+
     public void addSavedLists(Set<SavedList> savedLists) {
         for (SavedList savedList : savedLists) {
             addSavedList(savedList);
@@ -2532,5 +2589,23 @@ public class Candidate extends AbstractAuditableDomainObject<Long> implements Ha
 
     public void setRelocatedCountry(Country relocatedCountry) {
         this.relocatedCountry = relocatedCountry;
+    }
+
+    public String getText() {
+        return text;
+    }
+
+    public void updateText() {
+        String combinedJobText = getCandidateJobExperiences().stream()
+            .map(CandidateJobExperience::getDescription)
+            .collect(Collectors.joining(" || "));
+        String combinedCvText = getCandidateAttachments().stream()
+            .filter(CandidateAttachment::isCv)
+            .map(CandidateAttachment::getTextExtract)
+            .collect(Collectors.joining(" || "));
+        String notesText = getShareableNotes();
+        this.text = Stream.of(combinedJobText, combinedCvText, notesText)
+            .filter(s -> s != null && !s.isBlank())
+            .collect(Collectors.joining(" || "));
     }
 }

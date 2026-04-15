@@ -16,6 +16,16 @@
 
 package org.tctalent.server.security;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+import java.util.Collections;
+import java.util.Optional;
+import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -30,13 +40,6 @@ import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.Country;
 import org.tctalent.server.model.db.Role;
 import org.tctalent.server.model.db.User;
-
-import java.util.Collections;
-import java.util.Optional;
-import java.util.Set;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
 
 class AuthServiceTest {
 
@@ -71,6 +74,7 @@ class AuthServiceTest {
   @Test
   void getLoggedInUser_returnsUser_whenAuthenticated() {
     when(authentication.getPrincipal()).thenReturn(tcUserDetails);
+    when(authentication.isAuthenticated()).thenReturn(true);
     when(tcUserDetails.getUser()).thenReturn(user);
 
     Optional<User> result = authService.getLoggedInUser();
@@ -101,6 +105,7 @@ class AuthServiceTest {
   void getLoggedInCandidateId_returnsId_whenUserHasCandidate() {
     Long candidateId = 123L;
     when(authentication.getPrincipal()).thenReturn(tcUserDetails);
+    when(authentication.isAuthenticated()).thenReturn(true);
     when(tcUserDetails.getUser()).thenReturn(user);
     when(user.getCandidate()).thenReturn(candidate);
     when(candidate.getId()).thenReturn(candidateId);
@@ -133,6 +138,7 @@ class AuthServiceTest {
   @Test
   void getLoggedInCandidate_returnsCandidate_whenUserHasCandidate() {
     when(authentication.getPrincipal()).thenReturn(tcUserDetails);
+    when(authentication.isAuthenticated()).thenReturn(true);
     when(tcUserDetails.getUser()).thenReturn(user);
     when(user.getCandidate()).thenReturn(candidate);
 
@@ -165,6 +171,7 @@ class AuthServiceTest {
   void getUserLanguage_returnsLanguage_whenUserLoggedIn() {
     String language = "en";
     when(authentication.getPrincipal()).thenReturn(tcUserDetails);
+    when(authentication.isAuthenticated()).thenReturn(true);
     when(tcUserDetails.getUser()).thenReturn(user);
     when(user.getSelectedLanguage()).thenReturn(language);
 
@@ -206,6 +213,7 @@ class AuthServiceTest {
   @EnumSource(value = Role.class, names = {"admin", "systemadmin"})
   void authoriseLoggedInUser_returnsTrue_forAdminRoles(Role role) {
     when(authentication.getPrincipal()).thenReturn(tcUserDetails);
+    when(authentication.isAuthenticated()).thenReturn(true);
     when(tcUserDetails.getUser()).thenReturn(user);
     when(user.getReadOnly()).thenReturn(false);
     when(user.getRole()).thenReturn(role);
@@ -218,6 +226,7 @@ class AuthServiceTest {
   @Test
   void authoriseLoggedInUser_returnsTrue_forPartnerAdminNoCountryRestrictions() {
     when(authentication.getPrincipal()).thenReturn(tcUserDetails);
+    when(authentication.isAuthenticated()).thenReturn(true);
     when(tcUserDetails.getUser()).thenReturn(user);
     when(user.getReadOnly()).thenReturn(false);
     when(user.getRole()).thenReturn(Role.partneradmin);
@@ -231,6 +240,7 @@ class AuthServiceTest {
   @Test
   void authoriseLoggedInUser_returnsTrue_forPartnerAdminWithMatchingCountry() {
     when(authentication.getPrincipal()).thenReturn(tcUserDetails);
+    when(authentication.isAuthenticated()).thenReturn(true);
     when(tcUserDetails.getUser()).thenReturn(user);
     when(user.getReadOnly()).thenReturn(false);
     when(user.getRole()).thenReturn(Role.partneradmin);
@@ -261,6 +271,7 @@ class AuthServiceTest {
   void authoriseLoggedInUser_returnsTrue_forUserOwningCandidate() {
     Long candidateId = 123L;
     when(authentication.getPrincipal()).thenReturn(tcUserDetails);
+    when(authentication.isAuthenticated()).thenReturn(true);
     when(tcUserDetails.getUser()).thenReturn(user);
     when(user.getReadOnly()).thenReturn(false);
     when(user.getRole()).thenReturn(Role.user);

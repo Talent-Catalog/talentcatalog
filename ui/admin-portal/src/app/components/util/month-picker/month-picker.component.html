@@ -14,8 +14,8 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<div class="d-flex">
-  <ng-select class="w-50" [(ngModel)]="month" (ngModelChange)="updateMonth()" [items]="months" placeholder="Month" [disabled]="control.disabled"></ng-select>
-  <ng-select class="w-50" [(ngModel)]="year" (ngModelChange)="updateYear()" [items]="years" placeholder="Year" [disabled]="control.disabled"></ng-select>
+<div class="d-flex gap-2">
+  <ng-select class="tc-select w-50" [(ngModel)]="month" (ngModelChange)="updateMonth()" [items]="months" placeholder="Month" [disabled]="control.disabled"></ng-select>
+  <ng-select class="tc-select w-50" [(ngModel)]="year" (ngModelChange)="updateYear()" [items]="years" placeholder="Year" [disabled]="control.disabled"></ng-select>
 </div>
 

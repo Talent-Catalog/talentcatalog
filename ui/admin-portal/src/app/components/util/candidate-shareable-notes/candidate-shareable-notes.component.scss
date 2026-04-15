@@ -25,6 +25,11 @@ span {
   color: $accent1;
 }
 
+.warning-text {
+  margin-bottom: 0;   // remove extra spacing below
+  line-height: 1;     // keeps it vertically centered
+}
+
 ::-webkit-input-placeholder {
   font-size: 13px!important;
 }

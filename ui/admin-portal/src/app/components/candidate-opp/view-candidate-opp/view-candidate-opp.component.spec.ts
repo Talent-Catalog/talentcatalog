@@ -16,12 +16,12 @@
 
 import {ViewCandidateOppComponent} from "./view-candidate-opp.component";
 import {ComponentFixture, fakeAsync, TestBed, tick} from "@angular/core/testing";
-import {NgbModal, NgbNavChangeEvent, NgbNavModule} from "@ng-bootstrap/ng-bootstrap";
+import {NgbModal, NgbNavModule} from "@ng-bootstrap/ng-bootstrap";
 import {FileSelectorComponent} from "../../util/file-selector/file-selector.component";
 import {CandidateOpportunityService} from "../../../services/candidate-opportunity.service";
 import {AuthenticationService} from "../../../services/authentication.service";
 import {ChatService} from "../../../services/chat.service";
-import {of, throwError} from "rxjs";
+import {of} from "rxjs";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {mockCandidateOpportunity} from "../../../MockData/MockCandidateOpportunity";
 import {RouterLinkStubDirective} from "../../login/login.component.spec";
@@ -32,6 +32,7 @@ import {
 import {MockJobChat} from "../../../MockData/MockJobChat";
 import {ChatReadStatusComponent} from "../../chat/chat-read-status/chat-read-status.component";
 import {CUSTOM_ELEMENTS_SCHEMA} from "@angular/core";
+import {AuthorizationService} from "../../../services/authorization.service";
 
 describe('ViewCandidateOppComponent', () => {
   let component: ViewCandidateOppComponent;
@@ -44,6 +45,10 @@ describe('ViewCandidateOppComponent', () => {
     mockModalService = jasmine.createSpyObj('NgbModal', ['open']);
     mockCandidateOpportunityService = jasmine.createSpyObj('CandidateOpportunityService', ['uploadOffer']);
     mockAuthService = jasmine.createSpyObj('AuthenticationService', ['getLoggedInUser']);
+    const authorizationSpy = jasmine.createSpyObj('AuthorizationService', [
+      'canEditCandidateOpp',
+      'canViewChats',
+    ]);
     chatService = jasmine.createSpyObj('ChatService',
       ['combineChatReadStatuses','getOrCreate','getChatIsRead$']);
     chatService.getOrCreate.and.callThrough();
@@ -56,11 +61,13 @@ describe('ViewCandidateOppComponent', () => {
         { provide: NgbModal, useValue: mockModalService },
         { provide: CandidateOpportunityService, useValue: mockCandidateOpportunityService },
         { provide: AuthenticationService, useValue: mockAuthService },
+        { provide: AuthorizationService, useValue: authorizationSpy },
         { provide: ChatService, useValue: chatService }
       ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA]
     }).compileComponents();
     mockAuthService.getLoggedInUser.and.returnValue({ partner: new MockPartner()});
+    authorizationSpy.canViewChats.and.returnValue(true);
     chatService.getOrCreate.and.returnValue(of(new MockJobChat()));
     mockCandidateOpportunityService.uploadOffer.and.returnValue(of(mockCandidateOpportunity));
   });
@@ -133,11 +140,11 @@ describe('ViewCandidateOppComponent', () => {
   }));
 
   it('should update active tab ID when the user changes tabs', () => {
-    const mockNavChangeEvent: NgbNavChangeEvent = { activeId:1, nextId: 'Progress', preventDefault: () => {} };
+    const activeTabId: string = 'Progress';
     // Trigger tab change
-    component.onTabChanged(mockNavChangeEvent);
+    component.onTabChanged(activeTabId);
     // Expectations
-    expect(component.activeTabId).toBe(mockNavChangeEvent.nextId);
+    expect(component.activeTabId).toBe(activeTabId);
   });
 
   it('should not upload offer if modal is dismissed', fakeAsync(() => {

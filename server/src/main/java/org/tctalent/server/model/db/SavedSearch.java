@@ -16,10 +16,6 @@
 
 package org.tctalent.server.model.db;
 
-import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -33,6 +29,10 @@ import jakarta.persistence.OrderBy;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
+import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.Nullable;
 import org.springframework.util.StringUtils;
@@ -63,6 +63,8 @@ public class SavedSearch extends AbstractCandidateSource {
     private Integer maxYrs;
 
     private String partnerIds;
+
+    private String candidateNumbers;
 
     private String listAllIds;
     @Enumerated(EnumType.STRING)
@@ -110,6 +112,7 @@ public class SavedSearch extends AbstractCandidateSource {
     private Integer minEducationLevel;
     private String educationMajorIds;
 
+    private Boolean includePendingTermsCandidates;
     private Boolean miniIntakeCompleted;
     private Boolean fullIntakeCompleted;
     private Boolean potentialDuplicate;
@@ -258,6 +261,15 @@ public class SavedSearch extends AbstractCandidateSource {
     public void setPartnerIds(String partnerIds) {
         this.partnerIds = partnerIds;
     }
+
+    public String getCandidateNumbers() {
+        return candidateNumbers;
+    }
+
+    public void setCandidateNumbers(String candidateNumbers) {
+        this.candidateNumbers = candidateNumbers;
+    }
+
 
     public String getListAllIds() {
         return listAllIds;
@@ -429,6 +441,14 @@ public class SavedSearch extends AbstractCandidateSource {
 
     public void setEducationMajorIds(String educationMajorIds) {
         this.educationMajorIds = educationMajorIds;
+    }
+
+    public Boolean getIncludePendingTermsCandidates() {
+        return includePendingTermsCandidates;
+    }
+
+    public void setIncludePendingTermsCandidates(Boolean includePendingTermsCandidates) {
+        this.includePendingTermsCandidates = includePendingTermsCandidates;
     }
 
     public Boolean getMiniIntakeCompleted() {

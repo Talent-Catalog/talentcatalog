@@ -14,22 +14,17 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<div class="modal-header">
+<tc-modal [heading]="title"
+          [actionText]="closeButtonLabel"
+          [disableAction]="!isValid()"
+          (onAction)="close()">
 
-  <h4 class="modal-title">{{title}}</h4>
-
-  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" (click)="cancel()"></button>
-
-</div>
-
-<div class="modal-body">
-
-  <div class="alert alert-danger" *ngIf="error">
-    {{error}}
-  </div>
+  <tc-alert type="danger" *ngIf="error">
+    <div><strong>{{error}}</strong></div>
+  </tc-alert>
 
   <p>
-    Valid file extensions:
+    <strong>Valid file extensions:</strong>
     <span *ngFor="let extension of validExtensions">
       {{' ' + extension}}
     </span>
@@ -38,23 +33,15 @@
   <p *ngIf="instructions">{{instructions}}</p>
 
   <p *ngIf="selectedFiles.length > 0">
-    Selection:
+    <strong>Selection:</strong>
   </p>
-  <div *ngFor="let file of selectedFiles">
+  <div *ngFor="let file of selectedFiles" class="mb-3">
     {{file.name}}
   </div>
 
-  <app-file-upload [validExtensions]="validExtensions" (newFiles)="addFiles($event)"
-  (error)="onError($event)"></app-file-upload>
-</div>
+  <app-file-upload [validExtensions]="validExtensions"
+                   (newFiles)="addFiles($event)"
+                   (error)="onError($event)">
+  </app-file-upload>
 
-<div class="modal-footer">
-  <button type="button" class="btn btn-accent-2"
-          (click)="cancel()">
-    Cancel
-  </button>
-  <button [disabled]="!isValid()" type="button" class="btn btn-success"
-          (click)="close()">
-    {{closeButtonLabel}}
-  </button>
-</div>
+</tc-modal>

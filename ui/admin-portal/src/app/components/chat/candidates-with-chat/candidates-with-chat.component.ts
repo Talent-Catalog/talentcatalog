@@ -17,10 +17,11 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {ChatService} from "../../../services/chat.service";
 import {MainSidePanelBase} from "../../util/split/MainSidePanelBase";
-import {Candidate} from "../../../model/candidate";
+import {Candidate, UpdateCandidateMutedRequest} from "../../../model/candidate";
 import {JobChat} from "../../../model/chat";
 import {BehaviorSubject} from "rxjs";
 import {AuthorizationService} from "../../../services/authorization.service";
+import {CandidateService} from "../../../services/candidate.service";
 
 @Component({
   selector: 'app-candidates-with-chat',
@@ -47,6 +48,7 @@ export class CandidatesWithChatComponent extends MainSidePanelBase implements On
 
   constructor(
     private chatService: ChatService,
+    private candidateService: CandidateService,
     private authorizationService: AuthorizationService
   ) { super(5); }
 

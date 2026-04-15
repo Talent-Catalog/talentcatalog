@@ -61,16 +61,13 @@ export class CandidateShareableNotesComponent extends AutoSaveComponentBase
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    //Replace the form value with the new candidates data when
-    //changing from one candidate to the next or when selection has changed.
     if (this.form) {
-      if (this.editable) {
-        this.form.controls['shareableNotes'].patchValue(this.candidate.shareableNotes, {emitEvent: false});
-      }
+      // Update value
+      this.form.controls['shareableNotes'].patchValue(
+        this.candidate.shareableNotes,
+        { emitEvent: false }
+      );
     }
   }
 
-  isEditable(): boolean {
-    return this.authService.isEditableCandidate(this.candidate);
-  }
 }

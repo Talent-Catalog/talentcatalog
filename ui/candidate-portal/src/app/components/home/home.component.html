@@ -16,7 +16,7 @@
 
 <div class="container">
 
-  <app-loading [loading]="loading"></app-loading>
+  <tc-loading [loading]="loading"></tc-loading>
 
   <ng-container *ngIf="!loading">
 
@@ -31,7 +31,7 @@
         </p>
 
         <div class="text-start">
-          <a class="btn btn-primary" [routerLink]="'/register'">{{ 'HOME.DRAFT.BUTTON' | translate }}</a>
+          <tc-button [routerLink]="'/register'">{{ 'HOME.DRAFT.BUTTON' | translate }} </tc-button>
         </div>
       </ng-container>
 
@@ -42,7 +42,7 @@
         </p>
 
         <div class="text-start">
-          <a class="btn btn-primary" [routerLink]="'/profile'">{{ 'HOME.PENDING.BUTTON' | translate }}</a>
+          <tc-button [routerLink]="'/profile'">{{ 'HOME.PENDING.BUTTON' | translate }}</tc-button>
         </div>
       </ng-container>
 
@@ -53,7 +53,7 @@
         </p>
 
         <div class="text-start">
-          <a class="btn btn-primary" [routerLink]="'/profile'">{{ 'HOME.ACTIVE.BUTTON' | translate }}</a>
+          <tc-button [routerLink]="'/profile'">{{ 'HOME.ACTIVE.BUTTON' | translate }}</tc-button>
         </div>
       </ng-container>
 
@@ -64,7 +64,7 @@
         </p>
 
         <div class="text-start">
-          <a class="btn btn-primary" [routerLink]="'/profile'">{{ 'HOME.ACTIVE.BUTTON' | translate }}</a>
+          <tc-button [routerLink]="'/profile'">{{ 'HOME.ACTIVE.BUTTON' | translate }}</tc-button>
         </div>
       </ng-container>
 
@@ -74,12 +74,10 @@
           {{ 'HOME.INCOMPLETE.EXPLANATION' | translate }}
         </p>
 
-        <p class="alert alert-warning" *ngIf="candidate.candidateMessage">
-          {{candidate.candidateMessage}}
-        </p>
+        <tc-alert type="warning" *ngIf="candidate.candidateMessage"> {{candidate.candidateMessage}} </tc-alert>
 
         <div class="text-start">
-          <a class="btn btn-primary" [routerLink]="'/register'">{{ 'HOME.INCOMPLETE.BUTTON' | translate }}</a>
+          <tc-button [routerLink]="'/register'">{{ 'HOME.INCOMPLETE.BUTTON' | translate }}</tc-button>
         </div>
       </ng-container>
 
@@ -89,14 +87,16 @@
           {{ 'HOME.INELIGIBLE.EXPLANATION' | translate }}
         </p>
 
-        <p class="alert alert-warning" *ngIf="candidate.candidateMessage">
-          {{candidate.candidateMessage}}
-        </p>
+        <tc-alert type="warning" *ngIf="candidate.candidateMessage"> {{candidate.candidateMessage}} </tc-alert>
 
         <div class="text-start">
-          <a class="btn btn-primary" [routerLink]="'/profile'">{{ 'HOME.INELIGIBLE.BUTTON' | translate }}</a>
-          <a class="btn btn-secondary" [href]="getEligibilityLink()" target="_blank">
-            <fa-icon icon="external-link-alt"></fa-icon> {{ 'ERROR.CRITERIA_INVALID.LINK' | translate }}</a>
+          <tc-button [routerLink]="'/profile'">{{ 'HOME.INELIGIBLE.BUTTON' | translate }}</tc-button>
+          <tc-button color="secondary" [href]="getEligibilityLink()" target="_blank">
+            <tc-icon size="sm" color="white">
+              <i class="fas fa-external-link-alt"></i>
+            </tc-icon>
+            {{ 'ERROR.CRITERIA_INVALID.LINK' | translate }}
+          </tc-button>
         </div>
       </ng-container>
 
@@ -107,12 +107,12 @@
         </p>
 
         <div class="text-start">
-          <a class="btn btn-primary" [routerLink]="'/profile'">{{ 'HOME.ACTIVE.BUTTON' | translate }}</a>
+          <tc-button [routerLink]="'/profile'">{{ 'HOME.ACTIVE.BUTTON' | translate }}</tc-button>
         </div>
       </ng-container>
 
       <div *ngIf="emailVerified === false" class="text-start verify-email-button" style="margin-top: 1rem;">
-        <button class="btn btn-primary" (click)="openModal()">{{ 'HOME.EMAIL_VERIFICATION.BUTTON' | translate }}</button>
+        <tc-button (onClick)="openModal()">{{ 'HOME.EMAIL_VERIFICATION.BUTTON' | translate }}</tc-button>
       </div>
 
     </ng-container>

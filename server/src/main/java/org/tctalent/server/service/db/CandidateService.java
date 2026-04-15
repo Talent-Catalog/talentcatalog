@@ -16,6 +16,7 @@
 
 package org.tctalent.server.service.db;
 
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.persistence.PersistenceException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.constraints.NotNull;
@@ -28,7 +29,6 @@ import java.util.Optional;
 import java.util.Set;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.web.reactive.function.client.WebClientException;
@@ -40,7 +40,6 @@ import org.tctalent.server.exception.InvalidSessionException;
 import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.exception.SalesforceException;
 import org.tctalent.server.model.db.Candidate;
-import org.tctalent.server.model.db.CandidateStatus;
 import org.tctalent.server.model.db.CandidateSubfolderType;
 import org.tctalent.server.model.db.Country;
 import org.tctalent.server.model.db.DataRow;
@@ -57,6 +56,7 @@ import org.tctalent.server.request.candidate.CandidateExternalIdSearchRequest;
 import org.tctalent.server.request.candidate.CandidateIntakeAuditRequest;
 import org.tctalent.server.request.candidate.CandidateIntakeDataUpdate;
 import org.tctalent.server.request.candidate.CandidateNumberOrNameSearchRequest;
+import org.tctalent.server.request.candidate.CandidatePublicIdSearchRequest;
 import org.tctalent.server.request.candidate.ResolveTaskAssignmentsRequest;
 import org.tctalent.server.request.candidate.SavedListGetRequest;
 import org.tctalent.server.request.candidate.SelfRegistrationRequest;
@@ -65,6 +65,7 @@ import org.tctalent.server.request.candidate.UpdateCandidateAdditionalInfoReques
 import org.tctalent.server.request.candidate.UpdateCandidateContactRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateEducationRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateLinksRequest;
+import org.tctalent.server.request.candidate.UpdateCandidateMaxEducationLevelRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateMediaRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateMutedRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateNotificationPreferenceRequest;
@@ -81,55 +82,6 @@ import org.tctalent.server.util.dto.DtoBuilder;
 
 public interface CandidateService {
 
-    /**
-     * Adds or updates the Elasticsearch records corresponding to candidates on
-     * our standard database.
-     * <p/>
-     * This is intended to be a bulk update which updates the contents of the
-     * elasticsearch server to for ALL non deleted candidates on our database.
-     * <p/>
-     * For performance reasons (and to minimize memory use) this update is done
-     * a page of records (eg 20) at a time - as defined by the "pageable"
-     * parameter passed to this method. This method will normally be called
-     * repeatedly from a background Async task, triggered by an API call to
-     * SystemAdminApi, starting with page 0, page 1, etc, until all candidates
-     * have been added/updated.
-     *
-     * @param pageable      The page request - basically the page number.
-     * @param logTotal      If true, the method is requested to log the total
-     *                      number of candidates to be updated.
-     * @param createElastic If true, it is assumed that the Elasticsearch has
-     *                      started empty, so new records need to be created
-     *                      (rather than updating existing records).
-     * @return The number of candidates added or updated on this call. Normally
-     * that will be page full (eg 20).
-     */
-    int populateElasticCandidates(
-            Pageable pageable, boolean logTotal, boolean createElastic);
-
-    /**
-     * Updates the candidates database records corresponding to candidates on
-     * elasticsearch.
-     * <p/>
-     * This is intended to be a bulk update which updates the contents of the
-     * database server for ALL non deleted candidates on our database and
-     * updates a specific field/fields in the database from ES.
-     * This was made to handle if the two databases get out of sync
-     * (e.g. due to a bad flyway) and we want the restore the data from the ES.
-     * As long as the ES hasn't been reloaded (so retains the original data before flyway).
-     * <p/>
-     * For performance reasons (and to minimize memory use) this update is done
-     * a page of records (eg 20) at a time - as defined by the "pageable"
-     * parameter passed to this method. This method will normally be called
-     * repeatedly from a background Async task, triggered by an API call to
-     * SystemAdminApi, starting with page 0, page 1, etc, until all candidates
-     * have been added/updated.
-     *
-     * @param pageable      The page request - basically the page number.
-     * @return The number of candidates added or updated on this call. Normally
-     * that will be page full (eg 20).
-     */
-    int populateCandidatesFromElastic(Pageable pageable);
 
     Page<Candidate> searchCandidates(CandidateEmailSearchRequest request);
 
@@ -138,6 +90,8 @@ public interface CandidateService {
     Page<Candidate> searchCandidates(CandidateNumberOrNameSearchRequest request);
 
     Page<Candidate> searchCandidates(CandidateExternalIdSearchRequest request);
+
+    Page<Candidate> searchCandidates(CandidatePublicIdSearchRequest request);
 
     /**
      * Returns a set of the ids of all candidates resulting from the given SQL query.
@@ -154,14 +108,6 @@ public interface CandidateService {
     List<Candidate> getSavedListCandidatesUnpaged(SavedList savedList, SavedListGetRequest request);
 
     Candidate getCandidate(long id) throws NoSuchObjectException;
-
-    /**
-     * Sets the transient answer field on Question Task Assignments, these come from various places either the candidate
-     * property table (stored as task name and answer values) or it's stored in a field on the candidate object.
-     * This method allows us to pass in the page of candidates from a search/list of candidates and then populate the fields.
-     * @param candidates: page of candidates from a search paged method (saved search or saved list)
-     */
-    void populateCandidatesTransientTaskAssignments(Page<Candidate> candidates);
 
     Candidate updateCandidateAdditionalInfo(long id, UpdateCandidateAdditionalInfoRequest request);
 
@@ -255,6 +201,16 @@ public interface CandidateService {
     Candidate updateOtherInfo(UpdateCandidateOtherInfoRequest request);
 
     Candidate updateCandidateSurvey(UpdateCandidateSurveyRequest request);
+    /**
+     * Updates the maximum education level of a candidate.
+     *
+     * @param id the ID of the candidate to update
+     * @param request the request object containing the new max education level
+     * @return the updated {@link Candidate} entity with the new education level
+     * @throws EntityNotFoundException if no candidate is found with the given ID
+     * @throws IllegalArgumentException if the request is invalid or incomplete
+     */
+    Candidate updateCandidateMaxEducationLevel(long id, UpdateCandidateMaxEducationLevelRequest request);
 
     /**
      * Submits a candidate's completed registration.
@@ -482,15 +438,22 @@ public interface CandidateService {
     Resource generateCv(Candidate candidate, Boolean showName, Boolean showContact);
 
     /**
-     * IMPORTANT: Use this instead of {@link CandidateRepository#save} Saves
-     * candidate to repository, but also optionally updates corresponding
-     * Elasticsearch CandidateEs
+     * Best to use this rather than {@link CandidateRepository#save}.
+     * Saves the candidate to repository.
      *
      * @param candidate         Candidate to be saved
-     * @param updateCandidateEs If true, will also update Elasticsearch
      * @return Candidate object as returned by {@link CandidateRepository#save}
      */
-    Candidate save(Candidate candidate, boolean updateCandidateEs);
+    Candidate save(Candidate candidate);
+
+    /**
+     * Allows for automatic updating of the candidate text before saving the candidate.
+     * @see #save(Candidate)
+     * @param candidate         Candidate to be saved
+     * @param updateCandidateText   Whether to update candidate text before saving
+     * @return Candidate object as returned by {@link CandidateRepository#save}
+     */
+    Candidate save(Candidate candidate, boolean updateCandidateText);
 
     /**
      * Creates a folder for the given candidate on Google Drive, as well as standard subfolders.
@@ -643,17 +606,6 @@ public interface CandidateService {
      * @throws SalesforceException if Salesforce had a problem with the data
      */
     void upsertCandidatesToSf(List<Candidate> orderedCandidates);
-
-    /**
-     * Processes a single page for the TC-SF candidate sync.
-     * @param startPage page to process (zero-based index)
-     * @param statuses types of {@link CandidateStatus} to filter for in search
-     * @throws WebClientException if there is a problem connecting to Salesforce
-     * @throws SalesforceException if Salesforce had a problem with the data
-     */
-    void processSfCandidateSyncPage(
-        long startPage, List<CandidateStatus> statuses
-    ) throws SalesforceException, WebClientException;
 
     /**
      * Returns IDs of Job Chats of type 'CandidateProspect' for candidates managed by the logged-in

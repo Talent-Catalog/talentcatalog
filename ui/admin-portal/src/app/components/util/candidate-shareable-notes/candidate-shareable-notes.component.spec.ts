@@ -95,12 +95,13 @@ describe('CandidateShareableNotesComponent', () => {
     });
   });
 
-  it('should disable textarea if not editable', () => {
-    component.editable = false;
+  it('should disable the textarea when candidate is not editable', () => {
+    component.editable = false
+
     fixture.detectChanges();
 
-    const textarea = fixture.debugElement.query(By.css('textarea')).nativeElement;
-    expect(textarea.readOnly).toBeTrue();
+    const textarea = fixture.debugElement.query(By.css('tc-textarea'));
+    expect(textarea.componentInstance.disabled).toBeTrue();
   });
 
   it('should enable textarea if editable', () => {

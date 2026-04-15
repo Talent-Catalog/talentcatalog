@@ -1,0 +1,23 @@
+name: Perf Soak
+
+on:
+  schedule:
+    - cron: "0 2 * * 0"   # Sundays 02:00 UTC (example)
+  workflow_dispatch:
+
+jobs:
+  soak:
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+
+    uses: ./.github/workflows/tc-gatling-tests.yml
+    secrets:
+      USERS_CSV: ${{ secrets.STAGING_PERF_USERS_CSV }}
+    with:
+      tier: soak
+      list_file: performance-tests/simulations/perf-soak.txt
+      shard_index: 0
+      shard_total: 1
+      perf_base_url: "https://tctalent-test.org"
+      run_performance_threshold_check: true
+      max_failed_pct: 10.0
+      max_latency_ms: 90000

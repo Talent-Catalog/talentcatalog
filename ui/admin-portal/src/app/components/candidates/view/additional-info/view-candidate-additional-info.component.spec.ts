@@ -49,17 +49,23 @@ describe('ViewCandidateAdditionalInfoComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should render the candidate additional info', () => {
-    const compiled = fixture.nativeElement;
-    const additionalInfoElement = compiled.querySelector('.card-body p');
-    expect(additionalInfoElement.textContent).toContain('Additional Information about candidate');
+  it('should render the card header', () => {
+    const cardHeader = fixture.nativeElement.querySelector('tc-card-header');
+    expect(cardHeader.textContent).toContain('Anything else we should know?');
   });
 
   it('should render edit button if editable is true', () => {
-    const compiled = fixture.nativeElement;
-    const editButton = compiled.querySelector('.card-header button');
-
+    const editButton = fixture.nativeElement.querySelector('tc-card-header tc-button');
     expect(editButton).toBeTruthy();
+  });
+
+  it('should not render edit button if editable is false', () => {
+    component.editable = false;
+
+    fixture.detectChanges();
+
+    const editButton = fixture.nativeElement.querySelector('tc-card-header tc-button');
+    expect(editButton).toBeNull();
   });
 
   it('should not render edit button if editable is false', () => {

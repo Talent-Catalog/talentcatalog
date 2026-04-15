@@ -28,6 +28,7 @@ export class TasksMonitorComponent implements OnInit {
   @Input() candidate: Candidate;
   @Input() completedTasks: TaskAssignment[];
   @Input() totalTasks: TaskAssignment[];
+  @Input() size?: 'sm' | 'md' | 'lg' | 'xl' = 'lg';
 
   hasOverdue: boolean;
   hasAbandoned: boolean;
@@ -40,6 +41,10 @@ export class TasksMonitorComponent implements OnInit {
     this.hasAbandoned = checkForAbandoned(this.totalTasks);
     // Only show the monitor if there are incomplete tasks, if hasCompleted is true then hide.
     this.hasCompleted = this.completedTasks.length === this.totalTasks.length && !checkForAbandoned(this.totalTasks);
+  }
+
+  get sizeClass(): string[] {
+    return [`task-fraction-${this.size}`];
   }
 
 }

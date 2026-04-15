@@ -21,6 +21,9 @@ export interface SearchCandidateRequest {
   keyword?: string;
   gender?: string;
   regoReferrerParam?: string;
+  regoUtmCampaign?: string;
+  regoUtmSource?: string;
+  regoUtmMedium?: string;
   statuses?: string[];
   occupationIds?: number[];
   orProfileKeyword?: string;
@@ -55,6 +58,7 @@ export interface SearchCandidateRequest {
   otherSpokenLevel?: string;
   minEducationLevelName?: string;
   includeDraftAndDeleted?: boolean;
+  includePendingTermsCandidates?: boolean;
   searchJoins?: SavedSearchJoin[];
   exclusionListId?: number;
   miniIntakeCompleted?: boolean;
@@ -65,4 +69,5 @@ export interface SearchCandidateRequest {
   listAnySearchType?: string;
   listAllIds?: number[];
   listAllSearchType?: string;
+  candidateNumbers?: string[];
 }

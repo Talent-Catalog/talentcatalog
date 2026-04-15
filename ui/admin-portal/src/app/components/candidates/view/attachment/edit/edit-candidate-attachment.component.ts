@@ -47,7 +47,7 @@ export class EditCandidateAttachmentComponent implements OnInit {
       name: [this.attachment.name, Validators.required],
     });
     if (this.attachment.type === 'link') {
-      this.form.addControl('location', new UntypedFormControl(this.attachment.location, [Validators.required]));
+      this.form.addControl('url', new UntypedFormControl(this.attachment.url, [Validators.required]));
     }
   }
 
@@ -55,7 +55,7 @@ export class EditCandidateAttachmentComponent implements OnInit {
     this.loading = true;
     const request: UpdateCandidateAttachmentRequest = {
       name: this.form.value.name,
-      location: this.form.value?.location
+      url: this.form.value?.url
     };
     this.candidateAttachmentService.updateAttachment(this.form.value.id, request).subscribe(
       (response) => {

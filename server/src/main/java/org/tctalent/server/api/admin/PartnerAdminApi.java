@@ -31,6 +31,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.tctalent.server.api.dto.DtoType;
 import org.tctalent.server.exception.EntityExistsException;
 import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.model.db.Employer;
@@ -122,6 +123,9 @@ public class PartnerAdminApi implements
     @GetMapping("public-api-key/{api-key}")
     public ResponseEntity<PublicApiPartnerDto> findPartnerByPublicApiKey(@PathVariable("api-key") String apiKey) {
         PublicApiPartnerDto partner = partnerService.findPublicApiPartnerDtoByKey(apiKey);
+        if (partner == null) {
+          return ResponseEntity.notFound().build();
+        }
         return ResponseEntity.ok(partner);
     }
 
@@ -146,6 +150,39 @@ public class PartnerAdminApi implements
             employer = employerService.findOrCreateEmployerFromSalesforceLink(employerSflink);
         }
         return employer;
+    }
+
+    /**
+     * Marks the partner as having accepted the Data Processing Agreement (DPA).
+     *
+     * @param id The partner ID
+     * @return The updated partner information
+     */
+    @PutMapping("{id}/accept-dpa")
+    public Map<String, Object> acceptDpa(@PathVariable("id") String id) {
+        Partner partner = partnerService.updateAcceptedDpa(id);
+        return PartnerDtoHelper.getPartnerDto().build(partner);
+    }
+
+    /**
+     * Records the first time the partner has seen the Data Processing Agreement (DPA).
+     *
+     * @return The updated partner information
+     */
+    @PutMapping("/dpa-seen")
+    public Map<String, Object> setFirstDpaSeen() {
+        PartnerImpl partner = partnerService.setFirstDpaSeen();
+        return PartnerDtoHelper.getPartnerDto().build(partner);
+    }
+
+    /**
+     * Checks whether the partner still needs to accept the Data Processing Agreement (DPA).
+     *
+     * @return true if the partner is required to accept the DPA, false otherwise
+     */
+    @GetMapping("/requires-dpa")
+    public boolean requiresDpaAcceptance() {
+        return partnerService.requiresDpaAcceptance();
     }
 
 }

@@ -17,3 +17,14 @@
 .error {
   font-size: 14px;
 }
+
+.cv-icon {
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.cv-icon:hover,
+.cv-icon:focus {
+  text-decoration: none;
+  color: inherit;
+}

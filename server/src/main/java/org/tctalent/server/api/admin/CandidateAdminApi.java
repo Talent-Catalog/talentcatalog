@@ -23,9 +23,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.tomcat.util.http.fileupload.IOUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -44,12 +44,16 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.reactive.function.client.WebClientException;
 import org.tctalent.anonymization.model.RegisterCandidate201Response;
+import org.tctalent.server.api.dto.CandidateBuilderSelector;
+import org.tctalent.server.api.dto.CandidateIntakeDataBuilderSelector;
+import org.tctalent.server.api.dto.DtoType;
 import org.tctalent.server.exception.ExportFailedException;
 import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.exception.SalesforceException;
 import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.JobChatUserInfo;
+import org.tctalent.server.repository.db.read.dto.CandidateReadDto;
 import org.tctalent.server.request.RegisterCandidateByPartnerRequest;
 import org.tctalent.server.request.candidate.CandidateEmailPhoneOrWhatsappSearchRequest;
 import org.tctalent.server.request.candidate.CandidateEmailSearchRequest;
@@ -57,12 +61,14 @@ import org.tctalent.server.request.candidate.CandidateExternalIdSearchRequest;
 import org.tctalent.server.request.candidate.CandidateIntakeAuditRequest;
 import org.tctalent.server.request.candidate.CandidateIntakeDataUpdate;
 import org.tctalent.server.request.candidate.CandidateNumberOrNameSearchRequest;
+import org.tctalent.server.request.candidate.CandidatePublicIdSearchRequest;
 import org.tctalent.server.request.candidate.DownloadCvRequest;
 import org.tctalent.server.request.candidate.ResolveTaskAssignmentsRequest;
 import org.tctalent.server.request.candidate.SearchCandidateRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateAdditionalInfoRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateLinksRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateListOppsRequest;
+import org.tctalent.server.request.candidate.UpdateCandidateMaxEducationLevelRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateMediaRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateMutedRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateNotificationPreferenceRequest;
@@ -79,15 +85,13 @@ import org.tctalent.server.security.CvClaims;
 import org.tctalent.server.service.db.CandidateOpportunityService;
 import org.tctalent.server.service.db.CandidateSavedListService;
 import org.tctalent.server.service.db.CandidateService;
-import org.tctalent.server.service.db.CountryService;
-import org.tctalent.server.service.db.OccupationService;
 import org.tctalent.server.service.db.SavedListService;
 import org.tctalent.server.service.db.SavedSearchService;
-import org.tctalent.server.service.db.UserService;
 import org.tctalent.server.util.dto.DtoBuilder;
 
-@RestController()
+@RestController
 @RequestMapping("/api/admin/candidate")
+@RequiredArgsConstructor
 @Slf4j
 public class CandidateAdminApi {
 
@@ -100,31 +104,46 @@ public class CandidateAdminApi {
     private final CandidateIntakeDataBuilderSelector intakeDataBuilderSelector;
     private final CandidateTokenProvider candidateTokenProvider;
 
-
-    @Autowired
-    public CandidateAdminApi(CandidateService candidateService,
-        CandidateOpportunityService candidateOpportunityService, CandidateSavedListService candidateSavedListService,
-        CountryService countryService,
-        SavedListService savedListService,
-        SavedSearchService savedSearchService,
-        UserService userService,
-        CandidateTokenProvider candidateTokenProvider, OccupationService occupationService) {
-        this.candidateService = candidateService;
-        this.candidateOpportunityService = candidateOpportunityService;
-        this.candidateSavedListService = candidateSavedListService;
-        builderSelector = new CandidateBuilderSelector(candidateOpportunityService, countryService,
-            occupationService, userService);
-        intakeDataBuilderSelector = new CandidateIntakeDataBuilderSelector(countryService, occupationService);
-        this.savedListService = savedListService;
-        this.savedSearchService = savedSearchService;
-        this.candidateTokenProvider = candidateTokenProvider;
-    }
-
     @PostMapping("search")
     public Map<String, Object> search(@RequestBody SearchCandidateRequest request) {
-        Page<Candidate> candidates = savedSearchService.searchCandidates(request);
+        Page<CandidateReadDto> candidates = savedSearchService.searchCandidateDtos(request);
+
+        long start = System.currentTimeMillis();
+        long end;
+
         DtoBuilder builder = builderSelector.selectBuilder(request.getDtoType());
-        return builder.buildPage(candidates);
+        final Map<String, Object> stringObjectMap = builder.buildPage(candidates);
+
+
+        end = System.currentTimeMillis();
+        long computeDtoTime = end - start;
+
+        LogBuilder.builder(log).action("findCandidates")
+            .message("Timings: computeDto: " + computeDtoTime
+            ).logInfo();
+
+        return stringObjectMap;
+    }
+
+    @PostMapping("search-old-fetch")
+    public Map<String, Object> searchOldFetch(@RequestBody SearchCandidateRequest request) {
+        Page<Candidate> candidates = savedSearchService.searchCandidates(request);
+
+        long start = System.currentTimeMillis();
+        long end;
+
+        DtoBuilder builder = builderSelector.selectBuilder(request.getDtoType());
+        final Map<String, Object> stringObjectMap = builder.buildPage(candidates);
+
+
+        end = System.currentTimeMillis();
+        long computeDtoTime = end - start;
+
+        LogBuilder.builder(log).action("findCandidates")
+            .message("Timings: computeDto: " + computeDtoTime
+            ).logInfo();
+
+        return stringObjectMap;
     }
 
     @PostMapping("findbyemail")
@@ -159,6 +178,16 @@ public class CandidateAdminApi {
 
     @PostMapping("findbyexternalid")
     public Map<String, Object> findByCandidateExternalId(@RequestBody CandidateExternalIdSearchRequest request) {
+        Page<Candidate> candidates = candidateService.searchCandidates(request);
+
+        //Use a minimal DTO builder - we only need candidate number and name returned so we don't
+        //need to fetch more data from the database than that.
+        DtoBuilder builder = builderSelector.selectBuilder(DtoType.MINIMAL);
+        return builder.buildPage(candidates);
+    }
+
+    @PostMapping("findbypublicid")
+    public Map<String, Object> findByCandidatePublicId(@RequestBody CandidatePublicIdSearchRequest request) {
         Page<Candidate> candidates = candidateService.searchCandidates(request);
 
         //Use a minimal DTO builder - we only need candidate number and name returned so we don't
@@ -219,6 +248,14 @@ public class CandidateAdminApi {
     public Map<String, Object> updateContactDetails(@PathVariable("id") long id,
                                       @RequestBody UpdateCandidateRequest request) {
         Candidate candidate = candidateService.updateCandidate(id, request);
+        DtoBuilder builder = builderSelector.selectBuilder();
+        return builder.build(candidate);
+    }
+
+    @PutMapping("{id}/education")
+    public Map<String, Object> updateMaxEducationLevel(@PathVariable("id") long id,
+        @RequestBody UpdateCandidateMaxEducationLevelRequest request) {
+        Candidate candidate = candidateService.updateCandidateMaxEducationLevel(id, request);
         DtoBuilder builder = builderSelector.selectBuilder();
         return builder.build(candidate);
     }
@@ -442,7 +479,7 @@ public class CandidateAdminApi {
         @Valid @RequestBody FetchCandidatesWithChatRequest request
     ) {
         Page<Candidate> candidates = candidateService.fetchCandidatesWithChat(request);
-        DtoBuilder builder = builderSelector.selectBuilder(DtoType.MINIMAL);
+        DtoBuilder builder = builderSelector.selectBuilder(DtoType.PREVIEW);
         return builder.buildPage(candidates);
     }
 

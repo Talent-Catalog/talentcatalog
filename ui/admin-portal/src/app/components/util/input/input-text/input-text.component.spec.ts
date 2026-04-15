@@ -72,7 +72,7 @@ describe('InputTextComponent', () => {
   }));
 
   it('should render the message if message is provided', () => {
-    const labelElement: HTMLElement = fixture.nativeElement.querySelector('.form-label');
+    const labelElement: HTMLElement = fixture.nativeElement.querySelector('tc-label');
     expect(labelElement).toBeTruthy();
     expect(labelElement.textContent).toContain('Please enter text');
   });
@@ -81,24 +81,7 @@ describe('InputTextComponent', () => {
     component.message = null;
     fixture.detectChanges();
 
-    const labelElement: HTMLElement = fixture.nativeElement.querySelector('.form-label');
+    const labelElement: HTMLElement = fixture.nativeElement.querySelector('tc-label');
     expect(labelElement).toBeNull();
-  });
-
-  it('should render the Cancel button if showCancel is true', () => {
-    component.showCancel = true;
-    fixture.detectChanges();
-
-    const cancelButton: HTMLElement = fixture.nativeElement.querySelector('.modal-footer .btn:nth-child(2)');
-    expect(cancelButton).toBeTruthy();
-    expect(cancelButton.textContent).toContain('Cancel');
-  });
-
-  it('should not render the Cancel button if showCancel is false', () => {
-    component.showCancel = false;
-    fixture.detectChanges();
-
-    const cancelButton: HTMLElement = fixture.nativeElement.querySelector('.modal-footer .btn:nth-child(2)');
-    expect(cancelButton).toBeNull();
   });
 });

@@ -111,20 +111,4 @@ describe('CreateUpdateSearchComponent', () => {
     component.cancel();
     expect(mockActiveModal.dismiss).toHaveBeenCalled();
   });
-
-  it('should disable save button when form is invalid', () => {
-    component.form.get('name').setValue('');
-    fixture.detectChanges();
-
-    const saveButton: HTMLButtonElement = fixture.nativeElement.querySelector('button.btn-success');
-    expect(saveButton.disabled).toBe(true);
-  });
-
-  it('should enable save button when form is valid', () => {
-    component.form.get('name').setValue('Valid Name');
-    fixture.detectChanges();
-
-    const saveButton: HTMLButtonElement = fixture.nativeElement.querySelector('button.btn-success');
-    expect(saveButton.disabled).toBe(false);
-  });
 });

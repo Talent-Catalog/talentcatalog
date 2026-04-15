@@ -69,6 +69,13 @@ public interface CountryService {
 
     List<Country> getTCDestinations();
 
+    /**
+     * Check if the given country is a TC destination country
+     * @param countryId ID of country
+     * @return True if the given country is TC destination country
+     */
+    boolean isTCDestination(long countryId);
+
     DtoBuilder selectBuilder();
 
     /**

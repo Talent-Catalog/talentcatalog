@@ -20,11 +20,12 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
 import org.springframework.lang.NonNull;
@@ -37,25 +38,26 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+import org.tctalent.server.api.dto.CandidateBuilderSelector;
+import org.tctalent.server.api.dto.DtoType;
+import org.tctalent.server.api.dto.SavedListBuilderSelector;
 import org.tctalent.server.exception.EntityExistsException;
 import org.tctalent.server.exception.ExportFailedException;
 import org.tctalent.server.exception.InvalidSessionException;
 import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.SavedList;
+import org.tctalent.server.repository.db.read.dto.CandidateReadDto;
 import org.tctalent.server.request.candidate.SavedListGetRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateStatusInfo;
 import org.tctalent.server.request.candidate.UpdateCandidateStatusRequest;
 import org.tctalent.server.request.list.ContentUpdateType;
 import org.tctalent.server.request.list.UpdateExplicitSavedListContentsRequest;
-import org.tctalent.server.service.db.CandidateOpportunityService;
+import org.tctalent.server.service.db.CandidateDtoService;
 import org.tctalent.server.service.db.CandidateSavedListService;
 import org.tctalent.server.service.db.CandidateService;
-import org.tctalent.server.service.db.CountryService;
-import org.tctalent.server.service.db.OccupationService;
 import org.tctalent.server.service.db.SavedListService;
 import org.tctalent.server.service.db.SavedSearchService;
-import org.tctalent.server.service.db.UserService;
 import org.tctalent.server.util.dto.DtoBuilder;
 
 /**
@@ -77,33 +79,19 @@ import org.tctalent.server.util.dto.DtoBuilder;
  * SavedList's (that it belongs to).
  *
  */
-@RestController()
+@RequiredArgsConstructor
+@RestController
 @RequestMapping("/api/admin/saved-list-candidate")
 public class SavedListCandidateAdminApi implements
     IManyToManyApi<SavedListGetRequest, UpdateExplicitSavedListContentsRequest> {
 
+    private final CandidateDtoService candidateDtoService;
     private final CandidateService candidateService;
     private final CandidateSavedListService candidateSavedListService;
     private final SavedListService savedListService;
     private final SavedSearchService savedSearchService;
     private final CandidateBuilderSelector candidateBuilderSelector;
-    private final SavedListBuilderSelector savedListBuilderSelector = new SavedListBuilderSelector();
-    @Autowired
-    public SavedListCandidateAdminApi(
-        CandidateService candidateService, CandidateOpportunityService candidateOpportunityService,
-        CandidateSavedListService candidateSavedListService,
-        CountryService countryService,
-        OccupationService occupationService,
-        SavedListService savedListService,
-        SavedSearchService savedSearchService,
-        UserService userService) {
-        this.candidateService = candidateService;
-        this.candidateSavedListService = candidateSavedListService;
-        this.savedListService = savedListService;
-        this.savedSearchService = savedSearchService;
-        candidateBuilderSelector = new CandidateBuilderSelector(
-            candidateOpportunityService, countryService, occupationService, userService);
-    }
+    private final SavedListBuilderSelector savedListBuilderSelector;
 
     @GetMapping(value = "{id}/is-empty")
     public boolean isEmpty(@PathVariable("id") long savedListId) throws NoSuchObjectException {
@@ -146,7 +134,9 @@ public class SavedListCandidateAdminApi implements
     @PutMapping("{id}/merge-from-file")
     public void mergeFromFile(@PathVariable("id") long savedListId,
         @RequestParam("file") MultipartFile file) throws NoSuchObjectException, IOException {
-        savedListService.mergeSavedListFromInputStream(savedListId, file.getInputStream());
+        try (InputStream inputStream = file.getInputStream()) {
+            savedListService.mergeSavedListFromInputStream(savedListId, inputStream);
+        }
     }
 
     @Override
@@ -181,15 +171,60 @@ public class SavedListCandidateAdminApi implements
             long savedListId, @Valid SavedListGetRequest request) throws NoSuchObjectException {
         SavedList savedList = savedListService.get(savedListId);
 
-        Page<Candidate> candidates = this.candidateService
-                .getSavedListCandidates(savedList, request);
+        Page<CandidateReadDto> candidates = savedListService
+            .getSavedListCandidateDtos(savedList, request);
+
+        candidateDtoService.populateComputedFields(candidates, savedListId);
+
+        //TODO JC Review how this is done. Commented out for now. See issue 2989
+        // Populate the transient answers for question tasks to display in search card 'Tasks' tab
+//        for (CandidateReadDto candidate : candidates) {
+//            final List<TaskAssignmentReadDto> tas = candidate.getTaskAssignments();
+//            for (TaskAssignmentReadDto ta : tas) {
+//                taskAssignmentService.populateTransientTaskAssignmentDtoFields(ta);
+//            }
+//        }
+
+        DtoBuilder builder = candidateBuilderSelector.selectBuilder(request.getDtoType());
+        return builder.buildPage(candidates);
+    }
+
+    @PostMapping("{id}/search-paged-old-fetch")
+    public @NotNull Map<String, Object> searchPagedOldFetch(
+        @PathVariable("id") long savedListId, @Valid @RequestBody SavedListGetRequest request) throws NoSuchObjectException {
+        SavedList savedList = savedListService.get(savedListId);
+
+        Page<Candidate> candidates = candidateService
+            .getSavedListCandidates(savedList, request);
 
         savedListService.setCandidateContext(savedListId, candidates);
 
+        //TODO JC Review how this is done. Commented out for now. See issue 2989
         // Populate the transient answers for question tasks to display in search card 'Tasks' tab
-        candidateService.populateCandidatesTransientTaskAssignments(candidates);
+//        for (Candidate candidate : candidates) {
+//            taskAssignmentService.populateTransientTaskAssignmentFields(
+//                candidate.getTaskAssignments());
+//        }
 
         DtoBuilder builder = candidateBuilderSelector.selectBuilder(request.getDtoType());
+        return builder.buildPage(candidates);
+    }
+
+    @Override
+    public @NotNull Set<String> fetchPublicIds(String publicListId) throws NoSuchObjectException {
+        return savedListService.fetchCandidatePublicIds(publicListId);
+    }
+
+    @Override
+    public @NotNull Map<String, Object> fetchPublicIdsPaged(
+        String publicListId, @Valid SavedListGetRequest request) throws NoSuchObjectException {
+
+        SavedList savedList = savedListService.getByPublicId(publicListId);
+
+        Page<Candidate> candidates = candidateService.getSavedListCandidates(savedList, request);
+
+        // We only want to send the public ids
+        DtoBuilder builder = candidateBuilderSelector.selectBuilder(DtoType.PUBLIC_ID_ONLY);
         return builder.buildPage(candidates);
     }
 

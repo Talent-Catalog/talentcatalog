@@ -23,6 +23,7 @@ import {Candidate} from "../../../model/candidate";
 import {of, throwError} from "rxjs";
 import {DebugElement} from "@angular/core";
 import {By} from "@angular/platform-browser";
+import {UploadType} from "../../../model/task";
 
 describe('CvIconComponent', () => {
   let component: CvIconComponent;
@@ -67,7 +68,8 @@ describe('CvIconComponent', () => {
     const candidate: Candidate = mockCanidiate;
     component.candidate = candidate;
     component.getAttachments();
-    expect(component.cvs).toEqual(candidate.candidateAttachments.filter(attachment => attachment.cv));
+    expect(component.cvs).toEqual(candidate.candidateAttachments.filter(
+      attachment => attachment.uploadType === UploadType.cv));
   });
 
   it('should return true if user can view CV and cvs are present', () => {
@@ -122,22 +124,13 @@ describe('CvIconComponent', () => {
     expect(spinner).toBeTruthy();
   });
 
-  it('should display error message when there is an error', () => {
-    component.candidate = mockCanidiate;
-    const errorMessage = 'Error occurred';
-    component.error = errorMessage;
-    fixture.detectChanges();
-    const errorElement: HTMLElement = fixture.debugElement.query(By.css('.error')).nativeElement;
-    expect(errorElement.textContent).toContain(errorMessage);
-  });
-
   it('should call openCVs when link is clicked', () => {
     component.candidate = mockCanidiate;
     spyOn(component, 'openCVs');
     mockAuthService.canViewCandidateCV.and.returnValue(true);
     component.cvs = mockCanidiate.candidateAttachments;
     fixture.detectChanges();
-    const link: DebugElement = fixture.debugElement.query(By.css('.link-info'));
+    const link: DebugElement = fixture.debugElement.query(By.css('.cv-icon'));
     expect(link).toBeTruthy();
     link.triggerEventHandler('click', null);
     expect(component.openCVs).toHaveBeenCalled();

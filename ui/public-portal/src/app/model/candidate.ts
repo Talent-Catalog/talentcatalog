@@ -129,7 +129,9 @@ export enum CandidateStatus {
   employed = "employed (inactive)",
   incomplete = "incomplete",
   ineligible = "ineligible (inactive)",
+  ineligibleReview = "ineligible (review)",
   pending = "pending",
+  relocatedIndependently = "relocated independently (inactive)",
   unreachable = "unreachable",
   withdrawn = "withdrawn (inactive)"
 }

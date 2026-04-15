@@ -172,8 +172,10 @@ export class CreateUpdatePartnerComponent extends FormComponentBase implements O
       status: [this.partner?.status, Validators.required],
       websiteUrl: [this.partner?.websiteUrl],
       redirectPartnerId: [this.partner?.redirectPartner?.id],
+      // DPA status fields (read-only for display in update mode)
+      acceptedDataProcessingAgreementId: [{value: this.partner?.acceptedDataProcessingAgreementId, disabled: true}],
+      acceptedDataProcessingAgreementDate: [{value: this.partner?.acceptedDataProcessingAgreementDate, disabled: true}],
     },{validators: crossFieldValidator});
-
     this.countryService.listCountriesRestricted().subscribe(
       (response) => {
         this.countries = response;

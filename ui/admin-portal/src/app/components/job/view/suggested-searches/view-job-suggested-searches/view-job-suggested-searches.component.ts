@@ -63,8 +63,8 @@ export class ViewJobSuggestedSearchesComponent implements OnInit, OnChanges {
     });
 
     inputTextModal.componentInstance.title = 'Enter search name suffix';
-    inputTextModal.componentInstance.message = '(The search name will start with the job name. ' +
-      'You just need to add a short suffix - eg "search 1" or "elastic search")';
+    inputTextModal.componentInstance.message = 'The search name will start with the job name. ' +
+      'You just need to add a short suffix - eg "search 1" or "elastic search"';
     inputTextModal.result.then(
       (suffix) => {
         //Ignore blank suffixes

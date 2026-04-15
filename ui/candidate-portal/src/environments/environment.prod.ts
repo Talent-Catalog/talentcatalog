@@ -24,9 +24,11 @@ export const environment = {
   publishUrl: document.location.origin + '/published',
   chatApiUrl: '/api/admin',
   termsInfoApiUrl: '/api/admin',
+  halApiUrl: '/api/hal',
   apiUrl: '/api/portal',
   systemApiUrl: '/api/system',
   s3BucketUrl: 'https://s3.us-east-1.amazonaws.com/files.tbbtalent.org',
   googleAnalyticsId: 'G-BPDYWB77Y3',
+  clarityProjectId: 'vfddfqcyk0',
   environmentName: 'prod'
 };

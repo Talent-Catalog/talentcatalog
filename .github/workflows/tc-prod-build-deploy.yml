@@ -1,4 +1,5 @@
-# This workflow builds a Java project with Gradle and deploys to Elastic beanstalk on a push to master
+# This workflow builds a Java project with Gradle, runs tests, then deploys to
+# TBB and OPC prod environments.
 # For more information see: https://help.github.com/actions/language-and-framework-guides/building-and-testing-java-with-gradle
 # And https://github.com/marketplace/actions/beanstalk-deploy
 
@@ -7,36 +8,132 @@ name: tc-prod-build-deploy
 on:
   push:
     branches: [ master ]
-
-#This should correspond to the AWS IAM user prod-tbb-deploy
-#The matching secret key is stored as a GitHub secret and is accessible
-#as ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-env:
-  AWS_ACCESS_KEY_ID: AKIA6C7ESOA6BS5PUOWH
+  workflow_dispatch:
+    inputs:
+      target_env:
+        description: "Production deployment target"
+        required: true
+        default: grn
+        type: choice
+        options:
+          - grn
+          - tbb
+          - both
 
 jobs:
-  build:
-
+  build-and-test:
+    name: Build and Test
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2
+      - name: Checkout code
+        uses: actions/checkout@v4
+
       - name: Set up Java 17
-        uses: actions/setup-java@v2
+        uses: actions/setup-java@v4
         with:
           distribution: 'zulu'
           java-version: '17'
+
       - name: Install credential helper - for jib
         run: sudo apt update && sudo apt install amazon-ecr-credential-helper
+
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
-      - name: Build with Gradle
-        run: ./gradlew server:build # We won't run the perf tests here
-      - name: Deploy with Jib
-        run: ./gradlew jib -Pprod-tc-system
 
-        # These env variables will be used by the jib stage of the gradle
-        # build which is configured to use the ecr credential helper.
+      # --- Build and Test ---
+
+      - name: Configure AWS credentials for test resources
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+
+      - name: Download DB dump from S3
+        run: |
+          mkdir -p server/src/test/resources
+          aws s3 cp s3://tctalent-prod-db-dumps/dump.sql server/src/test/resources/dump.sql
+
+      - name: Build and test with Gradle
+        run: ./gradlew server:build
         env:
-          AWS_ACCESS_KEY_ID: ${{env.AWS_ACCESS_KEY_ID}}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          GOOGLE_DRIVE_PRIVATEKEY: ${{ secrets.GOOGLE_DRIVE_PRIVATEKEY }}
+          GOOGLE_DRIVE_PRIVATEKEYID: ${{ secrets.GOOGLE_DRIVE_PRIVATEKEYID }}
+          SF_PRIVATE_KEY: ${{ secrets.SF_PRIVATE_KEY }}
+
+  deploy-tc-prod:
+    name: Deploy to TC Prod (TBB + OPC)
+    runs-on: ubuntu-latest
+    needs: build-and-test
+    environment: production-tbb
+    if: github.event_name == 'workflow_dispatch' && (github.event.inputs.target_env == 'tbb' || github.event.inputs.target_env == 'both')
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+
+      # - name: Install credential helper - for jib
+      #   run: sudo apt update && sudo apt install amazon-ecr-credential-helper
+
+      # - name: Grant execute permission for gradlew
+      #   run: chmod +x gradlew
+
+      # - name: Configure AWS credentials for TBB
+      #   uses: aws-actions/configure-aws-credentials@v4
+      #   with:
+      #     aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      #     aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      #     aws-region: us-east-1
+
+      # - name: Deploy to TBB legacy prod with Jib
+      #   run: ./gradlew jib -Ptbb-prod -x test
+
+      # - name: Configure AWS credentials for OPC
+      #   uses: aws-actions/configure-aws-credentials@v4
+      #   with:
+      #     aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_OPC_PROD }}
+      #     aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_OPC_PROD }}
+      #     aws-region: eu-west-2
+
+      # - name: Deploy to OPC prod with Jib
+      #   run: ./gradlew jib -Popc-prod -x test
+
+  deploy-grn:
+    name: Deploy to GRN Prod
+    runs-on: ubuntu-latest
+    needs: build-and-test
+    environment: production-grn
+    if: github.event_name == 'workflow_dispatch' && (github.event.inputs.target_env == 'grn' || github.event.inputs.target_env == 'both')
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+
+      - name: Install credential helper - for jib
+        run: sudo apt update && sudo apt install amazon-ecr-credential-helper
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Configure AWS credentials for GRN
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID_OPC_PROD }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_OPC_PROD }}
+          aws-region: eu-west-2
+
+      - name: Deploy to GRN with Jib
+        run: ./gradlew jib -Pgrn-prod -x test

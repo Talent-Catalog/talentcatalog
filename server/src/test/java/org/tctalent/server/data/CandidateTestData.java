@@ -17,7 +17,9 @@
 package org.tctalent.server.data;
 
 import static org.tctalent.server.data.PartnerImplTestData.getSourcePartner;
+import static org.tctalent.server.data.UserTestData.getAuditCandidateUser;
 import static org.tctalent.server.data.UserTestData.getAuditUser;
+import static org.tctalent.server.data.UserTestData.getCandidateUser;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -40,6 +42,7 @@ import org.tctalent.server.model.db.CandidateSkill;
 import org.tctalent.server.model.db.CandidateStatus;
 import org.tctalent.server.model.db.CandidateVisaCheck;
 import org.tctalent.server.model.db.CandidateVisaJobCheck;
+import org.tctalent.server.model.db.CefrLevel;
 import org.tctalent.server.model.db.Country;
 import org.tctalent.server.model.db.DependantRelations;
 import org.tctalent.server.model.db.DocumentStatus;
@@ -70,6 +73,8 @@ import org.tctalent.server.model.db.User;
 import org.tctalent.server.model.db.VisaEligibility;
 import org.tctalent.server.model.db.YesNo;
 import org.tctalent.server.model.db.YesNoUnsure;
+import org.tctalent.server.repository.db.read.dto.CandidateReadDto;
+import org.tctalent.server.repository.db.read.dto.UserReadDto;
 
 public class CandidateTestData {
 
@@ -80,12 +85,28 @@ public class CandidateTestData {
             "test.candidate1@some.thing",
             Role.user);
 
+    private static final UserReadDto candidate1userdto =
+        UserReadDto.builder()
+            .username("candidate1")
+            .firstName("test")
+            .lastName("candidate1")
+            .email("test.candidate1@some.thing")
+            .build();
+
     private static final User candidate2user =
         new User("candidate2",
             "test",
             "candidate2",
             "test.candidate2@some.thing",
             Role.user);
+
+    private static final UserReadDto candidate2userdto =
+        UserReadDto.builder()
+            .username("candidate2")
+            .firstName("test")
+            .lastName("candidate2")
+            .email("test.candidate2@some.thing")
+            .build();
 
     private static final User candidate3user =
         new User("candidate3",
@@ -94,12 +115,20 @@ public class CandidateTestData {
             "test.candidate3@some.thing",
             Role.user);
 
+    private static final UserReadDto candidate3userdto =
+        UserReadDto.builder()
+            .username("candidate3")
+            .firstName("test")
+            .lastName("candidate3")
+            .email("test.candidate3@some.thing")
+            .build();
+
     public static Candidate getCandidate() {
         Candidate candidate = new Candidate(
             candidate1user,
             "+123-456-789",
             "+123-456-789",
-            getAuditUser()
+            getCandidateUser()
         );
         candidate.setId(99L);
         candidate.setCandidateNumber("99");
@@ -109,11 +138,40 @@ public class CandidateTestData {
         return candidate;
     }
 
+    public static Candidate getCandidate2() {
+        Candidate candidate = new Candidate(
+            candidate2user,
+            "+61-040-178-040",
+            "+61-456-789-235",
+            getAuditCandidateUser()
+        );
+        candidate.setId(488L);
+        candidate.setCandidateNumber("488");
+        candidate.setNationality(CountryTestData.VENEZUELA);
+        candidate.setStatus(CandidateStatus.active);
+        candidate.setFolderlink("www.anotherfolder.com");
+        return candidate;
+    }
+
     public static List<Candidate> getListOfCandidates() {
         return List.of(
             new Candidate(candidate1user, "+123-456-789", "+123-456-789", getAuditUser()),
             new Candidate(candidate2user, "+234-567-890", "+123-456-789", getAuditUser()),
             new Candidate(candidate3user, "+345-678-901", "+345-678-901", getAuditUser())
+        );
+    }
+
+    public static List<CandidateReadDto> getListOfCandidateDtos() {
+        return List.of(
+            CandidateReadDto.builder()
+                .user(candidate1userdto).phone("+123-456-789").whatsapp("+123-456-789")
+                .status(CandidateStatus.draft).nationality(CountryTestData.PAKISTAN_DTO).build(),
+            CandidateReadDto.builder()
+                .user(candidate2userdto).phone("+234-567-890").whatsapp("+123-456-789")
+                .status(CandidateStatus.draft).nationality(CountryTestData.PAKISTAN_DTO).build(),
+            CandidateReadDto.builder()
+                .user(candidate3userdto).phone("+345-678-901").whatsapp("+345-678-901")
+                .status(CandidateStatus.draft).nationality(CountryTestData.PAKISTAN_DTO).build()
         );
     }
 
@@ -237,8 +295,8 @@ public class CandidateTestData {
         return new CandidateLanguage(
             getCandidate(),
             new Language("Arabic", Status.active),
-            new LanguageLevel("Good", Status.active, 9),
-            new LanguageLevel("Good", Status.active, 9)
+            new LanguageLevel("Good", Status.active, 9, CefrLevel.B2),
+            new LanguageLevel("Good", Status.active, 9, CefrLevel.B2)
         );
     }
 

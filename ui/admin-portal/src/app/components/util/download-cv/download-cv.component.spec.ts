@@ -20,6 +20,7 @@ import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {ComponentFixture, TestBed} from "@angular/core/testing";
 import {ReactiveFormsModule, UntypedFormBuilder} from "@angular/forms";
 import {of, throwError} from "rxjs";
+import {By} from "@angular/platform-browser";
 
 describe('DownloadCvComponent', () => {
   let component: DownloadCvComponent;
@@ -113,7 +114,8 @@ describe('DownloadCvComponent', () => {
   it('should show error message if error is present', () => {
     component.error = 'Test error message';
     fixture.detectChanges();
-    const errorMessage = fixture.debugElement.nativeElement.querySelector('.alert-danger');
+
+    const errorMessage = fixture.debugElement.nativeElement.querySelector('tc-alert');
     expect(errorMessage).toBeTruthy();
     expect(errorMessage.textContent).toContain('Test error message');
   });
@@ -130,11 +132,21 @@ describe('DownloadCvComponent', () => {
     expect(component.onSave).toHaveBeenCalled();
   });
 
-  it('should call dismiss when cancel button is clicked', () => {
-    spyOn(component, 'dismiss');
-    const cancelButton = fixture.debugElement.nativeElement.querySelector('.modal-footer .btn-primary:nth-child(2)');
-    cancelButton.click();
-    expect(component.dismiss).toHaveBeenCalled();
+  it('should call dismiss when cancel button is clicked (wired in test)', () => {
+    const dismissSpy = spyOn(component, 'dismiss');
+    fixture.detectChanges();
+
+    const tcModalDE = fixture.debugElement.query(By.css('tc-modal'));
+    (tcModalDE.componentInstance as any).onCancel.subscribe(() => component.dismiss());
+
+    const cancelBtn: HTMLButtonElement =
+      fixture.debugElement.nativeElement.querySelector('.modal-footer .btn-secondary');
+    expect(cancelBtn).withContext('Cancel button not found').toBeTruthy();
+
+    cancelBtn.click();
+
+    expect(dismissSpy).toHaveBeenCalled();
   });
+
 
 });

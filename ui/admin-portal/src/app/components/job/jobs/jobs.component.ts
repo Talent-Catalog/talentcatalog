@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, ElementRef, Inject, LOCALE_ID, ViewChild} from '@angular/core';
+import {Component, Inject, LOCALE_ID, ViewChild} from '@angular/core';
 import {AuthorizationService} from "../../../services/authorization.service";
 import {UntypedFormBuilder} from "@angular/forms";
 import {Job, JobOpportunityStage, SearchJobRequest} from "../../../model/job";
@@ -31,6 +31,7 @@ import {CreateChatRequest, JobChat, JobChatType} from "../../../model/chat";
 import {ChatService} from "../../../services/chat.service";
 import {PartnerService} from "../../../services/partner.service";
 import {LocalStorageService} from "../../../services/local-storage.service";
+import {InputComponent} from "../../../shared/components/input/input.component";
 
 @Component({
   selector: 'app-jobs',
@@ -52,7 +53,7 @@ export class JobsComponent extends FilteredOppsComponentBase<Job> {
   withUnreadMessagesTip = "Only show jobs which have unread chats";
 
   @ViewChild("searchFilter")
-  declare searchFilter: ElementRef;
+  declare searchFilter: InputComponent;
 
   constructor(
     chatService: ChatService,
@@ -111,8 +112,10 @@ export class JobsComponent extends FilteredOppsComponentBase<Job> {
     //Call standard processing (which puts the results into this.opps)
     super.processSearchResults(results);
 
-    //Then fetch the chats associated with all opps.
-    this.fetchChats();
+    if (this.canViewChats()) {
+      //Then fetch the chats associated with all opps.
+      this.fetchChats();
+    }
   }
 
   private fetchChats() {
@@ -171,6 +174,10 @@ export class JobsComponent extends FilteredOppsComponentBase<Job> {
 
   public canSeeJobDetails() {
     return this.authorizationService.canSeeJobDetails()
+  }
+
+  canViewChats(): boolean {
+    return this.authorizationService.canViewChats();
   }
 
 }

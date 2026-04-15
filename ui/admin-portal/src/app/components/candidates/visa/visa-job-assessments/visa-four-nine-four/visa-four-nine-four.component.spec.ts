@@ -52,8 +52,8 @@ describe('VisaFourNineFourComponent', () => {
 
   it('should display notes section when eligible for 494', () => {
     component.form.get('visaJobEligible494')?.setValue('Yes');
-    component.ngOnInit();
-    const notesElement: HTMLElement = fixture.nativeElement.querySelector('.mb-3');
+    fixture.detectChanges();
+    const notesElement: HTMLElement = fixture.nativeElement.querySelector('tc-textarea#visaJobEligible494Notes');
     expect(notesElement).toBeTruthy();
   });
 

@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {TermsInfoDto, TermsType} from "../../model/terms-info-dto";
+import {TermsInfoDto} from "../../model/terms-info-dto";
 import {TermsInfoService} from "../../services/terms-info.service";
 import {CandidateService} from "../../services/candidate.service";
 import {forkJoin} from "rxjs";
@@ -14,9 +14,13 @@ export class TermsComponent implements OnInit {
   content: string;
   currentPrivacyPolicy: TermsInfoDto;
   error: any;
+  partnerEmail: string;
   partnerName: string;
   requestAcceptance: boolean;
   termsRead: boolean = false;
+  acceptedPrivacyPolicyDate: string | null = null;
+  acceptedPrivacyPolicyId: string | null = null;
+  acceptedPrivacyPolicyPartner: string | null = null;
 
   constructor(
     private candidateService: CandidateService,
@@ -24,9 +28,13 @@ export class TermsComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.loadCandidate();
+  }
+
+  loadCandidate(){
     //Fetch the current candidate privacy policy and candidate info
     forkJoin({
-      'currentPolicy': this.termsInfoService.getCurrentByType(TermsType.CANDIDATE_PRIVACY_POLICY),
+      'currentPolicy': this.termsInfoService.getCurrentCandidatePolicy(),
       'candidate': this.candidateService.getCandidatePersonal()
     }).subscribe(
       results => {
@@ -42,9 +50,14 @@ export class TermsComponent implements OnInit {
 
     //Store the name of the candidate's partner
     this.partnerName = candidate?.user?.partner?.name;
+    this.partnerEmail = candidate?.user?.partner?.notificationEmail;
+    this.acceptedPrivacyPolicyId = candidate?.acceptedPrivacyPolicyId;
+    this.acceptedPrivacyPolicyDate = candidate?.acceptedPrivacyPolicyDate;
+    this.acceptedPrivacyPolicyPartner = candidate?.acceptedPrivacyPolicyPartner?.name || this.partnerName;
 
     //Check if candidate has accepted the current policy. If not they need to accept it.
-    this.setRequestAcceptance(currentPolicy.id != candidate.acceptedPrivacyPolicyId)
+    this.setRequestAcceptance(
+      currentPolicy?.content?.length > 0 && currentPolicy.id != candidate.acceptedPrivacyPolicyId)
   }
 
   private setCurrentPolicy(termsInfo: TermsInfoDto) {
@@ -60,7 +73,10 @@ export class TermsComponent implements OnInit {
     //Mark candidate as having accepted these terms.
     this.candidateService.updateAcceptedPrivacyPolicy(this.currentPrivacyPolicy?.id).subscribe(
       {
-        next: () => {this.setRequestAcceptance(false)},
+        next: () => {
+          this.loadCandidate();
+          this.setRequestAcceptance(false);
+          },
         error: err => {this.error = err}
       }
     );

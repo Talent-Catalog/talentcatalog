@@ -21,17 +21,16 @@ MODEL - use of subclassing FormComponentBase to inherit common standard form fun
 -->
 
 <form [formGroup]="form">
-
-  <div>
-    <label class="form-label">Link to Salesforce Job Opportunity</label>
-    <input type="text" class="form-control" formControlName="sfJoblink">
-  </div>
-  <div *ngIf="isInvalid(form.controls.sfJoblink)" class="alert alert-danger">
+  <tc-field>
+    <tc-label>Link to Salesforce Job Opportunity</tc-label>
+    <tc-input type="text" formControlName="sfJoblink"></tc-input>
+  </tc-field>
+  <tc-alert *ngIf="isInvalid(form.controls.sfJoblink)" type="warning">
     Your link must be the <em>full version</em> of a URL pointing to a valid Salesforce opportunity.
-    Navigate to the record and copy-paste from your browser's address bar, e.g.:
-    https://talentbeyondboundaries.lightning.force.com/lightning/r/<b>Opportunity</b>/006Uu000004qo4rIAA/view
-  </div>
-  <div *ngIf="form.controls.sfJoblink.pending">
+    Navigate to the record and copy-paste from your browser's address bar <br>
+    e.g. https://talentbeyondboundaries.lightning.force.com/lightning/r/<b>Opportunity</b>/006Uu000004qo4rIAA/view
+  </tc-alert>
+  <tc-icon *ngIf="form.controls.sfJoblink.pending">
     <i class="fas fa-spinner fa-spin"></i>Waiting for validation from Salesforce...
-  </div>
+  </tc-icon>
 </form>

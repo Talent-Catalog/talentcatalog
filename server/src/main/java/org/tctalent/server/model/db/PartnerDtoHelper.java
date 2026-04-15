@@ -75,6 +75,9 @@ public class PartnerDtoHelper {
             .add("sflink")
             .add("sourceCountries", countryDto())
             .add("redirectPartner", shortPartnerDto())
+            .add("acceptedDataProcessingAgreementId")
+            .add("acceptedDataProcessingAgreementDate")
+            .add("firstDpaSeenDate")
             ;
     }
 

@@ -16,8 +16,10 @@
 
 package org.tctalent.server.service.db.impl;
 
+import java.time.OffsetDateTime;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,8 +28,11 @@ import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.tctalent.server.configuration.properties.DpaProperties;
 import org.tctalent.server.exception.EntityExistsException;
 import org.tctalent.server.exception.InvalidRequestException;
+import org.tctalent.server.exception.InvalidSessionException;
 import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.model.db.Country;
@@ -37,6 +42,8 @@ import org.tctalent.server.model.db.PartnerJobRelationKey;
 import org.tctalent.server.model.db.PublicApiPartnerDto;
 import org.tctalent.server.model.db.SalesforceJobOpp;
 import org.tctalent.server.model.db.Status;
+import org.tctalent.server.model.db.TermsInfo;
+import org.tctalent.server.model.db.TermsType;
 import org.tctalent.server.model.db.User;
 import org.tctalent.server.model.db.partner.Partner;
 import org.tctalent.server.repository.db.PartnerJobRelationRepository;
@@ -44,20 +51,25 @@ import org.tctalent.server.repository.db.PartnerRepository;
 import org.tctalent.server.repository.db.PartnerSpecification;
 import org.tctalent.server.request.partner.SearchPartnerRequest;
 import org.tctalent.server.request.partner.UpdatePartnerRequest;
+import org.tctalent.server.security.AuthService;
 import org.tctalent.server.security.PublicApiKeyGenerator;
 import org.tctalent.server.service.db.CountryService;
 import org.tctalent.server.service.db.PartnerService;
 import org.tctalent.server.service.db.PublicIDService;
+import org.tctalent.server.service.db.TermsInfoService;
 
 @Service
 @AllArgsConstructor
 @Slf4j
 public class PartnerServiceImpl implements PartnerService {
     private final CountryService countryService;
+    private final AuthService authService;
     private final PartnerRepository partnerRepository;
     private final PartnerJobRelationRepository partnerJobRelationRepository;
     private final PasswordEncoder passwordEncoder;
     private final PublicIDService publicIDService;
+    private final TermsInfoService termsInfoService;
+    private final DpaProperties dpaProperties;
 
     @Override
     public @NonNull PartnerImpl create(UpdatePartnerRequest request)
@@ -83,6 +95,10 @@ public class PartnerServiceImpl implements PartnerService {
 
         //Source countries
         populateSourceCountries(request.getSourceCountryIds(), partner);
+
+        if (request.getDefaultSourcePartner() != null) {
+            partner.setDefaultSourcePartner(request.getDefaultSourcePartner());
+        }
 
         return partnerRepository.save(partner);
     }
@@ -194,13 +210,18 @@ public class PartnerServiceImpl implements PartnerService {
         return partner;
     }
 
+
+    @Override
+    public Optional<PartnerImpl> findDefaultSourcePartner() throws NoSuchObjectException {
+        return partnerRepository.findByDefaultSourcePartner(true);
+    }
+
     @NonNull
     @Override
     public Partner getDefaultSourcePartner() throws NoSuchObjectException {
-        final PartnerImpl partner = partnerRepository.findByDefaultSourcePartner(true)
-            .orElseThrow(() -> new NoSuchObjectException(Partner.class, "default"));
-
-        return partner;
+        return findDefaultSourcePartner().orElseThrow(
+            () -> new NoSuchObjectException(Partner.class, "default")
+        );
     }
 
     @Nullable
@@ -338,5 +359,63 @@ public class PartnerServiceImpl implements PartnerService {
         }
 
         return newPartner;
+    }
+
+    @Override
+    public PartnerImpl updateAcceptedDpa(String acceptedDpaId) {
+        User user = authService.getLoggedInUser()
+            .orElseThrow(() -> new InvalidSessionException("Not logged in"));
+        PartnerImpl partner = user.getPartner();
+        updatePolicyId(acceptedDpaId, partner);
+        partner = partnerRepository.save(partner);
+        return partner;
+    }
+
+    /**
+     * Factored out some common code
+     */
+    private static void updatePolicyId(String acceptedDpaId, PartnerImpl partner) {
+        if (acceptedDpaId == null) {
+            throw new InvalidRequestException("Privacy policy has not been accepted");
+        }
+        partner.setAcceptedDataProcessingAgreementId(acceptedDpaId);
+        partner.setAcceptedDataProcessingAgreementDate(OffsetDateTime.now());
+    }
+
+    @Transactional
+    public PartnerImpl setFirstDpaSeen() {
+        User user = authService.getLoggedInUser()
+            .orElseThrow(() -> new InvalidSessionException("Not logged in"));
+        PartnerImpl partner = user.getPartner();
+        if (partner.isSourcePartner() && partner.getFirstDpaSeenDate() == null) {
+            partner.setFirstDpaSeenDate(OffsetDateTime.now());
+            partner = partnerRepository.save(partner);
+        }
+        return partner;
+    }
+    @Transactional
+    public boolean requiresDpaAcceptance() {
+        if (!dpaProperties.isEnabled()) {
+            return false;
+        }
+
+        User user = authService.getLoggedInUser()
+            .orElseThrow(() -> new InvalidSessionException("Not logged in"));
+        PartnerImpl partner = user.getPartner();
+
+        if (!partner.isSourcePartner()) {
+            return false; // Non-partner users don't require DPA
+        }
+
+        // Get current DPA
+        TermsInfo currentDpa = termsInfoService.getCurrentByType(TermsType.OPC_STANDARD_DATA_PROCESSING_AGREEMENT);
+        // Partner already accepted the current DPA
+        if (partner.getAcceptedDataProcessingAgreementId() != null &&
+            partner.getAcceptedDataProcessingAgreementId().equals(currentDpa.getId())) {
+            return false;
+        }
+        // No first seen date or within 90 days
+        return partner.getFirstDpaSeenDate() != null &&
+          !OffsetDateTime.now().isBefore(partner.getFirstDpaSeenDate().plusDays(dpaProperties.getDpaVisibilityDelayDays()));
     }
 }

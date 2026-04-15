@@ -1,0 +1,11 @@
+<div class="d-sm-flex flex-column align-items-end mt-4">
+  <div>
+    <ng-container *ngIf="selectedTask?.abandonedDate">
+      <h5 class="text-success">{{ 'TASKS.TASK.ABANDONEDDATE' | translate }} {{selectedTask?.abandonedDate | date}}</h5>
+    </ng-container>
+  </div>
+
+  <tc-button size="sm" (onClick)="returnToTasksClicked()">
+    <i class="me-1 fas fa-arrow-left"></i>{{ 'TASKS.TASK.RETURN' | translate }}
+  </tc-button>
+</div>

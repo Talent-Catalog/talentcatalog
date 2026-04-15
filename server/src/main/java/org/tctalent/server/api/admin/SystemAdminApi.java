@@ -16,11 +16,9 @@
 
 package org.tctalent.server.api.admin;
 
-import com.amazonaws.services.s3.model.S3ObjectSummary;
 import com.google.api.services.drive.model.FileList;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
-import java.io.File;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.sql.Connection;
@@ -39,7 +37,6 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -50,35 +47,29 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import lombok.extern.slf4j.Slf4j;
-import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.batch.core.Job;
+import org.springframework.batch.item.ItemProcessor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.lang.Nullable;
-import org.springframework.scheduling.TaskScheduler;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.reactive.function.client.WebClientException;
+import org.tctalent.server.batchjob.candidate.CandidateBatchJobFactory;
+import org.tctalent.server.batchjob.candidate.CandidateBatchJobFactory.CandidateBatchJobBuilder;
+import org.tctalent.server.casi.application.providers.linkedin.LinkedInService;
 import org.tctalent.server.configuration.GoogleDriveConfig;
 import org.tctalent.server.configuration.SalesforceConfig;
 import org.tctalent.server.exception.NoSuchObjectException;
-import org.tctalent.server.exception.SalesforceException;
 import org.tctalent.server.logging.LogBuilder;
-import org.tctalent.server.model.Environment;
 import org.tctalent.server.model.db.AttachmentType;
 import org.tctalent.server.model.db.Candidate;
-import org.tctalent.server.model.db.CandidateAttachment;
 import org.tctalent.server.model.db.CandidateNote;
 import org.tctalent.server.model.db.CandidateOpportunity;
 import org.tctalent.server.model.db.CandidateStatus;
@@ -86,19 +77,21 @@ import org.tctalent.server.model.db.EducationType;
 import org.tctalent.server.model.db.Gender;
 import org.tctalent.server.model.db.JobChat;
 import org.tctalent.server.model.db.NoteType;
+import org.tctalent.server.model.db.PartnerImpl;
 import org.tctalent.server.model.db.SalesforceJobOpp;
 import org.tctalent.server.model.db.SavedList;
+import org.tctalent.server.model.db.SavedSearch;
 import org.tctalent.server.model.db.Status;
 import org.tctalent.server.model.db.User;
 import org.tctalent.server.model.db.partner.Partner;
 import org.tctalent.server.model.sf.Contact;
-import org.tctalent.server.repository.db.CandidateAttachmentRepository;
 import org.tctalent.server.repository.db.CandidateNoteRepository;
 import org.tctalent.server.repository.db.CandidateOpportunityRepository;
 import org.tctalent.server.repository.db.CandidateRepository;
 import org.tctalent.server.repository.db.ChatPostRepository;
 import org.tctalent.server.repository.db.JobChatRepository;
 import org.tctalent.server.repository.db.JobChatUserRepository;
+import org.tctalent.server.repository.db.PartnerRepository;
 import org.tctalent.server.repository.db.SalesforceJobOppRepository;
 import org.tctalent.server.repository.db.SavedListRepository;
 import org.tctalent.server.repository.db.SavedSearchRepository;
@@ -112,6 +105,7 @@ import org.tctalent.server.response.DuolingoVerifyScoreResponse;
 import org.tctalent.server.security.AuthService;
 import org.tctalent.server.service.api.TcApiService;
 import org.tctalent.server.service.db.BackgroundProcessingService;
+import org.tctalent.server.service.db.BatchJobService;
 import org.tctalent.server.service.db.CandidateOppBackgroundProcessingService;
 import org.tctalent.server.service.db.CandidateOpportunityService;
 import org.tctalent.server.service.db.CandidateService;
@@ -124,20 +118,15 @@ import org.tctalent.server.service.db.JobService;
 import org.tctalent.server.service.db.LanguageService;
 import org.tctalent.server.service.db.NotificationService;
 import org.tctalent.server.service.db.PartnerService;
-import org.tctalent.server.service.db.PopulateElasticsearchService;
 import org.tctalent.server.service.db.SalesforceService;
 import org.tctalent.server.service.db.SavedListService;
 import org.tctalent.server.service.db.SavedSearchService;
-import org.tctalent.server.service.db.aws.S3ResourceHelper;
+import org.tctalent.server.service.db.UserService;
 import org.tctalent.server.service.db.cache.CacheService;
-import org.tctalent.server.util.background.BackProcessor;
-import org.tctalent.server.util.background.BackRunner;
-import org.tctalent.server.util.background.PageContext;
+import org.tctalent.server.storage.TranslationMigrationService;
 import org.tctalent.server.util.filesystem.GoogleFileSystemDrive;
 import org.tctalent.server.util.filesystem.GoogleFileSystemFile;
 import org.tctalent.server.util.filesystem.GoogleFileSystemFolder;
-import org.tctalent.server.util.listener.BatchListeningLogger;
-import org.tctalent.server.util.textExtract.TextExtractHelper;
 
 @RestController
 @RequestMapping("/api/admin/system")
@@ -149,7 +138,7 @@ public class SystemAdminApi {
 
     private final DataSharingService dataSharingService;
 
-    private final CandidateAttachmentRepository candidateAttachmentRepository;
+    private final CandidateBatchJobFactory candidateBatchJobFactory;
     private final CandidateNoteRepository candidateNoteRepository;
     private final CandidateRepository candidateRepository;
     private final CandidateOpportunityRepository candidateOpportunityRepository;
@@ -160,7 +149,6 @@ public class SystemAdminApi {
     private final JobService jobService;
     private final LanguageService languageService;
     private final NotificationService notificationService;
-    private final PopulateElasticsearchService populateElasticsearchService;
     private final SalesforceService salesforceService;
     private final SalesforceConfig salesforceConfig;
     private final SavedListRepository savedListRepository;
@@ -170,21 +158,23 @@ public class SystemAdminApi {
     private final JobChatRepository jobChatRepository;
     private final JobChatUserRepository jobChatUserRepository;
     private final ChatPostRepository chatPostRepository;
-    private final S3ResourceHelper s3ResourceHelper;
+    private final PartnerRepository partnerRepository;
     private final CacheService cacheService;
+    private final TranslationMigrationService translationMigrationService;
 
     private final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 
-    private final Map<Integer, Integer> countryForGeneralCountry;
+    final Map<Integer, Integer> countryForGeneralCountry;
 
     private final GoogleDriveConfig googleDriveConfig;
-    private final TaskScheduler taskScheduler;
     private final BackgroundProcessingService backgroundProcessingService;
+    private final BatchJobService batchJobService;
     private final SavedSearchService savedSearchService;
     private final PartnerService partnerService;
     private final CandidateOppBackgroundProcessingService candidateOppBackgroundProcessingService;
     private final TcApiService tcApiService;
-    private final BatchListeningLogger batchListeningLogger;
+    private final LinkedInService linkedInService;
+    private final UserService userService;
 
     @Value("${spring.datasource.url}")
     private String targetJdbcUrl;
@@ -210,39 +200,50 @@ public class SystemAdminApi {
     @PersistenceContext
     private EntityManager entityManager;
 
-    @Value("${environment}")
-    private String environment;
     private final DuolingoApiService duolingoApiService;
     private final DuolingoCouponService duolingoCouponService;
 
     @Autowired
     public SystemAdminApi(
-            DataSharingService dataSharingService,
-            AuthService authService,
-            CandidateAttachmentRepository candidateAttachmentRepository,
-            CandidateNoteRepository candidateNoteRepository,
-            CandidateRepository candidateRepository,
+        DataSharingService dataSharingService,
+        AuthService authService,
+        PartnerRepository partnerRepository,
+        CandidateBatchJobFactory candidateBatchJobFactory,
+        CandidateNoteRepository candidateNoteRepository,
+        CandidateRepository candidateRepository,
         CandidateOpportunityRepository candidateOpportunityRepository,
-            CandidateOpportunityService candidateOpportunityService, CandidateService candidateService,
-            CountryService countryService,
-            FileSystemService fileSystemService,
-            JobService jobService, LanguageService languageService,
+        CandidateOpportunityService candidateOpportunityService,
+        CandidateService candidateService,
+        CountryService countryService,
+        FileSystemService fileSystemService,
+        JobService jobService, LanguageService languageService,
         NotificationService notificationService,
-            PopulateElasticsearchService populateElasticsearchService,
-            SalesforceService salesforceService,
-            SalesforceConfig salesforceConfig, SalesforceJobOppRepository salesforceJobOppRepository, SavedListService savedListService,
-            SavedListRepository savedListRepository,
-            JobChatRepository jobChatRepository, JobChatUserRepository jobChatUserRepository, ChatPostRepository chatPostRepository,
-            SavedSearchRepository savedSearchRepository, S3ResourceHelper s3ResourceHelper,
-            GoogleDriveConfig googleDriveConfig, CacheService cacheService,
-        TaskScheduler taskScheduler, BackgroundProcessingService backgroundProcessingService,
-        SavedSearchService savedSearchService, PartnerService partnerService,
-        CandidateOppBackgroundProcessingService candidateOppBackgroundProcessingService, DuolingoApiService duolingoApiService, DuolingoCouponService duolingoCouponService,
-        TcApiService tcApiService, BatchListeningLogger batchListeningLogger
-        ) {
+        SalesforceService salesforceService,
+        SalesforceConfig salesforceConfig,
+        SalesforceJobOppRepository salesforceJobOppRepository,
+        SavedListService savedListService,
+        SavedListRepository savedListRepository,
+        JobChatRepository jobChatRepository,
+        JobChatUserRepository jobChatUserRepository,
+        ChatPostRepository chatPostRepository,
+        SavedSearchRepository savedSearchRepository,
+        TranslationMigrationService translationMigrationService,
+        GoogleDriveConfig googleDriveConfig,
+        CacheService cacheService,
+        BackgroundProcessingService backgroundProcessingService,
+        BatchJobService batchJobService,
+        SavedSearchService savedSearchService,
+        PartnerService partnerService,
+        CandidateOppBackgroundProcessingService candidateOppBackgroundProcessingService,
+        DuolingoApiService duolingoApiService,
+        DuolingoCouponService duolingoCouponService,
+        TcApiService tcApiService,
+        LinkedInService linkedInService,
+        UserService userService
+    ) {
         this.dataSharingService = dataSharingService;
         this.authService = authService;
-        this.candidateAttachmentRepository = candidateAttachmentRepository;
+        this.candidateBatchJobFactory = candidateBatchJobFactory;
         this.candidateNoteRepository = candidateNoteRepository;
         this.candidateRepository = candidateRepository;
         this.candidateOpportunityRepository = candidateOpportunityRepository;
@@ -253,7 +254,6 @@ public class SystemAdminApi {
         this.jobService = jobService;
         this.languageService = languageService;
         this.notificationService = notificationService;
-        this.populateElasticsearchService = populateElasticsearchService;
         this.salesforceService = salesforceService;
         this.salesforceConfig = salesforceConfig;
         this.savedListRepository = savedListRepository;
@@ -263,19 +263,153 @@ public class SystemAdminApi {
         this.jobChatRepository = jobChatRepository;
         this.jobChatUserRepository = jobChatUserRepository;
         this.chatPostRepository = chatPostRepository;
-        this.s3ResourceHelper = s3ResourceHelper;
+        this.translationMigrationService = translationMigrationService;
         this.googleDriveConfig = googleDriveConfig;
         this.cacheService = cacheService;
-        this.taskScheduler = taskScheduler;
-      this.backgroundProcessingService = backgroundProcessingService;
-      this.savedSearchService = savedSearchService;
-      this.partnerService = partnerService;
-      this.candidateOppBackgroundProcessingService = candidateOppBackgroundProcessingService;
-      this.batchListeningLogger = batchListeningLogger;
-      countryForGeneralCountry = getExtraCountryMappings();
-      this.duolingoApiService = duolingoApiService;
-      this.duolingoCouponService = duolingoCouponService;
-      this.tcApiService = tcApiService;
+        this.backgroundProcessingService = backgroundProcessingService;
+        this.batchJobService = batchJobService;
+        this.savedSearchService = savedSearchService;
+        this.partnerService = partnerService;
+        this.partnerRepository = partnerRepository;
+        this.candidateOppBackgroundProcessingService = candidateOppBackgroundProcessingService;
+        countryForGeneralCountry = getExtraCountryMappings();
+        this.duolingoApiService = duolingoApiService;
+        this.duolingoCouponService = duolingoCouponService;
+        this.tcApiService = tcApiService;
+        this.linkedInService = linkedInService;
+        this.userService = userService;
+    }
+
+    /**
+     * One-off relay migration endpoint for copying translation files between buckets that are
+     * accessed by different AWS identities/accounts. This performs a download (legacy source)
+     * followed by upload (configured destination), rather than S3 server-side copy.
+     *
+     * @param sourceBucket Source S3 bucket name (i.e. legacy TBB bucket)
+     * @param destinationBucket Destination S3 bucket name (i.e. GRN/OPC translations bucket)
+     * @param sourcePrefix Optional source prefix/folder. Defaults to {@code translations}.
+     * @param destinationPrefix Optional destination prefix/folder. Defaults to {@code translations}.
+     * @return Status map including copy mode and number of copied objects
+     */
+    @GetMapping("migrate-translations")
+    public Map<String, Object> migrateTranslations(
+        @RequestParam("sourceBucket") String sourceBucket,
+        @RequestParam("destinationBucket") String destinationBucket,
+        @RequestParam(value = "sourcePrefix", required = false) String sourcePrefix,
+        @RequestParam(value = "destinationPrefix", required = false) String destinationPrefix) {
+
+        String normalizedSourcePrefix = normalizeS3Prefix(
+            StringUtils.isBlank(sourcePrefix) ? "translations" : sourcePrefix);
+        String normalizedDestinationPrefix = normalizeS3Prefix(
+            StringUtils.isBlank(destinationPrefix) ? "translations" : destinationPrefix);
+
+        LogBuilder.builder(log)
+            .user(authService.getLoggedInUser())
+            .action("MigrateTranslations")
+            .message(sourceBucket + "/" + normalizedSourcePrefix
+                + " -> " + destinationBucket + "/" + normalizedDestinationPrefix)
+            .logInfo();
+
+        long startMs = System.currentTimeMillis();
+        int copiedCount = translationMigrationService.migrateBucketContents(
+            sourceBucket, normalizedSourcePrefix, destinationBucket, normalizedDestinationPrefix);
+        long durationMs = System.currentTimeMillis() - startMs;
+
+        LogBuilder.builder(log)
+            .user(authService.getLoggedInUser())
+            .action("MigrateTranslations")
+            .message("Completed: " + copiedCount + " file(s) in " + durationMs + "ms")
+            .logInfo();
+
+        return Map.of(
+            "status", "success",
+            "mode", "relay-copy",
+            "copiedCount", copiedCount,
+            "durationMs", durationMs,
+            "sourceBucket", sourceBucket,
+            "sourcePrefix", normalizedSourcePrefix,
+            "destinationBucket", destinationBucket,
+            "destinationPrefix", normalizedDestinationPrefix
+        );
+    }
+
+    private String normalizeS3Prefix(String prefix) {
+        return prefix.endsWith("/") ? prefix : prefix + "/";
+    }
+
+    /**
+     * Clears the firstDpaSeenDate field for the partner with the given ID.
+     * @param partnerId The ID of the partner
+     */
+    @GetMapping("partner/clear-first-dpa-seen/{partnerId}")
+    public void clearFirstDpaSeen(@PathVariable("partnerId") Long partnerId) {
+        // Fetch the partner by ID
+        PartnerImpl partner = (PartnerImpl) partnerService.getPartner(partnerId);
+
+        // Clear the firstDpaSeenDate field
+        partner.setFirstDpaSeenDate(null);
+
+        // Save the updated partner back to the repository
+        partnerRepository.save(partner);
+    }
+
+    @GetMapping("set_candidate_text/cpu-{cpu}")
+    public ResponseEntity<String> setCandidateText(
+        @PathVariable("cpu") int cpu) throws Exception {
+        return setCandidateTextCommon("", 0, cpu);
+    }
+
+    @GetMapping("set_candidate_text/search-{sourceId}-cpu-{cpu}")
+    public ResponseEntity<String> setCandidateTextBySearch(
+        @PathVariable("sourceId") int sourceId,
+        @PathVariable("cpu") int cpu) throws Exception {
+        return setCandidateTextCommon("search", sourceId, cpu);
+    }
+
+    @GetMapping("set_candidate_text/list-{sourceId}-cpu-{cpu}")
+    public ResponseEntity<String> setCandidateTextByList(
+        @PathVariable("sourceId") int sourceId,
+        @PathVariable("cpu") int cpu) throws Exception {
+        return setCandidateTextCommon("list", sourceId, cpu);
+    }
+
+    private ResponseEntity<String> setCandidateTextCommon(
+        @PathVariable("candidateSource") String candidateSource,
+        @PathVariable("sourceId") int sourceId,
+        @PathVariable("cpu") int cpu) throws Exception {
+
+        ItemProcessor<Candidate, Candidate> candidateUpdateTextProcessor =
+            candidate -> {
+                candidate.updateText();
+                return candidate;
+            };
+
+        CandidateBatchJobBuilder jobBuilder;
+        if (candidateSource.equals("list")) {
+            SavedList savedList = savedListService.get(sourceId);
+            jobBuilder = candidateBatchJobFactory
+                .builder("candidateTextJob", savedList, candidateUpdateTextProcessor);
+        } else if (candidateSource.equals("search")) {
+            SavedSearch search = savedSearchService.getSavedSearch(sourceId);
+            jobBuilder = candidateBatchJobFactory
+                .builder("candidateTextJob", search, candidateUpdateTextProcessor);
+        } else {
+            //If no source is specified, generate a default search request which processes all
+            //candidates except deleted or withdrawn
+            SearchCandidateRequest request = new SearchCandidateRequest();
+            EnumSet<CandidateStatus> includedStatuses = EnumSet.complementOf(
+                EnumSet.of(CandidateStatus.deleted, CandidateStatus.withdrawn));
+            request.setStatuses(new ArrayList<>(includedStatuses));
+            jobBuilder = candidateBatchJobFactory
+                .builder("candidateTextJob", request, candidateUpdateTextProcessor);
+        }
+
+        Job candidateUpdateTextJob= jobBuilder
+            .percentageOfCpu(cpu)
+            .build();
+
+        String response = batchJobService.launchJob(candidateUpdateTextJob, false);
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("set_public_ids")
@@ -1123,52 +1257,6 @@ public class SystemAdminApi {
         return "done";
     }
 
-    @GetMapping("awsmetadata")
-    public String updateAwsFileTypes() {
-        List<S3ObjectSummary> objectSummaries = s3ResourceHelper.getObjectSummaries();
-        LogBuilder.builder(log)
-            .user(authService.getLoggedInUser())
-            .action("UpdateAwsFileTypes")
-            .message("Got the object summaries. There is a total of: " + objectSummaries.size())
-            .logInfo();
-
-        List<S3ObjectSummary> filteredSummaries = s3ResourceHelper.filterMigratedObjects(objectSummaries);
-        LogBuilder.builder(log)
-            .user(authService.getLoggedInUser())
-            .action("UpdateAwsFileTypes")
-            .message("Filtered out the migrated objects. There is a total of: " + filteredSummaries.size())
-            .logInfo();
-
-        int count = 0;
-        int success = 0;
-        for(S3ObjectSummary summary : filteredSummaries) {
-            try {
-                s3ResourceHelper.addObjectMetadata(summary);
-                success++;
-            } catch (Exception e) {
-                LogBuilder.builder(log)
-                    .user(authService.getLoggedInUser())
-                    .action("UpdateAwsFileTypes")
-                    .message("Error adding metadata to object with key: " + summary.getKey())
-                    .logWarn(e);
-            }
-            count++;
-            if (count%100 == 0) {
-                LogBuilder.builder(log)
-                    .user(authService.getLoggedInUser())
-                    .action("UpdateAwsFileTypes")
-                    .message("Processed " + count)
-                    .logInfo();
-            }
-        }
-        LogBuilder.builder(log)
-            .user(authService.getLoggedInUser())
-            .action("UpdateAwsFileTypes")
-            .message("Finished processing. Success total of: " + success + " out of " + count)
-            .logInfo();
-
-        return "done";
-    }
 
     //Remove after running. One off method. Login as System Admin user.
 //    @GetMapping("update-isocodes")
@@ -1414,109 +1502,6 @@ public class SystemAdminApi {
         return "done";
     }
 
-    /**
-     * @see PopulateElasticsearchService#populateElasticCandidates(boolean, boolean, Integer, Integer)
-     */
-    @GetMapping("esload")
-    public void loadElasticsearch(
-        @RequestParam(value = "reset", required = false) String reset,
-        @RequestParam(value = "frompage", required = false) Integer fromPage,
-        @RequestParam(value = "topage", required = false) Integer toPage) {
-
-        boolean deleteExisting = reset != null;
-
-        boolean createElastic = deleteExisting;
-
-        populateElasticsearchService.populateElasticCandidates(
-            deleteExisting, createElastic, fromPage, toPage);
-    }
-
-    @GetMapping("migrate/extract")
-    public void migrateExtract() {
-        TextExtractHelper textExtractHelper = new TextExtractHelper(candidateAttachmentRepository, s3ResourceHelper);
-        Long userId = 1L;
-        if (authService != null) {
-            User loggedInUser = authService.getLoggedInUser().orElse(null);
-            if (loggedInUser != null){
-                userId = loggedInUser.getId();
-            }
-        }
-
-        List<String> types = Arrays.asList("pdf", "docx", "doc", "txt");
-        extractTextFromMigratedFiles(textExtractHelper, types);
-        extractTextFromNewFiles(textExtractHelper, types);
-    }
-
-//    @GetMapping("es-to-db/unhcr-status")
-    public void migrateUnhcrStatus() {
-        populateElasticsearchService.populateCandidateFromElastic();
-    }
-
-    private void extractTextFromMigratedFiles(TextExtractHelper textExtractHelper, List<String> types) {
-        List<CandidateAttachment> files = candidateAttachmentRepository.findByFileTypesAndMigrated(types, true);
-        int count = 0;
-        int success = 0;
-        for(CandidateAttachment file : files) {
-            try {
-                String uniqueFilename = file.getLocation();
-                String destination = "candidate/migrated/" + uniqueFilename;
-                File srcFile = this.s3ResourceHelper.downloadFile(this.s3ResourceHelper.getS3Bucket(), destination);
-                String extractedText = textExtractHelper.getTextExtractFromFile(srcFile, file.getFileType());
-                if(StringUtils.isNotBlank(extractedText)) {
-                    file.setTextExtract(extractedText);
-                    candidateAttachmentRepository.save(file);
-                    success++;
-                }
-            } catch (Exception e) {
-                LogBuilder.builder(log)
-                    .user(authService.getLoggedInUser())
-                    .action("MigrateExtract")
-                    .message("Unable to extract text from file " + file.getLocation())
-                    .logError(e);
-            }
-            if (count%100 == 0) {
-                LogBuilder.builder(log)
-                    .user(authService.getLoggedInUser())
-                    .action("MigrateExtract")
-                    .message(count + " new files processed, with " + success + " successfully extracted text.")
-                    .logInfo();
-            }
-            count++;
-        }
-    }
-
-    private void extractTextFromNewFiles(TextExtractHelper textExtractHelper, List<String> types) {
-        List<CandidateAttachment> files = candidateAttachmentRepository.findByFileTypesAndMigrated(types, false);
-        int count = 0;
-        int success = 0;
-        for(CandidateAttachment file : files) {
-            try {
-                String uniqueFilename = file.getLocation();
-                String destination = "candidate/" + file.getCandidate().getCandidateNumber() + "/" + uniqueFilename;
-                File srcFile = this.s3ResourceHelper.downloadFile(this.s3ResourceHelper.getS3Bucket(), destination);
-                String extractedText = textExtractHelper.getTextExtractFromFile(srcFile, file.getFileType());
-                if (StringUtils.isNotBlank(extractedText)) {
-                    file.setTextExtract(extractedText);
-                    candidateAttachmentRepository.save(file);
-                    success++;
-                }
-            } catch (Exception e) {
-                LogBuilder.builder(log)
-                    .user(authService.getLoggedInUser())
-                    .action("MigrateExtract")
-                    .message("Unable to extract text from new file " + file.getLocation())
-                    .logError(e);
-            }
-            if (count%100 == 0) {
-                LogBuilder.builder(log)
-                    .user(authService.getLoggedInUser())
-                    .action("MigrateExtract")
-                    .message(count + " new files processed, with " + success + " successfully extracted text.")
-                    .logInfo();
-            }
-            count++;
-        }
-    }
 
 //    @GetMapping("migrate/survey")
     public String migrateSurvey() {
@@ -2667,7 +2652,7 @@ public class SystemAdminApi {
     }
 
     private Long checkReference(int value,
-                                Set<Long> referenceIds) {
+        Set<Long> referenceIds) {
         // null values coming from source db are converted to integer 0 which would be incorrectly linked to "unknown", so treat as null
         Long lookupVal = value > 0 ? (long) value : null;
         if (referenceIds.contains(lookupVal)) {
@@ -2835,8 +2820,8 @@ public class SystemAdminApi {
     }
 
     private Date getDate(ResultSet result,
-                         String columnName,
-                         Long candidateId) {
+        String columnName,
+        Long candidateId) {
         try {
             Date date = result.getDate(columnName);
             if (date != null && !"1970-01-01".equals(date.toString())) {
@@ -2935,120 +2920,6 @@ public class SystemAdminApi {
 
     public void setTargetPwd(String targetPwd) {
         this.targetPwd = targetPwd;
-    }
-
-    /**
-     * Stub for manual call to sync active candidates to SF
-     * @param noOfPagesRequested total no of pages (containing up to 200 candidates max) to be
-     *                           synced. NB: passing <code>0</code> will sync full search results.
-     */
-    @GetMapping("sf-sync-candidates/{noOfPagesRequested}")
-    public ResponseEntity<?> sfSyncCandidates(
-        @PathVariable("noOfPagesRequested") long noOfPagesRequested
-    ) {
-        try {
-            // 0 syncs all results
-            if (noOfPagesRequested == 0) {
-                initiateSfCandidateSync(null);
-            } else {
-                initiateSfCandidateSync(noOfPagesRequested);
-            }
-
-            return ResponseEntity.ok().build(); // Return 200 OK - front-end will display 'Done'
-
-        } catch(Exception e) {
-            LogBuilder.builder(log)
-                .action("sfSyncCandidates")
-                .message("TC-SF candidate sync failed.")
-                .logError(e);
-
-            // Return 500 Internal Server Error including error in body for display on frontend
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e);
-        }
-    }
-
-    /**
-     * Sets up search parameters and scheduled background processing for SF candidate sync.
-     * @param noOfPagesRequested no of pages requested to be synced - if null, all results will sync
-     * @throws WebClientException if there is a problem connecting to Salesforce
-     * @throws SalesforceException if Salesforce had a problem with the data
-     */
-    private void initiateSfCandidateSync(@Nullable Long noOfPagesRequested)
-        throws SalesforceException, WebClientException {
-
-        LogBuilder.builder(log)
-            .action("initiateSfCandidateSync")
-            .message("Initiating TC-SF candidate sync")
-            .logInfo();
-
-        // Obtain and log search results metrics
-        Pageable pageable = PageRequest.of(
-            0, 200, Sort.by("id").ascending()
-        );
-
-        // Candidates with an 'active' status or already uploaded to SF
-        final List<CandidateStatus> statuses = new ArrayList<>(
-            EnumSet.of(CandidateStatus.active, CandidateStatus.pending,
-                CandidateStatus.incomplete));
-
-        Page<Candidate> candidatePage = candidateRepository
-            .findByStatusesOrSfLinkIsNotNull(statuses, pageable);
-
-        LogBuilder.builder(log)
-            .action("initiateSfCandidateSync")
-            .message(candidatePage.getTotalElements() + " candidates meet the criteria")
-            .logInfo();
-
-        // Set total page count - if requested amount is null, defers to total pages in results
-        long totalNoOfPages =
-            Optional.ofNullable(noOfPagesRequested).orElse((long) candidatePage.getTotalPages());
-
-        LogBuilder.builder(log)
-            .action("initiateSfCandidateSync")
-            .message("This request will process " + totalNoOfPages + " pages of 200 candidates.")
-            .logInfo();
-
-        // Implement background processing
-        BackProcessor<PageContext> backProcessor =
-            backgroundProcessingService.createSfSyncBackProcessor(statuses, totalNoOfPages);
-
-        // Schedule background processing
-        BackRunner<PageContext> backRunner = new BackRunner<>();
-        backRunner.addListener(batchListeningLogger);
-
-        backRunner.start(
-            taskScheduler,
-            backProcessor,
-            new PageContext(null),
-            20,
-            "TC to SF candidate sync"
-        );
-    }
-
-    /**
-     * Scheduled TC -> SF sync of all active candidates
-     */
-    @Scheduled(cron = "0 0 18 * * SUN", zone = "GMT")
-    @SchedulerLock(name = "CandidateService_syncLiveCandidatesToSf", lockAtLeastFor = "PT23H",
-        lockAtMostFor = "PT23H")
-    public void scheduledSfProdCandidateSync() {
-        if (environment.equalsIgnoreCase(Environment.prod.name())) {
-            // Passing null means all results will be processed
-            initiateSfCandidateSync(null);
-        }
-    }
-
-    /**
-     * Scheduled TC staging -> SF sandbox sync
-     */
-    @Scheduled(cron = "0 0 18 * * SAT", zone = "GMT")
-    @SchedulerLock(name = "CandidateService_syncLiveCandidatesToSf", lockAtLeastFor = "PT23H",
-        lockAtMostFor = "PT23H")
-    public void scheduledSfSandboxCandidateSync() {
-        // Scaled-down replica of prod for testing purposes (4,000 candidates)
-        if (environment.equalsIgnoreCase(Environment.staging.name())) {
-            initiateSfCandidateSync(20L);
-        }
     }
 
     @GetMapping("delete-job/{jobId}")
@@ -3234,6 +3105,32 @@ public class SystemAdminApi {
             LogBuilder.builder(log)
                 .action("Process potential duplicates")
                 .message("Manual triggered operation failed")
+                .logError(e);
+
+            // Return 500 Internal Server Error including error in body for display on frontend
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e);
+        }
+    }
+
+    /**
+     * Cancels the candidate's previous coupon assignment and makes a new one.
+     */
+    @GetMapping("{candidateNumber}/reassign-linkedin-coupon")
+    ResponseEntity<?> reassignLinkedinCoupon(@PathVariable("candidateNumber") String candidateNumber) {
+        try {
+            linkedInService.reassignForCandidate(candidateNumber, userService.getLoggedInUser());
+
+            LogBuilder.builder(log)
+                .action("Reassign LinkedIn Coupon")
+                .message("For candidate " + candidateNumber + ": Success")
+                .logInfo();
+
+            return ResponseEntity.ok().build(); // Return 200 OK - front-end will display 'Done'
+
+        } catch(Exception e) {
+            LogBuilder.builder(log)
+                .action("Reassign LinkedIn Coupon")
+                .message("For candidate " + candidateNumber + ": Failure")
                 .logError(e);
 
             // Return 500 Internal Server Error including error in body for display on frontend

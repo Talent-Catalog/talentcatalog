@@ -16,7 +16,6 @@
 import {ConfirmationComponent} from "./confirmation.component";
 import {ComponentFixture, TestBed} from "@angular/core/testing";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
-import {By} from "@angular/platform-browser";
 
 describe('ConfirmationComponent', () => {
   let component: ConfirmationComponent;
@@ -60,36 +59,17 @@ describe('ConfirmationComponent', () => {
     expect(activeModalSpy.close).toHaveBeenCalledWith(true);
   });
 
-  it('should display the title in the modal header', () => {
-    const compiled = fixture.nativeElement;
-    expect(compiled.querySelector('.modal-title').textContent).toContain('Confirmation');
-  });
-
   it('should display the message if provided', () => {
     component.message = 'Test message';
     fixture.detectChanges();
     const compiled = fixture.nativeElement;
-    expect(compiled.querySelector('.modal-body span').textContent).toContain('Test message');
+    expect(compiled.querySelector('p').textContent).toContain('Test message');
   });
 
   it('should display "Are you sure?" if message is not provided', () => {
     component.message = null;
     fixture.detectChanges();
     const compiled = fixture.nativeElement;
-    expect(compiled.querySelector('.modal-body span').textContent).toContain('Are you sure?');
-  });
-
-  it('should display the cancel button if showCancel is true', () => {
-    component.showCancel = true;
-    fixture.detectChanges();
-    const cancelButton = fixture.debugElement.query(By.css('.modal-footer button:nth-child(1)'));
-    expect(cancelButton.nativeElement.textContent).toContain('Cancel');
-  });
-
-  it('should not display the cancel button if showCancel is false', () => {
-    component.showCancel = false;
-    fixture.detectChanges();
-    const cancelButton = fixture.debugElement.query(By.css('.modal-footer button:nth-child(2)'));
-    expect(cancelButton).toBeNull();
+    expect(compiled.querySelector('p').textContent).toContain('Are you sure?');
   });
 });

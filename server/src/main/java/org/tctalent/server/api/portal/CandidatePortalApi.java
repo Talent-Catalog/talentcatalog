@@ -247,7 +247,9 @@ public class CandidatePortalApi {
     private DtoBuilder partnerDto() {
         return new DtoBuilder()
             .add("name")
+            .add("notificationEmail")
             .add("websiteUrl")
+            .add("defaultSourcePartner")
             ;
     }
 
@@ -255,6 +257,8 @@ public class CandidatePortalApi {
         return new DtoBuilder()
                 .add("user", userDto())
                 .add("acceptedPrivacyPolicyId")
+                .add("acceptedPrivacyPolicyDate")
+                .add("acceptedPrivacyPolicyPartner",partnerDto())
                 .add("candidateNumber")
                 .add("publicId")
                 .add("candidateMessage")
@@ -359,7 +363,7 @@ public class CandidatePortalApi {
                 .add("additionalInfo")
                 .add("linkedInLink")
                 .add("allNotifications")
-                ;
+                .add("aspirations");
     }
 
     private DtoBuilder candidateSurveyDto() {
@@ -480,6 +484,7 @@ public class CandidatePortalApi {
                 .add("yearOfArrival")
                 .add("nationality", countryService.selectBuilder())
                 .add("country", countryService.selectBuilder())
+                .add("birthCountry", countryService.selectBuilder())
                 .add("externalId")
                 .add("unhcrRegistered")
                 .add("unhcrNumber")
@@ -503,6 +508,7 @@ public class CandidatePortalApi {
                 .add("candidateCertifications", certificationDto())
                 /* ADDITIONAL INFO / SUBMIT */
                 .add("additionalInfo")
+                .add("aspirations")
                 .add("candidateMessage")
                 .add("surveyType", surveyTypeDto())
                 .add("surveyComment")

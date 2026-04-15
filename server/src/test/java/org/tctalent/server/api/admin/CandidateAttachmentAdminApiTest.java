@@ -54,6 +54,7 @@ import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.multipart.MultipartFile;
+import org.tctalent.server.files.UploadType;
 import org.tctalent.server.model.db.AttachmentType;
 import org.tctalent.server.model.db.CandidateAttachment;
 import org.tctalent.server.request.attachment.CreateCandidateAttachmentRequest;
@@ -254,7 +255,7 @@ class CandidateAttachmentAdminApiTest extends ApiTestBase {
                         .accept(MediaType.APPLICATION_JSON))
 
                 .andDo(print())
-                .andExpect(status().isBadRequest())
+                .andExpect(status().isNotFound())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.code", is("missing_object")))
                 .andExpect(jsonPath("$.message", is("Missing FileSystemService with ID 99")));
@@ -352,7 +353,7 @@ class CandidateAttachmentAdminApiTest extends ApiTestBase {
 
     private static CandidateAttachment getCandidateAttachments(boolean isCvOnly) {
         CandidateAttachment candidateAttachment = new CandidateAttachment();
-        candidateAttachment.setCv(isCvOnly);
+        candidateAttachment.setUploadType(isCvOnly ? UploadType.cv : UploadType.other);
         return candidateAttachment;
     }
 

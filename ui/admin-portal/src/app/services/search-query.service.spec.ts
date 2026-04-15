@@ -34,14 +34,14 @@ describe('SearchQueryService', () => {
 
   it('should return an empty array for an empty query', () => {
     service.changeSearchQuery('');
-    service.currentSearchTerms.pipe(take(1)).subscribe((terms) => {
+    service.currentSearchTerms$.pipe(take(1)).subscribe((terms) => {
       expect(terms).toEqual([]);
     });
   });
 
   it('should return an empty array for a null query', () => {
     service.changeSearchQuery(null);
-    service.currentSearchTerms.pipe(take(1)).subscribe((terms) => {
+    service.currentSearchTerms$.pipe(take(1)).subscribe((terms) => {
       expect(terms).toEqual([]);
     });
   });
@@ -49,7 +49,7 @@ describe('SearchQueryService', () => {
   it('should parse a simple query into an array of terms', () => {
     const query = 'accountant powerpoint excel';
     service.changeSearchQuery(query);
-    service.currentSearchTerms.pipe(take(1)).subscribe((terms) => {
+    service.currentSearchTerms$.pipe(take(1)).subscribe((terms) => {
       expect(terms).toEqual(jasmine.arrayContaining(['accountant', 'excel', 'powerpoint']));
     });
   });
@@ -58,7 +58,7 @@ describe('SearchQueryService', () => {
   it('should parse a complex query with phrases and operators', () => {
     const query = 'accountant + (excel powerpoint) "hospital director"';
     service.changeSearchQuery(query);
-    service.currentSearchTerms.pipe(take(1)).subscribe((terms) => {
+    service.currentSearchTerms$.pipe(take(1)).subscribe((terms) => {
       expect(terms).toEqual(['hospital director', 'accountant', 'powerpoint', 'excel']);
     });
   });
@@ -66,7 +66,7 @@ describe('SearchQueryService', () => {
   it('should remove wildcard characters', () => {
     const query = 'account* + (excel* powerpoint*) "hospital* director*"';
     service.changeSearchQuery(query);
-    service.currentSearchTerms.pipe(take(1)).subscribe((terms) => {
+    service.currentSearchTerms$.pipe(take(1)).subscribe((terms) => {
       expect(terms).toEqual(jasmine.arrayContaining(['hospital director', 'account', 'powerpoint', 'excel']));
     });
   });
@@ -74,7 +74,7 @@ describe('SearchQueryService', () => {
   it('should handle queries with only operators', () => {
     const query = '+ +';
     service.changeSearchQuery(query);
-    service.currentSearchTerms.pipe(take(1)).subscribe((terms) => {
+    service.currentSearchTerms$.pipe(take(1)).subscribe((terms) => {
       expect(terms).toEqual([]);
     });
   });

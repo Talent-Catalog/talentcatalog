@@ -14,92 +14,92 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<nav aria-label="breadcrumb">
-  <ol class="breadcrumb">
-    <li class="breadcrumb-item"><a [routerLink]="['/']">Home</a></li>
-    <li class="breadcrumb-item active" aria-current="page">
-      Stats
-    </li>
-  </ol>
-</nav>
-
-<div class="alert alert-danger" *ngIf="error">
+<tc-alert *ngIf="error">
   {{error}}
-</div>
+</tc-alert>
 
 <form [formGroup]="statsFilter">
   <div class="container-fluid">
+    <tc-fieldset>
+      <div class="row gy-4">
+        <tc-field class="col-12 col-lg-3">
+          <tc-label>List</tc-label>
+          <!-- Disabled if saved search is entered -->
+          <ng-select
+            class="tc-select"
+            id="savedList"
+            [items]="lists"
+            [closeOnSelect]="false"
+            [searchable]="true"
+            placeholder="Select or type..."
+            bindLabel="name"
+            [readonly]="savedSearch != null || this.listFromUrl == true"
+            formControlName="savedList">
+          </ng-select>
+        </tc-field>
+        <tc-field class="col-12 col-lg-3">
+          <tc-label>Search</tc-label>
+          <!-- Disabled if saved list is entered -->
+          <ng-select
+            class="tc-select"
+            id="savedSearch"
+            [items]="searches"
+            [closeOnSelect]="false"
+            [searchable]="true"
+            placeholder="Select or type..."
+            bindLabel="name"
+            [readonly]="savedList != null  || this.listFromUrl == true"
+            formControlName="savedSearch">
+          </ng-select>
+        </tc-field>
+        <tc-field class="col-12 col-lg-3">
+          <tc-label for="dateFrom">Date From</tc-label>
+          <tc-date-picker id="dateFrom"
+                          [control]="statsFilter.controls.dateFrom"
+                          [allowFuture]="false"
+                          [showHelpText]="false"
+          ></tc-date-picker>
+        </tc-field>
+        <tc-field class="col-12 col-lg-3">
+            <tc-label for="dateTo">Date To</tc-label>
+            <tc-date-picker id="dateTo"
+                            [control]="statsFilter.controls.dateTo"
+                            [allowFuture]="false"
+                            [showHelpText]="false"
+            ></tc-date-picker>
+        </tc-field>
+      </div>
 
-    <div class="row gy-4">
-
-      <div class="col-12 col-lg-3">
-        <label class="form-label">List</label>
-        <!-- Disabled if saved search is entered -->
-        <ng-select
-          id="savedList"
-          [items]="lists"
-          [closeOnSelect]="false"
-          [searchable]="true"
-          placeholder="Select or type..."
-          bindLabel="name"
-          [readonly]="savedSearch != null || this.listFromUrl == true"
-          formControlName="savedList">
-        </ng-select>
+      <div class="row align-items-center flex-lg-fill">
+        <tc-field class="col-12 col-lg-9">
+          <tc-label class="form-label" for="selectStats">Select Stats to Run</tc-label>
+          <ng-select
+            class="tc-select"
+            id="selectStats"
+            [items]="statOptions"
+            [closeOnSelect]="false"
+            [clearSearchOnAdd]="true"
+            [searchable]="true"
+            placeholder="Select or type..."
+            bindLabel="stringValue"
+            bindValue="key"
+            [multiple] = "true"
+            [maxSelectedItems]="8"
+            formControlName="selectedStats">
+          </ng-select>
+          <tc-description>Due to processing size, maximum 8 stats can be run at a time.</tc-description>
+        </tc-field>
+        <tc-field class="col-12 col-lg-3 mb-0">
+          <tc-button (onClick)="submitStatsRequest()" [disabled]="selectedStats.length == 0">
+            <i class="fas fa-calendar-alt"></i> Run Stats
+          </tc-button>
+        </tc-field>
       </div>
-      <div class="col-12 col-lg-3">
-        <label class="form-label">Search</label>
-        <!-- Disabled if saved list is entered -->
-        <ng-select
-          id="savedSearch"
-          [items]="searches"
-          [closeOnSelect]="false"
-          [searchable]="true"
-          placeholder="Select or type..."
-          bindLabel="name"
-          [readonly]="savedList != null  || this.listFromUrl == true"
-          formControlName="savedSearch">
-        </ng-select>
-      </div>
-      <div class="col-12 col-lg-3">
-        <label class="form-label" for="dateFrom">Date From:</label>
-        <app-date-picker id="dateFrom" [control]="statsFilter.controls.dateFrom" [allowFuture]="false"></app-date-picker>
-      </div>
-      <div class="col-12 col-lg-3">
-          <label class="form-label" for="dateTo">Date To:</label>
-          <app-date-picker id="dateTo" [control]="statsFilter.controls.dateTo" [allowFuture]="false"></app-date-picker>
-      </div>
-    </div>
-
-    <div class="row align-items-center my-4 flex-lg-fill">
-      <div class="col-12 col-lg-9">
-        <label class="form-label" for="selectStats">Select Stats to Run</label>
-        <ng-select
-          id="selectStats"
-          [items]="statOptions"
-          [closeOnSelect]="false"
-          [clearSearchOnAdd]="true"
-          [searchable]="true"
-          placeholder="Select or type..."
-          bindLabel="stringValue"
-          bindValue="key"
-          multiple = "true"
-          maxSelectedItems="8"
-          formControlName="selectedStats">
-        </ng-select>
-        <div class="form-text">Due to processing size, maximum 8 stats can be run at a time.</div>
-      </div>
-      <div class="col-12 col-lg-3">
-        <button class="btn btn-success me-3" (click)="submitStatsRequest()" [disabled]="selectedStats.length == 0">
-          <i class="fas fa-calendar-alt"></i> Run stats
-        </button>
-      </div>
-    </div>
+    </tc-fieldset>
   </div>
 </form>
 
-<ng-container *ngIf="loading">
-  <i class="fas fa-spinner fa-spin"></i>
-</ng-container>
+<tc-loading [loading]="loading" [type]="'page'"></tc-loading>
 
 <ng-container *ngIf="!loading">
   <!--Loop through reports data, displaying each report-->
@@ -108,18 +108,24 @@
     <nav class="navbar sticky-top navbar-expand-md second-nav">
       <span class="navbar-brand">Stats for {{statsName}}</span>
         <ul class="navbar-nav ms-auto">
-          <div ngbDropdown display="dynamic" placement="bottom-end">
-            <button type="button" class="btn btn-info float-end" id="jumpToStats" ngbDropdownToggle>Go to stat <i class="fa-solid fa-hand-point-down"></i></button>
-            <div ngbDropdownMenu aria-labelledby="jumpToStats" class="scroll-dropdown">
-              <ng-container *ngFor="let statReport of statReports; let i = index">
-                <a ngbDropdownItem (click)="scroll(i)">{{statReport.name}}</a>
-              </ng-container>
-            </div>
-          </div>
+          <tc-dropdown [hasItems]="statReports?.length > 1">
+            <tc-dropdown-button [type]="'solid'"
+                                [disabled]="!(statReports?.length > 1)"
+            >
+              Go to Stat <i class="fa-solid fa-hand-point-down"></i>
+            </tc-dropdown-button>
+            <tc-dropdown-menu>
+              <tc-dropdown-item *ngFor="let statReport of statReports; let i = index" (click)="scroll(i)">{{statReport.name}}</tc-dropdown-item>
+            </tc-dropdown-menu>
+          </tc-dropdown>
 
-          <button class="btn btn-secondary float-end  ms-2" [disabled]="!dataLoaded" (click)="exportStats()">
+          <tc-button [type]="'outline'"
+                     class="float-end ms-2"
+                     [disabled]="!dataLoaded"
+                     (onClick)="exportStats()"
+          >
             Export <i class="fas fa-file-excel"></i>
-          </button>
+          </tc-button>
 
         </ul>
     </nav>

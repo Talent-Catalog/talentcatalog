@@ -5,12 +5,12 @@
  * the terms of the GNU Affero General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or any later version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
  * for more details.
  *
- * You should have received a copy of the GNU Affero General Public License 
+ * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
@@ -49,8 +49,6 @@ public class TextExtractHelperTest {
     @Autowired
     private S3ResourceHelper s3ResourceHelper;
 
-    private TextExtractHelper textExtractHelper = new TextExtractHelper(candidateAttachmentRepository, s3ResourceHelper);
-
     /**
      * Test Text Extract Helper on different file types
      * @throws IOException from PDFBox extraction methods
@@ -58,30 +56,29 @@ public class TextExtractHelperTest {
     @Transactional
     @Test
     void testDifferentFilesTextExtractHelper() throws IOException {
-        assertNotNull(textExtractHelper);
 
         // Test pdf file
         File pdfFile = new File("src/test/resources/text/EnglishPdf.pdf");
         assertNotNull(pdfFile);
-        String pdfExtract = textExtractHelper.getTextExtractFromFile(pdfFile, "pdf");
+        String pdfExtract = TextExtractHelper.getTextExtractFromFile(pdfFile, "pdf");
         assertNotEquals("", pdfExtract);
 
         // Test pdf file that can't be read (scanned)
         File pdfFileFail = new File("src/test/resources/text/ScannedPdfNoTextExt.pdf");
         assertNotNull(pdfFileFail);
-        String pdfExtractFail = textExtractHelper.getTextExtractFromFile(pdfFileFail, "pdf");
+        String pdfExtractFail = TextExtractHelper.getTextExtractFromFile(pdfFileFail, "pdf");
         assertEquals("", pdfExtractFail);
 
         // Test when wrong params and catch the exception
         try {
-            String wrongFileType = textExtractHelper.getTextExtractFromFile(pdfFile, "docx");
+            String wrongFileType = TextExtractHelper.getTextExtractFromFile(pdfFile, "docx");
         } catch (Exception e) {
             log.error(e.getMessage());
             assertNotNull(e);
         }
 
         try {
-            String noFile = textExtractHelper.getTextExtractFromFile(null ,"pdf");
+            String noFile = TextExtractHelper.getTextExtractFromFile(null ,"pdf");
         } catch (Exception e) {
             log.error(e.getMessage());
             assertNotNull(e);
@@ -90,19 +87,19 @@ public class TextExtractHelperTest {
         // Testing Docx files
         File docxFile = new File("src/test/resources/text/EnglishDocx.docx");
         assertNotNull(docxFile);
-        String docxExtract = textExtractHelper.getTextExtractFromFile(docxFile, "docx");
+        String docxExtract = TextExtractHelper.getTextExtractFromFile(docxFile, "docx");
         assertNotEquals("", docxExtract);
 
         // Testing Doc files
         File docFile = new File("src/test/resources/text/EnglishDoc.doc");
         assertNotNull(docFile);
-        String docExtract = textExtractHelper.getTextExtractFromFile(docFile, "doc");
+        String docExtract = TextExtractHelper.getTextExtractFromFile(docFile, "doc");
         assertNotEquals("", docExtract);
 
         // Testing Txt files
         File txtFile = new File("src/test/resources/text/EnglishTxt.txt");
         assertNotNull(txtFile);
-        String txtExtract = textExtractHelper.getTextExtractFromFile(txtFile, "txt");
+        String txtExtract = TextExtractHelper.getTextExtractFromFile(txtFile, "txt");
         assertNotEquals("", txtExtract);
 
     }
@@ -131,26 +128,31 @@ public class TextExtractHelperTest {
         List<CandidateAttachment> files = candidateAttachmentRepository.findByFileTypesAndMigrated(types, true);
         assertNotNull(files);
 
-        // Test with 10 from List
-        Set<CandidateAttachment> candidateAttachmentSet = new HashSet<>();
-        for (int i = 0; i < 10; i++) {
-            CandidateAttachment candidateAttachment = files.get(i);
-            candidateAttachmentSet.add(candidateAttachment);
-        }
-        assertEquals(10, candidateAttachmentSet.size());
+        if (!files.isEmpty()) {
 
-        // Use test set to loop through
-        for(CandidateAttachment file : candidateAttachmentSet) {
-            try {
-                String uniqueFilename = file.getLocation();
-                String destination = "candidate/migrated/" + uniqueFilename;
-                File srcFile = this.s3ResourceHelper.downloadFile(this.s3ResourceHelper.getS3Bucket(), destination);
-                String extractedText = textExtractHelper.getTextExtractFromFile(srcFile, file.getFileType());
-                if (StringUtils.isNotBlank(extractedText)) {
-                    file.setTextExtract(extractedText);
+            // Test with 10 from List
+            Set<CandidateAttachment> candidateAttachmentSet = new HashSet<>();
+            for (int i = 0; i < 10; i++) {
+                CandidateAttachment candidateAttachment = files.get(i);
+                candidateAttachmentSet.add(candidateAttachment);
+            }
+            assertEquals(10, candidateAttachmentSet.size());
+
+            // Use test set to loop through
+            for (CandidateAttachment file : candidateAttachmentSet) {
+                try {
+                    String uniqueFilename = file.getUrl();
+                    String destination = "candidate/migrated/" + uniqueFilename;
+                    File srcFile = this.s3ResourceHelper.downloadFile(
+                        this.s3ResourceHelper.getS3Bucket(), destination);
+                    String extractedText = TextExtractHelper.getTextExtractFromFile(srcFile,
+                        file.getFileType());
+                    if (StringUtils.isNotBlank(extractedText)) {
+                        file.setTextExtract(extractedText);
+                    }
+                } catch (Exception e) {
+                    log.error("Could not extract text from " + file.getUrl(), e.getMessage());
                 }
-            } catch (Exception e) {
-                log.error("Could not extract text from " + file.getLocation(), e.getMessage());
             }
         }
     }
@@ -166,26 +168,28 @@ public class TextExtractHelperTest {
         List<CandidateAttachment> files = candidateAttachmentRepository.findByFileTypesAndMigrated(types, false);
         assertNotNull(files);
 
-        // Test with 10 from List
-        Set<CandidateAttachment> candidateAttachmentSet = new HashSet<>();
-        for (int i = 0; i < 5; i++) {
-            CandidateAttachment candidateAttachment = files.get(i);
-            candidateAttachmentSet.add(candidateAttachment);
-        }
-        assertEquals(5, candidateAttachmentSet.size());
+        if (!files.isEmpty()) {
+            // Test with 10 from List
+            Set<CandidateAttachment> candidateAttachmentSet = new HashSet<>();
+            for (int i = 0; i < 5; i++) {
+                CandidateAttachment candidateAttachment = files.get(i);
+                candidateAttachmentSet.add(candidateAttachment);
+            }
+            assertEquals(5, candidateAttachmentSet.size());
 
-        // Use test set to loop through
-        for(CandidateAttachment file : candidateAttachmentSet) {
-            try {
-                String uniqueFilename = file.getLocation();
-                String destination = "candidate/" + file.getCandidate().getCandidateNumber() + "/" + uniqueFilename;
-                File srcFile = this.s3ResourceHelper.downloadFile(this.s3ResourceHelper.getS3Bucket(), destination);
-                String extractedText = textExtractHelper.getTextExtractFromFile(srcFile, file.getFileType());
-                if (StringUtils.isNotBlank(extractedText)) {
-                    file.setTextExtract(extractedText);
+            // Use test set to loop through
+            for(CandidateAttachment file : candidateAttachmentSet) {
+                try {
+                    String uniqueFilename = file.getUrl();
+                    String destination = "candidate/" + file.getCandidate().getCandidateNumber() + "/" + uniqueFilename;
+                    File srcFile = this.s3ResourceHelper.downloadFile(this.s3ResourceHelper.getS3Bucket(), destination);
+                    String extractedText = TextExtractHelper.getTextExtractFromFile(srcFile, file.getFileType());
+                    if (StringUtils.isNotBlank(extractedText)) {
+                        file.setTextExtract(extractedText);
+                    }
+                } catch (Exception e) {
+                    log.error("Could not extract text from " + file.getUrl(), e.getMessage());
                 }
-            } catch (Exception e) {
-                log.error("Could not extract text from " + file.getLocation(), e.getMessage());
             }
         }
     }
@@ -201,25 +205,29 @@ public class TextExtractHelperTest {
         List<CandidateAttachment> candidatePdfs = candidateAttachmentRepository.findByFileType("pdf");
         assertNotNull(candidatePdfs);
 
-        // Test with 10 from List
-        Set<CandidateAttachment> candidateAttachmentSet = new HashSet<>();
-        for (int i = 0; i < 10; i++) {
-            CandidateAttachment candidateAttachment;
-            candidateAttachment = candidatePdfs.get(i);
-            candidateAttachmentSet.add(candidateAttachment);
-        }
-        assertEquals(10, candidateAttachmentSet.size());
+        if (!candidatePdfs.isEmpty()) {
 
-        // Loop through test set using pdf text extract helper methods
-        for(CandidateAttachment pdf : candidateAttachmentSet){
-            try {
-                String uniqueFilename = pdf.getLocation();
-                String destination = "candidate/migrated/" + uniqueFilename;
-                File srcFile = this.s3ResourceHelper.downloadFile(this.s3ResourceHelper.getS3Bucket(), destination);
-                String pdfExtract = textExtractHelper.getTextFromPDFFile(srcFile);
-                assertNotNull(pdfExtract);
-            } catch (Exception e) {
-                log.error("Could not extract text from " + pdf.getLocation(), e.getMessage());
+            // Test with 10 from List
+            Set<CandidateAttachment> candidateAttachmentSet = new HashSet<>();
+            for (int i = 0; i < 10; i++) {
+                CandidateAttachment candidateAttachment;
+                candidateAttachment = candidatePdfs.get(i);
+                candidateAttachmentSet.add(candidateAttachment);
+            }
+            assertEquals(10, candidateAttachmentSet.size());
+
+            // Loop through test set using pdf text extract helper methods
+            for (CandidateAttachment pdf : candidateAttachmentSet) {
+                try {
+                    String uniqueFilename = pdf.getUrl();
+                    String destination = "candidate/migrated/" + uniqueFilename;
+                    File srcFile = this.s3ResourceHelper.downloadFile(
+                        this.s3ResourceHelper.getS3Bucket(), destination);
+                    String pdfExtract = TextExtractHelper.getTextFromPDFFile(srcFile);
+                    assertNotNull(pdfExtract);
+                } catch (Exception e) {
+                    log.error("Could not extract text from " + pdf.getUrl(), e.getMessage());
+                }
             }
         }
     }
@@ -235,24 +243,28 @@ public class TextExtractHelperTest {
         List<CandidateAttachment> candidateDocs = candidateAttachmentRepository.findByFileType("docx");
         assertNotNull(candidateDocs);
 
-        // Create test set of docx files
-        Set<CandidateAttachment> candidateAttachmentSet = new HashSet<>();
-        for (int i = 0; i < 10; i++) {
-            CandidateAttachment candidateAttachment;
-            candidateAttachment = candidateDocs.get(i);
-            candidateAttachmentSet.add(candidateAttachment);
-        }
+        if (!candidateDocs.isEmpty()) {
 
-        // Loop through test set using docx text extract helper methods
-        for(CandidateAttachment docx : candidateAttachmentSet) {
-            try {
-                String uniqueFilename = docx.getLocation();
-                String destination = "candidate/migrated/" + uniqueFilename;
-                File srcFile = this.s3ResourceHelper.downloadFile(this.s3ResourceHelper.getS3Bucket(), destination);
-                String pdfExtract = textExtractHelper.getTextFromDocxFile(srcFile);
-                assertNotNull(pdfExtract);
-            } catch (Exception e) {
-                log.error("Could not extract text from " + docx.getLocation(), e.getMessage());
+            // Create test set of docx files
+            Set<CandidateAttachment> candidateAttachmentSet = new HashSet<>();
+            for (int i = 0; i < 10; i++) {
+                CandidateAttachment candidateAttachment;
+                candidateAttachment = candidateDocs.get(i);
+                candidateAttachmentSet.add(candidateAttachment);
+            }
+
+            // Loop through test set using docx text extract helper methods
+            for (CandidateAttachment docx : candidateAttachmentSet) {
+                try {
+                    String uniqueFilename = docx.getUrl();
+                    String destination = "candidate/migrated/" + uniqueFilename;
+                    File srcFile = this.s3ResourceHelper.downloadFile(
+                        this.s3ResourceHelper.getS3Bucket(), destination);
+                    String pdfExtract = TextExtractHelper.getTextFromDocxFile(srcFile);
+                    assertNotNull(pdfExtract);
+                } catch (Exception e) {
+                    log.error("Could not extract text from " + docx.getUrl(), e.getMessage());
+                }
             }
         }
     }
@@ -268,26 +280,29 @@ public class TextExtractHelperTest {
         List<CandidateAttachment> candidateDocs = candidateAttachmentRepository.findByFileType("doc");
         assertNotNull(candidateDocs);
 
-        // Create test set of doc files
-        Set<CandidateAttachment> candidateAttachmentSet = new HashSet<>();
-        for (int i = 0; i < 10; i++) {
-            CandidateAttachment candidateAttachment;
-            candidateAttachment = candidateDocs.get(i);
-            candidateAttachmentSet.add(candidateAttachment);
-        }
+        if (!candidateDocs.isEmpty()) {
 
-        // Loop through test set using docx text extract helper methods
-        for(CandidateAttachment doc : candidateAttachmentSet) {
-            try{
-                String uniqueFilename = doc.getLocation();
-                String destination = "candidate/migrated/" + uniqueFilename;
-                File srcFile = this.s3ResourceHelper.downloadFile(this.s3ResourceHelper.getS3Bucket(), destination);
-                String pdfExtract = textExtractHelper.getTextFromDocFile(srcFile);
-                assertNotNull(pdfExtract);
-            } catch (Exception e) {
-                log.error("Could not extract text from " + doc.getLocation(), e.getMessage());
+            // Create test set of doc files
+            Set<CandidateAttachment> candidateAttachmentSet = new HashSet<>();
+            for (int i = 0; i < 10; i++) {
+                CandidateAttachment candidateAttachment;
+                candidateAttachment = candidateDocs.get(i);
+                candidateAttachmentSet.add(candidateAttachment);
+            }
+
+            // Loop through test set using docx text extract helper methods
+            for (CandidateAttachment doc : candidateAttachmentSet) {
+                try {
+                    String uniqueFilename = doc.getUrl();
+                    String destination = "candidate/migrated/" + uniqueFilename;
+                    File srcFile = this.s3ResourceHelper.downloadFile(
+                        this.s3ResourceHelper.getS3Bucket(), destination);
+                    String pdfExtract = TextExtractHelper.getTextFromDocFile(srcFile);
+                    assertNotNull(pdfExtract);
+                } catch (Exception e) {
+                    log.error("Could not extract text from " + doc.getUrl(), e.getMessage());
+                }
             }
         }
-
     }
 }

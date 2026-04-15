@@ -250,13 +250,39 @@ public class CandidateSpecification {
                 );
             }
 
+            // UTM: Campaign
+            if (request.getRegoUtmCampaign() != null &&
+                !request.getRegoUtmCampaign().trim().isEmpty()) {
+                conjunction = cb.and(conjunction,
+                    cb.like(cb.lower(candidate.get("regoUtmCampaign")),
+                        request.getRegoUtmCampaign().toLowerCase())
+                );
+            }
+
+            // UTM: Sources
+            if (request.getRegoUtmSource() != null &&
+                !request.getRegoUtmSource().trim().isEmpty()) {
+                conjunction = cb.and(conjunction,
+                    cb.like(cb.lower(candidate.get("regoUtmSource")),
+                        request.getRegoUtmSource().toLowerCase())
+                );
+            }
+
+            // UTM: Medium
+            if (request.getRegoUtmMedium() != null &&
+                !request.getRegoUtmMedium().trim().isEmpty()) {
+                conjunction = cb.and(conjunction,
+                    cb.like(cb.lower(candidate.get("regoUtmMedium")),
+                        request.getRegoUtmMedium().toLowerCase())
+                );
+            }
+
             // GENDER SEARCH
             if (request.getGender() != null) {
                 conjunction = cb.and(conjunction,
                         cb.equal(candidate.get("gender"), request.getGender())
                 );
             }
-
 
             //Modified From
             if (request.getLastModifiedFrom() != null) {
@@ -292,11 +318,18 @@ public class CandidateSpecification {
             }
 
             // EDUCATION LEVEL SEARCH
-            if (request.getMinEducationLevel() != null) {
+            if (request.getMinEducationLevel() != null || request.getMaxEducationLevel() != null) {
                 Join<Candidate, EducationLevel> educationLevel = candidate.join("maxEducationLevel");
-                conjunction = cb.and(conjunction,
+                if (request.getMinEducationLevel() != null) {
+                    conjunction = cb.and(conjunction,
                         cb.greaterThanOrEqualTo(educationLevel.get("level"), request.getMinEducationLevel())
-                );
+                    );
+                }
+                if (request.getMaxEducationLevel() != null) {
+                    conjunction = cb.and(conjunction,
+                        cb.lessThanOrEqualTo(educationLevel.get("level"), request.getMaxEducationLevel())
+                    );
+                }
             }
 
             // MINI INTAKE COMPLETE

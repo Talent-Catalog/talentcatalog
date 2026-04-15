@@ -15,6 +15,7 @@
  */
 
 @import "src/scss/variables";
+@import "src/scss/color-mixins";
 
 button.custom-emoji-btn {
   color: #444 !important;
@@ -40,6 +41,13 @@ emoji-mart#editorPicker {
 
 #quillToolbar {
   position: relative;
+  border-radius: 0.8rem 0.8rem 0 0;
+}
+
+:host ::ng-deep .ql-container.ql-snow {
+  border-radius: 0 0 0.8rem 0.8rem;
+  border:none;
+  @include shadow-lg;
 }
 
 button.custom-link-btn {

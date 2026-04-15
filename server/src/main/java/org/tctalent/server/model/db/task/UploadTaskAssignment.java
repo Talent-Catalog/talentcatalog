@@ -17,7 +17,7 @@
 package org.tctalent.server.model.db.task;
 
 /**
- * Task assignment associated with a Question Task.
+ * Task assignment associated with an Upload Task.
  *
  * @author John Cameron
  */

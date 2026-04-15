@@ -17,7 +17,7 @@
 import {By} from '@angular/platform-browser';
 import {NclcScoreValidationComponent} from "./nclc-score-validation.component";
 import {ComponentFixture, fakeAsync, TestBed, tick} from "@angular/core/testing";
-import {UntypedFormControl, FormsModule, ReactiveFormsModule} from "@angular/forms";
+import {FormsModule, ReactiveFormsModule, UntypedFormControl} from "@angular/forms";
 
 describe('NclcScoreValidationComponent', () => {
   let component: NclcScoreValidationComponent;
@@ -79,11 +79,12 @@ describe('NclcScoreValidationComponent', () => {
     component.value = '15';
     component.update();
     fixture.detectChanges();
-    const errorElement = fixture.debugElement.query(By.css('.alert-danger'));
+
+    const errorElement = fixture.debugElement.query(By.css('.alert-warning'));
     expect(errorElement).toBeTruthy();
     expect(errorElement.nativeElement.textContent).toContain('NCLC grades are always a whole number between 1 and 10. See tooltip for help.');
     tick(4000);
     fixture.detectChanges();
-    expect(fixture.debugElement.query(By.css('.alert-danger'))).toBeNull();
+    expect(fixture.debugElement.query(By.css('.alert-warning'))).toBeNull();
   }));
 });

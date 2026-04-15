@@ -13,9 +13,9 @@
   ~ You should have received a copy of the GNU Affero General Public License
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
-<div *ngIf="error">
+<tc-alert type="danger" *ngIf="error">
   {{error}}
-</div>
+</tc-alert>
 <div *ngIf="candidateIntakeData?.candidateDependants.length == 0">
   <p class="mb-0">No Dependants Added</p>
 </div>

@@ -42,7 +42,7 @@ describe('SearchLanguageLevelsComponent', () => {
     size: 0,
     totalPages: 0,
     totalElements: 1,
-    content: [{id:1, name:'IELTS', level:3, status:'Active'}]
+    content: [{id:1, name:'IELTS', level:3, cefrLevel: 'B1', status:'Active'}]
   };
   beforeEach(async () => {
     const languageLevelSpy = jasmine.createSpyObj('LanguageLevelService', ['search', 'delete', 'addSystemLanguageTranslations']);

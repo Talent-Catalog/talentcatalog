@@ -16,7 +16,7 @@
 
 import {TestBed} from '@angular/core/testing';
 import {HttpClientTestingModule, HttpTestingController} from '@angular/common/http/testing';
-import {of} from 'rxjs';
+import {of, Subject} from 'rxjs';
 import {ChatService} from './chat.service';
 import {RxStompService} from './rx-stomp.service';
 import {AuthenticationService} from './authentication.service';
@@ -33,7 +33,7 @@ describe('ChatService', () => {
 
   beforeEach(() => {
     const rxStompServiceSpy = jasmine.createSpyObj('RxStompService', ['watch', 'configure', 'activate', 'deactivate']);
-    const authenticationServiceSpy = jasmine.createSpyObj('AuthenticationService', ['getLoggedInUser', 'getToken', 'logout']);
+    const authenticationServiceSpy = jasmine.createSpyObj('AuthenticationService', ['getLoggedInUser', 'getToken', 'logout'], { loggedInUser$: new Subject<any>() });
 
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule],

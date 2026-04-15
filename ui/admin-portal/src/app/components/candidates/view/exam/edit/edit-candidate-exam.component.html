@@ -14,80 +14,91 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<div class="modal-header">
+<tc-modal heading="Edit Exam"
+          [showClose]="true"
+          [disableAction]="candidateForm.invalid || loading || saving"
+          (onAction)="onSave()"
+          actionText="Save"
+          [showCancel]="true"
+>
 
-  <h4 class="modal-title">Edit Exam</h4>
-
-  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" (click)="dismiss()"></button>
-
-</div>
-
-<div class="modal-body">
-
-  <div *ngIf="loading">
-    <i class="fas fa-spinner fa-spin"></i>
-  </div>
+  <tc-loading [loading]="loading"></tc-loading>
 
   <div *ngIf="!loading">
-    <div class="alert alert-danger" *ngIf="error">
-      {{error}}
-    </div>
+
+    <tc-alert type="danger" *ngIf="error">
+      <div><strong>{{error}}</strong></div>
+    </tc-alert>
 
     <form [formGroup]="candidateForm">
 
       <!-- Exam -->
-      <div class="mb-3">
-        <div class="exam d-flex align-items-baseline justify-content-between">
-          <label class="form-label" [for]="'exam'">Exam</label>
-        </div>
-        <ng-select [id]="'exam'" [formControlName]="'exam'"
-                   [items]="examOptions" [clearOnBackspace]="false"
-                   placeholder="Select" bindLabel="stringValue" bindValue="key"></ng-select>
-      </div>
+      <tc-field class="mb-4">
+        <tc-label for="exam">
+          Exam
+        </tc-label>
+        <ng-select class="tc-select"
+                   [id]="'exam'"
+                   [formControlName]="'exam'"
+                   [items]="examOptions"
+                   [clearOnBackspace]="false"
+                   placeholder="Select"
+                   bindLabel="stringValue"
+                   bindValue="key"
+        ></ng-select>
+      </tc-field>
+
       <!-- OtherExam NAME -->
-      <div *ngIf="isOtherExam">
-        <div class="mb-3">
-          <label class="form-label" [for]="'otherExam'">Other Exam Name</label>
-          <input type="text" class="form-control" [id]="'otherExam'" [formControlName]="'otherExam'">
-        </div>
-      </div>
+      <ng-container *ngIf="isOtherExam">
+        <tc-field class="mb-4">
+          <tc-label for="otherExam">
+            Other Exam Name
+          </tc-label>
+          <tc-input [type]="'text'"
+                    id="'otherExam'"
+                    [formControlName]="'otherExam'"
+          ></tc-input>
+        </tc-field>
+      </ng-container>
 
       <!-- Score -->
-      <div *ngIf="hasSelectedExam">
-        <div class="mb-3">
-          <label class="form-label" [for]="'score'">Score</label>
+      <ng-container *ngIf="hasSelectedExam">
+        <tc-field class="mb-4">
+          <tc-label for="score">Score
+          </tc-label>
           <app-ielts-score-validation
-            [id]="'score'"
+            id="score"
             [control]="candidateForm.controls.score"
             [examType]="candidateForm.controls.exam.value">
           </app-ielts-score-validation>
-        </div>
-      </div>
+        </tc-field>
+      </ng-container>
 
       <!-- Year -->
-      <div class="mb-3">
-        <label class="form-label" [for]="'year'">
+      <tc-field class="mb-4">
+        <tc-label for="year">
           In what year did you take the test?
-        </label>
-        <ng-select [id]="'year'" [formControlName]="'year'" [items]="years"
-                   [clearOnBackspace]="false" placeholder="Select"></ng-select>
-      </div>
+        </tc-label>
+        <ng-select class="tc-select"
+                   [id]="'year'"
+                   [formControlName]="'year'"
+                   [items]="years"
+                   [clearOnBackspace]="false"
+                   placeholder="Select"
+        ></ng-select>
+      </tc-field>
 
       <!-- Notes -->
-      <div class="mb-3">
-        <label class="form-label" [for]="'notes'">Notes</label>
-        <textarea type="text" class="md-textarea-auto form-control" rows="3"
-                  [id]="'notes'" [formControlName]="'notes'"
-                  placeholder=""></textarea>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-primary" (click)="onSave()"
-                [disabled]="candidateForm.invalid || loading || saving">
-          <i class="fas fa-spinner fa-spin" *ngIf="saving"></i>
-          Save
-        </button>
-      </div>
+      <tc-field class="mb-4">
+        <tc-label for="notes">
+          Notes
+        </tc-label>
+        <tc-textarea [id]="'notes'"
+                     [formControlName]="'notes'"
+        ></tc-textarea>
+      </tc-field>
+
     </form>
 
   </div>
-</div>
+</tc-modal>

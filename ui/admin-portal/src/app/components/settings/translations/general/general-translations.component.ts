@@ -499,9 +499,11 @@ const ALL_FIELDS = {
         }
       },
       "SUBMIT": {
+        "INTRODUCTION": null,
         "CONSENT_INTRODUCTION": null,
         "LABEL": {
           "ADDITIONALINFO": null,
+          "ASPIRATIONS": null,
           "SURVEY": null,
           "COMMENT": null,
         },
@@ -509,6 +511,7 @@ const ALL_FIELDS = {
           "LABEL": null,
           "WARN": null
         },
+        "NO_POLICY_ACCEPTANCE_TEXT": null,
         "POLICY_ACCEPTANCE_TEXT": null,
         "YOUR_PARTNER_IS": null,
       },
@@ -531,7 +534,8 @@ const ALL_FIELDS = {
         },
         "CV": {
           "NAME": null,
-          "EXPLANATION": null
+          "EXPLANATION": null,
+          "WARNING": null,
         },
         "OTHER": {
           "NAME": null,
@@ -570,7 +574,11 @@ const ALL_FIELDS = {
       },
       "PRIVACY": {
         "CHANGED": null,
-        "THANK_ACCEPTANCE": null
+        "THANK_ACCEPTANCE": null,
+        "VERSION": null,
+        "ACCEPTED_ON": null,
+        "ACCEPTED_WITH": null,
+        "ACCEPTANCE_DETAILS": null
       },
       "OCCUPATIONS": {
         "TITLE": null
@@ -772,6 +780,34 @@ const ALL_FIELDS = {
         'GOOD_LUCK': null,
         'CTA_BUTTON': null,
       }
+    },
+    'LINKEDIN': {
+      'TITLE': null,
+      'DESCRIPTION': null,
+      'NEW_ASSIGNMENT_INTRO': null,
+      'NEW_ASSIGNMENT_VERIFY': null,
+      'NEW_ASSIGNMENT_ENTER': null,
+      'NEW_ASSIGNMENT_PLACEHOLDER': null,
+      'LINKEDIN_URL_WARN': null,
+      'VERIFY_BTN': null,
+      'SUBMIT_BTN': null,
+      'ASSIGNED': null,
+      'REDEEM_BTN': null,
+      'FAIL_TITLE': null,
+      'FAIL_PARA': null,
+      'BACK': null,
+      'REDEEMED': {
+        'TITLE': null,
+        'DESCRIPTION': null,
+        'ISSUE_TITLE': null,
+        'ISSUE_DESCRIPTION': null,
+        'ISSUE_DESCRIPTION_HERE': null,
+        'REPORT_TITLE': null,
+        'REPORT_BTN': null,
+        'REPORT_THANKS': null,
+        'REPORT_DESCRIPTION': null,
+        'REPORT_COMMENT_PLACEHOLDER': null,
+      }
     }
   },
   "TASKS": {
@@ -840,7 +876,8 @@ const ALL_FIELDS = {
       "VIEWHELP": null,
       "RETURN": null,
       "SUBMIT": null,
-    },
+      "SUBMIT-COMMENT": null,
+    }
   },
   "CANDIDATE-OPPS": {
     "HEADER": null,
@@ -906,6 +943,62 @@ const ALL_FIELDS = {
         "JOB_CREATOR_SOURCE_PARTNER": null,
         "CANDIDATE_RECRUITING": null,
         "JOB_CREATOR_ALL_SOURCE_PARTNERS": null
+      }
+  },
+  "TRAVELINFO": {
+    "MISMATCH": {
+      "TITLE": null,
+      "DESCRIPTION": null,
+      "INSTRUCTION": null
+    },
+    "BUTTON": {
+      "UPDATEPROFILE": null,
+      "SUBMIT": null
+    },
+    "LABEL": {
+      "BIRTHCOUNTRY": null,
+      "PLACEOFBIRTH": null,
+      "DOCTYPE": null,
+      "DOCNUMBER": null,
+      "DOCISSUEDBY": null,
+      "ISSUEDATE": null,
+      "EXPIRYDATE": null,
+      "COMMENT": null
+    },
+    "OPTION": {
+      "SELECTCOUNTRY": null,
+      "PASSPORT": null,
+      "NATIONALID": null,
+      "REFUGEE": null
+    }
+  },
+  "FAMILY-DOC":{
+      "LABEL":{
+        "NO_ELIGIBLE": null,
+        "FAMILY-MEMBER": null,
+        "RELATIONSHIP":null,
+        "OTHER":null,
+        "AGE-VALIDATION":null,
+        "HEALTH-CONCERN":null,
+        "REGISTERED":null,
+        "REGISTRED-NUMBER":null,
+        "DOC-VALIDATION":null,
+        "ANOTHER-MEMBER":null
+      }
+  },
+  "RSD-EVIDENCE":{
+    "LABEL":{
+      "COMMENT": null,
+      "DOCTYPE": null,
+      "DOCNUMBER": null,
+      "REFUGEE-STATUS": null,
+      "RSD-VALIDATION":null
+    }
+  },
+  "FAMILY-RSD":{
+      "LABEL":{
+        "NO-MEMBER": null,
+        "NOTHING-TO-DO": null
       }
   }
 }

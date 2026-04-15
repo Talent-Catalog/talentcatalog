@@ -16,7 +16,10 @@
 
 import {Component, EventEmitter, Input, Output} from '@angular/core';
 import {Candidate} from '../../../../../model/candidate';
+import {ServiceProvider} from '../../../../../model/services';
 import {TaskAssignment} from "../../../../../model/task-assignment";
+import {Observable} from "rxjs";
+import {environment} from "../../../../../../environments/environment";
 
 @Component({
     selector: 'app-services',
@@ -24,23 +27,30 @@ import {TaskAssignment} from "../../../../../model/task-assignment";
     styleUrls: ['./services.component.scss']
 })
 export class ServicesComponent {
+  protected readonly Service = ServiceProvider;
+  selectedService: ServiceProvider;
+  error;
+  loading;
+  @Input() candidate: Candidate;
+  @Input() activeDuolingoTask: TaskAssignment;
+  @Input() showLinkedin$: Observable<boolean>;
+  @Input() showReference$: Observable<boolean>;
+  @Input() showUnhcr$: Observable<boolean>;
+  @Output() refresh = new EventEmitter();
 
-    selectedService: String;
-    error;
-    loading;
-    @Input() candidate: Candidate;
-    @Input() activeDuolingoTask: TaskAssignment;
-    @Output() refresh = new EventEmitter();
+  constructor() { }
 
-    constructor() {
-    }
+  selectService(service: ServiceProvider) {
+      this.selectedService = service;
+  }
 
-    selectService(serviceName: String) {
-        this.selectedService = serviceName;
-    }
+  onBackButtonClick(): void {
+      this.selectedService = null;
+      this.refresh.emit();
+  }
 
-    unSelectService() {
-        this.selectedService = null;
-        this.refresh.emit();
-    }
+  isLocalEnv(): boolean {
+    return environment.environmentName === 'local';
+  }
+
 }

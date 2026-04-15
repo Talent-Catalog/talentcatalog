@@ -87,14 +87,14 @@ public abstract class AbstractCandidateSource extends AbstractAuditableDomainObj
      * The code allows for two different ways of displaying candidates of
      * a candidate source - a "long" one, and a more compact "short" one.
      */
-    @Convert(converter = DelimitedStringsConverter.class)
+    @Convert(converter = CommaDelimitedStringsConverter.class)
     @Nullable
     private List<String> displayedFieldsLong;
 
     /**
      * @see #displayedFieldsLong
      */
-    @Convert(converter = DelimitedStringsConverter.class)
+    @Convert(converter = CommaDelimitedStringsConverter.class)
     @Nullable
     private List<String> displayedFieldsShort;
 

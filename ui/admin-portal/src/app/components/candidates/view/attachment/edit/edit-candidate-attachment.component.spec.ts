@@ -63,11 +63,11 @@ describe('EditCandidateAttachmentComponent', () => {
     component.form = fb.group({
       id: [mockAttachment.id],
       name: [mockAttachment.name, Validators.required],
-      location: [mockAttachment.location]
+      url: [mockAttachment.url]
     });
 
     if (mockAttachment.type === 'link') {
-      component.form.addControl('location', new UntypedFormControl(mockAttachment.location, Validators.required));
+      component.form.addControl('url', new UntypedFormControl(mockAttachment.url, Validators.required));
     }
     fixture.detectChanges();
   });
@@ -80,7 +80,7 @@ describe('EditCandidateAttachmentComponent', () => {
     expect(component).toBeTruthy();
     expect(component.form).toBeDefined();
     expect(component.form.controls['name'].value).toBe(mockAttachment.name);
-    expect(component.form.controls['location'].value).toBe(mockAttachment.location);
+    expect(component.form.controls['url'].value).toBe(mockAttachment.url);
   });
 
   it('should save the attachment', () => {
@@ -88,7 +88,7 @@ describe('EditCandidateAttachmentComponent', () => {
     candidateAttachmentServiceSpy.updateAttachment.and.returnValue(of(mockResponse));
 
     component.form.controls['name'].setValue('Updated Attachment');
-    component.form.controls['location'].setValue('https://updated.com');
+    component.form.controls['url'].setValue('https://updated.com');
 
     component.save();
 
@@ -96,7 +96,7 @@ describe('EditCandidateAttachmentComponent', () => {
       mockAttachment.id,
       jasmine.objectContaining<UpdateCandidateAttachmentRequest>({
         name: 'Updated Attachment',
-        location: 'https://updated.com'
+        url: 'https://updated.com'
       })
     );
     expect(component.loading).toBe(true);
@@ -107,7 +107,7 @@ describe('EditCandidateAttachmentComponent', () => {
     candidateAttachmentServiceSpy.updateAttachment.and.returnValue(throwError(mockError));
 
     component.form.controls['name'].setValue('Updated Attachment');
-    component.form.controls['location'].setValue('https://updated.com');
+    component.form.controls['url'].setValue('https://updated.com');
 
     component.save();
 
@@ -115,7 +115,7 @@ describe('EditCandidateAttachmentComponent', () => {
       mockAttachment.id,
       jasmine.objectContaining<UpdateCandidateAttachmentRequest>({
         name: 'Updated Attachment',
-        location: 'https://updated.com'
+        url: 'https://updated.com'
       })
     );
     expect(component.loading).toBe(true);

@@ -63,7 +63,7 @@ describe('ViewCandidateLanguageComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should display loading spinner initially', () => {
-    expect(fixture.nativeElement.querySelector('.fa-spinner')).toBeTruthy();
+  it('should display TC loading indicator initially', () => {
+    expect(fixture.nativeElement.querySelector('tc-loading')).toBeTruthy();
   });
 });

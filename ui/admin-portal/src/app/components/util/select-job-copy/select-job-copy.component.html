@@ -15,30 +15,15 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<form [formGroup]="form">
-  <div class="modal-header">
-    <div class="modal-title">
-      <h5>Select Job to Copy From</h5>
-    </div>
-  </div>
-  <div class="modal-body">
-    <div *ngIf="loading">
-      <i class="fas fa-spinner fa-spin"></i> loading...
-    </div>
+<tc-modal heading="Select Job to Copy From" actionText="Select" (onAction)="onSelect()">
+  <form [formGroup]="form">
+    <tc-loading [loading]="loading"></tc-loading>
     <div *ngIf="!loading">
-      <ng-select id="jobToCopyId" [formControlName]="'jobToCopyId'"
+      <ng-select id="jobToCopyId" class="tc-select" [formControlName]="'jobToCopyId'"
                  placeholder="Select" [clearable]="false">
         <ng-option *ngFor="let job of jobsToCopy; let i=index" [value]="job.id">
           {{job?.name}}</ng-option>
       </ng-select>
     </div>
-  </div>
-</form>
-<div class="modal-footer">
-  <button type="button" class="btn btn-accent-2" (click)="onCancel()">
-    Cancel
-  </button>
-  <button type="button" class="btn btn-primary" (click)="onSelect()">
-    Select
-  </button>
-</div>
+  </form>
+</tc-modal>

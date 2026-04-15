@@ -15,6 +15,7 @@
  */
 
 @import "src/scss/variables";
+@import 'src/scss/color-mixins';
 
 .admin-panel {
   justify-content: space-between;
@@ -42,27 +43,52 @@
   margin-top: 0;
 }
 
+ul.searches {
+  @include border-color-base;
+  @include background-color-soft;
+  border-radius: 12px;
+}
+
 .searches li {
   cursor: pointer;
   position: relative;
   left: 0;
-  background-color: $accent3;
-  color: $dark;
-  margin: .5em;
-  margin-left: 0;
-  padding: 0.1em .4em;
-  border-radius: 4px;
+  padding: 0.6rem;
+  background-color: white;
+  font-size: 0.9rem;
+  transition: background-color 0.2s ease, color 0.2s ease;
+
+  border: 1px solid var(--tc-border-color, rgba(0, 0, 0, 0.1));
+  border-top:none;
+  margin: 0;
+
+  // Add a top border only to the first item
+  &:first-child {
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+    border-top: 1px solid var(--tc-border-color, rgba(0, 0, 0, 0.1));
+  }
+
+  // Add a bottom border only to the last item
+  &:last-child {
+    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px;
+  }
 }
+
 .searches li:hover {;
-  background-color: $accent1;
-  color: $light;
+  background-color: color(primary, 50);
   left: .1em;
+  font-weight: 400;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
 }
 .searches li.selected {
-  background-color: $accent1;
-  color: white;
+  @include background-color-primary-light;
+  font-weight: 600;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
 }
 .searches li.selected:hover {
-  background-color: $accent1;
-  color: $light;
+  background-color: color(primary, 50);
+  font-weight: 400;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
 }

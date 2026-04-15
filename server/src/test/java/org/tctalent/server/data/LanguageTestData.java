@@ -19,6 +19,7 @@ package org.tctalent.server.data;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.tctalent.server.model.db.CefrLevel;
 import org.tctalent.server.model.db.Language;
 import org.tctalent.server.model.db.LanguageLevel;
 import org.tctalent.server.model.db.Status;
@@ -29,7 +30,7 @@ public class LanguageTestData {
 
     public static LanguageLevel getLanguageLevel() {
         LanguageLevel languageLevel = new LanguageLevel(
-                "Excellent", Status.active, 1
+                "Excellent", Status.active, 1, CefrLevel.C1
         );
         return languageLevel;
     }

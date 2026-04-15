@@ -16,7 +16,6 @@
 
 import {Component, Input, OnInit} from '@angular/core';
 import {UntypedFormBuilder, UntypedFormGroup} from "@angular/forms";
-import {debounceTime, distinctUntilChanged} from "rxjs/operators";
 import {SystemLanguage} from "../../../model/language";
 import {LanguageService} from "../../../services/language.service";
 import {CreateLanguageComponent} from "./create/create-language.component";
@@ -48,32 +47,9 @@ export class SearchLanguagesComponent implements OnInit {
   }
 
   ngOnInit() {
-
-    /* SET UP FORM */
-    this.searchForm = this.fb.group({
-      keyword: [''],
-      status: ['active'],
-    });
-    this.pageNumber = 1;
-    this.pageSize = 50;
-
-    this.onChanges();
-  }
-
-  onChanges(): void {
-    /* SEARCH ON CHANGE*/
-    this.searchForm.valueChanges
-      .pipe(
-        debounceTime(400),
-        distinctUntilChanged()
-      )
-      .subscribe(res => {
-        this.search();
-      });
     this.search();
   }
-
-  /* SEARCH FORM */
+  
   search() {
     this.loading = true;
     this.languageService.listSystemLanguages().subscribe(results => {

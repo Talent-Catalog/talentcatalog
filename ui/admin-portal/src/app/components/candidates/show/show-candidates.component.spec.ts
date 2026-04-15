@@ -16,7 +16,7 @@
 
 import {ShowCandidatesComponent} from "./show-candidates.component";
 import {ComponentFixture, fakeAsync, TestBed, tick} from "@angular/core/testing";
-import {UntypedFormBuilder, ReactiveFormsModule} from "@angular/forms";
+import {ReactiveFormsModule, UntypedFormBuilder} from "@angular/forms";
 import {SortedByComponent} from "../../util/sort/sorted-by.component";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {RouterTestingModule} from "@angular/router/testing";
@@ -121,7 +121,7 @@ describe('ShowCandidatesComponent', () => {
     // Setup default mocks
     formBuilder = TestBed.inject(UntypedFormBuilder);
     component.candidateSource = new MockCandidateSource();
-    component.searchForm = formBuilder.group({
+    component.searchInResultsForm = formBuilder.group({
       keyword: [''],
       showClosedOpps: [false],
       statusesDisplay: [[]]
@@ -179,8 +179,8 @@ describe('ShowCandidatesComponent', () => {
 
   it('should initialize form and user correctly', () => {
     component.ngOnInit();
-    expect(component.searchForm.get('keyword')).toBeTruthy();
-    expect(component.searchForm.get('showClosedOpps')).toBeTruthy();
+    expect(component.searchInResultsForm.get('keyword')).toBeTruthy();
+    expect(component.searchInResultsForm.get('showClosedOpps')).toBeTruthy();
     expect(component.loggedInUser).toEqual(new MockUser());
   });
 
@@ -292,8 +292,8 @@ describe('ShowCandidatesComponent', () => {
     spyOn(component, 'saveSelection');
     fixture.detectChanges();
 
-    const saveButton = fixture.debugElement.query(By.css('.btn[title="Save selected candidates to a list"]'));
-    saveButton.triggerEventHandler('click', null);
+    const saveButton = fixture.debugElement.query(By.css('.save-selection-btn'));
+    saveButton.triggerEventHandler('onClick', null);
 
     expect(component.saveSelection).toHaveBeenCalled();
   });
@@ -309,15 +309,19 @@ describe('ShowCandidatesComponent', () => {
 
   it('should toggle description visibility when link is clicked', () => {
     fixture.detectChanges();
-    const toggleLink = fixture.debugElement.query(By.css('.link'));
+
+    const toggleLink = fixture.debugElement.query(By.css('.toggle-description'));
     expect(component.showDescription).toBeFalse();
 
-    toggleLink.triggerEventHandler('click', null);
+    toggleLink.triggerEventHandler('onClick', null);
     fixture.detectChanges();
 
     expect(component.showDescription).toBeTrue();
-    expect(toggleLink.nativeElement.textContent).toContain('Hide description');
+
+    const icon = toggleLink.query(By.css('i'));
+    expect(icon.nativeElement.classList).toContain('fa-chevron-up');
   });
+
 
   it('should call importCandidates when import button is clicked', () => {
     component.candidateSource = new MockCandidateSource();
@@ -325,8 +329,8 @@ describe('ShowCandidatesComponent', () => {
     spyOn(component, 'importCandidates');
     fixture.detectChanges();
 
-    const importButton = fixture.debugElement.query(By.css('.btn[title="Import candidates"]'));
-    importButton.triggerEventHandler('click', null);
+    const importButton = fixture.debugElement.query(By.css('.import-candidates-btn'));
+    importButton.triggerEventHandler('onClick', null);
 
     expect(component.importCandidates).toHaveBeenCalled();
   });

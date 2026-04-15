@@ -19,16 +19,14 @@ import {HttpClient} from "@angular/common/http";
 import {environment} from "../../environments/environment";
 import {Observable, throwError} from "rxjs";
 import {CandidateAttachment} from "../model/candidate-attachment";
-import {SearchResults} from "../model/search-results";
 import {saveBlob} from "../util/file";
 import {catchError, map} from "rxjs/operators";
+import {AuthenticationService} from "./authentication.service";
 
-//todo use this for other requests
 export interface UpdateCandidateAttachmentRequest {
   id?: number;
   name?: string;
   location?: string;
-  cv?: boolean;
 }
 
 @Injectable({
@@ -38,18 +36,13 @@ export class CandidateAttachmentService {
 
   private apiUrl: string = environment.apiUrl + '/candidate-attachment';
 
-  constructor(private http: HttpClient) { }
+  constructor(
+    private authenticationService: AuthenticationService,
+    private http: HttpClient
+  ) {}
 
   listCandidateAttachments(): Observable<CandidateAttachment[]> {
     return this.http.get<CandidateAttachment[]>(`${this.apiUrl}`);
-  }
-
-  searchCandidateAttachments(request): Observable<SearchResults<CandidateAttachment>> {
-    return this.http.post<SearchResults<CandidateAttachment>>(`${this.apiUrl}/search`, request);
-  }
-
-  createAttachment(request): Observable<CandidateAttachment> {
-    return this.http.post<CandidateAttachment>(`${this.apiUrl}`, request);
   }
 
   deleteAttachment(id: number) {
@@ -57,17 +50,24 @@ export class CandidateAttachmentService {
   }
 
   downloadAttachment(id: number, name: string) {
-    return this.http.get(`${this.apiUrl}/${id}/download`,
-      { responseType: 'blob' }).pipe(
-      map((resp: Blob) => {
-          saveBlob(resp, name);
-        }, catchError(e => {
-            console.log('error', e);
-            return throwError(e);
-          }
+    let observable: Observable<void>;
+    if (this.authenticationService.isGrnInstance()) {
+      //For GRN instances, we just want to view the file without downloading it.
+      observable = this.http.get<void>(`${this.apiUrl}/${id}/view`);
+    } else {
+      observable = this.http.get(`${this.apiUrl}/${id}/download`,
+        { responseType: 'blob' }).pipe(
+        map((resp: Blob) => {
+            saveBlob(resp, name);
+          }, catchError(e => {
+              console.log('error', e);
+              return throwError(e);
+            }
+          )
         )
       )
-    )
+    }
+    return observable;
   }
 
   uploadAttachment(cv: boolean, formData: FormData): Observable<CandidateAttachment> {

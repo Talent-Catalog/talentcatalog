@@ -50,8 +50,8 @@ describe('MaritalStatusComponent', () => {
       { id: 2, name: 'Teacher', isco08Code: '5678', status: 'Active' }
     ];
     component.languageLevels = [
-      { id: 1, name: 'Basic', level: 1, status: 'Active' },
-      { id: 2, name: 'Intermediate', level: 2, status: 'Active' }
+      { id: 1, name: 'Basic', level: 1, cefrLevel: 'A1', status: 'Active' },
+      { id: 2, name: 'Intermediate', level: 2, cefrLevel: 'B1', status: 'Active' }
     ];
     component.nationalities = [
       { id: 1, name: 'USA', status: 'Active', translatedName: 'United States' },

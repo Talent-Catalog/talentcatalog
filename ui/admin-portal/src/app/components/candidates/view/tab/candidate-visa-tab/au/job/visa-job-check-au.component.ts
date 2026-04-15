@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {AfterViewInit, Component, Input, OnInit, ViewChild} from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 import {
   calculateAge,
   Candidate,
@@ -32,7 +32,6 @@ import {CandidateOccupation} from "../../../../../../../model/candidate-occupati
 import {CandidateEducationService} from "../../../../../../../services/candidate-education.service";
 import {CandidateEducation} from "../../../../../../../model/candidate-education";
 import {Occupation} from "../../../../../../../model/occupation";
-import {NgbAccordion} from "@ng-bootstrap/ng-bootstrap";
 import {CandidateOpportunity} from "../../../../../../../model/candidate-opportunity";
 
 @Component({
@@ -40,13 +39,11 @@ import {CandidateOpportunity} from "../../../../../../../model/candidate-opportu
   templateUrl: './visa-job-check-au.component.html',
   styleUrls: ['./visa-job-check-au.component.scss']
 })
-export class VisaJobCheckAuComponent implements OnInit, AfterViewInit {
+export class VisaJobCheckAuComponent implements OnInit {
   @Input() selectedJobCheck: CandidateVisaJobCheck;
   @Input() candidate: Candidate;
   @Input() candidateIntakeData: CandidateIntakeData;
   @Input() visaCheckRecord: CandidateVisa;
-
-  @ViewChild('visaJobAus') visaJobAus: NgbAccordion;
 
   candOccupations: CandidateOccupation[];
   candQualifications: CandidateEducation[];
@@ -90,14 +87,16 @@ export class VisaJobCheckAuComponent implements OnInit, AfterViewInit {
     this.familyInAus = describeFamilyInDestination(this.visaCheckRecord);
     const dobDate = new Date(this.candidate.dob);
     this.candidateAge = calculateAge(dobDate);
-    this.candidateOpportunity = this.candidate.candidateOpportunities
-      .find(co => co.jobOpp.id == this.selectedJobCheck.jobOpp.id);
-  }
+    const selectedJobOppId = this.selectedJobCheck?.jobOpp?.id;
 
-  ngAfterViewInit() {
-    if(this.visaJobAus){
-      this.visaJobAus.expandAll();
+    if (!selectedJobOppId) {
+      // no linked job opportunity
+      this.candidateOpportunity = null;
+      return;
     }
+
+    this.candidateOpportunity = this.candidate.candidateOpportunities
+      .find(co => co.jobOpp.id == selectedJobOppId);
   }
 
   get ieltsScoreType(): string {

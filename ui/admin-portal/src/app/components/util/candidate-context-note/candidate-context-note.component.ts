@@ -64,8 +64,8 @@ export class CandidateContextNoteComponent extends AutoSaveComponentBase
   }
 
   get title(): string {
-    return "Context notes for " + this.candidate.user.firstName + " in " + this.candidateSource.name +
-      " " + getCandidateSourceType(this.candidateSource);
+    return "Context notes for " + this.candidate.user.firstName + " in '" + this.candidateSource.name +
+      "' " + getCandidateSourceType(this.candidateSource);
   }
 
   ngOnChanges(changes: SimpleChanges): void {

@@ -21,7 +21,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import org.springframework.lang.Nullable;
-import org.tctalent.server.api.admin.DtoType;
+import org.tctalent.server.api.dto.DtoType;
 
 /**
  * Fetching data by ids

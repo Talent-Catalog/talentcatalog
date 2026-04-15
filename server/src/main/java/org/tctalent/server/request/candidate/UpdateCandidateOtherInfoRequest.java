@@ -29,5 +29,5 @@ public class UpdateCandidateOtherInfoRequest {
     private String linkedInLink;
     private boolean allNotifications;
     private Boolean submit;
-
+    private String aspirations;
 }

@@ -14,15 +14,18 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import { TestBed } from '@angular/core/testing';
+import {TestBed} from '@angular/core/testing';
 
-import { PublishedDocColumnService } from './published-doc-column.service';
+import {PublishedDocColumnService} from './published-doc-column.service';
+import {HttpClientTestingModule} from "@angular/common/http/testing";
 
 describe('PublishedDocColumnService', () => {
   let service: PublishedDocColumnService;
 
   beforeEach(() => {
-    TestBed.configureTestingModule({});
+    TestBed.configureTestingModule({
+      imports: [HttpClientTestingModule],
+    });
     service = TestBed.inject(PublishedDocColumnService);
   });
 

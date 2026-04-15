@@ -20,6 +20,8 @@
 @import "scss/btn";
 @import "scss/overrides";
 @import "scss/chat";
+@import "scss/component/ngb-datepicker";
+@import "scss/component/ng-select";
 
 @import "scss/rtl";
 
@@ -29,6 +31,13 @@
 @import "~@ng-select/ng-select/themes/default.theme.css";
 @import "quill/dist/quill.snow.css";
 @import 'quill/dist/quill.bubble.css';
+
+/* Font Awesome */
+$fa-font-path: "~@fortawesome/fontawesome-free/webfonts";
+@import '@fortawesome/fontawesome-free/scss/fontawesome.scss';
+@import '@fortawesome/fontawesome-free/scss/brands.scss';
+@import '@fortawesome/fontawesome-free/scss/solid.scss';
+@import '@fortawesome/fontawesome-free/scss/regular.scss';
 
 
 // Card specific
@@ -43,6 +52,14 @@
     }
   }
 
+}
+
+//Links on tab headers need contrasting colours
+.tab-header a {
+  color: white;
+  &:hover {
+    color: grey;
+  }
 }
 
 /* FONT AWESOME */

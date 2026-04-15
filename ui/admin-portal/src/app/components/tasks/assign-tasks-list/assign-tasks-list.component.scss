@@ -14,10 +14,17 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
+@import 'src/scss/color-mixins';
+
 .required-task-bg {
-  background-color: #cdcdcd;
+  @include background-color-primary-light;
 }
 
 .optional-task-bg {
-  background-color: #e4e4e4;
+  @include background-color-light;
+}
+
+.search-current {
+  position: relative;
+  top: 0.5rem;
 }

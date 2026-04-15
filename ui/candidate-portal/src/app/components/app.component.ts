@@ -20,9 +20,12 @@ import {LanguageService} from '../services/language.service';
 import {LanguageLoader} from "../services/language.loader";
 import {AuthenticationService} from "../services/authentication.service";
 import {User} from "../model/user";
-import {NavigationEnd, Router} from "@angular/router";
+import {ActivatedRoute, NavigationEnd, Router} from "@angular/router";
 import {ChatService} from "../services/chat.service";
 import {environment} from "../../environments/environment";
+import {BrandingService} from "../services/branding.service";
+import Clarity from '@microsoft/clarity';
+import {TcInstanceType} from "../model/tc-instance-type";
 
 @Component({
   selector: 'app-root',
@@ -35,21 +38,26 @@ export class AppComponent implements OnInit {
   @HostBinding('class.rtl-wrapper') rtl: boolean = false;
 
   loading: boolean;
+  showTcChatbot: boolean = false;
 
   constructor(private translate: TranslateService,
               private authenticationService: AuthenticationService,
               private chatService: ChatService,
               private router: Router,
               private languageLoader: LanguageLoader,
-              private languageService: LanguageService) {
+              private languageService: LanguageService,
+              private brandingService: BrandingService,
+              private route: ActivatedRoute) {
   }
 
   ngOnInit(): void {
     this.trackPageViews();
+    this.trackClarityViews();
 
     this.authenticationService.loggedInUser$.subscribe(
       (user) => {
         this.onChangedLogin(user);
+        this.updateChatbotVisibility();
       }
     )
 
@@ -70,6 +78,20 @@ export class AppComponent implements OnInit {
       }
     );
 
+    //Check for the partner query param and use it to configure the branding service
+    this.route.queryParamMap.subscribe(
+      (params) => {
+        this.brandingService.setPartnerAbbreviation(params.get('p'));
+      }
+    );
+
+    // Initial check for branding (handles case where query params are set before subscription)
+    const initialParams = this.route.snapshot.queryParams;
+    if (initialParams['p']) {
+      this.brandingService.setPartnerAbbreviation(initialParams['p']);
+    }
+    this.updateChatbotVisibility();
+
     // this language will be used as a fallback when a translation isn't
     // found in the current language. This forces loading of translations.
     this.translate.setDefaultLang('en');
@@ -79,7 +101,14 @@ export class AppComponent implements OnInit {
 
   private onChangedLogin(user: User) {
     //If logged out
-    if (user == null) {
+    if (user != null) {
+      // If user is logged in, identify them in Clarity
+      // Catching the user's information
+      Clarity.identify(
+        String(user.id),             // custom-id
+        user.username || 'NoName'   // friendly-name
+      );
+    } else {
       this.onLogout();
     }
   }
@@ -88,6 +117,25 @@ export class AppComponent implements OnInit {
     this.chatService.cleanUp();
     //Show login screen
     this.router.navigate(['login']);
+  }
+
+  private updateChatbotVisibility(): void {
+    const isGrnInstance = this.authenticationService.getTcInstanceType() === TcInstanceType.GRN;
+    const isEnabledEnvironment = ['local', 'staging'].includes(environment.environmentName);
+    this.showTcChatbot = isGrnInstance && isEnabledEnvironment;
+  }
+
+  private trackClarityViews() {
+    // Initialize Clarity with your Project ID
+    Clarity.init(environment.clarityProjectId);
+
+    // Track page views on router changes
+    this.router.events.subscribe(event => {
+      if (event instanceof NavigationEnd) {
+        // Track page views manually
+        Clarity.event('PageView');
+      }
+    });
   }
 
   /**

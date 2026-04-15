@@ -14,46 +14,64 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<div *ngIf="loading">
-  <i class="fas fa-spinner fa-spin"></i> loading...
+<div class="my-4">
+  <tc-loading [loading]="loading"></tc-loading>
 </div>
-<div *ngIf="error">
-  {{error}}
-</div>
-<div class="card" *ngIf="!loading">
 
-  <div class="card-header">
+<tc-alert type="danger" *ngIf="error">
+  <div><strong>{{error}}</strong></div>
+</tc-alert>
+
+<tc-card *ngIf="!loading">
+
+  <tc-card-header>
     Destinations
-  </div>
+  </tc-card-header>
 
-  <div class="card-body">
-    <p *ngIf="this.emptyDestinations; else hasDestinations" class="m-1">
-      No destination data has been entered by this candidate.
-    </p>
-    <ng-template #hasDestinations>
-      <div *ngFor="let destination of candidate.candidateDestinations; let i = index;">
-        <div class="row align-items-center">
-          <div class="d-flex" [ngClass]="editable ? 'col-md-3': 'col-md-4'">
-            <label>{{destination.country.name}}</label>
-            <p class="mb-0 ms-2">
-              <i *ngIf="destination.interest == 'No'" class="fa-regular fa-circle-xmark text-danger"></i>
-              <i *ngIf="destination.interest == 'Yes'" class="fa-regular fa-circle-check text-success"></i>
-              <i *ngIf="destination.interest == 'Unsure'" class="fa-regular fa-circle-question text-warning"></i>
-              {{destination.interest}}
-            </p>
-          </div>
-          <div class="col-sm-12 col-md-8">
-            <span>Notes: {{destination.notes}}</span>
-          </div>
-          <div class="col-1" *ngIf="editable">
-            <button class="btn btn-default"
-                    (click)="editDestinationsDetails(destination)">
-              <i class="fas fa-edit"></i>
-            </button>
+  <p *ngIf="this.emptyDestinations; else hasDestinations" class="m-1">
+    No destination data has been entered by this candidate.
+  </p>
+  <ng-template #hasDestinations>
+    <div *ngFor="let destination of candidate.candidateDestinations; let i = index;">
+      <div class="row align-items-center g-0 py-2">
+
+        <!-- Country + Interest -->
+        <div [ngClass]="editable ? 'col-md-4' : 'col-md-5'">
+          <div class="d-flex align-items-center flex-wrap">
+            <label class="mb-0 me-2 fw-semibold">{{ destination.country.name }}</label>
+            <tc-icon [color]="'error'" *ngIf="destination.interest === 'No'">
+              <i class="fa-regular fa-circle-xmark"></i>
+            </tc-icon>
+            <tc-icon [color]="'success'" *ngIf="destination.interest === 'Yes'">
+              <i class="fa-regular fa-circle-check"></i>
+            </tc-icon>
+            <tc-icon [color]="'warning'" *ngIf="destination.interest === 'Unsure'">
+              <i class="fa-regular fa-circle-question"></i>
+            </tc-icon>
+            <span class="ms-1">{{ destination.interest }}</span>
           </div>
         </div>
-        <hr *ngIf="i < candidate.candidateDestinations?.length - 1">
+
+        <!-- Notes -->
+        <div class="col-md-7">
+        <span class="d-block text-break">
+          <strong>Notes:</strong>
+          {{ destination.notes || '' }}
+        </span>
+        </div>
+
+        <!-- Edit button -->
+        <div class="col-md-1 text-end" *ngIf="editable">
+          <tc-button (onClick)="editDestinationsDetails(destination)"
+                     [type]="'plain'"
+                     [color]="'secondary'"
+          >
+            <i class="fas fa-edit"></i>
+          </tc-button>
+        </div>
       </div>
-    </ng-template>
-  </div>
-</div>
+
+      <hr *ngIf="i < candidate.candidateDestinations?.length - 1" class="my-2" />
+    </div>
+  </ng-template>
+</tc-card>

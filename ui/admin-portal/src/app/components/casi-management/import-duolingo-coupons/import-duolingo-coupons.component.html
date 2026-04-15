@@ -1,0 +1,62 @@
+<!--
+  ~ Copyright (c) 2025 Talent Catalog.
+  ~
+  ~ This program is free software: you can redistribute it and/or modify it under
+  ~ the terms of the GNU Affero General Public License as published by the Free
+  ~ Software Foundation, either version 3 of the License, or any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful, but WITHOUT
+  ~ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+  ~ FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+  ~ for more details.
+  ~
+  ~ You should have received a copy of the GNU Affero General Public License
+  ~ along with this program. If not, see https://www.gnu.org/licenses/.
+  -->
+
+<h4>Import Duolingo Coupons</h4>
+<!-- Display the number of available coupons here -->
+<div class="text-muted mb-2 align-middle">
+  Available Proctored Coupons: {{ availableProctoredCouponsCount }}
+</div>
+
+<!-- Instructional Text with URL -->
+<tc-alert type="info">
+  <h5>Instructions for Exporting Duolingo Coupons:</h5>
+  <p>Follow these steps to export your Duolingo coupons:</p>
+  <ol>
+    <li>Log in to Talent Beyond Boundaries Duolingo account at <a href="https://englishtest.duolingo.com" target="_blank">Duolingo Dashboard</a>.</li>
+    <li>Navigate to the <strong>Coupons</strong> section of your account.</li>
+    <li>Export the list of coupons to a CSV file.</li>
+    <li>Once exported, you can upload this CSV file using the form below to import the coupons into the Talent Catalog.</li>
+  </ol>
+</tc-alert>
+<tc-alert *ngIf="error" type="warning">{{ error }}</tc-alert>
+
+<div class="mb-3">
+  <label for="fileInput" class="form-label">Upload CSV File *</label>
+  <input
+    type="file"
+    id="fileInput"
+    class="form-control"
+    (change)="onFileChange($event)"
+    accept=".csv"
+  />
+</div>
+
+<div class="mb-3" *ngIf="csvData.length">
+  <h5>Preview</h5>
+  <app-csv-preview
+    [csvHeaders]="csvHeaders"
+    [csvData]="csvData"
+    [paginatedData]="paginatedData"
+    [working]="working"
+    [currentPage]="currentPage"
+    [pageSize]="pageSize"
+    (pageChange)="onPageChange($event)"
+  ></app-csv-preview>
+</div>
+
+<tc-button class="float-end" [loading]="working" (onClick)="importCSV()" [disabled]="!csvData.length || working">
+  Import
+</tc-button>

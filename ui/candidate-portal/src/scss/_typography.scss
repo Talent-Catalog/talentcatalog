@@ -46,7 +46,7 @@ h5 {
   line-height: 1.33;
 }
 
-p {
+p, li, dt, dd {
   font-size: 14px;
 }
 
@@ -71,7 +71,7 @@ p {
     font-size: 18px;
   }
 
-  p {
+  p, li, dt, dd {
     font-size: 16px;
   }
 }

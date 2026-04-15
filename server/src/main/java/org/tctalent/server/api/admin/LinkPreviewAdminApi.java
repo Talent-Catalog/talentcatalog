@@ -65,7 +65,7 @@ package org.tctalent.server.api.admin;
      return this.linkPreviewDto().build(linkPreview);
    }
 
-     private DtoBuilder linkPreviewDto() {
+     DtoBuilder linkPreviewDto() {
          return new DtoBuilder()
                  .add("id")
                  .add("url")

@@ -88,7 +88,7 @@ describe('ViewJobSuggestedSearchesComponent', () => {
     // Expectations
     expect(modalService.open).toHaveBeenCalledWith(InputTextComponent, jasmine.any(Object));
     expect(mockModalRef.componentInstance.title).toEqual('Enter search name suffix');
-    expect(mockModalRef.componentInstance.message).toEqual('(The search name will start with the job name. You just need to add a short suffix - eg "search 1" or "elastic search")');
+    expect(mockModalRef.componentInstance.message).toEqual('The search name will start with the job name. You just need to add a short suffix - eg "search 1" or "elastic search"');
 
     // Use fakeAsync to wait for the promise to resolve
     fixture.whenStable().then(() => {

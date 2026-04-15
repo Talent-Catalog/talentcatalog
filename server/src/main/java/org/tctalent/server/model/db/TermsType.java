@@ -22,5 +22,16 @@ package org.tctalent.server.model.db;
  * @author John Cameron
  */
 public enum TermsType {
-    CANDIDATE_PRIVACY_POLICY
+    GRN_CANDIDATE_PRIVACY_POLICY,
+    TBB_CANDIDATE_PRIVACY_POLICY,
+
+    /**
+     * OPC's standard data processing agreement (as delivered by OPC's lawyers HSFK) between
+     * OPC and a service provider.
+     * <p>
+     * TBB, or other service providers, may require their own data processing agreements in which
+     * case we will need a new enum corresponding to each non-standard provider.
+     * e.g. OPC_TBB_DATA_PROCESSING_AGREEMENT.
+     */
+    OPC_STANDARD_DATA_PROCESSING_AGREEMENT
 }

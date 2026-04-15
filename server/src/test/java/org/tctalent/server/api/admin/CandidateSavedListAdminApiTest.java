@@ -42,8 +42,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.tctalent.server.api.dto.ExportColumnsBuilderSelector;
+import org.tctalent.server.api.dto.SavedListBuilderSelector;
 import org.tctalent.server.request.candidate.HasSetOfSavedListsImpl;
 import org.tctalent.server.request.list.SearchSavedListRequest;
 import org.tctalent.server.service.db.CandidateSavedListService;
@@ -56,6 +59,7 @@ import org.tctalent.server.service.db.SavedListService;
  */
 @WebMvcTest(CandidateSavedListAdminApi.class)
 @AutoConfigureMockMvc
+@Import({SavedListBuilderSelector.class, ExportColumnsBuilderSelector.class})
 class CandidateSavedListAdminApiTest extends ApiTestBase {
 
   private static final String BASE_PATH = "/api/admin/candidate-saved-list";

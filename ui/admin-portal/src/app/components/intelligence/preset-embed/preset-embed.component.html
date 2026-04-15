@@ -1,3 +1,5 @@
-<app-error-display [error]="error"></app-error-display>
-<app-loading-indicator [loading]="loading" [holdTheLine]="false"></app-loading-indicator>
+<tc-alert type="danger" *ngIf="error">
+  <div><strong>{{error}}</strong></div>
+</tc-alert>
+<tc-loading [type]="'page'"></tc-loading>
 <div id="dashboard"></div>

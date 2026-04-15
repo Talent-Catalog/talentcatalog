@@ -97,4 +97,53 @@ public class StringSanitizer {
     return result;
   }
 
+  /**
+   * Sanitizes contact information fields (e.g., phone, WhatsApp) by removing:
+   * - LRE / RLE / PDF characters (Unicode: 202A, 202B, 202C)
+   * - Non-breaking spaces (Unicode: 00A0)
+   * - Extra spacing
+   *
+   * @param input the input contact string
+   * @return a cleaned-up version of the contact string
+   */
+  public static String sanitizeContactField(@Nullable String input) {
+    if (input == null) {
+      return null;
+    }
+
+    String cleaned = input
+        .replaceAll("[\\u202A\\u202B\\u202C\\u00A0]", "") // Remove LRE, RLE, PDF, NBSP
+        .replaceAll("\\s+", " ")                         // Normalize spacing
+        .trim();
+
+    if (!cleaned.equals(input)) {
+      String truncated = input.length() < 500 ? input : input.substring(0, 500) + "...";
+      LogBuilder.builder(log)
+          .action("StringSanitizer#sanitizeContactField")
+          .message("Sanitized contact field: " + truncated)
+          .logDebug();
+    }
+
+    return cleaned;
+  }
+
+  /**
+   * Normalizes smart quotes, dashes, and other problematic Unicode punctuation
+   * into ASCII-safe equivalents for XHTML/PDF rendering.
+   */
+  public static String normalizeUnicodeText(@Nullable String input) {
+    if (input == null) {
+      return null;
+    }
+    return input
+        .replace("’", "'")
+        .replace("‘", "'")
+        .replace("“", "\"")
+        .replace("”", "\"")
+        .replace("–", "-")
+        .replace("—", "-")
+        .replace("…", "...");
+  }
+
+
 }

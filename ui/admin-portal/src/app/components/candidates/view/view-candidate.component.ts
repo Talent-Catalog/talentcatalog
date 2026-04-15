@@ -18,13 +18,12 @@ import {Component, OnDestroy, OnInit} from '@angular/core';
 import {
   Candidate,
   UpdateCandidateNotificationPreferenceRequest,
-  UpdateCandidateMutedRequest,
   UpdateCandidateStatusInfo,
   UpdateCandidateStatusRequest
 } from '../../../model/candidate';
 import {CandidateService, DownloadCVRequest} from '../../../services/candidate.service';
 import {ActivatedRoute, Router} from '@angular/router';
-import {NgbModal, NgbNavChangeEvent} from '@ng-bootstrap/ng-bootstrap';
+import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {DeleteCandidateComponent} from './delete/delete-candidate.component';
 import {EditCandidateStatusComponent} from './status/edit-candidate-status.component';
 import {Title} from '@angular/platform-browser';
@@ -34,7 +33,7 @@ import {IHasSetOfCandidates, SavedList, SearchSavedListRequest} from '../../../m
 import {SavedListService} from '../../../services/saved-list.service';
 import {CandidateSavedListService} from '../../../services/candidate-saved-list.service';
 import {SavedListCandidateService} from '../../../services/saved-list-candidate.service';
-import {forkJoin, Subject} from 'rxjs';
+import {Observable, of, Subject} from 'rxjs';
 import {CreateUpdateListComponent} from '../../list/create-update/create-update-list.component';
 import {ConfirmationComponent} from "../../util/confirm/confirmation.component";
 import {DownloadCvComponent} from "../../util/download-cv/download-cv.component";
@@ -45,8 +44,17 @@ import {CreateChatRequest, JobChat, JobChatType} from "../../../model/chat";
 import {ChatService} from "../../../services/chat.service";
 import {DtoType} from "../../../model/base";
 import {LocalStorageService} from "../../../services/local-storage.service";
-import {concatMap, takeUntil} from "rxjs/operators";
-
+import {
+  catchError,
+  concatMap,
+  debounceTime,
+  distinctUntilChanged,
+  map,
+  switchMap,
+  takeUntil,
+  tap
+} from "rxjs/operators";
+import {UploadType} from "../../../model/task";
 
 @Component({
   selector: 'app-view-candidate',
@@ -67,9 +75,12 @@ export class ViewCandidateComponent extends MainSidePanelBase implements OnInit,
   candidateChat: JobChat;
   candidateProspectTabVisible: boolean;
   loggedInUser: User;
+  uploadedCvAvailable: boolean = false;
 
   selectedLists: SavedList[] = [];
-  lists: SavedList[] = [];
+  lists$: Observable<SavedList[]>;
+  listsInput$ = new Subject<string>();
+  listsLoading = false;
   token: string;
 
   private destroy$ = new Subject<void>();
@@ -138,6 +149,7 @@ export class ViewCandidateComponent extends MainSidePanelBase implements OnInit,
           this.loading = false;
         } else {
           this.setCandidate(candidate);
+          this.updateUploadedCvAvailable();
           this.loadLists();
           this.generateToken();
           this.setChatAccess();
@@ -155,7 +167,41 @@ export class ViewCandidateComponent extends MainSidePanelBase implements OnInit,
   }
 
   private loadLists() {
-    /*load all our non-fixed lists */
+    this.setupListsTypeahead();
+    this.loadSelectedLists();
+  }
+
+  /**
+   * This fetches saved lists based on their names as the user types.
+   * @private
+   */
+  private setupListsTypeahead() {
+    this.lists$ = this.listsInput$.pipe(
+      debounceTime(300),
+      distinctUntilChanged(),
+      tap(() => this.listsLoading = true),
+      switchMap(term => this.doListSearch(term)),
+      tap(() => this.listsLoading = false)
+    );
+  }
+
+  private doListSearch(keyword: string): Observable<SavedList[]> {
+    const request: SearchSavedListRequest = {
+      dtoType: DtoType.MINIMAL,  //We just need the names and ids of the lists
+      keyword: keyword,
+      pageSize: 10,
+      owned: true,
+      shared: true,
+      global: this.canSeeGlobalLists(),
+      fixed: false
+    };
+    return this.savedListService.searchPaged(request).pipe(
+      map(results => results.content),
+      catchError(() => of([]))
+    );
+  }
+
+  private loadSelectedLists() {
     this.loading = true;
     const request: SearchSavedListRequest = {
       dtoType: DtoType.MINIMAL, //We just need the names and ids of the lists
@@ -164,15 +210,10 @@ export class ViewCandidateComponent extends MainSidePanelBase implements OnInit,
       global: this.canSeeGlobalLists(),
       fixed: false
     };
-
-    forkJoin( {
-      'lists': this.savedListService.search(request),
-      'selectedLists': this.candidateSavedListService.search(this.candidate.id, request)
-    }).subscribe(
+    this.candidateSavedListService.search(this.candidate.id, request).subscribe(
       results => {
         this.loading = false;
-        this.lists = results['lists'];
-        this.selectedLists = results['selectedLists'];
+        this.selectedLists = results;
       },
       (error) => {
         this.error = error;
@@ -209,8 +250,11 @@ export class ViewCandidateComponent extends MainSidePanelBase implements OnInit,
       candidateIds: [this.candidate.id],
       info: info
     };
-    this.candidateService.updateStatus(request).subscribe(
-      () => {
+    this.candidateService.updateStatus(request).pipe(
+      concatMap(() => this.candidateService.getByNumber(this.candidate.candidateNumber))
+    ).subscribe(
+      (candidate) => {
+        this.setCandidate(candidate);
         this.loading = false;
         //Update candidate with new status
         this.candidate.status = info.status;
@@ -285,12 +329,11 @@ export class ViewCandidateComponent extends MainSidePanelBase implements OnInit,
   }
 
   private selectDefaultTab() {
-    const defaultActiveTabID: string = this.localStorageService.get(this.lastTabKey);
-    this.activeTabId = defaultActiveTabID;
+    this.activeTabId = this.localStorageService.get(this.lastTabKey);
   }
 
-  onTabChanged(event: NgbNavChangeEvent) {
-    this.setActiveTabId(event.nextId);
+  onTabChanged(activeTabId: string) {
+    this.setActiveTabId(activeTabId);
   }
 
   publicCvUrl() {
@@ -374,7 +417,7 @@ export class ViewCandidateComponent extends MainSidePanelBase implements OnInit,
       () => {
         this.savingList = false;
         if (reload) {
-          this.loadLists();
+          this.loadSelectedLists();
         }
       },
       (error) => {
@@ -480,6 +523,10 @@ export class ViewCandidateComponent extends MainSidePanelBase implements OnInit,
     return this.authorizationService.canViewCandidateName();
   }
 
+  canViewChats(): boolean {
+    return this.authorizationService.canViewChats();
+  }
+
   public computeNotificationButtonLabel() {
     return "Notification " + (this.candidate?.allNotifications ? "Opt Out": "Opt In");
   }
@@ -524,26 +571,14 @@ export class ViewCandidateComponent extends MainSidePanelBase implements OnInit,
       });
   }
 
-  public computeMuteButtonLabel() {
-    return (this.candidate?.muted ? "Unmute": "Mute") + " Candidate";
+  onMuteToggled() {
+    this.refreshCandidateProfile();
   }
 
-  public toggleMuted() {
-    this.error = null;
-    const request: UpdateCandidateMutedRequest = {
-      muted: !this.candidate.muted
-    };
-    this.candidateService.updateMuted(this.candidate.id, request).subscribe(
-      () => {
-        //Update candidate with new status
-        this.candidate.muted = request.muted;
-
-        //Refresh to get new candidate notes.
-        this.refreshCandidateProfile();
-      },
-      (error) => {
-        this.error = error;
-      });
-
+  private updateUploadedCvAvailable() {
+    this.uploadedCvAvailable =
+      !!this.candidate?.candidateAttachments?.some(
+        att => att.uploadType === UploadType.cv);
   }
+
 }

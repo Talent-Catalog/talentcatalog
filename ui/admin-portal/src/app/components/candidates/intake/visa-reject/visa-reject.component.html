@@ -14,9 +14,9 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<div *ngIf="error">
+<tc-alert type="danger" *ngIf="error">
   {{error}}
-</div>
+</tc-alert>
 <form [formGroup]="form">
 
   <div class="mb-3">
@@ -29,15 +29,15 @@
         [typing]="typing">
       </app-autosave-status>
     </div>
-    <ng-select id="visaReject" [formControlName]="'visaReject'" (clear)="setNoResponse('visaReject')"
+    <ng-select class="tc-select" id="visaReject" [formControlName]="'visaReject'" (clear)="setNoResponse('visaReject')"
                [items]="visaRejectOptions" [clearOnBackspace]="false"
                placeholder="Select" bindLabel="stringValue" bindValue="key"></ng-select>
   </div>
   <div *ngIf="visaReject === 'Yes' || visaReject === 'Unsure'" class="mb-3">
     <label class="form-label" for="visaRejectNotes">Notes</label>
-    <textarea type="text" class="md-textarea-auto form-control" rows="4"
+    <tc-textarea type="text" rows="4"
               id="visaRejectNotes" [formControlName]="'visaRejectNotes'"
-              placeholder="" ></textarea>
+              placeholder="" ></tc-textarea>
   </div>
 
 </form>

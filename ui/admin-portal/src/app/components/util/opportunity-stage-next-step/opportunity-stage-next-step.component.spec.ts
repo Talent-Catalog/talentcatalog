@@ -72,16 +72,16 @@ describe('OpportunityStageNextStepComponent', () => {
   it('should display progress card when opp is provided', () => {
     component.opp = mockCandidateOpportunity;
     fixture.detectChanges();
-    const card = fixture.debugElement.query(By.css('.card'));
+    const card = fixture.debugElement.query(By.css('tc-card'));
     expect(card).toBeTruthy();
   });
 
-  it('should display spinner when updating', () => {
+  it('should display tc-loading indicator when updating', () => {
     component.updating = true;
     authServiceSpy.canEditCandidateOpp.and.returnValue(true);
     fixture.detectChanges();
-    const spinner = fixture.debugElement.query(By.css('.fa-spinner'));
-    expect(spinner).toBeTruthy();
+    const loadingIndicator = fixture.debugElement.query(By.css('tc-loading'));
+    expect(loadingIndicator).toBeTruthy();
   });
 
   it('should display error message when error is set', () => {
@@ -98,8 +98,10 @@ describe('OpportunityStageNextStepComponent', () => {
     component.updating = true;
     authServiceSpy.canEditCandidateOpp.and.returnValue(true);
     fixture.detectChanges();
-    const button = fixture.debugElement.query(By.css('.btn-secondary'));
-    button.nativeElement.click();
+    const button = fixture.debugElement.query(By.css('.edit-opp-progress-btn'));
+    button.triggerEventHandler('onClick', null);
+
+    fixture.detectChanges();
     expect(component.editOppProgress).toHaveBeenCalled();
   });
 

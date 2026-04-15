@@ -24,6 +24,7 @@ import {
 } from './candidate-attachment.service';
 import {environment} from '../../environments/environment';
 import {CandidateAttachment, CandidateAttachmentRequest} from '../model/candidate-attachment';
+import {UploadType} from "../model/task";
 
 describe('CandidateAttachmentService', () => {
   let service: CandidateAttachmentService;
@@ -49,7 +50,8 @@ describe('CandidateAttachmentService', () => {
 
   it('should search attachments', () => {
     const request: SearchCandidateAttachmentsRequest = { candidateId: 1, cvOnly: true };
-    const mockAttachments: CandidateAttachment[] = [{ id: 1, name: 'CV', location: '', fileType: 'pdf', url: '', cv: true } as CandidateAttachment];
+    const mockAttachments: CandidateAttachment[] =
+      [{ id: 1, name: 'CV', url: '', fileType: 'pdf', uploadType: UploadType.cv } as CandidateAttachment];
 
     service.search(request).subscribe((attachments) => {
       expect(attachments.length).toBe(1);
@@ -62,8 +64,10 @@ describe('CandidateAttachmentService', () => {
   });
 
   it('should create an attachment', () => {
-    const details: CandidateAttachmentRequest = { candidateId: 1, name: 'CV', fileType: 'pdf'} as CandidateAttachmentRequest;
-    const mockAttachment: CandidateAttachment = { id: 1, name: 'CV', location: '', fileType: 'pdf', url: '', cv: true } as CandidateAttachment;
+    const details: CandidateAttachmentRequest =
+      { candidateId: 1, name: 'CV', fileType: 'pdf'} as CandidateAttachmentRequest;
+    const mockAttachment: CandidateAttachment =
+      { id: 1, name: 'CV', url: '', fileType: 'pdf', uploadType: UploadType.cv } as CandidateAttachment;
 
     service.createAttachment(details).subscribe((attachment) => {
       expect(attachment).toEqual(mockAttachment);
@@ -75,7 +79,8 @@ describe('CandidateAttachmentService', () => {
   });
 
   it('should delete an attachment', () => {
-    const mockAttachment: CandidateAttachment = { id: 1, name: 'CV', location: '', fileType: 'pdf', url: '', cv: true } as CandidateAttachment;
+    const mockAttachment: CandidateAttachment =
+      { id: 1, name: 'CV', url: '', fileType: 'pdf', uploadType: UploadType.cv } as CandidateAttachment;
 
     service.deleteAttachment(1).subscribe((attachment) => {
       expect(attachment).toEqual(mockAttachment);
@@ -88,7 +93,8 @@ describe('CandidateAttachmentService', () => {
 
   it('should update an attachment', () => {
     const request: UpdateCandidateAttachmentRequest = { id: 1, name: 'Updated CV' };
-    const mockAttachment: CandidateAttachment = { id: 1, name: 'Updated CV', location: '', fileType: 'pdf', url: '', cv: true } as CandidateAttachment;
+    const mockAttachment: CandidateAttachment =
+      { id: 1, name: 'Updated CV', url: '', fileType: 'pdf', uploadType: UploadType.cv } as CandidateAttachment;
 
     service.updateAttachment(1, request).subscribe((attachment) => {
       expect(attachment).toEqual(mockAttachment);
@@ -101,7 +107,8 @@ describe('CandidateAttachmentService', () => {
 
   it('should list attachments by type', () => {
     const request: ListByUploadTypeRequest = { candidateId: 1, uploadType: 'pdf' };
-    const mockAttachments: CandidateAttachment[] = [{ id: 1, name: 'CV', location: '', fileType: 'pdf', url: '', cv: true } as CandidateAttachment];
+    const mockAttachments: CandidateAttachment[] =
+      [{ id: 1, name: 'CV', url: '', fileType: 'pdf', uploadType: UploadType.cv } as CandidateAttachment];
 
     service.listByType(request).subscribe((attachments) => {
       expect(attachments.length).toBe(1);

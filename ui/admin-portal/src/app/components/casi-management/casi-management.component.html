@@ -1,0 +1,48 @@
+<!--
+  ~ Copyright (c) 2026 Talent Catalog.
+  ~
+  ~ This program is free software: you can redistribute it and/or modify it under
+  ~ the terms of the GNU Affero General Public License as published by the Free
+  ~ Software Foundation, either version 3 of the License, or any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful, but WITHOUT
+  ~ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+  ~ FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+  ~ for more details.
+  ~
+  ~ You should have received a copy of the GNU Affero General Public License
+  ~ along with this program. If not, see https://www.gnu.org/licenses/.
+  -->
+
+<tc-tabs [activeTabId]="activeTabId" (tabChanged)="onTabChanged($event)">
+  <ng-container *ngIf="systemAdminOnly()">
+    <tc-tab id="duolingo-coupons">
+      <tc-tab-header>Duolingo Coupons</tc-tab-header>
+      <tc-tab-content>
+        <app-import-duolingo-coupons [loggedInUser]="loggedInUser"></app-import-duolingo-coupons>
+      </tc-tab-content>
+    </tc-tab>
+
+    <tc-tab id="linkedin-coupons">
+      <tc-tab-header>LinkedIn Coupons</tc-tab-header>
+      <tc-tab-content>
+        <app-import-linkedin-premium-coupons [loggedInUser]="loggedInUser"></app-import-linkedin-premium-coupons>
+      </tc-tab-content>
+    </tc-tab>
+
+    <!-- Reference Vouchers are only relevant in local environments, so we hide this tab in staging and production -->
+    <tc-tab id="reference-vouchers" *ngIf="isLocalEnv()">
+      <tc-tab-header>Reference Vouchers</tc-tab-header>
+      <tc-tab-content>
+        <app-import-reference-vouchers [loggedInUser]="loggedInUser"></app-import-reference-vouchers>
+      </tc-tab-content>
+    </tc-tab>
+
+    <tc-tab id="ota">
+      <tc-tab-header>Offers To Assist</tc-tab-header>
+      <tc-tab-content>
+        <app-offer-to-assist></app-offer-to-assist>
+      </tc-tab-content>
+    </tc-tab>
+  </ng-container>
+</tc-tabs>

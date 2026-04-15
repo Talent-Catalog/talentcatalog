@@ -327,6 +327,10 @@ gradle-app.setting
 *.tfstate
 *.tfstate.*
 
+# tfplan and secrets files
+tfplan
+secrets.auto.tfvars
+
 # Crash log files
 crash.log
 crash.*.log
@@ -354,3 +358,10 @@ terraform.rc
 
 # Exclude binary files
 server/bin/
+server/src/test/resources/dump.sql
+
+# Ignore SSM parameter scripts containing sensitive data
+/infra/aws/terraform/opc-staging/ssm-parameters.sh
+/infra/aws/terraform/opc-prod/ssm-parameters.sh
+performance-tests/src/gatling/resources/users.csv
+/.idea

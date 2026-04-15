@@ -139,6 +139,18 @@ public class SalesforceJobOpp extends AbstractOpportunity {
     private SavedList exclusionList;
 
     /**
+     * This contains the text extracted from any uploaded Job Description Document.
+     * <p/>
+     * Note that, for legacy reasons, the url and name of the Job Description Document are stored
+     * with the job's submission list. (Originally there was no entity like this representing a
+     * job - there was just a special kind of list - the "submission list".)
+     * <p/>
+     * Eventually we plan to move those fields to this entity.
+     */
+    @Nullable
+    private String jdFileText;
+
+    /**
      * Summary describing job
      */
     private String jobSummary;

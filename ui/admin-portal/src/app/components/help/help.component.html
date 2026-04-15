@@ -17,7 +17,7 @@
 <span>
   <ng-template #helpTipContent>
     <div *ngIf="loading">
-      Loading...
+      <i class="fas fa-spinner fa-spin"></i>
     </div>
     <div *ngIf="error">
       {{error}}
@@ -29,9 +29,13 @@
     </div>
   </ng-template>
 
-  <button class="help-tip-button" [ngbTooltip]="helpTipContent"
-          (click)="fetchHelp()" placement="auto"
-          triggers="click" tooltipClass="help-tips">
+  <button class="help-tip-button"
+          *ngIf="request"
+          [ngbTooltip]="helpTipContent"
+          (shown)="fetchHelp()"
+          [placement]="placement"
+          triggers="click"
+          tooltipClass="help-tips">
     <i class="fa-regular fa-circle-question fa-xs"></i>
   </button>
 

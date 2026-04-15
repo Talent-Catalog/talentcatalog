@@ -42,6 +42,9 @@ export class AdminApiComponent implements OnInit {
 
   // List of general admin commands
   readonly adminCommands = [
+    { command: 'set_candidate_text/cpu-{percentage}', description: 'Update text of all candidates that are not deleted or withdrawn status limiting cpu percentage' },
+    { command: 'set_candidate_text/list-{listId}-cpu-{percentage}', description: 'Update text of all candidates in the specified list limiting cpu percentage' },
+    { command: 'set_candidate_text/search-{searchId}-cpu-{percentage}', description: 'Update text of all candidates in the specified search limiting cpu percentage' },
     { command: 'reassign-candidates/list-{listId}-to-partner-{partnerId}', description: 'Reassign all candidates in the specified list to the specified partner' },
     { command: 'reassign-candidates/search-{searchId}-to-partner-{partnerId}', description: 'Reassign all candidates in the specified search to the specified partner' },
     { command: 'move-candidate-drive/{number}', description: 'Move candidate to the current candidate data drive' },
@@ -54,6 +57,13 @@ export class AdminApiComponent implements OnInit {
     { command: 'duolingo/dashboard-results', description: 'Fetch Duolingo dashboard results' },
     { command: 'duolingo/verify-score?certificateId={certificateId}&birthdate={yyyy-MM-dd}', description: 'Verify Duolingo score by certificateId and birthdate' },
     { command: 'reassign-duolingo-coupon/{candidateNumber}', description: 'Reassign a new Duolingo coupon to a candidate' },
+  ];
+
+  readonly linkedinCommands = [
+    {
+      command: '{candidateNumber}/reassign-linkedin-coupon',
+      description: 'Cancel previous assignment and make new one for given candidate'
+    }
   ];
 
   constructor(
@@ -73,12 +83,22 @@ export class AdminApiComponent implements OnInit {
       this.error = null;
       this.adminService.call(this.form.value.apicall).subscribe(
         (response: string) => {
-          // If the response string is present and not empty, set ack to response;
-          // otherwise, default to "Done"
-          this.ack = response && response.trim().length > 0 ? response : "Done";
+          if (response && response.trim().length > 0) {
+            this.ack = this.tryFormatJson(response) ?? response;
+          } else {
+            this.ack = 'Done';
+          }
         },
         (error) => {this.error = error}
       )
+    }
+  }
+
+  private tryFormatJson(s: string): string | null {
+    try {
+      return JSON.stringify(JSON.parse(s), null, 2);
+    } catch {
+      return null;
     }
   }
 

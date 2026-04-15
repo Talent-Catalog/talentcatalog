@@ -14,12 +14,8 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<div *ngIf="loading">
-  <i class="fas fa-spinner fa-spin"></i> loading...
-</div>
-<div class="alert alert-danger" *ngIf="error">
-  {{error}}
-</div>
+<tc-loading [loading]="loading" type="page"></tc-loading>
+<tc-alert *ngIf="error" type="danger">{{error}}</tc-alert>
 <app-view-job
   *ngIf="job"
   [job]="job"

@@ -25,7 +25,7 @@ import {ExternalLinkService} from "../../services/external-link.service";
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {VerifyEmailComponent} from "../account/verify-email/verify-email.component";
 import {forkJoin} from "rxjs";
-import {TermsInfoDto, TermsType} from "../../model/terms-info-dto";
+import {TermsInfoDto} from "../../model/terms-info-dto";
 import {TermsInfoService} from "../../services/terms-info.service";
 import {Router} from "@angular/router";
 
@@ -61,7 +61,7 @@ export class HomeComponent implements OnInit {
 
     //Fetch the current candidate privacy policy and candidate info
     forkJoin({
-      'currentPolicy': this.termsInfoService.getCurrentByType(TermsType.CANDIDATE_PRIVACY_POLICY),
+      'currentPolicy': this.termsInfoService.getCurrentCandidatePolicy(),
       'candidate': this.candidateService.getCandidatePersonal()
     }).subscribe(
       results => {
@@ -96,7 +96,7 @@ export class HomeComponent implements OnInit {
     //If status is not draft (ie candidate is not registering) and the candidate's accepted terms
     //are out of date, send them to the terms (/privacy).
     if (this.candidate.status != CandidateStatus.draft) {
-      if (currentPolicy.id != candidate.acceptedPrivacyPolicyId) {
+      if (currentPolicy.content.length > 0 && currentPolicy.id != candidate.acceptedPrivacyPolicyId) {
         //They will be asked to accept the new terms on this page.
         this.router.navigateByUrl("/privacy");
       }

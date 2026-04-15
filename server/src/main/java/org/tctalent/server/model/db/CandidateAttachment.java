@@ -16,6 +16,7 @@
 
 package org.tctalent.server.model.db;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -24,37 +25,41 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
-import jakarta.persistence.Transient;
-
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.lang.Nullable;
-import org.tctalent.server.model.db.task.UploadType;
+import org.tctalent.server.files.UploadType;
 
 @Getter
 @Setter
 @Entity
 @Table(name = "candidate_attachment")
 @SequenceGenerator(name = "seq_gen", sequenceName = "candidate_attachment_id_seq", allocationSize = 1)
-public class CandidateAttachment extends AbstractAuditableDomainObject<Long>  {
+public class CandidateAttachment extends AbstractAuditableDomainObject<Long> implements ICandidateAttachment {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "candidate_id")
     private Candidate candidate;
 
+    /**
+     * The type of attachment - we have stored attachments in a number of different ways
+     */
     @Enumerated(EnumType.STRING)
     private AttachmentType type;
 
+    /**
+     * Name of the attachment file 
+     */
     private String name;
 
     /**
-     * For links {@link AttachmentType#link} and Google Docs
-     * {@link AttachmentType#googlefile}, the associated url.
+     * The attachment's public url.
      * <p>
-     * For S3 files {@link AttachmentType#file}, it is the unique filename
-     * generated on S3.
+     * Historical note: This field maps to the "location" database column for backward
+     * compatibility. Prior to 2026, this column stored relative S3 paths for file-type
+     * attachments. Migration V1_400 converted all paths to full URLs.
      */
-    private String location;
+    @Column(name = "location") //Originally this field was called location
+    private String url;
 
     /**
      * This is recorded just as the suffix of the attachment filename
@@ -63,29 +68,55 @@ public class CandidateAttachment extends AbstractAuditableDomainObject<Long>  {
     private String fileType;
 
     private boolean migrated;
+    
+    /**
+     * See ICandidateAttachment Javadoc
+     */
+    private String publicId;
+    
+    /**
+     * See IStoredFile Javadoc
+     * Only populated for {@link AttachmentType#grnfile} attachments. They are stored on S3
+     * using obfuscated storage keys. 
+     */
+    private String storageKey;
+
+    /**
+     * Only populated for Cvs. This is the text extracted from the file.
+     */
     private String textExtract;
 
-    //todo Eventually get rid of this cv attribute altogether - replacing it with just uploadType
-    //For now they duplicate each other
-    private boolean cv;
-
+    /**
+     * The type of the attachment: CV, Passport etc. 
+     */
     @Enumerated(EnumType.STRING)
     private UploadType uploadType;
 
-    @Transient
-    @Nullable
-    private String url;
+    /**
+     * See IStoredFile Javadoc
+     */
+    private boolean active;
 
+    /**
+     * See IStoredFile Javadoc
+     */
+    private String bucket;
+
+    /**
+     * See IStoredFile Javadoc
+     */
+    private Long contentLength;
+
+    /**
+     * See IStoredFile Javadoc
+     */
+    @Column(name = "sha256_hex")
+    private String sha256Hex;
+
+    public boolean isCv() {
+        return UploadType.cv.equals(uploadType);
+    }
+    
     public CandidateAttachment() {
     }
-
-    public String getUrl() {
-        if (type == AttachmentType.file) {
-            url = "https://s3.us-east-1.amazonaws.com/files.tbbtalent.org/candidate/" + (migrated ? "migrated" : candidate.getCandidateNumber()) + '/' + location;
-        } else {
-            url = location;
-        }
-        return url;
-    }
-
 }

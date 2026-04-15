@@ -59,7 +59,7 @@ export class CreateUpdateUserComponent implements OnInit {
 
   ngOnInit() {
     let formControlsConfig = {
-      email: [this.user?.email, Validators.required],
+      email: [this.user?.email, [Validators.required, Validators.pattern(this.emailRegex)]],
       username: [this.user?.username, Validators.required],
       firstName: [this.user?.firstName, Validators.required],
       lastName: [this.user?.lastName, Validators.required],
@@ -182,11 +182,11 @@ export class CreateUpdateUserComponent implements OnInit {
     this.activeModal.close(user);
   }
 
-  dismiss() {
-    this.activeModal.dismiss(false);
-  }
-
   canAssignPartner(): boolean {
     return this.authorizationService.canAssignPartner();
+  }
+
+  get email() {
+    return this.userForm.get('email');
   }
 }

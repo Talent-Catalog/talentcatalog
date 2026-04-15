@@ -16,6 +16,7 @@
 
 package org.tctalent.server.request.partner;
 
+import java.time.OffsetDateTime;
 import java.util.Set;
 import lombok.Getter;
 import lombok.Setter;
@@ -41,6 +42,13 @@ public class UpdatePartnerRequest {
      * a partner and every partner having a default contact user.
      */
     private User defaultContact;
+
+    /**
+     * If specified, is used to set the defaultSourcePartner field of the partner.
+     * <p>
+     * Internal user only. See SystemAdminConfiguration.
+     */
+    private Boolean defaultSourcePartner;
 
     /**
      * Redundant field containing looked up employer corresponding to {@link #employerSflink}.
@@ -79,4 +87,9 @@ public class UpdatePartnerRequest {
 
     private Long redirectPartnerId;
 
+    private String acceptedDataProcessingAgreementId;
+
+    private OffsetDateTime acceptedDataProcessingAgreementDate;
+
+    private OffsetDateTime firstDpaSeenDate;
 }

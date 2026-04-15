@@ -168,7 +168,7 @@ export class CandidateFieldService {
       new CandidateFieldInfo("Legal status", "residenceStatus", null,
         this.residenceStatusFormatter, null, true),
       new CandidateFieldInfo("Dependants", "numberDependants", null,
-        null, null, true),
+        null, null, false),
       new CandidateFieldInfo("Next Step", "nextStep", null,
       this.nextStepFormatter, this.isSourceSubmissionList, false),
       new CandidateFieldInfo("Added By", "addedBy", this.addedByTooltip,

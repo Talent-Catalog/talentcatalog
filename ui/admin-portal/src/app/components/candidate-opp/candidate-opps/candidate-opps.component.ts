@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, ElementRef, Inject, Input, LOCALE_ID, SimpleChanges, ViewChild} from '@angular/core';
+import {Component, Inject, Input, LOCALE_ID, SimpleChanges, ViewChild} from '@angular/core';
 import {
   CandidateOpportunity,
   CandidateOpportunityStage,
@@ -33,6 +33,7 @@ import {ChatService} from "../../../services/chat.service";
 import {SearchResults} from "../../../model/search-results";
 import {PartnerService} from "../../../services/partner.service";
 import {LocalStorageService} from "../../../services/local-storage.service";
+import {InputComponent} from "../../../shared/components/input/input.component";
 
 @Component({
   selector: 'app-candidate-opps',
@@ -60,6 +61,9 @@ export class CandidateOppsComponent extends FilteredOppsComponentBase<CandidateO
    */
   @Input() preview: boolean = false;
 
+  /** Pass false when the context doesn't require any clicked/selected table row behaviour/styling */
+  @Input() clickableRows: boolean = true;
+
   //Override text to replace "opps" text with "cases"
   myOppsOnlyLabel = "My cases only";
   myOppsOnlyTip = "Only show cases that I am the contact for";
@@ -74,12 +78,12 @@ export class CandidateOppsComponent extends FilteredOppsComponentBase<CandidateO
   withUnreadMessagesTip = "Only show cases which have unread chat messages";
 
   @ViewChild("searchFilter")
-  declare searchFilter: ElementRef;
+  declare searchFilter: InputComponent;
 
   constructor(
     chatService: ChatService,
     fb: UntypedFormBuilder,
-    authService: AuthorizationService,
+    authorizationService: AuthorizationService,
     localStorageService: LocalStorageService,
     oppService: CandidateOpportunityService,
     salesforceService: SalesforceService,
@@ -87,7 +91,7 @@ export class CandidateOppsComponent extends FilteredOppsComponentBase<CandidateO
     partnerService: PartnerService,
     @Inject(LOCALE_ID) locale: string
   ) {
-    super(chatService, fb, authService, localStorageService, oppService, salesforceService,
+    super(chatService, fb, authorizationService, localStorageService, oppService, salesforceService,
       countryService, partnerService, locale,"Opps")
 
   }
@@ -129,8 +133,10 @@ export class CandidateOppsComponent extends FilteredOppsComponentBase<CandidateO
     //Call standard processing (which puts the results into this.opps)
     super.processSearchResults(results);
 
-    //Then fetch the chats associated with all opps.
-    this.fetchChats();
+    if (this.canViewChats()) {
+      //Then fetch the chats associated with all opps.
+      this.fetchChats();
+    }
   }
 
   private fetchChats() {

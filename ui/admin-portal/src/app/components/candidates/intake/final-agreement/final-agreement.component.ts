@@ -15,6 +15,8 @@
  */
 
 import {Component, OnInit} from '@angular/core';
+import {Partner} from "../../../../model/partner";
+import {AuthenticationService} from "../../../../services/authentication.service";
 
 @Component({
   selector: 'app-final-agreement',
@@ -23,9 +25,11 @@ import {Component, OnInit} from '@angular/core';
 })
 export class FinalAgreementComponent implements OnInit {
 
-  constructor() { }
+  constructor(private authService: AuthenticationService) { }
+   loggedInUserPartner: Partner;
 
   ngOnInit(): void {
+    this.loggedInUserPartner = this.authService.getLoggedInUser()?.partner;
   }
 
 }

@@ -1,0 +1,245 @@
+<form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate class="container mt-4">
+  <tc-alert type="danger" *ngIf="error">{{ error?.message || error }}</tc-alert>
+
+  <tc-field [checkbox]="true" class="mb-3">
+    <tc-input
+      id="noEligible"
+      type="checkbox"
+      [formControlName]="'noEligibleDependants'"
+      [disabled]="readOnly"
+    ></tc-input>
+    <tc-label for="noEligible">
+      {{ 'FAMILY-DOC.LABEL.NO_ELIGIBLE' | translate }}
+    </tc-label>
+  </tc-field>
+
+  <div class="mb-3" *ngIf="noEligibleDependants">
+    <tc-field>
+      <tc-label for="noEligibleNotes">{{ "REGISTRATION.EXAM.LABEL.NOTES" | translate }}</tc-label>
+      <tc-textarea
+        id="noEligibleNotes"
+        rows="2"
+        [formControlName]="'noEligibleNotes'"
+        [disabled]="readOnly"
+      ></tc-textarea>
+      <tc-error-message
+        *ngIf="form.get('noEligibleNotes')?.touched && form.get('noEligibleNotes')?.hasError('required')"
+      >
+        {{ "FORM.ERROR.REQUIRED" | translate }}
+      </tc-error-message>
+    </tc-field>
+  </div>
+
+  <ng-container formArrayName="members" *ngIf="!noEligibleDependants">
+    <div class="card mb-3" *ngFor="let m of members.controls; let i = index" [formGroupName]="i">
+      <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center">
+          <h5 class="card-title mb-3"> {{'FAMILY-DOC.LABEL.FAMILY-MEMBER' | translate}} #{{ i + 1 }}</h5>
+          <tc-button
+            type="outline"
+            color="error"
+            size="sm"
+            [disabled]="readOnly"
+            (onClick)="removeMember(i)"
+          >
+            {{ "CHAT.LINK-REMOVE-BTN" | translate }}
+          </tc-button>
+        </div>
+
+        <!-- basic fields -->
+        <div class="row g-3">
+          <div class="col-md-4">
+            <tc-field>
+              <tc-label for="relationship-{{ i }}">{{ 'FAMILY-DOC.LABEL.RELATIONSHIP' | translate }} *</tc-label>
+              <ng-select id="relationship-{{ i }}" formControlName="TTH_IT$RELATIONSHIP_TO_PRIMARY_APPLICANT"
+                         [readonly]="readOnly"
+                         [items]="relationships"
+                         bindLabel="stringValue"
+                         bindValue="key"
+                         [clearable]="false">
+              </ng-select>
+
+              <tc-error-message
+                *ngIf="m.get('TTH_IT$RELATIONSHIP_TO_PRIMARY_APPLICANT')?.touched && m.get('TTH_IT$RELATIONSHIP_TO_PRIMARY_APPLICANT')?.hasError('required')"
+              >
+                {{ "FORM.ERROR.REQUIRED" | translate }}
+              </tc-error-message>
+            </tc-field>
+          </div>
+          <!-- If relationship is "Other", ask for detail -->
+          <div class="col-md-6" *ngIf="m.get('TTH_IT$RELATIONSHIP_TO_PRIMARY_APPLICANT')?.value === 'Other'">
+            <tc-field>
+              <tc-label for="otherRelationship-{{ i }}">{{ 'FAMILY-DOC.LABEL.OTHER' | translate }}</tc-label>
+              <tc-input
+                id="otherRelationship-{{ i }}"
+                [formControlName]="'TTH_IT$OTHER_RELATIONSHIP_TO_PRIMARY_APPLICANT'"
+                [readonly]="readOnly"
+                [invalid]="m.touched && m.hasError('otherRelationshipRequired')"
+              ></tc-input>
+              <tc-error-message *ngIf="m.touched && m.hasError('otherRelationshipRequired')">
+                {{ "FORM.ERROR.REQUIRED" | translate }}
+              </tc-error-message>
+            </tc-field>
+          </div>
+
+          <div class="col-md-4">
+            <tc-field>
+              <tc-label for="firstName-{{ i }}">{{ "PROFILE.PERSONAL.FIRSTNAME" | translate }} *</tc-label>
+              <tc-input
+                id="firstName-{{ i }}"
+                [formControlName]="'user.firstName'"
+                [readonly]="readOnly"
+              ></tc-input>
+            </tc-field>
+          </div>
+
+          <div class="col-md-4">
+            <tc-field>
+              <tc-label for="lastName-{{ i }}">{{ "PROFILE.PERSONAL.LASTNAME" | translate }} *</tc-label>
+              <tc-input
+                id="lastName-{{ i }}"
+                [formControlName]="'user.lastName'"
+                [readonly]="readOnly"
+              ></tc-input>
+            </tc-field>
+          </div>
+
+          <div class="col-md-4">
+            <tc-field>
+              <tc-label for="dob-{{ i }}">{{ "PROFILE.PERSONAL.DOB" | translate }} *</tc-label>
+              <tc-input
+                id="dob-{{ i }}"
+                type="date"
+                [formControlName]="'dob'"
+                [readonly]="readOnly"
+                [invalid]="m.touched && m.hasError('childAgeInvalid')"
+              ></tc-input>
+              <tc-error-message *ngIf="m.touched && m.hasError('childAgeInvalid')">
+                {{ 'FAMILY-DOC.LABEL.AGE-VALIDATION' | translate }}
+              </tc-error-message>
+            </tc-field>
+          </div>
+
+          <div class="col-md-4">
+            <tc-field>
+              <tc-label for="gender-{{ i }}">{{ "PROFILE.PERSONAL.GENDER" | translate }}</tc-label>
+              <select id="gender-{{ i }}" class="form-select" formControlName="gender" [disabled]="readOnly">
+                <option value="male">{{ 'GENDER.MALE' | translate }}</option>
+                <option value="female">{{ 'GENDER.FEMALE' | translate }}</option>
+                <option value="other">{{ 'GENDER.OTHER' | translate }}</option>
+              </select>
+            </tc-field>
+          </div>
+
+          <div class="col-md-4">
+            <tc-field>
+              <tc-label for="birthCountry-{{ i }}">{{ "TRAVELINFO.LABEL.BIRTHCOUNTRY" | translate }}</tc-label>
+              <tc-input
+                id="birthCountry-{{ i }}"
+                [formControlName]="'birthCountry.name'"
+                [readonly]="readOnly"
+              ></tc-input>
+            </tc-field>
+          </div>
+
+          <div class="col-md-6">
+            <tc-field>
+              <tc-label for="placeOfBirth-{{ i }}">{{ 'TRAVELINFO.LABEL.PLACEOFBIRTH' | translate }}</tc-label>
+              <tc-input
+                id="placeOfBirth-{{ i }}"
+                [formControlName]="'placeOfBirth'"
+                [readonly]="readOnly"
+              ></tc-input>
+            </tc-field>
+          </div>
+        </div>
+
+        <hr class="my-4">
+
+        <div class="row g-3">
+          <div class="col-md-4">
+            <tc-field>
+              <tc-label for="travelDocType-{{ i }}">{{ 'TRAVELINFO.LABEL.DOCTYPE' | translate }} *</tc-label>
+              <select id="travelDocType-{{ i }}" class="form-select" formControlName="TTH_IT$TRAVEL_DOC_TYPE">
+                <option [value]="TravelDocType.Passport">{{ 'TRAVELINFO.OPTION.PASSPORT' | translate }}</option>
+                <option [value]="TravelDocType.NationalId">{{ 'TRAVELINFO.OPTION.NATIONALID' | translate }}</option>
+                <option [value]="TravelDocType.RefugeeCertificate">{{ 'TRAVELINFO.OPTION.REFUGEE' | translate }}</option>
+              </select>
+            </tc-field>
+          </div>
+          <div class="col-md-4">
+            <tc-field>
+              <tc-label for="travelDocNumber-{{ i }}">{{ 'TRAVELINFO.LABEL.DOCNUMBER' | translate }} *</tc-label>
+              <tc-input
+                id="travelDocNumber-{{ i }}"
+                [formControlName]="'TTH_IT$TRAVEL_DOC_NUMBER'"
+                [readonly]="readOnly"
+              ></tc-input>
+            </tc-field>
+          </div>
+          <div class="col-md-4">
+            <tc-field>
+              <tc-label for="travelDocIssuedBy-{{ i }}">{{ 'TRAVELINFO.LABEL.DOCISSUEDBY' | translate }}</tc-label>
+              <tc-input
+                id="travelDocIssuedBy-{{ i }}"
+                [formControlName]="'TTH_IT$TRAVEL_DOC_ISSUED_BY'"
+                [readonly]="readOnly"
+              ></tc-input>
+            </tc-field>
+          </div>
+          <div class="col-md-4">
+            <tc-field>
+              <tc-label for="travelDocIssueDate-{{ i }}">{{ 'TRAVELINFO.LABEL.ISSUEDATE' | translate }}</tc-label>
+              <tc-input
+                id="travelDocIssueDate-{{ i }}"
+                type="date"
+                [formControlName]="'TTH_IT$TRAVEL_DOC_ISSUE_DATE'"
+                [readonly]="readOnly"
+              ></tc-input>
+            </tc-field>
+          </div>
+          <div class="col-md-4">
+            <tc-field>
+              <tc-label for="travelDocExpiryDate-{{ i }}">{{ 'TRAVELINFO.LABEL.EXPIRYDATE' | translate }}</tc-label>
+              <tc-input
+                id="travelDocExpiryDate-{{ i }}"
+                type="date"
+                [formControlName]="'TTH_IT$TRAVEL_DOC_EXPIRY_DATE'"
+                [readonly]="readOnly"
+                [invalid]="m.hasError('expiryTooSoon')"
+              ></tc-input>
+              <tc-error-message *ngIf="m.hasError('expiryTooSoon')">
+                {{ 'FAMILY-DOC.LABEL.DOC-VALIDATION' | translate }}
+              </tc-error-message>
+            </tc-field>
+          </div>
+          <div class="col-md-12">
+            <tc-field>
+              <tc-label for="travelInfoComment-{{ i }}">{{ 'TRAVELINFO.LABEL.COMMENT' | translate }}</tc-label>
+              <tc-textarea
+                id="travelInfoComment-{{ i }}"
+                rows="5"
+                [disabled]="readOnly"
+                [formControlName]="'TTH_IT$TRAVEL_INFO_COMMENT'"
+              ></tc-textarea>
+            </tc-field>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <tc-button
+      type="outline"
+      [disabled]="readOnly"
+      (onClick)="addMember()"
+    >
+      {{'FAMILY-DOC.LABEL.ANOTHER-MEMBER' | translate}}
+    </tc-button>
+  </ng-container>
+
+  <div class="mt-4">
+    <tc-button [disabled]="!canSubmit()">
+      {{ 'TASKS.TASK.SUBMIT' | translate }}
+    </tc-button>
+  </div>
+</form>

@@ -28,7 +28,7 @@ import org.tctalent.server.model.db.task.UploadTaskAssignment;
  * @author John Cameron
  */
 @Entity(name="UploadTaskAssignment")
-@DiscriminatorValue("UploadTask")
+@DiscriminatorValue("Upload")
 @Getter
 @Setter
 public class UploadTaskAssignmentImpl extends TaskAssignmentImpl implements UploadTaskAssignment {

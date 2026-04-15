@@ -16,10 +16,11 @@
 
 package org.tctalent.server.api.admin;
 
+import jakarta.validation.Valid;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
-import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -32,6 +33,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+import org.tctalent.server.api.dto.SystemLanguageDtoBuilder;
 import org.tctalent.server.exception.EntityExistsException;
 import org.tctalent.server.exception.EntityReferencedException;
 import org.tctalent.server.exception.NoSuchObjectException;
@@ -63,11 +65,12 @@ public class EducationLevelAdminApi {
     public Map<String, Object> addSystemLanguageTranslations(
         @PathVariable("langCode") String langCode, @RequestParam("file") MultipartFile file)
         throws EntityExistsException, IOException, NoSuchObjectException {
-        SystemLanguage systemLanguage =
-            languageService.addSystemLanguageTranslations(
-                langCode, "education_level", file.getInputStream());
-
-        return systemLanguageDtoBuilder.build(systemLanguage);
+        try (InputStream translations = file.getInputStream()) {
+            SystemLanguage systemLanguage =
+                languageService.addSystemLanguageTranslations(
+                    langCode, "education_level", translations);
+            return systemLanguageDtoBuilder.build(systemLanguage);
+        }
     }
 
     @GetMapping

@@ -16,24 +16,23 @@
 
 package org.tctalent.server.service.db;
 
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.web.multipart.MultipartFile;
 import org.tctalent.server.exception.InvalidSessionException;
 import org.tctalent.server.exception.NoSuchObjectException;
+import org.tctalent.server.files.UploadType;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.CandidateAttachment;
-import org.tctalent.server.model.db.task.UploadType;
 import org.tctalent.server.request.PagedSearchRequest;
 import org.tctalent.server.request.attachment.CreateCandidateAttachmentRequest;
 import org.tctalent.server.request.attachment.ListByUploadTypeRequest;
 import org.tctalent.server.request.attachment.SearchCandidateAttachmentsRequest;
 import org.tctalent.server.request.attachment.UpdateCandidateAttachmentRequest;
-
-import java.io.IOException;
-import java.io.OutputStream;
-import java.util.List;
 
 public interface CandidateAttachmentService {
 
@@ -50,7 +49,8 @@ public interface CandidateAttachmentService {
 
     List<CandidateAttachment> listCandidateAttachments(Long candidateId);
 
-    CandidateAttachment createCandidateAttachment(CreateCandidateAttachmentRequest request);
+    CandidateAttachment createCandidateAttachment(CreateCandidateAttachmentRequest request)
+        throws IOException;
 
     void deleteCandidateAttachment(Long id);
 
@@ -84,11 +84,22 @@ public interface CandidateAttachmentService {
      * Retrieves details on the given attachment.
      * @param id ID of requested attachment
      * @return CandidateAttachment containing link to the file in
-     * {@link CandidateAttachment#getLocation()}
+     * {@link CandidateAttachment#getUrl()}
      * @throws NoSuchObjectException if no attachment with that id exists
      * @throws IOException if there is a problem retrieving the attachment.
      */
     CandidateAttachment getCandidateAttachment(Long id)
+            throws IOException, NoSuchObjectException;
+
+    /**
+     * Retrieves details on the given attachment.
+     * @param publicId Public ID of requested attachment
+     * @return CandidateAttachment containing link to the file in
+     * {@link CandidateAttachment#getUrl()}
+     * @throws NoSuchObjectException if no attachment with that id exists
+     * @throws IOException if there is a problem retrieving the attachment.
+     */
+    CandidateAttachment getCandidateAttachmentByPublicId(String publicId)
             throws IOException, NoSuchObjectException;
 
     CandidateAttachment updateCandidateAttachment(Long id,
@@ -103,7 +114,7 @@ public interface CandidateAttachmentService {
      * @param cv True if this attachment is a CV
      * @param file Uploaded file attachment
      * @return CandidateAttachment containing link to the file in
-     * {@link CandidateAttachment#getLocation()}
+     * {@link CandidateAttachment#getUrl()}
      * @throws InvalidSessionException if logged in user is not a candidate
      * @throws IOException           if there is a problem uploading the file.
      */
@@ -120,7 +131,7 @@ public interface CandidateAttachmentService {
      * @param cv True if this attachment is a CV
      * @param file Uploaded file attachment
      * @return CandidateAttachment containing link to the file in
-     * {@link CandidateAttachment#getLocation()}
+     * {@link CandidateAttachment#getUrl()}
      * @throws NoSuchObjectException if no candidate is found with that id
      * @throws IOException           if there is a problem uploading the file.
      */
@@ -138,7 +149,7 @@ public interface CandidateAttachmentService {
      * @param file Uploaded file attachment
      * @param uploadType Type of attachment - eg CV
      * @return CandidateAttachment containing link to the file in
-     * {@link CandidateAttachment#getLocation()}
+     * {@link CandidateAttachment#getUrl()}
      * @throws NoSuchObjectException if no candidate is found with that id
      * @throws IOException           if there is a problem uploading the file.
      */

@@ -16,7 +16,8 @@
  */
 
 export enum TermsType {
-  CANDIDATE_PRIVACY_POLICY,
+  GRN_CANDIDATE_PRIVACY_POLICY,
+  TBB_CANDIDATE_PRIVACY_POLICY,
 }
 
 export interface TermsInfoDto {
@@ -27,7 +28,9 @@ export interface TermsInfoDto {
   id: string;
 
   /**
-   * HTML content
+   * HTML content.
+   *
+   * Empty content indicates that no terms have been set yet (legacy behavior)
    */
   content: string;
 }

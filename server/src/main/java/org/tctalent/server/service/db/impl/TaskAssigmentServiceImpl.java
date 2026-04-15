@@ -16,24 +16,25 @@
 
 package org.tctalent.server.service.db.impl;
 
+import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.time.LocalDate;
+import java.time.OffsetDateTime;
+import java.util.List;
+import java.util.Optional;
+import org.apache.commons.beanutils.PropertyUtils;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import org.tctalent.server.exception.InvalidRequestException;
 import org.tctalent.server.exception.InvalidSessionException;
 import org.tctalent.server.exception.NoSuchObjectException;
-import org.tctalent.server.repository.db.TaskAssignmentRepository;
-import org.tctalent.server.request.task.TaskListRequest;
-import org.tctalent.server.security.AuthService;
-import org.tctalent.server.service.db.CandidateAttachmentService;
-import org.tctalent.server.service.db.TaskAssignmentService;
-import org.tctalent.server.service.db.TaskService;
-
-import java.io.IOException;
-import java.time.LocalDate;
-import java.time.OffsetDateTime;
-import java.util.List;
+import org.tctalent.server.files.UploadType;
 import org.tctalent.server.model.db.Candidate;
+import org.tctalent.server.model.db.CandidateExam;
+import org.tctalent.server.model.db.CandidateProperty;
+import org.tctalent.server.model.db.Exam;
 import org.tctalent.server.model.db.QuestionTaskAssignmentImpl;
 import org.tctalent.server.model.db.SavedList;
 import org.tctalent.server.model.db.Status;
@@ -41,11 +42,19 @@ import org.tctalent.server.model.db.TaskAssignmentImpl;
 import org.tctalent.server.model.db.TaskImpl;
 import org.tctalent.server.model.db.UploadTaskAssignmentImpl;
 import org.tctalent.server.model.db.User;
+import org.tctalent.server.model.db.task.QuestionTask;
+import org.tctalent.server.model.db.task.QuestionTaskAssignment;
 import org.tctalent.server.model.db.task.Task;
 import org.tctalent.server.model.db.task.TaskAssignment;
 import org.tctalent.server.model.db.task.TaskType;
 import org.tctalent.server.model.db.task.UploadTask;
-import org.tctalent.server.model.db.task.UploadType;
+import org.tctalent.server.repository.db.TaskAssignmentRepository;
+import org.tctalent.server.request.task.TaskListRequest;
+import org.tctalent.server.security.AuthService;
+import org.tctalent.server.service.db.CandidateAttachmentService;
+import org.tctalent.server.service.db.CandidatePropertyService;
+import org.tctalent.server.service.db.TaskAssignmentService;
+import org.tctalent.server.service.db.TaskService;
 
 /**
  * Default implementation of a TaskAssignmentService
@@ -55,16 +64,19 @@ import org.tctalent.server.model.db.task.UploadType;
 @Service
 public class TaskAssigmentServiceImpl implements TaskAssignmentService {
     private final CandidateAttachmentService candidateAttachmentService;
+    private final CandidatePropertyService candidatePropertyService;
     private final TaskAssignmentRepository taskAssignmentRepository;
     private final TaskService taskService;
     private final AuthService authService;
 
     public TaskAssigmentServiceImpl(
         CandidateAttachmentService candidateAttachmentService,
+        CandidatePropertyService candidatePropertyService,
         TaskAssignmentRepository taskAssignmentRepository,
         AuthService authService,
         TaskService taskService) {
         this.candidateAttachmentService = candidateAttachmentService;
+        this.candidatePropertyService = candidatePropertyService;
         this.taskAssignmentRepository = taskAssignmentRepository;
         this.authService = authService;
         this.taskService = taskService;
@@ -203,9 +215,8 @@ public class TaskAssigmentServiceImpl implements TaskAssignmentService {
         taskAssignmentRepository.save((TaskAssignmentImpl) ta);
     }
 
-    private String computeUploadFileName
-        (Candidate candidate, UploadType uploadType, String baseFileName) {
-        return candidate.getCandidateNumber() + "-" + uploadType + "-" + baseFileName;
+    private String computeUploadFileName(Candidate candidate, String taskName, String baseFileName) {
+        return candidate.getCandidateNumber() + "_" + taskName + "-" + baseFileName;
     }
 
     @Override
@@ -215,7 +226,8 @@ public class TaskAssigmentServiceImpl implements TaskAssignmentService {
 
         Candidate candidate = ta.getCandidate();
         UploadType uploadType = uploadTask.getUploadType();
-        String uploadedName = computeUploadFileName(candidate, uploadType, file.getOriginalFilename());
+        String taskName = uploadTask.getName();
+        String uploadedName = computeUploadFileName(candidate, taskName, file.getOriginalFilename());
         String subFolderName = uploadTask.getUploadSubfolderName();
         candidateAttachmentService.uploadAttachment(candidate, uploadedName, subFolderName, file, uploadType);
 
@@ -240,4 +252,94 @@ public class TaskAssigmentServiceImpl implements TaskAssignmentService {
             .orElseThrow(() -> new InvalidSessionException("Not logged in"));
         return user;
     }
+
+    @Override
+    public void populateTransientTaskAssignmentFields(List<TaskAssignmentImpl> taskAssignments) {
+        for (TaskAssignment taskAssignment : taskAssignments) {
+            taskService.populateTransientFields(taskAssignment.getTask());
+
+            //If task is completed, see if there is any transient data to be populated - eg the
+            //answer on a question task
+            if (taskAssignment.getCompletedDate() != null) {
+                if (taskAssignment instanceof QuestionTaskAssignmentImpl) {
+                    QuestionTaskAssignment qta = (QuestionTaskAssignmentImpl) taskAssignment;
+                    String answer = fetchCandidateTaskAnswer(qta);
+                    qta.setAnswer(answer);
+                }
+            }
+        }
+    }
+
+    /**
+     * Retrieves the answer, if any, of the give question task assignment.
+     * @param questionTaskAssignment Question task assignment
+     * @return Candidate's answer to the question
+     * @throws NoSuchObjectException if the answer could not be retrieved because the answer has
+     * been specified as being located in a non existent candidate field or property.
+     */
+    @Nullable
+    private String fetchCandidateTaskAnswer(QuestionTaskAssignment questionTaskAssignment)
+        throws NoSuchObjectException {
+        String answer;
+        Task task = questionTaskAssignment.getTask();
+        if (task instanceof QuestionTask) {
+            String answerField = ((QuestionTask) task).getCandidateAnswerField();
+            Candidate candidate = questionTaskAssignment.getCandidate();
+            if (answerField == null) {
+                //Get answer from candidate property
+                String propertyName = task.getName();
+                final CandidateProperty property =
+                    candidatePropertyService.findProperty(candidate, propertyName);
+                answer = property != null ? property.getValue() : null;
+            } else {
+                //Get answer from candidate field
+
+                //TODO JC This is a bit of a hack - we need a better way of processing things like candidateExams
+                String candidateExamsFieldName = "candidateExams";
+                if (answerField.startsWith(candidateExamsFieldName + ".")) {
+                    //Special code for candidate exams
+                    //Extract the exam name from the answerField
+                    String examName = answerField.substring(candidateExamsFieldName.length() + 1);
+                    Exam examType = Exam.valueOf(examName);
+
+                    //See if we already have an entry for this exam
+                    Optional<CandidateExam> examO = Optional.empty();
+                    final List<CandidateExam> candidateExams = candidate.getCandidateExams();
+                    if (candidateExams != null) {
+                        examO = candidateExams.stream().filter(
+                            e -> e.getExam().equals(examType)).findFirst();
+                    }
+
+                    //Fetch the answer
+                    CandidateExam exam;
+                    if (examO.isPresent()) {
+                        exam = examO.get();
+                        answer = exam.getScore();
+                    } else {
+                        answer = null;
+                    }
+                } else {
+                    try {
+                        Object value = PropertyUtils.getProperty(candidate, answerField);
+                        answer = value != null ? value.toString() : null;
+                    } catch (IllegalAccessException e) {
+                        throw new InvalidRequestException("Unable to access '" + answerField
+                            + "' field of candidate");
+                    } catch (InvocationTargetException e) {
+                        throw new InvalidRequestException("Error while accessing '" + answerField
+                            + "' field of candidate");
+                    } catch (NoSuchMethodException e) {
+                        throw new NoSuchObjectException(
+                            "Answer not found to " + task.getDisplayName()
+                                + ". No such candidate field: " + answerField);
+                    }
+                }
+            }
+        } else {
+            throw new InvalidRequestException("Task is not a QuestionTask: " + task.getName());
+        }
+
+        return answer;
+    }
+
 }

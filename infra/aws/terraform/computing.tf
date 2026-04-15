@@ -1,3 +1,6 @@
+# Get the current AWS region from the provider configuration
+data "aws_region" "current" {}
+
 # Security Groups
 resource "aws_security_group" "fargate" {
   name   = "${var.app}-${var.env}-fargate-sg"
@@ -82,13 +85,65 @@ resource "aws_iam_role_policy_attachment" "ecs_task_execution_role_policy_attach
   policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
 }
 
-# ALB
-data "aws_acm_certificate" "certificate" {
-  domain      = var.site_domain
-  types       = ["AMAZON_ISSUED"]
-  most_recent = true
+resource "aws_iam_role" "ecs_task_role" {
+  name = "${var.app}-${var.env}-fargate-task-role"
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow",
+        Principal = {
+          Service = "ecs-tasks.amazonaws.com"
+        }
+        Action = "sts:AssumeRole"
+      }
+    ]
+  })
 }
 
+locals {
+  s3_data_bucket_arns = compact([
+    var.s3_bucket != "" ? "arn:aws:s3:::${var.s3_bucket}" : "",
+    var.translations_bucket != "" ? "arn:aws:s3:::${var.translations_bucket}" : "",
+    var.candidate_files_bucket != "" ? "arn:aws:s3:::${var.candidate_files_bucket}" : ""
+  ])
+  s3_data_object_arns = [for arn in local.s3_data_bucket_arns : "${arn}/*"]
+}
+
+resource "aws_iam_policy" "ecs_task_s3_policy" {
+  name = "${var.app}-${var.env}-fargate-task-s3-policy"
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+          "s3:ListBucket",
+          "s3:GetBucketLocation"
+        ]
+        Resource = local.s3_data_bucket_arns
+      },
+      {
+        Effect = "Allow"
+        Action = [
+          "s3:GetObject",
+          "s3:PutObject",
+          "s3:DeleteObject",
+          "s3:AbortMultipartUpload"
+        ]
+        Resource = local.s3_data_object_arns
+      }
+    ]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "ecs_task_role_policy_attachment_s3" {
+  role       = aws_iam_role.ecs_task_role.name
+  policy_arn = aws_iam_policy.ecs_task_s3_policy.arn
+}
+
+# ALB
 module "alb" {
   source             = "terraform-aws-modules/alb/aws"
   version            = "~> 6.0"
@@ -107,13 +162,13 @@ module "alb" {
       health_check = {
         enabled             = true
         interval            = 65
-        path                = "/"
+        path                = "/actuator/health"
         port                = "traffic-port"
         healthy_threshold   = 2
         unhealthy_threshold = 5
         timeout             = 60
         protocol            = "HTTP"
-        matcher             = "200,302"
+        matcher             = "200"
       }
       targets = {}
     }
@@ -123,16 +178,25 @@ module "alb" {
     {
       port               = 443
       protocol           = "HTTPS"
-      certificate_arn    = data.aws_acm_certificate.certificate.arn
+      certificate_arn    = aws_acm_certificate_validation.this.certificate_arn
       target_group_index = 0
     }
   ]
 
-  http_tcp_listeners = [
+  http_tcp_listeners = var.cloudfront_enable ? [
     {
-      port        = 80
-      protocol    = "HTTP"
-      action_type = "redirect"
+      action_type        = "forward"
+      port               = 80
+      protocol           = "HTTP"
+      target_group_index = 0
+      redirect           = {}
+    }
+    ] : [
+    {
+      action_type        = "redirect"
+      port               = 80
+      protocol           = "HTTP"
+      target_group_index = 0
       redirect = {
         port        = "443"
         protocol    = "HTTPS"
@@ -140,6 +204,17 @@ module "alb" {
       }
     }
   ]
+
+  tags = merge(
+    {
+      Name = "${var.app}-${var.env}"
+    },
+    var.common_tags,
+    {
+      Component = "alb"
+      Purpose   = "public-ingress"
+    }
+  )
 }
 
 # CloudWatch Logs
@@ -174,18 +249,26 @@ module "ecs" {
     }
   }
 
-  fargate_capacity_providers = {
+  # Module v7+ uses explicit capacity providers and strategy.
+  cluster_capacity_providers = ["FARGATE", "FARGATE_SPOT"]
+  default_capacity_provider_strategy = {
     FARGATE = {
-      default_capacity_provider_strategy = {
-        weight = 50
-      }
+      weight = 50
     }
     FARGATE_SPOT = {
-      default_capacity_provider_strategy = {
-        weight = 50
-      }
+      weight = 50
     }
   }
+
+  tags = merge(
+    {
+      Name = "${var.app}-${var.env}"
+    },
+    var.common_tags,
+    {
+      Component = "ecs"
+    }
+  )
 }
 
 resource "aws_ecs_service" "web-app" {
@@ -207,6 +290,16 @@ resource "aws_ecs_service" "web-app" {
     assign_public_ip = true
   }
   health_check_grace_period_seconds = 300
+
+  tags = merge(
+    {
+      Name = "${var.app}-${var.env}"
+    },
+    var.common_tags,
+    {
+      Component = "ecs"
+    }
+  )
 }
 
 resource "aws_ecs_task_definition" "web-app" {
@@ -214,8 +307,9 @@ resource "aws_ecs_task_definition" "web-app" {
   requires_compatibilities = ["FARGATE"]
   network_mode             = "awsvpc"
   execution_role_arn       = aws_iam_role.ecs_task_execution_role.arn
-  cpu                      = 256
-  memory                   = 2048
+  task_role_arn            = aws_iam_role.ecs_task_role.arn
+  cpu                      = var.fargate_cpu
+  memory                   = var.fargate_memory
   container_definitions = jsonencode([
     {
       name                   = "${var.app}-${var.env}"
@@ -228,7 +322,7 @@ resource "aws_ecs_task_definition" "web-app" {
         options = {
           awslogs-group         = "/fargate/service/${var.app}-${var.env}-fargate-log"
           awslogs-stream-prefix = "ecs"
-          awslogs-region        = "us-east-1"
+          awslogs-region        = data.aws_region.current.id
         }
       }
       portMappings = [
@@ -239,4 +333,6 @@ resource "aws_ecs_task_definition" "web-app" {
       ]
     }
   ])
+
+  depends_on = [aws_ssm_parameter.spring_datasource_url]
 }

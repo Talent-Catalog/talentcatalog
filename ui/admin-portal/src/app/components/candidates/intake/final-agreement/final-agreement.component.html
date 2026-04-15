@@ -15,26 +15,32 @@
   -->
 
 <div>
-  <label class="form-label">Please check off the points below before finishing the interview. Once finished click "Complete Intake"
-    button to automatically create a note with details of completion.</label>
+  <label class="form-label">
+    Please check the points below before finishing the interview.<br><br>
+    Once finished click 'Complete Intake' button to automatically create a note with details of completion.
+  </label>
   <ul>
     <li>
-      Candidate has verbally confirmed he/she is aware engagement with Talent Beyond Boundaries does not guarantee a secured opportunity internationally.
+      Candidate has verbally confirmed he/she is aware engagement with {{ loggedInUserPartner.name }}
+      does not guarantee a secured opportunity internationally.
     </li>
     <li>
-      Candidate has verbally given TBB permission to share the candidate’s full profile with employers and anonymous information to third party partners.
+      Candidate has verbally given {{ loggedInUserPartner.name }} permission to share their full
+      profile with employers and anonymous information to third party partners.
     </li>
-    <li>
-      Sent collaboration agreement to candidate
-    </li>
-    <li>
-      Sent Coursera invite
-    </li>
-    <li>
-      Sent ReallyEnglish invite
-    </li>
-    <li>
-      Sent Forage link
-    </li>
+    <span *ngIf="loggedInUserPartner.id === 1">
+      <li>
+        Sent collaboration agreement to candidate
+      </li>
+      <li>
+        Sent Coursera invite
+      </li>
+      <li>
+        Sent ReallyEnglish invite
+      </li>
+      <li>
+        Sent Forage link
+      </li>
+    </span>
   </ul>
 </div>

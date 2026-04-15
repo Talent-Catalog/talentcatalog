@@ -30,6 +30,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.never;
@@ -108,14 +109,15 @@ import org.tctalent.server.service.db.FileSystemService;
 import org.tctalent.server.service.db.JobChatService;
 import org.tctalent.server.service.db.JobOppIntakeService;
 import org.tctalent.server.service.db.NextStepProcessingService;
-import org.tctalent.server.service.db.OppNotificationService;
 import org.tctalent.server.service.db.PartnerService;
 import org.tctalent.server.service.db.SalesforceBridgeService;
 import org.tctalent.server.service.db.SalesforceJobOppService;
 import org.tctalent.server.service.db.SalesforceService;
 import org.tctalent.server.service.db.SavedListService;
 import org.tctalent.server.service.db.SavedSearchService;
+import org.tctalent.server.service.db.SystemNotificationService;
 import org.tctalent.server.service.db.UserService;
+import org.tctalent.server.service.policy.ChatPolicy;
 import org.tctalent.server.util.filesystem.GoogleFileSystemDrive;
 import org.tctalent.server.util.filesystem.GoogleFileSystemFile;
 import org.tctalent.server.util.filesystem.GoogleFileSystemFolder;
@@ -152,12 +154,13 @@ class JobServiceImplTest {
     private static final String URL = "www.url.com";
     private static final Specification<SalesforceJobOpp> FAKE_SPEC = (root, query, cb) -> null;
 
+    @Mock private ChatPolicy chatPolicy;
     @Mock private UserService userService;
     @Mock private SalesforceJobOppRepository salesforceJobOppRepository;
     @Mock private SavedSearchService savedSearchService;
     @Mock private SavedListService savedListService;
     @Mock private NextStepProcessingService nextStepProcessingService;
-    @Mock private OppNotificationService oppNotificationService;
+    @Mock private SystemNotificationService systemNotificationService;
     @Mock private CandidateOpportunityService candidateOpportunityService;
     @Mock private AuthService authService;
     @Mock private SalesforceJobOppService salesforceJobOppService;
@@ -386,6 +389,7 @@ class JobServiceImplTest {
     @DisplayName("should call salesforceJobOppService to create job and update TC version with SF "
         + "details for default job creator user")
     void createJob_shouldCallSalesforceJobOppServiceToCreateJobAndThenUpdateTCVersion() {
+        given(chatPolicy.canCreateChats(any())).willReturn(true);
         given(userService.getLoggedInUser()).willReturn(adminUser);
         adminUser.setPartner(getDefaultPartner());
         createJobRequest.setSfJoblink(SF_JOB_LINK); // Default job creator must have SF equivalent
@@ -457,6 +461,7 @@ class JobServiceImplTest {
     }
 
     private void setUpAndCompleteCreateJobPath() {
+        given(chatPolicy.canCreateChats(any())).willReturn(true);
         given(userService.getLoggedInUser()).willReturn(adminUser);
         adminUser.getPartner().setEmployer(getEmployer());
         adminUser.getPartner().setJobCreator(true);
@@ -1183,9 +1188,9 @@ class JobServiceImplTest {
         GoogleFileSystemFile mockGoogleFile = mock(GoogleFileSystemFile.class);
 
         given(salesforceJobOppRepository.findById(JOB_ID)).willReturn(Optional.of(longJob));
+        lenient().when(salesforceJobOppRepository.save(any())).thenReturn(longJob);
         given(mockFile.getOriginalFilename()).willReturn(NAME);
         given(mockFile.getInputStream()).willReturn(mockStream);
-        given(mockStream.read(any())).willReturn(-1);
         given(googleDriveConfig.getListFoldersDrive()).willReturn(mock(GoogleFileSystemDrive.class));
         given(fileSystemService.uploadFile(
             any(GoogleFileSystemDrive.class),

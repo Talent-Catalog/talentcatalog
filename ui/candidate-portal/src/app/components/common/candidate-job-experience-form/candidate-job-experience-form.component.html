@@ -23,11 +23,11 @@
   <!-- OCCUPATION -->
   <div class="col-12" *ngIf="!candidateOccupation">
     <div class="mb-3">
-      <label class="form-label" for="candidateOccupationId">
+      <tc-label for="candidateOccupationId">
         {{ 'FORM.JOBEXPERIENCE.LABEL.CANDIDATEOCCUPATIONID' | translate }} <sup>*</sup>
-      </label>
+      </tc-label>
 
-      <ng-select  id="candidateOccupationId" [formControlName]="'candidateOccupationId'" [items]="candidateOccupations"
+      <ng-select class="tc-select" id="candidateOccupationId" [formControlName]="'candidateOccupationId'" [items]="candidateOccupations"
                   [clearable]="false" bindValue="id" bindLabel="occupation.name" placeholder="{{ 'FORM.PLACEHOLDER.SELECT' | translate }}">
       </ng-select>
 
@@ -38,11 +38,11 @@
   <!-- COMPANY NAME -->
   <div class="col-12 col-md-6">
     <div class="mb-3">
-      <label class="form-label" for="companyName">
+      <tc-label for="companyName">
         {{ 'FORM.JOBEXPERIENCE.LABEL.COMPANYNAME' | translate }} <sup>*</sup>
-      </label>
+      </tc-label>
 
-      <input type="text" class="form-control" name="companyName" id="companyName" [formControlName]="'companyName'">
+      <tc-input type="text" name="companyName" id="companyName" [formControlName]="'companyName'"></tc-input>
 
       <app-form-control-error [control]="form.controls.companyName"></app-form-control-error>
     </div>
@@ -51,10 +51,10 @@
   <!-- COMPANY LOCATION -->
   <div class="col-12 col-md-6">
     <div class="mb-3">
-      <label class="form-label" for="country">
+      <tc-label for="country">
         {{ 'FORM.JOBEXPERIENCE.LABEL.COUNTRY' | translate }} <sup>*</sup>
-      </label>
-      <ng-select id="country" [formControlName]="'country'" [items]="countries" [clearable]="false"
+      </tc-label>
+      <ng-select class="tc-select" id="country" [formControlName]="'country'" [items]="countries" [clearable]="false"
                   bindLabel="name" bindValue="id" placeholder="{{ 'FORM.PLACEHOLDER.SELECTORTYPE' | translate }}">
       </ng-select>
       <app-form-control-error [control]="form.controls.country"></app-form-control-error>
@@ -64,17 +64,17 @@
   <!-- START DATE -->
   <div class="col-12 col-md-6">
     <div class="mb-3">
-      <label class="form-label" for="startDate">
+      <tc-label for="startDate">
         {{ 'FORM.JOBEXPERIENCE.LABEL.STARTDATE' | translate }} <sup>*</sup>
-      </label>
-      <app-date-picker id="startDate" [control]="form.controls.startDate"></app-date-picker>
+      </tc-label>
+      <tc-date-picker id="startDate" [control]="form.controls.startDate"></tc-date-picker>
       <app-form-control-error [control]="form.controls.startDate"></app-form-control-error>
       <p class="small mt-2 mb-0">
         {{ 'FORM.LABEL.APPROX' | translate }}
       </p>
-      <small *ngIf="form.hasError('invalidDate')">
+      <tc-error-message *ngIf="form.hasError('invalidDate')">
         {{ 'FORM.ERROR.INVALIDDATERANGE' | translate }}
-      </small>
+      </tc-error-message>
     </div>
 
   </div>
@@ -82,10 +82,10 @@
   <!-- END DATE -->
   <div class="col-12 col-md-6">
     <div class="mb-3">
-      <label class="form-label" for="endDate">
+      <tc-label for="endDate">
         {{ 'FORM.JOBEXPERIENCE.LABEL.ENDDATE' | translate }}
-      </label>
-      <app-date-picker id="endDate" [control]="form.controls.endDate"></app-date-picker>
+      </tc-label>
+      <tc-date-picker id="endDate" [control]="form.controls.endDate"></tc-date-picker>
       <app-form-control-error [control]="form.controls.endDate"></app-form-control-error>
       <p class="small mt-2 mb-0">
         {{ 'FORM.LABEL.APPROX' | translate }}
@@ -97,11 +97,11 @@
   <!-- JOB TITLE -->
   <div class="col-12">
     <div class="mb-3">
-      <label class="form-label" for="role">
+      <tc-label for="role">
         {{ 'FORM.JOBEXPERIENCE.LABEL.ROLE' | translate }} <sup>*</sup>
-      </label>
+      </tc-label>
 
-      <input type="text" class="form-control" name="role" id="role" [formControlName]="'role'">
+      <tc-input type="text" name="role" id="role" [formControlName]="'role'"></tc-input>
 
       <app-form-control-error [control]="form.controls.role"></app-form-control-error>
     </div>
@@ -110,9 +110,9 @@
   <!-- ROLE DESCRIPTION -->
   <div class="col-12">
     <div class="mb-3">
-      <label class="form-label" for="description">
+      <tc-label for="description">
         {{ 'FORM.JOBEXPERIENCE.LABEL.DESCRIPTION' | translate }} <sup>*</sup>
-      </label>
+      </tc-label>
 
       <ngx-wig id="description" formControlName="description"></ngx-wig>
 
@@ -123,20 +123,20 @@
   <!-- FULLTIME? -->
   <div class="col-12">
     <div class="mb-3">
-      <label class="form-label">{{ 'FORM.JOBEXPERIENCE.LABEL.CONTRACTTYPE.TITLE' | translate }} <sup>*</sup></label>
+      <tc-label>{{ 'FORM.JOBEXPERIENCE.LABEL.CONTRACTTYPE.TITLE' | translate }} <sup>*</sup></tc-label>
 
-      <div class="form-check">
-        <input class="form-check-input" type="radio" id="fullTime" [value]="true" [formControlName]="'fullTime'">
-        <label class="form-check-label" for="fullTime">
+      <div class="mt-2">
+        <tc-radio type="radio" id="fullTime" name="contractType" [value]="true" [formControlName]="'fullTime'"></tc-radio>
+        <tc-label for="fullTime">
           {{ 'FORM.JOBEXPERIENCE.LABEL.CONTRACTTYPE.FULLTIME' | translate }}
-        </label>
+        </tc-label>
       </div>
 
-      <div class="form-check">
-        <input class="form-check-input" type="radio" id="partTime" [value]="false" [formControlName]="'fullTime'">
-        <label class="form-check-label" for="partTime">
+      <div>
+        <tc-radio type="radio" id="partTime" name="contractType" [value]="false" [formControlName]="'fullTime'"></tc-radio>
+        <tc-label for="partTime">
           {{ 'FORM.JOBEXPERIENCE.LABEL.CONTRACTTYPE.PARTTIME' | translate }}
-        </label>
+        </tc-label>
       </div>
 
       <app-form-control-error [control]="form.controls.fullTime"></app-form-control-error>
@@ -146,20 +146,20 @@
   <!-- VOLUNTEER / PAID -->
   <div class="col-12">
     <div class="mb-3">
-      <label class="form-label">{{ 'FORM.JOBEXPERIENCE.LABEL.EMPLOYMENTTYPE.TITLE' | translate }} <sup>*</sup></label>
+      <tc-label>{{ 'FORM.JOBEXPERIENCE.LABEL.EMPLOYMENTTYPE.TITLE' | translate }} <sup>*</sup></tc-label>
 
-      <div class="form-check">
-        <input class="form-check-input" type="radio" id="paid" [value]="true" [formControlName]="'paid'">
-        <label class="form-check-label" for="paid">
+      <div class="mt-2">
+        <tc-radio type="radio" id="paid" name="employmentType" [value]="true" [formControlName]="'paid'"></tc-radio>
+        <tc-label  for="paid">
           {{ 'FORM.JOBEXPERIENCE.LABEL.EMPLOYMENTTYPE.PAID' | translate }}
-        </label>
+        </tc-label>
       </div>
 
-      <div class="form-check">
-        <input class="form-check-input" type="radio" id="voluntary" [value]="false" [formControlName]="'paid'">
-        <label class="form-check-label" for="voluntary">
+      <div>
+        <tc-radio type="radio" id="voluntary" name="employmentType" [value]="false" [formControlName]="'paid'"></tc-radio>
+        <tc-label for="voluntary">
           {{ 'FORM.JOBEXPERIENCE.LABEL.EMPLOYMENTTYPE.VOLUNTARY' | translate }}
-        </label>
+        </tc-label>
       </div>
 
       <app-form-control-error [control]="form.controls.paid"></app-form-control-error>
@@ -167,17 +167,17 @@
   </div>
 
   <div class="col-12 text-end mb-4">
-    <button class="btn btn-outline-primary"
+    <tc-button class="me-2"
             [disabled]="loading || saving"
-            (click)="cancel()">
+            (onClick)="cancel()">
       {{ 'FORM.JOBEXPERIENCE.BUTTON.CANCEL' | translate }}
-    </button>
+    </tc-button>
 
-    <button class="btn btn-primary"
+    <tc-button
             [disabled]="form.invalid || loading || saving"
-            (click)="save()">
+            (onClick)="save()">
       <span *ngIf="!candidateJobExperience">{{ 'FORM.JOBEXPERIENCE.BUTTON.ADD' | translate }}</span>
       <span *ngIf="candidateJobExperience">{{ 'FORM.JOBEXPERIENCE.BUTTON.SAVE' | translate }}</span>
-    </button>
+    </tc-button>
   </div>
 </form>

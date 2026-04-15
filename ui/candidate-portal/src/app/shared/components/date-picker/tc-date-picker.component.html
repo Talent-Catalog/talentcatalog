@@ -1,0 +1,54 @@
+<!--
+  ~ Copyright (c) 2024 Talent Catalog.
+  ~
+  ~ This program is free software: you can redistribute it and/or modify it under
+  ~ the terms of the GNU Affero General Public License as published by the Free
+  ~ Software Foundation, either version 3 of the License, or any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful, but WITHOUT
+  ~ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+  ~ FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+  ~ for more details.
+  ~
+  ~ You should have received a copy of the GNU Affero General Public License
+  ~ along with this program. If not, see https://www.gnu.org/licenses/.
+  -->
+
+<div class="tc-date-picker">
+  <div id="date-container">
+    <tc-button class="calendar-btn" type="plain" (onClick)="picker.toggle()">
+      <tc-icon color="primary" size="md">
+        <i class="fas fa-calendar"></i>
+      </tc-icon>
+    </tc-button>
+  <input (click)="picker.toggle()" class="form-control" placeholder="yyyy-mm-dd"
+         name="dp" ngbDatepicker
+         #picker="ngbDatepicker"
+         [dayTemplate]="t"
+         [(ngModel)]="dateString"
+         (ngModelChange)="update()"
+         (dateSelect)="control.markAsDirty()"
+         [autoClose]="true"
+         [outsideDays]="'hidden'"
+         [minDate]="minDate"
+         [maxDate]="maxDate"
+         [disabled]="control.disabled">
+    <tc-button class="clear-btn" type="plain" (onClick)="clear()">
+      <tc-icon color="gray" size="sm">
+        <i class="fas fa-times"></i>
+      </tc-icon>
+    </tc-button>
+  </div>
+</div>
+<ng-template #t let-d="date">
+  <span class="custom-day"
+        [class.selected]="d.equals(date)">
+    {{ d.day }}
+  </span>
+</ng-template>
+<small *ngIf="showHelpText" class="text-muted d-block mt-2">
+  If exact day or month unknown, use '01' to approximate, e.g., '2020-07-<b>01</b>'.
+</small>
+<tc-alert type="danger" *ngIf="error">
+  <div><strong>{{error}}</strong></div>
+</tc-alert>

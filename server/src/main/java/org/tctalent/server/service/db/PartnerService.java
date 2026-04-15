@@ -17,6 +17,7 @@
 package org.tctalent.server.service.db;
 
 import java.util.List;
+import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
@@ -66,6 +67,16 @@ public interface PartnerService {
      */
     @NonNull
     Partner getPartner(long partnerId) throws NoSuchObjectException;
+
+    /**
+     * Find the default source partner (eg TBB).
+     * <p>
+     * Note that this is called by {@link #getDefaultSourcePartner()}.
+     * Normally you should call that.
+     * <p>
+     * @return Default source partner as Optional.
+     */
+    Optional<PartnerImpl> findDefaultSourcePartner();
 
     /**
      * Get the default source partner (eg TBB).
@@ -160,4 +171,26 @@ public interface PartnerService {
      * Update the given user contact for the given partner and job
      */
     void updateJobContact(Partner partner, SalesforceJobOpp job, User contactUser);
+
+    /**
+     * Marks the current partner as having accepted the DPA (Data Processing Agreement).
+     *
+     * @param acceptedDpaId the ID of the accepted DPA
+     * @return the updated {@link PartnerImpl} after acceptance
+     */
+    PartnerImpl updateAcceptedDpa(String acceptedDpaId);
+
+    /**
+     * Records that the current partner has seen the DPA for the first time.
+     *
+     * @return the updated {@link PartnerImpl} with first DPA seen timestamp
+     */
+    PartnerImpl setFirstDpaSeen();
+
+    /**
+     * Checks whether the DPA acceptance is required for the current partner.
+     *
+     * @return true if DPA acceptance is required, false otherwise
+     */
+    boolean requiresDpaAcceptance();
 }

@@ -72,8 +72,6 @@ Download and install the latest of the following tools.
             - Set the `Project bytecode version` to match the JDK chosen (e.g. **17**).
         - Go to IntelliJ / Settings / Build,Execution,Deployment / Build Tools / Gradle
             - Set the **GradleJVM** from the drop list to use the Project SDK.
-
-
 - Code Style
     - Download the intellij-java-google-style.xml file from the google/styleguide repository
       [here](https://github.com/google/styleguide/blob/gh-pages/intellij-java-google-style.xml).
@@ -86,27 +84,50 @@ Download and install the latest of the following tools.
       **Apply** for the settings to take effect.
 
 
+- Python 3.12
+    - Later versions of Python are not supported by all the packages that we use.
+    - It is not recommended to install Python using brew.
+      See, for example, [here](https://pydevtools.com/handbook/explanation/should-i-use-homebrew-to-install-python/).
+      Instead, download from the [Python website](https://www.python.org/downloads/).
+    - Intellij Settings:
+        - See [Intellij doc](https://www.jetbrains.com/help/idea/configuring-python-sdk.html).
+          We configure local Python interpreters using [virtual environments](https://www.w3schools.com/python/python_virtualenv.asp).
+
 - Gradle [https://gradle.org/install/](https://gradle.org/install/)
   ```
   brew install gradle
   ```
 
-- Node [https://nodejs.org/en/](https://nodejs.org/en/)
-    - Note that developers should use **Node version 18**, specifically versions **18.10.0 and 
-    above**, which is currently the latest LTS (Long Term Support) version compatible with Angular 16.
+- Node.js [https://nodejs.org/en/](https://nodejs.org/en/)
+    - This project requires **Node.js 18** 
+    - We currently pin Node 18.20.7 (via .nvmrc), which satisfies Angular 17’s Node 18.13+ 
+      requirement.
         - See [Angular Compatibility Table](https://angular.io/guide/versions)
         - See [Node.js Releases](https://nodejs.org/en/about/releases/)
-    - If using Node 17 or higher, it’s recommended to add `--host=127.0.0.1` to the `ng serve` 
-    command to avoid debugger and sourcemap issues in IntelliJ. The `start` scripts in `package.json`
-    have been bundled with this parameter for convenience.
+
+    - **Install Node using nvm (recommended)**
+      - If you don’t already have nvm installed:
+        ```
+        brew install nvm
+        ```
+        Note the messages from brew at the end of the install.
+        You will have to manually set up the path.
+
+        Restart your terminal (or reload your shell), then from the project root:
+        ```
+        nvm install
+        nvm use
+        node -v 
+        # should output v18.20.7
+        ```
+      
+    - **IntelliJ users**
+      - When using Node 17+, `ng serve` may require `--host=127.0.0.1` to avoid debugger and sourcemap 
+        issues in IntelliJ.
+      - The `start` scripts in `package.json` in each ui module already include this flag for 
+        convenience.
         - See [IntelliJ Angular Debugging Guide](https://www.jetbrains.com/help/idea/angular.html)
         - See [IntelliJ Angular Debugging Troubleshooting](https://www.jetbrains.com/help/idea/angular.html#ws_angular_debug_app_troubleshooting)
-
-  ```
-  brew install node@18
-  ```
-    - Note the messages from brew at the end of the install.
-      You will have to manually set up the path.
 
 
 - Angular CLI [https://angular.io/cli](https://angular.io/cli)
@@ -134,6 +155,15 @@ Download and install the latest of the following tools.
       ```shell
         docker-compose --version
       ```
+      
+      > IMPORTANT NOTE:
+      >
+      > This project assumes you are using Docker Compose V2. Container names differ from V1.
+      > 
+      > V1 used underscores (_) to separate parts of the container name, whereas V2 uses hyphens (-).
+      > 
+      > Commands in this README use V2 conventions. If you are using V1, you will need to adjust 
+        the commands, or upgrade to V2 (see [Docker's Official Guide](https://docs.docker.com/compose/releases/migrate/)).
 
 ### Clone the TC repository from Git ###
 
@@ -244,7 +274,18 @@ Then you can run `init` (only need to do this once), and then `plan` or `apply`,
 
 ### Set up your local database ###
 
-Ask TC developers for a `pg_dump` of the database. Note that the dump does not have to be recent. 
+If you just create a database called `tctalent` with no tables, 
+running the server for the first time will automatically create all the required tables. 
+(See the section below on `Run the Server`) 
+It will also automatically create some static data, including populating the country and language
+tables. Lastly it will create a system admin user called SystemAdmin that you can log in with
+and start creating other users and configuration. You can use the `boot-admin-password` property
+in `application.yml` to define a password for that user.
+
+Alternately, ask TC developers for a `pg_dump` of the database. The advantage of the the dump
+is that you will get a database populated with a lot of test data and users. 
+
+Note that the dump does not have to be recent. 
 The software will automatically apply any required updates to the database definition, driven by 
 Flyway files stored in GitHub. 
 
@@ -252,7 +293,7 @@ A standard dump file is kept specifically for getting new developers started, bu
 also quickly create a new one from their local containerised version with the following commands:
 
    ```shell    
-   docker exec -it docker-compose-postgres-1 pg_dump --file=/tmp/dump.sql --create --username=tctalent --host=localhost --port=5432
+   docker exec -it docker-compose-postgres-1 pg_dump --file=/tmp/tcdump.sql --create --username=tctalent --host=localhost --port=5432
    ```
    ```shell    
    docker cp docker-compose-postgres-1:/tmp/tcdump.sql </path/to/file>   
@@ -490,20 +531,23 @@ for additional documentation.
 
 ### Master branch ###
 
-The main branch is "master". We only merge and push into "master" when we are
-ready to deploy to production (rebuild and upload of build artifacts to the
-production environment is automatic, triggered by any push to "master".
-See Deployment section below).
+The main branch is "master". We only merge into "master" when code is ready for production. A push 
+to "master" automatically runs the build and test pipeline but does **not** automatically deploy to 
+any production environment. Production image deployments to GRN and TC (TBB + OPC) are triggered
+independently and manually — see the
+[Release Runbook wiki](https://github.com/Talent-Catalog/talentcatalog/wiki/Release#release-runbook)
+for full details.
 
-Master should only be accessed directly when staging
-is merged into it, triggering deployment to production. You should not
+Master should only be accessed directly when staging is merged into it. You should not
 do normal development in Master.
 
 ### Staging branch ###
 
 The "staging" branch is used for code which is potentially ready to go into
-production. Code is pushed into production by merging staging into master and
-then pushing master. See Deployment section below.
+production. Code is promoted to production by merging staging into master. Production deployments 
+are then triggered manually via GitHub Actions — see the
+[Release wiki](https://github.com/Talent-Catalog/talentcatalog/wiki/Release) for the
+release runbook.
 
 Staging is a shared resource so you should only push changes there when
 you have finished changes which you are confident will build without error
@@ -546,3 +590,4 @@ See the Deployment and Monitoring pages on the
 
 [GNU AGPLv3](https://choosealicense.com/licenses/agpl-3.0/)
 
+For copyright header format and conventions, see [CONTRIBUTING.md](CONTRIBUTING.md).

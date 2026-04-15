@@ -14,7 +14,7 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<input type="text" class="form-control" [(ngModel)]="this.value" (ngModelChange)="update()">
-<div class="alert alert-danger" *ngIf="error && this.value != null">
+<tc-input [(ngModel)]="this.value" (ngModelChange)="update()"></tc-input>
+<tc-alert  type="warning" *ngIf="error && this.value != null">
   {{error}}
-</div>
+</tc-alert >

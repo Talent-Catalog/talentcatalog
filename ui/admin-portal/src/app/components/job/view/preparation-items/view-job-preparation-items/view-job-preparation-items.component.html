@@ -17,11 +17,18 @@
 <div class="alert alert-danger" *ngIf="error">
   {{error}}
 </div>
-<div *ngIf="jobPrepItems" class="card">
-  <div class="card-header d-flex align-items-baseline justify-content-between">
-    <h5>Suggested job preparation items</h5>
-  </div>
-  <div class="card-body">
+<tc-card *ngIf="jobPrepItems">
+  <tc-card-header>
+    Suggested job preparation items
+    <tc-button *ngIf="editable"
+               color="success"
+               (onClick)="publish()"
+               ngbTooltip=
+                 "Publish the job so other TC users can see it and begin the recruitment process.">
+      Publish Job
+    </tc-button>
+  </tc-card-header>
+  <div>
     <div>
       Clicking on each item will show you how you can complete it. A tick appears
       next to items which have been completed.
@@ -32,7 +39,7 @@
         <li class="prep-items" *ngFor="let item of jobPrepItems" (click)="onItemSelected(item)"
             [ngClass]="{'selected': isSelected(item)}"
         >
-          <span class="fa-li text-secondary">
+          <span class="fa-li">
              <i [ngClass]="item.isCompleted() ? 'far fa-check-square' : 'far fa-square'"></i>
           </span>
           {{item.description}}
@@ -40,4 +47,4 @@
       </ul>
     </div>
   </div>
-</div>
+</tc-card>

@@ -19,7 +19,8 @@ import {RegistrationService} from "../../services/registration.service";
 import {ActivatedRoute, Router} from "@angular/router";
 import {LanguageService} from "../../services/language.service";
 import {AuthenticationService} from "../../services/authentication.service";
-import {BrandingService} from "../../services/branding.service";
+import {CandidateService} from "../../services/candidate.service";
+import {Partner} from "../../model/partner";
 
 @Component({
   selector: 'app-register',
@@ -28,13 +29,14 @@ import {BrandingService} from "../../services/branding.service";
 })
 export class RegisterComponent implements OnInit, OnDestroy {
 
-  partnerName: string;
+  private partner: Partner;
+  private loadingPartner: boolean = false;
 
   constructor(public registrationService: RegistrationService,
+              private candidateService: CandidateService,
               public authenticationService: AuthenticationService,
               private route: ActivatedRoute,
               private languageService: LanguageService,
-              private brandingService: BrandingService,
               public router: Router) { }
 
   ngOnInit() {
@@ -60,13 +62,31 @@ export class RegisterComponent implements OnInit, OnDestroy {
     this.authenticationService.logout();
   }
 
-  setPartnerName(): void {
-    this.brandingService.getBrandingInfo().subscribe(
-      (brandingInfo) => this.partnerName = brandingInfo.partnerName);
+  get partnerName(): string {
+    if (!this.partner && !this.loadingPartner) {
+      this.loadPartner();
+    }
+    return this.partner?.name;
   }
 
-  getPartnerName(): string {
-    return this.partnerName;
+  private loadPartner() {
+    if (!this.partner) {
+      this.loadingPartner = true;
+      //Grab partner from candidate
+      this.candidateService.getCandidatePersonal().subscribe(
+        {
+          next: candidate => {
+            this.partner = candidate?.user?.partner;
+            this.loadingPartner = false
+          },
+          error: err => {
+            this.partner = null;
+            this.loadingPartner = false;
+            console.log("RegisterComponent: failed to load candidate-" + err);
+          }
+        }
+      )
+    }
   }
 
   isRegistered(): boolean {

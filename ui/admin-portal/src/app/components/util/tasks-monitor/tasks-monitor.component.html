@@ -14,12 +14,14 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<div class="d-inline-block ms-2" *ngIf="!hasCompleted">
-  <sup class="fw-bold" [ngClass]="{'text-danger' : hasOverdue,'text-warning' : hasAbandoned}">
+<div class="d-inline-block"
+     *ngIf="!hasCompleted"
+     [ngClass]="sizeClass">
+  <sup class="fw-bold" [ngClass]="{'text-color-red' : hasOverdue,'text-color-yellow' : hasAbandoned}">
     {{this.completedTasks.length}}
   </sup>
   &frasl;
-  <sub class="text-muted fw-bold">
+  <sub class="text-color-secondary fw-bold">
     {{this.totalTasks.length}}
   </sub>
 </div>

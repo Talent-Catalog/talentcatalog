@@ -14,6 +14,9 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-.card-body :last-child > hr {
-  display: none;
+.note-title {
+  flex: 1;
+  min-width: 0;
+  white-space: normal;
+  word-break: break-word;
 }

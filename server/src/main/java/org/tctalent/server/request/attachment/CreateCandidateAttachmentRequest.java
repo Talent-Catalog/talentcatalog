@@ -20,12 +20,13 @@ import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import lombok.Getter;
 import lombok.Setter;
+import org.tctalent.server.files.StoredFile;
+import org.tctalent.server.files.UploadType;
 import org.tctalent.server.model.db.AttachmentType;
-import org.tctalent.server.model.db.task.UploadType;
 
 @Getter
 @Setter
-public class CreateCandidateAttachmentRequest {
+public class CreateCandidateAttachmentRequest implements StoredFile {
 
     private Long candidateId;
 
@@ -40,14 +41,9 @@ public class CreateCandidateAttachmentRequest {
     private String fileType;
 
     /**
-     * For links {@link AttachmentType#link} and
-     * Google docs {@link AttachmentType#googlefile}, the associated url.
-     * For S3 files {@link AttachmentType#file}, it is the unique filename
-     * generated on S3.
+     * The attachment's url.
      */
-    private String location;
-
-    private Boolean cv;
+    private String url;
 
     private UploadType uploadType;
 
@@ -61,7 +57,29 @@ public class CreateCandidateAttachmentRequest {
      */
     private String textExtract;
 
+    /**
+     * See IStoredFile Javadoc
+     */
+    private boolean active;
 
+    /**
+     * See IStoredFile Javadoc
+     */
+    private String bucket;
 
+    /**
+     * See IStoredFile Javadoc
+     */
+    private Long contentLength;
+
+    /**
+     * See IStoredFile Javadoc
+     */
+    private String sha256Hex;
+
+    /**
+     * See IStoredFile Javadoc
+     */
+    private String storageKey;
 }
 

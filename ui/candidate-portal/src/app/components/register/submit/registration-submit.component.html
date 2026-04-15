@@ -1,30 +1,55 @@
-<app-loading [loading]="loading"></app-loading>
+<div class="container-fluid step-header">
+  <div class="container">
+    <h3 [innerHTML]="'HEADER.NAV.PRIVACY' | translate"></h3>
+    <p
+      [innerHTML]="'REGISTRATION.SUBMIT.YOUR_PARTNER_IS' | translate:{partner: getPartnerDescription(true)}"
+      class="explain"></p>
 
-<div [innerHTML]="'REGISTRATION.SUBMIT.YOUR_PARTNER_IS'
-| translate:{partner: getPartnerDescription(true)} ">
+    <div class="step-progress">
+      <div class="step-progress-bar"
+           *ngFor="let x of [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]; let i = index;"
+           [class.selected]="11 === i + 1"></div>
+    </div>
+  </div>
 </div>
 
-<hr class="my-4"/>
+<div class="container step-body">
+  <tc-loading [loading]="loading"></tc-loading>
 
-<div [innerHTML]="'REGISTRATION.SUBMIT.CONSENT_INTRODUCTION' | translate"></div>
+  <div [innerHTML]="'REGISTRATION.SUBMIT.INTRODUCTION' | translate"></div>
 
-<hr class="my-4"/>
+  <div *ngIf="!consentRequired">
+    <tc-button color="success" [disabled]="loading" (onClick)="submit()">
+      {{ 'REGISTRATION.SUBMIT.NO_POLICY_ACCEPTANCE_TEXT' | translate }}
+    </tc-button>
+  </div>
 
-<h2>
-  Privacy Policy with {{getPartnerDescription(false)}}
-</h2>
-<app-show-terms
-  [requestTermsRead] = true
-  (termsRead)="setReadTerms()"
->
-  <div [innerHtml]=currentPrivacyPolicy?.content></div>
-</app-show-terms>
+  <div *ngIf="consentRequired">
+    <div [innerHTML]="'REGISTRATION.SUBMIT.CONSENT_INTRODUCTION' | translate"></div>
 
-<app-error [error]="error"></app-error>
+    <div *ngIf="currentPrivacyPolicy.content.length == 0">
+      <p>
+        <a target="_blank"
+           href="https://www.talentbeyondboundaries.org/privacy-and-data-protection-policy">
+          www.talentbeyondboundaries.org/privacy-and-data-protection-policy
+        </a>
+      </p>
+    </div>
 
-<button class="btn btn-primary" (click)="submit()"
-        [disabled]="!readTerms"
->
-<!--  todo new text-->
-  {{ 'REGISTRATION.SUBMIT.POLICY_ACCEPTANCE_TEXT' | translate }}
-</button>
+    <div *ngIf="currentPrivacyPolicy.content.length > 0">
+      <app-show-terms
+        [requestTermsRead]=true
+        (termsRead)="setReadTerms()"
+      >
+        <div [innerHtml]=currentPrivacyPolicy?.content></div>
+      </app-show-terms>
+
+    </div>
+
+    <app-error [error]="error"></app-error>
+
+    <tc-button color="success" [disabled]="loading" (onClick)="submit()">
+      {{ 'REGISTRATION.SUBMIT.POLICY_ACCEPTANCE_TEXT' | translate }}
+    </tc-button>
+  </div>
+</div>

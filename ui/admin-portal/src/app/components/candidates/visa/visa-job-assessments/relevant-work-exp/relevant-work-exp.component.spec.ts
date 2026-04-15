@@ -15,7 +15,7 @@
  */
 
 import {ComponentFixture, TestBed} from '@angular/core/testing';
-import {UntypedFormBuilder, ReactiveFormsModule} from '@angular/forms';
+import {ReactiveFormsModule, UntypedFormBuilder} from '@angular/forms';
 import {RelevantWorkExpComponent} from './relevant-work-exp.component';
 import {CandidateVisaCheckService} from '../../../../../services/candidate-visa-check.service';
 import {AutosaveStatusComponent} from "../../../../util/autosave-status/autosave-status.component";
@@ -76,13 +76,13 @@ describe('RelevantWorkExpComponent', () => {
   });
 
   it('should render textarea with correct placeholder', () => {
-    const textareaElement: HTMLTextAreaElement = fixture.nativeElement.querySelector('#visaJobRelevantWorkExp');
+    const textareaElement: HTMLTextAreaElement = fixture.nativeElement.querySelector('tc-textarea textarea');
     expect(textareaElement).toBeTruthy();
     expect(textareaElement.placeholder).toBe('');
   });
 
   it('should display the correct helper text', () => {
-    const smallElement: HTMLElement = fixture.nativeElement.querySelector('small');
-    expect(smallElement.textContent).toContain('Please include the date that this is recorded');
+    const helperElement: HTMLElement = fixture.nativeElement.querySelector('tc-description');
+    expect(helperElement.textContent).toContain('Please include the date that this is recorded');
   });
 });

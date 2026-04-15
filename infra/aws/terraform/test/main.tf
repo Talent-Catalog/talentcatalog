@@ -4,10 +4,8 @@
 # it can be changed later to use workspaces instead of directories to follow the DRY concept!
 terraform {
   required_version = ">= 1.3.0"
-}
 
-# Store the terraform state remotely in S3 bucket
-terraform {
+  # Store the terraform state remotely in S3 bucket
   backend "s3" {
     bucket = "tbbtalent-terraform-state-test"
     key    = "terraform.tfstate"
@@ -20,9 +18,19 @@ provider "aws" {
   region = "us-east-1"
 }
 
+provider "aws" {
+  alias  = "us_east_1"
+  region = "us-east-1"
+}
+
 # Include the flat configuration
 module "website" {
   source = "../"
+
+  providers = {
+    aws           = aws
+    aws.us_east_1 = aws.us_east_1
+  }
 
   app                             = var.app
   env                             = var.env
@@ -36,6 +44,8 @@ module "website" {
   aws_access_key                  = var.aws_access_key
   aws_secret_key                  = var.aws_secret_key
   s3_bucket                       = var.s3_bucket
+  translations_bucket             = var.translations_bucket
+  translations_folder             = var.translations_folder
   es_password                     = var.es_password
   es_url                          = var.es_url
   es_username                     = var.es_username
@@ -73,8 +83,8 @@ module "website" {
   spring_db_pool_min              = var.spring_db_pool_min
   spring_servlet_max_file_size    = var.spring_servlet_max_file_size
   spring_servlet_max_request_size = var.spring_servlet_max_request_size
-  tbb_cors_urls                   = var.tbb_cors_urls
-  tbb_db_copy_config              = var.tbb_db_copy_config
+  tc_cors_urls                    = var.tc_cors_urls
+  tc_db_copy_config               = var.tc_db_copy_config
   translation_password            = var.translation_password
   web_admin                       = var.web_admin
   web_portal                      = var.web_portal

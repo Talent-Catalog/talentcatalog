@@ -120,7 +120,8 @@ public interface DuolingoCouponService {
    */
   void assignCouponsToList(Long listId, User user) throws NoSuchObjectException;
 
-  /* Expires all coupons that have passed their expiration date.
+  /**
+   * Expires all coupons that have passed their expiration date.
    * <p>
    * This method identifies all coupons with an expiration date before the current time
    * that are not already marked as {@code EXPIRED} or {@code REDEEMED}. It updates their status

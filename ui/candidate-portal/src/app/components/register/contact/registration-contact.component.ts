@@ -122,13 +122,6 @@ export class RegistrationContactComponent implements OnInit {
     this.error = null;
     if (this.authenticationService.isAuthenticated()) {
 
-      // If the candidate hasn't changed anything, skip the update service call
-      if (this.form.pristine) {
-        this.registrationService.next();
-        this.onSave.emit();
-        return;
-      }
-
       // The user has already registered and is either revisiting this page or updating it for the
       // first time
       this.candidateService.updateCandidateContact(this.form.value).subscribe(

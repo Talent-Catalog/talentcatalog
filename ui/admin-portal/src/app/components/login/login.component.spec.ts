@@ -17,7 +17,7 @@
 import {ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
 import {HttpClientTestingModule} from '@angular/common/http/testing';
 import {LoginComponent} from './login.component';
-import {UntypedFormBuilder, ReactiveFormsModule} from '@angular/forms';
+import {ReactiveFormsModule, UntypedFormBuilder} from '@angular/forms';
 import {ActivatedRoute, Router} from '@angular/router';
 import {AuthenticationService} from "../../services/authentication.service";
 import {of} from "rxjs";
@@ -72,10 +72,10 @@ describe('LoginComponent', () => {
     const compiled = fixture.nativeElement;
     // Assert login form and its required fields are rendered
     expect(compiled.querySelector('form')).toBeTruthy();
-    expect(compiled.querySelector('input[formControlName="username"]')).toBeTruthy();
-    expect(compiled.querySelector('input[formControlName="password"]')).toBeTruthy();
-    expect(compiled.querySelector('input[formControlName="totpToken"]')).toBeTruthy();
-    expect(compiled.querySelector('button[type="submit"]')).toBeTruthy();
+    expect(compiled.querySelector('tc-input[formControlName="username"]')).toBeTruthy();
+    expect(compiled.querySelector('tc-input[formControlName="password"]')).toBeTruthy();
+    expect(compiled.querySelector('tc-input[formControlName="totpToken"]')).toBeTruthy();
+    expect(compiled.querySelector('tc-button')).toBeTruthy();
   });
 
   it('should call the login function when the form is submitted', fakeAsync(() => {

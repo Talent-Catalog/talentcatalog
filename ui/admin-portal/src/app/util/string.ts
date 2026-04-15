@@ -27,8 +27,25 @@ export function truncate(str: string, num: number): string {
   }
 }
 
-
 export function isHtml(text): boolean {
   // Very simple test for HTML tags - isn't foolproof but probably good enough
   return /<\/?[a-z][\s\S]*>/i.test(text);
+}
+
+export function isNumeric(str: string): boolean {
+  if (typeof str !== 'string' || str.trim() === '') {
+    return false; // Not a string or an empty string after trimming
+  }
+  const num = Number(str);
+  return !Number.isNaN(num) && Number.isFinite(num);
+}
+
+/**
+ * Determines whether a given string is null, undefined, or an empty string after trimming whitespace.
+ *
+ * @param {string | null | undefined} value - The string to check.
+ * @return {boolean} Returns true if the input is null, undefined, or an empty string; otherwise, false.
+ */
+export function isNullOrEmpty(value: string | null | undefined): boolean {
+  return !value || value.trim().length === 0;
 }

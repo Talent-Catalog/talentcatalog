@@ -55,10 +55,19 @@ describe('VisaCheckNzComponent', () => {
     expect(spinner).toBeTruthy();
   });
 
-  it('should display error message when error is present', () => {
+  it('should display loading message when loading', () => {
+    component.loading = true;
     fixture.detectChanges();
     const errorMsg = fixture.debugElement.query(By.css('div')).nativeElement;
     expect(errorMsg.textContent).toContain('loading...');
+  });
+
+  it('should display error message when error is present', () => {
+    component.loading = false;
+    component.error = 'error';
+    fixture.detectChanges();
+    const errorMsg = fixture.debugElement.query(By.css('div')).nativeElement;
+    expect(errorMsg.textContent).toContain('error');
   });
 
   it('should display Visa New Zealand section when not loading', () => {

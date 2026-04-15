@@ -17,5 +17,8 @@
 export interface Country {
   id: number;
   name: string;
-  code: string;
+  status: string;
+  translatedName: string;
+  isoCode?: string;
+  countryCode?: string;
 }

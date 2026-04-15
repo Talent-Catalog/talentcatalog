@@ -24,6 +24,8 @@ import {ShowQrCodeComponent} from "../util/qr/show-qr-code/show-qr-code.componen
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {AuthenticationService} from "../../services/authentication.service";
 import {environment} from "../../../environments/environment";
+import {PartnerService} from "../../services/partner.service";
+import {AuthorizationService} from "../../services/authorization.service";
 
 @Component({
   selector: 'app-login',
@@ -42,14 +44,16 @@ export class LoginComponent implements OnInit {
 
   constructor(private builder: UntypedFormBuilder,
               private authenticationService: AuthenticationService,
+              private authorizationService: AuthorizationService,
               private modalService: NgbModal,
               private route: ActivatedRoute,
+              private partnerService: PartnerService,
               private router: Router) {
   }
 
   ngOnInit() {
     this.backgroundImage = `url(${environment.assetBaseUrl}/assets/images/login-splash-v2.2.1.png)`;
-    this.loginImage = `${environment.assetBaseUrl}/assets/images/tc-logo-2.png`;
+    this.loginImage = `${environment.assetBaseUrl}/assets/images/tcHorizontalLogo.png`;
 
     this.route.queryParams.subscribe(params => {
       this.returnUrl = params['returnUrl'] || '';
@@ -100,14 +104,14 @@ export class LoginComponent implements OnInit {
     req.reCaptchaV3Token = token;
 
     this.authenticationService.login(req)
-      .subscribe(() => {
-        this.loading = false;
-        this.checkMfaSetup();
-      }, error => {
-        // console.log(error);
-        this.error = error;
-        this.loading = false;
-      });
+    .subscribe(() => {
+      this.loading = false;
+      this.checkMfaAndDpa();
+    }, error => {
+      // console.log(error);
+      this.error = error;
+      this.loading = false;
+    });
 
   }
 
@@ -136,6 +140,27 @@ export class LoginComponent implements OnInit {
     })
     .catch(() => {
       this.router.navigateByUrl(this.returnUrl);
+    });
+  }
+
+  private checkMfaAndDpa() {
+    if (!this.authorizationService.isSourcePartner()) {
+      // Non-partner users skip DPA check and proceed to MFA
+      this.checkMfaSetup();
+      return;
+    }
+    this.partnerService.requiresDpaAcceptance().subscribe({
+      next: (requiresDpa: boolean) => {
+        if (requiresDpa) {
+          this.router.navigateByUrl('/dpa');
+        } else {
+          this.checkMfaSetup();
+        }
+      },
+      error: error => {
+        this.error = error;
+        this.loading = false;
+      }
     });
   }
 }

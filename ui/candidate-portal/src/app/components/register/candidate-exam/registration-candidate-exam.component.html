@@ -16,7 +16,7 @@
 
 <div class="container">
 
-  <app-loading [loading]="loading"></app-loading>
+  <tc-loading [loading]="loading"></tc-loading>
 
   <ng-container *ngIf="!loading">
 
@@ -49,9 +49,9 @@
   <app-error [error]="error"></app-error>
 
   <div class="text-center mt-4" *ngIf="!addingExam">
-    <button class="btn btn-primary" (click)="addingExam = true">
+    <tc-button (onClick)="addingExam = true">
       {{ 'REGISTRATION.EXAM.BUTTON.ADD' | translate }}
-    </button>
+    </tc-button>
   </div>
 
 </div>

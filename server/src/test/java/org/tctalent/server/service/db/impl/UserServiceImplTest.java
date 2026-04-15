@@ -5,20 +5,20 @@
  * the terms of the GNU Affero General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or any later version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
  * for more details.
  *
- * You should have received a copy of the GNU Affero General Public License 
+ * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
 package org.tctalent.server.service.db.impl;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -112,6 +112,7 @@ import org.tctalent.server.security.JwtTokenProvider;
 import org.tctalent.server.security.PasswordHelper;
 import org.tctalent.server.service.db.PartnerService;
 import org.tctalent.server.service.db.email.EmailHelper;
+import org.tctalent.server.service.policy.ChatPolicy;
 
 @ExtendWith(MockitoExtension.class)
 class UserServiceImplTest {
@@ -146,6 +147,7 @@ class UserServiceImplTest {
     @Mock private UserRepository userRepository;
     @Mock private SearchUserRequest searchUserRequest;
     @Mock private Specification<User> mockedUserSpec;
+    @Mock private ChatPolicy chatPolicy;
     @Mock private CountryRepository countryRepository;
     @Mock private Country mockCountry;
     @Mock private Country mockCountry2;
@@ -157,6 +159,7 @@ class UserServiceImplTest {
     @Mock private JwtTokenProvider tokenProvider;
     @Mock private EmailHelper emailHelper;
     @Mock private CandidateRepository candidateRepository;
+    @Mock private TcInstanceService tcInstanceService;
 
     @Captor ArgumentCaptor<User> userCaptor;
 
