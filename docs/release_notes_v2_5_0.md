@@ -48,6 +48,10 @@ adds two new services to the growing CASI ecosystem:
 
 ## Performance Tuning and GRN Launch
 
+Ahead of the launch of the <a href="https://openpathwaycollective.org/globalrefugeenetwork"
+target="_blank">Global Refugee Network (GRN)</a>, v2.5.0 delivers targeted performance improvements.
+While driven by the need to scale for GRN, these gains benefit all Talent Catalog users:
+
 <div class="card-container">
 
   <a href="./v250/performance" class="card">
