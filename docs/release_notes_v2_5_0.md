@@ -122,7 +122,7 @@ Helpful TC user guides:
   <a href="./v250/candidate_portal_redesign" class="card">
     <img src="./assets/images/v250/CandidatePortalNewComponents.png.png" alt="Candidate Portal redesign" class="card-image">
     <div class="card-body">
-      <div class="card-title">Candidate Portal updated with a new shared component library!</div>
+      <div class="card-title">Candidate Portal Upgrade</div>
       <div class="card-description">
         As part of Phase 2 of the TC redesign, we’ve upgraded the Candidate Portal to use the new TC component library. 
         This brings a cleaner, more consistent experience aligned with the Admin Portal, while reducing one-off UI code 
@@ -138,7 +138,7 @@ Helpful TC user guides:
   <a href="./v250/search_screen_ux_insights" class="card">
     <img src="./assets/images/v250/SearchScreenUX.png" alt="Search screen UX insights" class="card-image">
     <div class="card-body">
-      <div class="card-title">Targeted UX insights for the search redesign</div>
+      <div class="card-title">Targeted UX Insights for Search Redesign</div>
       <div class="card-description">
         We began the redesign by focusing on the search screen, identifying possible UX improvements and gathering team input through structured voting sessions. By combining Figma collaboration, heatmap analysis, and quantitative feedback, we were able to guide design decisions and better prioritise future UX enhancements.
       </div>
