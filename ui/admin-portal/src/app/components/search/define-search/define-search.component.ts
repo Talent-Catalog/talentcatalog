@@ -126,7 +126,6 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
 
   error: any;
   loading: boolean;
-  useOldSearch: boolean;
   searchForm: UntypedFormGroup;
   showSearchRequest: boolean = false;
   results: SearchResults<Candidate>;
@@ -420,8 +419,6 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
     request.pageSize = this.pageSize;
     request.sortFields = [this.sortField];
     request.sortDirection = this.sortDirection;
-
-    request.useOldSearch = this.useOldSearch;
 
     //Note that just changing searchRequest triggers the display of the results
     //See the html of this component, for which app-show-candidates takes
