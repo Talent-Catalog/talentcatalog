@@ -140,9 +140,9 @@ Helpful TC user guides:
     <div class="card-body">
       <div class="card-title">Targeted UX Insights for Search Redesign</div>
       <div class="card-description">
-        We began the redesign by focusing on the search screen, identifying possible UX improvements 
-        and gathering team input through structured voting sessions. By combining Figma collaboration, 
-        heatmap analysis, and quantitative feedback, we were able to guide design decisions and better 
+        In the next cycle, we're focusing on the search screen, identifying possible UX improvements 
+        and gathering user input through structured voting sessions. By combining Figma collaboration, 
+        heatmap analysis, and quantitative feedback, we're able to guide design decisions and better 
         prioritise future UX enhancements.
       </div>
       <div class="card-footer">
