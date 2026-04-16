@@ -124,10 +124,10 @@ Helpful TC user guides:
     <div class="card-body">
       <div class="card-title">Candidate Portal Upgrade</div>
       <div class="card-description">
-        As part of Phase 2 of the TC redesign, we’ve upgraded the Candidate Portal to use the new TC component library. 
-        This brings a cleaner, more consistent experience aligned with the Admin Portal, while reducing one-off UI code 
-        and improving maintainability. The update also lays the foundation for future UX improvements and the upcoming mobile app, 
-        with added test coverage to ensure stability across all updated components.
+        As part of Phase 2 of the TC redesign, we’ve upgraded the Candidate Portal to  the new TC 
+        component library, brining a cleaner, more consistent experience aligned with the Admin 
+        Portal. The update also lays the foundation for future UX improvements and the forthcoming 
+        mobile app.
       </div>
       <div class="card-footer">
          <button class="btn btn-sm">Learn more</button>
@@ -140,7 +140,10 @@ Helpful TC user guides:
     <div class="card-body">
       <div class="card-title">Targeted UX Insights for Search Redesign</div>
       <div class="card-description">
-        We began the redesign by focusing on the search screen, identifying possible UX improvements and gathering team input through structured voting sessions. By combining Figma collaboration, heatmap analysis, and quantitative feedback, we were able to guide design decisions and better prioritise future UX enhancements.
+        We began the redesign by focusing on the search screen, identifying possible UX improvements 
+        and gathering team input through structured voting sessions. By combining Figma collaboration, 
+        heatmap analysis, and quantitative feedback, we were able to guide design decisions and better 
+        prioritise future UX enhancements.
       </div>
       <div class="card-footer">
          <button class="btn btn-sm">Learn more</button>
