@@ -125,7 +125,7 @@ Helpful TC user guides:
       <div class="card-title">Candidate Portal Upgrade</div>
       <div class="card-description">
         As part of Phase 2 of the TC redesign, we’ve upgraded the Candidate Portal to  the new TC 
-        component library, brining a cleaner, more consistent experience aligned with the Admin 
+        component library. This brings a cleaner, more consistent experience aligned with the Admin 
         Portal. The update also lays the foundation for future UX improvements and the forthcoming 
         mobile app.
       </div>
