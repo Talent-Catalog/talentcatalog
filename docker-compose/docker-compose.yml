@@ -20,14 +20,6 @@ services:
     volumes:
       - redis-data:/data
 
-  kibana:
-    image: docker.elastic.co/kibana/kibana:7.17.11
-    ports:
-      - "5601:5601"
-    environment:
-      ELASTICSEARCH_HOSTS: "http://elasticsearch:9200"
-
 volumes:
   postgres-data:
   redis-data:
-  es-data:
