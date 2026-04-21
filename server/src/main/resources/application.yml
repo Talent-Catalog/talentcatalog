@@ -1,6 +1,9 @@
 tc:
   cors:
     urls: ${TC_CORS_URLS:http://localhost:4200,http://127.0.0.1:4200,http://localhost:4201,http://localhost:4202}
+  security:
+    oauth2:
+      client-id: grn-candidate
 
   init:
     #This is only used when booting up new instance of the server.
@@ -61,6 +64,12 @@ spring:
       initialize-schema: never # batch schema are initialised by flyway
     job:
       enabled: false
+
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          jwk-set-uri: ${OAUTH2_JWK_SET_URI:http://localhost:8082/realms/talentcatalog}
 
   servlet:
     multipart:
