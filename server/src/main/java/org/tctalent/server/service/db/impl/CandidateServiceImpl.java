@@ -183,6 +183,7 @@ import org.tctalent.server.service.db.SavedSearchService;
 import org.tctalent.server.service.db.SystemNotificationService;
 import org.tctalent.server.service.db.UserService;
 import org.tctalent.server.service.db.email.EmailHelper;
+import org.tctalent.server.service.db.util.DocxHelper;
 import org.tctalent.server.service.db.util.PdfHelper;
 import org.tctalent.server.util.BeanHelper;
 import org.tctalent.server.util.PersistenceContextHelper;
@@ -268,6 +269,7 @@ public class CandidateServiceImpl implements CandidateService {
     private final TaskAssignmentRepository taskAssignmentRepository;
     private final EmailHelper emailHelper;
     private final PdfHelper pdfHelper;
+    private final DocxHelper docxHelper;
     private final TextExtracter textExtracter;
     private final EntityManager entityManager;
     private final PersistenceContextHelper persistenceContextHelper;
@@ -2241,6 +2243,11 @@ public class CandidateServiceImpl implements CandidateService {
     @Override
     public Resource generateCv(Candidate candidate, Boolean showName, Boolean showContact) {
        return pdfHelper.generatePdf(candidate, showName, showContact);
+    }
+
+    @Override
+    public Resource generateCvDocx(Candidate candidate, Boolean showName, Boolean showContact) {
+        return docxHelper.generateDocx(candidate, showName, showContact);
     }
 
     // List export
