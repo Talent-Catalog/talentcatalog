@@ -33,13 +33,7 @@ public class AuthService {
     private final Set<Role> adminRoles = new HashSet<>(Arrays.asList(
         Role.partneradmin, Role.admin, Role.systemadmin));
 
-    /**
-     * Return logged in user in form of their TcUserDetails object (ie their security principal.
-     * This has the user's role and authorities.
-     *
-     * @return Logged in user details or empty if not logged in.
-     */
-    public Optional<TcUserDetails> getLoggedInUserDetails() {
+    private OAuth2AuthenticatedUser getOAuth2AuthenticatedUser() {
         Authentication authentication =
             SecurityContextHolder.getContext().getAuthentication();
 
@@ -47,10 +41,24 @@ public class AuthService {
             !authentication.isAuthenticated() ||
             authentication.getPrincipal() instanceof String) {
 
-            return Optional.empty();
+            return null;
         }
 
-        return Optional.of((TcUserDetails) authentication.getPrincipal());
+        return (OAuth2AuthenticatedUser) authentication.getPrincipal();
+    }
+
+    /**
+     * Return logged in user in form of their TcUserDetails object (ie their security principal.
+     * This has the user's role and authorities.
+     *
+     * @return Logged in user details or empty if not logged in.
+     */
+    public Optional<OAuth2AuthenticatedUser> getLoggedInUserDetails() {
+        return Optional.ofNullable(getOAuth2AuthenticatedUser());
+    }
+
+    public Optional<QueryAuthorities> queryLoggedInUserAuthorities() {
+        return Optional.ofNullable(getOAuth2AuthenticatedUser());
     }
 
     /**
@@ -100,8 +108,8 @@ public class AuthService {
     }
 
     public @Nullable String getUserLanguage() {
-        User user = getLoggedInUser().orElse(null);
-        return user == null ? null : user.getSelectedLanguage();
+        OAuth2AuthenticatedUser authUser = getLoggedInUserDetails().orElse(null);
+        return authUser == null ? null : authUser.getSelectedLanguage();
     }
 
     /**

@@ -18,13 +18,13 @@ package org.tctalent.server.service.policy;
 
 import java.util.Optional;
 import org.springframework.stereotype.Component;
-import org.tctalent.server.security.TcUserDetails;
+import org.tctalent.server.security.QueryAuthorities;
 
 /**
  * Policy for access to TC chats.
  * <p>
  *     Driven by user permissions such as "CHAT_SUBSCRIBE" specified as "authorities" in
- *     the TC security principal - which is a TcUserDetails object.
+ *     the TC security principal - which implements {@link QueryAuthorities}.
  * </p>
  *
  * @author John Cameron
@@ -32,19 +32,19 @@ import org.tctalent.server.security.TcUserDetails;
 @Component
 public class ChatPolicy {
 
-    public boolean canSubscribeToChats(Optional<TcUserDetails> user) {
-        //Must have a user to create a chat
-        if (user.isEmpty()) {
+    public boolean canSubscribeToChats(Optional<QueryAuthorities> authorities) {
+        //Must have authorities to create a chat
+        if (authorities.isEmpty()) {
             return false;
         }
-        return user.get().hasAnyAuthority("CHAT_SUBSCRIBE");
+        return authorities.get().hasAnyAuthority("CHAT_SUBSCRIBE");
     }
 
-    public boolean canCreateChats(Optional<TcUserDetails> user) {
-        //Must have a user to create a chat
-        if (user.isEmpty()) {
+    public boolean canCreateChats(Optional<QueryAuthorities> authorities) {
+        //Must have authorities to create a chat
+        if (authorities.isEmpty()) {
             return false;
         }
-        return user.get().hasAnyAuthority("CHAT_CREATE");
+        return authorities.get().hasAnyAuthority("CHAT_CREATE");
     }
 }

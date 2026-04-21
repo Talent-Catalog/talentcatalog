@@ -465,7 +465,7 @@ public class UserServiceImpl implements UserService {
 
             JwtAuthenticationResponse response = new JwtAuthenticationResponse(jwt, user);
             response.setCanViewChats(
-                chatPolicy.canSubscribeToChats(authService.getLoggedInUserDetails()));
+                chatPolicy.canSubscribeToChats(authService.queryLoggedInUserAuthorities()));
             response.setTcInstanceType(tcInstanceService.getInstanceType());
             return response;
 

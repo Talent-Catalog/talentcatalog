@@ -16,11 +16,11 @@
 
 package org.tctalent.server.security;
 
-import java.io.IOException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.lang.NonNull;
@@ -28,7 +28,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.tctalent.server.logging.LogBuilder;
-import org.tctalent.server.model.db.User;
 
 /**
  * Sets an authenticated user's selected language based on the X-Language
@@ -53,8 +52,7 @@ public class LanguageFilter extends OncePerRequestFilter {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             if (authentication != null) {
                 Object principal = authentication.getPrincipal();
-                if (principal instanceof TcUserDetails) {
-                    User user = ((TcUserDetails) principal).getUser();
+                if (principal instanceof OAuth2AuthenticatedUser user) {
                     user.setSelectedLanguage(selectedLanguage);
                 }
             }
