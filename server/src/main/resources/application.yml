@@ -1,9 +1,6 @@
 tc:
   cors:
     urls: ${TC_CORS_URLS:http://localhost:4200,http://127.0.0.1:4200,http://localhost:4201,http://localhost:4202}
-  security:
-    oauth2:
-      client-id: grn-candidate
 
   init:
     #This is only used when booting up new instance of the server.
