@@ -353,6 +353,37 @@ public class CandidateAdminApi {
         }
     }
 
+    @PostMapping(value = "{id}/cv.docx")
+    public void downloadCandidateCVDocx(@RequestBody DownloadCvRequest request,
+        HttpServletResponse response) throws IOException {
+
+        LogBuilder.builder(log)
+            .candidateId(request.getCandidateId())
+            .action("downloadCandidateCVDocx")
+            .message("Downloading DOCX CV for candidate")
+            .logInfo();
+
+        Candidate candidate = candidateService.getCandidate(request.getCandidateId());
+
+        String name = candidate.getUser().getDisplayName() + "-" + "CV";
+
+        response.setContentType(
+            "application/vnd.openxmlformats-officedocument.wordprocessingml.document");
+        response.setHeader("Content-Disposition",
+            "attachment; filename=" + name + ".docx");
+
+        Resource report = candidateService.generateCvDocx(
+            candidate,
+            request.getShowName(),
+            request.getShowContact()
+        );
+
+        try (InputStream reportStream = report.getInputStream()) {
+            IOUtils.copy(reportStream, response.getOutputStream());
+            response.flushBuffer();
+        }
+    }
+
     @PutMapping("{id}/create-folder")
     public Map<String, Object> createCandidateFolder(@PathVariable("id") long id)
             throws IOException {
