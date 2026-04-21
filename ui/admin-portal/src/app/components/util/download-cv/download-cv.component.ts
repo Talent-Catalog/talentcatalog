@@ -44,6 +44,7 @@ export class DownloadCvComponent implements OnInit {
     this.form = this.fb.group({
       name: [false],
       contact: [false],
+      format: ['pdf'],
     });
   }
 
@@ -52,12 +53,19 @@ export class DownloadCvComponent implements OnInit {
       candidateId: this.candidateId,
       showName: this.form.value.name,
       showContact: this.form.value.contact
-    }
+    };
+
+    const format = this.form.value.format;
     const tab = window.open();
-    this.candidateService.downloadCv(request).subscribe(
+
+    const download$ = format === 'docx'
+      ? this.candidateService.downloadCvDocx(request)
+      : this.candidateService.downloadCv(request);
+
+    download$.subscribe(
       result => {
         tab.location.href = URL.createObjectURL(result);
-        this.closeModal()
+        this.closeModal();
       },
       error => {
         this.error = error;
@@ -72,5 +80,4 @@ export class DownloadCvComponent implements OnInit {
   dismiss() {
     this.activeModal.dismiss(false);
   }
-
 }
