@@ -245,6 +245,7 @@ import {KeycloakAuthenticationService} from "./services/keycloak-authentication.
 import {CognitoAuthenticationService} from "./services/cognito-authentication.service";
 import {environment} from "../environments/environment";
 import {AUTH_PROVIDER} from "./services/auth.tokens";
+import {KeycloakAngularModule} from "keycloak-angular";
 
 //This is not used now - but is left here to show how the standard translation loading works.
 //See https://github.com/ngx-translate/core#configuration
@@ -387,7 +388,8 @@ export function initializeAuth(authenticationService: AuthenticationService) {
     NgSelectModule,
     NgxWigModule,
     QuillModule.forRoot(),
-    PickerModule
+    PickerModule,
+    KeycloakAngularModule
   ],
   providers: [
     {provide: AUTH_PROVIDER, useFactory: authProviderFactory,
