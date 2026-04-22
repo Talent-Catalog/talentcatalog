@@ -156,4 +156,7 @@ export class CandidateIntakeTabComponent extends IntakeComponentTabBase {
     return this.authorizationService.isEditableCandidate(this.candidate);
   }
 
+  protected getTabId(): string {
+    return 'FullIntake';
+  }
 }

@@ -223,6 +223,8 @@
   <div class="row">
       <!-- Just have main panel taking up whole screen if they cannot view private data (case notes)-->
       <div class="col-sm-{{canViewPrivateInfo() ? mainPanelColWidth : totalPanelWidth}}">
+        <tc-loading type="page" [loading]="tabLoading"></tc-loading>
+
         <!-- TABS -->
         <tc-tabs [activeTabId]="activeTabId"
                  (tabChanged)="onTabChanged($event)"
@@ -292,6 +294,7 @@
               <app-candidate-mini-intake-tab
                 [candidate]="candidate"
                 [tabIsActive]="activeTabId === 'MiniIntake'"
+                (loadingChange)="onTabLoadingChange($event)">
               >
               </app-candidate-mini-intake-tab>
             </tc-tab-content>
@@ -306,6 +309,7 @@
               <app-candidate-intake-tab
                 [candidate]="candidate"
                 [tabIsActive]="activeTabId === 'FullIntake'"
+                (loadingChange)="onTabLoadingChange($event)">
               >
               </app-candidate-intake-tab>
             </tc-tab-content>
@@ -318,7 +322,9 @@
             </tc-tab-header>
             <tc-tab-content>
               <app-candidate-visa-tab
-                [candidate]="candidate">
+                [candidate]="candidate"
+                [tabIsActive]="activeTabId === 'Visa'"
+                (loadingChange)="onTabLoadingChange($event)">
               </app-candidate-visa-tab>
             </tc-tab-content>
           </tc-tab>
