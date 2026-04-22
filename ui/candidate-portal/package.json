@@ -40,6 +40,8 @@
     "karma-chrome-launcher": "^3.2.0",
     "karma-coverage-istanbul-reporter": "^3.0.3",
     "karma-jasmine-html-reporter": "^2.1.0",
+    "keycloak-angular": "^15.3.0",
+    "keycloak-js": "^25.0.6",
     "libphonenumber-js": "^1.12.8",
     "ngx-quill": "^16.2.1",
     "ngx-translate-phraseapp": "^0.4.2",

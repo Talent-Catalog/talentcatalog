@@ -15,7 +15,7 @@
  */
 
 import {BrowserModule} from '@angular/platform-browser';
-import {NgModule} from '@angular/core';
+import {APP_INITIALIZER, NgModule} from '@angular/core';
 import {AppRoutingModule} from './app-routing.module';
 import {SharedModule} from './shared/shared.module';
 import {AppComponent} from './components/app.component';
@@ -236,14 +236,33 @@ import {
 import {
   LinkedinRedeemedComponent
 } from "./components/profile/view/tab/services/linkedin/linkedin-redeemed/linkedin-redeemed.component";
-import {ReferenceComponent} from './components/profile/view/tab/services/reference/reference.component';
+import {
+  ReferenceComponent
+} from './components/profile/view/tab/services/reference/reference.component';
 import {UnhcrComponent} from './components/profile/view/tab/services/unhcr/unhcr.component';
+import {AuthenticationService} from "./services/authentication.service";
+import {KeycloakAuthenticationService} from "./services/keycloak-authentication.service";
+import {CognitoAuthenticationService} from "./services/cognito-authentication.service";
+import {environment} from "../environments/environment";
+import {AUTH_PROVIDER} from "./services/auth.tokens";
 
 //This is not used now - but is left here to show how the standard translation loading works.
 //See https://github.com/ngx-translate/core#configuration
 //See doc for LanguageLoader for the reasons why we do what we do.
 export function HttpLoaderFactory(http: HttpClient) {
   return new TranslateHttpLoader(http);
+}
+
+export function authProviderFactory(
+  keycloakAuth: KeycloakAuthenticationService,
+  cognitoAuth: CognitoAuthenticationService
+) {
+
+  return environment.authProvider === 'cognito' ? cognitoAuth : keycloakAuth;
+}
+
+export function initializeAuth(authenticationService: AuthenticationService) {
+  return () => authenticationService.init();
 }
 
 @NgModule({
@@ -371,6 +390,12 @@ export function HttpLoaderFactory(http: HttpClient) {
     PickerModule
   ],
   providers: [
+    {provide: AUTH_PROVIDER, useFactory: authProviderFactory,
+      deps: [KeycloakAuthenticationService, CognitoAuthenticationService]},
+    KeycloakAuthenticationService,
+    CognitoAuthenticationService,
+    {provide: APP_INITIALIZER,
+      useFactory: initializeAuth, deps: [AuthenticationService], multi: true},
     {provide: RedirectGuard},
     {provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true},
     {provide: HTTP_INTERCEPTORS, useClass: LanguageInterceptor, multi: true},

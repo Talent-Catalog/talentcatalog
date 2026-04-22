@@ -14,18 +14,18 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Injectable, OnDestroy} from '@angular/core';
-import {catchError, map} from "rxjs/operators";
+import {Inject, Injectable, OnDestroy} from '@angular/core';
 import {JwtAuthenticationResponse} from "../model/jwt-authentication-response";
-import {Observable, Subject, throwError} from "rxjs";
+import {Observable, Subject} from "rxjs";
 import {HttpClient} from "@angular/common/http";
 import {environment} from "../../environments/environment";
 import {User} from "../model/user";
-import {LoginRequest} from "../model/base";
 import {LocalStorageService} from "./local-storage.service";
-import {CandidateStatus, RegisterCandidateRequest} from "../model/candidate";
+import {CandidateStatus} from "../model/candidate";
 import {TcInstanceType} from "../model/tc-instance-type";
 import {TermsType} from "../model/terms-info-dto";
+import {AuthProvider} from "./auth-provider";
+import {AUTH_PROVIDER} from "./auth.tokens";
 
 export class AuthenticateInContextTranslationRequest {
   password: string;
@@ -56,15 +56,50 @@ export class AuthenticationService implements OnDestroy {
    */
   loggedInUser$ = new Subject<User>();
 
-  constructor(
-    private http: HttpClient,
-    private localStorageService: LocalStorageService
+  constructor(@Inject(AUTH_PROVIDER) private authProvider: AuthProvider,
+              private http: HttpClient,
+              private localStorageService: LocalStorageService
   ) {}
 
   ngOnDestroy(): void {
     //This will close any subscriptions - freeing resources.
     //See https://stackoverflow.com/a/77426261/929968
     this.loggedInUser$.complete();
+  }
+
+  init(): Promise<boolean> {
+    return this.authProvider.init();
+  }
+
+  isAuthenticated(): boolean {
+    return this.authProvider.isAuthenticated();
+  }
+
+  login(): Promise<void> {
+    return this.authProvider.login();
+  }
+
+  register(): Promise<void> {
+     return this.authProvider.register();
+   }
+
+  logout(): Promise<void> {
+    this.localStorageService.remove('user');
+    this.localStorageService.remove('access-token');
+    localStorage.clear();
+
+    this.setLoggedInUser(null);
+    this.setCandidateStatus(null);
+
+    return this.authProvider.logout();     
+   }
+
+  getToken(): string | undefined {
+     return this.authProvider.getToken();
+  }
+
+  refreshToken(minValiditySeconds = 30): Promise<void> {
+    return this.authProvider.refreshToken(minValiditySeconds);
   }
 
   authenticateInContextTranslation(password: string): Observable<void> {
@@ -88,10 +123,6 @@ export class AuthenticationService implements OnDestroy {
     return this.loggedInUser;
   }
 
-  getToken(): string {
-    return this.localStorageService.get('access-token');
-  }
-
   canViewChats(): boolean {
     return this.localStorageService.get('can_view_chats');
   }
@@ -110,48 +141,12 @@ export class AuthenticationService implements OnDestroy {
     return this.getTcInstanceType() == TcInstanceType.GRN;
   }
 
-  isAuthenticated(): boolean {
-    return this.getLoggedInUser() != null;
-  }
-
   isRegistered(): boolean {
     //Recover status from storage - may have been lost during browser refresh.
     if (this.candidateStatus == null) {
       this.candidateStatus = this.localStorageService.get("candidateStatus");
     }
     return this.candidateStatus != null && this.candidateStatus != CandidateStatus.draft;
-  }
-
-  login(credentials: LoginRequest) {
-    return this.http.post(`${this.apiUrl}/login`, credentials).pipe(
-      map((response: JwtAuthenticationResponse) => {
-        this.storeCredentials(response);
-      }),
-      catchError(e => {
-          console.log('error', e);
-          return throwError(e);
-        }
-      )
-    );
-  }
-
-  logout() {
-    this.http.post(`${this.apiUrl}/logout`, null).subscribe({
-      next: () => {}
-    })
-    this.localStorageService.remove('user');
-    this.localStorageService.remove('access-token');
-    localStorage.clear();
-
-    this.setLoggedInUser(null);
-    this.setCandidateStatus(null);
-  }
-
-  register(request: RegisterCandidateRequest) {
-    return this.http.post<JwtAuthenticationResponse>(`${this.apiUrl}/register`, request).pipe(
-      map((response) => this.storeCredentials(response)),
-      catchError((e) => throwError(e))
-    );
   }
 
   setCandidateStatus(candidateStatus: CandidateStatus) {
