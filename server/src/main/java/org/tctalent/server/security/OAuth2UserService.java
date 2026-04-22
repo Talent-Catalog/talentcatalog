@@ -27,7 +27,7 @@ import org.tctalent.server.repository.db.UserRepository;
 
 /**
  * Loads the user from the database based on the idpIssuer and idpSubject received in the JWT token
- * provided by the idp. Then uses that data to create an {@link OAuth2AuthenticatedUser},
+ * provided by the idp. Then uses that data to create an {@link CurrentUserInfo},
  * complete with the user's authorities.
  */
 @Service
@@ -39,20 +39,29 @@ public class OAuth2UserService {
         this.userRepository = userRepository;
     }
 
-    public OAuth2AuthenticatedUser loadUser(String idpIssuer, String idpSubject) {
+    public CurrentUserInfo loadUser(String idpIssuer, String idpSubject) {
         User user = userRepository.findByIdpIssuerAndIdpSubject(idpIssuer, idpSubject)
             .orElseThrow(() -> new UsernameNotFoundException(
                 "User not found for issuer=" + idpIssuer + ", sub=" + idpSubject
             ));
 
-        OAuth2AuthenticatedUser authUser = OAuth2AuthenticatedUser.builder()
+        CurrentUserInfo authUser = CurrentUserInfo.builder()
             .id(user.getId())
-            .email(user.getEmail())
+
+            //Use email as a human-readable identifier.
+            //This is used to populate the name of TcAuthenticationToken for which CurrentUserInfo
+            //is the Principal.
+            .name(user.getEmail())
+
             .idpIssuer(idpIssuer)
             .idpSubject(idpSubject)
             .build();
 
         authUser.setAuthorities(mapAuthorities(user));
+
+        //TODO JC Temporarily expose the User
+        authUser.setUser(user);
+
         return authUser;
     }
 

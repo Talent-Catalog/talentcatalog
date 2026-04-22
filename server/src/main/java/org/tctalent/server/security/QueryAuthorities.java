@@ -11,12 +11,24 @@ package org.tctalent.server.security;
  */
 public interface QueryAuthorities {
 
+    /**
+     * True if the given authority is present.
+     */
     boolean hasAuthority(String authority);
 
+    /**
+     * True if the given role is present.
+     */
     boolean hasRole(String role);
 
+    /**
+     * True if any of the given authorities are present.
+     */
     boolean hasAnyAuthority(String... authorities);
 
+    /**
+     * True if any of the given roles are present.
+     */
     boolean hasAnyRole(String... roles);
 
 }

@@ -32,11 +32,11 @@ import org.springframework.security.oauth2.jwt.Jwt;
 @Getter
 public class TcAuthenticationToken extends AbstractAuthenticationToken {
 
-    private final OAuth2AuthenticatedUser principal;
+    private final CurrentUserInfo principal;
     private final Jwt jwt;
 
     public TcAuthenticationToken(
-        OAuth2AuthenticatedUser principal,
+        CurrentUserInfo principal,
         Jwt jwt,
         Collection<? extends GrantedAuthority> authorities
     ) {
@@ -51,13 +51,13 @@ public class TcAuthenticationToken extends AbstractAuthenticationToken {
         return jwt;
     }
 
+    /**
+     * Pick up the name from the {@link CurrentUserInfo} principal.
+     */
     @Override
     public String getName() {
-        if (principal.getEmail() != null && !principal.getEmail().isBlank()) {
-            return principal.getEmail();
-        }
-        if (principal.getUsername() != null && !principal.getUsername().isBlank()) {
-            return principal.getUsername();
+        if (principal.getName() != null && !principal.getName().isBlank()) {
+            return principal.getName();
         }
         return principal.getIdpSubject();
     }

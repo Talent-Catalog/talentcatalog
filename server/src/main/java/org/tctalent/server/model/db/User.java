@@ -16,9 +16,6 @@
 
 package org.tctalent.server.model.db;
 
-import java.time.OffsetDateTime;
-import java.util.HashSet;
-import java.util.Set;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -33,6 +30,9 @@ import jakarta.persistence.OneToOne;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
+import java.time.OffsetDateTime;
+import java.util.HashSet;
+import java.util.Set;
 import org.apache.commons.lang3.StringUtils;
 
 @Entity
@@ -179,12 +179,6 @@ public class User extends AbstractAuditableDomainObject<Long> {
             inverseJoinColumns = @JoinColumn(name = "saved_list_id")
     )
     private Set<SavedList> sharedLists = new HashSet<>();
-
-    /**
-     * selectedLanguage sets the display language of the TC admin portal — at May '23 only English is available
-     */
-    @Transient
-    private String selectedLanguage = "en";
 
     /**
      * sourceCountries can be used to restrict certain users to viewing candidates in only one or more countries
@@ -348,14 +342,6 @@ public class User extends AbstractAuditableDomainObject<Long> {
 
     public void setEmailVerified(Boolean emailVerified) {
         this.emailVerified = emailVerified;
-    }
-
-    public String getSelectedLanguage() {
-        return selectedLanguage;
-    }
-
-    public void setSelectedLanguage(String selectedLanguage) {
-        this.selectedLanguage = selectedLanguage;
     }
 
     public boolean getUsingMfa() {

@@ -23,6 +23,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
+import org.tctalent.server.model.db.User;
 
 /**
  * Lightweight representation of an authenticated user.
@@ -31,14 +32,31 @@ import org.springframework.security.core.GrantedAuthority;
  */
 @Getter
 @Builder
-public class OAuth2AuthenticatedUser implements QueryAuthorities {
+public class CurrentUserInfo implements QueryAuthorities {
     private static final String ROLE_PREFIX = "ROLE_"; // Spring default
 
+    /**
+     * Id of corresponding User on the database.
+     */
     private final Long id;
-    private final String username;
-    private final String email;
+
+    /**
+     * ID of the IDP (Identity Provider) where the user was authenticated.
+     */
     private final String idpIssuer;
+
+    /**
+     * Subject (IDP unique identifier) of the user on the IDP (Identity Provider).
+     */
     private final String idpSubject;
+
+    /**
+     * Human-readable identifier for the user
+     * (currently the email address - see {@link OAuth2UserService}).
+     * This name value is used to populate the name of TcAuthenticationToken for which
+     * CurrentUserInfo is the Principal.
+     */
+    private final String name;
 
     /**
      * The language the user has selected.
@@ -47,10 +65,22 @@ public class OAuth2AuthenticatedUser implements QueryAuthorities {
     @Setter
     private String selectedLanguage;
 
+    /**
+     * Collection of authorities granted to the user.
+     */
     private Collection<? extends GrantedAuthority> authorities;
 
+    //TODO JC Temporarily expose User object.
+    @Setter
+    private User user;
+
+    //Set of Strings computed from authorities to efficiently support hasAuthority
+    //and hasRole methods.
     private Set<String> authorityStrings;
 
+    /**
+     * Hook into setting authorities so that the authorityStrings can be computed.
+     */
     public void setAuthorities(Collection<? extends GrantedAuthority> authorities) {
         this.authorities = authorities;
 
