@@ -39,13 +39,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.lang.Nullable;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.CredentialsExpiredException;
-import org.springframework.security.authentication.DisabledException;
-import org.springframework.security.authentication.LockedException;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -59,13 +52,9 @@ import org.tctalent.server.exception.InvalidPasswordTokenException;
 import org.tctalent.server.exception.InvalidRequestException;
 import org.tctalent.server.exception.InvalidSessionException;
 import org.tctalent.server.exception.NoSuchObjectException;
-import org.tctalent.server.exception.PasswordExpiredException;
-import org.tctalent.server.exception.PasswordMatchException;
 import org.tctalent.server.exception.ServiceException;
-import org.tctalent.server.exception.UserDeactivatedException;
 import org.tctalent.server.exception.UsernameTakenException;
 import org.tctalent.server.logging.LogBuilder;
-import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.Country;
 import org.tctalent.server.model.db.PartnerImpl;
 import org.tctalent.server.model.db.Role;
@@ -88,7 +77,6 @@ import org.tctalent.server.request.user.emailverify.VerifyEmailRequest;
 import org.tctalent.server.response.JwtAuthenticationResponse;
 import org.tctalent.server.security.AuthService;
 import org.tctalent.server.security.JwtTokenProvider;
-import org.tctalent.server.security.PasswordHelper;
 import org.tctalent.server.service.db.PartnerService;
 import org.tctalent.server.service.db.UserService;
 import org.tctalent.server.service.db.email.EmailHelper;
@@ -103,8 +91,8 @@ public class UserServiceImpl implements UserService {
     private final CandidateRepository candidateRepository;
     private final ChatPolicy chatPolicy;
     private final CountryRepository countryRepository;
-    private final PasswordHelper passwordHelper;
-    private final AuthenticationManager authenticationManager;
+//    private final PasswordHelper passwordHelper;
+//    private final AuthenticationManager authenticationManager;
     private final JwtTokenProvider tokenProvider;
     private final AuthService authService;
     private final EmailHelper emailHelper;
@@ -166,10 +154,10 @@ public class UserServiceImpl implements UserService {
         User user = new User();
 
         populateUserFields(user, request, creatingUser);
-
-        /* Validate the password before account creation */
-        String passwordEncrypted = passwordHelper.validateAndEncodePassword(request.getPassword());
-        user.setPasswordEnc(passwordEncrypted);
+        //TODO JC Remove
+        //        /* Validate the password before account creation */
+//        String passwordEncrypted = passwordHelper.validateAndEncodePassword(request.getPassword());
+//        user.setPasswordEnc(passwordEncrypted);
         return this.userRepository.save(user);
     }
 
@@ -423,69 +411,70 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public JwtAuthenticationResponse login(LoginRequest request) throws AccountLockedException {
-        try {
-            String loggedInName = request.getUsername();
-            if (loggedInName.contains("@")) {
-                //User has supplied email as username.
-                //See if we have a user with this email.
-                try {
-                    User exists = userRepository.findByEmailIgnoreCase(loggedInName);
-                    if (exists != null) {
-                        loggedInName = exists.getUsername();
-                    }
-                } catch (Exception ex) {
-                    //Log details to check for nature of brute force attacks.
-                    LogBuilder.builder(log)
-                        .action("Login")
-                        .message("Invalid credentials for user with given username: " +
-                            request.getUsername())
-                        .logError(ex);
-
-                    //Exception if there is more than one user associated with email.
-                    throw new InvalidCredentialsException("Sorry, that email is not unique. Log in with your username.");
-                }
-                //Just continue if we couldn't find user for email
-            }
-
-
-            Authentication auth = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
-                    loggedInName, request.getPassword()
-            ));
-            User user = userRepository.findByUsernameIgnoreCase(loggedInName);
-
-            if (user.getStatus().equals(Status.inactive)) {
-                throw new InvalidCredentialsException("Sorry, it looks like that account is no longer active.");
-            }
-
-            user.setLastLogin(OffsetDateTime.now());
-            user = userRepository.save(user);
-
-            SecurityContextHolder.getContext().setAuthentication(auth);
-            String jwt = tokenProvider.generateToken(auth);
-
-            JwtAuthenticationResponse response = new JwtAuthenticationResponse(jwt, user);
-            response.setCanViewChats(
-                chatPolicy.canSubscribeToChats(authService.queryLoggedInUserAuthorities()));
-            response.setTcInstanceType(tcInstanceService.getInstanceType());
-            return response;
-
-        } catch (BadCredentialsException e) {
-            //Log details to check for nature of brute force attacks.
-            LogBuilder.builder(log)
-                .action("Login")
-                .message("Invalid credentials for user with given username: " +
-                    request.getUsername())
-                .logError(e);
-
-            // map spring exception to a service exception for better handling
-            throw new InvalidCredentialsException("Invalid credentials for user");
-        } catch (LockedException e) {
-            throw new AccountLockedException("Account locked");
-        } catch (DisabledException e) {
-            throw new UserDeactivatedException();
-        } catch (CredentialsExpiredException e) {
-            throw new PasswordExpiredException();
-        }
+        throw new UnsupportedOperationException("Disabled");
+//        try {
+//            String loggedInName = request.getUsername();
+//            if (loggedInName.contains("@")) {
+//                //User has supplied email as username.
+//                //See if we have a user with this email.
+//                try {
+//                    User exists = userRepository.findByEmailIgnoreCase(loggedInName);
+//                    if (exists != null) {
+//                        loggedInName = exists.getUsername();
+//                    }
+//                } catch (Exception ex) {
+//                    //Log details to check for nature of brute force attacks.
+//                    LogBuilder.builder(log)
+//                        .action("Login")
+//                        .message("Invalid credentials for user with given username: " +
+//                            request.getUsername())
+//                        .logError(ex);
+//
+//                    //Exception if there is more than one user associated with email.
+//                    throw new InvalidCredentialsException("Sorry, that email is not unique. Log in with your username.");
+//                }
+//                //Just continue if we couldn't find user for email
+//            }
+//
+//
+//            Authentication auth = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
+//                    loggedInName, request.getPassword()
+//            ));
+//            User user = userRepository.findByUsernameIgnoreCase(loggedInName);
+//
+//            if (user.getStatus().equals(Status.inactive)) {
+//                throw new InvalidCredentialsException("Sorry, it looks like that account is no longer active.");
+//            }
+//
+//            user.setLastLogin(OffsetDateTime.now());
+//            user = userRepository.save(user);
+//
+//            SecurityContextHolder.getContext().setAuthentication(auth);
+//            String jwt = tokenProvider.generateToken(auth);
+//
+//            JwtAuthenticationResponse response = new JwtAuthenticationResponse(jwt, user);
+//            response.setCanViewChats(
+//                chatPolicy.canSubscribeToChats(authService.queryLoggedInUserAuthorities()));
+//            response.setTcInstanceType(tcInstanceService.getInstanceType());
+//            return response;
+//
+//        } catch (BadCredentialsException e) {
+//            //Log details to check for nature of brute force attacks.
+//            LogBuilder.builder(log)
+//                .action("Login")
+//                .message("Invalid credentials for user with given username: " +
+//                    request.getUsername())
+//                .logError(e);
+//
+//            // map spring exception to a service exception for better handling
+//            throw new InvalidCredentialsException("Invalid credentials for user");
+//        } catch (LockedException e) {
+//            throw new AccountLockedException("Account locked");
+//        } catch (DisabledException e) {
+//            throw new UserDeactivatedException();
+//        } catch (CredentialsExpiredException e) {
+//            throw new PasswordExpiredException();
+//        }
     }
 
     @Override
@@ -584,34 +573,30 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void updatePassword(UpdateUserPasswordRequest request) {
-        /* Check that the new passwords match */
-        if (!request.getPassword().equals(request.getPasswordConfirmation())) {
-            throw new PasswordMatchException();
-        }
-
-        /* Check that the old passwords match */
-        User user = authService.getLoggedInUser()
-                .orElseThrow(() -> new InvalidSessionException("Not logged in"));
-
-        // TODO extend PasswordEncoder to expose BCrypts `checkpw` method (to compare plaintext and hashed passwords)
-//        String oldPasswordEnc = passwordHelper.encodePassword(request.getOldPassword());
-//        if (!passwordHelper.isValidPassword(user.getPasswordEnc(), oldPasswordEnc)) {
-//            throw new InvalidCredentialsException("Invalid credentials for this user");
+        throw new UnsupportedOperationException("Disabled");
+//        /* Check that the new passwords match */
+//TODO JC Remove
+//        if (!request.getPassword().equals(request.getPasswordConfirmation())) {
+//            throw new PasswordMatchException();
 //        }
-
-        /* Change the password */
-        String passwordEnc = passwordHelper.validateAndEncodePassword(request.getPassword());
-        user.setPasswordEnc(passwordEnc);
-        userRepository.save(user);
-
-        /* Update changePassword */
-        if (user.getCandidate() != null && user.getCandidate().isChangePassword()) {
-            Candidate candidate = candidateRepository.findById(user.getCandidate().getId())
-                .orElseThrow(
-                    () -> new NoSuchObjectException(Candidate.class, user.getCandidate().getId()));
-            candidate.setChangePassword(false);
-            candidateRepository.save(candidate);
-        }
+//
+//        /* Check that the old passwords match */
+//        User user = authService.getLoggedInUser()
+//                .orElseThrow(() -> new InvalidSessionException("Not logged in"));
+//
+//        /* Change the password */
+//        String passwordEnc = passwordHelper.validateAndEncodePassword(request.getPassword());
+//        user.setPasswordEnc(passwordEnc);
+//        userRepository.save(user);
+//
+//        /* Update changePassword */
+//        if (user.getCandidate() != null && user.getCandidate().isChangePassword()) {
+//            Candidate candidate = candidateRepository.findById(user.getCandidate().getId())
+//                .orElseThrow(
+//                    () -> new NoSuchObjectException(Candidate.class, user.getCandidate().getId()));
+//            candidate.setChangePassword(false);
+//            candidateRepository.save(candidate);
+//        }
     }
 
     /**
@@ -622,22 +607,24 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void updateUserPassword(long id, UpdateUserPasswordRequest request) throws InvalidRequestException {
-        /* Get user */
-        User user = this.userRepository.findById(id)
-                .orElseThrow(() -> new NoSuchObjectException(User.class, id));
-        if (authoriseAdminUser()) {
-            /* Check that the new passwords match */
-            if (!request.getPassword().equals(request.getPasswordConfirmation())) {
-                throw new PasswordMatchException();
-            }
-
-            /* Change the password */
-            String passwordEnc = passwordHelper.validateAndEncodePassword(request.getPassword());
-            user.setPasswordEnc(passwordEnc);
-            userRepository.save(user);
-        } else {
-            throw new InvalidRequestException("You don't have permission to update this user's password.");
-        }
+        throw new UnsupportedOperationException("Disabled");
+//
+//        /* Get user */
+//        User user = this.userRepository.findById(id)
+//                .orElseThrow(() -> new NoSuchObjectException(User.class, id));
+//        if (authoriseAdminUser()) {
+//            /* Check that the new passwords match */
+//            if (!request.getPassword().equals(request.getPasswordConfirmation())) {
+//                throw new PasswordMatchException();
+//            }
+//
+//            /* Change the password */
+//            String passwordEnc = passwordHelper.validateAndEncodePassword(request.getPassword());
+//            user.setPasswordEnc(passwordEnc);
+//            userRepository.save(user);
+//        } else {
+//            throw new InvalidRequestException("You don't have permission to update this user's password.");
+//        }
     }
 
     @Override
@@ -687,26 +674,27 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void resetPassword(ResetPasswordRequest request) {
-        if (!request.getPassword().equals(request.getPasswordConfirmation())) {
-            throw new PasswordMatchException();
-        }
-
-        User user = userRepository.findByResetToken(request.getToken());
-
-        if (user != null) {
-            String passwordEnc = passwordHelper.validateAndEncodePassword(request.getPassword());
-
-            LogBuilder.builder(log)
-                .action("ResetPassword")
-                .message("Saving new password for user with id " + user.getId())
-                .logInfo();
-
-            user.setPasswordEnc(passwordEnc);
-            user.setPasswordUpdatedDate(OffsetDateTime.now());
-            user.setResetTokenIssuedDate(null);
-            user.setResetToken(null);
-            userRepository.save(user);
-        }
+        throw new UnsupportedOperationException("Disabled");
+//        if (!request.getPassword().equals(request.getPasswordConfirmation())) {
+//            throw new PasswordMatchException();
+//        }
+//
+//        User user = userRepository.findByResetToken(request.getToken());
+//
+//        if (user != null) {
+//            String passwordEnc = passwordHelper.validateAndEncodePassword(request.getPassword());
+//
+//            LogBuilder.builder(log)
+//                .action("ResetPassword")
+//                .message("Saving new password for user with id " + user.getId())
+//                .logInfo();
+//
+//            user.setPasswordEnc(passwordEnc);
+//            user.setPasswordUpdatedDate(OffsetDateTime.now());
+//            user.setResetTokenIssuedDate(null);
+//            user.setResetToken(null);
+//            userRepository.save(user);
+//        }
     }
 
     @Override
