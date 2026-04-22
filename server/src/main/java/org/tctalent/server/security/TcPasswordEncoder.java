@@ -17,7 +17,9 @@
 package org.tctalent.server.security;
 
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.stereotype.Component;
 
+@Component
 public class TcPasswordEncoder extends BCryptPasswordEncoder {
 
     private static final String DEFAULT_PASSWORD = "password";
