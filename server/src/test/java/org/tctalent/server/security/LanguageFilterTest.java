@@ -16,10 +16,15 @@
 
 package org.tctalent.server.security;
 
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.when;
+
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -31,10 +36,6 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.model.db.User;
-
-import java.io.IOException;
-
-import static org.mockito.Mockito.*;
 
 class LanguageFilterTest {
 
@@ -62,6 +63,9 @@ class LanguageFilterTest {
   @Mock
   private User user;
 
+  @Mock
+  private CurrentUserInfo userInfo;
+
 
   @Mock
   private LogBuilder logBuilder;
@@ -87,7 +91,7 @@ class LanguageFilterTest {
 
     languageFilter.doFilterInternal(request, response, filterChain);
 
-    verify(user).setSelectedLanguage(language);
+    verify(userInfo).setSelectedLanguage(language);
     verify(filterChain).doFilter(request, response);
     verifyNoInteractions(logBuilder);
   }
@@ -101,7 +105,7 @@ class LanguageFilterTest {
 
     languageFilter.doFilterInternal(request, response, filterChain);
 
-    verify(user).setSelectedLanguage("en");
+    verify(userInfo).setSelectedLanguage("en");
     verify(filterChain).doFilter(request, response);
     verifyNoInteractions(logBuilder);
   }
@@ -115,7 +119,7 @@ class LanguageFilterTest {
 
     languageFilter.doFilterInternal(request, response, filterChain);
 
-    verify(user).setSelectedLanguage("en");
+    verify(userInfo).setSelectedLanguage("en");
     verify(filterChain).doFilter(request, response);
     verifyNoInteractions(logBuilder);
   }
