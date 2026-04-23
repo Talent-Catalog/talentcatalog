@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Catalog.
+ * Copyright (c) 2026 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -14,21 +14,25 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, Input} from '@angular/core';
-import {IntakeComponentTabBase} from "../../../../../util/intake/IntakeComponentTabBase";
-import {CandidateIntakeData, CandidateVisa} from "../../../../../../model/candidate";
+package org.tctalent.server.casi.api.request;
 
-@Component({
-  selector: 'app-visa-check-nz',
-  templateUrl: './visa-check-nz.component.html',
-  styleUrls: ['./visa-check-nz.component.scss']
-})
-export class VisaCheckNzComponent extends IntakeComponentTabBase {
-  @Input() selectedIndex: number;
-  @Input() declare candidateIntakeData: CandidateIntakeData;
-  visaRecord: CandidateVisa;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
+import java.util.List;
+import lombok.Getter;
+import lombok.Setter;
+import org.tctalent.server.casi.domain.model.ListAction;
 
-  protected getTabId(): string {
-    return 'Visa';
-  }
+/**
+ * Request to perform a {@link ListAction} on a set of candidates within a service list.
+ */
+@Getter
+@Setter
+public class ServiceListActionRequest {
+
+  @NotNull(message = "Action must not be null")
+  private ListAction action;
+
+  @NotEmpty(message = "At least one candidate number must be provided")
+  private List<String> candidateNumbers;
 }

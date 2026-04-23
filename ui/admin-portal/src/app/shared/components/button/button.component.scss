@@ -1,17 +1,11 @@
 @import '../../../../scss/typography-mixins';
 @import "../../../../scss/color-mixins";
 
-:host {
-  display: inline-flex;
-  max-width: 100%;
-}
-
 .btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   justify-items: center;
-  width: 100%;
   border-radius: 8px;
   border: none;
   transition: background-color 0.2s ease-in-out, box-shadow 0.2s;

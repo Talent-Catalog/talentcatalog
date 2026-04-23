@@ -51,12 +51,12 @@ public class ReferenceService extends AbstractCandidateAssistanceService {
   }
 
   @Override
-  protected ServiceProvider provider() {
+  public ServiceProvider provider() {
     return ServiceProvider.REFERENCE;
   }
 
   @Override
-  protected ServiceCode serviceCode() {
+  public ServiceCode serviceCode() {
     return ServiceCode.VOUCHER;
   }
 
