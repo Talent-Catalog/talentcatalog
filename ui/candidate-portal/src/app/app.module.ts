@@ -357,7 +357,8 @@ export function initializeAuth(authenticationService: AuthenticationService) {
     LinkedinComponent,
     LinkedinRedeemedComponent,
     ReferenceComponent,
-    UnhcrComponent
+    UnhcrComponent,
+    AuthErrorComponent
   ],
   imports: [
     BrowserModule,
@@ -390,8 +391,7 @@ export function initializeAuth(authenticationService: AuthenticationService) {
     NgxWigModule,
     QuillModule.forRoot(),
     PickerModule,
-    KeycloakAngularModule,
-    AuthErrorComponent
+    KeycloakAngularModule
   ],
   providers: [
     {provide: AUTH_PROVIDER, useFactory: authProviderFactory,
