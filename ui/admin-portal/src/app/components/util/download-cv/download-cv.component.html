@@ -22,11 +22,14 @@
           [showClose]="true">
 
   <tc-alert type="danger" *ngIf="error">
-    <div><strong>{{error}}</strong></div>
+    <div><strong>{{ error }}</strong></div>
+  </tc-alert>
+
+  <tc-alert type="info" *ngIf="loading && form?.value?.format === 'google-doc'">
+    <div><strong>Creating Google Doc...</strong></div>
   </tc-alert>
 
   <form [formGroup]="form">
-
     <div class="mb-3">
       <tc-label>Format</tc-label>
     </div>
@@ -36,8 +39,7 @@
                 name="format"
                 [value]="'pdf'"
                 [label]="'PDF'"
-                [formControlName]="'format'"
-      >
+                [formControlName]="'format'">
       </tc-radio>
     </tc-field>
 
@@ -46,6 +48,15 @@
                 name="format"
                 [value]="'docx'"
                 [label]="'Word (.docx)'"
+                [formControlName]="'format'">
+      </tc-radio>
+    </tc-field>
+
+    <tc-field [checkbox]="true">
+      <tc-radio [id]="'google-doc'"
+                name="format"
+                [value]="'google-doc'"
+                [label]="'Google Doc'"
                 [formControlName]="'format'">
       </tc-radio>
     </tc-field>
@@ -69,13 +80,6 @@
                 id="contact">
       </tc-input>
     </tc-field>
-
-    <div class="mt-3 d-flex gap-2" *ngIf="loading || saving">
-      <tc-button [disabled]="true">
-        Downloading...
-      </tc-button>
-    </div>
-
   </form>
 
 </tc-modal>
