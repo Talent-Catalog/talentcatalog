@@ -18,6 +18,7 @@ import {Injectable} from '@angular/core';
 import {HttpClient, HttpHeaders} from "@angular/common/http";
 import {Observable} from "rxjs";
 import {environment} from "../../environments/environment";
+import {ListAction, ServiceList} from "../model/service-list";
 
 
 /**
@@ -73,6 +74,31 @@ export class CasiAdminService {
     return this.http.post<any>(
       `${this.apiBaseUrl}/${provider}/${serviceCode}/assign/candidate/${candidateId}`,
       null
+    );
+  }
+
+  /**
+   * Get the service list associated with a saved list, or null if none exists.
+   * @param savedListId
+   */
+  getServiceList(savedListId: number): Observable<ServiceList> {
+    return this.http.get<ServiceList>(`${this.apiBaseUrl}/list/${savedListId}`);
+  }
+
+  /**
+   * Perform a ListAction on a set of candidates within a service list.
+   * @param serviceListId - the ID of the ServiceList (not the SavedList)
+   * @param action
+   * @param candidateNumbers
+   */
+  performServiceListAction(
+    serviceListId: number,
+    action: ListAction,
+    candidateNumbers: string[]
+  ): Observable<void> {
+    return this.http.post<void>(
+      `${this.apiBaseUrl}/list/${serviceListId}/action`,
+      {action, candidateNumbers}
     );
   }
 
