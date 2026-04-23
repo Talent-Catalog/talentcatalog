@@ -279,7 +279,7 @@ module "tc-plus-staging" {
   tc_api_url                      = "https://test.api.tctalent.org"
   tc_cors_urls                    = "https://tctalent-test.org,https://*.d2jx6ziu0w8kq9.amplifyapp.com,https://*.d1bt868vpd541m.amplifyapp.com"
   tc_db_copy_config               = "data.sharing/tcCopies.xml"                   # todo: can this be retired?
-  tc_destinations                 = "Australia,Canada,New Zealand,United Kingdom" # todo: set TC destinations
+  tc_destinations                 = "Australia,Belgium,Canada,France,Germany,Ireland,Italy,Slovakia,Spain,United Kingdom,United States" # todo: set TC destinations
   tc_skills_extraction_api_url    = "https://test.skills.tctalent.org"
   web_admin                       = "https://tctalent-test.org/admin-portal"
   web_portal                      = "https://tctalent-test.org/candidate-portal"
