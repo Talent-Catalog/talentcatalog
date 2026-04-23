@@ -88,6 +88,7 @@ import org.tctalent.server.service.db.CandidateService;
 import org.tctalent.server.service.db.SavedListService;
 import org.tctalent.server.service.db.SavedSearchService;
 import org.tctalent.server.util.dto.DtoBuilder;
+import org.tctalent.server.util.filesystem.GoogleFileSystemFile;
 
 @RestController
 @RequestMapping("/api/admin/candidate")
@@ -382,6 +383,26 @@ public class CandidateAdminApi {
             IOUtils.copy(reportStream, response.getOutputStream());
             response.flushBuffer();
         }
+    }
+
+    @PostMapping(value = "{id}/cv.google-doc")
+    public GoogleFileSystemFile createCandidateCVGoogleDoc(
+        @RequestBody DownloadCvRequest request
+    ) throws IOException {
+
+        LogBuilder.builder(log)
+            .candidateId(request.getCandidateId())
+            .action("createCandidateCVGoogleDoc")
+            .message("Creating Google Doc CV for candidate")
+            .logInfo();
+
+        Candidate candidate = candidateService.getCandidate(request.getCandidateId());
+
+        return candidateService.createCvGoogleDoc(
+            candidate,
+            request.getShowName(),
+            request.getShowContact()
+        );
     }
 
     @PutMapping("{id}/create-folder")
