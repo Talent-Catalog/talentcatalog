@@ -157,4 +157,28 @@ public interface FileSystemService {
     GoogleFileSystemFile copyFile(
         GoogleFileSystemFolder parentFolder, String name, GoogleFileSystemFile sourceFile)
         throws IOException;
+
+    /**
+     * Uploads a local DOCX file and imports it as a native Google Docs document.
+     * <p>
+     * The created file is a Google Docs file rather than an Office file opened in
+     * Microsoft Office editing mode. This is required for Google Docs features such
+     * as {@code Tools -> Translate document}.
+     * </p>
+     *
+     * @param drive Drive where the file should be created
+     * @param parentFolder Folder that file should be uploaded to. If null,
+     *                     file is uploaded to the root of the given drive
+     * @param fileName Name assigned to the created Google document
+     * @param file Local DOCX file to be uploaded and converted
+     * @return Info about the created Google Docs file
+     * @throws IOException If there was a problem uploading or converting the file
+     */
+    @NonNull
+    GoogleFileSystemFile uploadFileAsGoogleDoc(
+        GoogleFileSystemDrive drive,
+        @Nullable GoogleFileSystemFolder parentFolder,
+        String fileName,
+        File file
+    ) throws IOException;
 }
