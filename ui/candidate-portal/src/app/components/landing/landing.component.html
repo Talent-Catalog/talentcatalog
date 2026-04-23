@@ -13,6 +13,14 @@
   ~ You should have received a copy of the GNU Affero General Public License
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
+<app-auth-error
+  [error]="authStatus?.error"
+  (dismissed)="dismissAuthError()">
+</app-auth-error>
+
+<div *ngIf="authStatus?.busy" class="alert alert-info">
+  Connecting to authentication service...
+</div>
 <div class="container">
 
   <div class="row justify-content-center mt-4">

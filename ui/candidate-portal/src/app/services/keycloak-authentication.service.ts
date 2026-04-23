@@ -1,7 +1,10 @@
 // keycloak-authentication.service.ts
 import {Injectable} from '@angular/core';
+import {BehaviorSubject, Observable} from 'rxjs';
 import {KeycloakService} from 'keycloak-angular';
 import {AuthProvider} from './auth-provider';
+import {AuthStatus} from './auth-status';
+import {reportAuthError} from './auth-error.util';
 
 /**
  * Keycloak authentication service.
@@ -14,25 +17,67 @@ import {AuthProvider} from './auth-provider';
  * </pre>
  * which is compatible with Angular 17.
  */
-
 @Injectable()
 export class KeycloakAuthenticationService implements AuthProvider {
 
+  private readonly status$ = new BehaviorSubject<AuthStatus>({
+    initialized: false,
+    authenticated: false,
+    busy: false,
+    error: null
+  });
+
   constructor(private keycloakService: KeycloakService) {}
 
+  getStatus(): Observable<AuthStatus> {
+    return this.status$.asObservable();
+  }
+
+  getCurrentStatus(): AuthStatus {
+    return this.status$.value;
+  }
+
+  clearError(): void {
+    this.patchStatus({ error: null });
+  }
+
   async init(): Promise<boolean> {
-    return this.keycloakService.init({
-      config: {
-        url: 'http://localhost:8082',
-        realm: 'talentcatalog',
-        clientId: 'grn-candidate'
-      },
-      initOptions: {
-        onLoad: 'check-sso',
-        pkceMethod: 'S256'
-      },
-      enableBearerInterceptor: false
-    });
+    this.patchStatus({ busy: true, error: null });
+
+    try {
+      const authenticated = await this.keycloakService.init({
+        config: {
+          url: 'http://localhost:8082',
+          realm: 'talentcatalog',
+          clientId: 'grn-candidate'
+        },
+        initOptions: {
+          onLoad: 'check-sso',
+          pkceMethod: 'S256'
+        },
+        enableBearerInterceptor: false
+      });
+
+      this.patchStatus({
+        initialized: true,
+        authenticated,
+        busy: false,
+        error: null
+      });
+
+      return authenticated;
+    } catch (e) {
+      const message = reportAuthError('Failed to initialize authentication service', e);
+
+      this.patchStatus({
+        initialized: true,
+        authenticated: false,
+        busy: false,
+        error: message
+      });
+
+      return false;
+    }
   }
 
   isAuthenticated(): boolean {
@@ -40,28 +85,102 @@ export class KeycloakAuthenticationService implements AuthProvider {
   }
 
   async login(): Promise<void> {
-    await this.keycloakService.login({
-      redirectUri: window.location.origin + '/home'
-    });
+    this.patchStatus({ busy: true, error: null });
+
+    try {
+      await this.keycloakService.login({
+        redirectUri: window.location.origin + '/home'
+      });
+
+      this.patchStatus({ busy: false });
+    } catch (e) {
+      const message = reportAuthError('Login failed', e);
+
+      this.patchStatus({
+        busy: false,
+        error: message
+      });
+
+      throw e;
+    }
   }
 
   async register(): Promise<void> {
-    await this.keycloakService.register({
-      redirectUri: window.location.origin + '/home'
-    });
+    this.patchStatus({ busy: true, error: null });
+
+    try {
+      await this.keycloakService.register({
+        redirectUri: window.location.origin + '/home'
+      });
+
+      this.patchStatus({ busy: false });
+    } catch (e) {
+      const message = reportAuthError('Registration failed', e);
+
+      this.patchStatus({
+        busy: false,
+        error: message
+      });
+
+      throw e;
+    }
   }
 
   async logout(): Promise<void> {
-    await this.keycloakService.logout(window.location.origin);
+    this.patchStatus({ busy: true, error: null });
+
+    try {
+      await this.keycloakService.logout(window.location.origin);
+
+      this.patchStatus({
+        busy: false,
+        authenticated: false,
+        error: null
+      });
+    } catch (e) {
+      const message = reportAuthError('Logout failed', e);
+
+      this.patchStatus({
+        busy: false,
+        error: message
+      });
+
+      throw e;
+    }
   }
 
   getToken(): string | undefined {
-    return this.keycloakService.getKeycloakInstance().token;
+    try {
+      return this.keycloakService.getKeycloakInstance().token;
+    } catch (e) {
+      const message = reportAuthError('Could not read authentication token', e);
+      this.patchStatus({ error: message });
+      return undefined;
+    }
   }
 
   async refreshToken(minValiditySeconds = 30): Promise<void> {
-    if (await this.keycloakService.isLoggedIn()) {
-      await this.keycloakService.updateToken(minValiditySeconds);
+    try {
+      const loggedIn = await this.keycloakService.isLoggedIn();
+      if (loggedIn) {
+        await this.keycloakService.updateToken(minValiditySeconds);
+      }
+    } catch (e) {
+      const message = reportAuthError('Authentication session refresh failed', e);
+
+      this.patchStatus({
+        authenticated: false,
+        error: message
+      });
+
+      throw e;
     }
+  }
+
+  private patchStatus(patch: Partial<AuthStatus>): void {
+    this.status$.next({
+      ...this.status$.value,
+      ...patch
+    });
   }
 }

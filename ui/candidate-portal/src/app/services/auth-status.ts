@@ -13,20 +13,10 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-// auth-provider.ts
-import {Observable} from 'rxjs';
-import {AuthStatus} from './auth-status';
-
-export interface AuthProvider {
-  init(): Promise<boolean>;
-  isAuthenticated(): boolean;
-  login(): Promise<void>;
-  register(): Promise<void>;
-  logout(): Promise<void>;
-  getToken(): string | undefined;
-  refreshToken(minValiditySeconds?: number): Promise<void>;
-
-  getStatus(): Observable<AuthStatus>;
-  getCurrentStatus(): AuthStatus;
-  clearError(): void;
+// auth-status.ts
+export interface AuthStatus {
+  initialized: boolean;
+  authenticated: boolean;
+  busy: boolean;
+  error: string | null;
 }

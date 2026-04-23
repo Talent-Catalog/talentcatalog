@@ -14,12 +14,14 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import {LanguageService} from '../../services/language.service';
 import {initializePhraseAppEditor} from "ngx-translate-phraseapp";
 import {BrandingInfo, BrandingService} from "../../services/branding.service";
 import {AuthenticationService} from "../../services/authentication.service";
+import {Subscription} from "rxjs";
+import {AuthStatus} from "../../services/auth-status";
 
 @Component({
   selector: 'app-landing',
@@ -45,8 +47,9 @@ import {AuthenticationService} from "../../services/authentication.service";
  *   RegisterComponent (as defined in AppRoutingModule).
  * </p>
  */
-export class LandingComponent implements OnInit {
-
+export class LandingComponent implements OnInit, OnDestroy {
+  authStatus: AuthStatus;
+  private authStatusSub?: Subscription;
   private brandingInfo: BrandingInfo;
   showUSAfghanInfo:boolean = false;
 
@@ -56,7 +59,12 @@ export class LandingComponent implements OnInit {
               private route: ActivatedRoute,
               private languageService: LanguageService) { }
 
+  // todo Login and Register should now just be buttons in this page?
+
   ngOnInit() {
+    this.authStatusSub = this.authenticationService.getAuthStatus().subscribe(status => {
+      this.authStatus = status;
+    });
 
     //Note that we deliberately use a snapshot rather than a subscribe
     //so that we pick up the lang query even if there is a redirect.
@@ -100,6 +108,10 @@ export class LandingComponent implements OnInit {
         }
       )
     }
+  }
+
+  ngOnDestroy(): void {
+    this.authStatusSub?.unsubscribe();
   }
 
   private setBrandingInfo(brandingInfo:BrandingInfo) {

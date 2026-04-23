@@ -26,6 +26,7 @@ import {TcInstanceType} from "../model/tc-instance-type";
 import {TermsType} from "../model/terms-info-dto";
 import {AuthProvider} from "./auth-provider";
 import {AUTH_PROVIDER} from "./auth.tokens";
+import {AuthStatus} from "./auth-status";
 
 export class AuthenticateInContextTranslationRequest {
   password: string;
@@ -91,7 +92,7 @@ export class AuthenticationService implements OnDestroy {
     this.setLoggedInUser(null);
     this.setCandidateStatus(null);
 
-    return this.authProvider.logout();     
+    return this.authProvider.logout();
    }
 
   getToken(): string | undefined {
@@ -100,6 +101,18 @@ export class AuthenticationService implements OnDestroy {
 
   refreshToken(minValiditySeconds = 30): Promise<void> {
     return this.authProvider.refreshToken(minValiditySeconds);
+  }
+
+  getAuthStatus(): Observable<AuthStatus> {
+    return this.authProvider.getStatus();
+  }
+
+  getCurrentAuthStatus(): AuthStatus {
+    return this.authProvider.getCurrentStatus();
+  }
+
+  clearAuthError(): void {
+    this.authProvider.clearError();
   }
 
   authenticateInContextTranslation(password: string): Observable<void> {
