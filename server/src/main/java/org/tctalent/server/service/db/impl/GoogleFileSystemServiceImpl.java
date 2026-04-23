@@ -44,6 +44,9 @@ import org.tctalent.server.util.filesystem.GoogleFileSystemFolder;
 public class GoogleFileSystemServiceImpl implements FileSystemService {
 
     private static final String FOLDER_MIME_TYPE = "application/vnd.google-apps.folder";
+    private static final String GOOGLE_DOC_MIME_TYPE = "application/vnd.google-apps.document";
+    private static final String DOCX_MIME_TYPE =
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
 
     private final Drive googleDriveService;
 
@@ -284,4 +287,40 @@ public class GoogleFileSystemServiceImpl implements FileSystemService {
         return fsf;
     }
 
+    @Override
+    public @NonNull GoogleFileSystemFile uploadFileAsGoogleDoc(
+        GoogleFileSystemDrive drive,
+        @Nullable GoogleFileSystemFolder parentFolder,
+        String fileName,
+        java.io.File file
+    ) throws IOException {
+
+        File fileMetadata = new File();
+
+        List<String> parent;
+        if (parentFolder == null) {
+            parent = Collections.singletonList(drive.getId());
+        } else {
+            parent = Collections.singletonList(parentFolder.getId());
+        }
+
+        fileMetadata.setDriveId(drive.getId());
+        fileMetadata.setParents(parent);
+        fileMetadata.setName(fileName);
+        fileMetadata.setMimeType(GOOGLE_DOC_MIME_TYPE);
+
+        FileContent mediaContent = new FileContent(DOCX_MIME_TYPE, file);
+
+        File uploadedFile = googleDriveService.files()
+            .create(fileMetadata, mediaContent)
+            .setSupportsAllDrives(true)
+            .setFields("id,webViewLink,name")
+            .execute();
+
+        GoogleFileSystemFile fsf = new GoogleFileSystemFile(uploadedFile.getWebViewLink());
+        fsf.setId(uploadedFile.getId());
+        fsf.setName(uploadedFile.getName());
+
+        return fsf;
+    }
 }
