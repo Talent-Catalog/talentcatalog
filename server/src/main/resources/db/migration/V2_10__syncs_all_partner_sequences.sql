@@ -43,4 +43,4 @@ DO $$
                 RAISE NOTICE 'Aligned %.% using %.%',
                     r.sequence_schema, r.sequence_name, r.table_name, r.column_name;
             END LOOP;
-    END $$;
+    END $$; 
