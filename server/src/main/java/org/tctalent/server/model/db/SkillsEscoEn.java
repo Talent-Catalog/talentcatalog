@@ -18,6 +18,7 @@ package org.tctalent.server.model.db;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import java.io.Serializable;
 import lombok.Getter;
@@ -30,6 +31,7 @@ import lombok.Setter;
  */
 @Entity
 @Table(name = "skills_esco_en")
+@SequenceGenerator(name = "seq_gen", sequenceName = "skills_esco_en_id_seq", allocationSize = 1)
 @Getter
 @Setter
 public class SkillsEscoEn implements Serializable {
