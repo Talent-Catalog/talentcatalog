@@ -50,7 +50,7 @@
 
       <ng-container *ngIf="hasSelectedNationality">
         <div class="mb-3">
-          <label class="form-label" [for]="'hasPassport'+myRecordIndex">Passport?</label>
+          <label class="form-label" [for]="'hasPassport'+myRecordIndex">Passport or Travel Document?</label>
           <ng-select class="tc-select"  [id]="'hasPassport'+myRecordIndex" [formControlName]="'citizenHasPassport'" (clear)="setNoResponse('citizenHasPassport')"
                      [items]="hasPassportOptions" [clearOnBackspace]="false"
                      placeholder="Select" bindLabel="stringValue" bindValue="key"></ng-select>
