@@ -52,9 +52,6 @@ No change. Branches continue to use the GitHub issue number as the prefix. Linea
 **Option B — Adopt Linear IDs**  
 Branches use the Linear-generated format (`{dev}/{linear-id}-description`, e.g. `sadat/tc-123-fix-password-validation`). Linear's "copy branch name" button generates this automatically.
 
-**Option C — Dual reference (transitional)**  
-Branches include both identifiers (`{github-issue-number}-{linear-id}-description`, e.g. `3353-tc-456-hardcoded-default-password`). Used during transition; dropped once ZenHub is decommissioned.
-
 ### Decision
 
 _To be agreed._
