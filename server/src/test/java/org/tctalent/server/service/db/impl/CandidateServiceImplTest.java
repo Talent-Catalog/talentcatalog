@@ -30,8 +30,8 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-import java.util.List;
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import org.junit.jupiter.api.Assertions;
@@ -53,16 +53,16 @@ import org.tctalent.server.model.db.PartnerImpl;
 import org.tctalent.server.model.db.User;
 import org.tctalent.server.model.db.partner.Partner;
 import org.tctalent.server.repository.db.CandidateRepository;
-import org.tctalent.server.service.db.CountryService;
-import org.tctalent.server.service.db.SystemNotificationService;
-import org.tctalent.server.util.PersistenceContextHelper;
 import org.tctalent.server.repository.db.CountryRepository;
 import org.tctalent.server.repository.db.UserRepository;
 import org.tctalent.server.request.candidate.UpdateCandidatePersonalRequest;
 import org.tctalent.server.request.candidate.citizenship.CreateCandidateCitizenshipRequest;
 import org.tctalent.server.security.AuthService;
 import org.tctalent.server.service.db.CandidateCitizenshipService;
+import org.tctalent.server.service.db.CountryService;
 import org.tctalent.server.service.db.PartnerService;
+import org.tctalent.server.service.db.SystemNotificationService;
+import org.tctalent.server.util.PersistenceContextHelper;
 
 @ExtendWith(MockitoExtension.class)
 class CandidateServiceImplTest {
@@ -88,6 +88,7 @@ class CandidateServiceImplTest {
   @Mock private User mockUser;
   @Mock private CandidateCitizenshipService candidateCitizenshipService;
   @Mock private PartnerImpl mockPartner;
+  @Mock private TcInstanceService tcInstanceService;
 
   @Spy
   @InjectMocks
@@ -329,6 +330,8 @@ class CandidateServiceImplTest {
     updateCandidatePersonalRequest.setCountryId(1L);
     updateCandidatePersonalRequest.setNationalityId(2L);
     updateCandidatePersonalRequest.setOtherNationalityIds(new Long[0]);
+    
+    given(tcInstanceService.isTBB()).willReturn(true);
 
     // Set current partner source country
     partner.setSourcePartner(true);
