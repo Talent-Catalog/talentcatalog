@@ -31,3 +31,30 @@ GitHub Issues remain the canonical issue tracker for all contributors — core e
 Option A is not viable. Talent Catalog is an open-source project; the GitHub Issues tab is the universal contract between the project and its contributor community. Disabling it would cut off external contributions and violate the expectations of any developer who finds the repository.
 
 Option B is not a compromise — it is the correct architecture. Linear addresses the product management limitations of ZenHub without disrupting the engineering workflow or the open-source contributor experience.
+
+---
+
+## Decision 2: Branch Naming Convention
+
+**Status:** Pending
+
+### Context
+
+The team's branch naming convention (`{github-issue-number}-description`, e.g. `3353-hardcoded-default-password`) is shown by example in `CONTRIBUTING.md`.
+
+This decision applies only to the core team. External contributors work from forks and name branches as they choose; the convention is guidance, not enforcement.
+
+### Options
+
+**Option A — Keep GitHub issue numbers**  
+No change. Branches continue to use the GitHub issue number as the prefix. Linear traceability is handled via PR linking.
+
+**Option B — Adopt Linear IDs**  
+Branches use the Linear-generated format (`{dev}/{linear-id}-description`, e.g. `sadat/tc-123-fix-password-validation`). Linear's "copy branch name" button generates this automatically.
+
+**Option C — Dual reference (transitional)**  
+Branches include both identifiers (`{github-issue-number}-{linear-id}-description`, e.g. `3353-tc-456-hardcoded-default-password`). Used during transition; dropped once ZenHub is decommissioned.
+
+### Decision
+
+_To be agreed._
