@@ -96,12 +96,14 @@ export class HighlightSearchDirective implements OnInit, OnDestroy, AfterContent
 
   private createTermsRegex(searchTerms: string[]): RegExp {
     // Escape special regex characters in terms then join them with '|' to match any of them
-    const termsRegex = searchTerms.map(term =>
-        term.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&')
-    ).join('|');
+    const termsRegex = searchTerms
+    .filter(term => term && term.trim().length > 0) // This avoids building bad regex patterns from empty strings.
+    .map(term => term.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&'))
+    .join('|');
 
-    // Return a regex that finds any of the terms
-    return new RegExp(`(${termsRegex})`, 'gi');
+    // Match terms only when not inside another word.
+    // Prevents "it" matching "bite", "writing", etc.
+    return new RegExp(`(?<![\\p{L}\\p{N}_])(${termsRegex})(?![\\p{L}\\p{N}_])`, 'giu');
   }
 
   private highlightInTextNode(node: Node, regex: RegExp): void {
