@@ -1,23 +1,41 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or any later version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT
+ * This program is distributed in the hope that it will be useful, but WITHOUT 
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
  * for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
+ * You should have received a copy of the GNU Affero General Public License 
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
 package org.tctalent.server.api.admin;
 
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.verify;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.tctalent.server.data.CandidateTestData.getCandidateJobExperience;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -36,23 +54,8 @@ import org.tctalent.server.request.work.experience.CreateJobExperienceRequest;
 import org.tctalent.server.request.work.experience.SearchJobExperienceRequest;
 import org.tctalent.server.request.work.experience.UpdateJobExperienceRequest;
 import org.tctalent.server.service.db.CandidateJobExperienceService;
-
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.verify;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import org.tctalent.server.service.db.CountryService;
+import org.tctalent.server.service.db.OccupationService;
 
 /**
  * Unit tests for Candidate Job Experience Admin Api endpoints.
@@ -67,7 +70,7 @@ class CandidateJobExperienceAdminApiTest extends ApiTestBase {
     private static final String BASE_PATH = "/api/admin/candidate-job-experience";
     private static final String SEARCH_PATH = "/search";
 
-    private static final CandidateJobExperience candidateJobExperience = AdminApiTestUtil.getCandidateJobExperience();
+    private static final CandidateJobExperience candidateJobExperience = getCandidateJobExperience();
 
     private final Page<CandidateJobExperience> candidateJobExperiencePage =
             new PageImpl<>(
@@ -77,6 +80,8 @@ class CandidateJobExperienceAdminApiTest extends ApiTestBase {
             );
 
     @MockBean CandidateJobExperienceService candidateJobExperienceService;
+    @MockBean CountryService countryService;
+    @MockBean OccupationService occupationService;
 
     @Autowired MockMvc mockMvc;
     @Autowired ObjectMapper objectMapper;
@@ -102,6 +107,7 @@ class CandidateJobExperienceAdminApiTest extends ApiTestBase {
                 .willReturn(candidateJobExperiencePage);
 
         mockMvc.perform(post(BASE_PATH + SEARCH_PATH)
+                        .with(csrf())
                         .header("Authorization", "Bearer " + "jwt-token")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request))
@@ -146,6 +152,7 @@ class CandidateJobExperienceAdminApiTest extends ApiTestBase {
                 .willReturn(candidateJobExperience);
 
         mockMvc.perform(post(BASE_PATH + "/" + CANDIDATE_ID)
+                        .with(csrf())
                         .header("Authorization", "Bearer " + "jwt-token")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request))
@@ -184,6 +191,7 @@ class CandidateJobExperienceAdminApiTest extends ApiTestBase {
                 .willReturn(candidateJobExperience);
 
         mockMvc.perform(put(BASE_PATH + "/" + CANDIDATE_ID)
+                        .with(csrf())
                         .header("Authorization", "Bearer " + "jwt-token")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request))
@@ -212,6 +220,7 @@ class CandidateJobExperienceAdminApiTest extends ApiTestBase {
     @DisplayName("delete candidate job experience by id succeeds")
     void deleteCandidateJobExperienceByIdSucceeds() throws Exception {
         mockMvc.perform(delete(BASE_PATH + "/" + CANDIDATE_ID)
+                        .with(csrf())
                         .header("Authorization", "Bearer " + "jwt-token"))
 
                 .andExpect(status().isOk());

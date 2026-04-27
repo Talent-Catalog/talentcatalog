@@ -1,5 +1,5 @@
 <!--
-  ~ Copyright (c) 2021 Talent Beyond Boundaries.
+  ~ Copyright (c) 2024 Talent Catalog.
   ~
   ~ This program is free software: you can redistribute it and/or modify it under
   ~ the terms of the GNU Affero General Public License as published by the Free
@@ -16,17 +16,17 @@
 
 <div class="text-end" *ngIf="!preview">
 
-  <button class="btn btn-danger btn-card"
+  <tc-button color="error" class="me-2"
           [disabled]="disabled"
-          (click)="delete()">
+          (onClick)="delete()">
     &times;
-  </button>
+  </tc-button>
 
-  <button class="btn btn-primary btn-card pb-1"
+  <tc-button color="info"
           [disabled]="disabled"
-          (click)="edit()">
-    <fa-icon icon="edit" size="xs"></fa-icon>
-  </button>
+          (onClick)="edit()">
+    <i class="fas fa-edit fa-xs"></i>
+  </tc-button>
 
 </div>
 
@@ -34,8 +34,7 @@
 
 <p>{{experience?.companyName}}</p>
 
-<div class="row">
-
+<div class="row experience-meta">
   <div class="col-12 col-md-4 text-start">
     <span class="icon"></span>
     {{getCountryName(experience.country)}}
@@ -51,8 +50,6 @@
     <span class="icon"></span>
     {{experience?.startDate ? (experience?.startDate | date: 'yyyy') : '?'}} - {{experience?.endDate ? (experience?.endDate | date: 'yyyy') : 'current'}}
   </div>
-
 </div>
 
 <p class="text-muted" [ngClass]="isHtml(experience?.description)?'html':'text'" [innerHTML]="experience?.description"></p>
-

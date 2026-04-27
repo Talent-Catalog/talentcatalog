@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2024 Talent Catalog.
+ *
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see https://www.gnu.org/licenses/.
+ */
+
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {ShortJob} from "../../../../../../model/job";
 import {
@@ -14,10 +30,8 @@ import {
   CandidateVisa,
   CandidateVisaJobCheck
 } from "../../../../../../model/candidate";
-import {CandidateVisaCheckService} from "../../../../../../services/candidate-visa-check.service";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
-import {FormBuilder, FormGroup} from "@angular/forms";
-import {LocalStorageService} from "angular-2-local-storage";
+import {UntypedFormBuilder, UntypedFormGroup} from "@angular/forms";
 import {AuthorizationService} from "../../../../../../services/authorization.service";
 
 @Component({
@@ -41,13 +55,11 @@ export class CandidateVisaJobComponent implements OnInit {
   selectedIndex: number;
   loading: boolean;
   error: string;
-  form: FormGroup;
+  form: UntypedFormGroup;
 
-  constructor(private candidateVisaCheckService: CandidateVisaCheckService,
-              private candidateVisaJobService: CandidateVisaJobService,
+  constructor(private candidateVisaJobService: CandidateVisaJobService,
               private modalService: NgbModal,
-              private localStorageService: LocalStorageService,
-              private fb: FormBuilder,
+              private fb: UntypedFormBuilder,
               private authService: AuthorizationService) { }
 
   ngOnInit(): void {
@@ -59,12 +71,17 @@ export class CandidateVisaJobComponent implements OnInit {
 
   private get filteredSfJobs(): ShortJob[] {
     /**
-     * IF there are no existing visa job checks, return all the jobs associated with the candidate's candidate opportunities.
-     * ELSE filter those jobs out from the jobs associated with their candidate opportunities
-     * SO that we avoid double ups of visa job checks for the same job.
+     * IF there are no existing visa job checks, return all the jobs associated with candidate's candidate opportunities
+     * but filtered by the same destination country as the specific visa check country.
+     * ELSE add additional filter removing completed visa job check jobs
+     * SO that we avoid double ups of visa job checks for the same job,
+     * and that jobs are only having visa checks for their appropriate destination country.
      */
     if (!this.hasJobChecks) {
-      return this.candidate.candidateOpportunities.map(co => co.jobOpp);
+      const ops = this.candidate.candidateOpportunities
+        .map(co => co.jobOpp)
+        .filter(jo => jo?.country?.id == this.visaCheckRecord.country.id);
+      return ops;
     } else {
       /**
        * NOTE: Some job checks don't have a SF Job Opp associated as these were entered in an earlier version of the code.
@@ -74,7 +91,7 @@ export class CandidateVisaJobComponent implements OnInit {
 
       return this.candidate.candidateOpportunities
         .map(co => co.jobOpp)
-        .filter(jo => !existingJobIds.includes(jo.id))
+        .filter(jo => !existingJobIds.includes(jo.id) && jo.country.id == this.visaCheckRecord.country.id)
     }
   }
 
@@ -89,7 +106,7 @@ export class CandidateVisaJobComponent implements OnInit {
   addJob() {
     const modal = this.modalService.open(HasNameSelectorComponent);
     modal.componentInstance.hasNames = this.filteredSfJobs;
-    modal.componentInstance.label = "Candidate's Job Opportunities";
+    modal.componentInstance.label = "Candidate's Job Opportunities for Destination: " + this.visaCheckRecord.country.name;
 
     modal.result
     .then((selection: ShortJob) => {
@@ -124,21 +141,22 @@ export class CandidateVisaJobComponent implements OnInit {
   deleteJob(i: number) {
     const confirmationModal = this.modalService.open(ConfirmationComponent);
     const visaJobCheck: CandidateVisaJobCheck = this.visaCheckRecord.candidateVisaJobChecks[i];
-    const jobName = visaJobCheck.jobOpp ? visaJobCheck.jobOpp.name : visaJobCheck.name
+    const jobName = visaJobCheck.jobOpp.name;
     confirmationModal.componentInstance.message =
       "Are you sure you want to delete the job check for " + jobName + '?';
     confirmationModal.result
     .then((result) => {
       if (result === true) {
-        this.doDelete(i, visaJobCheck);
+        this.doDelete(i);
       }
     })
     .catch(() => {});
   }
 
-  private doDelete(i: number, visaJobCheck: CandidateVisaJobCheck) {
+  private doDelete(i: number) {
     this.loading = true;
-    this.candidateVisaJobService.delete(visaJobCheck.id).subscribe(
+    let jobCheck = this.visaCheckRecord.candidateVisaJobChecks[i];
+    this.candidateVisaJobService.delete(jobCheck.id).subscribe(
       (done) => {
         this.loading = false;
         this.visaCheckRecord.candidateVisaJobChecks.splice(i, 1);
@@ -157,15 +175,29 @@ export class CandidateVisaJobComponent implements OnInit {
    * This allows us to retain the changed form data when switching between visa jobs.
    */
   fetchUpdatedSelectedJob(visaJob: CandidateVisaJobCheck) {
-    this.candidateVisaJobService.get(visaJob.id).subscribe(
-      (result) => {
-        this.visaCheckRecord.candidateVisaJobChecks[this.form.controls.jobIndex.value] = result;
-        this.selectedJobChange.emit(result);
-      }
-    )
+    if (visaJob) {
+      this.candidateVisaJobService.get(visaJob.id).subscribe(
+        (result) => {
+          this.visaCheckRecord.candidateVisaJobChecks[this.form.controls.jobIndex.value] = result;
+          this.selectedJobChange.emit(result);
+        }
+      )
+    }
   }
 
   canDeleteVisaJob() : boolean {
     return this.authService.isSystemAdminOnly();
+  }
+
+  fetchCandidateOppIdForJob(jobId: number): number {
+    if (!jobId) return null;
+    if (this.hasJobOpps) {
+      return this.candidate.candidateOpportunities.find(
+        co => co.jobOpp?.id === jobId)?.id;
+    }
+  }
+
+  isEditable(): boolean {
+    return this.authService.isEditableCandidate(this.candidate);
   }
 }

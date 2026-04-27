@@ -1,0 +1,87 @@
+@import '../../../../scss/color-mixins';
+
+.tc-loader {
+  @include text-color-primary;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+// Full-page loader
+.tc-loader-page {
+  position: fixed;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.85); // dimmed backdrop
+  z-index: 9999;
+  justify-content: center;
+  align-items: center;
+
+
+  .tc-loader-ring {
+    width: 6rem;
+    height: 6rem;
+    margin-bottom: 1rem;
+  }
+
+  .tc-loader-logo {
+    width: 3.5rem;
+  }
+}
+
+// Section loader
+.tc-loader-section {
+  p {
+    font-size: 0.8rem;
+  }
+
+  .tc-loader-ring {
+    width: 2.5rem;
+    height: 2.5rem;
+  }
+
+  .tc-loader-logo {
+    width: 1.4rem;
+  }
+}
+
+// Shared ring style
+.tc-loader-ring {
+  border-radius: 50%;
+  border: 0.1rem solid currentColor;
+  display: grid;
+  place-items: center;
+  animation: tc-pulse 1.2s ease-in-out infinite;
+}
+
+.tc-loader-logo {
+  height: auto;
+  display: block;
+}
+
+.tc-loader-dots::after {
+  content: '...';
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: -0.2em;
+  width: 0ch;
+  animation: tc-dots 1.2s steps(4, end) infinite;
+}
+
+// Animations
+@keyframes tc-pulse {
+  0%, 100% {
+    transform: scale(0.95);
+    opacity: 0.65;
+  }
+  50% {
+    transform: scale(1.06);
+    opacity: 1;
+  }
+}
+
+@keyframes tc-dots {
+  to {
+    width: 3ch;
+  }
+}

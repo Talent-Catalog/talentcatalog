@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -43,6 +43,10 @@ export class CandidateDependantService {
     Observable<CandidateDependant>  {
     return this.http.post<CandidateDependant>(
       `${this.apiUrl}/${candidateId}`, request);
+  }
+
+  list(candidateId: number): Observable<CandidateDependant[]> {
+    return this.http.get<CandidateDependant[]>(`${this.apiUrl}/${candidateId}/list`);
   }
 
   delete(id: number): Observable<boolean>  {

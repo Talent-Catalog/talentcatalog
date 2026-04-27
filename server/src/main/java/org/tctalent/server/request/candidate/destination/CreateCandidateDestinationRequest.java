@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -20,25 +20,16 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import org.springframework.lang.Nullable;
-import org.tctalent.server.model.db.Country;
-import org.tctalent.server.model.db.FamilyRelations;
 import org.tctalent.server.model.db.YesNoUnsure;
 
 @Getter
 @Setter
 @ToString
 public class CreateCandidateDestinationRequest {
-    @Nullable
-    private Country country;
+    private Long countryId;
 
     @Nullable
     private YesNoUnsure interest;
-
-    @Nullable
-    private FamilyRelations family;
-
-    @Nullable
-    private String location;
 
     @Nullable
     private String notes;

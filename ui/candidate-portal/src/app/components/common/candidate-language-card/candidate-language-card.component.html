@@ -1,5 +1,5 @@
 <!--
-  ~ Copyright (c) 2021 Talent Beyond Boundaries.
+  ~ Copyright (c) 2024 Talent Catalog.
   ~
   ~ This program is free software: you can redistribute it and/or modify it under
   ~ the terms of the GNU Affero General Public License as published by the Free
@@ -14,49 +14,59 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<div class="text-end" *ngIf="!isEnglish(language.languageId) && !preview">
-  <button class="btn btn-danger btn-card" (click)="delete()">&times;</button>
+<div class="text-end" *ngIf="!isEnglish(language.languageId) && !preview"
+     xmlns="http://www.w3.org/1999/html">
+  <tc-button color="error" (onClick)="delete()">&times;</tc-button>
 </div>
 
 <!-- WHICH LANGUAGE -->
 <div class="mb-3" *ngIf="!isEnglish(language.languageId)">
-  <label class="form-label">{{ 'REGISTRATION.LANGUAGE.LABEL.LANGUAGE' | translate }}</label>
+  <tc-label *ngIf="!preview">{{ 'REGISTRATION.LANGUAGE.LABEL.LANGUAGE' | translate }}</tc-label>
 
   <ng-select [disabled]="" [(ngModel)]="language.languageId" disabled *ngIf="!preview"
+             class="tc-select"
              [items]="languages" [clearable]="false" bindValue="id" bindLabel="name">
   </ng-select>
 
-  <p class="m-0" *ngIf="preview">
-    {{getLanguageName(language)}}
-  </p>
+  <tc-description-list *ngIf="preview" direction="column" compact size="lg">
+    <tc-description-item [label]="'REGISTRATION.LANGUAGE.LABEL.LANGUAGE' | translate">
+      {{translatedLanguageName}}
+    </tc-description-item>
+  </tc-description-list>
 </div>
 
 <!-- HOW WELL DO YOU SPEAK -->
 <div class="mb-3">
-  <label class="form-label" translate dir="auto">
-    {{ 'REGISTRATION.LANGUAGE.LABEL.SPEAK' | translate:{languageName: getLanguageName(language)} }}
-  </label>
+  <tc-label *ngIf="!preview" dir="auto">
+    {{ 'REGISTRATION.LANGUAGE.LABEL.SPEAK' | translate: { languageName: translatedLanguageName } }}
+  </tc-label>
 
   <ng-select [(ngModel)]="language.spokenLevelId" *ngIf="!preview" [items]="languageLevels"
+             class="tc-select"
              [clearable]="false" bindLabel="name" bindValue="id">
   </ng-select>
 
-  <p class="m-0" *ngIf="preview">
-    {{getLangLevel(language.spokenLevel)}}
-  </p>
+  <tc-description-list *ngIf="preview" direction="column" compact size="lg">
+    <tc-description-item [label]="'REGISTRATION.LANGUAGE.LABEL.SPEAK' | translate: { languageName: translatedLanguageName }">
+      {{getLangLevel(language.spokenLevel)}}
+    </tc-description-item>
+  </tc-description-list>
 </div>
 
 <!-- HOW WELL DO YOU READ AND WRITE -->
 <div class="mb-3">
-  <label class="form-label" translate dir="auto" [translateParams]="{languageName: getLanguageName(language)}">
-    {{ 'REGISTRATION.LANGUAGE.LABEL.WRITTEN' | translate:{languageName: getLanguageName(language)} }}
-  </label>
+  <tc-label *ngIf="!preview" [translate]="'REGISTRATION.LANGUAGE.LABEL.WRITTEN'"
+    dir="auto" [translateParams]=" { languageName: translatedLanguageName }">
+  </tc-label>
 
   <ng-select [(ngModel)]="language.writtenLevelId" *ngIf="!preview" [items]="languageLevels"
+             class="tc-select"
              [clearable]="false" bindValue="id" bindLabel="name">
   </ng-select>
 
-  <p class="m-0" *ngIf="preview">
-    {{getLangLevel(language.writtenLevel)}}
-  </p>
+  <tc-description-list *ngIf="preview" direction="column" compact size="lg">
+    <tc-description-item [label]="'REGISTRATION.LANGUAGE.LABEL.WRITTEN' | translate: { languageName: translatedLanguageName }">
+      {{getLangLevel(language.writtenLevel)}}
+    </tc-description-item>
+  </tc-description-list>
 </div>

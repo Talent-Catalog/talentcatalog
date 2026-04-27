@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -26,6 +26,7 @@ import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -44,8 +45,8 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.tctalent.server.api.admin.AdminApiTestUtil;
 import org.tctalent.server.api.admin.ApiTestBase;
+import org.tctalent.server.data.JobChatTestData;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.ChatPost;
 import org.tctalent.server.model.db.JobChat;
@@ -76,10 +77,10 @@ class ChatAdminApiTest extends ApiTestBase {
     private static final String READ = "/read";
     private static final String USER = "/user";
 
-    private static final JobChat chat = AdminApiTestUtil.getChat();
-    private static final List<JobChat> chatList = AdminApiTestUtil.getListOfChats();
-    private static final ChatPost post = AdminApiTestUtil.getChatPost();
-    private static final JobChatUserInfo info = AdminApiTestUtil.getJobChatUserInfo();
+    private static final JobChat chat = JobChatTestData.getChat();
+    private static final List<JobChat> chatList = JobChatTestData.getListOfChats();
+    private static final ChatPost post = JobChatTestData.getChatPost();
+    private static final JobChatUserInfo info = JobChatTestData.getJobChatUserInfo();
 
 
     @Autowired
@@ -121,12 +122,13 @@ class ChatAdminApiTest extends ApiTestBase {
     void create() throws Exception {
         CreateChatRequest request = new CreateChatRequest();
 
-        given(chatService.createJobChat(
+        given(chatService.getOrCreateJobChat(
             nullable(JobChatType.class), nullable(SalesforceJobOpp.class), nullable(PartnerImpl.class),
             nullable(Candidate.class)))
             .willReturn(chat);
 
         mockMvc.perform(post(BASE_PATH)
+            .with(csrf())
             .header("Authorization", "Bearer " + "jwt-token")
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(request))
@@ -138,7 +140,7 @@ class ChatAdminApiTest extends ApiTestBase {
             .andExpect(jsonPath("$", notNullValue()))
             .andExpect(jsonPath("$.id", is(chat.getId().intValue())));
 
-        verify(chatService).createJobChat(
+        verify(chatService).getOrCreateJobChat(
             nullable(JobChatType.class), nullable(SalesforceJobOpp.class), nullable(PartnerImpl.class),
             nullable(Candidate.class)
         );
@@ -176,6 +178,7 @@ class ChatAdminApiTest extends ApiTestBase {
 
         mockMvc.perform(post(BASE_PATH + GET_OR_CREATE_PATH)
                 .header("Authorization", "Bearer " + "jwt-token")
+                .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request))
                 .accept(MediaType.APPLICATION_JSON))
@@ -211,6 +214,7 @@ class ChatAdminApiTest extends ApiTestBase {
         //For moment just testing that post id is passed as zero - meaning read whole post
         mockMvc.perform(put(BASE_PATH + "/" + chat.getId() + POST + "/0" + READ)
                 .header("Authorization", "Bearer " + "jwt-token")
+                .with(csrf())
                 )
 
             .andDo(print())

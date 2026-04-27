@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -28,8 +28,7 @@ import com.slack.api.model.block.composition.MarkdownTextObject;
 import com.slack.api.model.block.composition.PlainTextObject;
 import java.util.ArrayList;
 import java.util.List;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.tctalent.server.configuration.SlackConfig;
 import org.tctalent.server.exception.NoSuchObjectException;
@@ -51,8 +50,8 @@ import org.tctalent.server.service.db.SlackService;
  * @author John Cameron
  */
 @Service
+@Slf4j
 public class SlackServiceImpl implements SlackService {
-  private static final Logger log = LoggerFactory.getLogger(SlackServiceImpl.class);
 
   private final AuthService authService;
   private final SlackConfig slackConfig;

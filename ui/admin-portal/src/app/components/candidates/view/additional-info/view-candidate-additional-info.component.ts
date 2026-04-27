@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -17,7 +17,10 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {Candidate} from "../../../../model/candidate";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
-import {EditCandidateAdditionalInfoComponent} from "./edit/edit-candidate-additional-info.component";
+import {
+  EditCandidateAdditionalInfoComponent
+} from "./edit/edit-candidate-additional-info.component";
+import {CandidateService} from "../../../../services/candidate.service";
 
 @Component({
   selector: 'app-view-candidate-additional-info',
@@ -29,7 +32,8 @@ export class ViewCandidateAdditionalInfoComponent implements OnInit {
   @Input() candidate: Candidate;
   @Input() editable: boolean;
 
-  constructor(private modalService: NgbModal) { }
+  constructor(private modalService: NgbModal,
+              private candidateService: CandidateService) { }
 
   ngOnInit() {
   }
@@ -43,7 +47,7 @@ export class ViewCandidateAdditionalInfoComponent implements OnInit {
     editAdditionalInfoModal.componentInstance.candidateId = this.candidate.id;
 
     editAdditionalInfoModal.result
-      .then((candidate) => this.candidate = candidate)
+      .then((candidate) => this.candidateService.updateCandidate())
       .catch(() => { /* Isn't possible */ });
 
   }

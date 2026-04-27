@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -17,9 +17,9 @@
 package org.tctalent.server.repository.db;
 
 import io.jsonwebtoken.lang.Collections;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.JoinType;
-import javax.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.JoinType;
+import jakarta.persistence.criteria.Predicate;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.jpa.domain.Specification;
 import org.tctalent.server.model.db.Role;
@@ -33,44 +33,50 @@ MODEL: Simple join in specification
 public class UserSpecification {
 
     public static Specification<User> buildSearchQuery(final SearchUserRequest request) {
-        return (user, query, builder) -> {
-            Predicate conjunction = builder.conjunction();
+        return (user, query, cb) -> {
+            if (query == null) {
+                throw new IllegalArgumentException("UserSpecification.CriteriaQuery should not be null");
+            }
             query.distinct(true);
+
+            Predicate conjunction = cb.conjunction();
 
             // KEYWORD SEARCH
             if (!StringUtils.isBlank(request.getKeyword())){
                 String lowerCaseMatchTerm = request.getKeyword().toLowerCase();
                 String likeMatchTerm = "%" + lowerCaseMatchTerm + "%";
-                conjunction.getExpressions().add(
-                        builder.or(
-                                builder.like(builder.lower(user.get("firstName")), likeMatchTerm),
-                                builder.like(builder.lower(user.get("lastName")), likeMatchTerm),
-                                builder.like(builder.lower(user.get("email")), likeMatchTerm),
-                                builder.like(builder.lower(user.get("username")), likeMatchTerm)
+                conjunction = cb.and(conjunction,
+                        cb.or(
+                                cb.like(cb.lower(user.get("firstName")), likeMatchTerm),
+                                cb.like(cb.lower(user.get("lastName")), likeMatchTerm),
+                                cb.like(cb.lower(user.get("email")), likeMatchTerm),
+                                cb.like(cb.lower(user.get("username")), likeMatchTerm)
                         ));
             }
 
             // ROLE SEARCH
             if (Collections.isEmpty(request.getRole())) {
                 //If no roles specified, just exclude candidate users.
-                conjunction.getExpressions().add(
-                    builder.notEqual(user.get("role"), Role.user)
+                conjunction = cb.and(conjunction,
+                    cb.notEqual(user.get("role"), Role.user)
                 );
             } else {
-                conjunction.getExpressions().add(
-                        builder.isTrue(user.get("role").in(request.getRole()))
+                conjunction = cb.and(conjunction,
+                        cb.isTrue(user.get("role").in(request.getRole()))
                 );
             }
 
             // PARTNER
             if (request.getPartnerId() != null){
                 Join<Object, Object> partner = user.join("partner", JoinType.LEFT);
-                conjunction.getExpressions().add(builder.equal(partner.get("id"), request.getPartnerId()));
+                conjunction = cb.and(conjunction,
+                    cb.equal(partner.get("id"), request.getPartnerId()));
             }
 
             // STATUS
             if (request.getStatus() != null){
-                conjunction.getExpressions().add(builder.equal(user.get("status"), request.getStatus()));
+                conjunction = cb.and(conjunction,
+                    cb.equal(user.get("status"), request.getStatus()));
             }
 
             return conjunction;

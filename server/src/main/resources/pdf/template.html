@@ -1,5 +1,5 @@
 <!--
-  ~ Copyright (c) 2021 Talent Beyond Boundaries.
+  ~ Copyright (c) 2024 Talent Catalog.
   ~
   ~ This program is free software: you can redistribute it and/or modify it under
   ~ the terms of the GNU Affero General Public License as published by the Free
@@ -24,13 +24,13 @@
 </head>
 
 <body>
-<div class='header' th:include="header::header"></div>
-<div class='footer' th:include="footer::footer"></div>
+<div class='header' th:insert="~{header::header}"></div>
+<div class='footer' th:insert="~{footer::footer}"></div>
 
 <div class="center">
     <h1 th:if="${showName}"><span th:text="${candidate.user.firstName}"></span> <span th:text="${candidate.user.lastName}"></span></h1>
     <strong class="subheader">User ID <span th:text="${candidate.candidateNumber}"></span></strong>
-    <div th:if="${!showContact and candidate.country}">
+    <div th:if="${!showContact && candidate.country != null}">
         <strong>Current Location: </strong>
         <span th:text="${candidate.country.name}"></span>
     </div>
@@ -89,12 +89,12 @@
                     <strong>
                         <span th:if="${experience.startDate}" th:text="${#temporals.format(experience.startDate, 'MMM-yyyy')}"></span> to
                         <span th:if="${experience.endDate}" th:text="${#temporals.format(experience.endDate, 'MMM-yyyy')}"></span>
-                        <span th:if="${!experience.endDate}">present</span>
+                        <span th:if="${experience.endDate == null}">present</span>
                     </strong>
                 </div>
                 <div class="small-break">
                     <strong th:if="${experience.role}"><span th:text="${experience.role}"></span></strong>
-                    <div th:if="${experience.companyName or experience.country}">
+                    <div th:if="${experience.companyName != null || experience.country != null}">
                         <em th:if="${experience.companyName}"><span th:text="${experience.companyName}"></span>, </em>
                         <em th:if="${experience.country}"><span th:text="${experience.country.name}"></span></em>
                     </div>
@@ -119,7 +119,7 @@
                 <strong th:if="${education.courseName}">: <span th:text="${education.courseName}"></span></strong>
                 <span th:if="${education.institution}" th:text="${education.institution}"></span>,
                 <span th:if="${education.yearCompleted}" th:text="${education.yearCompleted}"></span>
-                <span th:if="${!education.yearCompleted}">Incomplete
+                <span th:if="${education.yearCompleted == null}">Incomplete
                 </span>
             </td>
         </tr>

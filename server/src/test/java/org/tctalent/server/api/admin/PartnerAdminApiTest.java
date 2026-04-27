@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -25,6 +25,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -32,8 +33,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.tctalent.server.api.admin.AdminApiTestUtil.getJob;
-import static org.tctalent.server.api.admin.AdminApiTestUtil.getUser;
+import static org.tctalent.server.data.PartnerImplTestData.getDestinationPartner;
+import static org.tctalent.server.data.PartnerImplTestData.getListOfDestinationPartners;
+import static org.tctalent.server.data.SalesforceJobOppTestData.getSalesforceJobOppMinimal;
+import static org.tctalent.server.data.UserTestData.getAuditUser;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
@@ -76,8 +79,8 @@ class PartnerAdminApiTest extends ApiTestBase {
   private static final String SEARCH_PAGED_PATH = "/search-paged";
   private static final String UPDATE_JOB_CONTACT_PATH = "/update-job-contact";
 
-  private static final List<PartnerImpl> partnerList = AdminApiTestUtil.getListOfPartners();
-  private static final PartnerImpl partner = AdminApiTestUtil.getPartner();
+  private static final List<PartnerImpl> partnerList = getListOfDestinationPartners();
+  private static final PartnerImpl partner = getDestinationPartner();
 
   private final Page<PartnerImpl> partnerPage =
       new PageImpl<>(
@@ -117,6 +120,7 @@ class PartnerAdminApiTest extends ApiTestBase {
         .willReturn(partner);
 
     mockMvc.perform(post(BASE_PATH)
+            .with(csrf())
             .header("Authorization", "Bearer " + "jwt-token")
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(request))
@@ -226,6 +230,7 @@ class PartnerAdminApiTest extends ApiTestBase {
         .willReturn(partnerPage);
 
     mockMvc.perform(post(BASE_PATH + SEARCH_PAGED_PATH)
+            .with(csrf())
             .header("Authorization", "Bearer " + "jwt-token")
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(request))
@@ -279,13 +284,14 @@ class PartnerAdminApiTest extends ApiTestBase {
 
     given(userService
         .getUser(11L))
-        .willReturn(getUser());
+        .willReturn(getAuditUser());
 
     given(partnerService
         .update(anyLong(), any(UpdatePartnerRequest.class)))
         .willReturn(partner);
 
     mockMvc.perform(put(BASE_PATH + "/" + PARTNER_ID)
+            .with(csrf())
             .header("Authorization", "Bearer " + "jwt-token")
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(request))
@@ -326,13 +332,14 @@ class PartnerAdminApiTest extends ApiTestBase {
 
     given(jobService
         .getJob(jobId))
-        .willReturn(getJob());
+        .willReturn(getSalesforceJobOppMinimal());
 
     given(userService
         .getUser(userId))
-        .willReturn(getUser());
+        .willReturn(getAuditUser());
 
     mockMvc.perform(put(BASE_PATH + "/" + partnerId + UPDATE_JOB_CONTACT_PATH)
+            .with(csrf())
             .header("Authorization", "Bearer " + "jwt-token")
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(request))

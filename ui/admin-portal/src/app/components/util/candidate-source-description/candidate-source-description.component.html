@@ -1,17 +1,31 @@
-<div class="alert alert-danger" *ngIf="error">
-  {{error}}
-</div>
+<!--
+  ~ Copyright (c) 2024 Talent Catalog.
+  ~
+  ~ This program is free software: you can redistribute it and/or modify it under
+  ~ the terms of the GNU Affero General Public License as published by the Free
+  ~ Software Foundation, either version 3 of the License, or any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful, but WITHOUT
+  ~ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+  ~ FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+  ~ for more details.
+  ~
+  ~ You should have received a copy of the GNU Affero General Public License
+  ~ along with this program. If not, see https://www.gnu.org/licenses/.
+  -->
+
+<tc-alert type="danger" *ngIf="error">
+  <div><strong>{{error}}</strong></div>
+</tc-alert>
+
 <form [formGroup]="form">
 
-  <div class="mb-3 flex-fill">
-    <label class="h6 form-label" for="description">
-      <span class="me-2 font-weight-normal">Description</span>
-      <app-autosave-status [saving]="saving" [typing]="typing"></app-autosave-status>
-    </label>
-
-    <textarea id="description" class="md-textarea-auto form-control" rows="2"
-              placeholder="Add notes ..."
-              [formControlName]="'description'"></textarea>
+  <div class="flex-fill">
+    <tc-textarea [disabled]="!isEditable()"
+                 placeholder="Purpose of this {{ isSubmissionList() ? 'submission ' : ''}}{{ isSavedList() ? 'list' : 'search'}}..."
+                 [formControlName]="'description'">
+    </tc-textarea>
+    <app-autosave-status class="ms-1" [saving]="saving" [typing]="typing"></app-autosave-status>
   </div>
 
 </form>

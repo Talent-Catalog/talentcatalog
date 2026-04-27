@@ -1,5 +1,5 @@
 /*!
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -14,32 +14,45 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-button.custom-emoji-btn {
-  color: #444 !important;
-  padding-bottom: 4px !important;
-  padding-left: 0 !important;
-}
-
-button.custom-emoji-btn:hover {
-  color: #0066cc !important;
-  padding-bottom: 4px !important;
-  padding-left: 0 !important;
-}
-
-button.custom-emoji-btn-menu-open {
-  color: #0066cc !important;
-  padding-bottom: 4px !important;
-  padding-left: 0 !important;
-}
-
 emoji-mart#editorPicker {
-  position: absolute;
-  top: -456px;
-  left: -20px;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 3;
+}
+
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 2;
 }
 
 #quillToolbar {
   position: relative;
 }
 
+button.custom-quill-btn {
+  color: #444;
+  padding-top: 0 !important;
 
+  &:hover {
+    color: #0066cc !important;
+  }
+}
+
+button.custom-quill-btn-selected {
+  color: #0066cc !important;
+  padding-top: 0 !important;
+}
+
+/* Mobile screen styling - override colour change on hover */
+@media only screen and (max-width: 600px) {
+  button.custom-quill-btn:hover {
+    color: #444 !important;
+  }
+}

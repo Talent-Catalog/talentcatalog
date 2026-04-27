@@ -1,16 +1,16 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or any later version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT
+ * This program is distributed in the hope that it will be useful, but WITHOUT 
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
  * for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
+ * You should have received a copy of the GNU Affero General Public License 
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
@@ -23,9 +23,13 @@ import java.security.GeneralSecurityException;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.transaction.annotation.Transactional;
 import org.tctalent.server.configuration.GoogleDriveConfig;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.repository.db.CandidateRepository;
@@ -33,10 +37,10 @@ import org.tctalent.server.repository.db.UserRepository;
 import org.tctalent.server.service.db.impl.GoogleFileSystemServiceImpl;
 
 
-// @SpringBootTest
+@Tag("skip-test-in-gradle-build")
+@SpringBootTest
+@Slf4j
 public class MigrateDriveTest {
-
-    private static final Logger log = LoggerFactory.getLogger(MigrateDriveTest.class);
 
     @Autowired
     private GoogleDriveConfig googleDriveConfig;
@@ -53,9 +57,9 @@ public class MigrateDriveTest {
     private List<File> folders;
     private Candidate candidate;
 
-//    @Transactional
-//    @Test
-//    @BeforeEach
+    @Transactional
+    @Test
+    @BeforeEach
     void getSampleGoogleFolders() throws IOException, GeneralSecurityException {
         FileList result = googleDriveConfig.getGoogleDriveService().files().list()
                 .setQ("'" + googleDriveConfig.getCandidateRootFolderId() + "' in parents" +
@@ -69,7 +73,7 @@ public class MigrateDriveTest {
         folders = result.getFiles();
     }
 
-//    @Test
+    @Test
     void loopFoldersGetLocation() {
         for(File folder: folders) {
             setCandidateFolderLink(folder);

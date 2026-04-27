@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -28,18 +28,16 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
-import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
+import lombok.extern.slf4j.Slf4j;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.lang.Nullable;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.service.db.DataSharingService;
 import org.tctalent.server.service.db.email.EmailSender;
 import org.tctalent.server.service.db.util.PartnerDatabaseDefinition;
@@ -48,18 +46,18 @@ import org.tctalent.server.service.db.util.PartnerTableDefinition;
 /**
  * Data is shared with destination partners by copying to their own databases,
  * as configured in an XML configuration file stored in resources whose path is
- * specified in tbb.partner-dbcopy-config in application.yml.
+ * specified in tc.partner-dbcopy-config in application.yml.
  * <p/>
  * The configuration file contains a different configuration for each partner
  * (typically by country - eg Australian partner, UK partner etc).
  * <p/>
  * Each destination configuration defines the structure of destination tables
- * which are populated from the TBB database.
+ * which are populated from the TC database.
  * <p/>
  * In this implementation data is copied in two stages. First a local
  * "in memory" copy of the destination database is created on this server
  * (using an H2 in memory database). This involves reading a subset of data from
- * the normal TBB data base (as defined in the "populate" elements of the xml
+ * the normal TC database (as defined in the "populate" elements of the xml
  * configuration) and inserting it into the appropriate fields of the
  * destination tables (as defined in the "fields" elements for each destination
  * table in the xml configuration).
@@ -75,8 +73,8 @@ import org.tctalent.server.service.db.util.PartnerTableDefinition;
  * See https://dev.mysql.com/doc/refman/8.0/en/load-data.html
  */
 @Service
+@Slf4j
 public class DataSharingServiceImpl implements DataSharingService {
-    private static final Logger log = LoggerFactory.getLogger(DataSharingServiceImpl.class);
 
     @Value("${spring.datasource.url}")
     private String masterJdbcUrl;
@@ -87,13 +85,13 @@ public class DataSharingServiceImpl implements DataSharingService {
     @Value("${spring.datasource.password}")
     private String masterPwd;
 
-    @Value("${tbb.partner-dbcopy-config}")
-    private String partnerDbcopyConfig = "data.sharing/tbbCopies.xml";
+    @Value("${tc.partner-dbcopy-config}")
+    private String partnerDbcopyConfig = "data.sharing/tcCopies.xml";
 
     private static final String DB_LOCAL_COPY_URL = "jdbc:h2:mem:";
 
-    private Connection tbbMaster;
-    private Connection tbbLocalCopy;
+    private Connection tcMaster;
+    private Connection tcLocalCopy;
 
     private final EmailSender emailSender;
 
@@ -107,8 +105,8 @@ public class DataSharingServiceImpl implements DataSharingService {
     }
 
     @Override
-    @Scheduled(cron = "0 30 23 * * ?", zone = "GMT")
-    @SchedulerLock(name = "DataSharingService_dbCopy", lockAtLeastFor = "PT23H", lockAtMostFor = "PT23H")
+//    @Scheduled(cron = "0 30 23 * * ?", zone = "GMT")
+//    @SchedulerLock(name = "DataSharingService_dbCopy", lockAtLeastFor = "PT23H", lockAtMostFor = "PT23H")
     public void dbCopy() throws Exception {
 //        reportError("dbCopy has been started. Pull this out once emails are working", null);
         performCopies();
@@ -119,29 +117,40 @@ public class DataSharingServiceImpl implements DataSharingService {
         boolean ok = true;
 
         try {
-            //Connect to TBB database and local copy
+            //Connect to TC database and local copy
             connect();
 
             List<PartnerDatabaseDefinition> destinations = getDestinations();
 
             for (PartnerDatabaseDefinition destination : destinations) {
 
-                log.info("Copying to " + destination.getCountry());
+                LogBuilder.builder(log)
+                    .action("DataSharingServiceImpl")
+                    .message("Copying to " + destination.getCountry())
+                    .logInfo();
 
                 try {
                     List<PartnerTableDefinition> defs = destination.getTables();
 
-                    log.info("Create local copy");
+                    LogBuilder.builder(log)
+                        .action("DataSharingServiceImpl")
+                        .message("Create local copy")
+                        .logInfo();
+
                     for (PartnerTableDefinition def : defs) {
                         copyTable(def);
                     }
 
                     postProcess();
 
-                    log.info("Export/Import remote copy");
-                    try (Connection tbbRemoteCopy = destination.connect()) {
+                    LogBuilder.builder(log)
+                        .action("DataSharingServiceImpl")
+                        .message("Export/Import remote copy")
+                        .logInfo();
+
+                    try (Connection tcRemoteCopy = destination.connect()) {
                         for (PartnerTableDefinition def : defs) {
-                            exportImport(tbbRemoteCopy, def);
+                            exportImport(tcRemoteCopy, def);
                         }
                     }
                 } catch (Exception ex) {
@@ -163,27 +172,27 @@ public class DataSharingServiceImpl implements DataSharingService {
         String dbLocalCopyUser = "sa";
         String dbLocalCopyPassword = "";
 
-        tbbLocalCopy = DriverManager.getConnection(DB_LOCAL_COPY_URL, dbLocalCopyUser, dbLocalCopyPassword);
-        tbbMaster = DriverManager.getConnection(masterJdbcUrl, masterUser, masterPwd);
+        tcLocalCopy = DriverManager.getConnection(DB_LOCAL_COPY_URL, dbLocalCopyUser, dbLocalCopyPassword);
+        tcMaster = DriverManager.getConnection(masterJdbcUrl, masterUser, masterPwd);
 
     }
 
     private void disconnect() {
         try {
-            if (tbbMaster != null) {
-                tbbMaster.close();
-                tbbMaster = null;
+            if (tcMaster != null) {
+                tcMaster.close();
+                tcMaster = null;
             }
         } catch (Exception ex) {
             reportError("Could not close master DB connection", ex);
         }
 
         try {
-            if (tbbLocalCopy != null) {
-                Statement st = tbbLocalCopy.createStatement();
+            if (tcLocalCopy != null) {
+                Statement st = tcLocalCopy.createStatement();
                 st.execute("DROP ALL OBJECTS");
-                tbbLocalCopy.close();
-                tbbLocalCopy = null;
+                tcLocalCopy.close();
+                tcLocalCopy = null;
             }
         } catch (Exception ex) {
             reportError("Could not close local temporary DB connection", ex);
@@ -192,12 +201,16 @@ public class DataSharingServiceImpl implements DataSharingService {
 
     private void copyTable(PartnerTableDefinition def) {
 
-        log.info(def.getTableName());
+        LogBuilder.builder(log)
+            .action("DataSharingServiceImpl")
+            .message("Copying " + def.getTableName())
+            .logInfo();
+
         final String populateTableSQL = def.getPopulateTableSQL();
-        try (final Statement masterSelect = tbbMaster.createStatement();
+        try (final Statement masterSelect = tcMaster.createStatement();
              final ResultSet masterData =
                      masterSelect.executeQuery(populateTableSQL);
-             final Statement reCreateCopy = tbbLocalCopy.createStatement()) {
+             final Statement reCreateCopy = tcLocalCopy.createStatement()) {
             ResultSetMetaData rsmd = masterData.getMetaData();
 
             //Drop and recreate any existing table
@@ -212,7 +225,7 @@ public class DataSharingServiceImpl implements DataSharingService {
             String insertSQL = def.getInsertSQL(nColumns);
 
             try (final PreparedStatement insertStatement =
-                         tbbLocalCopy.prepareStatement(insertSQL)) {
+                         tcLocalCopy.prepareStatement(insertSQL)) {
                 int count = 0;
                 while (masterData.next()) {
                     // Insert a row with these values into copy
@@ -242,28 +255,39 @@ public class DataSharingServiceImpl implements DataSharingService {
     }
 
     private void exportImport(
-            Connection tbbRemoteCopy, PartnerTableDefinition def) {
+            Connection tcRemoteCopy, PartnerTableDefinition def) {
         final String tableName = def.getTableName();
-        log.info(tableName);
+
+        LogBuilder.builder(log)
+            .action("DataSharingServiceImpl")
+            .message("Exporting " + tableName)
+            .logInfo();
 
         String tmpDir = System.getProperty("java.io.tmpdir");
         File exportFile = new File(tmpDir, tableName + ".csv");
         if (exportFile.exists()) {
             boolean ok = exportFile.delete();
             if (!ok) {
-                log.warn("Failed to delete old temp file");
+                LogBuilder.builder(log)
+                    .action("DataSharingServiceImpl")
+                    .message("Failed to delete old temp file")
+                    .logWarn();
             }
         }
         final String exportFilePath = exportFile.getAbsolutePath();
-        log.info("Exporting to " + exportFilePath);
 
-        try (final Statement exportSt = tbbLocalCopy.createStatement()) {
+        LogBuilder.builder(log)
+            .action("DataSharingServiceImpl")
+            .message("Exporting to " + exportFilePath)
+            .logInfo();
+
+        try (final Statement exportSt = tcLocalCopy.createStatement()) {
             String s = "CALL CSVWRITE(" +
                     "'" + exportFilePath + "'" +
                     ", 'SELECT * FROM " + tableName + "'" +
                     ")";
             exportSt.execute(s);
-            try (final Statement importSt = tbbRemoteCopy.createStatement()) {
+            try (final Statement importSt = tcRemoteCopy.createStatement()) {
                 //Create a new table
                 //Delete if already exists
                 importSt.executeUpdate(def.getDropTableSQLAsNew());
@@ -375,7 +399,11 @@ public class DataSharingServiceImpl implements DataSharingService {
     }
 
     private void reportError(String s, @Nullable Exception ex) {
-        log.error(s, ex);
+        LogBuilder.builder(log)
+            .action("DataSharingServiceImpl")
+            .message(s)
+            .logError(ex);
+
         if (emailSender != null) {
             emailSender.sendAlert( s, ex);
         }

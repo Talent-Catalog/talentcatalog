@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -23,11 +23,31 @@ plugins {
   id "com.github.node-gradle.node" version "3.4.0"
 }
 
-sourceCompatibility = 1.8
-targetCompatibility = 1.8
+java {
+  sourceCompatibility = JavaVersion.VERSION_17
+  targetCompatibility = JavaVersion.VERSION_17
+}
+
+// Read Node.js version from root .nvmrc file
+// Note: rootProject.projectDir always resolves to the root project directory
+// regardless of which task triggers the build (e.g., ./gradlew server:build)
+def nvmrcFile = file("${rootProject.projectDir}/.nvmrc")
+def nodeVersion = nvmrcFile.exists() ? nvmrcFile.text.trim() : '18.20.7'
+
+// Log the Node.js version being used (always visible)
+afterEvaluate {
+  println "> ${project.name}: Using Node.js version ${nodeVersion} (from ${nvmrcFile.exists() ? '.nvmrc' : 'fallback'})"
+}
+
+// Log the resolved path for debugging (only in verbose mode)
+if (project.hasProperty('verbose') || project.gradle.startParameter.logLevel.toString().contains('DEBUG')) {
+  println "[${project.name}] Root project dir: ${rootProject.projectDir}"
+  println "[${project.name}] Looking for .nvmrc at: ${nvmrcFile.absolutePath}"
+  println "[${project.name}] Node version resolved: ${nodeVersion}"
+}
 
 node {
-  version = '16.17.0'
+  version = nodeVersion
   download = true
 }
 
@@ -44,7 +64,8 @@ node {
 //See https://angular.io/cli/build
 //So this task effectively runs "ng build --configuration production --base-href /...-portal/"
 task npm_build_ui_bundle(type: NpmTask) {
-  args = ['run', 'build', '--', '--configuration', 'production', '--base-href', "/$project.name/"]
+  def config = project.hasProperty('test-tc-system') ? 'staging' : 'production'
+  args = ['run', 'build', '--', '--configuration', config, '--base-href', "/$project.name/"]
   dependsOn 'npm_install'
 }
 

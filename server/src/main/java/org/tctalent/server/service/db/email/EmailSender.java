@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -16,50 +16,46 @@
 
 package org.tctalent.server.service.db.email;
 
-import java.io.IOException;
+import jakarta.mail.MessagingException;
+import jakarta.mail.internet.MimeMessage;
 import java.util.Properties;
-import java.util.Queue;
-import java.util.concurrent.LinkedBlockingQueue;
-
 import javax.annotation.PostConstruct;
-import javax.mail.Address;
-import javax.mail.Authenticator;
-import javax.mail.BodyPart;
-import javax.mail.Message;
-import javax.mail.MessagingException;
-import javax.mail.Multipart;
-import javax.mail.PasswordAuthentication;
-import javax.mail.Provider;
-import javax.mail.Session;
-import javax.mail.Transport;
-import javax.mail.URLName;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeBodyPart;
-import javax.mail.internet.MimeMessage;
-import javax.mail.internet.MimeMultipart;
-
 import lombok.Setter;
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.lang.Nullable;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.JavaMailSenderImpl;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ObjectUtils;
+import org.tctalent.server.logging.LogBuilder;
 
-@Setter
+/**
+ * Email sender built using Spring's standard mail support.
+ *
+ * @author John Cameron
+ */
 @Service
+@Slf4j
 public class EmailSender {
 
-    private static final Logger log = LoggerFactory.getLogger(EmailSender.class);
     private final String alertSubject = "Talent Catalog Alert";
 
     public enum EmailType {
-        STUB, SMTP, MANDRILL
+        STUB, SMTP
     }
 
+    //Exposed for testing
+    @Setter
     @Value("${email.type}")
-    private EmailType type;
+    private EmailSender.EmailType type;
+    @Setter
+    @Value("${email.defaultEmail}")
+    private String defaultEmail;
+
+
     @Value("${email.host}")
     private String host;
     @Value("${email.port}")
@@ -72,27 +68,45 @@ public class EmailSender {
     private Boolean authenticated;
     @Value("${email.alertEmail}")
     private String alertEmail;
-    @Value("${email.defaultEmail}")
-    private String defaultEmail;
     @Value("${email.testOverrideEmail}")
     private String testOverrideEmail;
 
-    private final Properties properties = new Properties();
-    private Session session;
-    private Transport transport;
+    private JavaMailSender mailSender;
 
     @PostConstruct
     public void init() {
-        if (type == EmailType.SMTP) {
-            log.info("email configured to use SMTP with host " + host + " and port " + port);
-        } else if (type == EmailType.STUB) {
-            log.info("email configured to use STUB, emails will be printed to the log file");
-        } else if (type == EmailType.MANDRILL) {
-            log.info("email configured to use MANDRILL, emails will be sent via Mandrill");
+        if (type == EmailSender.EmailType.SMTP) {
+            LogBuilder.builder(log)
+                .action("EmailSender")
+                .message("Email configured to use SMTP with host " + host + " and port " + port)
+                .logInfo();
+
+        } else if (type == EmailSender.EmailType.STUB) {
+            LogBuilder.builder(log)
+                .action("EmailSender")
+                .message("Email configured to use STUB, emails will be printed to the log file")
+                .logInfo();
+
         }
 
-        this.session = emailSession();
-        this.transport = emailTransport();
+        this.mailSender = getJavaMailSender();
+    }
+
+    private JavaMailSender getJavaMailSender() {
+        JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
+        mailSender.setHost(host);
+        mailSender.setPort(port);
+
+        mailSender.setUsername(user);
+        mailSender.setPassword(password);
+
+        Properties props = mailSender.getJavaMailProperties();
+        props.put("mail.transport.protocol", "smtp");
+        props.put("mail.smtp.auth", authenticated != null ? authenticated.toString() : "false");
+        props.put("mail.smtp.starttls.enable", authenticated != null ? authenticated.toString() : "false");
+        props.put("mail.debug", "false");
+
+        return mailSender;
     }
 
     public void sendAlert(String alertMessage) {
@@ -107,170 +121,74 @@ public class EmailSender {
         sendAsync(alertEmail, alertSubject, s, s);
     }
 
-    public boolean send(String emailTo,
-                        String bccTo,
-                        String subject,
-                        String contentText,
-                        String contentHtml) {
-        return doSend(emailTo, subject, contentText, contentHtml);
-    }
-
     @Async
     public void sendAsync(String emailTo,
-                             String subject,
-                             String contentText,
-                             String contentHtml) {
-        doSend(emailTo, subject, contentText, contentHtml);
-    }
-
-    private boolean doSend(String emailTo,
-                           String subject,
-                           String contentText,
-                           String contentHtml) {
-
-        log.info("sending email to " + emailTo + " with subject '" + subject + "'");
-
-        MimeMessage email = new MimeMessage(session);
-        try {
-            email.addFrom(InternetAddress.parse(defaultEmail));
-            email.addRecipients(Message.RecipientType.TO, applyTestOverrideIfRequired(emailTo));
-            email.setSubject(subject);
-            email.setContent(createEmailBody(contentText, contentHtml));
-
-            send(email);
-
-            return true;
-        } catch (MessagingException e) {
-            log.error("Error sending email to " + emailTo, e);
-        }
-
-        return false;
-    }
-
-    public void send(MimeMessage mimeMessage) throws MessagingException {
-        if (transport == null) {
-            Transport.send(mimeMessage);
-            return;
-        }
-        transport.sendMessage(mimeMessage, mimeMessage.getAllRecipients());
+        String subject,
+        String contentText,
+        String contentHtml) {
+        doSend(emailTo, null, subject, contentText, contentHtml);
     }
 
     @Async
-    public void sendAsync(MimeMessage mimeMessage) throws MessagingException {
-        if (transport == null) {
-            Transport.send(mimeMessage);
-            return;
-        }
-        transport.sendMessage(mimeMessage, mimeMessage.getAllRecipients());
+    public void sendAsync(String emailTo, String emailCc,
+        String subject,
+        String contentText,
+        String contentHtml) {
+        doSend(emailTo, emailCc, subject, contentText, contentHtml);
     }
 
-    private static Multipart createEmailBody(String contentText,
-                                             String contentHtml) throws MessagingException {
-        MimeMultipart body = new MimeMultipart("alternative");
+    private void doSend(String emailTo,
+        @Nullable
+        String emailCc,
+        String subject,
+        String contentText,
+        String contentHtml) {
+        LogBuilder.builder(log)
+            .action("Email")
+            .message("Sending email to " + emailTo +
+                (emailCc != null ? " cc " + emailCc : "") +
+                " with subject '" + subject + "'")
+            .logInfo();
 
-        BodyPart bodyPartText = new MimeBodyPart();
-        bodyPartText.setText(contentText);
-        body.addBodyPart(bodyPartText);
+        MimeMessage email = mailSender.createMimeMessage();
+        try {
+            MimeMessageHelper helper = new MimeMessageHelper(email, true);
+            helper.setFrom(defaultEmail);
+            helper.addTo(applyTestOverrideIfRequired(emailTo));
+            if (emailCc != null) {
+                helper.addCc(applyTestOverrideIfRequired(emailCc));
+            }
+            helper.setSubject(subject);
+            helper.setText(contentText, contentHtml);
 
-        BodyPart bodyPartHtml = new MimeBodyPart();
-        bodyPartHtml.setContent(contentHtml, "text/html; charset=utf-8");
-        body.addBodyPart(bodyPartHtml);
-        return body;
+            if (type.equals(EmailType.SMTP)) {
+                mailSender.send(email);
+            } else {
+                sendStub(contentText, contentHtml, emailTo);
+            }
+        } catch (MessagingException e) {
+            LogBuilder.builder(log)
+                .action("Email")
+                .message("Error sending email to " + emailTo)
+                .logError(e);
+        }
+    }
+
+    private void sendStub(String text, String html, String to) throws MessagingException {
+        LogBuilder.builder(log)
+            .action("Email")
+            .message("Email received html (sent to: " + to + "): \n\n" + html)
+            .logInfo();
+        LogBuilder.builder(log)
+            .action("Email")
+            .message("Email received text (sent to: " + to + "): \n\n" + text)
+            .logInfo();
     }
 
     private String applyTestOverrideIfRequired(String email) {
-        if (StringUtils.isNotBlank(testOverrideEmail) && StringUtils.isNotBlank(email)) {
+        if (!ObjectUtils.isEmpty(testOverrideEmail) && !ObjectUtils.isEmpty(email)) {
             return testOverrideEmail;
         }
         return email;
-    }
-
-    /*
-     * @Bean
-     *
-     * @ConditionalOnProperty(name = "email.type", havingValue = "MANDRILL")
-     * public MandrillApi mandrillApi() { return new MandrillApi(password); }
-     */
-
-    public Session emailSession() {
-        if (type == EmailType.SMTP) {
-            properties.put("mail.transport.protocol", "smtp");
-            properties.put("mail.from", defaultEmail);
-            properties.put("mail.smtp.port", port);
-            properties.put("mail.smtp.host", host);
-            properties.put("mail.smtp.username", user);
-            properties.put("mail.debug", "false");
-            properties.put("mail.smtp.auth", authenticated != null ? authenticated.toString() : "false");
-            properties.put("mail.smtp.starttls.enable", authenticated != null ? authenticated : false);
-            if (authenticated != null && authenticated) {
-                Authenticator authenticator = new Authenticator() {
-                    @Override
-                    protected PasswordAuthentication getPasswordAuthentication() {
-                        return new PasswordAuthentication(user, password);
-                    }
-                };
-                return Session.getDefaultInstance(properties, authenticator);
-            } else {
-                return Session.getDefaultInstance(properties);
-            }
-        } else if (type == EmailType.STUB) {
-            return stubMailSession();
-        }
-        throw new RuntimeException("Email has not been correctly configured");
-    }
-
-    public Session stubMailSession() {
-        Properties testMailProperties = new Properties();
-        testMailProperties.setProperty("mail.testProtocol.class", "com.covata.util.mail.MailStubber$TestTransport");
-        testMailProperties.setProperty("mail.transport.protocol.rfc822", "testProtocol");
-        Session session = Session.getInstance(testMailProperties);
-        Provider testMailProvider = new Provider(Provider.Type.TRANSPORT, "testProtocol",
-                                                 "com.covata.util.mail.MailStubber$TestTransport", "", "");
-        session.addProvider(testMailProvider);
-        return session;
-    }
-
-    private Transport emailTransport() {
-        if (type == EmailType.STUB) {
-            return new StubTransport(stubMailSession(), new URLName("test"));
-        }
-        return null;
-    }
-
-    public static class StubTransport extends Transport {
-
-        private static final Queue<String> MAIL = new LinkedBlockingQueue<>(20);
-
-        public StubTransport(Session session,
-                             URLName urlname) {
-            super(session, urlname);
-        }
-
-        static String getMailMessage() {
-            return MAIL.poll();
-        }
-
-        static void clearMail() {
-            MAIL.clear();
-        }
-
-        @Override
-        public void connect() {
-        }
-
-        @Override
-        public void sendMessage(Message msg,
-                                Address[] addresses)
-                throws MessagingException {
-            try {
-                BodyPart part = ((Multipart) msg.getContent()).getBodyPart(0);
-                if (MAIL.size() < 20) {
-                    MAIL.add(part.getContent().toString());
-                }
-                log.info("Email received (sent to: " + addresses[0] + "): \n\n" + part.getContent());
-            } catch (IOException e) {
-                log.error(e.getMessage(), e);
-            }
-        }
     }
 }

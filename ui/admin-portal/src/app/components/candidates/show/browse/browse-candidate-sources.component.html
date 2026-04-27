@@ -1,7 +1,7 @@
 
 
 <!--
-  ~ Copyright (c) 2021 Talent Beyond Boundaries.
+  ~ Copyright (c) 2024 Talent Catalog.
   ~
   ~ This program is free software: you can redistribute it and/or modify it under
   ~ the terms of the GNU Affero General Public License as published by the Free
@@ -19,25 +19,22 @@
   <div class="row">
     <div class="col-md-4 admin-panel left-panel">
       <div class="searches">
-        <div class="alert alert-danger" *ngIf="error">
-          {{error}}
-        </div>
+        <tc-alert *ngIf="error" type="danger">{{error}}</tc-alert>
 
         <div *ngIf="sourceType == CandidateSourceType.SavedList" class="flex-shrink-0 mb-3">
-          <button class="btn btn-sm btn-primary" type="button"
-                  (click)="onNewList()">+ New List
-          </button>
+          <tc-button (onClick)="onNewList()">
+            + New List
+          </tc-button>
         </div>
-
         <form [formGroup]="searchForm" (ngSubmit)="search()">
           <div class="mb-3">
-            <input type="text" class="form-control top" placeholder="Search..." aria-label="Search" formControlName="keyword"
-                   id="keyword">
+            <tc-input type="text" placeholder="Search..." aria-label="Search" formControlName="keyword"
+                      id="keyword"></tc-input>
           </div>
         </form>
 
         <div *ngIf="savedSearchTypeSubInfos" class="pt-3">
-          <ng-select id="savedSearchSubtype" [(ngModel)]="savedSearchSubtype" [items]="savedSearchTypeSubInfos"
+          <ng-select class="tc-select" id="savedSearchSubtype" [(ngModel)]="savedSearchSubtype" [items]="savedSearchTypeSubInfos"
                      [clearable]="false" (change)="subtypeChangeEvent($event)"
                      placeholder="Select" bindLabel="title" bindValue="savedSearchSubtype"></ng-select>
         </div>
@@ -49,31 +46,18 @@
             (click)="select(source)"  >
           {{getBrowserDisplayString(source)}}
         </li>
-
       </ul>
 
-      <div class="text-muted mb-2 align-middle">
-
-        <ngb-pagination
-          [boundaryLinks]="true"
+        <tc-pagination
+          *ngIf="results?.totalElements > 0"
+          [totalElements]="results?.totalElements"
           [pageSize]="pageSize"
-          [collectionSize]="results?.totalElements"
-          [(page)]="pageNumber"
-          [maxSize]="5"
-          [ellipses]="true"
-          [rotate]="true"
-          (pageChange)="search()">
-        </ngb-pagination>
-
-        Found {{results?.totalElements}} in total
-      </div>
+          [pageNumber]="pageNumber"
+          (pageChange)="pageNumber = $event; search()">
+        </tc-pagination>
 
       <!-- loading -->
-      <div *ngIf="loading">
-        <div>
-          <i class="fas fa-spinner fa-spin"></i> Loading...
-        </div>
-      </div>
+      <tc-loading [loading]="loading" type="page"></tc-loading>
 
       <!-- no results -->
       <div *ngIf="!loading && !results?.totalElements">

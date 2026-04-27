@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -14,11 +14,11 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, Input, OnInit, SimpleChanges} from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 import {Candidate} from "../../../../model/candidate";
-import {CandidateService} from "../../../../services/candidate.service";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {EditCandidateRegistrationComponent} from "./edit/edit-candidate-registration.component";
+import {CandidateService} from "../../../../services/candidate.service";
 
 @Component({
   selector: 'app-view-candidate-registration',
@@ -29,30 +29,17 @@ export class ViewCandidateRegistrationComponent implements OnInit {
 
   @Input() candidate: Candidate;
   @Input() editable: boolean;
+  /** Passed to tc-description-list instances to define column spacing */
+  @Input() compact: boolean = false;
 
   loading: boolean;
   error;
 
-  constructor(private candidateService: CandidateService,
-              private modalService: NgbModal) { }
+  constructor(private modalService: NgbModal,
+              private candidateService: CandidateService) { }
 
   ngOnInit() {
 
-  }
-
-  ngOnChanges(changes: SimpleChanges) {
-    if (changes && changes.candidate && changes.candidate.previousValue !== changes.candidate.currentValue) {
-      this.loading = true;
-      this.candidateService.get(this.candidate.id).subscribe(
-        candidate => {
-          this.candidate = candidate;
-          this.loading = false;
-        },
-        error => {
-          this.error = error;
-          this.loading = false;
-        });
-    }
   }
 
   editRegistrationDetails() {
@@ -64,7 +51,7 @@ export class ViewCandidateRegistrationComponent implements OnInit {
     editCandidateRegistrationModal.componentInstance.candidateId = this.candidate.id;
 
     editCandidateRegistrationModal.result
-      .then((candidate) => this.candidate = candidate)
+      .then((candidate) => this.candidateService.updateCandidate())
       .catch(() => { /* Isn't possible */ });
 
   }

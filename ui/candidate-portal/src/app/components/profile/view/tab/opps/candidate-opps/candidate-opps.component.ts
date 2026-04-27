@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2024 Talent Catalog.
+ *
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see https://www.gnu.org/licenses/.
+ */
+
 import {
   Component,
   EventEmitter,
@@ -12,6 +28,7 @@ import {CandidateOpportunity} from "../../../../../../model/candidate-opportunit
 import {forkJoin, Observable} from "rxjs";
 import {JobChat, JobChatType} from "../../../../../../model/chat";
 import {ChatService} from "../../../../../../services/chat.service";
+import {AuthorizationService} from "../../../../../../services/authorization.service";
 
 @Component({
   selector: 'app-candidate-opps',
@@ -22,6 +39,7 @@ export class CandidateOppsComponent implements OnInit, OnChanges {
   error: string;
   loading: boolean;
   @Input() candidate: Candidate;
+  @Input() filteredOpps: CandidateOpportunity[];
   @Output() refresh = new EventEmitter();
 
   //Map of job chats by opp id
@@ -30,6 +48,7 @@ export class CandidateOppsComponent implements OnInit, OnChanges {
   selectedOpp: CandidateOpportunity;
 
   constructor(
+    private authorizationService: AuthorizationService,
     private chatService: ChatService
   ) { }
 
@@ -37,13 +56,13 @@ export class CandidateOppsComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes.candidate) {
+    if (changes.candidate && this.canViewChats) {
       this.fetchChats();
     }
   }
 
-  get opps(): CandidateOpportunity[] {
-    return this.candidate?.candidateOpportunities;
+  get canViewChats(): boolean {
+    return this.authorizationService.canViewChats();
   }
 
   selectOpp(opp: CandidateOpportunity) {

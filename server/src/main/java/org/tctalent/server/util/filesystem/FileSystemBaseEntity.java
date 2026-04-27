@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -17,14 +17,13 @@
 package org.tctalent.server.util.filesystem;
 
 import lombok.Getter;
-import lombok.NonNull;
 import lombok.Setter;
 import lombok.ToString;
 
 
 /**
  * Base class for representing drives, folders or files on a remote file system where
- * all can be identified by a url.
+ * a url can identify all.
  *
  * @author John Cameron
  */
@@ -38,7 +37,7 @@ public abstract class FileSystemBaseEntity {
     }
 
     /**
-     * Name of file or older on file system.
+     * Name of the file or folder on the file system.
      * <p/>
      * Note that this is changeable (eg can be renamed to anything - manually on Google by the user)
      * and does not have to be unique. It is the url that ultimately
@@ -49,6 +48,5 @@ public abstract class FileSystemBaseEntity {
     /**
      * Url by which folder or file can be identified on the file system.
      */
-    @NonNull
     private String url;
 }

@@ -1,5 +1,5 @@
 <!--
-  ~ Copyright (c) 2021 Talent Beyond Boundaries.
+  ~ Copyright (c) 2024 Talent Catalog.
   ~
   ~ This program is free software: you can redistribute it and/or modify it under
   ~ the terms of the GNU Affero General Public License as published by the Free
@@ -14,47 +14,44 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<div class="modal-header">
+<tc-modal heading="Edit Note"
+          [showClose]="true"
+          [disableAction]="candidateForm.invalid || loading || saving"
+          actionText="Save"
+          (onAction)="onSave()"
+>
 
-  <h4 class="modal-title">Edit Note</h4>
-
-  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" (click)="dismiss()"></button>
-
-</div>
-
-<div class="modal-body">
-
-  <div *ngIf="loading">
-    <i class="fas fa-spinner fa-spin"></i>
-  </div>
+  <tc-loading [loading]="loading"></tc-loading>
 
   <div *ngIf="!loading">
-    <div class="alert alert-danger" *ngIf="error">
-      {{error}}
-    </div>
+
+    <tc-alert type="danger" *ngIf="error">
+      <div><strong>{{error}}</strong></div>
+    </tc-alert>
 
     <form [formGroup]="candidateForm">
 
       <!-- TITLE -->
-      <div class="mb-3">
-        <label class="form-label" for="title">Title</label>
-        <input type="text" class="form-control" id="title" [formControlName]="'title'">
-      </div>
+      <tc-field class="mb-4">
+        <tc-label for="title">
+          Title
+        </tc-label>
+        <tc-input [type]="'text'"
+                  id="title"
+                  [formControlName]="'title'"
+        ></tc-input>
+      </tc-field>
 
       <!-- COMMENT -->
-      <div class="mb-3">
-        <label class="form-label" for="comment">Comment</label>
+      <tc-field class="mb-4">
+        <tc-label for="comment">
+          Comment
+        </tc-label>
         <ngx-wig id="comment" formControlName="comment"></ngx-wig>
-      </div>
+      </tc-field>
 
-      <div class="modal-footer">
-        <button type="button" class="btn btn-primary" (click)="onSave()"
-                [disabled]="candidateForm.invalid || loading || saving">
-          <i class="fas fa-spinner fa-spin" *ngIf="saving"></i>
-          Save
-        </button>
-      </div>
     </form>
 
   </div>
-</div>
+
+</tc-modal>

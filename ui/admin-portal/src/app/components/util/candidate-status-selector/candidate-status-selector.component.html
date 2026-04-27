@@ -1,18 +1,54 @@
+<!--
+  ~ Copyright (c) 2024 Talent Catalog.
+  ~
+  ~ This program is free software: you can redistribute it and/or modify it under
+  ~ the terms of the GNU Affero General Public License as published by the Free
+  ~ Software Foundation, either version 3 of the License, or any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful, but WITHOUT
+  ~ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+  ~ FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+  ~ for more details.
+  ~
+  ~ You should have received a copy of the GNU Affero General Public License
+  ~ along with this program. If not, see https://www.gnu.org/licenses/.
+  -->
+
 <form [formGroup]="candidateStatusInfoForm">
 
   <div class="mb-3">
-    <label class="form-label" for="status">Status</label>
-    <ng-select id="status" [formControlName]="'status'" [items]="candidateStatusOptions" [clearable]="false"
-               placeholder="Select" bindLabel="stringValue" bindValue="key"></ng-select>
+    <tc-field>
+      <tc-label [for]="'status'">Status</tc-label>
+      <ng-select id="status"
+                 class="tc-select"
+                 [formControlName]="'status'"
+                 [items]="candidateStatusOptions"
+                 [clearable]="false"
+                 placeholder="Select"
+                 bindLabel="stringValue"
+                 bindValue="key">
+      </ng-select>
+    </tc-field>
   </div>
 
   <div class="mb-3">
-    <label class="form-label" for="comment">Admin Note</label>
-    <ngx-wig id="comment" formControlName="comment"></ngx-wig>
+    <tc-field>
+      <tc-label [for]="comment">
+        Admin Note
+      </tc-label>
+      <ngx-wig id="comment" formControlName="comment"></ngx-wig>
+    </tc-field>
   </div>
 
   <div class="mb-3">
-    <label class="form-label" for="candidateMessage">Please provide a message to the candidate (visible to them)</label>
-    <textarea  class="form-control"  id="candidateMessage" [formControlName]="'candidateMessage'"></textarea>
+    <tc-field>
+      <tc-label [for]="'candidateMessage'">
+        Please provide a message to the candidate (visible to them)
+      </tc-label>
+      <tc-textarea [id]="'candidateMessage'"
+                   [formControlName]="'candidateMessage'">
+      </tc-textarea>
+    </tc-field>
   </div>
+
 </form>

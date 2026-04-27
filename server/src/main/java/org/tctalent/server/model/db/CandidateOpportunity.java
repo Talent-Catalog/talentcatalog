@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -16,18 +16,22 @@
 
 package org.tctalent.server.model.db;
 
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.SequenceGenerator;
-import javax.persistence.Table;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.SequenceGenerator;
+import jakarta.persistence.Table;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
+import org.springframework.util.CollectionUtils;
 
 /**
  * This is a candidate opportunity to be recruited for a particular job.
@@ -69,6 +73,13 @@ public class CandidateOpportunity extends AbstractOpportunity {
     SalesforceJobOpp jobOpp;
 
     /**
+     * Last active stage of opportunity - it is there for closed opportunities to know how far a candidate opportunity
+     * got before it was closed. Defaults to prospect.
+     */
+    @Enumerated(EnumType.STRING)
+    CandidateOpportunityStage lastActiveStage = CandidateOpportunityStage.prospect;
+
+    /**
      * Current stage of opportunity.
      */
     @Enumerated(EnumType.STRING)
@@ -87,6 +98,35 @@ public class CandidateOpportunity extends AbstractOpportunity {
     private String fileOfferName;
 
     /**
+     * String of the ids of the candidate dependants that are relocating as part of the visa job check.
+     * This is a simple string of ids to avoid a lengthy and unnecessary many-to-many relationship,
+     * as we don't need to track the inverse relationship of dependants and their associated visa job checks.
+     * It is a string as opposed to a List of ids due to the error: ''Basic' attribute type should not be a container'
+     */
+    private String relocatingDependantIds;
+
+    /**
+     * Get the string of relocating dependant ids and convert to a comma separated list of ids(long).
+     * @return List of candidate dependant ids
+     */
+    public List<Long> getRelocatingDependantIds() {
+        return relocatingDependantIds != null ?
+            Stream.of(relocatingDependantIds.split(","))
+                .map(Long::parseLong)
+                .collect(Collectors.toList()) : null;
+    }
+
+    /**
+     * Set the list of ids (long) to a string of ids comma separated to save to database.
+     */
+    public void setRelocatingDependantIds(List<Long> relocatingDependantIds) {
+        this.relocatingDependantIds = !CollectionUtils.isEmpty(relocatingDependantIds) ?
+            relocatingDependantIds.stream()
+                .map(String::valueOf)
+                .collect(Collectors.joining(",")) : null;
+    }
+
+    /**
      * Override standard setStage to automatically also update stageOrder and also closed
      * @param stage New job opportunity stage
      */
@@ -95,6 +135,9 @@ public class CandidateOpportunity extends AbstractOpportunity {
         setStageOrder(stage.ordinal());
         setClosed(this.stage.isClosed());
         setWon(this.stage.isWon());
+        if (!stage.isClosed()) {
+            setLastActiveStage(stage);
+        }
     }
 
 }

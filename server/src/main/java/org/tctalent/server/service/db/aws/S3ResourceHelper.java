@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -16,310 +16,345 @@
 
 package org.tctalent.server.service.db.aws;
 
-import com.amazonaws.auth.AWSCredentials;
-import com.amazonaws.auth.AWSStaticCredentialsProvider;
-import com.amazonaws.auth.BasicAWSCredentials;
-import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.AmazonS3ClientBuilder;
-import com.amazonaws.services.s3.internal.Mimetypes;
-import com.amazonaws.services.s3.model.*;
-import com.amazonaws.services.s3.transfer.*;
-import org.apache.tomcat.util.http.fileupload.FileUploadException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.FileSystemResource;
-import org.springframework.core.io.Resource;
-import org.springframework.web.multipart.MultipartFile;
-import org.tctalent.server.exception.FileDownloadException;
-
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.tomcat.util.http.fileupload.FileUploadException;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
+import org.springframework.util.StringUtils;
+import org.springframework.web.multipart.MultipartFile;
+import org.tctalent.server.exception.FileDownloadException;
+import org.tctalent.server.logging.LogBuilder;
+import software.amazon.awssdk.auth.credentials.AnonymousCredentialsProvider;
+import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
+import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
+import software.amazon.awssdk.core.ResponseInputStream;
+import software.amazon.awssdk.core.sync.RequestBody;
+import software.amazon.awssdk.regions.Region;
+import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.S3ClientBuilder;
+import software.amazon.awssdk.services.s3.model.*;
 
+@Slf4j
 public class S3ResourceHelper {
-    private static final Logger log = LoggerFactory.getLogger(S3ResourceHelper.class);
-    public static long FILE_PART_SIZE = 5 * 1024 * 1024; // 5MB
 
-    private AmazonS3 amazonS3;
+    private final S3Client s3Client;
 
     @Value("${aws.s3.bucketName}")
     private String s3Bucket;
 
-    private TransferManager transferManager;
+    public S3ResourceHelper(
+        @Value("${aws.credentials.accessKey}") String accessKey,
+        @Value("${aws.credentials.secretKey}") String secretKey,
+        @Value("${aws.s3.region}") String s3Region
+    ) {
+        S3ClientBuilder builder = S3Client.builder()
+            .region(Region.of(s3Region));
 
-    @Autowired
-    public S3ResourceHelper(@Value("${aws.credentials.accessKey}") String accessKey,
-                            @Value("${aws.credentials.secretKey}") String secretKey,
-                            @Value("${aws.s3.region}") String s3Region) {
-        AWSCredentials credentials = new BasicAWSCredentials(accessKey, secretKey);
-        amazonS3 = AmazonS3ClientBuilder.standard().withCredentials(new AWSStaticCredentialsProvider(credentials))
-                .withRegion(s3Region).build();
-        transferManager = TransferManagerBuilder.standard().withS3Client(amazonS3).build();
+        if (StringUtils.hasText(accessKey) && StringUtils.hasText(secretKey)) {
+            builder.credentialsProvider(
+                StaticCredentialsProvider.create(
+                    AwsBasicCredentials.create(accessKey, secretKey)
+                )
+            );
+        } else {
+            builder.credentialsProvider(AnonymousCredentialsProvider.create());
+        }
+
+        this.s3Client = builder.build();
     }
 
     public String getS3Bucket() {
         return s3Bucket;
     }
 
+    // ===================== DOWNLOAD =====================
+
     public File downloadFile(String key) throws FileDownloadException {
         return downloadFile(s3Bucket, key);
     }
 
-    public File downloadFile(String bucket,
-                             String key)
-            throws FileDownloadException {
-        File downloadFile = null;
+    public File downloadFile(String bucket, String key) throws FileDownloadException {
         try {
-            downloadFile = getTmpFile();
-            Download download = transferManager.download(bucket, key, downloadFile);
-            // blocking wait
-            download.waitForCompletion();
+            File file = getTmpFile();
 
-            log.debug("downloaded key {} to {}", key, downloadFile.getAbsolutePath());
+            try (ResponseInputStream<GetObjectResponse> in = s3Client.getObject(
+                GetObjectRequest.builder()
+                    .bucket(bucket)
+                    .key(key)
+                    .build()
+            )) {
+                Files.copy(in, file.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+            }
+
+            LogBuilder.builder(log)
+                .action("DownloadFile")
+                .message("Downloaded key " + key + " to " + file.getAbsolutePath())
+                .logDebug();
+
+            return file;
 
         } catch (Exception e) {
-            log.error("Error downloading file to: " + key, e);
+            LogBuilder.builder(log)
+                .action("DownloadFile")
+                .message("Error downloading file: " + key)
+                .logError(e);
+
             throw new FileDownloadException("Error downloading file from: " + key, e);
         }
-        return downloadFile;
     }
 
     public Resource downloadResource(String key) throws FileDownloadException {
-        Resource resource = null;
-        try {
-            File downloadFile = getTmpFile();
-            Download download = transferManager.download(s3Bucket, key, downloadFile);
-            // blocking wait
-            download.waitForCompletion();
-
-            log.debug("downloaded key {} to {}", key, downloadFile.getAbsolutePath());
-
-            // convert to resource
-            resource = new FileSystemResource(downloadFile);
-        } catch (Exception e) {
-            log.error("Error downloading file to: " + key, e);
-            throw new FileDownloadException("Error downloading file from: " + key, e);
-        }
-        return resource;
+        return new FileSystemResource(downloadFile(key));
     }
 
-    public Resource downloadResource(String key,
-                                     File targetLocation)
-            throws FileDownloadException {
-        Resource resource = null;
+    public Resource downloadResource(String key, File targetLocation) throws FileDownloadException {
         try {
-            File downloadFile = targetLocation;
-            Download download = transferManager.download(s3Bucket, key, downloadFile);
-            // blocking wait
-            download.waitForCompletion();
+            try (ResponseInputStream<GetObjectResponse> in = s3Client.getObject(
+                GetObjectRequest.builder()
+                    .bucket(s3Bucket)
+                    .key(key)
+                    .build()
+            )) {
+                Files.copy(in, targetLocation.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+            }
 
-            log.debug("downloaded key {} to {}", key, downloadFile.getAbsolutePath());
+            return new FileSystemResource(targetLocation);
 
-            // convert to resource
-            resource = new FileSystemResource(downloadFile);
         } catch (Exception e) {
-            log.error("Error downloading file to: " + key, e);
-            throw new FileDownloadException("Error downloading file from: " + key, e);
+            throw new FileDownloadException("Error downloading file: " + key, e);
         }
-        return resource;
     }
 
-    public void uploadFile(File file,
-                           String key,
-                           String contentType)
-            throws FileUploadException {
+    // ===================== UPLOAD =====================
+
+    public void uploadFile(File file, String key, String contentType) throws FileUploadException {
         uploadFile(s3Bucket, file, key, contentType);
     }
 
-    public void uploadFile(String bucket,
-                           File file,
-                           String key,
-                           String contentType)
-            throws FileUploadException {
+    public void uploadFile(String bucket, File file, String key, String contentType)
+        throws FileUploadException {
         try {
-            Upload upload = transferManager.upload(bucket, key, file);
-            // blocking wait, though we could let uploads just run in background
-            upload.waitForCompletion();
+            PutObjectRequest.Builder put = PutObjectRequest.builder()
+                .bucket(bucket)
+                .key(key);
 
-            log.debug("uploaded file {} to {}", file.getAbsolutePath(), key);
+            if (contentType != null) {
+                put.contentType(contentType);
+            }
+
+            s3Client.putObject(put.build(), RequestBody.fromFile(file));
+
+            LogBuilder.builder(log)
+                .action("UploadFile")
+                .message("Uploaded file " + file.getAbsolutePath() + " to " + key)
+                .logDebug();
 
         } catch (Exception e) {
-            log.error("Error uploading file to: " + key, e);
             throw new FileUploadException("Error uploading file to: " + key, e);
         }
     }
 
-    public void uploadFile(String key,
-                           MultipartFile source)
-            throws FileUploadException {
+    public void uploadFile(String key, MultipartFile source) throws FileUploadException {
+        uploadFile(s3Bucket, key, source);
+    }
+
+    public void uploadFile(String bucket, String key, MultipartFile source)
+        throws FileUploadException {
         try {
-            uploadFile(s3Bucket, key, source);
+            PutObjectRequest.Builder put = PutObjectRequest.builder()
+                .bucket(bucket)
+                .key(key)
+                .contentLength(source.getSize());
+
+            if (source.getContentType() != null) {
+                put.contentType(source.getContentType());
+            }
+
+            s3Client.putObject(
+                put.build(),
+                RequestBody.fromInputStream(source.getInputStream(), source.getSize())
+            );
 
         } catch (Exception e) {
-            log.error("Error uploading file to: " + key, e);
             throw new FileUploadException("Error uploading file to: " + key, e);
         }
     }
 
-    public void uploadFile(String bucket,
-                           String key,
-                           MultipartFile source)
-            throws FileUploadException {
-        try {
-            ObjectMetadata objectMetadata = new ObjectMetadata();
-            objectMetadata.setContentLength(source.getSize());
-            objectMetadata.setContentType(source.getContentType());
-            Upload upload = transferManager.upload(bucket, key, source.getInputStream(), objectMetadata);
-
-            TransferManagerConfiguration configuration = transferManager.getConfiguration();
-            configuration.setMultipartUploadThreshold(FILE_PART_SIZE);
-
-            // blocking wait, though we could let uploads just run in background
-            upload.waitForCompletion();
-
-            log.debug("uploaded MultipartFile to {}", key);
-
-        } catch (Exception e) {
-            log.error("Error uploading file to: " + key, e);
-            throw new FileUploadException("Error uploading file to: " + key, e);
-        }
+    public void uploadFile(String content, String key, String contentType)
+        throws FileUploadException {
+        uploadFile(s3Bucket, content, key, contentType);
     }
 
-    public void uploadFile(String content,
-                           String key,
-                           String contentType)
-            throws FileUploadException {
-        try {
-            uploadFile(s3Bucket, content, key, contentType);
-
-        } catch (Exception e) {
-            log.error("Error uploading file to: " + key, e);
-            throw new FileUploadException("Error uploading file to: " + key, e);
-        }
-    }
-
-    public void uploadFile(String bucket,
-                           String content,
-                           String key,
-                           String contentType)
-            throws FileUploadException {
+    public void uploadFile(String bucket, String content, String key, String contentType)
+        throws FileUploadException {
         try {
             byte[] bytes = content.getBytes("UTF-8");
-            InputStream is = new ByteArrayInputStream(bytes);
-            uploadFile(bucket, is, bytes.length, key, contentType);
-        } catch (FileUploadException e) {
-            throw e;
+
+            PutObjectRequest.Builder put = PutObjectRequest.builder()
+                .bucket(bucket)
+                .key(key)
+                .contentLength((long) bytes.length);
+
+            if (contentType != null) {
+                put.contentType(contentType);
+            }
+
+            s3Client.putObject(
+                put.build(),
+                RequestBody.fromBytes(bytes)
+            );
+
         } catch (Exception e) {
             throw new FileUploadException("Error uploading string content to: " + key, e);
         }
     }
 
-    public void uploadFile(String bucket,
-                           InputStream content,
-                           long contentLength,
-                           String key,
-                           String contentType)
-            throws FileUploadException {
+    public void uploadFile(String bucket, InputStream content, long contentLength,
+        String key, String contentType)
+        throws FileUploadException {
         try {
-            ObjectMetadata objectMetadata = new ObjectMetadata();
-            objectMetadata.setContentLength(contentLength);
-            objectMetadata.setContentType(contentType);
-            Upload upload = transferManager.upload(bucket, key, content, objectMetadata);
-            // blocking wait, though we could let uploads just run in background
-            upload.waitForCompletion();
+            PutObjectRequest.Builder put = PutObjectRequest.builder()
+                .bucket(bucket)
+                .key(key)
+                .contentLength(contentLength);
 
-            log.debug("uploaded string content to {}", key);
+            if (contentType != null) {
+                put.contentType(contentType);
+            }
+
+            s3Client.putObject(
+                put.build(),
+                RequestBody.fromInputStream(content, contentLength)
+            );
 
         } catch (Exception e) {
-            log.error("Error uploading string content to: " + key, e);
-            throw new FileUploadException("Error uploading string content to: " + key, e);
+            throw new FileUploadException("Error uploading content to: " + key, e);
         }
     }
+
+    // ===================== DELETE =====================
 
     public void deleteFile(String key) {
-        amazonS3.deleteObject(s3Bucket, key);
+        s3Client.deleteObject(DeleteObjectRequest.builder()
+            .bucket(s3Bucket)
+            .key(key)
+            .build());
     }
 
-    public void copyObject(String sourceKey,
-                           String destinationKey) {
-        CopyObjectRequest copyObjectRequest = new CopyObjectRequest(s3Bucket, sourceKey, s3Bucket, destinationKey);
-        transferManager.copy(copyObjectRequest);
+    // ===================== COPY =====================
+
+    public void copyObject(String sourceKey, String destinationKey) {
+        copyObject(s3Bucket, sourceKey, s3Bucket, destinationKey);
     }
 
-    public void copyObject(String sourceBucket,
-                           String sourceKey,
-                           String destinationBucket,
-                           String destinationKey) {
+    public void copyObject(String sourceBucket, String sourceKey,
+        String destinationBucket, String destinationKey) {
 
-        sourceBucket = sourceBucket != null ? sourceBucket : s3Bucket;
-        destinationBucket = destinationBucket != null ? destinationBucket : s3Bucket;
-        CopyObjectRequest copyObjectRequest = new CopyObjectRequest(sourceBucket, sourceKey, destinationBucket,
-                                                                    destinationKey);
-        transferManager.copy(copyObjectRequest);
+        s3Client.copyObject(CopyObjectRequest.builder()
+            .sourceBucket(sourceBucket != null ? sourceBucket : s3Bucket)
+            .sourceKey(sourceKey)
+            .destinationBucket(destinationBucket != null ? destinationBucket : s3Bucket)
+            .destinationKey(destinationKey)
+            .build());
     }
 
-    public void copyBucketContents(String sourceBucket,
-                                   String sourcePrefix,
-                                   String destinationBucket,
-                                   String destinationPrefix)
-            throws AmazonS3Exception {
-        ListObjectsRequest req = new ListObjectsRequest();
-        req.setBucketName(sourceBucket);
-        req.withPrefix(sourcePrefix);
-        List<S3ObjectSummary> contents = amazonS3.listObjects(req).getObjectSummaries();
-        if (contents.size() <= 0) {
-            throw new AmazonS3Exception("No files found under " + sourceBucket + " and prefix " + sourcePrefix);
+    public void copyBucketContents(String sourceBucket, String sourcePrefix,
+        String destinationBucket, String destinationPrefix) {
+
+        ListObjectsV2Request request = ListObjectsV2Request.builder()
+            .bucket(sourceBucket)
+            .prefix(sourcePrefix)
+            .build();
+
+        ListObjectsV2Response response = s3Client.listObjectsV2(request);
+
+        if (response.contents().isEmpty()) {
+            throw S3Exception.builder()
+                .message("No files found under " + sourcePrefix)
+                .build();
         }
-        for (S3ObjectSummary summary : contents) {
-            String newKey = destinationPrefix + summary.getKey().replace(sourcePrefix, "");
-            CopyObjectRequest copyObjectRequest = new CopyObjectRequest(sourceBucket, summary.getKey(),
-                                                                        destinationBucket, newKey);
-            transferManager.copy(copyObjectRequest);
+
+        for (S3Object obj : response.contents()) {
+            String newKey = destinationPrefix + obj.key().replace(sourcePrefix, "");
+
+            s3Client.copyObject(CopyObjectRequest.builder()
+                .sourceBucket(sourceBucket)
+                .sourceKey(obj.key())
+                .destinationBucket(destinationBucket)
+                .destinationKey(newKey)
+                .build());
         }
     }
+
+    // ===================== LIST =====================
+
+    public List<S3Object> getObjectSummaries() {
+        List<S3Object> results = new ArrayList<>();
+
+        String token = null;
+
+        do {
+            ListObjectsV2Response response = s3Client.listObjectsV2(
+                ListObjectsV2Request.builder()
+                    .bucket(s3Bucket)
+                    .prefix("candidate/")
+                    .continuationToken(token)
+                    .build()
+            );
+
+            results.addAll(response.contents());
+            token = response.nextContinuationToken();
+
+        } while (token != null);
+
+        return results;
+    }
+
+    public List<S3Object> listObjectSummaries(String bucket, String prefix) {
+        List<S3Object> results = new ArrayList<>();
+
+        String token = null;
+        do {
+            ListObjectsV2Response response = s3Client.listObjectsV2(
+                ListObjectsV2Request.builder()
+                    .bucket(bucket)
+                    .prefix(prefix)
+                    .continuationToken(token)
+                    .build()
+            );
+
+            results.addAll(response.contents());
+            token = response.nextContinuationToken();
+        } while (token != null);
+
+        return results;
+    }
+
+    public List<S3Object> filterMigratedObjects(List<S3Object> objects) {
+        return objects.stream()
+            .filter(o -> !o.key().contains("/migrated/"))
+            .collect(Collectors.toList());
+    }
+
+    // ===================== UTIL =====================
 
     public File getTmpFile() throws IOException {
-        File tmpFile = File.createTempFile("lola-", ".tmp");
-        tmpFile.deleteOnExit();
-        return tmpFile;
+        File tmp = File.createTempFile("lola-", ".tmp");
+        tmp.deleteOnExit();
+        return tmp;
     }
 
     public boolean doesBucketExist(String bucket) {
-        return amazonS3.doesBucketExist(s3Bucket + "bucket");
-    }
-
-    public List<S3ObjectSummary> getObjectSummaries() {
-        List<S3ObjectSummary> objectSummaries = new ArrayList<S3ObjectSummary>();
-        ObjectListing objects = amazonS3.listObjects
-                (s3Bucket, "candidate/");
-        objectSummaries.addAll(objects.getObjectSummaries());
-        while (objects.isTruncated()) {
-            objects = amazonS3.listNextBatchOfObjects(objects);
-            objectSummaries.addAll(objects.getObjectSummaries());
-        }
-        return objectSummaries;
-    }
-
-    public List<S3ObjectSummary> filterMigratedObjects(List<S3ObjectSummary> objectSummaries) {
-        List<S3ObjectSummary> filteredSummaries = objectSummaries.stream().filter(s -> !s.getKey().contains("/migrated/"))
-                .collect(Collectors.toList());
-        return filteredSummaries;
-    }
-
-    public void addObjectMetadata(S3ObjectSummary objectSummary) {
-        ObjectMetadata metadata = new ObjectMetadata();
-        Mimetypes mimetypes = Mimetypes.getInstance();
-        metadata.setContentType(mimetypes.getMimetype(objectSummary.getKey()));
-        final CopyObjectRequest request = new CopyObjectRequest(objectSummary.getBucketName(), objectSummary.getKey(), objectSummary.getBucketName(), objectSummary.getKey())
-                .withSourceBucketName(objectSummary.getBucketName())
-                .withSourceKey(objectSummary.getKey())
-                .withNewObjectMetadata(metadata);
-        amazonS3.copyObject(request);
+        return s3Client.headBucket(HeadBucketRequest.builder()
+            .bucket(bucket)
+            .build()) != null;
     }
 }

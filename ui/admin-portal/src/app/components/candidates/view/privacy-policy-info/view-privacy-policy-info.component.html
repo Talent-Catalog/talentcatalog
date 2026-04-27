@@ -1,0 +1,28 @@
+<tc-card *ngIf="candidate">
+  <tc-card-header>
+    Privacy Policy Information
+  </tc-card-header>
+
+  <tc-description-list [direction]="'column'"
+                       [compact]="compact"
+  >
+
+    <tc-description-item [label]="'Policy Version ID:'">
+      {{ candidate?.acceptedPrivacyPolicyId || 'N/A' }}
+    </tc-description-item>
+
+    <tc-description-item [label]="'Accepted On:'">
+      {{ (candidate?.acceptedPrivacyPolicyDate | date: 'customDateTime') || 'N/A' }}
+    </tc-description-item>
+
+    <tc-description-item [label]="'Accepted With Partner:'">
+      {{ candidate?.acceptedPrivacyPolicyPartner?.name || 'N/A'}}
+    </tc-description-item>
+
+    <tc-description-item [label]="'Terms shown but not accepted:'">
+      {{ candidate?.pendingTerms ? "Yes" : "No"}}
+    </tc-description-item>
+
+  </tc-description-list>
+
+</tc-card>

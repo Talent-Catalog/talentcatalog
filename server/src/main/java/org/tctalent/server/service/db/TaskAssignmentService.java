@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -16,21 +16,21 @@
 
 package org.tctalent.server.service.db;
 
+import java.io.IOException;
+import java.time.LocalDate;
+import java.util.List;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.web.multipart.MultipartFile;
 import org.tctalent.server.exception.NoSuchObjectException;
-import org.tctalent.server.model.db.task.TaskAssignment;
-import org.tctalent.server.request.task.TaskListRequest;
-
-import java.io.IOException;
-import java.time.LocalDate;
-import java.util.List;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.SavedList;
+import org.tctalent.server.model.db.Status;
 import org.tctalent.server.model.db.TaskAssignmentImpl;
 import org.tctalent.server.model.db.TaskImpl;
 import org.tctalent.server.model.db.User;
+import org.tctalent.server.model.db.task.TaskAssignment;
+import org.tctalent.server.request.task.TaskListRequest;
 
 /**
  * Service for managing {@link TaskAssignment}s.
@@ -153,4 +153,22 @@ public interface TaskAssignmentService {
      * @return Matching Task Assignment's
      */
     List<TaskAssignmentImpl> listTaskAssignments(TaskListRequest request);
+
+    /**
+     * Finds task assignments by task ID, candidate ID, and status.
+     *
+     * @param taskId The ID of the task.
+     * @param candidateId The ID of the candidate.
+     * @param status The status of the task assignment.
+     * @return A list of matching TaskAssignmentImpl objects.
+     */
+    List<TaskAssignmentImpl> findByTaskIdAndCandidateIdAndStatus(Long taskId, Long candidateId, Status status);
+
+    /**
+     * Sets the transient answer field on Question Task Assignments, these come from various places
+     * either the candidate property table (stored as task name and answer values)
+     * or it's stored in a field on the candidate object.
+     * @param taskAssignments task assignment whose transients we want to populate
+     */
+    void populateTransientTaskAssignmentFields(List<TaskAssignmentImpl> taskAssignments);
 }

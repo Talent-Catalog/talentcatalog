@@ -1,5 +1,5 @@
 <!--
-  ~ Copyright (c) 2023 Talent Beyond Boundaries.
+  ~ Copyright (c) 2024 Talent Catalog.
   ~
   ~ This program is free software: you can redistribute it and/or modify it under
   ~ the terms of the GNU Affero General Public License as published by the Free
@@ -14,60 +14,82 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<div class="alert alert-danger" *ngIf="error">
-  {{error}}
-</div>
+<tc-alert type="danger" *ngIf="error">
+  <div>{{error}}</div>
+</tc-alert>
 
 <form [formGroup]="postForm">
 
   <!-- POST -->
-  <div class="mb-3">
+  <div class="my-3">
     <quill-editor id="content"
                   placeholder="Write your message..."
-                  formControlName="content"
-                  [modules]="moduleOptions"
-                  (onEditorCreated)="editorCreated($event)">
+                  [formControlName]="'content'"
+                  (onEditorCreated)="editorCreated($event)"
+                  (onContentChanged)="contentChanged($event)"
+                  (onSelectionChanged)="editorSelectionChanged($event)"
+    >
       <div quill-editor-toolbar id="quillToolbar">
-        <button class="ql-list" value="ordered"></button>
-        <button class="ql-list" value="bullet"></button>
-        <button class="ql-bold"></button>
-        <button class="ql-italic"></button>
-        <button class="ql-underline"></button>
-        <button class="ql-link"></button>
-        <button class="ql-image"></button>
+        <button class="ql-list" value="ordered" title="Ordered list"></button>
+        <button class="ql-list" value="bullet" title="Bullet list"></button>
+        <button class="ql-bold" title="Bold text"></button>
+        <button class="ql-italic" title="Italic text"></button>
+        <button class="ql-underline" title="Underline text"></button>
 
-        <button class="custom-quill-btn" (click)="uploadFile()">
-          <fa-icon *ngIf="!saving" icon="file-upload" size="xs"></fa-icon>
-          <app-loading [loading]="saving"></app-loading>
+        <button [ngClass]="!this.linkBtnSelected ? 'custom-quill-btn' : 'custom-quill-btn-selected'"
+                title="{{ 'CHAT.ADD-LINK' | translate }}"
+                (click)="onLinkBtnClickOrKeyShortcut()">
+          <i class="fas fa-link"></i>
+        </button>
+
+        <button class="custom-quill-btn" (click)="uploadFile()" title="Upload image/file">
+          <i *ngIf="saving" class="fas fa-spinner fa-spin"></i>
+          <i *ngIf="!saving" class="fa-solid fa-file-upload small"></i>
         </button>
 
         <button
           id="emojiBtn"
-          [ngClass]="!this.emojiPickerVisible ? 'custom-emoji-btn' : 'custom-emoji-btn-menu-open'"
-          (click)="onClickEmojiBtn()">
-          <fa-icon icon="face-smile" size="xs"></fa-icon>
+          [ngClass]="!this.emojiPickerVisible ? 'custom-quill-btn' : 'custom-quill-btn-selected'"
+          (click)="toggleEmojiPicker()">
+          <i class="fa-regular fa-face-smile"></i>
         </button>
 
-        <span #editorPickerSpan>
-          <emoji-mart
-            id="editorPicker"
-            *ngIf="emojiPickerVisible"
-            (emojiClick)="onSelectEmoji($event)"
-            emoji="point_up"
-            title="Add emoji..."
-            [autoFocus]="true"
-            [perLine]="8"
-            [emojisToShowFilter]="emojisToShowFilter"
-          ></emoji-mart>
-        </span>
+        <app-link-tooltip *ngIf="this.linkTooltipVisible"
+                          [leftOffset]="linkTooltipLeftOffset"
+                          [bottomOffset]="linkTooltipBottomOffset"
+                          [url]="editorSelection.linkUrl"
+                          (editClicked)="onEditLinkTooltipClick()"
+                          (removeClicked)="onRemoveLinkTooltipClick()"
+        ></app-link-tooltip>
       </div>
     </quill-editor>
   </div>
 
-  <div class="modal-footer">
-    <button type="button" class="btn btn-primary" (click)="onSend()"
-            [disabled]="postForm.invalid">
-      {{'CHAT.POST-SEND' | translate}} <i class="fa-solid fa-paper-plane"></i>
-    </button>
+  <div class="d-flex justify-content-end">
+    <tc-button type="solid" (onClick)="onSend()"
+               [disabled]="postForm.invalid">
+      {{ 'CHAT.POST-SEND' | translate }} <i class="fa-solid fa-paper-plane"></i>
+    </tc-button>
   </div>
+
+  <div>
+    <div *ngFor="let linkPreview of linkPreviews">
+      <app-preview-link [linkPreview]="linkPreview"
+                        [userIsPostAuthor]="true"
+      ></app-preview-link>
+    </div>
+  </div>
+
 </form>
+
+<emoji-mart
+  id="editorPicker"
+  *ngIf="emojiPickerVisible"
+  (emojiClick)="onSelectEmoji($event)"
+  emoji="point_up"
+  title="Add emoji..."
+  [autoFocus]="true"
+  [perLine]="8"
+></emoji-mart>
+
+<div *ngIf="emojiPickerVisible" class="overlay" (click)="toggleEmojiPicker()"></div>

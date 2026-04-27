@@ -1,0 +1,11 @@
+th {
+  min-width: 7em;
+  &:first-child {
+    min-width: 4em;
+    text-align: center;
+  }
+}
+
+tr > td:first-child {
+  text-align: center;
+}

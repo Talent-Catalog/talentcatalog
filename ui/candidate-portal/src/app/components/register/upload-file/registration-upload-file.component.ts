@@ -1,7 +1,23 @@
+/*
+ * Copyright (c) 2024 Talent Catalog.
+ *
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see https://www.gnu.org/licenses/.
+ */
+
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {FormGroup} from "@angular/forms";
+import {UntypedFormGroup} from "@angular/forms";
 import {RegistrationService} from "../../../services/registration.service";
-import {CandidateService} from "../../../services/candidate.service";
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-registration-upload-file',
@@ -13,41 +29,31 @@ export class RegistrationUploadFileComponent implements OnInit {
   /* A flag to indicate if the component is being used on the profile component */
   @Input() edit: boolean = false;
 
+  cvWarning!: string;
   @Output() onSave = new EventEmitter();
 
-  form: FormGroup;
+  form: UntypedFormGroup;
   error: any;
   // Component states
   saving: boolean;
-  activeIds: string;
+  activeIndexes: number | null;
 
 
-  constructor(public registrationService: RegistrationService,
-              private candidateService: CandidateService) {
+  constructor(public registrationService: RegistrationService, private translateService: TranslateService) {
   }
 
   ngOnInit() {
     // Make the accordions closed if editing (to allow better view of footer navigation)
+    // For tc-accordion, activeIndexes uses 0-based index: 0 = first panel, null = all closed
     if (!this.edit) {
-      this.activeIds = 'upload-cv'
+      this.activeIndexes = 0; // 'upload-cv' corresponds to the first panel (index 0)
     } else {
-      this.activeIds = ''
+      this.activeIndexes = null; // '' corresponds to all panels closed
     }
-  }
 
-  //Final registration step method
-  submit() {
-    this.saving = true;
-    this.candidateService.submitRegistration().subscribe(
-      (response) => {
-        this.saving = false;
-        this.next();
-      },
-      (error) => {
-        this.error = error;
-        this.saving = false;
-      }
-    );
+    this.translateService.get('REGISTRATION.ATTACHMENTS.CV.WARNING').subscribe((translated: string) => {
+      this.cvWarning = translated;
+    });
   }
 
   // Methods during registration process.

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -20,6 +20,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 import org.springframework.data.domain.Page;
+import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 import org.tctalent.server.exception.EntityExistsException;
 import org.tctalent.server.exception.EntityReferencedException;
 import org.tctalent.server.exception.NoSuchObjectException;
@@ -65,6 +67,16 @@ public interface LanguageService {
         String langCode, String tableName, InputStream translations)
         throws IOException, NoSuchObjectException;
 
+    /**
+     * Find language matching given
+     * <a href="https://en.wikipedia.org/wiki/List_of_ISO_639_language_codes">ISO code</a>.
+     * @param isoCode Language ISO code
+     * @return language or null if none found
+     * @throws NoSuchObjectException if not found
+     */
+    @NonNull
+    Language findByIsoCode(String isoCode);
+
     List<Language> listLanguages();
 
     Page<Language> searchLanguages(SearchLanguageRequest request);
@@ -77,6 +89,12 @@ public interface LanguageService {
      */
     DatePickerNames getDatePickerNames(String lang);
 
+    /**
+     * Find language matching given id.
+     * @param id Language id
+     * @return language
+     * @throws NoSuchObjectException if not found
+     */
     Language getLanguage(long id);
 
     Language createLanguage(CreateLanguageRequest request) throws EntityExistsException;
@@ -87,6 +105,12 @@ public interface LanguageService {
 
     List<SystemLanguage> listSystemLanguages();
 
+    /**
+     * Returns the language matching the given English language name (ignoring case).
+     * @param languageName Name of language - eg 'English'
+     * @return Language or null if not found
+     */
+    @Nullable
     Language getLanguage(String languageName);
 
     /**

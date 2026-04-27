@@ -1,0 +1,23 @@
+# Health smoke - quick proof the env is up
+org.talentcatalog.perf.simulations.http.health.HealthSimulation | -Dperf.healthPath=/actuator/health -DwarmupSeconds=2 -DmeasureSeconds=8 -DtotalConcurrentUsers=1
+
+# Candidate search A/B (needs users.csv)
+org.talentcatalog.perf.simulations.http.candidatesearch.CandidateSearchSequentialABSimulation | -Dpayload=baseline -DseqUsers=1 -DseqRepeats=1
+
+# Candidate search parallel closed model (FIXED: uses totalConcurrentUsers/searchRepeats)
+org.talentcatalog.perf.simulations.http.candidatesearch.CandidateSearchParallelClosedSimulation | -Dpayload=baseline -DtotalConcurrentUsers=2 -DwarmupSeconds=2 -DmeasureSeconds=8 -DsearchRepeats=1 -DsearchMinPauseSeconds=0 -DsearchMaxPauseSeconds=0
+
+# Candidate search parallel open model (FIXED: uses totalUsersPerSec/rampSeconds/searchRepeats)
+org.talentcatalog.perf.simulations.http.candidatesearch.CandidateSearchParallelOpenSimulation | -Dpayload=baseline -DtotalUsersPerSec=2 -DrampSeconds=1 -DwarmupSeconds=2 -DmeasureSeconds=8 -DsearchRepeats=1 -DsearchMinPauseSeconds=0 -DsearchMaxPauseSeconds=2
+
+# Candidate search random finite A/B (uses randUsers/randRepeats)
+org.talentcatalog.perf.simulations.http.candidatesearch.CandidateSearchRandomABFiniteSimulation | -Dpayload=baseline -DrandUsers=5 -DrandRepeats=4
+
+# Saved-list A/B (needs users.csv + listId)
+org.talentcatalog.perf.simulations.http.savedlist.SavedListSearchPagedSequentialABSimulation | -DlistId=1283 -DseqUsers=1 -DseqRepeats=1
+
+# Saved-list parallel closed model (FIXED: uses totalConcurrentUsers/searchRepeats)
+org.talentcatalog.perf.simulations.http.savedlist.SavedListSearchPagedParallelClosedSimulation | -DlistId=1283 -DtotalConcurrentUsers=2 -DwarmupSeconds=2 -DmeasureSeconds=8 -DsearchRepeats=1 -DsearchMinPauseSeconds=0 -DsearchMaxPauseSeconds=0
+
+# Saved-list random finite A/B (uses randUsers/randRepeats)
+org.talentcatalog.perf.simulations.http.savedlist.SavedListSearchPagedRandomABFiniteSimulation | -DlistId=1283 -DrandUsers=5 -DrandRepeats=4

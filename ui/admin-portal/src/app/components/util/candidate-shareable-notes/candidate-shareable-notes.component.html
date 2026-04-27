@@ -1,19 +1,43 @@
 
-<div class="alert alert-danger" *ngIf="error">
-  {{error}}
-</div>
+<!--
+  ~ Copyright (c) 2024 Talent Catalog.
+  ~
+  ~ This program is free software: you can redistribute it and/or modify it under
+  ~ the terms of the GNU Affero General Public License as published by the Free
+  ~ Software Foundation, either version 3 of the License, or any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful, but WITHOUT
+  ~ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+  ~ FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+  ~ for more details.
+  ~
+  ~ You should have received a copy of the GNU Affero General Public License
+  ~ along with this program. If not, see https://www.gnu.org/licenses/.
+  -->
+
+<tc-alert type="danger" *ngIf="error">
+  <div><strong>{{error}}</strong></div>
+</tc-alert>
+
 <form [formGroup]="form">
 
   <div class="mb-3 flex-fill">
-    <label class="form-label h6" for="shareableNotes">
-      <span class="me-2 font-weight-normal">General notes</span>
-      <app-autosave-status [saving]="saving" [typing]="typing"></app-autosave-status>
-    </label>
 
-      <textarea id="shareableNotes" class="md-textarea-auto form-control" rows="2"
-                [readonly]="!editable"
-                placeholder="Add general candidate notes which can be shared with potential employers..."
-                [formControlName]="'shareableNotes'"></textarea>
+    <tc-textarea id="shareableNotes"
+                 [placeholder]="'Add general candidate notes, which may be shared with potential employers...'"
+                 [formControlName]="'shareableNotes'"
+                 [disabled]="!editable"
+    ></tc-textarea>
+    <div class="d-flex align-items-center gap-2">
+      <app-autosave-status [saving]="saving"
+                           [typing]="typing"
+                           [size]="'md'"
+      ></app-autosave-status>
+      <p class="warning-text form-text fw-light text-danger">
+        This can be shared externally - please do not enter confidential info.
+      </p>
     </div>
+  </div>
+
 
 </form>

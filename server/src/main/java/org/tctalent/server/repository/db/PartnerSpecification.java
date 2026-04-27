@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -16,44 +16,50 @@
 
 package org.tctalent.server.repository.db;
 
+import jakarta.persistence.criteria.Predicate;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.jpa.domain.Specification;
 import org.tctalent.server.model.db.PartnerImpl;
 import org.tctalent.server.request.partner.SearchPartnerRequest;
 
-import javax.persistence.criteria.Predicate;
-
 public class PartnerSpecification {
 
     public static Specification<PartnerImpl> buildSearchQuery(final SearchPartnerRequest request) {
-        return (partner, query, builder) -> {
-            Predicate conjunction = builder.conjunction();
+        return (partner, query, cb) -> {
+            if (query == null) {
+                throw new IllegalArgumentException("PartnerSpecification.CriteriaQuery should not be null");
+            }
             query.distinct(true);
+
+            Predicate conjunction = cb.conjunction();
 
             // KEYWORD SEARCH
             if (!StringUtils.isBlank(request.getKeyword())){
                 String lowerCaseMatchTerm = request.getKeyword().toLowerCase();
                 String likeMatchTerm = "%" + lowerCaseMatchTerm + "%";
-                conjunction.getExpressions().add(
-                        builder.or(
-                                builder.like(builder.lower(partner.get("name")), likeMatchTerm),
-                                builder.like(builder.lower(partner.get("abbreviation")), likeMatchTerm)
+                conjunction = cb.and(conjunction,
+                        cb.or(
+                                cb.like(cb.lower(partner.get("name")), likeMatchTerm),
+                                cb.like(cb.lower(partner.get("abbreviation")), likeMatchTerm)
                         ));
             }
 
             // STATUS
             if (request.getStatus() != null){
-                conjunction.getExpressions().add(builder.equal(partner.get("status"), request.getStatus()));
+                conjunction = cb.and(conjunction,
+                    cb.equal(partner.get("status"), request.getStatus()));
             }
 
             // Job Creators
             if (request.getJobCreator() != null){
-                conjunction.getExpressions().add(builder.equal(partner.get("jobCreator"), request.getJobCreator()));
+                conjunction = cb.and(conjunction,
+                    cb.equal(partner.get("jobCreator"), request.getJobCreator()));
             }
 
             // Source Partners
             if (request.getSourcePartner() != null){
-                conjunction.getExpressions().add(builder.equal(partner.get("sourcePartner"), request.getSourcePartner()));
+                conjunction = cb.and(conjunction,
+                    cb.equal(partner.get("sourcePartner"), request.getSourcePartner()));
             }
 
             return conjunction;

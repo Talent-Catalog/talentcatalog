@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -38,12 +38,14 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.tctalent.server.data.CandidateTestData.getCandidateExam;
 
 /**
  * Unit tests for Candidate Exam Admin Api endpoints.
@@ -56,7 +58,7 @@ class CandidateExamAdminApiTest extends ApiTestBase {
     private static final String BASE_PATH = "/api/admin/candidate-exam";
     private static final long CANDIDATE_ID = 99L;
 
-    private final CandidateExam candidateExam = AdminApiTestUtil.getCandidateExam();
+    private final CandidateExam candidateExam = getCandidateExam();
 
     @MockBean CandidateExamService candidateExamService;
     @MockBean CandidateService candidateService;
@@ -85,6 +87,7 @@ class CandidateExamAdminApiTest extends ApiTestBase {
                 .willReturn(candidateExam);
 
         mockMvc.perform(post(BASE_PATH + "/" + CANDIDATE_ID)
+                        .with(csrf())
                         .header("Authorization", "Bearer " + "jwt-token")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request))
@@ -106,6 +109,7 @@ class CandidateExamAdminApiTest extends ApiTestBase {
     @DisplayName("delete candidate exam by id succeeds")
     void deleteExamByIdSucceeds() throws Exception {
         mockMvc.perform(delete(BASE_PATH + "/" + CANDIDATE_ID)
+                        .with(csrf())
                         .header("Authorization", "Bearer " + "jwt-token"))
 
                 .andDo(print())

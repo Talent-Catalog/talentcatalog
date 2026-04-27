@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -16,7 +16,7 @@
 import {AfterViewInit, Directive, Input, OnDestroy, OnInit} from "@angular/core";
 import {Observable, Subject} from "rxjs";
 import {catchError, debounceTime, map, switchMap, takeUntil, tap} from "rxjs/operators";
-import {FormGroup} from "@angular/forms";
+import {UntypedFormGroup} from "@angular/forms";
 import {isEnumOptionArray} from "../../../util/enum";
 import {HasId} from "../../../model/base";
 
@@ -52,7 +52,7 @@ export abstract class AutoSaveComponentBase implements AfterViewInit, OnDestroy,
    * Form containing the component's field(s).
    * This should be created and initialized in the subclass's ngOnInit method.
    */
-  form: FormGroup;
+  form: UntypedFormGroup;
 
   /**
    * True when a save is underway. Should be used to show the user when a save

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -55,16 +55,15 @@ public class CandidatePropertyServiceImpl implements CandidatePropertyService {
         @NonNull String name, @Nullable String value, @Nullable TaskAssignment taskAssignment) {
 
         CandidateProperty property = findProperty(candidate, name);
-        if (property != null) {
-            property.setValue(value);
-            property.setRelatedTaskAssignment((TaskAssignmentImpl) taskAssignment);
-        } else {
+        if (property == null) {
             property = new CandidateProperty();
-            property.setCandidateId(candidate.getId());
+            CandidatePropertyKey key = new CandidatePropertyKey(candidate.getId(), name);
+            property.setId(key);
+            property.setCandidate(candidate);
             property.setName(name);
-            property.setValue(value);
-            property.setRelatedTaskAssignment((TaskAssignmentImpl) taskAssignment);
         }
+        property.setValue(value);
+        property.setRelatedTaskAssignment((TaskAssignmentImpl) taskAssignment);
         return candidatePropertyRepository.save(property);
     }
 

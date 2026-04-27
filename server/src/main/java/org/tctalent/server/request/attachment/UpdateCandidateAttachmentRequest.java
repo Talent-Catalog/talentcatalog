@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -16,39 +16,17 @@
 
 package org.tctalent.server.request.attachment;
 
+import lombok.Getter;
+import lombok.Setter;
+import org.tctalent.server.files.UploadType;
+
+@Getter
+@Setter
 public class UpdateCandidateAttachmentRequest {
 
     private Long id;
     private String name;
-    private String location;
-    private Boolean cv;
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getLocation() {
-        return location;
-    }
-
-    public void setLocation(String location) {
-        this.location = location;
-    }
-
-    public Boolean getCv() { return cv; }
-
-    public void setCv(Boolean cv) { this.cv = cv; }
+    private String url;
+    private UploadType uploadType;
 }
 

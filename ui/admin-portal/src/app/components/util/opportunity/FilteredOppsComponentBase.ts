@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -16,43 +16,44 @@
 
 import {
   Directive,
-  ElementRef,
   EventEmitter,
   Inject,
   Input,
   LOCALE_ID,
   OnChanges,
+  OnDestroy,
   OnInit,
   Output,
-  SimpleChanges,
-  ViewChild
+  SimpleChanges
 } from '@angular/core';
 import {CandidateOpportunity, SearchOpportunityRequest} from "../../../model/candidate-opportunity";
 import {SearchResults} from "../../../model/search-results";
-import {FormBuilder, FormGroup} from "@angular/forms";
+import {UntypedFormBuilder, UntypedFormGroup} from "@angular/forms";
 import {EnumOption} from "../../../util/enum";
 import {AuthorizationService} from "../../../services/authorization.service";
-import {LocalStorageService} from "angular-2-local-storage";
 import {SalesforceService} from "../../../services/salesforce.service";
 import {indexOfHasId, SearchOppsBy} from "../../../model/base";
 import {
   getOpportunityStageName,
+  getStageBadgeColor,
   Opportunity,
   OpportunityOwnershipType
 } from "../../../model/opportunity";
-import {debounceTime, distinctUntilChanged} from "rxjs/operators";
+import {debounceTime, distinctUntilChanged, takeUntil} from "rxjs/operators";
 import {OpportunityService} from "./OpportunityService";
 import {User} from "../../../model/user";
 import {CountryService} from "../../../services/country.service";
 import {Country} from "../../../model/country";
 import {JobChat, JobChatUserInfo} from "../../../model/chat";
-import {BehaviorSubject, Subscription} from "rxjs";
+import {BehaviorSubject, Subject, Subscription} from "rxjs";
 import {ChatService} from "../../../services/chat.service";
 import {PartnerService} from "../../../services/partner.service";
 import {Partner} from "../../../model/partner";
+import {LocalStorageService} from "../../../services/local-storage.service";
+import {InputComponent} from "../../../shared/components/input/input.component";
 
 @Directive()
-export abstract class FilteredOppsComponentBase<T extends Opportunity> implements OnInit, OnChanges {
+export abstract class FilteredOppsComponentBase<T extends Opportunity> implements OnInit, OnChanges, OnDestroy {
 
   /**
    * Defines type of opportunity search.
@@ -71,7 +72,16 @@ export abstract class FilteredOppsComponentBase<T extends Opportunity> implement
    */
   @Input() chatsRead$: BehaviorSubject<boolean>;
 
+  /**
+   * When true, this tab is the currently visible tab. Used to defer  API calls
+   * (search, partner/country data) until the tab is first activated. Once initialised, data
+   * is cached and not re-fetched on subsequent activations.
+   * Defaults to true for backward compatibility with usages that don't pass this input.
+   */
+  @Input() tabIsActive: boolean = true;
+
   @Output() oppSelection = new EventEmitter();
+  @Output() refreshRequested = new EventEmitter<void>();
 
   opps: T[];
 
@@ -108,17 +118,16 @@ export abstract class FilteredOppsComponentBase<T extends Opportunity> implement
   withUnreadMessagesTip = "Only show opps which have unread chat messages";
 
   loading: boolean;
-  error;
+  error: string;
   pageNumber: number;
   pageSize: number;
 
   results: SearchResults<T>;
 
   //Get reference to the search input filter element (see #searchFilter in html) so we can reset focus
-  @ViewChild("searchFilter")
-  searchFilter: ElementRef;
+  protected searchFilter: InputComponent;
 
-  searchForm: FormGroup;
+  searchForm: UntypedFormGroup;
 
   //Default sort opps in descending order of nextDueDate
   sortField = 'nextStepDueDate';
@@ -135,14 +144,18 @@ export abstract class FilteredOppsComponentBase<T extends Opportunity> implement
   private savedStateKeyPrefix: string = 'BrowseKey';
   private showClosedOppsSuffix: string = 'ShowClosedOpps';
   private showInactiveOppsSuffix: string = 'ShowInactiveOpps';
+  private showUnpublishedOppsSuffix: string = 'ShowUnpublishedOpps';
   private sortDirectionSuffix: string = 'SortDir';
   private sortFieldSuffix: string = 'Sort';
   private withUnreadMessagesSuffix: string = 'WithUnreadMessages';
 
-  constructor(
+  private destroy$ = new Subject<void>();
+  private searchInitialized = false;
+
+  protected constructor(
     protected chatService: ChatService,
-    private fb: FormBuilder,
-    private authService: AuthorizationService,
+    private fb: UntypedFormBuilder,
+    protected authorizationService: AuthorizationService,
     private localStorageService: LocalStorageService,
     protected oppService: OpportunityService<T>,
     private salesforceService: SalesforceService,
@@ -166,6 +179,12 @@ export abstract class FilteredOppsComponentBase<T extends Opportunity> implement
 
     this.stages = this.loadStages();
 
+    if (this.tabIsActive) {
+      this.fetchReferenceData();
+    }
+  }
+
+  private fetchReferenceData() {
     this.partnerService.listSourcePartners().subscribe(
       (sourcePartners) => {
         this.sourcePartners = sourcePartners;
@@ -177,8 +196,18 @@ export abstract class FilteredOppsComponentBase<T extends Opportunity> implement
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes.searchBy) {
-      this.initSearchBy()
+    if (changes.searchBy && this.searchBy) {
+      this.initSearchBy();
+      if (this.tabIsActive) {
+        this.search();
+        this.searchInitialized = true;
+      }
+    }
+
+    if (changes.tabIsActive && this.tabIsActive && !this.searchInitialized && this.searchBy) {
+      this.fetchReferenceData();
+      this.search();
+      this.searchInitialized = true;
     }
   }
 
@@ -197,6 +226,7 @@ export abstract class FilteredOppsComponentBase<T extends Opportunity> implement
     const previousWithUnreadMessages: string = this.localStorageService.get(this.savedStateKey() + this.withUnreadMessagesSuffix);
     const previousShowClosedOpps: string = this.localStorageService.get(this.savedStateKey() + this.showClosedOppsSuffix);
     const previousShowInactiveOpps: string = this.localStorageService.get(this.savedStateKey() + this.showInactiveOppsSuffix);
+    const previousShowUnpublishedOpps: string = this.localStorageService.get(this.savedStateKey() + this.showUnpublishedOppsSuffix);
 
     this.searchForm = this.fb.group({
       destinationIds: [],
@@ -206,12 +236,13 @@ export abstract class FilteredOppsComponentBase<T extends Opportunity> implement
       selectedStages: [[]],
       showClosedOpps: [previousShowClosedOpps ? previousShowClosedOpps : false],
       showInactiveOpps: [previousShowInactiveOpps ? previousShowInactiveOpps : false],
+      showUnpublishedOpps: [previousShowUnpublishedOpps ? previousShowUnpublishedOpps : false],
       withUnreadMessages: [previousWithUnreadMessages ? previousWithUnreadMessages : false]
     });
 
     this.subscribeToFilterChanges();
 
-    this.search();
+    this.subscribeToStagesChanges();
   }
 
   private get keyword(): string {
@@ -224,6 +255,10 @@ export abstract class FilteredOppsComponentBase<T extends Opportunity> implement
 
   protected get showInactiveOpps(): boolean {
     return this.searchForm ? this.searchForm.value.showInactiveOpps : false;
+  }
+
+  protected get showUnpublishedOpps(): boolean {
+    return this.searchForm ? this.searchForm.value.showUnpublishedOpps : false;
   }
 
   protected get myOppsOnly(): boolean {
@@ -266,8 +301,10 @@ export abstract class FilteredOppsComponentBase<T extends Opportunity> implement
 
   protected abstract createSearchRequest(): SearchOpportunityRequest;
 
-  refresh(): void {
+  refresh(event: any): void {
     this.search();
+    this.refreshRequested.emit();
+    event.preventDefault(); // Stops form from submitting and search being called twice on click
   }
 
   /**
@@ -291,6 +328,7 @@ export abstract class FilteredOppsComponentBase<T extends Opportunity> implement
     this.localStorageService.set(this.savedStateKey()+this.overdueOppsOnlySuffix, this.overdueOppsOnly);
     this.localStorageService.set(this.savedStateKey()+this.showClosedOppsSuffix, this.showClosedOpps);
     this.localStorageService.set(this.savedStateKey()+this.showInactiveOppsSuffix, this.showInactiveOpps);
+    this.localStorageService.set(this.savedStateKey()+this.showUnpublishedOppsSuffix, this.showUnpublishedOpps);
     this.localStorageService.set(this.savedStateKey()+this.withUnreadMessagesSuffix, this.withUnreadMessages);
 
     let req = this.createSearchRequest();
@@ -360,6 +398,14 @@ export abstract class FilteredOppsComponentBase<T extends Opportunity> implement
       req.activeStages = false;
     }
 
+    if (this.showUnpublishedOpps) {
+      //Normally we don't care about published. Published jobs will be displayed or not
+      //based on the activeStages or oppClosed filters.
+      //However, an owner may want to force unpublished opps to display so that they can see
+      //if there are any that they still need to publish.
+      req.published = false;
+    }
+
     if (this.overdueOppsOnly) {
       //Only show overdue opps
       req.overdue = true;
@@ -413,15 +459,23 @@ export abstract class FilteredOppsComponentBase<T extends Opportunity> implement
     }
 
     //Following the search filter loses focus, so focus back on it again
-    setTimeout(()=>{this.searchFilter.nativeElement.focus()},0);
+    setTimeout(()=>{this.searchFilter.focus()},0);
   }
 
   canAccessSalesforce(): boolean {
-    return this.authService.canAccessSalesforce();
+    return this.authorizationService.canAccessSalesforce();
+  }
+
+  canViewChats(): boolean {
+    return this.authorizationService.canViewChats();
   }
 
   get getCandidateOpportunityStageName() {
     return getOpportunityStageName;
+  }
+
+  get getBadgeColor() {
+    return getStageBadgeColor;
   }
 
   getChats(opp: Opportunity): JobChat[] {
@@ -436,10 +490,36 @@ export abstract class FilteredOppsComponentBase<T extends Opportunity> implement
     this.searchForm.valueChanges
     .pipe(
       debounceTime(1000),
-      distinctUntilChanged()
+      distinctUntilChanged(),
+      takeUntil(this.destroy$)
     )
     .subscribe(() => {
       this.search();
+    });
+  }
+
+  /**
+   * Disable/enable the checkboxes depending on if there are stages selected.
+   * We don't search by these fields AND a stage, so want to disable (and set to false)
+   * when a stage is added. Re-enable once the stages are removed.
+   */
+  private subscribeToStagesChanges() {
+    this.searchForm.get('selectedStages').valueChanges
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((stages) => {
+          if (stages.length > 0) {
+            this.searchForm.get('showClosedOpps').reset({value: false, disabled: true});
+            this.searchForm.get('showInactiveOpps').reset({value: false, disabled: true});
+            this.searchForm.get('showUnpublishedOpps').reset({value: false, disabled: true});
+            this.searchForm.get('overdueOppsOnly').reset({value: false, disabled: true});
+            this.searchForm.get('withUnreadMessages').reset({value: false, disabled: true});
+          } else {
+            this.searchForm.get('showClosedOpps').enable()
+            this.searchForm.get('showInactiveOpps').enable()
+            this.searchForm.get('showUnpublishedOpps').enable()
+            this.searchForm.get('overdueOppsOnly').enable()
+            this.searchForm.get('withUnreadMessages').enable()
+          }
     });
   }
 
@@ -509,7 +589,9 @@ export abstract class FilteredOppsComponentBase<T extends Opportunity> implement
   private subscribeToAllVisibleChats() {
     this.unsubscribe();
     //Construct a single observable for all visible chat's read statuses, and subscribe to it
-    const chatReadStatus$ = this.chatService.combineChatReadStatuses(this.allChats);
+    const chatReadStatus$ =
+      this.chatService.combineChatReadStatuses(this.allChats)
+      .pipe(distinctUntilChanged());
     console.log("Subscribed to chats " + this.allChats.map( chat => chat.id).join(','));
     this.subscription = chatReadStatus$.subscribe(
       {
@@ -528,7 +610,7 @@ export abstract class FilteredOppsComponentBase<T extends Opportunity> implement
         this.chatsRead$.next(false);
       } else if (!this.chatsRead$.value && chatsRead) {
         //All chats are showing not read, but all chats for visible opps are now read.
-        //Fetch from server again to see if there are still some non visible opps with unread chats.
+        //Fetch from server again to see if there are still some non-visible opps with unread chats.
         //Don't redo the search - we just want to see if there are any unread chats left in the full
         //search results.
         this.search(false);
@@ -542,6 +624,16 @@ export abstract class FilteredOppsComponentBase<T extends Opportunity> implement
       this.subscription.unsubscribe();
       this.subscription = null;
     }
+  }
+
+  // These changes ensure subscriptions are torn down whenever the tab content is destroyed, preventing multiple overlapping subscriptions and eliminating the repeated console logs.
+  ngOnDestroy(): void {
+    // Existing: release combined chat subscription
+    this.unsubscribe();
+
+    // New: terminate form subscriptions
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
 }

@@ -1,0 +1,8 @@
+Hello [[${displayName}]],
+
+Congratulations! Your email has been successfully verified.
+
+If you have any issues, feel free to contact our support team.
+
+Best regards,
+The Talent Catalog Team

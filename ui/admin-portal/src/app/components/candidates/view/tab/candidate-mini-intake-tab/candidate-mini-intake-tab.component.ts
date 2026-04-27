@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -17,9 +17,6 @@
 import {Component} from '@angular/core';
 import {IntakeComponentTabBase} from '../../../../util/intake/IntakeComponentTabBase';
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
-import {
-  OldIntakeInputComponent
-} from "../../../../util/old-intake-input-modal/old-intake-input.component";
 import {CandidateService} from "../../../../../services/candidate.service";
 import {CountryService} from "../../../../../services/country.service";
 import {EducationLevelService} from "../../../../../services/education-level.service";
@@ -45,7 +42,6 @@ import {EditCandidateContactComponent} from "../../contact/edit/edit-candidate-c
 })
 export class CandidateMiniIntakeTabComponent extends IntakeComponentTabBase {
   clickedOldIntake: boolean;
-
   constructor(candidateService: CandidateService,
               countryService: CountryService,
               educationLevelService: EducationLevelService,
@@ -64,29 +60,23 @@ export class CandidateMiniIntakeTabComponent extends IntakeComponentTabBase {
     return this.candidate.miniIntakeCompletedDate != null;
   }
 
-  public inputOldIntakeNote(formName: string, button) {
-    this.clickedOldIntake = true;
-    // Popup modal to gather who and when.
-    const oldIntakeInputModal = this.modalService.open(OldIntakeInputComponent, {
-      centered: true,
-      backdrop: 'static'
-    });
-
-    oldIntakeInputModal.componentInstance.candidateId = this.candidate.id;
-    oldIntakeInputModal.componentInstance.formName = formName;
-
-    oldIntakeInputModal.result
-      .then((country) => button.textContent = 'Note created!')
-      .catch(() => { /* Isn't possible */
-      });
+  get miniIntakeCompletedBy() {
+    let user: string = null;
+    if (this.miniIntakeComplete) {
+      if (this.candidate.miniIntakeCompletedBy != null) {
+        user = this.candidate?.miniIntakeCompletedBy.firstName + " " + this.candidate?.miniIntakeCompletedBy.lastName;
+      } else {
+        user = "external input - see Notes for more details"
+      }
+    }
+    return user;
   }
 
   isPalestinian(): boolean {
     return this.countryService.isPalestine(this.candidate?.nationality)
   }
 
-  addExamRecord(e: MouseEvent) {
-    e.stopPropagation();
+  addExamRecord() {
     this.saving = true;
     const request: CreateCandidateExamRequest = {};
     this.candidateExamService.create(this.candidate.id, request).subscribe(
@@ -100,9 +90,7 @@ export class CandidateMiniIntakeTabComponent extends IntakeComponentTabBase {
       });
   }
 
-  addCitizenshipRecord(e: MouseEvent) {
-    // Stop the button from opening/closing the accordion
-    e.stopPropagation();
+  addCitizenshipRecord() {
     this.saving = true;
     const request: CreateCandidateCitizenshipRequest = {};
     this.candidateCitizenshipService.create(this.candidate.id, request).subscribe(
@@ -120,18 +108,38 @@ export class CandidateMiniIntakeTabComponent extends IntakeComponentTabBase {
     return this.authorizationService.isEditableCandidate(this.candidate);
   }
 
-  editContactDetails(event: MouseEvent) {
-    event.stopPropagation(); // Stop the click event from opening/closing the accordion
+  editContactDetails() {
     const editCandidateModal = this.modalService.open(EditCandidateContactComponent, {
       centered: true,
-      backdrop: 'static'
+      backdrop: 'static',
+      size: "xl"
     });
 
-    editCandidateModal.componentInstance.candidateId = this.candidate.id;
+    editCandidateModal.componentInstance.candidate = this.candidate;
 
     editCandidateModal.result
     .then((candidate) => this.candidate = candidate)
     .catch(() => { /* Isn't possible */ });
+  }
 
+  hasIssues() {
+    let issues: String[] = [];
+    if (this.candidateIntakeData?.healthIssues == "Yes") {
+      issues.push("Health Issues");
+    }
+    if (this.candidateIntakeData?.crimeConvict == "Yes") {
+      issues.push("Crime conviction")
+    }
+    if (this.candidateIntakeData?.arrestImprison == "Yes") {
+      issues.push("Arrest/Imprisoned")
+    }
+    if (this.candidateIntakeData?.conflict == "Yes") {
+      issues.push("Conflict")
+    }
+    return issues.join(", ");
+  }
+
+  protected getTabId(): string {
+    return 'MiniIntake';
   }
 }

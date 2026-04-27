@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -17,10 +17,8 @@
 package org.tctalent.server.service.db.impl;
 
 import java.util.List;
-
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
@@ -28,9 +26,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.tctalent.server.exception.EntityExistsException;
 import org.tctalent.server.exception.EntityReferencedException;
 import org.tctalent.server.exception.NoSuchObjectException;
+import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.model.db.EducationLevel;
 import org.tctalent.server.model.db.Status;
-import org.tctalent.server.repository.db.CandidateEducationRepository;
 import org.tctalent.server.repository.db.EducationLevelRepository;
 import org.tctalent.server.repository.db.EducationLevelSpecification;
 import org.tctalent.server.request.education.level.CreateEducationLevelRequest;
@@ -40,19 +38,15 @@ import org.tctalent.server.service.db.EducationLevelService;
 import org.tctalent.server.service.db.TranslationService;
 
 @Service
+@Slf4j
 public class EducationLevelServiceImpl implements EducationLevelService {
 
-    private static final Logger log = LoggerFactory.getLogger(LanguageLevelServiceImpl.class);
-
-    private final CandidateEducationRepository candidateEducationRepository;
     private final EducationLevelRepository educationLevelRepository;
     private final TranslationService translationService;
 
     @Autowired
-    public EducationLevelServiceImpl(CandidateEducationRepository candidateEducationRepository,
-                                     EducationLevelRepository educationLevelRepository,
+    public EducationLevelServiceImpl(EducationLevelRepository educationLevelRepository,
                                      TranslationService translationService) {
-        this.candidateEducationRepository = candidateEducationRepository;
         this.educationLevelRepository = educationLevelRepository;
         this.translationService = translationService;
     }
@@ -68,11 +62,21 @@ public class EducationLevelServiceImpl implements EducationLevelService {
     public Page<EducationLevel> searchEducationLevels(SearchEducationLevelRequest request) {
         Page<EducationLevel> educationLevels = educationLevelRepository.findAll(
                 EducationLevelSpecification.buildSearchQuery(request), request.getPageRequest());
-        log.info("Found " + educationLevels.getTotalElements() + " language levels in search");
+        LogBuilder.builder(log)
+            .action("SearchEducationLevels")
+            .message("Found " + educationLevels.getTotalElements() + " language levels in search")
+            .logInfo();
+
         if (!StringUtils.isBlank(request.getLanguage())){
             translationService.translate(educationLevels.getContent(), "education_level", request.getLanguage());
         }
         return educationLevels;
+    }
+
+    @Override
+    public EducationLevel findByLevel(int level) {
+        return this.educationLevelRepository.findByLevel(level)
+            .orElseThrow(() -> new NoSuchObjectException(EducationLevel.class, level));
     }
 
     @Override

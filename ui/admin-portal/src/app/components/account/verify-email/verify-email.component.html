@@ -1,0 +1,32 @@
+<tc-modal
+  [showCancel]="false"
+  [actionText]="getActionText()"
+  (onAction)="sendVerifyEmail()"
+  [showClose]="true"
+  class="verify-container"
+>
+  <div *ngIf="state === 'idle'">
+    <tc-icon size="xl"><i class="fa-regular fa-envelope fa-xl mb-4"></i></tc-icon>
+    <h2>Verify your Email</h2>
+    <p>Click the button below to send a verification email to: <b>{{this.userEmail}}</b>.</p>
+    <p>If you would like to update your email please click <a (click)="closeModal()" routerLink="/settings"> here</a></p>
+  </div>
+
+  <div *ngIf="state === 'loading'">
+    <div class="spinner-border text-primary" role="status"></div>
+    <h2>Sending Email..</h2>
+    <p>Please wait while we send the verification email.</p>
+  </div>
+
+  <div *ngIf="state === 'emailSent'">
+    <tc-icon size="xl"><i class="fa-solid fa-envelope-open-text fa-xl mb-4"></i></tc-icon>
+    <h2>Email Sent</h2>
+    <p>We've sent a verification email to your inbox <b>{{this.userEmail}}</b>. Please check your email and click the link to verify your account.</p>
+    <p>If you don't see it, check your <b>spam folder</b>. <br> If you would like to update your email please click <a (click)="closeModal()" routerLink="/settings">here</a></p>
+  </div>
+
+  <div *ngIf="state === 'error'">
+    <tc-icon size="xl"><i class="fa-solid fa-triangle-exclamation fa-xl mb-4"></i></tc-icon>
+    <h2>{{ this.error }}</h2>
+  </div>
+</tc-modal>

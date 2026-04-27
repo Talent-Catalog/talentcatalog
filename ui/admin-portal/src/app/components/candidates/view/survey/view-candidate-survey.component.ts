@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -18,6 +18,7 @@ import {Component, Input, OnInit} from '@angular/core';
 import {Candidate} from "../../../../model/candidate";
 import {EditCandidateSurveyComponent} from "./edit/edit-candidate-survey.component";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
+import {CandidateService} from "../../../../services/candidate.service";
 
 @Component({
   selector: 'app-view-candidate-survey',
@@ -28,8 +29,11 @@ export class ViewCandidateSurveyComponent implements OnInit {
 
   @Input() candidate: Candidate;
   @Input() editable: boolean;
+  /** Passed to tc-description-list instances to define column spacing */
+  @Input() compact: boolean = false;
 
-  constructor(private modalService: NgbModal) { }
+  constructor(private modalService: NgbModal,
+              private candidateService: CandidateService) { }
 
   ngOnInit() {
   }
@@ -43,7 +47,7 @@ export class ViewCandidateSurveyComponent implements OnInit {
     editSurveyModal.componentInstance.candidateId = this.candidate.id;
 
     editSurveyModal.result
-      .then((candidate) => this.candidate = candidate)
+      .then((candidate) => this.candidateService.updateCandidate())
       .catch(() => { /* Isn't possible */ });
 
   }

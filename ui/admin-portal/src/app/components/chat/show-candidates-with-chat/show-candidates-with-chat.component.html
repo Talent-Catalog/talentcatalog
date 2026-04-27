@@ -1,0 +1,109 @@
+<!--
+  ~ Copyright (c) 2024 Talent Catalog.
+  ~
+  ~ This program is free software: you can redistribute it and/or modify it under
+  ~ the terms of the GNU Affero General Public License as published by the Free
+  ~ Software Foundation, either version 3 of the License, or any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful, but WITHOUT
+  ~ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+  ~ FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+  ~ for more details.
+  ~
+  ~ You should have received a copy of the GNU Affero General Public License
+  ~ along with this program. If not, see https://www.gnu.org/licenses/.
+  -->
+
+<tc-alert type="warning" *ngIf="error">
+  {{error}}
+</tc-alert>
+
+<tc-loading *ngIf="loading || !chatsReadProcessingComplete" [loading]="loading"></tc-loading>
+
+<div *ngIf="!loading">
+  <div class="searches">
+    <form [formGroup]="searchForm" (ngSubmit)="fetchCandidatesWithActiveChat(true)">
+      <div class="row">
+        <div class="col-md-8">
+          <tc-field>
+            <tc-input #searchFilter type="text" placeholder="Name or number..."
+                      aria-label="Search" formControlName="keyword" id="keyword"></tc-input>
+          </tc-field>
+        </div>
+        <div class="col-md-3 align-content-center">
+          <tc-field [checkbox]="true" [title]="unreadOnlyTip">
+            <tc-label for="unreadOnlyCheckbox">{{unreadOnlyLabel}}</tc-label>
+            <tc-input type="checkbox" formControlName="unreadOnly" id="unreadOnlyCheckbox"></tc-input>
+          </tc-field>
+        </div>
+        <div class="col-md-1">
+          <tc-button type="plain" color="primary" (onClick)="refresh($event)">
+            <i class="fas fa-sync" title="Refresh data"></i>
+          </tc-button>
+        </div>
+      </div>
+
+      <div class="row">
+
+      </div>
+    </form>
+  </div>
+
+  <tc-table [results]="results" [loading]="loading" [(pageNumber)]="pageNumber" (pageChange)="fetchCandidatesWithActiveChat(true)">
+    <thead>
+    <tr>
+      <th (click)="toggleSort('id')">
+        <app-sorted-by [column]="'id'"
+                       [sortColumn]="sortField"
+                       [sortDirection]="sortDirection"
+        ></app-sorted-by>
+        Candidate #
+      </th>
+      <th (click)="toggleSort('user.firstName')">
+        <app-sorted-by [column]="'user.firstName'"
+                       [sortColumn]="sortField"
+                       [sortDirection]="sortDirection"
+        ></app-sorted-by>
+        First Name
+      </th>
+      <th (click)="toggleSort('user.lastName')">
+        <app-sorted-by [column]="'user.lastName'"
+                       [sortColumn]="sortField"
+                       [sortDirection]="sortDirection"
+        ></app-sorted-by>
+        Last Name
+      </th>
+      <th></th>
+    </tr>
+    </thead>
+
+    <tbody>
+    <tr *ngFor="let candidate of candidates"
+        (click)="onCandidateSelected(candidate)"
+        [ngClass]="{'current': currentCandidate?.id == candidate.id}"
+    >
+      <td>
+        <a target="_blank" [routerLink]="['/candidate',candidate.candidateNumber]" class="d-flex gap-2">
+          <span class="fw-bold">
+            {{candidate.candidateNumber}}
+          </span>
+          <span class="text-decoration-none">
+            <i class="fas fa-external-link-alt is-link me-2" title="Show candidate in new tab"></i>
+          </span>
+        </a>
+      </td>
+      <td>
+        {{candidate.user.firstName}}
+      </td>
+      <td>
+        {{candidate.user.lastName}}
+      </td>
+      <td>
+        <app-chat-read-status *ngIf="chatsReadProcessingComplete"
+                              [chats]="getCandidateChat(candidate)">
+        </app-chat-read-status>
+      </td>
+    </tr>
+    </tbody>
+  </tc-table>
+</div>

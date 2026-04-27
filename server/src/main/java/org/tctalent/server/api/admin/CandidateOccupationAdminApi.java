@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -16,9 +16,9 @@
 
 package org.tctalent.server.api.admin;
 
+import jakarta.validation.Valid;
 import java.util.List;
 import java.util.Map;
-import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -34,6 +34,7 @@ import org.tctalent.server.model.db.Occupation;
 import org.tctalent.server.request.candidate.occupation.CreateCandidateOccupationRequest;
 import org.tctalent.server.request.candidate.occupation.UpdateCandidateOccupationRequest;
 import org.tctalent.server.service.db.CandidateOccupationService;
+import org.tctalent.server.service.db.OccupationService;
 import org.tctalent.server.util.dto.DtoBuilder;
 
 @RestController()
@@ -41,12 +42,13 @@ import org.tctalent.server.util.dto.DtoBuilder;
 @RequiredArgsConstructor
 public class CandidateOccupationAdminApi {
 
+    private final OccupationService occupationService;
     private final CandidateOccupationService candidateOccupationService;
 
     @GetMapping("occupation")
     public List<Map<String, Object>> getAllOccupations() {
         List<Occupation> candidateOccupations = candidateOccupationService.listOccupations();
-        return occupationDto().buildList(candidateOccupations);
+        return occupationService.selectBuilder().buildList(candidateOccupations);
     }
 
     @GetMapping("{id}/list")
@@ -77,18 +79,10 @@ public class CandidateOccupationAdminApi {
         return ResponseEntity.ok().build();
     }
 
-    private DtoBuilder occupationDto() {
-        return new DtoBuilder()
-                .add("id")
-                .add("name")
-                ;
-    }
-
     private DtoBuilder candidateOccupationDto() {
         return new DtoBuilder()
                 .add("id")
-                .add("migrationOccupation")
-                .add("occupation", occupationDto())
+                .add("occupation", occupationService.selectBuilder())
                 .add("yearsExperience")
                 .add("createdBy", userDto())
                 .add("createdDate")

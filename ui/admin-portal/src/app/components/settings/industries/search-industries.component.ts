@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -19,7 +19,7 @@ import {Component, Input, OnInit} from '@angular/core';
 
 import {SearchResults} from '../../../model/search-results';
 
-import {FormBuilder, FormGroup} from "@angular/forms";
+import {UntypedFormBuilder, UntypedFormGroup} from "@angular/forms";
 import {debounceTime, distinctUntilChanged} from "rxjs/operators";
 import {Industry} from "../../../model/industry";
 import {IndustryService} from "../../../services/industry.service";
@@ -39,7 +39,7 @@ export class SearchIndustriesComponent implements OnInit {
 
   @Input() loggedInUser: User;
 
-  searchForm: FormGroup;
+  searchForm: UntypedFormGroup;
   loading: boolean;
   error: any;
   pageNumber: number;
@@ -47,7 +47,7 @@ export class SearchIndustriesComponent implements OnInit {
   results: SearchResults<Industry>;
 
 
-  constructor(private fb: FormBuilder,
+  constructor(private fb: UntypedFormBuilder,
               private industryService: IndustryService,
               private modalService: NgbModal,
               private authService: AuthorizationService) {
@@ -121,7 +121,7 @@ export class SearchIndustriesComponent implements OnInit {
       backdrop: 'static'
     });
 
-    deleteIndustryModal.componentInstance.message = 'Are you sure you want to delete '+ industry.name;
+    deleteIndustryModal.componentInstance.message = 'Are you sure you want to delete ' + industry.name;
 
     deleteIndustryModal.result
       .then((result) => {

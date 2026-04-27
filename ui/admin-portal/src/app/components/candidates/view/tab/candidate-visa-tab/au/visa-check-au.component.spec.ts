@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2025 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -14,28 +14,102 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {async, ComponentFixture, TestBed} from '@angular/core/testing';
-
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {VisaCheckAuComponent} from './visa-check-au.component';
+import {NgbAccordionModule, NgbModal} from '@ng-bootstrap/ng-bootstrap';
+import {Component, CUSTOM_ELEMENTS_SCHEMA} from '@angular/core';
+import {HttpClientTestingModule} from '@angular/common/http/testing';
+import {FormsModule, ReactiveFormsModule} from '@angular/forms';
+import {NgSelectModule} from '@ng-select/ng-select';
+import {LocalStorageService} from '../../../../../../services/local-storage.service';
+import {AuthorizationService} from '../../../../../../services/authorization.service';
+import {ReadOnlyInputsDirective} from '../../../../../../directives/read-only-inputs.directive';
+import {MockCandidate} from '../../../../../../MockData/MockCandidate';
+import {MockCandidateVisa} from '../../../../../../MockData/MockCandidateVisa';
+import {
+  mockCandidateIntakeData
+} from '../../candidate-intake-tab/candidate-intake-tab.component.spec';
+import {
+  DestinationFamilyComponent
+} from "../../../../visa/destination-family/destination-family.component";
+import {
+  HealthAssessmentComponent
+} from "../../../../visa/health-assessment/health-assessment.component";
 
-describe('AuComponent', () => {
+// Mock IntProtectionComponent to include input elements for testing
+@Component({
+  selector: 'app-int-protection',
+  template: `
+    <ng-select></ng-select>
+    <input type="text"/>
+    <textarea></textarea>
+    <app-date-picker></app-date-picker>
+    <ngx-wig></ngx-wig>
+  `
+})
+class MockIntProtectionComponent {
+  // No isEditable method; inputs are controlled by parent directive
+}
+
+describe('VisaCheckAuComponent', () => {
   let component: VisaCheckAuComponent;
   let fixture: ComponentFixture<VisaCheckAuComponent>;
+  let authorizationServiceSpy: jasmine.SpyObj<AuthorizationService>;
+  const mockCandidate = new MockCandidate();
 
-  beforeEach(async(() => {
-    TestBed.configureTestingModule({
-      declarations: [ VisaCheckAuComponent ]
-    })
-    .compileComponents();
-  }));
+  beforeEach(async () => {
+    const authServiceSpyObj = jasmine.createSpyObj('AuthorizationService', ['isEditableCandidate']);
 
-  beforeEach(() => {
+    await TestBed.configureTestingModule({
+      declarations: [
+        VisaCheckAuComponent,
+        ReadOnlyInputsDirective,
+        MockIntProtectionComponent,
+        DestinationFamilyComponent,
+        HealthAssessmentComponent
+      ],
+      imports: [
+        HttpClientTestingModule,
+        FormsModule,
+        ReactiveFormsModule,
+        NgbAccordionModule,
+        NgSelectModule
+      ],
+      providers: [
+        {provide: NgbModal, useValue: {}},
+        {provide: LocalStorageService, useValue: {}},
+        {provide: AuthorizationService, useValue: authServiceSpyObj}
+      ],
+      schemas: [CUSTOM_ELEMENTS_SCHEMA]
+    }).compileComponents();
+
     fixture = TestBed.createComponent(VisaCheckAuComponent);
     component = fixture.componentInstance;
+    authorizationServiceSpy = TestBed.inject(AuthorizationService) as jasmine.SpyObj<AuthorizationService>;
+
+    // Initialize input properties
+    component.candidate = {
+      ...mockCandidate
+    };
+    component.candidateIntakeData = {
+      ...mockCandidateIntakeData,
+      candidateDestinations: [{id: 1}]
+    };
+    component.visaCheckRecord = {
+      ...MockCandidateVisa,
+      candidateVisaJobChecks: [{id: 1}, {id: 2}]
+    };
+
     fixture.detectChanges();
   });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
+  it('should initialize currentYear and birthYear correctly', () => {
+    const currentYear = new Date().getFullYear().toString();
+    expect(component.currentYear).toBe(currentYear);
+    expect(component.birthYear).toBe('Mon ');
+  });
+
+  it('should select the first job by default', () => {
+    expect(component.selectedJob).toEqual({id: 1});
   });
 });

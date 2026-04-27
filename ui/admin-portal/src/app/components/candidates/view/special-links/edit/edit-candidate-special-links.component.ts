@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -16,7 +16,7 @@
 
 import {Component, OnInit} from '@angular/core';
 import {Candidate} from "../../../../../model/candidate";
-import {FormBuilder, FormGroup} from "@angular/forms";
+import {UntypedFormBuilder, UntypedFormGroup, Validators} from "@angular/forms";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {CandidateService} from "../../../../../services/candidate.service";
 import {EnvService} from "../../../../../services/env.service";
@@ -29,20 +29,23 @@ import {EnvService} from "../../../../../services/env.service";
 export class EditCandidateSpecialLinksComponent implements OnInit {
 
   candidateId: number;
-  candidateForm: FormGroup;
+  candidateForm: UntypedFormGroup;
 
   error;
   loading: boolean;
   saving: boolean;
 
-  sfUrlPlaceholder: string = this.envService.sfLightningUrl;
+  sfUrlPlaceholder: string;
 
   constructor(private activeModal: NgbActiveModal,
-              private fb: FormBuilder,
+              private fb: UntypedFormBuilder,
               private candidateService: CandidateService,
               private envService: EnvService) { }
 
   ngOnInit() {
+    this.sfUrlPlaceholder = this.envService.sfLightningUrl;
+
+    const linkedInRegex = /^http(s)?:\/\/([\w]+\.)?linkedin\.com\/in\/[A-z0-9_-]+\/?/
     this.loading = true;
 
     this.candidateService.get(this.candidateId).subscribe(candidate => {
@@ -50,7 +53,7 @@ export class EditCandidateSpecialLinksComponent implements OnInit {
         sflink: [candidate.sflink],
         folderlink: [candidate.folderlink],
         videolink: [candidate.videolink],
-        linkedInLink: [candidate.linkedInLink],
+        linkedInLink: [candidate.linkedInLink, Validators.pattern(linkedInRegex)],
       });
       this.loading = false;
     });

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -27,6 +27,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.tctalent.server.data.CandidateTestData.getSurveyTypes;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
@@ -53,7 +54,7 @@ class SurveyTypeAdminApiTest extends ApiTestBase {
 
   private static final String BASE_PATH = "/api/admin/survey-type";
 
-  private final List<SurveyType> surveyTypes = AdminApiTestUtil.getSurveyTypes();
+  private final List<SurveyType> surveyTypes = getSurveyTypes();
 
   @MockBean
   SurveyTypeService surveyTypeService;

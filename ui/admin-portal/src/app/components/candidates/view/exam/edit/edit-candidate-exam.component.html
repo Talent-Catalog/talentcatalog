@@ -1,0 +1,104 @@
+<!--
+  ~ Copyright (c) 2024 Talent Catalog.
+  ~
+  ~ This program is free software: you can redistribute it and/or modify it under
+  ~ the terms of the GNU Affero General Public License as published by the Free
+  ~ Software Foundation, either version 3 of the License, or any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful, but WITHOUT
+  ~ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+  ~ FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+  ~ for more details.
+  ~
+  ~ You should have received a copy of the GNU Affero General Public License
+  ~ along with this program. If not, see https://www.gnu.org/licenses/.
+  -->
+
+<tc-modal heading="Edit Exam"
+          [showClose]="true"
+          [disableAction]="candidateForm.invalid || loading || saving"
+          (onAction)="onSave()"
+          actionText="Save"
+          [showCancel]="true"
+>
+
+  <tc-loading [loading]="loading"></tc-loading>
+
+  <div *ngIf="!loading">
+
+    <tc-alert type="danger" *ngIf="error">
+      <div><strong>{{error}}</strong></div>
+    </tc-alert>
+
+    <form [formGroup]="candidateForm">
+
+      <!-- Exam -->
+      <tc-field class="mb-4">
+        <tc-label for="exam">
+          Exam
+        </tc-label>
+        <ng-select class="tc-select"
+                   [id]="'exam'"
+                   [formControlName]="'exam'"
+                   [items]="examOptions"
+                   [clearOnBackspace]="false"
+                   placeholder="Select"
+                   bindLabel="stringValue"
+                   bindValue="key"
+        ></ng-select>
+      </tc-field>
+
+      <!-- OtherExam NAME -->
+      <ng-container *ngIf="isOtherExam">
+        <tc-field class="mb-4">
+          <tc-label for="otherExam">
+            Other Exam Name
+          </tc-label>
+          <tc-input [type]="'text'"
+                    id="'otherExam'"
+                    [formControlName]="'otherExam'"
+          ></tc-input>
+        </tc-field>
+      </ng-container>
+
+      <!-- Score -->
+      <ng-container *ngIf="hasSelectedExam">
+        <tc-field class="mb-4">
+          <tc-label for="score">Score
+          </tc-label>
+          <app-ielts-score-validation
+            id="score"
+            [control]="candidateForm.controls.score"
+            [examType]="candidateForm.controls.exam.value">
+          </app-ielts-score-validation>
+        </tc-field>
+      </ng-container>
+
+      <!-- Year -->
+      <tc-field class="mb-4">
+        <tc-label for="year">
+          In what year did you take the test?
+        </tc-label>
+        <ng-select class="tc-select"
+                   [id]="'year'"
+                   [formControlName]="'year'"
+                   [items]="years"
+                   [clearOnBackspace]="false"
+                   placeholder="Select"
+        ></ng-select>
+      </tc-field>
+
+      <!-- Notes -->
+      <tc-field class="mb-4">
+        <tc-label for="notes">
+          Notes
+        </tc-label>
+        <tc-textarea [id]="'notes'"
+                     [formControlName]="'notes'"
+        ></tc-textarea>
+      </tc-field>
+
+    </form>
+
+  </div>
+</tc-modal>

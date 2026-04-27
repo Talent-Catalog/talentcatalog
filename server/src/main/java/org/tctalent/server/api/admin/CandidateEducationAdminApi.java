@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -16,18 +16,25 @@
 
 package org.tctalent.server.api.admin;
 
+import java.util.List;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import org.tctalent.server.exception.UsernameTakenException;
 import org.tctalent.server.model.db.CandidateEducation;
 import org.tctalent.server.request.candidate.education.CreateCandidateEducationRequest;
 import org.tctalent.server.request.candidate.education.UpdateCandidateEducationRequest;
 import org.tctalent.server.service.db.CandidateEducationService;
+import org.tctalent.server.service.db.CountryService;
 import org.tctalent.server.util.dto.DtoBuilder;
-
-import java.util.List;
-import java.util.Map;
 
 @RestController()
 @RequestMapping("/api/admin/candidate-education")
@@ -35,6 +42,7 @@ import java.util.Map;
 public class CandidateEducationAdminApi {
 
     private final CandidateEducationService candidateEducationService;
+    private final CountryService countryService;
 
     @GetMapping("{id}/list")
     public List<Map<String, Object>> get(@PathVariable("id") long id) {
@@ -64,21 +72,13 @@ public class CandidateEducationAdminApi {
         return new DtoBuilder()
                 .add("id")
                 .add("educationType")
-                .add("country", countryDto())
+                .add("country", countryService.selectBuilder())
                 .add("educationMajor", majorDto())
                 .add("lengthOfCourseYears")
                 .add("institution")
                 .add("courseName")
                 .add("yearCompleted")
                 .add("incomplete")
-                ;
-    }
-
-    private DtoBuilder countryDto() {
-        return new DtoBuilder()
-                .add("id")
-                .add("name")
-                .add("status")
                 ;
     }
 
@@ -89,6 +89,4 @@ public class CandidateEducationAdminApi {
                 .add("status")
                 ;
     }
-
-
 }

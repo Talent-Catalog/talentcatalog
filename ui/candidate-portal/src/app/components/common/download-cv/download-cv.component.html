@@ -1,5 +1,5 @@
 <!--
-  ~ Copyright (c) 2021 Talent Beyond Boundaries.
+  ~ Copyright (c) 2024 Talent Catalog.
   ~
   ~ This program is free software: you can redistribute it and/or modify it under
   ~ the terms of the GNU Affero General Public License as published by the Free
@@ -13,12 +13,10 @@
   ~ You should have received a copy of the GNU Affero General Public License
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
-<div class="mb-4 text-center">
-  <button class="btn btn-primary btn-sm" (click)="downloadCV()">
+<div class="mb-2 text-center">
+  <tc-button size="sm" color="white" (onClick)="downloadCV()">
     <span *ngIf="!loading">{{ 'PROFILE.BUTTON.CV' | translate }}</span>
     <span *ngIf="loading">{{ 'LOADING' | translate }}</span>
-  </button>
+  </tc-button>
   <p class="small text-muted">{{ 'ERROR.ALLOW_POPUPS' | translate }}</p>
 </div>
-
-

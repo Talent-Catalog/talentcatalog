@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -49,6 +49,7 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -57,6 +58,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.tctalent.server.data.LanguageTestData.getLanguage;
+import static org.tctalent.server.data.LanguageTestData.getLanguageList;
+import static org.tctalent.server.data.LanguageTestData.getSystemLanguage;
+import static org.tctalent.server.data.LanguageTestData.getSystemLanguageList;
 
 /**
  * Unit tests for Candidate Occupation Admin Api endpoints.
@@ -74,10 +79,10 @@ class LanguageAdminApiTest extends ApiTestBase {
     private static final String ADD_SYSTEM_LANGUAGE_TRANSLATIONS = "/system/{langCode}";
     private static final String SEARCH_PATH = "/search";
 
-    private static final List<Language> languageList = AdminApiTestUtil.getLanguageList();
-    private static final Language language = AdminApiTestUtil.getLanguage();
-    private static final SystemLanguage systemLanguage = AdminApiTestUtil.getSystemLanguage();
-    private static final List<SystemLanguage> systemLanguageList = AdminApiTestUtil.getSystemLanguageList();
+    private static final List<Language> languageList = getLanguageList();
+    private static final Language language = getLanguage();
+    private static final SystemLanguage systemLanguage = getSystemLanguage();
+    private static final List<SystemLanguage> systemLanguageList = getSystemLanguageList();
 
     private final Page<Language> languagePage =
             new PageImpl<>(
@@ -163,6 +168,7 @@ class LanguageAdminApiTest extends ApiTestBase {
                 .willReturn(languagePage);
 
         mockMvc.perform(post(BASE_PATH + SEARCH_PATH)
+                        .with(csrf())
                         .header("Authorization", "Bearer " + "jwt-token")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request))
@@ -217,6 +223,7 @@ class LanguageAdminApiTest extends ApiTestBase {
                 .willReturn(systemLanguage);
 
         mockMvc.perform(post(BASE_PATH + ADD_SYSTEM_LANGUAGE_TRANSLATIONS.replace("{langCode}", langCode))
+                        .with(csrf())
                         .header("Authorization", "Bearer " + "jwt-token")
                         .contentType(MediaType.APPLICATION_JSON))
 
@@ -244,6 +251,7 @@ class LanguageAdminApiTest extends ApiTestBase {
                 .willReturn(language);
 
         mockMvc.perform(post(BASE_PATH)
+                        .with(csrf())
                         .header("Authorization", "Bearer " + "jwt-token")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request))
@@ -272,6 +280,7 @@ class LanguageAdminApiTest extends ApiTestBase {
                 .willReturn(language);
 
         mockMvc.perform(put(BASE_PATH + "/" + LANGUAGE_ID)
+                        .with(csrf())
                         .header("Authorization", "Bearer " + "jwt-token")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request))
@@ -292,6 +301,7 @@ class LanguageAdminApiTest extends ApiTestBase {
     @DisplayName("delete language by id succeeds")
     void deleteLanguageByIdSucceeds() throws Exception {
         mockMvc.perform(delete(BASE_PATH + "/" + LANGUAGE_ID)
+                        .with(csrf())
                         .header("Authorization", "Bearer " + "jwt-token"))
 
                 .andExpect(status().isOk());

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -28,6 +28,7 @@ public enum JobOpportunityStage {
         prospect ("Prospect"),
         briefing ("Briefing"),
         pitching ("Pitching"),
+        mou("MOU"),
         identifyingRoles ("Identifying roles"),
         candidateSearch ("Candidate search"),
         visaEligibility ("Visa eligibility"),
@@ -35,9 +36,11 @@ public enum JobOpportunityStage {
         cvReview ("CV review"),
         recruitmentProcess ("Recruitment process"),
         jobOffer ("Job offer"),
+        training("Training"),
         visaPreparation ("Visa preparation"),
         postHireEngagement ("Post hire engagement"),
         hiringCompleted ("Hiring completed", true, true),
+        inadequatePathwayProvision ("Inadequate pathway provision", true, false),
         ineligibleEmployer ("Ineligible employer", true, false),
         ineligibleOccupation ("Ineligible occupation", true, false),
         ineligibleRegion ("Ineligible region", true, false),
@@ -48,7 +51,9 @@ public enum JobOpportunityStage {
         noVisa ("No visa", true, false),
         tooExpensive ("Too expensive", true, false),
         tooHighWage ("Too high wage", true, false),
-        tooLong ("Too long", true, false);
+        tooLong ("Too long", true, false),
+        mouIssue("MOU issue", true, false),
+        trainingNotCompleted("Training not completed", true, false);
 
         private final String salesforceStageName;
         private final boolean closed;

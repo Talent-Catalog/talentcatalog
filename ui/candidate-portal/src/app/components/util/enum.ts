@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -87,7 +87,7 @@ export function enumStringValues(enumeration): string[] {
  * @param obj Object to be tested
  */
 export function isEnumOption(obj): obj is EnumOption {
-  return obj ? ("key" in obj && "stringValue" in obj) : false;
+  return obj && typeof obj === "object" ? ("key" in obj && "stringValue" in obj) : false;
 }
 
 /**

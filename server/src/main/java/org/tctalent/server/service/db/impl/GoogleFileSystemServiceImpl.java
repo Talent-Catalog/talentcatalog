@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -26,8 +26,7 @@ import java.io.OutputStream;
 import java.security.GeneralSecurityException;
 import java.util.Collections;
 import java.util.List;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
@@ -41,8 +40,8 @@ import org.tctalent.server.util.filesystem.GoogleFileSystemFolder;
 
 
 @Service
+@Slf4j
 public class GoogleFileSystemServiceImpl implements FileSystemService {
-    private static final Logger log = LoggerFactory.getLogger(GoogleFileSystemServiceImpl.class);
 
     private static final String FOLDER_MIME_TYPE = "application/vnd.google-apps.folder";
 

@@ -1,16 +1,16 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or any later version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT
+ * This program is distributed in the hope that it will be useful, but WITHOUT 
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
  * for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
+ * You should have received a copy of the GNU Affero General Public License 
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
@@ -41,6 +41,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -49,6 +50,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.tctalent.server.data.CandidateTestData.getCandidateCertification;
+import static org.tctalent.server.data.CandidateTestData.getListOfCandidateCertifications;
 
 /**
  * Unit tests for Candidate Certification Admin Api endpoints.
@@ -62,8 +65,9 @@ class CandidateCertificationAdminApiTest extends ApiTestBase {
     private static final String GET_CERTIFICATION_LIST_BY_ID_PATH = "/{id}/list";
     private static final long CANDIDATE_ID = 99L;
 
-    private final CandidateCertification candidateCertification = AdminApiTestUtil.getCandidateCertification();
-    private final List<CandidateCertification> candidateCertificationList = AdminApiTestUtil.getListOfCandidateCertifications();
+    private final CandidateCertification candidateCertification = getCandidateCertification();
+    private final List<CandidateCertification> candidateCertificationList =
+        getListOfCandidateCertifications();
 
     @MockBean CandidateCertificationService candidateCertificationService;
 
@@ -115,6 +119,7 @@ class CandidateCertificationAdminApiTest extends ApiTestBase {
                 .willReturn(candidateCertification);
 
         mockMvc.perform(post(BASE_PATH)
+                .with(csrf())
                         .header("Authorization", "Bearer " + "jwt-token")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request))
@@ -141,6 +146,7 @@ class CandidateCertificationAdminApiTest extends ApiTestBase {
                 .willReturn(candidateCertification);
 
         mockMvc.perform(put(BASE_PATH)
+                .with(csrf())
                         .header("Authorization", "Bearer " + "jwt-token")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request))
@@ -161,6 +167,7 @@ class CandidateCertificationAdminApiTest extends ApiTestBase {
     @DisplayName("delete candidate certification by id succeeds")
     void deleteCertificationByIdSucceeds() throws Exception {
         mockMvc.perform(delete(BASE_PATH + "/" + CANDIDATE_ID)
+                .with(csrf())
                         .header("Authorization", "Bearer " + "jwt-token"))
 
                 .andExpect(status().isOk());

@@ -1,24 +1,43 @@
+<!--
+  ~ Copyright (c) 2024 Talent Catalog.
+  ~
+  ~ This program is free software: you can redistribute it and/or modify it under
+  ~ the terms of the GNU Affero General Public License as published by the Free
+  ~ Software Foundation, either version 3 of the License, or any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful, but WITHOUT
+  ~ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+  ~ FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+  ~ for more details.
+  ~
+  ~ You should have received a copy of the GNU Affero General Public License
+  ~ along with this program. If not, see https://www.gnu.org/licenses/.
+  -->
+
 <div *ngIf="error">
   {{error}}
 </div>
 
 <form [formGroup]="form">
-  <div class="mb-3">
-    <label class="form-label" for="visaHealthAssessment">Meets health requirement? (e.g. no major health issues)</label>
-    <div class="float-end">
-      <app-autosave-status
-        [saving]="saving"
-        [typing]="typing">
-      </app-autosave-status>
-    </div>
-    <ng-select id="visaHealthAssessment" [formControlName]="'visaHealthAssessment'" (clear)="setNoResponse('visaHealthAssessment')"
-               [items]="healthAssessmentOptions" [clearOnBackspace]="false"
-               placeholder="Select" bindLabel="stringValue" bindValue="key"></ng-select>
-  </div>
-  <div *ngIf="hasNotes" class="mb-3">
-    <label class="form-label" for="visaHealthAssessmentNotes">Notes</label>
-    <textarea type="text" class="md-textarea-auto form-control" rows="4"
-              id="visaHealthAssessmentNotes" [formControlName]="'visaHealthAssessmentNotes'"
-              placeholder="" ></textarea>
-  </div>
+  <tc-fieldset>
+    <tc-field>
+      <div class="d-flex justify-content-between">
+        <tc-label for="visaHealthAssessment">
+          Meets health requirement? (e.g. no major health issues)
+        </tc-label>
+        <app-autosave-status
+          [saving]="saving"
+          [typing]="typing">
+        </app-autosave-status>
+      </div>
+      <ng-select class="tc-select" id="visaHealthAssessment" [formControlName]="'visaHealthAssessment'"
+                 (clear)="setNoResponse('visaHealthAssessment')"
+                 [items]="healthAssessmentOptions" [clearOnBackspace]="false"
+                 placeholder="Select" bindLabel="stringValue" bindValue="key"></ng-select>
+    </tc-field>
+    <tc-field *ngIf="hasNotes">
+      <tc-label for="visaHealthAssessmentNotes">Notes</tc-label>
+      <tc-textarea id="visaHealthAssessmentNotes" [formControlName]="'visaHealthAssessmentNotes'"></tc-textarea>
+    </tc-field>
+  </tc-fieldset>
 </form>

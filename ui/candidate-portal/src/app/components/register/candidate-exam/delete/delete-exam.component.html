@@ -1,0 +1,32 @@
+<!--
+  ~ Copyright (c) 2024 Talent Catalog.
+  ~
+  ~ This program is free software: you can redistribute it and/or modify it under
+  ~ the terms of the GNU Affero General Public License as published by the Free
+  ~ Software Foundation, either version 3 of the License, or any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful, but WITHOUT
+  ~ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+  ~ FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+  ~ for more details.
+  ~
+  ~ You should have received a copy of the GNU Affero General Public License
+  ~ along with this program. If not, see https://www.gnu.org/licenses/.
+  -->
+
+<div class="modal-header">
+  <h4 class="modal-title">{{ 'REGISTRATION.EXAM.DELETE.TITLE' | translate }}</h4>
+  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" (click)="cancel()"></button>
+</div>
+<div class="modal-body">
+  <p>{{ 'REGISTRATION.EXAM.DELETE.CONFIRMATION' | translate }}</p>
+</div>
+<div class="modal-footer">
+  <span *ngIf="deleting"><i class="fas fa-spinner fa-spin"></i> deleting...</span>
+  <tc-button color="error"
+             [disabled]="deleting"
+             (onClick)="confirm()">{{ 'REGISTRATION.EXAM.DELETE.YES' | translate }}</tc-button>
+  <tc-button color="secondary"
+             [disabled]="deleting"
+             (onClick)="cancel()">{{ 'REGISTRATION.EXAM.DELETE.NO' | translate }}</tc-button>
+</div>

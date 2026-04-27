@@ -1,0 +1,65 @@
+<!--
+  ~ Copyright (c) 2024 Talent Catalog.
+  ~
+  ~ This program is free software: you can redistribute it and/or modify it under
+  ~ the terms of the GNU Affero General Public License as published by the Free
+  ~ Software Foundation, either version 3 of the License, or any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful, but WITHOUT
+  ~ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+  ~ FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+  ~ for more details.
+  ~
+  ~ You should have received a copy of the GNU Affero General Public License
+  ~ along with this program. If not, see https://www.gnu.org/licenses/.
+  -->
+
+<tc-modal [heading]="'Edit Destination'"
+          [showClose]="true"
+          [showCancel]="true"
+          [actionText]="'Save'"
+          (onAction)="onSave()" [disableAction]="form.invalid || loading || saving"
+>
+
+  <tc-loading [loading]="loading"></tc-loading>
+
+  <div *ngIf="!loading">
+
+    <tc-alert type="danger" *ngIf="error">
+      <div><strong>{{error}}</strong></div>
+    </tc-alert>
+
+    <form [formGroup]="form">
+
+      <div class="mb-3">
+        <tc-field>
+          <tc-label class="form-label" for="interest">
+            Interest: <sup>*</sup>
+          </tc-label>
+          <ng-select class="tc-select"
+                     id="interest"
+                     [formControlName]="'interest'"
+                     [items]="destInterestOptions"
+                     [clearOnBackspace]="false"
+                     placeholder="Select"
+                     bindLabel="stringValue"
+                     bindValue="key"
+          ></ng-select>
+        </tc-field>
+      </div>
+
+      <div class="mb-3">
+        <tc-field>
+          <tc-label class="form-label" for="notes">
+            Notes:
+          </tc-label>
+          <tc-textarea [id]="'notes'"
+                       [formControlName]="'notes'"
+          ></tc-textarea>
+        </tc-field>
+      </div>
+
+    </form>
+
+  </div>
+</tc-modal>

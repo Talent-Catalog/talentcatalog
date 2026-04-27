@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -19,6 +19,11 @@ import {CandidateAttachment} from '../../../model/candidate-attachment';
 import {CandidateAttachmentService} from '../../../services/candidate-attachment.service';
 import {Candidate} from '../../../model/candidate';
 import {AuthorizationService} from "../../../services/authorization.service";
+import {UploadType} from "../../../model/task";
+
+/**
+ * Clickable icon component that opens or DLs CVs uploaded to the given candidate's profile
+ */
 
 @Component({
   selector: 'app-cv-icon',
@@ -31,6 +36,10 @@ export class CvIconComponent implements OnInit {
   //Optional Input - if a candidate attachment is passed in, this will only
   //open the single attachment.
   @Input() attachment: CandidateAttachment;
+  // tc-icon properties
+  @Input() size?: 'sm' | 'md' | 'lg' | 'xl' = 'lg';
+  @Input() color?: 'primary' | 'secondary' | 'white' | 'gray' | 'success' | 'info' | 'warning' | 'error' = 'primary';
+  @Input() showLabel: boolean = false;
 
   //Used to indicate loading status.
   @Output() loadingStatus = new EventEmitter<boolean>();
@@ -54,7 +63,14 @@ export class CvIconComponent implements OnInit {
     if (this.attachment) {
       this.cvs.push(this.attachment)
     } else {
-      this.cvs = this.candidate.candidateAttachments;
+      // Only want to open/DL CV attachments (if we have them)
+      if (this.candidate.candidateAttachments) {
+        this.candidate.candidateAttachments.forEach(attachment => {
+          if (attachment.uploadType === UploadType.cv) {
+            this.cvs.push(attachment);
+          }
+        })
+      }
     }
   }
 

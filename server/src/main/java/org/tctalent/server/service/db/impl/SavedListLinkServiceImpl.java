@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -16,20 +16,18 @@
 
 package org.tctalent.server.service.db.impl;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.tctalent.server.exception.EntityExistsException;
 import org.tctalent.server.model.db.SavedListLink;
 import org.tctalent.server.repository.db.SavedListLinkRepository;
 import org.tctalent.server.repository.db.SavedListRepository;
-import org.tctalent.server.service.db.OccupationService;
 import org.tctalent.server.service.db.SavedListLinkService;
 
 @Service
+@Slf4j
 public class SavedListLinkServiceImpl implements SavedListLinkService {
-    private static final Logger log = LoggerFactory.getLogger(OccupationService.class);
 
     private final SavedListLinkRepository savedListLinkRepository;
     private final SavedListRepository savedListRepository;
@@ -81,9 +79,9 @@ public class SavedListLinkServiceImpl implements SavedListLinkService {
 //        SavedListLink link = this.savedListLinkRepository.findById(id)
 //                .orElseThrow(() -> new NoSuchObjectException(Occupation.class, id));
 //
-//        checkDuplicates(id, request.getSavedListId(), request.getTbbShortName());
+//        checkDuplicates(id, request.getSavedListId(), request.getTcShortName());
 //
-//        link.setLink(request.getTbbShortName());
+//        link.setLink(request.getTcShortName());
 //        return savedListLinkRepository.save(link);
 //    }
 //

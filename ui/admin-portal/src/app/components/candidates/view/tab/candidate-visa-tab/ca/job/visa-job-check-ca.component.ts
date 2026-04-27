@@ -1,34 +1,47 @@
-import {AfterViewInit, Component, Input, OnInit, ViewChild} from '@angular/core';
+/*
+ * Copyright (c) 2024 Talent Catalog.
+ *
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see https://www.gnu.org/licenses/.
+ */
+
+import {Component, Input, OnInit} from '@angular/core';
 import {
   Candidate,
   CandidateIntakeData,
   CandidateVisa,
   CandidateVisaJobCheck,
+  describeFamilyInDestination,
   getDestinationPathwayInfoLink,
   IeltsStatus
 } from "../../../../../../../model/candidate";
-import {describeFamilyInDestination} from "../../../../../../../model/candidate-destination";
 import {CandidateEducationService} from "../../../../../../../services/candidate-education.service";
 import {
   CandidateOccupationService
 } from "../../../../../../../services/candidate-occupation.service";
 import {CandidateOccupation} from "../../../../../../../model/candidate-occupation";
 import {CandidateEducation} from "../../../../../../../model/candidate-education";
-import {NgbAccordion} from "@ng-bootstrap/ng-bootstrap";
-import {CandidateVisaJobService} from "../../../../../../../services/candidate-visa-job.service";
+import {CandidateOpportunity} from "../../../../../../../model/candidate-opportunity";
 
 @Component({
   selector: 'app-visa-job-check-ca',
   templateUrl: './visa-job-check-ca.component.html',
   styleUrls: ['./visa-job-check-ca.component.scss']
 })
-export class VisaJobCheckCaComponent implements OnInit, AfterViewInit {
+export class VisaJobCheckCaComponent implements OnInit {
   @Input() selectedJobCheck: CandidateVisaJobCheck;
   @Input() candidate: Candidate;
   @Input() candidateIntakeData: CandidateIntakeData;
   @Input() visaCheckRecord: CandidateVisa;
-
-  @ViewChild('visaJobCanada') visaJobCanada: NgbAccordion;
 
   candOccupations: CandidateOccupation[];
   candQualifications: CandidateEducation[];
@@ -36,13 +49,13 @@ export class VisaJobCheckCaComponent implements OnInit, AfterViewInit {
   familyInCanada: string;
   partnerIeltsString: string;
   pathwaysInfoLink: string;
+  candidateOpportunity: CandidateOpportunity;
 
   error: string;
   loading: boolean;
 
   constructor(private candidateEducationService: CandidateEducationService,
-              private candidateOccupationService: CandidateOccupationService,
-              private candidateVisaJobService: CandidateVisaJobService) {}
+              private candidateOccupationService: CandidateOccupationService) {}
 
   ngOnInit(): void {
     // Get the candidate occupations
@@ -63,7 +76,7 @@ export class VisaJobCheckCaComponent implements OnInit, AfterViewInit {
     )
 
     // Process & fetch values that need to be displayed.
-    this.familyInCanada = describeFamilyInDestination(this.visaCheckRecord?.country.id, this.candidateIntakeData);
+    this.familyInCanada = describeFamilyInDestination(this.visaCheckRecord);
     if (this.candidateIntakeData?.partnerIelts) {
       this.partnerIeltsString = IeltsStatus[this.candidateIntakeData?.partnerIelts] +
         (this.candidateIntakeData?.partnerIeltsScore ? ', Score: ' + this.candidateIntakeData.partnerIeltsScore : null);
@@ -71,24 +84,16 @@ export class VisaJobCheckCaComponent implements OnInit, AfterViewInit {
       this.partnerIeltsString = null;
     }
     this.pathwaysInfoLink = getDestinationPathwayInfoLink(this.visaCheckRecord.country.id);
-  }
+    const selectedJobOppId = this.selectedJobCheck?.jobOpp?.id;
 
-  ngAfterViewInit() {
-    this.visaJobCanada.expandAll();
-  }
+    if (!selectedJobOppId) {
+      // no linked job opportunity
+      this.candidateOpportunity = null;
+      return;
+    }
 
-  requestSfCaseRelocationInfoUpdate() {
-    this.error = null;
-    this.loading = true;
-    this.candidateVisaJobService.updateSfCaseRelocationInfo(
-        this.selectedJobCheck.id).subscribe(
-        boolean => {
-          this.loading = false;
-        },
-        error => {
-          this.error = error;
-          this.loading = false;
-        });
+    this.candidateOpportunity = this.candidate.candidateOpportunities
+      .find(co => co.jobOpp.id == selectedJobOppId);
   }
 }
 

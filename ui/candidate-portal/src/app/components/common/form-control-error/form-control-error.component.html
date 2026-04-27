@@ -1,5 +1,5 @@
 <!--
-  ~ Copyright (c) 2021 Talent Beyond Boundaries.
+  ~ Copyright (c) 2024 Talent Catalog.
   ~
   ~ This program is free software: you can redistribute it and/or modify it under
   ~ the terms of the GNU Affero General Public License as published by the Free
@@ -16,17 +16,17 @@
 
 <ng-container *ngIf="control?.dirty || showAlways">
 
-  <small *ngIf="control?.errors?.required">
+  <tc-error-message *ngIf="control?.errors?.required">
     {{ 'FORM.ERROR.REQUIRED' | translate }}
-  </small>
+  </tc-error-message>
 
-  <small *ngIf="control?.errors?.email">
+  <tc-error-message *ngIf="control?.errors?.email">
     {{ 'FORM.ERROR.EMAIL' | translate }}
-  </small>
+  </tc-error-message>
 
-  <small *ngIf="control?.errors?.minlength">
+  <tc-error-message *ngIf="control?.errors?.minlength">
     {{ 'FORM.ERROR.MINLENGTH' | translate: {length: control?.errors?.minlength?.requiredLength} }}
-  </small>
+  </tc-error-message>
 
 <!--  <small *ngIf="control?.errors?.pattern && control?.errors?.pattern.requiredPattern === '^[\\w-]*$'">-->
 <!--    This field must contain letters, numbers, dashes and underscores only-->
@@ -36,13 +36,13 @@
 <!--    This field should have a max value of {{control?.errors?.max?.max}}-->
 <!--  </small>-->
 
-  <small *ngIf="control?.errors?.min">
+  <tc-error-message *ngIf="control?.errors?.min">
     {{ 'FORM.ERROR.MINVALUE' | translate: {min: control?.errors?.min?.min} }}
-  </small>
+  </tc-error-message>
 
-  <small *ngIf="control?.errors?.ngbDate?.invalid">
+  <tc-error-message *ngIf="control?.errors?.ngbDate?.invalid">
     {{ 'FORM.ERROR.DATE' | translate}}
-  </small>
+  </tc-error-message>
 
   <!-- For debugging - print unknown error types -->
   <!--{{control?.errors | json}}-->

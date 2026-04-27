@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -16,9 +16,8 @@
 
 package org.tctalent.server.service.db.impl;
 
-import java.util.List;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
-import org.tctalent.server.model.db.ExportColumn;
 import org.tctalent.server.model.db.SavedList;
 import org.tctalent.server.repository.db.ExportColumnRepository;
 import org.tctalent.server.service.db.ExportColumnsService;
@@ -34,11 +33,9 @@ public class ExportColumnsServiceImpl implements ExportColumnsService {
   }
 
   @Override
+  @Transactional
   public void clearExportColumns(SavedList savedList) {
-    List<ExportColumn> cols = savedList.getExportColumns();
-    if (cols != null) {
-      exportColumnRepository.deleteAll(cols);
-    }
+    exportColumnRepository.deleteBySavedList(savedList);
     savedList.setExportColumns(null);
   }
 }

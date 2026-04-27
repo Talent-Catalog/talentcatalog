@@ -1,5 +1,20 @@
+/*
+ * Copyright (c) 2024 Talent Catalog.
+ *
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see https://www.gnu.org/licenses/.
+ */
+
 import {Component, OnInit} from '@angular/core';
-import {JoblinkValidationEvent} from "../../util/joblink/joblink.component";
 import {SavedList} from "../../../model/saved-list";
 import {SavedListService} from "../../../services/saved-list.service";
 import {
@@ -15,10 +30,13 @@ import {SlackService} from "../../../services/slack.service";
 import {AuthorizationService} from "../../../services/authorization.service";
 import {Job, UpdateJobRequest} from "../../../model/job";
 import {JobService} from "../../../services/job.service";
-import {FormBuilder, FormGroup} from "@angular/forms";
+import {UntypedFormBuilder, UntypedFormGroup} from "@angular/forms";
 import {debounceTime, distinctUntilChanged} from "rxjs/operators";
 import {AuthenticationService} from "../../../services/authentication.service";
 import {Employer} from "../../../model/partner";
+import {SfJoblinkValidationEvent} from "../../util/sf-joblink/sf-joblink.component";
+import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
+import {SelectJobCopyComponent} from "../../util/select-job-copy/select-job-copy.component";
 
 @Component({
   selector: 'app-new-job',
@@ -32,6 +50,8 @@ export class NewJobComponent implements OnInit {
   job: Job;
   savedList: SavedList;
   sfJoblink: string;
+  jobToCopyId: number;
+  jobsToCopy: Job[];
   slacklink: string;
   creatingJob: Progress = Progress.NotStarted;
   creatingFolders: Progress = Progress.NotStarted;
@@ -42,18 +62,21 @@ export class NewJobComponent implements OnInit {
   errorCreatingJob: string = null;
   errorCreatingSFLinks: string = null;
   errorPostingToSlack: string = null;
-  jobForm: FormGroup;
+  errorGettingJobsToCopySlack: string = null;
+  jobForm: UntypedFormGroup;
+  remainingChars: number = 50;
 
   constructor(
     private authorizationService: AuthorizationService,
     private authenticationService: AuthenticationService,
-    private fb: FormBuilder,
+    private fb: UntypedFormBuilder,
     private jobService: JobService,
     public salesforceService: SalesforceService,
     private savedListService: SavedListService,
     private slackService: SlackService,
     private location: Location,
-    private router: Router) { }
+    private router: Router,
+    private modalService: NgbModal) { }
 
   ngOnInit(): void {
     if (this.isEmployerPartner()) {
@@ -63,6 +86,9 @@ export class NewJobComponent implements OnInit {
         role: []
       });
       this.subscribeToJobFormChanges();
+      this.jobForm.get('role').valueChanges.subscribe((value: string) => {
+        this.remainingChars = 50 - (value?.length || 0);
+      });
     }
   }
 
@@ -112,7 +138,7 @@ export class NewJobComponent implements OnInit {
     return name;
   }
 
-  onJoblinkValidation(jobOpportunity: JoblinkValidationEvent) {
+  onSfJoblinkValidation(jobOpportunity: SfJoblinkValidationEvent) {
     this.creatingJob = Progress.NotStarted;
     this.creatingFolders = Progress.NotStarted;
     this.creatingSFLinks = Progress.NotStarted;
@@ -140,7 +166,8 @@ export class NewJobComponent implements OnInit {
     this.creatingJob = Progress.Started;
     const request: UpdateJobRequest = {
       roleName: this.roleName ? this.roleName : null,
-      sfJoblink: this.sfJoblink ? this.sfJoblink : null
+      sfJoblink: this.sfJoblink ? this.sfJoblink : null,
+      jobToCopyId: this.jobToCopyId ? this.jobToCopyId : null
     };
     this.jobService.create(request).subscribe(
       (job) => {
@@ -229,11 +256,26 @@ export class NewJobComponent implements OnInit {
   }
 
   getBreadCrumb() {
-    return "Create a new job";
+    return "New Job";
   }
 
   doPreparation() {
     this.createRegisteredJob()
+  }
+
+  selectJobCopy() {
+    let jobs: Job[] = []
+    const copyJobModal = this.modalService.open(SelectJobCopyComponent, {
+      centered: true,
+      backdrop: 'static'
+    });
+
+    copyJobModal.result.then(
+      (jobId: number) => {
+        this.jobToCopyId = jobId;
+        this.doPreparation()
+      })
+      .catch(() => {})
   }
 
   doShowJob() {

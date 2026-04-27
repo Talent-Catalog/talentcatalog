@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -23,12 +23,15 @@ import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.tctalent.server.data.CandidateTestData.getListOfCandidateDtos;
+import static org.tctalent.server.data.CandidateTestData.getListOfCandidates;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.PrintWriter;
@@ -45,10 +48,15 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.tctalent.server.api.dto.CandidateBuilderSelector;
+import org.tctalent.server.data.SavedListTestData;
 import org.tctalent.server.model.db.Candidate;
+import org.tctalent.server.repository.db.read.dto.CandidateReadDto;
 import org.tctalent.server.request.candidate.SavedSearchGetRequest;
+import org.tctalent.server.service.db.CandidateDtoService;
+import org.tctalent.server.service.db.CandidateService;
 import org.tctalent.server.service.db.SavedSearchService;
-import org.tctalent.server.service.db.UserService;
+import org.tctalent.server.util.dto.DtoBuilder;
 
 /**
  * Unit tests for Saved Search Candidate Admin Api endpoints
@@ -67,7 +75,14 @@ class SavedSearchCandidateAdminApiTest extends ApiTestBase {
 
   private final Page<Candidate> candidatePage =
       new PageImpl<>(
-          AdminApiTestUtil.listOfCandidates(),
+          getListOfCandidates(),
+          PageRequest.of(0, 10, Sort.unsorted()),
+          1
+      );
+
+  private final Page<CandidateReadDto> candidateReadDtoPage =
+      new PageImpl<>(
+          getListOfCandidateDtos(),
           PageRequest.of(0, 10, Sort.unsorted()),
           1
       );
@@ -75,7 +90,11 @@ class SavedSearchCandidateAdminApiTest extends ApiTestBase {
   @MockBean
   SavedSearchService savedSearchService;
   @MockBean
-  UserService userService;
+  CandidateService candidateService;
+  @MockBean
+  CandidateDtoService candidateDtoService;
+  @MockBean
+  CandidateBuilderSelector candidateBuilderSelector;
 
   @Autowired
   MockMvc mockMvc;
@@ -87,6 +106,14 @@ class SavedSearchCandidateAdminApiTest extends ApiTestBase {
   @BeforeEach
   void setUp() {
     configureAuthentication();
+
+    // Minimal builder for Candidate
+    DtoBuilder candidateDto = new DtoBuilder()
+        .add("id")
+        .add("selected")
+        .add("status");
+
+    given(candidateBuilderSelector.selectBuilder(any())).willReturn(candidateDto);
   }
 
   @Test
@@ -95,10 +122,15 @@ class SavedSearchCandidateAdminApiTest extends ApiTestBase {
     SavedSearchGetRequest request = new SavedSearchGetRequest();
 
     given(savedSearchService
-        .searchCandidates(anyLong(), any(SavedSearchGetRequest.class)))
-        .willReturn(candidatePage);
+        .searchCandidateDtos(anyLong(), any(SavedSearchGetRequest.class)))
+        .willReturn(candidateReadDtoPage);
+
+    given(savedSearchService
+        .getSelectionListForLoggedInUser(anyLong()))
+        .willReturn(SavedListTestData.getSavedList());
 
     mockMvc.perform(post(BASE_PATH + SEARCH_PAGED_PATH.replace("{id}", Long.toString(SAVED_SEARCH_ID)))
+            .with(csrf())
             .header("Authorization", "Bearer " + "jwt-token")
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(request))
@@ -114,10 +146,11 @@ class SavedSearchCandidateAdminApiTest extends ApiTestBase {
         .andExpect(jsonPath("$.hasNext", is(false)))
         .andExpect(jsonPath("$.content", notNullValue()))
         .andExpect(jsonPath("$.content[0].selected", is(false)))
-        .andExpect(jsonPath("$.content[0].status", is("draft")));
+        .andExpect(jsonPath("$.content[0].status", is("draft")))
+    ;
 
-  verify(savedSearchService).searchCandidates(anyLong(), any(SavedSearchGetRequest.class));
-  verify(savedSearchService).setCandidateContext(anyLong(), any(Page.class));
+  verify(savedSearchService).searchCandidateDtos(anyLong(), any(SavedSearchGetRequest.class));
+  verify(candidateDtoService).populateComputedFields(any(), any());
   }
 
   @Test
@@ -142,6 +175,7 @@ class SavedSearchCandidateAdminApiTest extends ApiTestBase {
     SavedSearchGetRequest request = new SavedSearchGetRequest();
 
     mockMvc.perform(post(BASE_PATH + EXPORT_CSV_PATH.replace("{id}", Long.toString(SAVED_SEARCH_ID)))
+            .with(csrf())
             .header("Authorization", "Bearer " + "jwt-token")
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(request)))

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -16,7 +16,32 @@
 
 package org.tctalent.server.api.admin;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.verify;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.tctalent.server.data.CandidateTestData.getListOfOccupations;
+import static org.tctalent.server.data.CandidateTestData.getOccupation;
+import static org.tctalent.server.data.LanguageTestData.getSystemLanguage;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.InputStream;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -39,28 +64,7 @@ import org.tctalent.server.request.occupation.SearchOccupationRequest;
 import org.tctalent.server.request.occupation.UpdateOccupationRequest;
 import org.tctalent.server.service.db.LanguageService;
 import org.tctalent.server.service.db.OccupationService;
-
-import java.io.InputStream;
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.verify;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import org.tctalent.server.util.dto.DtoBuilder;
 
 /**
  * Unit tests for Candidate Occupation Admin Api endpoints.
@@ -77,9 +81,9 @@ class OccupationAdminApiTest extends ApiTestBase {
     private static final String ADD_SYSTEM_LANGUAGE_TRANSLATIONS = "/system/{langCode}";
     private static final String SEARCH_PATH = "/search";
 
-    private static final List<Occupation> occupationList = AdminApiTestUtil.getListOfOccupations();
-    private static final Occupation occupation = AdminApiTestUtil.getOccupation();
-    private static final SystemLanguage systemLanguage = AdminApiTestUtil.getSystemLanguage();
+    private static final List<Occupation> occupationList = getListOfOccupations();
+    private static final Occupation occupation = getOccupation();
+    private static final SystemLanguage systemLanguage = getSystemLanguage();
 
     private final Page<Occupation> occupationPage =
             new PageImpl<>(
@@ -98,6 +102,9 @@ class OccupationAdminApiTest extends ApiTestBase {
     @BeforeEach
     void setUp() {
         configureAuthentication();
+        given(occupationService
+            .selectBuilder())
+            .willReturn(new DtoBuilder().add("id").add("name").add("status"));
     }
 
     @Test
@@ -117,6 +124,7 @@ class OccupationAdminApiTest extends ApiTestBase {
 
         mockMvc.perform(multipart(BASE_PATH + ADD_SYSTEM_LANGUAGE_TRANSLATIONS.replace("{langCode}", langCode))
                         .file("file", file.getBytes())
+                        .with(csrf())
                         .header("Authorization", "Bearer " + "jwt-token")
                         .contentType(MediaType.APPLICATION_JSON))
 
@@ -170,6 +178,7 @@ class OccupationAdminApiTest extends ApiTestBase {
                 .willReturn(occupationPage);
 
         mockMvc.perform(post(BASE_PATH + SEARCH_PATH)
+                        .with(csrf())
                         .header("Authorization", "Bearer " + "jwt-token")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request))
@@ -226,6 +235,7 @@ class OccupationAdminApiTest extends ApiTestBase {
                 .willReturn(occupation);
 
         mockMvc.perform(post(BASE_PATH)
+                        .with(csrf())
                         .header("Authorization", "Bearer " + "jwt-token")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request))
@@ -254,6 +264,7 @@ class OccupationAdminApiTest extends ApiTestBase {
                 .willReturn(occupation);
 
         mockMvc.perform(put(BASE_PATH + "/" + OCCUPATION_ID)
+                        .with(csrf())
                         .header("Authorization", "Bearer " + "jwt-token")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request))
@@ -274,6 +285,7 @@ class OccupationAdminApiTest extends ApiTestBase {
     @DisplayName("delete occupation by id succeeds")
     void deleteOccupationByIdSucceeds() throws Exception {
         mockMvc.perform(delete(BASE_PATH + "/" + OCCUPATION_ID)
+                        .with(csrf())
                         .header("Authorization", "Bearer " + "jwt-token"))
 
                 .andExpect(status().isOk());

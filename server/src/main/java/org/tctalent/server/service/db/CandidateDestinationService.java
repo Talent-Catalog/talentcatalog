@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -16,6 +16,7 @@
 
 package org.tctalent.server.service.db;
 
+import java.util.List;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.tctalent.server.exception.EntityReferencedException;
@@ -25,6 +26,7 @@ import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.CandidateDestination;
 import org.tctalent.server.request.candidate.CandidateIntakeDataUpdate;
 import org.tctalent.server.request.candidate.destination.CreateCandidateDestinationRequest;
+import org.tctalent.server.request.candidate.destination.UpdateCandidateDestinationRequest;
 
 public interface CandidateDestinationService {
 
@@ -35,10 +37,22 @@ public interface CandidateDestinationService {
      * @param request Request containing destination details
      * @return Created record - including database id of destination record
      * @throws NoSuchObjectException if the there is no Candidate record with
-     * that candidateId or no Nationality with the id given in the request
+     * that candidateId or no country with the id given in the request
      */
     CandidateDestination createDestination(
             long candidateId, CreateCandidateDestinationRequest request)
+            throws NoSuchObjectException;
+
+    /**
+     * Update an existing candidate destination record with the data in the given
+     * request.
+     * @param id ID of candidate destination to be updated
+     * @param request Request containing destination details
+     * @return Created record - including database id of destination record
+     * @throws NoSuchObjectException if the there is no destination record with that id
+     */
+    CandidateDestination updateDestination(long id,
+            UpdateCandidateDestinationRequest request)
             throws NoSuchObjectException;
 
     /**
@@ -65,4 +79,11 @@ public interface CandidateDestinationService {
     void updateIntakeData(
             @Nullable Long countryId, @NonNull Candidate candidate,
             CandidateIntakeDataUpdate data) throws NoSuchObjectException;
+
+    /**
+     * List of all destinations associated to candidate with given id.
+     * @param candidateId ID of candidate whose destinations we want
+     * @return list of candidate destinations
+     */
+    List<CandidateDestination> list(long candidateId);
 }

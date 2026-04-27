@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -20,12 +20,13 @@ import {
   UpdateCandidateAttachmentRequest
 } from '../../../services/candidate-attachment.service';
 import {AttachmentType, CandidateAttachment} from '../../../model/candidate-attachment';
-import {FormBuilder, FormGroup} from '@angular/forms';
+import {UntypedFormBuilder, UntypedFormGroup} from '@angular/forms';
 import {environment} from '../../../../environments/environment';
 import {CandidateService} from '../../../services/candidate.service';
 import {forkJoin, Observable} from 'rxjs';
 import {UserService} from '../../../services/user.service';
 import {User} from '../../../model/user';
+import {UploadType} from "../../../model/task";
 
 @Component({
   selector: 'app-candidate-attachments',
@@ -49,7 +50,7 @@ export class CandidateAttachmentsComponent implements OnInit {
   uploading: boolean;
 
   s3BucketUrl: string = environment.s3BucketUrl;
-  form: FormGroup;
+  form: UntypedFormGroup;
 
   attachments: CandidateAttachment[] = [];
   candidateNumber: string;
@@ -57,7 +58,7 @@ export class CandidateAttachmentsComponent implements OnInit {
 
   editTarget: CandidateAttachment;
 
-  constructor(private fb: FormBuilder,
+  constructor(private fb: UntypedFormBuilder,
               private candidateService: CandidateService,
               private candidateAttachmentService: CandidateAttachmentService,
               private userService: UserService) { }
@@ -71,7 +72,7 @@ export class CandidateAttachmentsComponent implements OnInit {
     this._loading.user = true;
     this.editTarget = null;
 
-    this.candidateService.getCandidateNumber().subscribe(
+    this.candidateService.getCandidatePersonal().subscribe(
       (response) => {
         this.candidateNumber = response.candidateNumber;
         this._loading.candidate = false;
@@ -99,7 +100,9 @@ export class CandidateAttachmentsComponent implements OnInit {
     this.candidateAttachmentService.listCandidateAttachments().subscribe(
       (response) => {
         if (!this.preview){
-          this.attachments = response.filter(att => att.cv === this.cv);
+          this.attachments = response.filter(att =>
+               this.cv && (att.uploadType === UploadType.cv)
+            || !this.cv && (att.uploadType !== UploadType.cv ));
         } else {
           this.attachments = response;
         }
@@ -122,17 +125,14 @@ export class CandidateAttachmentsComponent implements OnInit {
   }
 
   getAttachmentUrl(att: CandidateAttachment) {
-    if (att.type === AttachmentType.file) {
-      return this.s3BucketUrl + '/candidate/' + (att.migrated ? 'migrated' : this.candidateNumber) + '/' + att.location;
-    }
-    return att.location;
+    return att.url;
   }
 
   deleteAttachment(attachment: CandidateAttachment) {
     this.deleting = true;
     this.candidateAttachmentService.deleteAttachment(attachment.id).subscribe(
-      (response) => {
-        this.attachments = this.attachments.filter(att => att.name !== attachment.name);
+      () => {
+        this.attachments = this.attachments.filter(att => att.id !== attachment.id);
         this.deleting = false;
       },
       (error) => {
@@ -160,7 +160,7 @@ export class CandidateAttachmentsComponent implements OnInit {
     }
 
     forkJoin(...uploads).subscribe(
-      (results: CandidateAttachment[]) => {
+      () => {
         this.uploading = false;
         this.refreshAttachments();
       },
@@ -199,7 +199,7 @@ export class CandidateAttachmentsComponent implements OnInit {
       name: attachment.name
     };
     this.candidateAttachmentService.updateAttachment(attachment.id, request).subscribe(
-      (response) => {
+      () => {
         this.attachments[i] = attachment;
         this.editTarget = null;
         this._loading.saving = false;

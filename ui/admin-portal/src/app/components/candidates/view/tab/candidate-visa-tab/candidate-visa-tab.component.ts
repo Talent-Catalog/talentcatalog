@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -14,9 +14,9 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, EventEmitter, Input, OnChanges, Output, SimpleChanges} from '@angular/core';
 import {CandidateService} from '../../../../../services/candidate.service';
-import {FormBuilder, FormGroup} from '@angular/forms';
+import {UntypedFormBuilder, UntypedFormGroup} from '@angular/forms';
 import {CountryService} from '../../../../../services/country.service';
 import {
   CandidateVisaCheckService,
@@ -29,20 +29,23 @@ import {
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {ConfirmationComponent} from '../../../../util/confirm/confirmation.component';
 import {Candidate, CandidateIntakeData, CandidateVisa} from '../../../../../model/candidate';
-import {LocalStorageService} from "angular-2-local-storage";
 import {AuthorizationService} from "../../../../../services/authorization.service";
+import {LocalStorageService} from "../../../../../services/local-storage.service";
+import {forkJoin} from "rxjs";
 
 @Component({
   selector: 'app-candidate-visa-tab',
   templateUrl: './candidate-visa-tab.component.html',
   styleUrls: ['./candidate-visa-tab.component.scss']
 })
-export class CandidateVisaTabComponent implements OnInit {
+export class CandidateVisaTabComponent implements OnChanges {
   @Input() candidate: Candidate;
+  @Input() tabIsActive: boolean;
+  @Output() loadingChange = new EventEmitter<{ loading: boolean; tabId: string }>();
   candidateIntakeData: CandidateIntakeData;
   visaChecks: CandidateVisa[];
-  tbbDestinations: Country[];
-  form: FormGroup;
+  tcDestinations: Country[];
+  form: UntypedFormGroup;
   selectedIndex: number;
   selectedCountry: string;
   selectedVisaCheck: CandidateVisa;
@@ -55,48 +58,73 @@ export class CandidateVisaTabComponent implements OnInit {
               private countryService: CountryService,
               private candidateVisaCheckService: CandidateVisaCheckService,
               private modalService: NgbModal,
-              private fb: FormBuilder,
+              private fb: UntypedFormBuilder,
               private localStorageService: LocalStorageService,
               private authService: AuthorizationService) {
   }
 
-  ngOnInit(): void {
-    this.loading = true;
-
-    // FETCH INTAKE DATA
-    this.candidateService.getIntakeData(this.candidate.id).subscribe((results) => {
-      this.candidateIntakeData = results;
-      this.loading = false;
-
-    })
-    // FETCH TBB DESTINATIONS
-    this.countryService.listTBBDestinations().subscribe((results) => {
-      /**
-       * todo: Remove/alter this filter once no longer needed or find other solution.
-       * It is a temporary filter to only display the TBB destinations (Australia & Canada) that have functioning visa checks.
-       */
-      this.tbbDestinations = results.filter(c => c.id == 6191 || c.id == 6216);
-    })
-
-    this.reloadAndSelectVisaCheck(0)
-
-    this.form = this.fb.group({
-      visaCountry: [0]
-    });
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes.tabIsActive && this.tabIsActive) {
+      setTimeout(() => {
+        this.loadVisaTabData();
+      });
+    }
   }
 
+  private loadVisaTabData(): void {
+    this.loading = true;
+    this.error = null;
+    this.loadingChange.emit({ loading: true, tabId: 'Visa' });
+
+    forkJoin({
+      // FETCH INTAKE DATA
+      intakeData: this.candidateService.getIntakeData(this.candidate.id),
+      /**
+       * todo: Remove/alter this filter once no longer needed or find other solution.
+       * It is a temporary filter to only display the TBB destinations (Australia, Canada & UK) that have functioning visa checks.
+       */
+      tcDestinations: this.countryService.listTCDestinations(),
+      visaChecks: this.candidateVisaCheckService.list(this.candidate.id)
+    }).subscribe(
+      (results) => {
+        this.candidateIntakeData = results.intakeData;
+        this.tcDestinations = results.tcDestinations.filter(
+          c => c.id == 6191 || c.id == 6216 || c.id == 6179
+        );
+        this.visaChecks = results.visaChecks;
+        this.selectedVisaCheck = this.visaChecks[0];
+        this.selectedCountry = this.selectedVisaCheck?.country?.name;
+
+        if (!this.form) {
+          this.form = this.fb.group({
+            visaCountry: [0]
+          });
+        } else {
+          this.form.controls['visaCountry'].patchValue(0);
+        }
+
+        this.loading = false;
+        this.loadingChange.emit({ loading: false, tabId: 'Visa' });
+      },
+      (error) => {
+        this.error = error;
+        this.loading = false;
+        this.loadingChange.emit({ loading: false, tabId: 'Visa' });
+      }
+    );
+  }
   /**
    * Filters out destinations already used in existingRecords
    */
   private get filteredDestinations(): Country[] {
-    if (!this.tbbDestinations) {
+    if (!this.tcDestinations) {
       return [];
     } else if (this.visaChecks?.length <= 0) {
-      return this.tbbDestinations;
+      return this.tcDestinations;
     } else {
       //Extract currently used ids
       const existingIds: number[] = this.visaChecks?.map(record => record.country?.id);
-      return this.tbbDestinations.filter(
+      return this.tcDestinations.filter(
         //Exclude already used ids
         record => !existingIds.includes(record.id)
       );
@@ -131,7 +159,6 @@ export class CandidateVisaTabComponent implements OnInit {
         this.visaChecks.push(visaCheck);
         this.form.controls['visaCountry'].patchValue(this.visaChecks.lastIndexOf(visaCheck));
         this.reloadAndSelectVisaCheck(this.visaChecks.indexOf(visaCheck));
-        this.loading = false;
       },
       (error) => {
         this.error = error;
@@ -166,6 +193,7 @@ export class CandidateVisaTabComponent implements OnInit {
           this.reloadAndSelectVisaCheck(0);
         } else {
           this.selectedVisaCheck = null;
+          this.loading = false;
         }
       },
       (error) => {
@@ -183,12 +211,21 @@ export class CandidateVisaTabComponent implements OnInit {
         this.visaChecks = results;
         this.selectedVisaCheck = this.visaChecks[index];
         this.selectedCountry = this.selectedVisaCheck?.country?.name;
-      })
+        this.loading = false;
+      },
+      (error) => {
+        this.error = error;
+        this.loading = false;
+      }
+    );
   }
 
   canDeleteVisa() : boolean {
     return this.authService.isSystemAdminOnly();
   }
 
+  isEditable(): boolean {
+    return this.authService.isEditableCandidate(this.candidate);
+  }
 
 }

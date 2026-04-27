@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -16,15 +16,27 @@
 
 package org.tctalent.server.repository.db;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.transaction.annotation.Transactional;
 import org.tctalent.server.model.db.SavedSearch;
 
-public interface SavedSearchRepository extends JpaRepository<SavedSearch, Long>, JpaSpecificationExecutor<SavedSearch> {
+public interface SavedSearchRepository extends CacheEvictingRepository<SavedSearch, Long>, JpaSpecificationExecutor<SavedSearch> {
+
+    /**
+     * Deletes all {@link SavedSearch} entries associated with the specified job ID.
+     *
+     * @param jobId The ID of the job for which associated {@link SavedSearch} entries will be deleted.
+     */
+    @Transactional
+    @Modifying
+    @Query("DELETE FROM SavedSearch s WHERE s.sfJobOpp.id = :jobId")
+    void deleteByJobId(@Param("jobId") Long jobId);
 
     @Query(" select distinct s from SavedSearch s "
             + " where lower(s.name) = lower(:name)"
@@ -77,5 +89,8 @@ public interface SavedSearchRepository extends JpaRepository<SavedSearch, Long>,
             " where s.createdBy.id = :userId " +
             " and s.defaultSearch = true" )
     Optional<SavedSearch> findDefaultSavedSearch(@Param("userId")Long userId);
+
+    @Query(" select s from SavedSearch s where s.id in (:ids) order by s.name")
+    List<SavedSearch> findByIds(@Param("ids") Iterable<Long> ids);
 
 }

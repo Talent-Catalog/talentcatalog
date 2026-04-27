@@ -1,0 +1,26 @@
+.modal-content {
+  text-align: center;
+}
+
+.modal-body {
+  margin-bottom: 3rem;
+}
+
+.modal-body svg {
+  margin-bottom:1rem;
+}
+
+.modal-header, .modal-footer {
+  border: none;
+}
+
+.fa-exclamation-triangle::before {
+  content: none;
+}
+
+.verify-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}

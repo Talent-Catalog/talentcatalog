@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -14,11 +14,12 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Directive, Input, OnInit} from '@angular/core';
-import {FormBuilder} from '@angular/forms';
+import {Directive, inject, Input, OnInit} from '@angular/core';
+import {UntypedFormBuilder} from '@angular/forms';
 import {Candidate, CandidateIntakeData, CandidateVisa} from '../../../model/candidate';
 import {AutoSaveComponentBase} from "../autosave/AutoSaveComponentBase";
 import {CandidateService} from "../../../services/candidate.service";
+import {CrossTabSyncService} from "../../../services/cross-tab-sync.service";
 
 /**
  * Base class for all candidate intake components.
@@ -64,7 +65,7 @@ export abstract class IntakeComponentBase extends AutoSaveComponentBase implemen
    * @param fb FormBuilder
    * @param candidateService CandidateService which saves the intake data
    */
-  protected constructor(protected fb: FormBuilder, candidateService: CandidateService) {
+  protected constructor(protected fb: UntypedFormBuilder, candidateService: CandidateService) {
     super(candidateService);
   }
 
@@ -85,10 +86,35 @@ export abstract class IntakeComponentBase extends AutoSaveComponentBase implemen
   }
 
   /**
+   * Service used to notify other browser tabs when the candidate
+   * intake data has been successfully saved.
+   */
+  protected crossTab = inject(CrossTabSyncService);
+
+  /**
+   * Called after a successful save.
+   * Notifies other open tabs that newer intake data is available.
+   */
+  onSuccessfulSave(): void {
+    this.crossTab.broadcastCandidateUpdated(this.candidate.id);
+  }
+
+  /**
    * Sets a standard no response value to the named form control.
    * @param formControlName Name of control in the intake form.
    */
   setNoResponse(formControlName: string) {
     this.form.controls[formControlName].setValue('NoResponse');
   };
+
+  /**
+   * Updates the CandidateIntakeData object with the changed form control value.
+   * This is used to populate the values on the accordion panels.
+   * @param formControlName Name of form control in intake form that we want to track changes of for update.
+   */
+  updateDataOnFieldChange(formControlName: string) {
+    this.form.get(formControlName).valueChanges.subscribe((value) => {
+      this.candidateIntakeData[formControlName] = value;
+    })
+  }
 }

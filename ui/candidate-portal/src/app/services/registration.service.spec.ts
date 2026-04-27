@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -15,14 +15,19 @@
  */
 
 import {TestBed} from '@angular/core/testing';
+import {HttpClientTestingModule} from '@angular/common/http/testing';
+import {RouterTestingModule} from '@angular/router/testing';
 
 import {RegistrationService} from './registration.service';
 
 describe('RegistrationService', () => {
-  beforeEach(() => TestBed.configureTestingModule({}));
+  beforeEach(() => TestBed.configureTestingModule({
+    imports: [HttpClientTestingModule, RouterTestingModule],
+    providers: [RegistrationService]
+  }));
 
   it('should be created', () => {
-    const service: RegistrationService = TestBed.get(RegistrationService);
+    const service: RegistrationService = TestBed.inject(RegistrationService);
     expect(service).toBeTruthy();
   });
 });

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -19,7 +19,7 @@ import {Component, Input, OnInit} from '@angular/core';
 
 import {SearchResults} from '../../../model/search-results';
 
-import {FormBuilder, FormGroup, Validators} from "@angular/forms";
+import {UntypedFormBuilder, UntypedFormGroup, Validators} from "@angular/forms";
 import {debounceTime, distinctUntilChanged} from "rxjs/operators";
 import {Occupation} from "../../../model/occupation";
 import {OccupationService} from "../../../services/occupation.service";
@@ -39,8 +39,8 @@ export class SearchOccupationsComponent implements OnInit {
 
   @Input() loggedInUser: User;
 
-  importForm: FormGroup;
-  searchForm: FormGroup;
+  importForm: UntypedFormGroup;
+  searchForm: UntypedFormGroup;
   loading: boolean;
   error: any;
   pageNumber: number;
@@ -48,7 +48,7 @@ export class SearchOccupationsComponent implements OnInit {
   results: SearchResults<Occupation>;
 
 
-  constructor(private fb: FormBuilder,
+  constructor(private fb: UntypedFormBuilder,
               private occupationService: OccupationService,
               private modalService: NgbModal,
               private authService: AuthorizationService) {

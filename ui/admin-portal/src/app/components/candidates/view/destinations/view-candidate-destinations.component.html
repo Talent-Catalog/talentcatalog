@@ -1,0 +1,77 @@
+<!--
+  ~ Copyright (c) 2024 Talent Catalog.
+  ~
+  ~ This program is free software: you can redistribute it and/or modify it under
+  ~ the terms of the GNU Affero General Public License as published by the Free
+  ~ Software Foundation, either version 3 of the License, or any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful, but WITHOUT
+  ~ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+  ~ FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+  ~ for more details.
+  ~
+  ~ You should have received a copy of the GNU Affero General Public License
+  ~ along with this program. If not, see https://www.gnu.org/licenses/.
+  -->
+
+<div class="my-4">
+  <tc-loading [loading]="loading"></tc-loading>
+</div>
+
+<tc-alert type="danger" *ngIf="error">
+  <div><strong>{{error}}</strong></div>
+</tc-alert>
+
+<tc-card *ngIf="!loading">
+
+  <tc-card-header>
+    Destinations
+  </tc-card-header>
+
+  <p *ngIf="this.emptyDestinations; else hasDestinations" class="m-1">
+    No destination data has been entered by this candidate.
+  </p>
+  <ng-template #hasDestinations>
+    <div *ngFor="let destination of candidate.candidateDestinations; let i = index;">
+      <div class="row align-items-center g-0 py-2">
+
+        <!-- Country + Interest -->
+        <div [ngClass]="editable ? 'col-md-4' : 'col-md-5'">
+          <div class="d-flex align-items-center flex-wrap">
+            <label class="mb-0 me-2 fw-semibold">{{ destination.country.name }}</label>
+            <tc-icon [color]="'error'" *ngIf="destination.interest === 'No'">
+              <i class="fa-regular fa-circle-xmark"></i>
+            </tc-icon>
+            <tc-icon [color]="'success'" *ngIf="destination.interest === 'Yes'">
+              <i class="fa-regular fa-circle-check"></i>
+            </tc-icon>
+            <tc-icon [color]="'warning'" *ngIf="destination.interest === 'Unsure'">
+              <i class="fa-regular fa-circle-question"></i>
+            </tc-icon>
+            <span class="ms-1">{{ destination.interest }}</span>
+          </div>
+        </div>
+
+        <!-- Notes -->
+        <div class="col-md-7">
+        <span class="d-block text-break">
+          <strong>Notes:</strong>
+          {{ destination.notes || '' }}
+        </span>
+        </div>
+
+        <!-- Edit button -->
+        <div class="col-md-1 text-end" *ngIf="editable">
+          <tc-button (onClick)="editDestinationsDetails(destination)"
+                     [type]="'plain'"
+                     [color]="'secondary'"
+          >
+            <i class="fas fa-edit"></i>
+          </tc-button>
+        </div>
+      </div>
+
+      <hr *ngIf="i < candidate.candidateDestinations?.length - 1" class="my-2" />
+    </div>
+  </ng-template>
+</tc-card>

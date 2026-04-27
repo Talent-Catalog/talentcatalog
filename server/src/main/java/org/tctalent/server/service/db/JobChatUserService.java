@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -36,6 +36,14 @@ public interface JobChatUserService {
      */
     @NonNull
     JobChatUserInfo getJobChatUserInfo(@NonNull JobChat chat, @NonNull User user);
+
+    /**
+     * Determines whether the given chat has been marked as read by the given user.
+     * @param chat Chat in question
+     * @param user User in question
+     * @return True if chat is marker as read by the user, otherwise false.
+     */
+    boolean isChatReadByUser(@NonNull JobChat chat, @NonNull User user);
 
     /**
      * Records which post the given user has read up to in the given chat

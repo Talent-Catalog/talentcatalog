@@ -1,23 +1,39 @@
-<div *ngIf="error">
-  {{error}}
-</div>
+<!--
+  ~ Copyright (c) 2024 Talent Catalog.
+  ~
+  ~ This program is free software: you can redistribute it and/or modify it under
+  ~ the terms of the GNU Affero General Public License as published by the Free
+  ~ Software Foundation, either version 3 of the License, or any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful, but WITHOUT
+  ~ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+  ~ FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+  ~ for more details.
+  ~
+  ~ You should have received a copy of the GNU Affero General Public License
+  ~ along with this program. If not, see https://www.gnu.org/licenses/.
+  -->
+
+<tc-alert *ngIf="error">{{error}}</tc-alert>
 <form [formGroup]="form">
-  <div *ngIf="editable" class="mb-3">
-    <label class="form-label" for="visaJobEligibleOther">Other Visa Options?</label>
-    <div class="float-end">
-      <app-autosave-status
-        [saving]="saving"
-        [typing]="typing">
-      </app-autosave-status>
-    </div>
-    <ng-select id="visaJobEligibleOther" [formControlName]="'visaJobEligibleOther'" (clear)="setNoResponse('visaJobEligibleOther')"
-               [items]="visaOtherOptions" [clearOnBackspace]="false"
-               placeholder="Select" bindLabel="stringValue" bindValue="key"></ng-select>
-  </div>
-  <div *ngIf="hasNotes" class="mb-3">
-    <label class="form-label" for="visaJobEligibleOtherNotes">Notes</label>
-    <textarea type="text" class="md-textarea-auto form-control" rows="4"
-              id="visaJobEligibleOtherNotes" [formControlName]="'visaJobEligibleOtherNotes'"
-              placeholder=""></textarea>
-  </div>
+  <tc-fieldset>
+    <tc-field *ngIf="editable">
+      <div class="d-flex justify-content-between">
+        <tc-label for="visaJobEligibleOther">
+          Other Visa Options?
+        </tc-label>
+        <app-autosave-status
+          [saving]="saving"
+          [typing]="typing">
+        </app-autosave-status>
+      </div>
+      <ng-select class="tc-select" id="visaJobEligibleOther" [formControlName]="'visaJobEligibleOther'" (clear)="setNoResponse('visaJobEligibleOther')"
+                 [items]="visaOtherOptions" [clearOnBackspace]="false"
+                 placeholder="Select" bindLabel="stringValue" bindValue="key"></ng-select>
+    </tc-field>
+    <tc-field *ngIf="hasNotes">
+      <tc-label for="visaJobEligibleOtherNotes">Notes</tc-label>
+      <tc-textarea id="visaJobEligibleOtherNotes" [formControlName]="'visaJobEligibleOtherNotes'"></tc-textarea>
+    </tc-field>
+  </tc-fieldset>
 </form>

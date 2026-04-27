@@ -1,0 +1,440 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright (c) 2024 Talent Catalog.
+  ~
+  ~ This program is free software: you can redistribute it and/or modify it under
+  ~ the terms of the GNU Affero General Public License as published by the Free
+  ~ Software Foundation, either version 3 of the License, or any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful, but WITHOUT
+  ~ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+  ~ FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+  ~ for more details.
+  ~
+  ~ You should have received a copy of the GNU Affero General Public License
+  ~ along with this program. If not, see https://www.gnu.org/licenses/.
+  -->
+
+<destinations>
+    <!--
+       Once a day a filtered copy of a subset of the master TBB candidate
+       data is sent to databases in various employer destinations.
+       For example, to the Refugee Talent database in Australia.
+
+       The data is anonymous - so only a refugee's id is provide - no name or
+       contact details.
+
+       The data is filtered according to the destination.
+       For example Australia only receives data written in English, for
+       refugees currently located in Jordan or Lebanon, and who are not
+       Palestinian nationality.
+
+       Any existing data in the destination database is deleted, and replace by
+       the new data.
+    -->
+<!--    <destination>-->
+<!--        <country>au</country>-->
+<!--        <database>-->
+<!--&lt;!&ndash;            todo Need to remove these credentials into env variables&ndash;&gt;-->
+<!--            <url>jdbc:mysql://prod-db-mysql-1.refugeetalent.com:3306/GlobalTalentDb?allowLoadLocalInfile=true&amp;useSSL=false&amp;verifyServerCertificate=false</url>-->
+<!--            <user>GlobalTalentUser</user>-->
+<!--            <password>d26OKew37IkE</password>-->
+
+<!--            &lt;!&ndash;-->
+<!--                This filter is added as an AND condition to the WHERE clause-->
+<!--                of the populate SQL-->
+<!--            &ndash;&gt;-->
+<!--            <filter>-->
+<!--                &lt;!&ndash;Exclude test users&ndash;&gt;-->
+<!--                users.username NOT LIKE 'TBB%'-->
+<!--                AND-->
+<!--                &lt;!&ndash;Only look at Active users&ndash;&gt;-->
+<!--                candidate.status IN ('active', 'pending')-->
+<!--                AND-->
+<!--                &lt;!&ndash;Located in Jordan or Lebanon only&ndash;&gt;-->
+<!--                (candidate.country_id IS NULL OR candidate.country_id IN (6288,6296))-->
+<!--                AND-->
+<!--                &lt;!&ndash;Exclude candidates in TestCandidates list&ndash;&gt;-->
+<!--                candidate.id NOT IN-->
+<!--                (select candidate_id from candidate_saved_list where saved_list_id-->
+<!--                   = (select id from saved_list where name = 'TestCandidates' and global = true));-->
+<!--            </filter>-->
+<!--            <tables>-->
+<!--                <table>-->
+<!--                    <name>jobseekers</name>-->
+<!--                    <populate>-->
+<!--                        SELECT-->
+<!--                        CAST(candidate_number AS int) AS user_id,-->
+<!--                        EXTRACT(year FROM dob) AS birth_year,-->
+<!--                        country_id,-->
+<!--                        nationality_id,-->
+<!--                        (SELECT location FROM candidate_attachment ca-->
+<!--                        WHERE ca.id = candidate.shareable_cv_attachment_id) as cv_url-->
+<!--                        FROM candidate-->
+<!--                        JOIN users ON candidate.user_id = users.id-->
+<!--                        WHERE true-->
+<!--                    </populate>-->
+<!--                    <fields>-->
+<!--                        user_id INT(11) NOT NULL,-->
+<!--                        birth_year INT(11),-->
+<!--                        country_id INT(11),-->
+<!--                        nationality_id INT(11),-->
+<!--                        cv_url TEXT-->
+<!--                    </fields>-->
+<!--                    <index>-->
+<!--                        user_id-->
+<!--                    </index>-->
+<!--                </table>-->
+<!--                <table>-->
+<!--                    <name>jobseeker_certifications</name>-->
+<!--                    <populate>-->
+<!--                        SELECT-->
+<!--                        CAST(candidate_number AS int) AS user_id,-->
+<!--                        name as certification,-->
+<!--                        institution,-->
+<!--                        date_completed AS date-->
+<!--                        FROM candidate-->
+<!--                        JOIN users ON candidate.user_id = users.id-->
+<!--                        JOIN candidate_certification ON candidate_certification.candidate_id = candidate.id-->
+<!--                        WHERE-->
+<!--                        &lt;!&ndash; Filter out anything with non ASCII (eg Arabic) characters &ndash;&gt;-->
+<!--                        candidate_certification.name = regexp_replace(candidate_certification.name, '[^[:ascii:]]', '', 'g')-->
+<!--                        AND-->
+<!--                        candidate_certification.institution = regexp_replace(candidate_certification.institution, '[^[:ascii:]]', '', 'g')-->
+<!--                    </populate>-->
+<!--                    <fields>-->
+<!--                        user_id INT(11),-->
+<!--                        certification TEXT,-->
+<!--                        institution TEXT,-->
+<!--                        date DATE-->
+<!--                    </fields>-->
+<!--                </table>-->
+<!--                <table>-->
+<!--                    <name>jobseeker_degrees</name>-->
+<!--                    <populate>-->
+<!--                        SELECT-->
+<!--                        CAST(candidate_number AS int) AS user_id,-->
+<!--                        education_type,-->
+<!--                        course_name,-->
+<!--                        education_major.name as major,-->
+<!--                        year_completed AS graduation,-->
+<!--                        candidate_education.country_id,-->
+<!--                        institution-->
+<!--                        FROM candidate-->
+<!--                        JOIN users ON candidate.user_id = users.id-->
+<!--                        JOIN candidate_education on candidate.id = candidate_education.candidate_id-->
+<!--                        JOIN education_major ON candidate.migration_education_major_id = education_major.id-->
+<!--                        WHERE-->
+<!--                        &lt;!&ndash;Filter out anything with non ASCII (eg Arabic) characters&ndash;&gt;-->
+<!--                        education_major.name = regexp_replace(education_major.name, '[^[:ascii:]]', '', 'g')-->
+<!--                    </populate>-->
+<!--                    <fields>-->
+<!--                        user_id INT(11) NOT NULL,-->
+<!--                        education_type TEXT,-->
+<!--                        course_name TEXT,-->
+<!--                        major TEXT,-->
+<!--                        graduation INT(11),-->
+<!--                        country_id INT(11),-->
+<!--                        institution TEXT-->
+<!--                    </fields>-->
+<!--                </table>-->
+<!--                <table>-->
+<!--                    <name>jobseeker_jobs</name>-->
+<!--                    <populate>-->
+<!--                        SELECT-->
+<!--                        CAST(candidate_number AS int) AS user_id,-->
+<!--                        candidate_job_experience.role as position_title,-->
+<!--                        company_name,-->
+<!--                        start_date,-->
+<!--                        end_date,-->
+<!--                        description,-->
+<!--                        candidate_occupation_id as occupation_id,-->
+<!--                        candidate_job_experience.country_id-->
+<!--                        FROM candidate-->
+<!--                        JOIN users ON candidate.user_id = users.id-->
+<!--                        JOIN candidate_job_experience on candidate.id = candidate_job_experience.candidate_id-->
+<!--                        WHERE-->
+<!--                        &lt;!&ndash;Filter out anything with non ASCII (eg Arabic) characters&ndash;&gt;-->
+<!--                        company_name = regexp_replace(company_name, '[^[:ascii:]]', '', 'g')-->
+<!--                        AND-->
+<!--                        candidate_job_experience.role = regexp_replace(candidate_job_experience.role, '[^[:ascii:]]', '', 'g')-->
+<!--                    </populate>-->
+<!--                    <fields>-->
+<!--                        user_id INT(11) NOT NULL,-->
+<!--                        position_title TEXT,-->
+<!--                        company_name TEXT,-->
+<!--                        start_date DATE,-->
+<!--                        end_date DATE,-->
+<!--                        description TEXT,-->
+<!--                        occupation_id INT(11),-->
+<!--                        country_id INT(11)-->
+<!--                    </fields>-->
+<!--                </table>-->
+<!--                <table>-->
+<!--                    <name>jobseeker_languages</name>-->
+<!--                    <populate>-->
+<!--                        SELECT-->
+<!--                        CAST(candidate_number AS int) AS user_id,-->
+<!--                        language_id,-->
+<!--                        spoken_level_id,-->
+<!--                        written_level_id-->
+<!--                        FROM candidate-->
+<!--                        JOIN users ON candidate.user_id = users.id-->
+<!--                        JOIN candidate_language on candidate.id = candidate_language.candidate_id-->
+<!--                    </populate>-->
+<!--                    <fields>-->
+<!--                        user_id INT(11) NOT NULL,-->
+<!--                        language_id INT(11),-->
+<!--                        spoken_level_id INT(11),-->
+<!--                        written_level_id INT(11)-->
+<!--                    </fields>-->
+<!--                </table>-->
+<!--                <table>-->
+<!--                    <name>jobseeker_skills</name>-->
+<!--                    <populate>-->
+<!--                        SELECT-->
+<!--                        CAST(candidate_number AS int) AS user_id,-->
+<!--                        skill,-->
+<!--                        time_period-->
+<!--                        FROM candidate-->
+<!--                        JOIN users ON candidate.user_id = users.id-->
+<!--                        JOIN candidate_skill on candidate.id = candidate_skill.candidate_id-->
+<!--                        WHERE-->
+<!--                        &lt;!&ndash; Filter out anything with non ASCII (eg Arabic) characters &ndash;&gt;-->
+<!--                        skill = regexp_replace(skill, '[^[:ascii:]]', '', 'g')-->
+<!--                    </populate>-->
+<!--                    <fields>-->
+<!--                        user_id INT(11) NOT NULL,-->
+<!--                        skill TEXT,-->
+<!--                        time_period TEXT-->
+<!--                    </fields>-->
+<!--                </table>-->
+<!--            </tables>-->
+<!--            <stringtables>-->
+<!--                <table>-->
+<!--                    <name>country</name>-->
+<!--                    <populate>-->
+<!--                        SELECT id, name FROM country WHERE status = 'active'-->
+<!--                    </populate>-->
+<!--                    <fields>-->
+<!--                        id INT(11) NOT NULL,-->
+<!--                        name TEXT NOT NULL-->
+<!--                    </fields>-->
+<!--                    <index>-->
+<!--                        id-->
+<!--                    </index>-->
+<!--                </table>-->
+<!--                <table>-->
+<!--                    <name>education_major</name>-->
+<!--                    <populate>-->
+<!--                        SELECT id, name FROM education_major WHERE status = 'active'-->
+<!--                    </populate>-->
+<!--                    <fields>-->
+<!--                        id INT(11) NOT NULL,-->
+<!--                        name TEXT NOT NULL-->
+<!--                    </fields>-->
+<!--                    <index>-->
+<!--                        id-->
+<!--                    </index>-->
+<!--                </table>-->
+<!--                <table>-->
+<!--                    <name>industry</name>-->
+<!--                    <populate>-->
+<!--                        SELECT id, name FROM industry WHERE status = 'active'-->
+<!--                    </populate>-->
+<!--                    <fields>-->
+<!--                        id INT(11) NOT NULL,-->
+<!--                        name TEXT NOT NULL-->
+<!--                    </fields>-->
+<!--                    <index>-->
+<!--                        id-->
+<!--                    </index>-->
+<!--                </table>-->
+<!--                <table>-->
+<!--                    <name>language</name>-->
+<!--                    <populate>-->
+<!--                        SELECT id, name FROM language WHERE status = 'active'-->
+<!--                    </populate>-->
+<!--                    <fields>-->
+<!--                        id INT(11) NOT NULL,-->
+<!--                        name TEXT NOT NULL-->
+<!--                    </fields>-->
+<!--                    <index>-->
+<!--                        id-->
+<!--                    </index>-->
+<!--                </table>-->
+<!--                <table>-->
+<!--                    <name>language_level</name>-->
+<!--                    <populate>-->
+<!--                        SELECT id, name FROM language_level WHERE status = 'active'-->
+<!--                    </populate>-->
+<!--                    <fields>-->
+<!--                        id INT(11) NOT NULL,-->
+<!--                        name TEXT NOT NULL-->
+<!--                    </fields>-->
+<!--                    <index>-->
+<!--                        id-->
+<!--                    </index>-->
+<!--                </table>-->
+<!--                <table>-->
+<!--                    <name>occupation</name>-->
+<!--                    <populate>-->
+<!--                        SELECT id, name FROM occupation WHERE status = 'active'-->
+<!--                    </populate>-->
+<!--                    <fields>-->
+<!--                        id INT(11) NOT NULL,-->
+<!--                        name TEXT NOT NULL-->
+<!--                    </fields>-->
+<!--                    <index>-->
+<!--                        id-->
+<!--                    </index>-->
+<!--                </table>-->
+<!--            </stringtables>-->
+<!--        </database>-->
+<!--    </destination>-->
+    <!--    <destination>-->
+    <!--        <country>nr</country>-->
+    <!--        <database>-->
+    <!--            <url>jdbc:mysql://tbb-database.cicadkawaz3y.ap-southeast-2.rds.amazonaws.com:3306/NauruDB</url>-->
+    <!--            <user>admin</user>-->
+    <!--            <password>1212s1212ss</password>-->
+    <!--            -->
+    <!--            &lt;!&ndash;-->
+    <!--                This filter is added as an AND condition to the WHERE clause-->
+    <!--                of the populate SQL -->
+    <!--            &ndash;&gt;-->
+    <!--            <filter>-->
+    <!--                &lt;!&ndash;Exclude test users&ndash;&gt;-->
+    <!--                &lt;!&ndash;debug&ndash;&gt;-->
+    <!--                &lt;!&ndash;user.username NOT LIKE 'TBB%'&ndash;&gt;-->
+    <!--                &lt;!&ndash;AND&ndash;&gt;-->
+    <!--                &lt;!&ndash;Only look at Active users&ndash;&gt;-->
+    <!--                &lt;!&ndash;user.status >= 10&ndash;&gt;-->
+    <!--                &lt;!&ndash;AND&ndash;&gt;-->
+    <!--                &lt;!&ndash;Located in Nauru&ndash;&gt;-->
+    <!--                &lt;!&ndash;(user_jobseeker.country IS NULL OR user_jobseeker.country IN (6327,9444))&ndash;&gt;-->
+    <!--                user.status > 0-->
+    <!--                AND-->
+    <!--                (user_jobseeker.country IN (6327,9444))-->
+    <!--            </filter>-->
+    <!--            <tables>-->
+    <!--                <table>-->
+    <!--                    <name>jobseekers</name>-->
+    <!--                    <populate>-->
+    <!--                        SELECT user.id,-->
+    <!--                        birth_year,-->
+    <!--                        country AS country_id,-->
+    <!--                        nationality AS nationality_id-->
+    <!--                        FROM user-->
+    <!--                        JOIN user_jobseeker ON id = user_id-->
+    <!--                        WHERE 1-->
+    <!--                    </populate>-->
+    <!--                    <fields>-->
+    <!--                        user_id INT(11) NOT NULL,-->
+    <!--                        birth_year INT(11),-->
+    <!--                        country_id INT(11),-->
+    <!--                        nationality_id INT(11)-->
+    <!--                    </fields>-->
+    <!--                    <index>-->
+    <!--                        CREATE UNIQUE INDEX jobseeker_user_id_uindex ON jobseekers (user_id)-->
+    <!--                    </index>-->
+    <!--                </table>-->
+    <!--                <table>-->
+    <!--                    <name>jobseeker_certifications</name>-->
+    <!--                    <populate>-->
+    <!--                        SELECT user.id,-->
+    <!--                        certification_name AS certification,-->
+    <!--                        institution_name AS institution,-->
+    <!--                        date_of_receipt AS "date"-->
+    <!--                        FROM user-->
+    <!--                        JOIN user_jobseeker ON id = user_id-->
+    <!--                        JOIN user_jobseeker_certification ON user.id = user_jobseeker_certification.user_id-->
+    <!--                        WHERE-->
+    <!--                        certification_name = CONVERT(certification_name USING ASCII)-->
+    <!--                        AND-->
+    <!--                        institution_name = CONVERT(institution_name USING ASCII)-->
+    <!--                    </populate>-->
+    <!--                    <fields>-->
+    <!--                        user_id INT(11),-->
+    <!--                        certification TEXT,-->
+    <!--                        institution TEXT,-->
+    <!--                        date DATE-->
+    <!--                    </fields>-->
+    <!--                </table>-->
+    <!--                <table>-->
+    <!--                    <name>jobseeker_degrees</name>-->
+    <!--                    <populate>-->
+    <!--                        SELECT user.id,-->
+    <!--                        user_jobseeker_education.specification_emphasis AS major,-->
+    <!--                        graduation_year AS graduation,-->
+    <!--                        user_jobseeker_education.country AS country_id,-->
+    <!--                        degree AS degree_id,-->
+    <!--                        user_jobseeker_education.university_school AS institution_id-->
+    <!--                        FROM user-->
+    <!--                        JOIN user_jobseeker ON id = user_id-->
+    <!--                        JOIN user_jobseeker_education ON user.id = user_jobseeker_education.user_id-->
+    <!--                        WHERE-->
+    <!--                        user_jobseeker_education.specification_emphasis =-->
+    <!--                        CONVERT(user_jobseeker_education.specification_emphasis USING ASCII)-->
+    <!--                    </populate>-->
+    <!--                    <fields>-->
+    <!--                        user_id INT(11) NOT NULL,-->
+    <!--                        major TEXT,-->
+    <!--                        graduation INT(11),-->
+    <!--                        country_id INT(11),-->
+    <!--                        degree_id INT(11),-->
+    <!--                        institution_id INT(11)-->
+    <!--                    </fields>-->
+    <!--                </table>-->
+    <!--                <table>-->
+    <!--                    <name>jobseeker_jobs</name>-->
+    <!--                    <populate>-->
+    <!--                        SELECT user.id, -->
+    <!--                        position_title, -->
+    <!--                        company_name,-->
+    <!--                        start_date, -->
+    <!--                        end_date,  -->
+    <!--                        description,-->
+    <!--                        job_occupation AS job_id,-->
+    <!--                        location AS location_id-->
+    <!--                        FROM user-->
+    <!--                        JOIN user_jobseeker ON id = user_id-->
+    <!--                        JOIN user_jobseeker_experience ON user.id = user_jobseeker_experience.user_id -->
+    <!--                        WHERE-->
+    <!--                        position_title = CONVERT(position_title USING ASCII)-->
+    <!--                        AND-->
+    <!--                        company_name = CONVERT(company_name USING ASCII)-->
+    <!--                    </populate>-->
+    <!--                    <fields>-->
+    <!--                        user_id INT(11) NOT NULL,-->
+    <!--                        position_title TEXT,-->
+    <!--                        company_name TEXT,-->
+    <!--                        start_date DATE,-->
+    <!--                        end_date DATE,-->
+    <!--                        description TEXT,-->
+    <!--                        job_id INT(11),-->
+    <!--                        location_id INT(11)-->
+    <!--                    </fields>-->
+    <!--                </table>-->
+    <!--                <table>-->
+    <!--                    <name>jobseeker_skills</name>-->
+    <!--                    <populate>-->
+    <!--                        SELECT user.id,-->
+    <!--                        skill,-->
+    <!--                        time_period-->
+    <!--                        FROM user-->
+    <!--                        JOIN user_jobseeker ON id = user_id-->
+    <!--                        JOIN user_jobseeker_skills ON user.id = user_jobseeker_skills.user_id-->
+    <!--                        WHERE-->
+    <!--                        skill = CONVERT(skill USING ASCII)-->
+    <!--                    </populate>-->
+    <!--                    <fields>-->
+    <!--                        user_id INT(11) NOT NULL,-->
+    <!--                        skill TEXT NOT NULL,-->
+    <!--                        time_period_id INT(11)-->
+    <!--                    </fields>-->
+    <!--                </table>-->
+    <!--            </tables>-->
+    <!--        </database>-->
+    <!--    </destination>-->
+</destinations>

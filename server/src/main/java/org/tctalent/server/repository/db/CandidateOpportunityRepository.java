@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -18,6 +18,7 @@ package org.tctalent.server.repository.db;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
@@ -61,8 +62,38 @@ public interface CandidateOpportunityRepository extends JpaRepository<CandidateO
         + " where op.sfId = :sfId ")
     Optional<CandidateOpportunity> findBySfId(@Param("sfId") String sfId);
 
+    List<CandidateOpportunity> findAllBySfIdIsNull();
+
     @Query(" select op from CandidateOpportunity op "
         + " where op.candidate.id = :candidateId and op.jobOpp.id = :jobOppId")
     CandidateOpportunity findByCandidateIdAndJobId(
         @Param("candidateId") Long candidateId, @Param("jobOppId") Long jobOppId);
+
+    @Query(" select op from CandidateOpportunity op where op.jobOpp.createdBy.partner.id = :partnerId")
+    List<CandidateOpportunity> findPartnerOpps(@Param("partnerId") Long partnerId);
+
+    @Query("""
+        select op.candidate.id
+        from CandidateOpportunity op
+        where op.jobOpp.createdBy.partner.id = :partnerId
+        and op.lastActiveStage >= org.tctalent.server.model.db.CandidateOpportunityStage.cvReview
+        """)
+    Set<Long> findFullyVisibleCandidateIds(@Param("partnerId") Long partnerId);
+
+    @Query("""
+        select op.candidate.user.id
+        from CandidateOpportunity op
+        where op.jobOpp.createdBy.partner.id = :partnerId
+        and op.lastActiveStage >= org.tctalent.server.model.db.CandidateOpportunityStage.cvReview
+        """)
+    Set<Long> findFullyVisibleUserIds(@Param("partnerId") Long partnerId);
+
+    @Query(
+        "SELECT co.sfId " +
+        "FROM CandidateOpportunity co " +
+        "WHERE co.closed = false " +
+        "AND co.sfId IS NOT NULL"
+    )
+    List<String> findAllNonNullSfIdsByClosedFalse();
+
 }

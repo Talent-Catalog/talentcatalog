@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -18,11 +18,12 @@ package org.tctalent.server.api.admin;
 
 import static org.tctalent.server.model.db.PartnerDtoHelper.employerDto;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -33,6 +34,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+import org.tctalent.server.api.dto.DtoType;
+import org.tctalent.server.api.dto.SavedListBuilderSelector;
 import org.tctalent.server.exception.EntityExistsException;
 import org.tctalent.server.exception.InvalidRequestException;
 import org.tctalent.server.exception.NoSuchObjectException;
@@ -42,21 +45,20 @@ import org.tctalent.server.request.job.JobIntakeData;
 import org.tctalent.server.request.job.SearchJobRequest;
 import org.tctalent.server.request.job.UpdateJobRequest;
 import org.tctalent.server.request.link.UpdateLinkRequest;
+import org.tctalent.server.service.api.SkillName;
+import org.tctalent.server.service.db.CountryService;
 import org.tctalent.server.service.db.JobService;
 import org.tctalent.server.util.dto.DtoBuilder;
 
-@RestController()
+@RestController
 @RequestMapping("/api/admin/job")
+@RequiredArgsConstructor
 public class JobAdminApi implements
     ITableApi<SearchJobRequest, UpdateJobRequest, UpdateJobRequest> {
 
-    private final SavedListBuilderSelector savedListBuilderSelector = new SavedListBuilderSelector();
-
+    private final CountryService countryService;
+    private final SavedListBuilderSelector savedListBuilderSelector;
     private final JobService jobService;
-
-    public JobAdminApi(JobService jobService) {
-        this.jobService = jobService;
-    }
 
     @Override
     @PostMapping
@@ -67,10 +69,17 @@ public class JobAdminApi implements
     }
 
     @Override
-    @GetMapping("{id}")
-    public @NotNull Map<String, Object> get(long id) throws NoSuchObjectException {
+    public @NotNull Map<String, Object> get(long id, DtoType dtoType) throws NoSuchObjectException {
         SalesforceJobOpp job = jobService.getJob(id);
         return jobDto().build(job);
+    }
+
+    @GetMapping("{id}/skills")
+    public @NotNull List<SkillName> getSkills(
+        @PathVariable("id") long id,
+        @RequestParam(value = "lang", defaultValue="en") String lang
+    ) throws NoSuchObjectException {
+        return jobService.getSkills(id, lang);
     }
 
     @PostMapping("{id}/create-search")
@@ -115,8 +124,22 @@ public class JobAdminApi implements
     @PostMapping("search-paged")
     public @NotNull Map<String, Object> searchPaged(@Valid SearchJobRequest request) {
         Page<SalesforceJobOpp> jobs = jobService.searchJobs(request);
-        final Map<String, Object> objectMap = jobDto().buildPage(jobs);
+        final DtoBuilder builder;
+        if (Boolean.TRUE.equals(request.getJobNameAndIdOnly())) {
+            builder = jobNameAndIdDto();
+        } else {
+            builder = jobListDto();
+        }
+        final Map<String, Object> objectMap = builder.buildPage(jobs);
         return objectMap;
+    }
+
+    @Override
+    public @NotNull List<Map<String, Object>> search(@Valid SearchJobRequest request) {
+        List<SalesforceJobOpp> jobs = jobService.searchJobsUnpaged(request);
+        final DtoBuilder builder =
+                Boolean.TRUE.equals(request.getJobNameAndIdOnly()) ? jobNameAndIdDto() : jobDto();
+        return builder.buildList(jobs);
     }
 
     @Override
@@ -148,6 +171,14 @@ public class JobAdminApi implements
         @PathVariable("id") long id, @Valid @RequestBody UpdateLinkRequest updateLinkRequest)
         throws InvalidRequestException, NoSuchObjectException {
         SalesforceJobOpp job = jobService.updateInterviewGuidanceLink(id, updateLinkRequest);
+        return jobDto().build(job);
+    }
+
+    @PutMapping("{id}/mou-link")
+    public @NotNull Map<String, Object> updateMouLink(
+            @PathVariable("id") long id, @Valid @RequestBody UpdateLinkRequest updateLinkRequest)
+            throws InvalidRequestException, NoSuchObjectException {
+        SalesforceJobOpp job = jobService.updateMouLink(id, updateLinkRequest);
         return jobDto().build(job);
     }
 
@@ -191,15 +222,53 @@ public class JobAdminApi implements
         return jobDto().build(job);
     }
 
+    @PostMapping("{id}/upload/mou")
+    public @NotNull Map<String, Object> uploadMou(
+            @PathVariable("id") long id, @RequestParam("file") MultipartFile file)
+            throws InvalidRequestException, IOException, NoSuchObjectException {
+        SalesforceJobOpp job = jobService.uploadMou(id, file);
+        return jobDto().build(job);
+    }
+
+    private DtoBuilder jobNameAndIdDto() {
+        return new DtoBuilder()
+            .add("id")
+            .add("name")
+            ;
+    }
+
+    private DtoBuilder jobListDto() {
+        return new DtoBuilder()
+            .add("id")
+            .add("name")
+            .add("country", countryService.selectBuilder())
+            .add("stage")
+            .add("closed")
+            .add("won")
+            .add("createdDate")
+            .add("submissionDueDate")
+            .add("contactUser", shortUserDto())
+            .add("submissionList", minimalSavedListDto())
+            .add("starringUsers", shortUserDto())
+            ;
+    }
+
+    private DtoBuilder minimalSavedListDto() {
+        return new DtoBuilder()
+            .add("id")
+            ;
+    }
+
     private DtoBuilder jobDto() {
         return new DtoBuilder()
             .add("id")
             .add("sfId")
             .add("contactUser", shortUserDto())
-            .add("country", countryDto())
+            .add("country", countryService.selectBuilder())
             .add("createdBy", shortUserDto())
             .add("createdDate")
             .add("employerEntity", employerDto())
+            .add("evergreen")
             .add("hiringCommitment")
             .add("opportunityScore")
             .add("exclusionList", savedListBuilderSelector.selectBuilder())
@@ -210,7 +279,10 @@ public class JobAdminApi implements
             .add("publishedBy", shortUserDto())
             .add("publishedDate")
             .add("jobCreator", shortPartnerDto())
+            .add("skipCandidateSearch")
             .add("stage")
+            .add("closed")
+            .add("won")
             .add("starringUsers", shortUserDto())
             .add("submissionDueDate")
             .add("submissionList", savedListBuilderSelector.selectBuilder())
@@ -219,13 +291,6 @@ public class JobAdminApi implements
             .add("updatedBy", shortUserDto())
             .add("updatedDate")
             .add("jobOppIntake", joiDto())
-            ;
-    }
-
-    private DtoBuilder countryDto() {
-        return new DtoBuilder()
-            .add("id")
-            .add("name")
             ;
     }
 

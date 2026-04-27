@@ -1,22 +1,40 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or any later version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT
+ * This program is distributed in the hope that it will be useful, but WITHOUT 
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
  * for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
+ * You should have received a copy of the GNU Affero General Public License 
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
 package org.tctalent.server.api.admin;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.verify;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.tctalent.server.data.CandidateOpportunityTestData.getCandidateOpp;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -31,26 +49,12 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.tctalent.server.model.db.CandidateOpportunity;
+import org.tctalent.server.request.candidate.dependant.UpdateRelocatingDependantIds;
 import org.tctalent.server.request.candidate.opportunity.CandidateOpportunityParams;
 import org.tctalent.server.request.candidate.opportunity.SearchCandidateOpportunityRequest;
 import org.tctalent.server.service.db.CandidateOpportunityService;
-
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.verify;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import org.tctalent.server.service.db.CountryService;
+import org.tctalent.server.service.db.SalesforceService;
 
 /**
  * Unit tests for Candidate Opportunity Admin Api endpoints.
@@ -65,8 +69,10 @@ class CandidateOpportunityAdminApiTest extends ApiTestBase {
 
     private static final String BASE_PATH = "/api/admin/opp";
     private static final String SEARCH_PAGED_PATH = "/search-paged";
+    private static final String UPDATE_SF_CASE_PATH = "/{id}/update-sf-case-relocation-info";
+    private static final String RELOCATING_DEPENDANTS_PATH = "/{id}/relocating-dependants";
 
-    private static final CandidateOpportunity candidateOpportunity = AdminApiTestUtil.getCandidateOpportunity();
+    private static final CandidateOpportunity candidateOpportunity = getCandidateOpp();
     private final Page<CandidateOpportunity> candidateOpportunityPage =
             new PageImpl<>(
                     List.of(candidateOpportunity),
@@ -75,6 +81,8 @@ class CandidateOpportunityAdminApiTest extends ApiTestBase {
             );
 
     @MockBean CandidateOpportunityService candidateOpportunityService;
+    @MockBean CountryService countryService;
+    @MockBean SalesforceService salesforceService;
 
     @Autowired MockMvc mockMvc;
     @Autowired ObjectMapper objectMapper;
@@ -128,6 +136,7 @@ class CandidateOpportunityAdminApiTest extends ApiTestBase {
                 .willReturn(candidateOpportunityPage);
 
         mockMvc.perform(post(BASE_PATH + SEARCH_PAGED_PATH)
+                        .with(csrf())
                         .header("Authorization", "Bearer " + "jwt-token")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request))
@@ -164,6 +173,7 @@ class CandidateOpportunityAdminApiTest extends ApiTestBase {
                 .willReturn(candidateOpportunity);
 
         mockMvc.perform(put(BASE_PATH + "/" + CANDIDATE_ID)
+                        .with(csrf())
                         .header("Authorization", "Bearer " + "jwt-token")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request))
@@ -183,5 +193,47 @@ class CandidateOpportunityAdminApiTest extends ApiTestBase {
                 .andExpect(jsonPath("$.employerFeedback", is("Some employer feedback")));
 
         verify(candidateOpportunityService).updateCandidateOpportunity(anyLong(), any(CandidateOpportunityParams.class));
+    }
+
+    @Test
+    @DisplayName("update sf case relocation info succeeds")
+    void updateSfCaseRelocationInfoSucceeds() throws Exception {
+        given(candidateOpportunityService
+                .getCandidateOpportunity(anyLong()))
+                .willReturn(any(CandidateOpportunity.class));
+
+        mockMvc.perform(put(BASE_PATH + UPDATE_SF_CASE_PATH.replace(
+                        "{id}", "3"))
+                        .with(csrf())
+                        .header("Authorization", "Bearer " + "jwt-token"))
+
+                .andDo(print())
+                .andExpect(status().isOk());
+
+        verify(candidateOpportunityService).getCandidateOpportunity(anyLong());
+    }
+
+    @Test
+    @DisplayName("update relocating dependants succeeds")
+    void updateRelocatingDependantsSucceeds() throws Exception {
+        UpdateRelocatingDependantIds request = new UpdateRelocatingDependantIds();
+        request.setRelocatingDependantIds(List.of(1L, 2L));
+
+        given(candidateOpportunityService
+                .updateRelocatingDependants(anyLong(), any(UpdateRelocatingDependantIds.class)))
+                .willReturn(candidateOpportunity);
+
+        mockMvc.perform(put(BASE_PATH + RELOCATING_DEPENDANTS_PATH.replace(
+                        "{id}", "3"))
+                        .with(csrf())
+                        .header("Authorization", "Bearer " + "jwt-token")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request))
+                        .accept(MediaType.APPLICATION_JSON))
+
+                .andDo(print())
+                .andExpect(status().isOk());
+
+        verify(candidateOpportunityService).updateRelocatingDependants(anyLong(), any(UpdateRelocatingDependantIds.class));
     }
 }

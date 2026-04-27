@@ -1,5 +1,5 @@
 <!--
-  ~ Copyright (c) 2021 Talent Beyond Boundaries.
+  ~ Copyright (c) 2024 Talent Catalog.
   ~
   ~ This program is free software: you can redistribute it and/or modify it under
   ~ the terms of the GNU Affero General Public License as published by the Free
@@ -16,7 +16,7 @@
 
 <div class="container">
 
-  <app-loading [loading]="loading"></app-loading>
+  <tc-loading [loading]="loading"></tc-loading>
   <app-error [error]="error"></app-error>
 
   <ng-container *ngIf="!loading">
@@ -24,48 +24,71 @@
     <form [formGroup]="form">
 
       <div class="mb-3">
-        <label class="fw-bold form-label" for="additionalInfo">
+        <tc-label for="additionalInfo">
           {{ 'REGISTRATION.SUBMIT.LABEL.ADDITIONALINFO' | translate }}
-        </label>
-        <textarea id="additionalInfo" class="md-textarea-auto form-control" rows="5"
-                  [formControlName]="'additionalInfo'"></textarea>
+        </tc-label>
+        <tc-textarea id="additionalInfo" rows="5"
+                     [formControlName]="'additionalInfo'"></tc-textarea>
+      </div>
+
+      <div class="mb-3" *ngIf="isGRN">
+        <tc-label for="aspirations">
+          {{ 'REGISTRATION.SUBMIT.LABEL.ASPIRATIONS' | translate }}
+        </tc-label>
+        <tc-textarea id="aspirations" rows="5"
+                     [formControlName]="'aspirations'"></tc-textarea>
       </div>
 
       <div *ngIf="!usAfghan">
         <div class="mb-3">
-          <label class="form-label" for="surveyTypeId">
+          <tc-label for="surveyTypeId">
             {{ 'REGISTRATION.SUBMIT.LABEL.SURVEY' | translate }} <sup>*</sup>
-          </label>
+          </tc-label>
           <ng-select id="surveyTypeId" [formControlName]="'surveyTypeId'" [items]="surveyTypes" [clearable]="false"
+                     class="tc-select"
                      bindLabel="name" bindValue="id" placeholder="{{ 'FORM.PLACEHOLDER.SELECT' | translate }}">
           </ng-select>
         </div>
 
         <ng-container *ngIf="form.controls.surveyTypeId.value !== ''">
           <div class="mb-3">
-            <label class="fw-bold form-label" for="surveyComment">
+            <tc-label for="surveyComment">
               {{ 'REGISTRATION.SUBMIT.LABEL.COMMENT' | translate }}
-            </label>
-            <input type="text" class="form-control" id="surveyComment" placeholder="" [formControlName]="'surveyComment'">
+            </tc-label>
+            <tc-input type="text" id="surveyComment" placeholder="" [formControlName]="'surveyComment'"></tc-input>
           </div>
         </ng-container>
       </div>
 
       <div class="mb-3">
         <div>
-          <label class="form-label" for="linkedInLink">
+          <tc-label for="linkedInLink">
             {{ 'REGISTRATION.SUBMIT.LINKEDIN.LABEL' | translate }}
-          </label>
+          </tc-label>
         </div>
-        <div class="d-flex align-items-center">
-          <input type="text" class="form-control" id="linkedInLink"
-                 formControlName="linkedInLink" placeholder="https://www.linkedin.com/in/...">
+        <div>
+          <tc-input type="text" id="linkedInLink"
+                    formControlName="linkedInLink" placeholder="https://www.linkedin.com/in/..."></tc-input>
         </div>
       </div>
       <div *ngIf="form.controls.linkedInLink.invalid && (form.controls.linkedInLink.dirty || form.controls.linkedInLink.touched)"
            class="alert alert-danger">
         {{ 'REGISTRATION.SUBMIT.LINKEDIN.WARN' | translate }}
       </div>
+
+<!--      todo Uncomment this back when opt in/out is supported-->
+<!--      <div class="mb-3 form-check">-->
+<!--        <input class="form-check-input" type="checkbox" id="allNotifications"-->
+<!--               [value]="false" formControlName="allNotifications">-->
+<!--        <label class="form-check-label" for="allNotifications">-->
+<!--          {{ 'CHAT.NOTIFICATION_PREFERENCE' | translate }}-->
+<!--        </label>-->
+<!--      </div>-->
+<!--      <ng-container *ngIf="allNotifications">-->
+<!--        <div class="mb-3">-->
+<!--          {{ 'CHAT.NOTIFICATION_PREFERENCE_HELP' | translate }}-->
+<!--        </div>-->
+<!--      </ng-container>-->
 
     </form>
 

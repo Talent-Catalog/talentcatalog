@@ -1,0 +1,39 @@
+@import '../../../../scss/color-mixins';
+@import '../../../../scss/support-colors';
+@import '../../../../scss/typography-mixins';
+
+.form-textarea {
+  @include paragraph-md;
+  width: 100%;
+  @include border-color-base;
+  border-width: 1px;
+  border-style: solid;
+  border-radius: 8px;
+  padding: 0.5rem 0.75rem;
+  transition: border-color 0.2s;
+  resize: vertical;
+  min-height: 100px;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  line-height: 1.5;
+
+  &:focus {
+    outline: none;
+    @include border-color-info;
+    box-shadow: 0 0 0 1px color(blue, 500);
+  }
+
+  &:disabled {
+    @include background-color-disabled;
+    @include text-color-disabled;
+    cursor: not-allowed;
+  }
+
+  &.textarea--invalid {
+    @include border-color-error;
+  }
+
+  &.textarea--invalid:focus {
+    @include border-color-info;
+    box-shadow: 0 0 0 1px color(blue, 500);
+  }
+}

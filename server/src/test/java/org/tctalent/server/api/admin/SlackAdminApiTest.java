@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -23,6 +23,7 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -79,6 +80,7 @@ class SlackAdminApiTest extends ApiTestBase {
             .willReturn(testSlackChannelUrl);
 
         mockMvc.perform(post(BASE_PATH + POST_JOB_PATH)
+                .with(csrf())
                 .header("Authorization", "Bearer " + "jwt-token")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request))
@@ -106,6 +108,7 @@ class SlackAdminApiTest extends ApiTestBase {
         String tcLink = "https://tctalent.org/admin-portal/job/123";
 
         mockMvc.perform(post(BASE_PATH + "/123" + POST_JOB_PATH)
+                .with(csrf())
                 .header("Authorization", "Bearer " + "jwt-token")
                 .contentType(MediaType.APPLICATION_OCTET_STREAM)
                 .content(tcLink)

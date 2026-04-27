@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -21,13 +21,10 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Base64;
 import java.util.Base64.Encoder;
-
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
-
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -36,9 +33,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("api/system/upload")
+@Slf4j
 public class SystemUploadApi {
-
-    private static final Logger log = LoggerFactory.getLogger(SystemUploadApi.class);
 
     @Value("${aws.credentials.accessKey}")
     private String accessKey;

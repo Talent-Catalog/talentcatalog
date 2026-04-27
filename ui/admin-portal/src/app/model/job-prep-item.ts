@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -54,11 +54,22 @@ export abstract class JobPrepItem {
   get tabId(): string {
     return this._tabId;
   }
+
+  /**
+   * Checks that given text is not null and is not empty string or all blank (spaces).
+   * @param text Text to check
+   */
+  isBlank(text: string): boolean {
+    return text == null ||
+    //Replace non-breaking spaces with normal spaces so that trim works.
+    //(Rich text (html) data entry can encode spaces as &nbsp;)
+    text.replace(/&nbsp;/g, ' ').trim().length == 0
+  }
 }
 
 export class JobPrepDueDate extends JobPrepItem {
   constructor() {
-    super("Submission due date", "General");
+    super("Submission due date (optional)", "General");
   }
 
   isCompleted(): boolean {
@@ -68,12 +79,12 @@ export class JobPrepDueDate extends JobPrepItem {
 
 export class JobPrepJD extends JobPrepItem {
   constructor() {
-    super("Provide job description (JD)", "Uploads");
+    super("Provide job description (Job Uploads Tab)", "Uploads");
   }
 
   isCompleted(): boolean {
     const fileJdLink = this.job?.submissionList?.fileJdLink;
-    return fileJdLink != null && fileJdLink.trim().length > 0;
+    return !this.isBlank(fileJdLink);
   }
 }
 
@@ -84,7 +95,7 @@ export class JobPrepJobSummary extends JobPrepItem {
 
   isCompleted(): boolean {
     const jobSummary = this.job?.jobSummary;
-    return jobSummary != null && jobSummary.trim().length > 0;
+    return !this.isBlank(jobSummary);
   }
 }
 
@@ -97,7 +108,7 @@ export class JobPrepJOI extends JobPrepItem {
     const joi = this.job?.jobOppIntake;
     let completed = false;
     if (joi != null) {
-      completed = joi.employerCostCommitment != null;
+      completed = !this.isBlank(joi.employerCostCommitment);
     }
     return completed;
   }
@@ -107,7 +118,7 @@ export class JobPrepSuggestedCandidates extends JobPrepItem {
   private _empty = true;
 
   constructor() {
-    super("Suggested candidate(s)", "General");
+    super("Suggested candidate(s) (optional)", "General");
   }
 
   isCompleted(): boolean {
@@ -121,7 +132,7 @@ export class JobPrepSuggestedCandidates extends JobPrepItem {
 
 export class JobPrepSuggestedSearches extends JobPrepItem {
   constructor() {
-    super("Suggested search(es)", "Searches");
+    super("Suggested search(es) (optional)", "Searches");
   }
 
   isCompleted(): boolean {

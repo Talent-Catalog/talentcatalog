@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -22,9 +22,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -35,6 +34,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.tctalent.server.exception.EntityExistsException;
 import org.tctalent.server.exception.EntityReferencedException;
 import org.tctalent.server.exception.NoSuchObjectException;
+import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.Country;
 import org.tctalent.server.model.db.Status;
@@ -47,16 +47,16 @@ import org.tctalent.server.request.country.UpdateCountryRequest;
 import org.tctalent.server.security.AuthService;
 import org.tctalent.server.service.db.CountryService;
 import org.tctalent.server.service.db.TranslationService;
+import org.tctalent.server.util.dto.DtoBuilder;
 import org.tctalent.server.util.locale.LocaleHelper;
 
 @Service
+@Slf4j
 public class CountryServiceImpl implements CountryService, InitializingBean {
 
-    private static final Logger log = LoggerFactory.getLogger(CountryServiceImpl.class);
-
-    @Value("${tbb.destinations}")
-    private String[] tbbDestinations;
-    private List<Country> tbbDestinationCountries;
+    @Value("${tc.destinations}")
+    private String[] tcDestinations;
+    private List<Country> tcDestinationCountries;
 
     private Map<Long, Country> cache = null;
     private final CandidateRepository candidateRepository;
@@ -77,15 +77,18 @@ public class CountryServiceImpl implements CountryService, InitializingBean {
 
     @Override
     public void afterPropertiesSet() {
-        //Extract the TBB destination countries array from the configuration
-        tbbDestinationCountries = new ArrayList<>();
-        for (String tbbDestination : tbbDestinations) {
-            Country country = countryRepository.findByNameIgnoreCase(tbbDestination);
+        //Extract the TC destination countries array from the configuration
+        tcDestinationCountries = new ArrayList<>();
+        for (String tcDestination : tcDestinations) {
+            Country country = countryRepository.findByNameIgnoreCase(tcDestination);
             if (country == null) {
-                log.error("Error in application.yml file. See tbb.destinations. " +
-                        "No country found called " + tbbDestination);
+                LogBuilder.builder(log)
+                    .action("CountryServiceImpl")
+                    .message("Error in application.yml file. See tc.destinations. " +
+                            "No country found called " + tcDestination)
+                    .logError();
             } else {
-                tbbDestinationCountries.add(country);
+                tcDestinationCountries.add(country);
             }
         }
     }
@@ -111,7 +114,7 @@ public class CountryServiceImpl implements CountryService, InitializingBean {
 
         if (restricted) {
             // Restrict access if there are source countries associated to admin user
-            if(user != null && user.getSourceCountries().size() > 0 ){
+            if(user != null && !user.getSourceCountries().isEmpty()){
                 countries = countryRepository.findByStatusAndSourceCountries(Status.active, user.getSourceCountries());
             } else {
                 //Note: Can't use cache because translationService modifies it adding
@@ -128,15 +131,26 @@ public class CountryServiceImpl implements CountryService, InitializingBean {
     }
 
     @Override
-    public List<Country> getTBBDestinations() {
-        return tbbDestinationCountries;
+    public List<Country> getTCDestinations() {
+        return tcDestinationCountries;
+    }
+
+    @Override
+    public boolean isTCDestination(long countryId) {
+        return tcDestinationCountries.stream().anyMatch(c -> c.getId() == countryId);
     }
 
     @Override
     public Page<Country> searchCountries(SearchCountryRequest request) {
         Page<Country> countries = countryRepository.findAll(
                 CountrySpecification.buildSearchQuery(request), request.getPageRequest());
-        log.info("Found " + countries.getTotalElements() + " countries in search");
+
+        LogBuilder.builder(log)
+            .user(authService.getLoggedInUser())
+            .action("searchCountries")
+            .message("Found " + countries.getTotalElements() + " countries in search")
+            .logInfo();
+
         if (!StringUtils.isBlank(request.getLanguage())){
             translationService.translate(countries.getContent(), "country", request.getLanguage());
         }
@@ -154,8 +168,15 @@ public class CountryServiceImpl implements CountryService, InitializingBean {
         return country;
     }
 
+    @NonNull
     @Override
-    public Country findCountryByName(String name) {
+    public Country findByIsoCode(String isoCode) {
+        return countryRepository.findByIsoCode(isoCode)
+            .orElseThrow(() ->new NoSuchObjectException(Country.class, isoCode));
+    }
+
+    @Override
+    public Country findByName(String name) {
         return countryRepository.findByNameIgnoreCase(name);
     }
 
@@ -200,6 +221,16 @@ public class CountryServiceImpl implements CountryService, InitializingBean {
     }
 
     @Override
+    public DtoBuilder selectBuilder() {
+        return new DtoBuilder()
+            .add("id")
+            .add("name")
+            .add("isoCode")
+            .add("status")
+            ;
+    }
+
+    @Override
     public String updateIsoCodes() {
         StringBuilder sb = new StringBuilder();
 
@@ -218,7 +249,7 @@ public class CountryServiceImpl implements CountryService, InitializingBean {
             final String name = country.getName().trim();
             String code = nameToCode.get(name);
             if (code == null) {
-                if (sb.length() > 0) {
+                if (!sb.isEmpty()) {
                    sb.append(",");
                 }
                 sb.append(name);

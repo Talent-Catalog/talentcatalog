@@ -1,0 +1,1 @@
+alter table education_level add column isced_code VARCHAR(20);

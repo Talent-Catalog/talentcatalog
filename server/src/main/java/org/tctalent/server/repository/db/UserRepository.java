@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -17,16 +17,29 @@
 package org.tctalent.server.repository.db;
 
 import java.util.List;
+
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.lang.NonNull;
 import org.tctalent.server.model.db.Role;
 import org.tctalent.server.model.db.User;
 
-public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificationExecutor<User> {
+public interface UserRepository extends CacheEvictingRepository<User, Long>, JpaSpecificationExecutor<User> {
+
+    /**
+     * This method overrides the default delete behavior in CacheEvictingRepository. Only the
+     * cache entry corresponding to the deleted user's username will be removed from the cache.
+     *
+     * @param user the user entity to delete; must not be null
+     */
+    @Override
+    @CacheEvict(value = "users", key = "#p0.username")
+    void delete(@NonNull User user);
 
     @Query("select distinct u from User u "
             + " where lower(u.username) = lower(:username) "
@@ -38,6 +51,7 @@ public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificat
     @Query("select distinct u from User u "
             + " where lower(u.username) = lower(:username) "
             + " and u.status != 'deleted'")
+    @Cacheable(value = "users", key = "#p0")
     User findByUsernameIgnoreCase(@Param("username") String username);
 
     /* Used for candidate authentication */
@@ -45,6 +59,9 @@ public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificat
             + " where (lower(u.email) = lower(:email) )"
             + " and u.status != 'deleted'")
     User findByEmailIgnoreCase(@Param("email") String email);
+
+    @Query("select u from User u where u.emailVerificationToken = :token and u.status != 'deleted'")
+    User findByEmailVerificationToken(@Param("token") String token);
 
     @Query("select u from User u where u.resetToken = :token and u.status != 'deleted'")
     User findByResetToken(@Param("token") String token);

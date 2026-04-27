@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -17,7 +17,6 @@
 import {Component} from '@angular/core';
 import {IntakeComponentTabBase} from "../../../../util/intake/IntakeComponentTabBase";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
-import {OldIntakeInputComponent} from "../../../../util/old-intake-input-modal/old-intake-input.component";
 import {CandidateService} from "../../../../../services/candidate.service";
 import {CountryService} from "../../../../../services/country.service";
 import {EducationLevelService} from "../../../../../services/education-level.service";
@@ -28,12 +27,17 @@ import {
   CandidateCitizenshipService,
   CreateCandidateCitizenshipRequest
 } from "../../../../../services/candidate-citizenship.service";
-import {CandidateExamService, CreateCandidateExamRequest} from "../../../../../services/candidate-exam.service";
+import {
+  CandidateExamService,
+  CreateCandidateExamRequest
+} from "../../../../../services/candidate-exam.service";
 import {
   CandidateDependantService,
   CreateCandidateDependantRequest
 } from "../../../../../services/candidate-dependant.service";
 import {AuthenticationService} from "../../../../../services/authentication.service";
+import {calculateAge} from "../../../../../model/candidate";
+import {AuthorizationService} from "../../../../../services/authorization.service";
 
 @Component({
   selector: 'app-candidate-intake-tab',
@@ -41,8 +45,6 @@ import {AuthenticationService} from "../../../../../services/authentication.serv
   styleUrls: ['./candidate-intake-tab.component.scss']
 })
 export class CandidateIntakeTabComponent extends IntakeComponentTabBase {
-  clickedOldIntake: boolean;
-
   constructor(candidateService: CandidateService,
               countryService: CountryService,
               educationLevelService: EducationLevelService,
@@ -51,40 +53,34 @@ export class CandidateIntakeTabComponent extends IntakeComponentTabBase {
               noteService: CandidateNoteService,
               authenticationService: AuthenticationService,
               modalService: NgbModal,
+              private authorizationService: AuthorizationService,
               private candidateCitizenshipService: CandidateCitizenshipService,
               private candidateExamService: CandidateExamService,
               private candidateDependantService: CandidateDependantService) {
     super(candidateService, countryService, educationLevelService, occupationService, languageLevelService, noteService, authenticationService, modalService)
   }
 
-  public inputOldIntakeNote(formName: string, button) {
-    this.clickedOldIntake = true;
-    // Popup modal to gather who and when.
-    const oldIntakeInputModal = this.modalService.open(OldIntakeInputComponent, {
-      centered: true,
-      backdrop: 'static'
-    });
-
-    oldIntakeInputModal.componentInstance.candidateId = this.candidate.id;
-    oldIntakeInputModal.componentInstance.formName = formName;
-
-    oldIntakeInputModal.result
-      .then((country) => button.textContent = 'Note created!')
-      .catch(() => { /* Isn't possible */
-      });
-  }
-
   get fullIntakeComplete() {
     return this.candidate.fullIntakeCompletedDate != null;
+  }
+
+  get fullIntakeCompletedBy() {
+    let user: string = null;
+    if (this.fullIntakeComplete) {
+      if (this.candidate.fullIntakeCompletedBy != null) {
+        user = this.candidate?.fullIntakeCompletedBy.firstName + " " + this.candidate?.fullIntakeCompletedBy.lastName;
+      } else {
+        user = "external input - see Notes for more details"
+      }
+    }
+    return user;
   }
 
   isPalestinian(): boolean {
     return this.countryService.isPalestine(this.candidate?.nationality)
   }
 
-  addCitizenshipRecord(e: MouseEvent) {
-    // Stop the button from opening/closing the accordion
-    e.stopPropagation();
+  addCitizenshipRecord() {
     this.saving = true;
     const request: CreateCandidateCitizenshipRequest = {};
     this.candidateCitizenshipService.create(this.candidate.id, request).subscribe(
@@ -98,8 +94,7 @@ export class CandidateIntakeTabComponent extends IntakeComponentTabBase {
       });
   }
 
-  addExamRecord(e: MouseEvent) {
-    e.stopPropagation();
+  addExamRecord() {
     this.saving = true;
     const request: CreateCandidateExamRequest = {};
     this.candidateExamService.create(this.candidate.id, request).subscribe(
@@ -113,8 +108,7 @@ export class CandidateIntakeTabComponent extends IntakeComponentTabBase {
       });
   }
 
-  addDependantRecord(e: MouseEvent) {
-    e.stopPropagation();
+  addDependantRecord() {
     const request: CreateCandidateDependantRequest = {};
     this.candidateDependantService.create(this.candidate.id, request).subscribe(
       (dependant) => {
@@ -125,5 +119,44 @@ export class CandidateIntakeTabComponent extends IntakeComponentTabBase {
         this.error = error;
         this.saving = false;
       });
+  }
+
+  getAge(dob: string) {
+    let dobDate = new Date(dob);
+    if (!Number.isNaN(dobDate.getTime())) {
+      return calculateAge(dobDate);
+    } else {
+      return 'no DOB'
+    }
+  }
+
+  getGender(gender: string) {
+    return gender ? gender.slice(0,1).toUpperCase() : "";
+  }
+
+  hasDependantHealthIssues() {
+    let health: boolean = false;
+    if (this.candidateIntakeData?.candidateDependants) {
+      for (let dep of this.candidateIntakeData?.candidateDependants) {
+        if (dep.healthConcern == "Yes") {
+          health = true;
+          break;
+        }
+      }
+    }
+    return health;
+  }
+
+
+  isReadOnly() {
+    return this.authenticationService.getLoggedInUser().readOnly;
+  }
+
+  isEditable(): boolean {
+    return this.authorizationService.isEditableCandidate(this.candidate);
+  }
+
+  protected getTabId(): string {
+    return 'FullIntake';
   }
 }

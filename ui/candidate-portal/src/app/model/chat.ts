@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -16,13 +16,16 @@
 import {User} from "./user";
 import {Auditable} from "./base";
 import {Reaction} from "./reaction";
+import {LinkPreview} from "./link-preview";
 
 export interface Post extends Auditable {
   content: string;
+  linkPreviews: LinkPreview[];
 }
 
 export interface JobChat {
   id: number;
+  type: JobChatType;
   name?: string;
 }
 
@@ -41,6 +44,12 @@ export interface ChatPost {
   updatedBy: User;
   updatedDate: Date;
   reactions?: Reaction[];
+  linkPreviews?: LinkPreview[];
+}
+
+export interface GroupedMessages {
+  date: string;
+  messages: ChatPost[];
 }
 
 export enum JobChatType {

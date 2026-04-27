@@ -1,16 +1,16 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or any later version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT
+ * This program is distributed in the hope that it will be useful, but WITHOUT 
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
  * for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
+ * You should have received a copy of the GNU Affero General Public License 
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
@@ -40,12 +40,15 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.tctalent.server.data.CandidateTestData.getCandidate;
+import static org.tctalent.server.data.CandidateTestData.getCandidateDependant;
 
 /**
  * Unit tests for Candidate Dependant Admin Api endpoints.
@@ -58,8 +61,8 @@ class CandidateDependantAdminApiTest extends ApiTestBase {
     private static final String BASE_PATH = "/api/admin/candidate-dependant";
     private static final long CANDIDATE_ID = 99L;
 
-    private final Candidate candidate = AdminApiTestUtil.getCandidate();
-    private final CandidateDependant candidateDependant = AdminApiTestUtil.getCandidateDependant();
+    private final Candidate candidate = getCandidate();
+    private final CandidateDependant candidateDependant = getCandidateDependant();
 
     @MockBean CandidateDependantService candidateDependantService;
     @MockBean CandidateService candidateService;
@@ -88,6 +91,7 @@ class CandidateDependantAdminApiTest extends ApiTestBase {
                 .willReturn(candidateDependant);
 
         mockMvc.perform(post(BASE_PATH + "/" + CANDIDATE_ID)
+                .with(csrf())
                         .header("Authorization", "Bearer " + "jwt-token")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request))
@@ -118,6 +122,7 @@ class CandidateDependantAdminApiTest extends ApiTestBase {
                 .willReturn(candidate);
 
         mockMvc.perform(delete(BASE_PATH + "/" + CANDIDATE_ID)
+                .with(csrf())
                         .header("Authorization", "Bearer " + "jwt-token"))
 
                 .andDo(print())

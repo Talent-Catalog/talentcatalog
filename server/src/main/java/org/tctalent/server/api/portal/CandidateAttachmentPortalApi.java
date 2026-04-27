@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -16,10 +16,10 @@
 
 package org.tctalent.server.api.portal;
 
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
-import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
@@ -67,7 +67,8 @@ public class CandidateAttachmentPortalApi {
     }
 
     @PostMapping()
-    public Map<String, Object> createCandidateAttachment(@RequestBody CreateCandidateAttachmentRequest request) {
+    public Map<String, Object> createCandidateAttachment(@RequestBody CreateCandidateAttachmentRequest request)
+        throws IOException {
         CandidateAttachment candidateAttachment = candidateAttachmentService.createCandidateAttachment(request);
         return candidateAttachmentDto().build(candidateAttachment);
     }
@@ -138,7 +139,7 @@ public class CandidateAttachmentPortalApi {
                 .add("id")
                 .add("type")
                 .add("name")
-                .add("location")
+                .add("url")
                 .add("fileType")
                 .add("migrated")
                 .add("cv")

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -15,12 +15,13 @@
  */
 
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {FormBuilder, FormGroup, Validators} from "@angular/forms";
+import {UntypedFormBuilder, UntypedFormGroup, Validators} from "@angular/forms";
 import {Router} from "@angular/router";
 import {CandidateService} from "../../../services/candidate.service";
 import {RegistrationService} from "../../../services/registration.service";
 import {SurveyTypeService} from "../../../services/survey-type.service";
 import {SurveyType, US_AFGHAN_SURVEY_TYPE} from "../../../model/survey-type";
+import {AuthenticationService} from "../../../services/authentication.service";
 
 @Component({
   selector: 'app-registration-additional-info',
@@ -34,36 +35,43 @@ export class RegistrationAdditionalInfoComponent implements OnInit {
 
   @Output() onSave = new EventEmitter();
 
-  form: FormGroup;
+  form: UntypedFormGroup;
   error: any;
   _loading = {
     surveyTypes: true,
     additionalInfo: true,
     candidateSurvey: true,
-    linkedInLink: true
+    linkedInLink: true,
+    allNotifications: true
   };
   // Component states
   saving: boolean;
 
   usAfghan: boolean;
   surveyTypes: SurveyType[];
-
-  constructor(private fb: FormBuilder,
+  isGRN: boolean = false;
+  constructor(private fb: UntypedFormBuilder,
               private router: Router,
               private candidateService: CandidateService,
               public registrationService: RegistrationService,
-              private surveyTypeService: SurveyTypeService) {
+              private surveyTypeService: SurveyTypeService,
+              private authenticationService: AuthenticationService) {
   }
 
   ngOnInit() {
-    const linkedInRegex = /http(s)?:\/\/([\w]+\.)?linkedin\.com\/in\/[A-z0-9_-]+\/?/
+    const linkedInRegex = /^http(s)?:\/\/([\w]+\.)?linkedin\.com\/in\/[A-z0-9_-]+\/?/
     this.saving = false;
+    this.isGRN = this.authenticationService.getTcInstanceType() === 'GRN'
     this.form = this.fb.group({
       additionalInfo: [''],
       surveyTypeId: [null, Validators.required],
       surveyComment: [''],
       linkedInLink: ['', Validators.pattern(linkedInRegex)],
+      allNotifications: [false],
     });
+    if (this.isGRN) {
+      this.form.addControl('aspirations', this.fb.control(''));
+    }
 
     this.candidateService.getCandidateSurvey().subscribe(
       (response) => {
@@ -89,21 +97,34 @@ export class RegistrationAdditionalInfoComponent implements OnInit {
     );
 
     this.candidateService.getCandidateAdditionalInfo().subscribe(
-      (response) => {
-        this.form.patchValue({
-          additionalInfo: response.additionalInfo,
-          linkedInLink: response.linkedInLink
-        });
+      (candidate) => {
+        const patch: any = {
+          additionalInfo: candidate.additionalInfo,
+          linkedInLink: candidate.linkedInLink,
+          allNotifications: candidate.allNotifications
+        };
+        if (this.isGRN) {
+          patch.aspirations = candidate.aspirations;
+        }
+
+        this.form.patchValue(patch);
+        
         this._loading.additionalInfo = false;
         this._loading.linkedInLink = false;
+        this._loading.allNotifications = false;
       },
       (error) => {
         this.error = error;
         this._loading.additionalInfo = false;
         this._loading.linkedInLink = false;
+        this._loading.allNotifications = false;
       }
     );
 
+  }
+
+  get allNotifications(): boolean {
+    return this.form.controls.allNotifications.value;
   }
 
   loadDropDownData() {
@@ -131,7 +152,7 @@ export class RegistrationAdditionalInfoComponent implements OnInit {
     this.saving = true;
 
     if (this.usAfghan) {
-      this.candidateService.updateCandidateAdditionalInfo(this.form.value).subscribe(
+      this.candidateService.updateCandidateOtherInfo(this.form.value).subscribe(
         (candidate) => {
 
           this.saving = false;
@@ -151,7 +172,7 @@ export class RegistrationAdditionalInfoComponent implements OnInit {
       this.candidateService.updateCandidateSurvey(this.form.value).subscribe(
         (response) => {
 
-          this.candidateService.updateCandidateAdditionalInfo(this.form.value).subscribe(
+          this.candidateService.updateCandidateOtherInfo(this.form.value).subscribe(
             (candidate) => {
 
               this.saving = false;

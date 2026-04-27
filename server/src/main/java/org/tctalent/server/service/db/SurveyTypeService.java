@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -16,15 +16,16 @@
 
 package org.tctalent.server.service.db;
 
+import java.util.List;
 import org.springframework.data.domain.Page;
 import org.tctalent.server.model.db.SurveyType;
 import org.tctalent.server.request.survey.SearchSurveyTypeRequest;
-
-import java.util.List;
 
 public interface SurveyTypeService {
     List<SurveyType> listActiveSurveyTypes();
     Page<SurveyType> searchActiveSurveyTypes(SearchSurveyTypeRequest request);
     List<SurveyType> listSurveyTypes();
+
+    SurveyType findByName(String name);
 }
 

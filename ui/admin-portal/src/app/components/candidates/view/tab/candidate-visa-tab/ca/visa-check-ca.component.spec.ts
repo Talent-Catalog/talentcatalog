@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -13,29 +13,77 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
+import {VisaCheckCaComponent} from "./visa-check-ca.component";
+import {ComponentFixture, TestBed} from "@angular/core/testing";
+import {Component, CUSTOM_ELEMENTS_SCHEMA} from "@angular/core";
+import {MockCandidate} from "../../../../../../MockData/MockCandidate";
+import {
+  mockCandidateIntakeData
+} from "../../candidate-intake-tab/candidate-intake-tab.component.spec";
+import {CandidateVisa, CandidateVisaJobCheck} from "../../../../../../model/candidate";
+import {NgbAccordionModule, NgbModal} from "@ng-bootstrap/ng-bootstrap";
+import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {AuthorizationService} from "../../../../../../services/authorization.service";
+import {ReadOnlyInputsDirective} from "../../../../../../directives/read-only-inputs.directive";
+import {LocalStorageService} from "../../../../../../services/local-storage.service";
 
-import {async, ComponentFixture, TestBed} from '@angular/core/testing';
-
-import {VisaCheckCaComponent} from './visa-check-ca.component';
+// Mock IntProtectionComponent to include input elements for testing
+@Component({
+  selector: 'app-int-protection',
+  template: `
+    <ng-select></ng-select>
+    <input type="text"/>
+    <textarea></textarea>
+    <app-date-picker></app-date-picker>
+    <ngx-wig></ngx-wig>
+  `
+})
+class MockIntProtectionComponent {
+  // No isEditable method; inputs are controlled by parent directive
+}
 
 describe('VisaCheckCaComponent', () => {
   let component: VisaCheckCaComponent;
   let fixture: ComponentFixture<VisaCheckCaComponent>;
+  let authorizationServiceSpy: jasmine.SpyObj<AuthorizationService>;
+  const mockCandidate = new MockCandidate();
 
-  beforeEach(async(() => {
-    TestBed.configureTestingModule({
-      declarations: [ VisaCheckCaComponent ]
-    })
-    .compileComponents();
-  }));
+  beforeEach(async () => {
+    const authServiceSpyObj = jasmine.createSpyObj('AuthorizationService', ['isEditableCandidate']);
+    await TestBed.configureTestingModule({
+      imports: [NgbAccordionModule, HttpClientTestingModule],
+      declarations: [VisaCheckCaComponent, ReadOnlyInputsDirective, MockIntProtectionComponent],
+      providers: [
+        {provide: NgbModal, useValue: {}},
+        {provide: LocalStorageService, useValue: {}},
+        {provide: AuthorizationService, useValue: authServiceSpyObj}
+      ],
+      schemas: [CUSTOM_ELEMENTS_SCHEMA]
+    }).compileComponents();
+  });
 
   beforeEach(() => {
     fixture = TestBed.createComponent(VisaCheckCaComponent);
     component = fixture.componentInstance;
-    fixture.detectChanges();
+    authorizationServiceSpy = TestBed.inject(AuthorizationService) as jasmine.SpyObj<AuthorizationService>;
+
+    component.candidate = mockCandidate;
+    component.candidateIntakeData = mockCandidateIntakeData;
+    component.visaCheckRecord = {
+      candidateVisaJobChecks: [
+        { id: 1, occupation: { id: 1, name: 'Job 1' } } as CandidateVisaJobCheck,
+        { id: 2, occupation: { id: 2, name: 'Job 2' } } as CandidateVisaJobCheck
+      ]
+    } as CandidateVisa;
+
+    fixture.detectChanges(); // trigger data binding
   });
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('should select the first job by default', () => {
+    expect(component.selectedJob).toEqual(component.visaCheckRecord.candidateVisaJobChecks[0]);
   });
 });

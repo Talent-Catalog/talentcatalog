@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -16,6 +16,10 @@
 
 package org.tctalent.server.service.db.impl;
 
+import java.beans.IntrospectionException;
+import java.beans.PropertyDescriptor;
+import java.util.ArrayList;
+import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
@@ -37,11 +41,6 @@ import org.tctalent.server.request.task.SearchTaskRequest;
 import org.tctalent.server.request.task.UpdateTaskRequest;
 import org.tctalent.server.service.db.TaskService;
 import org.tctalent.server.util.BeanHelper;
-
-import java.beans.IntrospectionException;
-import java.beans.PropertyDescriptor;
-import java.util.ArrayList;
-import java.util.List;
 
 
 @Service
@@ -103,10 +102,10 @@ public class TaskServiceImpl implements TaskService {
         task.setDisplayName(request.getDisplayName());
         task.setDescription(request.getDescription());
         task.setDaysToComplete(request.getDaysToComplete());
-        if (StringUtils.isNotBlank(request.getHelpLink())) {
-            task.setHelpLink(request.getHelpLink());
+        if (StringUtils.isNotBlank(request.getDocLink())) {
+            task.setDocLink(request.getDocLink());
         } else {
-            task.setHelpLink(null);
+            task.setDocLink(null);
         }
         task.setOptional(request.isOptional());
         return taskRepository.save(task);
@@ -124,6 +123,8 @@ public class TaskServiceImpl implements TaskService {
         }
     }
 
+    //TODO JC Perhaps these allowed answers should be stored in DB - not transient. Changes
+    //triggered by change to candidateAnswerField
     private void populateTransientQuestionFields(QuestionTask qt) {
         final String field = qt.getCandidateAnswerField();
 
@@ -162,8 +163,16 @@ public class TaskServiceImpl implements TaskService {
                 qt.setAllowedAnswers(allowedAnswers);
             }
         } else if (field == null && qt.getExplicitAllowedAnswers() != null){
-            // There is no answer field associated with question (it should be stored as a property) but there are explicit allowed answers provided.
-            // We need to then set the allowed answers for to these explicit answers, so that they can be displayed in the front end.
+            //TODO JC This needs a review - can some logic go into the getAnswer method of QuestionTaskImpl?
+
+            //TODO JC I don't really understand what this is doing - create an issue for fixing this?
+            //It is saying that for properties, with explicit allowed answers,
+            // we need to set the allowed answers. Why? Why can't you just use the explicit allowed answers?
+
+            // There is no answer field associated with question (it should be stored as a property)
+            // but there are explicit allowed answers provided.
+            // We need to then set the allowed answers for to these explicit answers,
+            // so that they can be displayed in the front end.
             List<AllowedQuestionTaskAnswer> allowedAnswers = new ArrayList<>();
             for (String answer : qt.getExplicitAllowedAnswers()) {
                 allowedAnswers.add(new AllowedQuestionTaskAnswer(

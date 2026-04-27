@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -36,6 +36,9 @@ import {CandidateEducation} from "./candidate-education";
 import {CandidateJobExperience} from "./candidate-job-experience";
 import {CandidateLanguage} from "./candidate-language";
 import {CandidateOccupation} from "./candidate-occupation";
+import {CandidateSkill} from "./candidate-skill";
+import {CandidateNote} from "./candidate-note";
+import {Partner} from "./partner";
 
 export interface ShortCandidate {
   id: number;
@@ -45,8 +48,12 @@ export interface ShortCandidate {
 
 export interface Candidate extends HasId {
   id: number;
+  rank?: number;
+  pendingTerms?: boolean;
   candidateNumber: string;
+  publicId?: string;
   status: string;
+  allNotifications: boolean;
   gender: string;
   dob: Date;
   address1: string;
@@ -70,6 +77,7 @@ export interface Candidate extends HasId {
   migrationEducationMajor: EducationMajor;
   additionalInfo: string;
   linkedInLink: string;
+  muted: boolean;
   candidateMessage: string;
   maxEducationLevel: EducationLevel;
   folderlink: string;
@@ -98,7 +106,9 @@ export interface Candidate extends HasId {
   unhcrStatus: UnhcrStatus;
   ieltsScore: string;
   numberDependants: number;
-  langAssessmentScore: string;
+  englishAssessmentScoreIelts?: string;
+  englishAssessmentScoreDet?: number;
+  frenchAssessmentScoreNclc?: number;
   candidateExams: CandidateExam[];
   candidateAttachments?: CandidateAttachment[];
   taskAssignments?: TaskAssignment[];
@@ -109,14 +119,27 @@ export interface Candidate extends HasId {
   miniIntakeCompletedDate: number;
   fullIntakeCompletedBy: User;
   fullIntakeCompletedDate: number;
+  potentialDuplicate: boolean;
 
-  //These are only used in the candidate portal on the browser code
   candidateCertifications?: CandidateCertification[];
   candidateEducations?: CandidateEducation[];
   candidateJobExperiences?: CandidateJobExperience[];
   candidateLanguages?: CandidateLanguage[];
   candidateOccupations?: CandidateOccupation[];
+  candidateDestinations?: CandidateDestination[];
+  candidateSkills?: CandidateSkill[];
+  candidateNotes?: CandidateNote[];
 
+  // relocated address fields
+  relocatedAddress: string;
+  relocatedCity: string;
+  relocatedState: string;
+  relocatedCountry: Country;
+
+  // privacy policy info
+  acceptedPrivacyPolicyId: string;
+  acceptedPrivacyPolicyDate:string;
+  acceptedPrivacyPolicyPartner?: Partner;
 }
 
 export interface CandidateProperty {
@@ -126,7 +149,8 @@ export interface CandidateProperty {
 
 export interface CandidateIntakeData {
   asylumYear?: string;
-  availImmediate?: YesNoUnsure;
+  availDate?: string;
+  availImmediate?: YesNo;
   availImmediateJobOps?: string;
   availImmediateReason?: AvailImmediateReason;
   availImmediateNotes?: string;
@@ -162,6 +186,9 @@ export interface CandidateIntakeData {
   crimeConvict?: YesNoUnsure;
   crimeConvictNotes?: string;
 
+  arrestImprison?: YesNoUnsure;
+  arrestImprisonNotes?: string;
+
   destLimit?: YesNo;
   destLimitNotes?: string;
 
@@ -171,6 +198,13 @@ export interface CandidateIntakeData {
   drivingLicense?: DrivingLicenseStatus;
   drivingLicenseExp?: string;
   drivingLicenseCountry?: Country;
+
+  englishAssessment?: string;
+  englishAssessmentScoreIelts?: string;
+  englishAssessmentScoreDet?: number;
+
+  frenchAssessment?: string;
+  frenchAssessmentScoreNclc?: number;
 
   familyMove?: YesNo;
   familyMoveNotes?: string;
@@ -193,8 +227,6 @@ export interface CandidateIntakeData {
   intRecruitOther?: string;
   intRecruitRural?: YesNoUnsure;
   intRecruitRuralNotes?: string;
-  langAssessment?: string;
-  langAssessmentScore?: string;
   leftHomeReasons?: LeftHomeReason[];
   leftHomeNotes?: string;
   militaryService?: YesNo;
@@ -204,7 +236,6 @@ export interface CandidateIntakeData {
   militaryEnd?: string;
   maritalStatus?: MaritalStatus;
   maritalStatusNotes?: string;
-  monitoringEvaluationConsent?: YesNo;
   partnerRegistered?: YesNoUnsure;
   partnerCandidate?: Candidate;
   partnerEduLevel?: EducationLevel;
@@ -216,7 +247,7 @@ export interface CandidateIntakeData {
   partnerIelts?: IeltsStatus;
   partnerIeltsScore?: string;
   partnerIeltsYr?: number;
-  partnerCitizenship?: Country;
+  partnerCitizenship?: number[];
 
   returnedHome?: YesNoUnsure;
   returnedHomeNotes?: string;
@@ -294,8 +325,6 @@ export interface CandidateDestination {
   id?: number;
   country?: Country;
   interest?: YesNoUnsure;
-  family?: FamilyRelations;
-  location?: string;
   notes?: string;
 }
 
@@ -322,9 +351,10 @@ export interface CandidateVisa {
   createdDate?: number;
   updatedBy?: User;
   updatedDate?: number;
-  visaEligibilityAssessment?: YesNo;
   pathwayAssessment?: YesNoUnsure;
   pathwayAssessmentNotes?: string;
+  destinationFamily?: FamilyRelations;
+  destinationFamilyLocation?: String;
   candidateVisaJobChecks?: CandidateVisaJobCheck[];
 
 }
@@ -332,8 +362,6 @@ export interface CandidateVisa {
 export interface CandidateVisaJobCheck {
   jobOpp?: Job;
   id?: number;
-  name?: string;
-  sfJobLink?: string;
   occupation?: Occupation;
   occupationNotes?: string;
   qualification?: YesNo;
@@ -362,7 +390,6 @@ export interface CandidateVisaJobCheck {
   languagesRequired?: string;
   languagesThresholdMet?: YesNo;
   languagesThresholdNotes?: string;
-  relocatingDependantIds?: number[];
 }
 /*
   Enumerations. These should match equivalent enumerations on the server (Java)
@@ -390,24 +417,11 @@ export enum CandidateStatus {
   employed = "employed (inactive)",
   incomplete = "incomplete",
   ineligible = "ineligible (inactive)",
+  ineligibleReview = "ineligible (review)",
   pending = "pending",
+  relocatedIndependently = "relocated independently (inactive)",
   unreachable = "unreachable",
   withdrawn = "withdrawn (inactive)"
-}
-
-export enum CandidateFilterByOpps {
-  someOpps = "Some cases",
-
-  noOpps = "No cases",
-
-  openOpps = "Some open cases",
-
-  closedOpps = "Some closed cases",
-
-  preRelocationOpps = "Some cases not yet at relocated stage - ie 'live' cases",
-
-  postRelocationOpps = "Some cases at the relocated or later stage"
-
 }
 
 export interface CandidateOpportunityParams extends OpportunityProgressParams {
@@ -451,6 +465,10 @@ export interface UpdateCandidateListOppsRequest {
   candidateOppParams?: CandidateOpportunityParams;
 }
 
+export interface UpdateCandidateNotificationPreferenceRequest {
+  allNotifications: boolean;
+}
+
 export interface UpdateCandidateShareableNotesRequest {
   shareableNotes?: string;
 }
@@ -470,6 +488,10 @@ export interface UpdateCandidateStatusInfo {
 export interface UpdateCandidateStatusRequest {
   candidateIds: number[];
   info: UpdateCandidateStatusInfo;
+}
+
+export interface UpdateCandidateMutedRequest {
+  muted: boolean;
 }
 
 export enum FamilyRelations {
@@ -534,12 +556,12 @@ export enum IntRecruitReason {
 }
 
 export enum UnhcrStatus {
-  NoResponse= "No response received from candidate",
+  NoResponse = "No response",
+  RegisteredStatusUnknown = "Registered with UNHCR but status unknown",
+  NotRegistered = "Not registered with UNHCR",
   MandateRefugee = "Assessed by UNHCR as a mandate refugee (RSD)",
   RegisteredAsylum = "Registered with UNHCR as asylum seeker",
   RegisteredStateless = "Registered with UNHCR as stateless",
-  RegisteredStatusUnknown = "Registered with UNHCR but status unknown",
-  NotRegistered = "Not registered with UNHCR",
   Unsure = "Candidate was unsure",
   NA = "Not applicable"
 }
@@ -568,12 +590,14 @@ export enum YesNoUnemployedOther {
 export enum YesNo {
   Yes = "Yes",
   No = "No",
+  NoResponse = "NoResponse"
 }
 
 export enum YesNoUnsure {
   Yes = "Yes",
   No = "No",
-  Unsure = "Unsure"
+  Unsure = "Unsure",
+  NoResponse = "NoResponse"
 }
 
 export enum IeltsStatus {
@@ -597,6 +621,7 @@ export enum Exam {
   IELTSGen = "IELTS General",
   IELTSAca = "IELTS Academic",
   TOEFL = "TOEFL",
+  DETOfficial = "DETOfficial",
   Other = "Other"
 }
 
@@ -725,8 +750,7 @@ export function getIeltsScoreTypeString(candidate: Candidate): string {
  * Returns the immigration pathway link for each destination country. Used in the visa intake.
  * We are hard coding these links as the websites should stay the same.
  * Note: These are currently for demo purposes only.
- * todo get the desired links from destination
- * @param countryId: The country we want the relevant links for.
+ * @param countryId The country we want the relevant links for.
  */
 export function getDestinationPathwayInfoLink(countryId: number): string {
   switch (countryId) {
@@ -744,8 +768,7 @@ export function getDestinationPathwayInfoLink(countryId: number): string {
  * Returns the occupation category help link for each destination country. Used in the visa intake.
  * We are hard coding these links as the websites should stay the same.
  * Note: These are currently for demo purposes only.
- * todo get the desired links from destination
- * @param countryId: The country we want the relevant links for.
+ * @param countryId The country we want the relevant links for.
  */
 export function getDestinationOccupationCatLink(countryId: number): string {
   switch (countryId) {
@@ -763,8 +786,7 @@ export function getDestinationOccupationCatLink(countryId: number): string {
  * Returns the occupation sub category help link for each destination country. Used in the visa intake.
  * We are hard coding these links as the websites should stay the same.
  * Note: These are currently for demo purposes only.
- * todo get the desired links from destination
- * @param countryId: The country we want the relevant links for.
+ * @param countryId The country we want the relevant links for.
  */
 export function getDestinationOccupationSubcatLink(countryId: number): string {
   switch (countryId) {
@@ -778,6 +800,37 @@ export function getDestinationOccupationSubcatLink(countryId: number): string {
   }
 }
 
+export function calculateAge(dob: Date): number {
+  const currentDate = new Date();
+  const currentYear = currentDate.getFullYear();
+  const currentMonth = currentDate.getMonth();
+  const currentDay = currentDate.getDate();
+
+  const birthYear = dob.getFullYear();
+  const birthMonth = dob.getMonth();
+  const birthDay = dob.getDate();
+
+  let age = currentYear - birthYear;
+  if (currentMonth < birthMonth || (currentMonth === birthMonth && currentDay < birthDay)) {
+    age--;
+  }
+
+  return age;
+}
+
 export class SendResetPasswordEmailRequest {
   email: string;
+}
+
+export function describeFamilyInDestination(visaCheck: CandidateVisa): string {
+  let family: string = 'No family entered'
+  if (visaCheck?.destinationFamily) {
+    if (visaCheck?.destinationFamilyLocation) {
+      family = visaCheck?.destinationFamily + ' in ' + visaCheck?.destinationFamilyLocation;
+    } else {
+      family = visaCheck?.destinationFamily;
+    }
+    return family;
+  }
+  return family;
 }

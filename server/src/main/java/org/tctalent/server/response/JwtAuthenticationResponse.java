@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -18,14 +18,17 @@ package org.tctalent.server.response;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.tctalent.server.model.db.TcInstanceType;
 import org.tctalent.server.model.db.User;
 
 @Getter
 @Setter
 public class JwtAuthenticationResponse {
 
+    private boolean canViewChats;
     private User user;
     private String accessToken;
+    private TcInstanceType tcInstanceType;
     private String tokenType = "Bearer";
 
     public JwtAuthenticationResponse(String accessToken, User user) {

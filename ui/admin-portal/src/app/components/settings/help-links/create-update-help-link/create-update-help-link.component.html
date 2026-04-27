@@ -1,0 +1,114 @@
+<!--
+  ~ Copyright (c) 2024 Talent Catalog.
+  ~
+  ~ This program is free software: you can redistribute it and/or modify it under
+  ~ the terms of the GNU Affero General Public License as published by the Free
+  ~ Software Foundation, either version 3 of the License, or any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful, but WITHOUT
+  ~ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+  ~ FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+  ~ for more details.
+  ~
+  ~ You should have received a copy of the GNU Affero General Public License
+  ~ along with this program. If not, see https://www.gnu.org/licenses/.
+  -->
+
+<tc-modal [heading]="title"
+          (onAction)="save()"
+          [disableAction]="form?.invalid || working"
+          [showClose]="true"
+>
+  <tc-alert *ngIf="error">{{error}}</tc-alert>
+  <form [formGroup]="form">
+    <tc-fieldset>
+      <tc-field>
+        <tc-label for="label">Label *</tc-label>
+        <tc-input id="label" formControlName="label"></tc-input>
+      </tc-field>
+
+      <tc-field>
+        <tc-label for="link">Link *</tc-label>
+        <tc-input id="link" formControlName="link"></tc-input>
+      </tc-field>
+
+      <tc-field>
+        <tc-label>Destination country? (if applicable)</tc-label>
+        <ng-select
+          class="tc-select"
+          id="status"
+          [items]="destinationCountries"
+          [multiple]="false"
+          [closeOnSelect]="true"
+          [searchable]="false"
+          bindLabel="name"
+          bindValue="id"
+          [formControlName]="'countryId'">
+        </ng-select>
+      </tc-field>
+
+
+      <tc-field>
+        <tc-label for="caseStage">Candidate Opportunity stage? (if applicable)</tc-label>
+        <ng-select
+          class="tc-select"
+          id="caseStage"
+          [items]="caseStages"
+          [multiple]="false"
+          [closeOnSelect]="true"
+          [searchable]="false"
+          bindLabel="stringValue"
+          bindValue="key"
+          [formControlName]="'caseStage'">
+        </ng-select>
+      </tc-field>
+
+      <tc-field>
+        <tc-label for="jobStage">Job Opportunity stage? (if applicable)</tc-label>
+        <ng-select
+          class="tc-select"
+          id="jobStage"
+          [items]="jobStages"
+          [multiple]="false"
+          [closeOnSelect]="true"
+          [searchable]="false"
+          bindLabel="stringValue"
+          bindValue="key"
+          [formControlName]="'jobStage'">
+        </ng-select>
+      </tc-field>
+
+      <tc-field>
+        <tc-label for="focus">Help focus? (if applicable)</tc-label>
+        <ng-select
+          class="tc-select"
+          id="focus"
+          [items]="focuses"
+          [multiple]="false"
+          [closeOnSelect]="true"
+          [searchable]="false"
+          bindLabel="stringValue"
+          bindValue="key"
+          [formControlName]="'focus'">
+        </ng-select>
+      </tc-field>
+
+      <h5 class="mb-3">Next Step Help</h5>
+
+      <tc-field>
+        <tc-label for="nextStepName">Next step name</tc-label>
+        <tc-input id="nextStepName" formControlName="nextStepName"></tc-input>
+      </tc-field>
+
+      <tc-field>
+        <tc-label for="nextStepText">Next step text</tc-label>
+        <tc-input id="nextStepText" formControlName="nextStepText"></tc-input>
+      </tc-field>
+
+      <tc-field>
+        <tc-label for="nextStepDays">Next step days</tc-label>
+        <tc-input type="number" id="nextStepDays" formControlName="nextStepDays"></tc-input>
+      </tc-field>
+    </tc-fieldset>
+  </form>
+</tc-modal>

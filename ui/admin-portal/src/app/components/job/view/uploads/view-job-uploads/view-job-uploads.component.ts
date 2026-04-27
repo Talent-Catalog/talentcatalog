@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2024 Talent Catalog.
+ *
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see https://www.gnu.org/licenses/.
+ */
+
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {Job, JobDocType} from "../../../../../model/job";
 import {FileSelectorComponent} from "../../../../util/file-selector/file-selector.component";
@@ -62,6 +78,10 @@ export class ViewJobUploadsComponent implements OnInit {
         initialValue.url = this.job.submissionList?.fileInterviewGuidanceLink;
         initialValue.name = this.job.submissionList?.fileInterviewGuidanceName;
         break;
+
+      case "mou":
+        initialValue.url = this.job.submissionList?.fileMouLink;
+        initialValue.name = this.job.submissionList?.fileMouName
     }
     inputLinkModal.componentInstance.initialValue = initialValue;
     inputLinkModal.result.then(
@@ -135,6 +155,10 @@ export class ViewJobUploadsComponent implements OnInit {
     this.editJobLink("joi")
   }
 
+  editMouLink() {
+    this.editJobLink("mou")
+  }
+
   highlightJD() {
     return this.highlightItem instanceof JobPrepJD;
   }
@@ -153,5 +177,9 @@ export class ViewJobUploadsComponent implements OnInit {
 
   uploadInterviewGuidance() {
     this.uploadJobDoc("interview")
+  }
+
+  uploadMou() {
+    this.uploadJobDoc("mou")
   }
 }

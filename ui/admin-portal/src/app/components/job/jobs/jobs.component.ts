@@ -1,7 +1,22 @@
-import {Component, Inject, LOCALE_ID} from '@angular/core';
+/*
+ * Copyright (c) 2024 Talent Catalog.
+ *
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see https://www.gnu.org/licenses/.
+ */
+
+import {Component, Inject, LOCALE_ID, ViewChild} from '@angular/core';
 import {AuthorizationService} from "../../../services/authorization.service";
-import {LocalStorageService} from "angular-2-local-storage";
-import {FormBuilder} from "@angular/forms";
+import {UntypedFormBuilder} from "@angular/forms";
 import {Job, JobOpportunityStage, SearchJobRequest} from "../../../model/job";
 import {JobService} from "../../../services/job.service";
 import {EnumOption, enumOptions} from "../../../util/enum";
@@ -15,6 +30,8 @@ import {forkJoin, Observable} from "rxjs";
 import {CreateChatRequest, JobChat, JobChatType} from "../../../model/chat";
 import {ChatService} from "../../../services/chat.service";
 import {PartnerService} from "../../../services/partner.service";
+import {LocalStorageService} from "../../../services/local-storage.service";
+import {InputComponent} from "../../../shared/components/input/input.component";
 
 @Component({
   selector: 'app-jobs',
@@ -25,7 +42,9 @@ export class JobsComponent extends FilteredOppsComponentBase<Job> {
 
   //Override text to replace "opps" text with "jobs"
   myOppsOnlyLabel = "My jobs only";
-  myOppsOnlyTip = "Only show jobs that I manage";
+  myOppsOnlyTip = "Only show jobs that I created or am the contact for";
+  showUnpublishedLabel = "Show unpublished jobs";
+  showUnpublishedTip = "Show jobs that have not yet been published";
   showClosedOppsLabel = "Show closed jobs";
   showClosedOppsTip = "Show jobs that have been closed";
   showInactiveOppsLabel = "Show inactive jobs";
@@ -33,10 +52,13 @@ export class JobsComponent extends FilteredOppsComponentBase<Job> {
   withUnreadMessagesLabel = "Jobs with unread chats only";
   withUnreadMessagesTip = "Only show jobs which have unread chats";
 
+  @ViewChild("searchFilter")
+  declare searchFilter: InputComponent;
+
   constructor(
     chatService: ChatService,
-    fb: FormBuilder,
-    authService: AuthorizationService,
+    fb: UntypedFormBuilder,
+    authorizationService: AuthorizationService,
     localStorageService: LocalStorageService,
     oppService: JobService,
     salesforceService: SalesforceService,
@@ -44,7 +66,7 @@ export class JobsComponent extends FilteredOppsComponentBase<Job> {
     partnerService: PartnerService,
     @Inject(LOCALE_ID) locale: string
   ) {
-    super(chatService, fb, authService, localStorageService, oppService, salesforceService,
+    super(chatService, fb, authorizationService, localStorageService, oppService, salesforceService,
       countryService, partnerService, locale, "Jobs")
   }
 
@@ -57,9 +79,6 @@ export class JobsComponent extends FilteredOppsComponentBase<Job> {
         //Don't want to see closed jobs
         req.sfOppClosed = false;
 
-        //Jobs must have been published
-        req.published = true;
-
         //Only want jobs which are accepting candidates. This is equivalent to checking that the
         //job's stage is between candidate search and prior to job offer/acceptance.
         //This request is ignored if certain stages have been requested (because that will clash
@@ -69,6 +88,9 @@ export class JobsComponent extends FilteredOppsComponentBase<Job> {
 
       case SearchOppsBy.starredByMe:
         req.starred = true;
+
+        //If it is starred I want to see it even if it is closed
+        req.sfOppClosed = true;
         break;
     }
 
@@ -90,8 +112,10 @@ export class JobsComponent extends FilteredOppsComponentBase<Job> {
     //Call standard processing (which puts the results into this.opps)
     super.processSearchResults(results);
 
-    //Then fetch the chats associated with all opps.
-    this.fetchChats();
+    if (this.canViewChats()) {
+      //Then fetch the chats associated with all opps.
+      this.fetchChats();
+    }
   }
 
   private fetchChats() {
@@ -142,4 +166,18 @@ export class JobsComponent extends FilteredOppsComponentBase<Job> {
     }
     return chatRequests;
   }
+
+  needsFilterByDestination() {
+    //Employers with direct access know that all jobs are coming to their destination.
+    return !this.authorizationService.isEmployerPartner();
+  }
+
+  public canSeeJobDetails() {
+    return this.authorizationService.canSeeJobDetails()
+  }
+
+  canViewChats(): boolean {
+    return this.authorizationService.canViewChats();
+  }
+
 }

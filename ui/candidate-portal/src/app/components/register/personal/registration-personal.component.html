@@ -1,5 +1,5 @@
 <!--
-  ~ Copyright (c) 2021 Talent Beyond Boundaries.
+  ~ Copyright (c) 2024 Talent Catalog.
   ~
   ~ This program is free software: you can redistribute it and/or modify it under
   ~ the terms of the GNU Affero General Public License as published by the Free
@@ -16,15 +16,15 @@
 
 <div class="container">
 
-  <app-loading [loading]="loading"></app-loading>
+  <tc-loading [loading]="loading"></tc-loading>
 
   <form class="row" [formGroup]="form" *ngIf="!loading">
 
     <!-- FIRST NAME -->
     <div class="col-12 col-md-6">
       <div class="mb-3">
-        <label class="form-label" for="firstName">{{ 'REGISTRATION.PERSONAL.LABEL.FIRSTNAME' | translate }} <sup>*</sup></label>
-        <input type="text" class="form-control" id="firstName" placeholder="" [formControlName]="'firstName'">
+        <tc-label for="firstName">{{ 'REGISTRATION.PERSONAL.LABEL.FIRSTNAME' | translate }} <sup>*</sup></tc-label>
+        <tc-input type="text" id="firstName" placeholder="" [formControlName]="'firstName'"></tc-input>
         <app-form-control-error [control]="form.controls.firstName"></app-form-control-error>
       </div>
     </div>
@@ -32,8 +32,8 @@
     <!-- LAST NAME -->
     <div class="col-12 col-md-6">
       <div class="mb-3">
-        <label class="form-label" for="lastName">{{ 'REGISTRATION.PERSONAL.LABEL.LASTNAME' | translate }} <sup>*</sup></label>
-        <input type="text" class="form-control" id="lastName" placeholder="" [formControlName]="'lastName'">
+        <tc-label for="lastName">{{ 'REGISTRATION.PERSONAL.LABEL.LASTNAME' | translate }} <sup>*</sup></tc-label>
+        <tc-input type="text" id="lastName" placeholder="" [formControlName]="'lastName'"></tc-input>
         <app-form-control-error [control]="form.controls.lastName"></app-form-control-error>
       </div>
     </div>
@@ -41,9 +41,9 @@
     <!-- GENDER -->
     <div class="col-12 col-md-6">
       <div class="mb-3">
-        <label class="form-label" for="gender">{{ 'REGISTRATION.PERSONAL.LABEL.GENDER' | translate }} <sup>*</sup></label>
+        <tc-label for="gender">{{ 'REGISTRATION.PERSONAL.LABEL.GENDER' | translate }} <sup>*</sup></tc-label>
 
-        <ng-select id="gender" [formControlName]="'gender'" [clearable]="false" [searchable]="false"
+        <ng-select class="tc-select" id="gender" [formControlName]="'gender'" [clearable]="false" [searchable]="false"
                    placeholder="{{ 'FORM.PLACEHOLDER.SELECT' | translate }}">
           <ng-option value="female">{{ 'GENDER.FEMALE' | translate }}</ng-option>
           <ng-option value="male">{{ 'GENDER.MALE' | translate }}</ng-option>
@@ -57,8 +57,8 @@
     <!-- DOB -->
     <div class="col-12 col-md-6">
       <div class="mb-3">
-        <label class="form-label" for="dob">{{ 'REGISTRATION.PERSONAL.LABEL.DOB' | translate }} <sup>*</sup></label>
-        <app-date-picker id="dob" [control]="form.controls.dob" [allowFuture]="false"></app-date-picker>
+        <tc-label for="dob">{{ 'REGISTRATION.PERSONAL.LABEL.DOB' | translate }} <sup>*</sup></tc-label>
+        <tc-date-picker id="dob" [control]="form.controls.dob" [allowFuture]="false"></tc-date-picker>
         <app-form-control-error [control]="form.controls.dob"></app-form-control-error>
       </div>
     </div>
@@ -68,8 +68,8 @@
     <!-- COUNTRY -->
     <div class="col-12 col-md-6">
       <div class="mb-3">
-        <label class="form-label" for="countryId">{{ 'REGISTRATION.PERSONAL.LABEL.COUNTRYID' | translate }} <sup>*</sup></label>
-        <ng-select id="countryId" [formControlName]="'countryId'" [items]="countries" [clearable]="false"
+        <tc-label for="countryId">{{ 'REGISTRATION.PERSONAL.LABEL.COUNTRYID' | translate }} <sup>*</sup></tc-label>
+        <ng-select class="tc-select" id="countryId" [formControlName]="'countryId'" [items]="countries" [clearable]="false"
                    (ngModelChange)="onCountryChange()"
                    placeholder="{{ 'FORM.PLACEHOLDER.SELECTORTYPE' | translate }}" bindValue="id" bindLabel="name">
         </ng-select>
@@ -80,10 +80,10 @@
     <!-- YEAR OF ARRIVAL -->
     <div class="col-12 col-md-6">
       <div class="mb-3">
-        <label class="form-label" for="yearOfArrival">
+        <tc-label for="yearOfArrival">
           {{ 'REGISTRATION.PERSONAL.LABEL.YEAROFARRIVAL' | translate }}
-        </label>
-        <ng-select id="yearOfArrival" [formControlName]="'yearOfArrival'" [items]="years"
+        </tc-label>
+        <ng-select class="tc-select" id="yearOfArrival" [formControlName]="'yearOfArrival'" [items]="years"
                    placeholder="{{ 'FORM.PLACEHOLDER.SELECTORTYPE' | translate }}">
         </ng-select>
         <!--        <app-form-control-error [control]="form.controls.yearOfArrival"></app-form-control-error>-->
@@ -93,27 +93,27 @@
     <!-- CITY -->
     <div class="col-12 col-md-6">
       <div class="mb-3">
-        <label class="form-label" for="city">
+        <tc-label for="city">
           {{ 'REGISTRATION.PERSONAL.LABEL.CITY' | translate }}
-        </label>
-        <input type="text" class="form-control" id="city" placeholder="" [formControlName]="'city'">
+        </tc-label>
+        <tc-input type="text" id="city" placeholder="" [formControlName]="'city'"></tc-input>
       </div>
     </div>
 
     <!-- STATE -->
     <div class="col-12 col-md-6">
       <div class="mb-3">
-        <label class="form-label" for="state">
+        <tc-label for="state">
           {{ 'REGISTRATION.PERSONAL.LABEL.STATE' | translate }}
-        </label>
+        </tc-label>
         <div *ngIf="states; else state_as_text">
-          <ng-select id="state" [formControlName]="'state'" [items]="states" [clearable]="true" [searchable]="true"
+          <ng-select class="tc-select" id="state" [formControlName]="'state'" [items]="states" [clearable]="true" [searchable]="true"
                      placeholder="{{ 'FORM.PLACEHOLDER.SELECTORTYPE' | translate }}">
             <!--                     bindLabel="name" bindValue="name">-->
           </ng-select>
         </div>
         <ng-template #state_as_text>
-          <input type="text" class="form-control" id="state" placeholder="" [formControlName]="'state'">
+          <tc-input type="text" id="stateAsText" placeholder="" [formControlName]="'state'"></tc-input>
         </ng-template>
       </div>
     </div>
@@ -123,8 +123,39 @@
     <!-- NATIONALITY -->
     <div class="col-12">
       <div class="mb-3">
-        <label class="form-label" for="nationalityId">{{ 'REGISTRATION.PERSONAL.LABEL.NATIONALITY' | translate }} <sup>*</sup></label>
-        <ng-select id="nationalityId" [formControlName]="'nationalityId'" [items]="countries" [clearable]="false"
+        <tc-label for="nationalityId">{{ 'REGISTRATION.PERSONAL.LABEL.NATIONALITY' | translate }} <sup>*</sup></tc-label>
+        <ng-select class="tc-select" id="nationalityId" [formControlName]="'nationalityId'" [items]="countries" [clearable]="false"
+                   placeholder="{{ 'FORM.PLACEHOLDER.SELECTORTYPE' | translate }}" bindLabel="name" bindValue="id">
+        </ng-select>
+        <p class="text-muted small">
+          {{ 'REGISTRATION.PERSONAL.NOTE.STATELESS' | translate }}
+        </p>
+        <app-form-control-error [control]="form.controls.nationalityId"></app-form-control-error>
+      </div>
+    </div>
+
+    <!-- OTHER NATIONALITIES -->
+    <div class="col-12 col-md-6">
+      <div class="mb-3">
+        <tc-label for="otherNationality">
+          {{ 'REGISTRATION.PERSONAL.LABEL.OTHER_NATIONALITY' | translate }} <sup>*</sup></tc-label>
+        <ng-select class="tc-select" id="otherNationality" formControlName="otherNationality"
+                   [clearable]="false" [searchable]="false"
+                   placeholder="{{ 'FORM.PLACEHOLDER.SELECT' | translate }}">
+          <ng-option value="Yes">{{ 'CONFIRMATION.YES' | translate }}</ng-option>
+          <ng-option value="No">{{ 'CONFIRMATION.NO' | translate }}</ng-option>
+          <ng-option value="Unsure">{{ 'CONFIRMATION.UNSURE' | translate }}</ng-option>
+        </ng-select>
+      </div>
+    </div>
+
+    <!-- OTHER NATIONALITIES -->
+    <div *ngIf="hasOtherNationality" class="col-12">
+      <div class="mb-3">
+        <tc-label for="otherNationalityId">
+          {{ 'REGISTRATION.PERSONAL.LABEL.OTHER_NATIONALITIES' | translate }}</tc-label>
+        <ng-select class="tc-select" id="otherNationalityId" formControlName="otherNationalityIds" multiple="true"
+                   [items]="countries" [clearable]="false"
                    placeholder="{{ 'FORM.PLACEHOLDER.SELECTORTYPE' | translate }}" bindLabel="name" bindValue="id">
         </ng-select>
         <app-form-control-error [control]="form.controls.nationalityId"></app-form-control-error>
@@ -136,8 +167,8 @@
 
     <div *ngIf="languageService.isUsAfghan()" class="col-12 col-md-6" >
       <div class="mb-3">
-        <label class="form-label" for="externalId">{{ 'REGISTRATION.PERSONAL.LABEL.EXTERNALID' | translate }}</label>
-        <input type="text" class="form-control" id="externalId" placeholder="" [formControlName]="'externalId'">
+        <tc-label for="externalId">{{ 'REGISTRATION.PERSONAL.LABEL.EXTERNALID' | translate }}</tc-label>
+        <tc-input type="text" id="externalId" placeholder="" [formControlName]="'externalId'"></tc-input>
       </div>
     </div>
 
@@ -146,8 +177,8 @@
     <!-- UNHCR REGISTRATION -->
     <div *ngIf="!languageService.isUsAfghan()" class="col-12 col-md-6">
       <div class="mb-3">
-        <label class="form-label" for="unhcrRegistered">{{ 'REGISTRATION.PERSONAL.LABEL.REGISTEREDWITHUN' | translate }} <sup>*</sup></label>
-        <ng-select id="unhcrRegistered" class="custom" [formControlName]="'unhcrRegistered'" [clearable]="false" [searchable]="false"
+        <tc-label for="unhcrRegistered">{{ 'REGISTRATION.PERSONAL.LABEL.REGISTEREDWITHUN' | translate }} <sup>*</sup></tc-label>
+        <ng-select class="tc-select" id="unhcrRegistered" [formControlName]="'unhcrRegistered'" [clearable]="false" [searchable]="false"
                    placeholder="{{ 'FORM.PLACEHOLDER.SELECT' | translate }}">
           <ng-option [value]="'Yes'">{{ 'CONFIRMATION.YES' | translate }}</ng-option>
           <ng-option [value]="'No'">{{ 'CONFIRMATION.NO' | translate }}</ng-option>
@@ -160,18 +191,18 @@
     </div>
 
     <!-- REGISTRATION NUMBER -->
-    <div *ngIf="hasUnhcr && !languageService.isUsAfghan()" class="col-12 col-md-6" >
+    <div *ngIf="registeredWithUnhcr && !languageService.isUsAfghan()" class="col-12 col-md-6" >
       <div class="mb-3">
-        <label class="form-label" for="unhcrNumber">{{ 'REGISTRATION.PERSONAL.LABEL.REGISTRATIONID' | translate }}</label>
-        <input type="text" class="form-control" id="unhcrNumber" placeholder="" [formControlName]="'unhcrNumber'">
+        <tc-label for="unhcrNumber">{{ 'REGISTRATION.PERSONAL.LABEL.REGISTRATIONID' | translate }}</tc-label>
+        <tc-input type="text" id="unhcrNumber" placeholder="" [formControlName]="'unhcrNumber'"></tc-input>
       </div>
     </div>
 
     <!-- UNHCR REGISTRATION -->
-    <div *ngIf="hasUnhcr && !languageService.isUsAfghan()" class="col-12" >
+    <div *ngIf="registeredWithUnhcr && !languageService.isUsAfghan()" class="col-12" >
       <div class="mb-3">
-        <label class="form-label" for="unhcrConsent">{{ 'REGISTRATION.PERSONAL.LABEL.UNHCRCONSENT' | translate }} <sup>*</sup></label>
-        <ng-select id="unhcrConsent" [formControlName]="'unhcrConsent'" [clearable]="false" [searchable]="false"
+        <tc-label for="unhcrConsent">{{ 'REGISTRATION.PERSONAL.LABEL.UNHCRCONSENT' | translate }} <sup>*</sup></tc-label>
+        <ng-select class="tc-select" id="unhcrConsent" [formControlName]="'unhcrConsent'" [clearable]="false" [searchable]="false"
                    placeholder="{{ 'FORM.PLACEHOLDER.SELECT' | translate }}">
           <ng-option [value]="'Yes'">{{ 'CONFIRMATION.YES' | translate }}</ng-option>
           <ng-option [value]="'No'">{{ 'CONFIRMATION.NO' | translate }}</ng-option>
@@ -186,12 +217,16 @@
 
   <app-error [error]="error"></app-error>
 
-  <div *ngIf="tcCriteriaFailed" class="alert alert-danger mt-4">
+  <tc-alert *ngIf="tcCriteriaFailed" type="danger" class="mt-4">
     <h5>{{ 'ERROR.CRITERIA_INVALID.HEADING' | translate }} </h5>
-    <p><a class="alert-link fw-light" [href]="lang == 'en' ? 'https://www.talentbeyondboundaries.org/talentcatalog/eligibility'
-      : 'https://www.talentbeyondboundaries.org/talentcatalog/eligibility-ar'" target="_blank">
-        <fa-icon icon="external-link-alt"></fa-icon> {{ 'ERROR.CRITERIA_INVALID.LINK' | translate }}</a></p>
-  </div>
+    <p>
+      <a class="alert-link" [href]="getEligibilityLink()" target="_blank">
+        <tc-icon color="error">
+        <i class="me-1 fas fa-external-link-alt"></i>{{ 'ERROR.CRITERIA_INVALID.LINK' | translate }}
+        </tc-icon>
+      </a>
+    </p>
+  </tc-alert>
 
 </div>
 

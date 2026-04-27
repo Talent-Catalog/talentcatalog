@@ -1,9 +1,22 @@
-tbb:
+tc:
   cors:
-    urls: ${TBB_CORS_URLS:http://localhost:4200,http://localhost:4201,http://localhost:4202}
+    urls: ${TC_CORS_URLS:http://localhost:4200,http://127.0.0.1:4200,http://localhost:4201,http://localhost:4202}
 
-  destinations: ${TBB_DESTINATIONS:Australia,Canada,New Zealand,United Kingdom}
-  partner-dbcopy-config: ${TBB_PARTNER_DBCOPY_CONFIG:data.sharing/tbbCopiesTest.xml}
+  init:
+    #This is only used when booting up new instance of the server.
+    #A System Admin user is created which can be used to create other users and other configuration.
+    #The username for logging in is SystemAdmin and this property provides the password.
+    #See SystemAdminConfiguration.java.
+    boot-admin-password: ${TC_BOOT_ADMIN_PASSWORD:}
+
+  destinations: ${TC_DESTINATIONS:Australia,Canada,New Zealand,United Kingdom}
+
+  flyway:
+    repair: true  #  Set this to true if you need to repair the Flyway history.
+
+  instance-type: ${TC_INSTANCE_TYPE:GRN}
+
+  partner-dbcopy-config: ${TC_PARTNER_DBCOPY_CONFIG:data.sharing/tcCopiesTest.xml}
 
 logging:
   level:
@@ -30,7 +43,25 @@ logging:
             #See https://stackoverflow.com/questions/60001034/how-to-remove-spring-data-customconversions-warnings-from-application-startup
             CustomConversions: ERROR
 
+logbuilder:
+  # Set to true to enable cpu utilisation logging
+  includeCpuUtilization: ${LOGBUILDER_INCLUDE_CPU_UTILIZATION:true}
+  # Set to true to enable memory utilisation logging
+  includeMemoryUtilization: ${LOGBUILDER_INCLUDE_MEMORY_UTILIZATION:true}
+
 spring:
+  autoconfigure:
+    exclude:
+      # We only want to use Redis as a cache so we do not want it to auto configure as a data store
+      - org.springframework.boot.autoconfigure.data.redis.RedisRepositoriesAutoConfiguration
+
+  # Batch
+  batch:
+    jdbc:
+      initialize-schema: never # batch schema are initialised by flyway
+    job:
+      enabled: false
+
   servlet:
     multipart:
       max-file-size: ${SPRING_SERVLET_MULTIPART_MAX_FILE_SIZE:10MB}
@@ -41,7 +72,15 @@ spring:
     username: ${ELASTICSEARCH_USERNAME:}
     password: ${ELASTICSEARCH_PASSWORD:}
 
+  cache:
+    type: redis
+    redis:
+        time-to-live: 300000
+
   data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
     # We explicitly enable repositories with @EnableJpaRepositories and
     # @EnableElasticsearchRepositories.
     # Turn off default enabling to avoid errors
@@ -54,6 +93,13 @@ spring:
       repositories:
         enabled: false
 
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+    baseline-on-migrate: true
+    baseline-version: 2
+    validate-on-migrate: true
+
   thymeleaf:
     prefix: classpath:/mail/
 
@@ -61,10 +107,11 @@ spring:
     driverClassName: org.postgresql.Driver
     url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/tctalent}
     username: tctalent
-    password: ${SPRING_DATASOURCE_PASSWORD:tctalent}
+    password: ${SPRING_DATASOURCE_PASSWORD}
     hikari:
       maximum-pool-size: ${SPRING_DBPOOL_MAX:10}
       minimum-idle:  ${SPRING_DBPOOL_MIN:10}
+      max-lifetime: ${SPRING_DBPOOL_MAX_LIFETIME:1800000} # 30 minutes
 
 #  To catch resource not found errors (404)
 #  See https://stackoverflow.com/questions/36733254/spring-boot-rest-how-to-configure-404-resource-not-found/36734193#36734193
@@ -91,7 +138,7 @@ management:
       enabled: false
 
 jwt:
-  secret: ${JWT_SECRET:RX4bokONoSrrNLM6CMTij9iG9jHFG5VfsN1zIi9UqDGK3pQXASG7xMEga2VrAj3P1SNmywqnWRoTXnltuJ5l+A==}
+  secret: ${JWT_SECRET}
   # This equates to 24 hours in milliseconds
   expirationInMs: 86400000
 
@@ -105,7 +152,7 @@ salesforce:
   # - then selecting Edit. Bizarrely, you can't do it from
   # Setup|Apps|ConnectedApps|Manage Connected Apps)
   #
-  # For dev this should be set in tbb-secrets
+  # For dev this should be set in tc-secrets
   #
   # We use the same SF connected app and key/certificate for TC dev and staging to access our SF sandbox, but other URLs and access credentials are different and therefore defined below and designated per environment.
   privatekey: ${SF_PRIVATE_KEY:}
@@ -118,6 +165,8 @@ salesforce:
   daysAgoRecent: 7
   recordType:
     employerJob: 0121N000001890wQAA
+    candidateRecruitment: 0121N000001890rQAA
+    candidateRecruitmentCan: 0123l000001DxSjAAK
   tbb:
     jordanAccount: 0013l00002Jm1rRAAR
     lebanonAccount: 0013l00002Jm2sqAAB
@@ -135,21 +184,14 @@ server:
   tomcat:
     redirect-context-root: false
 
-#  todo Unused?
-  url: https://tctalent.org
+  url: ${SERVER_URL:https://tctalent.org}
 web:
   # Used in EmailHelper
-  portal: https://tctalent.org/candidate-portal
+  portal: ${server.url}/candidate-portal
 
   # This is used in EmailHelper
   # and SiteRedirectController to redirect urls from the Version 1 TC to the Version 2 TC
-  admin: https://tctalent.org/admin-portal
-
-flyway:
-  ignoreMissingMigrations: false
-
-#  Set this to true if you need to repair the Flyway history.
-  repair: false
+  admin: ${server.url}/admin-portal
 
 google:
   drive:
@@ -161,7 +203,7 @@ google:
     projectId: ${GOOGLE_DRIVE_PROJECTID:talentcatalog}
     tokenUri: ${GOOGLE_DRIVE_TOKENURI:https://oauth2.googleapis.com/token}
 
-  # For dev these should be set in tbb-secrets
+  # For dev these should be set in tc-secrets
     privateKey: ${GOOGLE_DRIVE_PRIVATEKEY:}
     privateKeyId: ${GOOGLE_DRIVE_PRIVATEKEYID:}
 
@@ -187,15 +229,55 @@ google:
   # Pixel width of wide columns in generated published sheets
     publishedSheetWideColumn: 300
 
+s3:
+  region: ${S3_REGION:eu-west-2}
+  # For dev this should be set in tc-secrets.
+  #GRN instance uses these keys for both candidate file S3 storage and S3 translations
+  #TBB instance does not use these keys. For S3 storage of translations it uses the keys in 
+  #aws.s3 (see below)  
+  access-key: ${AWS_CREDENTIALS_APP_ACCESSKEY:}
+  secret-key: ${AWS_CREDENTIALS_APP_SECRETKEY:}
+  max-size: 52428800
+  candidate-files-bucket: ${S3_CANDIDATE_FILES_BUCKET:candidate-files.test.globalrefugee.net}
+  
+  #GRN staging Instance default
+  translations-bucket: ${S3_TRANSLATIONS_BUCKET:translations.test.globalrefugee.net}
+  #TBB staging Instance default
+#  translations-bucket: ${S3_TRANSLATIONS_BUCKET:dev.files.tbbtalent.org}
+  translations-folder: ${S3_TRANSLATIONS_FOLDER:translations}
 
+candidate-file-urls:
+  share-secret-key: ${SHARE_URL_SECRETKEY:}
+  share-expiry-minutes: 60
+  cloudfront-key-pair-id: ${CLOUDFRONT_KEY_PAIR_ID:}
+  cloudfront-private-key-pem-path: ${CLOUDFRONT_PRIVATE_KEY_PEM_PATH:}
+  origin-expiry-minutes: 15
+  
+  #In this configuration the server url points to Cloudfront which manages the routing to the
+  #S3 origin of files if needed. So both origin and public URLs point to Cloudfront.
+  #The default values are designed for testing on developer's local computers uploading to GRN 
+  #staging's S3, where the localhost machine will intercept public urls, but downloads will
+  #come from the GRN staging S3.
+  origin-base-url: ${SERVER_URL:https://test.globalrefugee.net} 
+  public-base-url: ${SERVER_URL:http://localhost:8080}
+  
 aws:
+  # Legacy S3 configuration retained for translation file migration support.
+  # The primary app S3 client now uses the s3: block above, but aws.s3 is still
+  # required by TranslationMigrationService via S3ResourceHelper to access TBB S3
+  # resources in us-east-1 during migration to OPC-managed S3 buckets.
+  # When all services are fully migrated to OPC AWS, aws.s3/S3ResourceHelper can
+  # be retired. (See Git issue #3324)
   s3:
     bucketName: ${AWS_S3_BUCKETNAME:dev.files.tbbtalent.org}
     region: us-east-1
     max-size: 52428800
+    # Used by SystemUploadApi (GET /api/system/upload/policy/{s3Key}) as a key prefix.
+    # No frontend callers target this endpoint, the property is likely vestigial.
+    # It does not need to be replicated in the s3: config.
     upload-folder: temp
   credentials:
-    # For dev this should be set in tbb-secrets
+    # For dev this should be set in tc-secrets
     accessKey: ${AWS_CREDENTIALS_ACCESSKEY:}
     secretKey: ${AWS_CREDENTIALS_SECRETKEY:}
 
@@ -212,21 +294,57 @@ email:
   type: ${EMAIL_TYPE:STUB}
   host: ${EMAIL_HOST:smtp.gmail.com}
   port: 587
-  user: ${EMAIL_USER:tc@talentcatalog.net}
+  user: ${EMAIL_USER:noreply@talentcatalog.net}
 
   # For dev this could be set in tc-secrets - but only needed if email.type is not STUB, which it
   # normally will be in dev.
   password: ${EMAIL_PASSWORD:}
   authenticated: true
   alertEmail: alert@talentcatalog.net
-  defaultEmail: ${EMAIL_DEFAULTEMAIL:tc@talentcatalog.net}
+  defaultEmail: ${EMAIL_DEFAULTEMAIL:noreply@talentcatalog.net}
   testOverrideEmail: ${EMAIL_TESTOVERRIDEEMAIL:}
 
+  # Duolingo API Configuration:
+  # Contains the API secret and base URL for interacting with the Duolingo English test API.
+duolingo:
+  api:
+    apiSecret: ${DUOLINGO_SECRET:}
+    baseUrl: https://englishtest.duolingo.com/api/partner/2
+
+# Anthropic Claude API Configuration:
+# Contains the API key and configuration for Anthropic's Claude AI service.
+anthropic:
+  api:
+    apiKey: ${ANTHROPIC_API_KEY:}
+    baseUrl: https://api.anthropic.com
+    model: claude-haiku-4-5-20251001
+    maxTokens: 20000
+    temperature: 1.0
 
 #Support for in context language translation
 translation:
-  password: ${TRANSLATION_PASSWORD:TGFM}
+  password: ${TRANSLATION_PASSWORD}
 
 #Identifies the running environment — AWS task definitions hold the corresponding value, e.g. 'prod'/'staging'
 #Options for injecting into code: https://www.baeldung.com/spring-boot-properties-env-variables
 environment: ${ENVIRONMENT:local}
+
+# Preset API Configuration:
+# Contains the secret or TC-environment-contingent properties required to interact w the Preset API.
+preset:
+  api:
+    apiSecret: ${PRESET_SECRET:}
+    apiToken: ${PRESET_API_TOKEN:}
+    workspaceId: ${PRESET_WORKSPACE_ID:}
+
+tc-api:
+  apiUrl: ${TC_API_URL:http://localhost:8082}
+  apiKey: ${TC_API_KEY:}
+
+tc-skills-extraction-service:
+  apiUrl: ${TC_SKILLS_EXTRACTION_API_URL:http://localhost:8000}
+  apiKey: ${TC_SKILLS_EXTRACTION_API_KEY:}
+
+dpa:
+  dpaVisibilityDelayDays: ${DPA_VISIBILITY_DELAY_DAYS:90}
+  enabled: ${DPA_ENABLED:false}

@@ -1,0 +1,78 @@
+---
+title: Release Notes 2.4.0
+description: Forms Tasks
+sass:
+  style: compressed
+---
+
+# Introducing Forms Tasks: Smarter Candidate Data Collection
+
+This release introduces a powerful new capability within the Talent Catalog: Forms Tasks — a 
+flexible, scalable framework that simplifies how we collect, update, and manage candidate data.
+
+Forms Tasks expand on the existing Tasks system by allowing multiple pieces of related information 
+to be gathered in a structured form — all from within a single task. This is especially valuable in 
+workflows where detailed, multi-field data is required, such as government submissions or 
+multi-step candidate onboarding.
+
+## Why Forms Tasks Matter
+
+Until now, candidate tasks were limited to:
+
+- 📎 Simple Upload Tasks (e.g., to upload a scan of a passport)
+
+- 💬 Question Tasks (e.g. to submit the answer to a single question -- just one piece of data)
+
+- ✅ Simple Acknowledgement Tasks (e.g., to confirm that an action has been taken)
+
+Forms Tasks build on this capability by supporting the collection of multiple fields and different
+types of information all in one go, creating much richer interactions with candidates and more 
+complex workflows — all within the familiar Tasks experience.
+
+The nice thing about tasks is that they have built-in tracking, time limits and reminders - as well 
+as automated assignment through lists.
+
+## First Application: Italy Train-to-Hire Program
+
+The first rollout of Forms Tasks supports the [Italy train-to-hire initiative](italy_train_to_hire.md), 
+where candidates (and their relocating family members) must provide:
+
+- Travel document scans 
+- Refugee status and ID documents 
+- Key data fields extracted from each
+
+Rather than relying on spreadsheets or email follow-ups, candidates now complete structured Form 
+Tasks that prompt them to upload documents and fill in related data directly in the platform — 
+reducing delays, errors, and manual handling.
+
+## What’s New in the Candidate Experience
+
+- 📄 **Integrated Forms**: Candidates see and complete forms directly within their task list 
+
+- 💾 **Save-as-you-go**: Forms support in-progress saving and later updates, similar to registration 
+and intakes
+
+- 🧾 **Single source of truth**: Data collected via Forms Tasks can draw from and update both standard 
+candidate fields and custom properties
+
+## Future Applications
+
+Forms Tasks lay the groundwork for a range of future use cases:
+
+- 🛂 Self-service intake processes: Enable structured out-of-band intakes for new candidates.
+
+- 📢 Proactive job opportunity outreach: Support recruiter workflows by sending select jobs to 
+qualified candidates and collecting expressions of interest.
+
+- 📊 Partner-initiated data requests: Enable, for example, TBB, and others to initiate 
+structured outreach (e.g., RSD verification, resettlement readiness).
+
+These enhancements align with our goal of making the Talent Catalog the trusted, up-to-date source 
+of candidate data across diverse use cases.
+
+## What’s Next
+
+- Expanding use of the Forms Task library for different partner and program needs 
+- Improving form export capabilities (e.g., PDF snapshots for government use)
+- Supporting conditional logic in forms (e.g., show/hide fields based on earlier answers)
+- Exploring integration with [CASI](casi_framework.md) for automated candidate guidance

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -14,15 +14,16 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, OnInit} from '@angular/core';
-import {CandidateService} from '../../../services/candidate.service';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {
   Candidate,
+  UpdateCandidateNotificationPreferenceRequest,
   UpdateCandidateStatusInfo,
   UpdateCandidateStatusRequest
 } from '../../../model/candidate';
+import {CandidateService, DownloadCVRequest} from '../../../services/candidate.service';
 import {ActivatedRoute, Router} from '@angular/router';
-import {NgbModal, NgbNavChangeEvent} from '@ng-bootstrap/ng-bootstrap';
+import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {DeleteCandidateComponent} from './delete/delete-candidate.component';
 import {EditCandidateStatusComponent} from './status/edit-candidate-status.component';
 import {Title} from '@angular/platform-browser';
@@ -32,8 +33,7 @@ import {IHasSetOfCandidates, SavedList, SearchSavedListRequest} from '../../../m
 import {SavedListService} from '../../../services/saved-list.service';
 import {CandidateSavedListService} from '../../../services/candidate-saved-list.service';
 import {SavedListCandidateService} from '../../../services/saved-list-candidate.service';
-import {forkJoin} from 'rxjs';
-import {LocalStorageService} from 'angular-2-local-storage';
+import {Observable, of, Subject} from 'rxjs';
 import {CreateUpdateListComponent} from '../../list/create-update/create-update-list.component';
 import {ConfirmationComponent} from "../../util/confirm/confirmation.component";
 import {DownloadCvComponent} from "../../util/download-cv/download-cv.component";
@@ -42,19 +42,33 @@ import {TailoredCvComponent} from 'src/app/components/candidates/view/tailored-c
 import {AuthenticationService} from "../../../services/authentication.service";
 import {CreateChatRequest, JobChat, JobChatType} from "../../../model/chat";
 import {ChatService} from "../../../services/chat.service";
-
+import {DtoType} from "../../../model/base";
+import {LocalStorageService} from "../../../services/local-storage.service";
+import {
+  catchError,
+  concatMap,
+  debounceTime,
+  distinctUntilChanged,
+  map,
+  switchMap,
+  takeUntil,
+  tap
+} from "rxjs/operators";
+import {UploadType} from "../../../model/task";
 
 @Component({
   selector: 'app-view-candidate',
   templateUrl: './view-candidate.component.html',
   styleUrls: ['./view-candidate.component.scss']
 })
-export class ViewCandidateComponent extends MainSidePanelBase implements OnInit {
+export class ViewCandidateComponent extends MainSidePanelBase implements OnInit, OnDestroy {
 
   private lastTabKey: string = 'CandidateLastTab';
 
   activeTabId: string;
   loading: boolean;
+  tabLoading: boolean = false;
+  loadingButton: boolean;
   savingList: boolean;
   loadingError: boolean;
   error;
@@ -62,10 +76,15 @@ export class ViewCandidateComponent extends MainSidePanelBase implements OnInit 
   candidateChat: JobChat;
   candidateProspectTabVisible: boolean;
   loggedInUser: User;
+  uploadedCvAvailable: boolean = false;
 
   selectedLists: SavedList[] = [];
-  lists: SavedList[] = [];
+  lists$: Observable<SavedList[]>;
+  listsInput$ = new Subject<string>();
+  listsLoading = false;
   token: string;
+
+  private destroy$ = new Subject<void>();
 
   constructor(private candidateService: CandidateService,
               private chatService: ChatService,
@@ -77,19 +96,30 @@ export class ViewCandidateComponent extends MainSidePanelBase implements OnInit 
               private router: Router,
               private modalService: NgbModal,
               private titleService: Title,
-              private authService: AuthorizationService,
+              private authorizationService: AuthorizationService,
               private authenticationService: AuthenticationService) {
     super(2, 4);
   }
 
   ngOnInit() {
-    this.refreshCandidateInfo();
+    this.refreshCandidateProfile();
     this.loggedInUser = this.authenticationService.getLoggedInUser();
     this.selectDefaultTab();
-    this.checkVisibility();
+    this.candidateService.candidateUpdated().pipe(
+      takeUntil(this.destroy$),
+      concatMap(() => {
+        return this.candidateService.getByNumber(this.candidate.candidateNumber)
+      })
+      ).subscribe(candidate => {
+      // We aren't able to merge two candidate objects (e.g. using Spread operator like in the candidate-search-card)
+      // if a value is changed to null. Null values aren't returned via the updated object DTO and therefore there is nothing
+      // to replace the old value with the new null value. So in this case, it is best to fetch the new object.
+      this.candidate = candidate;
+    })
   }
-  private checkVisibility() {
-    const candidatePartner = this.candidate?.user?.partner;
+
+  private setChatAccess() {
+    const candidatePartner = this.candidate.user?.partner;
     const loggedInPartner = this.authenticationService.getLoggedInUser().partner;
 
     //User is source partner responsible for candidate or default source partner
@@ -97,9 +127,16 @@ export class ViewCandidateComponent extends MainSidePanelBase implements OnInit 
       loggedInPartner.defaultSourcePartner || loggedInPartner.id == candidatePartner?.id;
 
     this.candidateProspectTabVisible = userIsCandidatePartner;
+
+    // May return null, in which case 'Create Chat' button displayed instead of chat
+    if (this.candidateProspectTabVisible) {
+      this.chatService.getCandidateProspectChat(this.candidate.id).subscribe(result => {
+        this.candidateChat = result;
+      })
+    }
   }
 
-  refreshCandidateInfo() {
+  refreshCandidateProfile() {
     this.loadingError = false;
     this.route.paramMap.subscribe(params => {
       const candidateNumber = params.get('candidateNumber');
@@ -113,8 +150,10 @@ export class ViewCandidateComponent extends MainSidePanelBase implements OnInit 
           this.loading = false;
         } else {
           this.setCandidate(candidate);
+          this.updateUploadedCvAvailable();
           this.loadLists();
           this.generateToken();
+          this.setChatAccess();
         }
       }, error => {
         this.loadingError = true;
@@ -129,23 +168,53 @@ export class ViewCandidateComponent extends MainSidePanelBase implements OnInit 
   }
 
   private loadLists() {
-    /*load all our non fixed lists */
-    this.loading = true;
+    this.setupListsTypeahead();
+    this.loadSelectedLists();
+  }
+
+  /**
+   * This fetches saved lists based on their names as the user types.
+   * @private
+   */
+  private setupListsTypeahead() {
+    this.lists$ = this.listsInput$.pipe(
+      debounceTime(300),
+      distinctUntilChanged(),
+      tap(() => this.listsLoading = true),
+      switchMap(term => this.doListSearch(term)),
+      tap(() => this.listsLoading = false)
+    );
+  }
+
+  private doListSearch(keyword: string): Observable<SavedList[]> {
     const request: SearchSavedListRequest = {
+      dtoType: DtoType.MINIMAL,  //We just need the names and ids of the lists
+      keyword: keyword,
+      pageSize: 10,
       owned: true,
       shared: true,
-      global: true,
+      global: this.canSeeGlobalLists(),
       fixed: false
     };
+    return this.savedListService.searchPaged(request).pipe(
+      map(results => results.content),
+      catchError(() => of([]))
+    );
+  }
 
-    forkJoin( {
-      'lists': this.savedListService.search(request),
-      'selectedLists': this.candidateSavedListService.search(this.candidate.id, request)
-    }).subscribe(
+  private loadSelectedLists() {
+    this.loading = true;
+    const request: SearchSavedListRequest = {
+      dtoType: DtoType.MINIMAL, //We just need the names and ids of the lists
+      owned: true,
+      shared: true,
+      global: this.canSeeGlobalLists(),
+      fixed: false
+    };
+    this.candidateSavedListService.search(this.candidate.id, request).subscribe(
       results => {
         this.loading = false;
-        this.lists = results['lists'];
-        this.selectedLists = results['selectedLists'];
+        this.selectedLists = results;
       },
       (error) => {
         this.error = error;
@@ -182,8 +251,11 @@ export class ViewCandidateComponent extends MainSidePanelBase implements OnInit 
       candidateIds: [this.candidate.id],
       info: info
     };
-    this.candidateService.updateStatus(request).subscribe(
-      () => {
+    this.candidateService.updateStatus(request).pipe(
+      concatMap(() => this.candidateService.getByNumber(this.candidate.candidateNumber))
+    ).subscribe(
+      (candidate) => {
+        this.setCandidate(candidate);
         this.loading = false;
         //Update candidate with new status
         this.candidate.status = info.status;
@@ -202,50 +274,86 @@ export class ViewCandidateComponent extends MainSidePanelBase implements OnInit 
     } else {
       this.titleService.setTitle(this.candidate.candidateNumber);
     }
-
-    this.fetchChat();
   }
 
-  fetchChat() {
-    if (this.candidate) {
-      this.loading = true;
-      this.error = null;
+  createChat() {
+    this.loadingButton = true;
+    this.error = null;
 
-      const candidateProspectChatRequest: CreateChatRequest = {
-        type: JobChatType.CandidateProspect,
-        candidateId: this.candidate.id,
+    const candidateProspectChatRequest: CreateChatRequest = {
+      type: JobChatType.CandidateProspect,
+      candidateId: this.candidate.id,
+    }
+    this.chatService.create(candidateProspectChatRequest).subscribe({
+        next: (chat) => {this.candidateChat = chat; this.loadingButton = false},
+        error: (error) => {this.error = error; this.loadingButton = false}
       }
-      this.chatService.getOrCreate(candidateProspectChatRequest).subscribe(
-        {
-          next: (chat) => {this.candidateChat = chat; this.loading = false},
-          error: (error) => {this.error = error; this.loading = false}
+    )
+  }
+
+  /**
+   * Very similar to ShowCandidatesComponent.downloadGeneratedCV.
+   * Opens {@link DownloadCvComponent} modal that returns CV generated from candidate profile.
+   */
+  downloadGeneratedCV() {
+    if (this.canViewCandidateName()) {
+      // Modal
+      const downloadCVModal = this.modalService.open(DownloadCvComponent, {
+        centered: true,
+        backdrop: 'static'
+      });
+
+      downloadCVModal.componentInstance.candidateId = this.candidate.id;
+
+      downloadCVModal.result
+      .then((result) => {
+      })
+      .catch(() => { /* Isn't possible */
+      });
+    } else {
+      // No modal giving option to view name and contact details - straight to anonymised DL
+      const request: DownloadCVRequest = {
+        candidateId: this.candidate.id,
+        showName: false,
+        showContact: false
+      }
+      const tab = window.open();
+      this.candidateService.downloadCv(request).subscribe(
+        result => {
+          tab.location.href = URL.createObjectURL(result);
+        },
+        error => {
+          this.error = error;
         }
-      )
+      );
     }
   }
 
-  downloadCV() {
-    // Modal
-    const downloadCVModal = this.modalService.open(DownloadCvComponent, {
-      centered: true,
-      backdrop: 'static'
-    });
-
-    downloadCVModal.componentInstance.candidateId = this.candidate.id;
-
-    downloadCVModal.result
-      .then((result) => {
-      })
-      .catch(() => { /* Isn't possible */ });
-  }
-
   private selectDefaultTab() {
-    const defaultActiveTabID: string = this.localStorageService.get(this.lastTabKey);
-    this.activeTabId = defaultActiveTabID;
+    this.activeTabId = this.localStorageService.get(this.lastTabKey);
   }
 
-  onTabChanged(event: NgbNavChangeEvent) {
-    this.setActiveTabId(event.nextId);
+  onTabChanged(activeTabId: string) {
+    if (this.activeTabId === activeTabId) {
+      return;
+    }
+
+    this.tabLoading = true;
+    this.setActiveTabId(activeTabId);
+
+    const asyncTabs = ['MiniIntake', 'FullIntake', 'Visa'];
+
+    if (!asyncTabs.includes(activeTabId)) {
+      setTimeout(() => {
+        this.tabLoading = false;
+      });
+    }
+  }
+
+  onTabLoadingChange(event: { loading: boolean; tabId: string }) {
+    if (event.tabId === this.activeTabId) {
+      this.tabLoading = event.loading;
+    }
   }
 
   publicCvUrl() {
@@ -266,11 +374,11 @@ export class ViewCandidateComponent extends MainSidePanelBase implements OnInit 
   }
 
   isCVViewable(): boolean {
-    return this.authService.canViewCandidateCV();
+    return this.authorizationService.canViewCandidateCV();
   }
 
   isAnAdmin(): boolean {
-    return this.authService.isAnAdmin();
+    return this.authorizationService.isAnAdmin();
   }
 
   onMarkCandidateChatAsRead() {
@@ -329,7 +437,7 @@ export class ViewCandidateComponent extends MainSidePanelBase implements OnInit 
       () => {
         this.savingList = false;
         if (reload) {
-          this.loadLists();
+          this.loadSelectedLists();
         }
       },
       (error) => {
@@ -388,15 +496,19 @@ export class ViewCandidateComponent extends MainSidePanelBase implements OnInit 
   }
 
   isEditable(): boolean {
-    return this.authService.isEditableCandidate(this.candidate);
+    return this.authorizationService.isEditableCandidate(this.candidate);
   }
 
   canViewPrivateInfo() {
-    return this.authService.canViewPrivateCandidateInfo(this.candidate);
+    return this.authorizationService.canViewPrivateCandidateInfo(this.candidate);
   }
 
   canAccessSalesforce(): boolean {
-    return this.authService.canAccessSalesforce();
+    return this.authorizationService.canAccessSalesforce();
+  }
+
+  canAccessGoogleDrive(): boolean {
+    return this.authorizationService.canAccessGoogleDrive();
   }
 
   createTailoredCv() {
@@ -409,4 +521,84 @@ export class ViewCandidateComponent extends MainSidePanelBase implements OnInit 
     createTailoredCvModal.componentInstance.candidateNumber = this.candidate?.candidateNumber;
 
   }
+
+  isReadOnlyUser() {
+    return this.authorizationService.isReadOnly();
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  private canSeeGlobalLists() {
+    return this.authorizationService.canSeeGlobalLists();
+  }
+
+  public canSeeJobDetails() {
+    return this.authorizationService.canSeeJobDetails()
+  }
+
+  public canViewCandidateName() {
+    return this.authorizationService.canViewCandidateName();
+  }
+
+  canViewChats(): boolean {
+    return this.authorizationService.canViewChats();
+  }
+
+  public computeNotificationButtonLabel() {
+    return "Notification " + (this.candidate?.allNotifications ? "Opt Out": "Opt In");
+  }
+
+  public toggleNotificationPreferences() {
+    //Ask user if they are sure. Normally this should be changed by candidate only.
+    const areYouSure = this.modalService.open(ConfirmationComponent, {
+      centered: true,
+      backdrop: 'static'
+    })
+
+    areYouSure.componentInstance.title = "Override candidate's chat notification preferences?";
+    areYouSure.componentInstance.message =
+      "The candidate can opt into receiving detailed chat notifications. " +
+      " The default is that they don't - but normally we should respect" +
+      " whatever decision they have made.";
+
+    areYouSure.result
+    .then((result) => {
+      if (result == true) {
+        this.doToggleNotificationPreferences()
+      }
+    })
+    .catch(() => {});
+  }
+
+  private doToggleNotificationPreferences() {
+    this.error = null;
+    const request: UpdateCandidateNotificationPreferenceRequest = {
+      allNotifications: !this.candidate.allNotifications
+    };
+    this.candidateService.updateNotificationPreference(this.candidate.id, request).subscribe(
+      () => {
+        //Update candidate with new preference
+        this.candidate.allNotifications = request.allNotifications;
+
+        //Refresh to get new candidate notes.
+        this.refreshCandidateProfile();
+      },
+      (error) => {
+        this.error = error;
+      });
+  }
+
+  onMuteToggled() {
+    this.refreshCandidateProfile();
+  }
+
+  private updateUploadedCvAvailable() {
+    this.uploadedCvAvailable =
+      !!this.candidate?.candidateAttachments?.some(
+        att => att.uploadType === UploadType.cv);
+  }
+
 }

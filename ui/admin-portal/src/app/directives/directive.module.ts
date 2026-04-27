@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -14,13 +14,15 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import { NgModule } from "@angular/core";
-import { LowercaseDirective } from "./lowercase.directive";
-import { CommonModule } from "@angular/common";
+import {NgModule} from "@angular/core";
+import {LowercaseDirective} from "./lowercase.directive";
+import {CommonModule} from "@angular/common";
+import {HighlightSearchDirective} from './highlight-search.directive';
+import {ReadOnlyInputsDirective} from "./read-only-inputs.directive";
 
 @NgModule({
-  declarations: [LowercaseDirective],
-  exports: [LowercaseDirective],
+  declarations: [LowercaseDirective, HighlightSearchDirective, ReadOnlyInputsDirective],
+  exports: [LowercaseDirective, HighlightSearchDirective, ReadOnlyInputsDirective],
   imports: [CommonModule],
 })
 export class DirectiveModule {}

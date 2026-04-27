@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -53,10 +53,19 @@ import static org.hamcrest.Matchers.notNullValue;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-import static org.tctalent.server.api.admin.AdminApiTestUtil.getTranslationFile;
+import static org.tctalent.server.data.CandidateTestData.getEducationLevels;
+import static org.tctalent.server.data.CandidateTestData.getEducationMajors;
+import static org.tctalent.server.data.CandidateTestData.getSurveyTypes;
+import static org.tctalent.server.data.LanguageTestData.getTranslation;
+import static org.tctalent.server.data.LanguageTestData.getTranslationFile;
+import static org.tctalent.server.data.CandidateTestData.getListOfOccupations;
+import static org.tctalent.server.data.CountryTestData.getSourceCountryList;
+import static org.tctalent.server.data.LanguageTestData.getLanguageLevelList;
+import static org.tctalent.server.data.LanguageTestData.getLanguageList;
 
 /**
  * Unit tests for Translation Admin Api endpoints.
@@ -77,27 +86,27 @@ class TranslationAdminApiTest extends ApiTestBase {
   private static final String SURVEY_TYPE_PATH = "/survey_type";
   private static final String TRANSLATION_PATH = "/file/{language}";
 
-  private static final Translation translation = AdminApiTestUtil.getTranslation();
+  private static final Translation translation = getTranslation();
   private final Page<Country> countryPage = new PageImpl<>(
-          AdminApiTestUtil.getCountries(), PageRequest.of(0, 10, Sort.unsorted()), 1);
+      getSourceCountryList(), PageRequest.of(0, 10, Sort.unsorted()), 1);
 
   private final Page<Language> languagePage = new PageImpl<>(
-          AdminApiTestUtil.getLanguageList(), PageRequest.of(0, 10, Sort.unsorted()), 1);
+      getLanguageList(), PageRequest.of(0, 10, Sort.unsorted()), 1);
 
   private final Page<LanguageLevel> languageLevelPage = new PageImpl<>(
-          AdminApiTestUtil.getLanguageLevelList(), PageRequest.of(0, 10, Sort.unsorted()), 1);
+      getLanguageLevelList(), PageRequest.of(0, 10, Sort.unsorted()), 1);
 
   private final Page<Occupation> occupationPage = new PageImpl<>(
-          AdminApiTestUtil.getListOfOccupations(), PageRequest.of(0, 10, Sort.unsorted()), 1);
+      getListOfOccupations(), PageRequest.of(0, 10, Sort.unsorted()), 1);
 
   private final Page<EducationLevel> educationLevelPage = new PageImpl<>(
-          AdminApiTestUtil.getEducationLevels(), PageRequest.of(0, 10, Sort.unsorted()), 1);
+      getEducationLevels(), PageRequest.of(0, 10, Sort.unsorted()), 1);
 
   private final Page<EducationMajor> educationMajorPage = new PageImpl<>(
-          AdminApiTestUtil.getEducationMajors(), PageRequest.of(0, 10, Sort.unsorted()), 1);
+      getEducationMajors(), PageRequest.of(0, 10, Sort.unsorted()), 1);
 
   private final Page<SurveyType> surveyTypePage = new PageImpl<>(
-          AdminApiTestUtil.getSurveyTypes(), PageRequest.of(0, 10, Sort.unsorted()), 1);
+      getSurveyTypes(), PageRequest.of(0, 10, Sort.unsorted()), 1);
 
   @MockBean
   TranslationService translationService;
@@ -145,6 +154,7 @@ class TranslationAdminApiTest extends ApiTestBase {
             .willReturn(countryPage);
 
     mockMvc.perform(post(BASE_PATH + COUNTRY_PATH)
+                    .with(csrf())
                     .header("Authorization", "Bearer " + "jwt-token")
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(objectMapper.writeValueAsString(request))
@@ -153,15 +163,15 @@ class TranslationAdminApiTest extends ApiTestBase {
             .andDo(print())
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-            .andExpect(jsonPath("$.totalElements", is(3)))
+            .andExpect(jsonPath("$.totalElements", is(2)))
             .andExpect(jsonPath("$.totalPages", is(1)))
             .andExpect(jsonPath("$.number", is(0)))
             .andExpect(jsonPath("$.hasNext", is(false)))
             .andExpect(jsonPath("$.hasPrevious", is(false)))
             .andExpect(jsonPath("$.content", notNullValue()))
-            .andExpect(jsonPath("$.content.[0].name", is("Jordan")))
+            .andExpect(jsonPath("$.content.[0].name", is("Lebanon")))
             .andExpect(jsonPath("$.content.[0].status", is("active")))
-            .andExpect(jsonPath("$.content.[0].translatedName", is("Jordan")));
+            .andExpect(jsonPath("$.content.[0].translatedName", is("Lebanon")));
 
     verify(countryService).searchCountries(any(SearchCountryRequest.class));
   }
@@ -176,6 +186,7 @@ class TranslationAdminApiTest extends ApiTestBase {
             .willReturn(countryPage);
 
     mockMvc.perform(post(BASE_PATH + NATIONALITY_PATH)
+                    .with(csrf())
                     .header("Authorization", "Bearer " + "jwt-token")
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(objectMapper.writeValueAsString(request))
@@ -184,15 +195,15 @@ class TranslationAdminApiTest extends ApiTestBase {
             .andDo(print())
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-            .andExpect(jsonPath("$.totalElements", is(3)))
+            .andExpect(jsonPath("$.totalElements", is(2)))
             .andExpect(jsonPath("$.totalPages", is(1)))
             .andExpect(jsonPath("$.number", is(0)))
             .andExpect(jsonPath("$.hasNext", is(false)))
             .andExpect(jsonPath("$.hasPrevious", is(false)))
             .andExpect(jsonPath("$.content", notNullValue()))
-            .andExpect(jsonPath("$.content.[0].name", is("Jordan")))
+            .andExpect(jsonPath("$.content.[0].name", is("Lebanon")))
             .andExpect(jsonPath("$.content.[0].status", is("active")))
-            .andExpect(jsonPath("$.content.[0].translatedName", is("Jordan")));
+            .andExpect(jsonPath("$.content.[0].translatedName", is("Lebanon")));
 
     verify(countryService).searchCountries(any(SearchCountryRequest.class));
   }
@@ -207,6 +218,7 @@ class TranslationAdminApiTest extends ApiTestBase {
             .willReturn(languagePage);
 
     mockMvc.perform(post(BASE_PATH + LANGUAGE_PATH)
+                    .with(csrf())
                     .header("Authorization", "Bearer " + "jwt-token")
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(objectMapper.writeValueAsString(request))
@@ -238,6 +250,7 @@ class TranslationAdminApiTest extends ApiTestBase {
             .willReturn(languageLevelPage);
 
     mockMvc.perform(post(BASE_PATH + LANGUAGE_LEVEL_PATH)
+                    .with(csrf())
                     .header("Authorization", "Bearer " + "jwt-token")
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(objectMapper.writeValueAsString(request))
@@ -269,6 +282,7 @@ class TranslationAdminApiTest extends ApiTestBase {
             .willReturn(occupationPage);
 
     mockMvc.perform(post(BASE_PATH + OCCUPATION_PATH)
+                    .with(csrf())
                     .header("Authorization", "Bearer " + "jwt-token")
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(objectMapper.writeValueAsString(request))
@@ -300,6 +314,7 @@ class TranslationAdminApiTest extends ApiTestBase {
             .willReturn(educationLevelPage);
 
     mockMvc.perform(post(BASE_PATH + EDUCATION_LEVEL_PATH)
+                    .with(csrf())
                     .header("Authorization", "Bearer " + "jwt-token")
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(objectMapper.writeValueAsString(request))
@@ -331,6 +346,7 @@ class TranslationAdminApiTest extends ApiTestBase {
             .willReturn(educationMajorPage);
 
     mockMvc.perform(post(BASE_PATH + EDUCATION_MAJOR_PATH)
+                    .with(csrf())
                     .header("Authorization", "Bearer " + "jwt-token")
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(objectMapper.writeValueAsString(request))
@@ -362,6 +378,7 @@ class TranslationAdminApiTest extends ApiTestBase {
             .willReturn(surveyTypePage);
 
     mockMvc.perform(post(BASE_PATH + SURVEY_TYPE_PATH)
+                    .with(csrf())
                     .header("Authorization", "Bearer " + "jwt-token")
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(objectMapper.writeValueAsString(request))
@@ -399,6 +416,7 @@ class TranslationAdminApiTest extends ApiTestBase {
             .willReturn(translation);
 
     mockMvc.perform(post(BASE_PATH)
+                    .with(csrf())
                     .header("Authorization", "Bearer " + "jwt-token")
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(objectMapper.writeValueAsString(request))
@@ -428,6 +446,7 @@ class TranslationAdminApiTest extends ApiTestBase {
             .willReturn(translation);
 
     mockMvc.perform(put(BASE_PATH + "/" + 1L)
+                    .with(csrf())
                     .header("Authorization", "Bearer " + "jwt-token")
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(objectMapper.writeValueAsString(request))
@@ -472,6 +491,7 @@ class TranslationAdminApiTest extends ApiTestBase {
     Map<String, Object> translation = new HashMap<>();
 
     mockMvc.perform(put(BASE_PATH + "/" + TRANSLATION_PATH.replace("{language}", "english"))
+                    .with(csrf())
                     .header("Authorization", "Bearer " + "jwt-token")
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(objectMapper.writeValueAsString(translation))

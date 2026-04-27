@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -22,6 +22,11 @@ import {SearchResults} from "../model/search-results";
 import {CandidateOpportunityParams} from "../model/candidate";
 import {OpportunityService} from "../components/util/opportunity/OpportunityService";
 import {JobChatUserInfo} from "../model/chat";
+
+export interface UpdateRelocatingDependantIds {
+  id?: number;
+  relocatingDependantIds: number[];
+}
 
 @Injectable({
   providedIn: 'root'
@@ -97,9 +102,18 @@ export class CandidateOpportunityService implements OpportunityService<Candidate
     return observable;
   }
 
+  updateRelocatingDependants(id: number, request: UpdateRelocatingDependantIds): Observable <void> {
+    return this.http.put<void>(`${this.apiUrl}/${id}/relocating-dependants`, request);
+  }
+
   uploadOffer(id: number, formData: FormData): Observable<CandidateOpportunity> {
     return this.http.post<CandidateOpportunity>(
       `${this.apiUrl}/${id}/upload-offer`, formData);
 
+  }
+
+  updateSfCaseRelocationInfo(id: number): Observable<void> {
+    return this.http.put<void>(
+      `${this.apiUrl}/${id}/update-sf-case-relocation-info`, null);
   }
 }

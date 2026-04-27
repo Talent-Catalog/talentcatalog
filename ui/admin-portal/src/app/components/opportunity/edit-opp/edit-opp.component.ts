@@ -1,6 +1,26 @@
+/*
+ * Copyright (c) 2024 Talent Catalog.
+ *
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see https://www.gnu.org/licenses/.
+ */
+
 import {Component, OnInit} from '@angular/core';
-import {CandidateOpportunity, CandidateOpportunityStage, isCandidateOpportunity} from "../../../model/candidate-opportunity";
-import {FormBuilder, FormGroup} from "@angular/forms";
+import {
+  CandidateOpportunity,
+  CandidateOpportunityStage,
+  isCandidateOpportunity
+} from "../../../model/candidate-opportunity";
+import {UntypedFormBuilder, UntypedFormGroup} from "@angular/forms";
 import {EnumOption, enumOptions} from "../../../util/enum";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {Opportunity, OpportunityProgressParams} from "../../../model/opportunity";
@@ -10,6 +30,7 @@ import {SavedListService} from "../../../services/saved-list.service";
 import {switchMap} from "rxjs/operators";
 import {SearchCandidateSourcesRequest} from "../../../model/base";
 import {JobService} from "../../../services/job.service";
+import {SearchHelpLinkRequest} from "../../../model/help-link";
 
 @Component({
   selector: 'app-edit-opp',
@@ -20,10 +41,12 @@ export class EditOppComponent implements OnInit {
 
   opp: Opportunity;
 
-  salesforceStageForm: FormGroup;
+  salesforceStageForm: UntypedFormGroup;
   opportunityStageOptions: EnumOption[] = [];
 
   closing = false;
+
+  oppType: string;
 
   /**
    * When set to true, this will indicate that the given case is the only remaining child of its job parent
@@ -32,12 +55,14 @@ export class EditOppComponent implements OnInit {
 
   error;
 
+  stageHelpRequest: SearchHelpLinkRequest;
+
   constructor(
     private activeModal: NgbActiveModal,
     private savedListService: SavedListService,
     private candidateSourceCandidateService: CandidateSourceCandidateService,
     private jobService: JobService,
-    private fb: FormBuilder) { }
+    private fb: UntypedFormBuilder) { }
 
   ngOnInit(): void {
     let stage = null;
@@ -46,9 +71,13 @@ export class EditOppComponent implements OnInit {
       if (isCandidateOpportunity(this.opp)) {
         this.opportunityStageOptions = enumOptions(CandidateOpportunityStage);
         this.checkOpenCases(this.opp);
+        this.oppType = 'Candidate Opportunity';
+        this.stageHelpRequest = {caseOppId: this.opp.id, caseStage: this.opp.stage}
       }
       if (isJob(this.opp)) {
         this.opportunityStageOptions = enumOptions(JobOpportunityStage);
+        this.oppType = 'Job'
+        this.stageHelpRequest = {jobOppId: this.opp.id, jobStage: this.opp.stage}
       }
     }
 
@@ -118,4 +147,17 @@ export class EditOppComponent implements OnInit {
       }
     }
 
+  isEvergreenJob(): boolean {
+    return isJob(this.opp) && this.opp.evergreen;
+  }
+
+  onStageSelectionChange(stage: any) {
+    if (isCandidateOpportunity(this.opp)) {
+      this.stageHelpRequest = {caseOppId: this.opp.id, caseStage: stage.key}
+    }
+    if (isJob(this.opp)) {
+      this.stageHelpRequest = {jobOppId: this.opp.id, jobStage: stage.key}
+    }
+
+  }
 }

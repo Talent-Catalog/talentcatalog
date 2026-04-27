@@ -1,17 +1,39 @@
+/*
+ * Copyright (c) 2024 Talent Catalog.
+ *
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see https://www.gnu.org/licenses/.
+ */
+
 import {Component, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
 import {Candidate} from "../../../../model/candidate";
 import {CandidateService} from "../../../../services/candidate.service";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
-import {AssignTasksCandidateComponent} from "../../../tasks/assign-tasks-candidate/assign-tasks-candidate.component";
+import {
+  AssignTasksCandidateComponent
+} from "../../../tasks/assign-tasks-candidate/assign-tasks-candidate.component";
 import {EditTaskAssignmentComponent} from "./edit/edit-task-assignment.component";
 import {ConfirmationComponent} from "../../../util/confirm/confirmation.component";
 import {TaskAssignmentService} from "../../../../services/task-assignment.service";
 import {TaskAssignment, taskAssignmentSort} from "../../../../model/task-assignment";
-import {CandidateAttachmentService, ListByUploadTypeRequest} from "../../../../services/candidate-attachment.service";
+import {
+  CandidateAttachmentService,
+  ListByUploadTypeRequest
+} from "../../../../services/candidate-attachment.service";
 import {CandidateAttachment} from "../../../../model/candidate-attachment";
 import {TaskType} from "../../../../model/task";
 import {ViewResponseComponent} from "./view-response/view-response.component";
 import {Status} from "../../../../model/base";
+import {AuthorizationService} from "../../../../services/authorization.service";
 
 @Component({
   selector: 'app-view-candidate-tasks',
@@ -33,6 +55,7 @@ export class ViewCandidateTasksComponent implements OnInit, OnChanges {
 
   constructor(private candidateService: CandidateService,
               private candidateAttachmentService: CandidateAttachmentService,
+              private authorizationService: AuthorizationService,
               private taskAssignmentService: TaskAssignmentService,
               private modalService: NgbModal) { }
 
@@ -42,35 +65,25 @@ export class ViewCandidateTasksComponent implements OnInit, OnChanges {
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes && changes.candidate && changes.candidate.previousValue !== changes.candidate.currentValue) {
-      this.loading = true;
-      this.getCandidate();
+      this.filterTasks();
     }
   }
 
-  getCandidate() {
-    this.candidateService.get(this.candidate.id).subscribe(
-      candidate => {
-        this.candidate = candidate;
-        if (this.candidate.taskAssignments) {
-          this.ongoingTasks = this.candidate.taskAssignments.filter(t =>
-            t.completedDate == null &&
-            t.abandonedDate == null &&
-            t.status === Status.active).sort(taskAssignmentSort);
-          this.completedTasks = this.candidate.taskAssignments.filter(t =>
-            t.completedDate != null ||
-            t.abandonedDate != null).sort(taskAssignmentSort);
-          this.inactiveTasks = this.candidate.taskAssignments.filter(t =>
-            t.status === Status.inactive);
-        } else {
-          this.ongoingTasks = [];
-          this.completedTasks = [];
-        }
-        this.loading = false;
-      },
-      error => {
-        this.error = error;
-        this.loading = false;
-      });
+  filterTasks() {
+    if (this.candidate.taskAssignments) {
+      this.ongoingTasks = this.candidate.taskAssignments.filter(t =>
+        t.completedDate == null &&
+        t.abandonedDate == null &&
+        t.status === Status.active).sort(taskAssignmentSort);
+      this.completedTasks = this.candidate.taskAssignments.filter(t =>
+        t.completedDate != null ||
+        t.abandonedDate != null).sort(taskAssignmentSort);
+      this.inactiveTasks = this.candidate.taskAssignments.filter(t =>
+        t.status === Status.inactive);
+    } else {
+      this.ongoingTasks = [];
+      this.completedTasks = [];
+    }
   }
 
   isOverdue(ta: TaskAssignment) {
@@ -86,9 +99,13 @@ export class ViewCandidateTasksComponent implements OnInit, OnChanges {
     assignTaskCandidateModal.componentInstance.candidateId = this.candidate.id;
 
     assignTaskCandidateModal.result
-      .then((taskAssignment: TaskAssignment) => this.getCandidate())
+      .then((taskAssignment: TaskAssignment) => this.candidateService.updateCandidate())
       .catch(() => { /* Isn't possible */ });
 
+  }
+
+  handleError(error: any) {
+    this.error = error;
   }
 
   editTaskAssignment(ta: TaskAssignment) {
@@ -100,7 +117,7 @@ export class ViewCandidateTasksComponent implements OnInit, OnChanges {
     editTaskAssignmentModal.componentInstance.taskAssignment = ta;
 
     editTaskAssignmentModal.result
-      .then((taskAssignment) => this.getCandidate())
+      .then((taskAssignment) => this.candidateService.updateCandidate())
       .catch(() => { /* Isn't possible */ });
 
   }
@@ -120,7 +137,7 @@ export class ViewCandidateTasksComponent implements OnInit, OnChanges {
         if (result === true) {
           this.taskAssignmentService.removeTaskAssignment(ta.id).subscribe(
             () => {
-              this.getCandidate();
+              this.candidateService.updateCandidate();
               this.saving = false;
             },
             error => {
@@ -135,7 +152,6 @@ export class ViewCandidateTasksComponent implements OnInit, OnChanges {
   }
 
   viewResponse(ta: TaskAssignment) {
-    // todo in future it might be the answer to a question, display this answer in a modal?
     if (ta.task.taskType === TaskType.Upload) {
       const request: ListByUploadTypeRequest = {
         candidateId: this.candidate.id,
@@ -176,5 +192,9 @@ export class ViewCandidateTasksComponent implements OnInit, OnChanges {
       })
       .catch(() => { /* Isn't possible */
       });
+  }
+
+  isDefaultSourcePartner() {
+    return this.authorizationService.isDefaultSourcePartner();
   }
 }

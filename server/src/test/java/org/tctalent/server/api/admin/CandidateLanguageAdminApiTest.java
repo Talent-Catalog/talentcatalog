@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -41,6 +41,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -49,6 +50,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.tctalent.server.data.CandidateTestData.getCandidateLanguage;
+import static org.tctalent.server.data.CandidateTestData.getListOfCandidateLanguages;
 
 /**
  * Unit tests for Candidate Language Admin Api endpoints.
@@ -63,9 +66,9 @@ class CandidateLanguageAdminApiTest extends ApiTestBase {
     private static final String BASE_PATH = "/api/admin/candidate-language";
     private static final String GET_LIST_PATH = "/{id}/list";
 
-    private static final CandidateLanguage candidateLanguage = AdminApiTestUtil.getCandidateLanguage();
+    private static final CandidateLanguage candidateLanguage = getCandidateLanguage();
 
-    private static final List<CandidateLanguage> candidateLanguageList = AdminApiTestUtil.getListOfCandidateLanguages();
+    private static final List<CandidateLanguage> candidateLanguageList = getListOfCandidateLanguages();
 
     @MockBean CandidateLanguageService candidateLanguageService;
 
@@ -119,6 +122,7 @@ class CandidateLanguageAdminApiTest extends ApiTestBase {
                 .willReturn(candidateLanguage);
 
         mockMvc.perform(post(BASE_PATH)
+                        .with(csrf())
                         .header("Authorization", "Bearer " + "jwt-token")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request))
@@ -147,6 +151,7 @@ class CandidateLanguageAdminApiTest extends ApiTestBase {
                 .willReturn(candidateLanguage);
 
         mockMvc.perform(put(BASE_PATH)
+                        .with(csrf())
                         .header("Authorization", "Bearer " + "jwt-token")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request))
@@ -169,6 +174,7 @@ class CandidateLanguageAdminApiTest extends ApiTestBase {
     @DisplayName("delete candidate language by id succeeds")
     void deleteCandidateLanguageByIdSucceeds() throws Exception {
         mockMvc.perform(delete(BASE_PATH + "/" + CANDIDATE_ID)
+                        .with(csrf())
                         .header("Authorization", "Bearer " + "jwt-token"))
 
                 .andExpect(status().isOk());

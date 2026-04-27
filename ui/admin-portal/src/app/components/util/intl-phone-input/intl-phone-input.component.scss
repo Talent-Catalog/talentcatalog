@@ -1,0 +1,14 @@
+#intl-phone-input {
+  #isoCodeSelect.ng-select {
+    width: 200px;
+    .ng-select-container {
+      height: 100% !important;
+    }
+  }
+}
+
+::ng-deep .ng-dropdown-panel {
+  width: auto !important;
+  min-width: 100%; /* fallback so it's not smaller than input */
+  max-width: max-content;
+}

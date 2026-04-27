@@ -1,0 +1,338 @@
+# Get the current AWS region from the provider configuration
+data "aws_region" "current" {}
+
+# Security Groups
+resource "aws_security_group" "fargate" {
+  name   = "${var.app}-${var.env}-fargate-sg"
+  vpc_id = module.vpc.vpc_id
+
+  ingress {
+    description      = "Container port"
+    protocol         = "tcp"
+    from_port        = var.container_port
+    to_port          = var.container_port
+    cidr_blocks      = ["0.0.0.0/0"]
+    ipv6_cidr_blocks = ["::/0"]
+  }
+
+  egress {
+    protocol    = "-1"
+    from_port   = 0
+    to_port     = 0
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+}
+
+resource "aws_security_group" "alb" {
+  name   = "${var.app}-${var.env}-alb-sg"
+  vpc_id = module.vpc.vpc_id
+
+  ingress {
+    description      = "Http access port"
+    protocol         = "tcp"
+    from_port        = 80
+    to_port          = 80
+    cidr_blocks      = ["0.0.0.0/0"]
+    ipv6_cidr_blocks = ["::/0"]
+  }
+
+  ingress {
+    description      = "Https access port"
+    protocol         = "tcp"
+    from_port        = 443
+    to_port          = 443
+    cidr_blocks      = ["0.0.0.0/0"]
+    ipv6_cidr_blocks = ["::/0"]
+  }
+
+  egress {
+    protocol    = "-1"
+    from_port   = 0
+    to_port     = 0
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+}
+
+# IAM Roles and Policies
+resource "aws_iam_role" "ecs_task_execution_role" {
+  name = "${var.app}-${var.env}-fargate-task-execution-role"
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow",
+        Principal = {
+          Service = "ecs-tasks.amazonaws.com"
+        }
+        Action = "sts:AssumeRole"
+      }
+    ]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "ecs_task_execution_role_policy_attachment" {
+  role       = aws_iam_role.ecs_task_execution_role.name
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
+}
+
+resource "aws_iam_role_policy_attachment" "ecs_task_execution_role_policy_attachment_ssm" {
+  role       = aws_iam_role.ecs_task_execution_role.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonSSMReadOnlyAccess"
+}
+
+resource "aws_iam_role_policy_attachment" "ecs_task_execution_role_policy_attachment_ecr" {
+  role       = aws_iam_role.ecs_task_execution_role.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
+}
+
+resource "aws_iam_role" "ecs_task_role" {
+  name = "${var.app}-${var.env}-fargate-task-role"
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow",
+        Principal = {
+          Service = "ecs-tasks.amazonaws.com"
+        }
+        Action = "sts:AssumeRole"
+      }
+    ]
+  })
+}
+
+locals {
+  s3_data_bucket_arns = compact([
+    var.s3_bucket != "" ? "arn:aws:s3:::${var.s3_bucket}" : "",
+    var.translations_bucket != "" ? "arn:aws:s3:::${var.translations_bucket}" : "",
+    var.candidate_files_bucket != "" ? "arn:aws:s3:::${var.candidate_files_bucket}" : ""
+  ])
+  s3_data_object_arns = [for arn in local.s3_data_bucket_arns : "${arn}/*"]
+}
+
+resource "aws_iam_policy" "ecs_task_s3_policy" {
+  name = "${var.app}-${var.env}-fargate-task-s3-policy"
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+          "s3:ListBucket",
+          "s3:GetBucketLocation"
+        ]
+        Resource = local.s3_data_bucket_arns
+      },
+      {
+        Effect = "Allow"
+        Action = [
+          "s3:GetObject",
+          "s3:PutObject",
+          "s3:DeleteObject",
+          "s3:AbortMultipartUpload"
+        ]
+        Resource = local.s3_data_object_arns
+      }
+    ]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "ecs_task_role_policy_attachment_s3" {
+  role       = aws_iam_role.ecs_task_role.name
+  policy_arn = aws_iam_policy.ecs_task_s3_policy.arn
+}
+
+# ALB
+module "alb" {
+  source             = "terraform-aws-modules/alb/aws"
+  version            = "~> 6.0"
+  name               = "${var.app}-${var.env}"
+  load_balancer_type = "application"
+
+  vpc_id          = module.vpc.vpc_id
+  subnets         = module.vpc.public_subnets
+  security_groups = [aws_security_group.alb.id]
+  target_groups = [
+    {
+      name_prefix      = "app-"
+      backend_protocol = "HTTP"
+      backend_port     = var.container_port
+      target_type      = "ip"
+      health_check = {
+        enabled             = true
+        interval            = 65
+        path                = "/actuator/health"
+        port                = "traffic-port"
+        healthy_threshold   = 2
+        unhealthy_threshold = 5
+        timeout             = 60
+        protocol            = "HTTP"
+        matcher             = "200"
+      }
+      targets = {}
+    }
+  ]
+
+  https_listeners = [
+    {
+      port               = 443
+      protocol           = "HTTPS"
+      certificate_arn    = aws_acm_certificate_validation.this.certificate_arn
+      target_group_index = 0
+    }
+  ]
+
+  http_tcp_listeners = var.cloudfront_enable ? [
+    {
+      action_type        = "forward"
+      port               = 80
+      protocol           = "HTTP"
+      target_group_index = 0
+      redirect           = {}
+    }
+    ] : [
+    {
+      action_type        = "redirect"
+      port               = 80
+      protocol           = "HTTP"
+      target_group_index = 0
+      redirect = {
+        port        = "443"
+        protocol    = "HTTPS"
+        status_code = "HTTP_301"
+      }
+    }
+  ]
+
+  tags = merge(
+    {
+      Name = "${var.app}-${var.env}"
+    },
+    var.common_tags,
+    {
+      Component = "alb"
+      Purpose   = "public-ingress"
+    }
+  )
+}
+
+# CloudWatch Logs
+resource "aws_cloudwatch_log_group" "logs" {
+  name              = "/fargate/service/${var.app}-${var.env}-fargate-log"
+  retention_in_days = "14"
+}
+
+# ECS
+data "aws_ssm_parameters_by_path" "secrets" {
+  path = "/${var.app}/${var.env}/"
+}
+
+locals {
+  env_secrets = [for name in data.aws_ssm_parameters_by_path.secrets.names : {
+    "name" : split("/", name)[3],
+    "value" : trimspace(data.aws_ssm_parameters_by_path.secrets.values[index(data.aws_ssm_parameters_by_path.secrets.names, name)])
+  }]
+}
+
+module "ecs" {
+  source = "terraform-aws-modules/ecs/aws"
+
+  cluster_name = "${var.app}-${var.env}"
+
+  cluster_configuration = {
+    execute_command_configuration = {
+      logging = "OVERRIDE"
+      log_configuration = {
+        cloud_watch_log_group_name = "/aws/ecs/aws-ec2"
+      }
+    }
+  }
+
+  # Module v7+ uses explicit capacity providers and strategy.
+  cluster_capacity_providers = ["FARGATE", "FARGATE_SPOT"]
+  default_capacity_provider_strategy = {
+    FARGATE = {
+      weight = 50
+    }
+    FARGATE_SPOT = {
+      weight = 50
+    }
+  }
+
+  tags = merge(
+    {
+      Name = "${var.app}-${var.env}"
+    },
+    var.common_tags,
+    {
+      Component = "ecs"
+    }
+  )
+}
+
+resource "aws_ecs_service" "web-app" {
+  name            = "${var.app}-${var.env}"
+  cluster         = module.ecs.cluster_id
+  task_definition = aws_ecs_task_definition.web-app.arn
+  desired_count   = var.ecs_tasks_count
+  launch_type     = "FARGATE"
+
+  load_balancer {
+    target_group_arn = module.alb.target_group_arns[0]
+    container_name   = "${var.app}-${var.env}"
+    container_port   = var.container_port
+  }
+
+  network_configuration {
+    security_groups = [aws_security_group.fargate.id]
+    subnets         = module.vpc.public_subnets
+    assign_public_ip = true
+  }
+  health_check_grace_period_seconds = 300
+
+  tags = merge(
+    {
+      Name = "${var.app}-${var.env}"
+    },
+    var.common_tags,
+    {
+      Component = "ecs"
+    }
+  )
+}
+
+resource "aws_ecs_task_definition" "web-app" {
+  family                   = "${var.app}-${var.env}"
+  requires_compatibilities = ["FARGATE"]
+  network_mode             = "awsvpc"
+  execution_role_arn       = aws_iam_role.ecs_task_execution_role.arn
+  task_role_arn            = aws_iam_role.ecs_task_role.arn
+  cpu                      = var.fargate_cpu
+  memory                   = var.fargate_memory
+  container_definitions = jsonencode([
+    {
+      name                   = "${var.app}-${var.env}"
+      image                  = var.container_image
+      essential              = true
+      readonlyRootFilesystem = false
+      environment            = local.env_secrets
+      logConfiguration = {
+        logDriver = "awslogs"
+        options = {
+          awslogs-group         = "/fargate/service/${var.app}-${var.env}-fargate-log"
+          awslogs-stream-prefix = "ecs"
+          awslogs-region        = data.aws_region.current.id
+        }
+      }
+      portMappings = [
+        {
+          containerPort = var.container_port
+          hostPort      = var.container_port
+        }
+      ]
+    }
+  ])
+
+  depends_on = [aws_ssm_parameter.spring_datasource_url]
+}

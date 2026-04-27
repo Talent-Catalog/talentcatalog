@@ -1,5 +1,21 @@
+/*
+ * Copyright (c) 2024 Talent Catalog.
+ *
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see https://www.gnu.org/licenses/.
+ */
+
 import {Directive, Input, OnInit} from '@angular/core';
-import {FormBuilder} from '@angular/forms';
+import {UntypedFormBuilder} from '@angular/forms';
 import {AutoSaveComponentBase} from "../autosave/AutoSaveComponentBase";
 import {CandidateVisaCheckService} from "../../../services/candidate-visa-check.service";
 import {CandidateVisa, CandidateVisaJobCheck} from "../../../model/candidate";
@@ -25,7 +41,7 @@ export abstract class VisaCheckComponentBase extends AutoSaveComponentBase imple
    * @param fb FormBuilder
    * @param candidateVisaCheckService Service which saves the intake data
    */
-  protected constructor(protected fb: FormBuilder,
+  protected constructor(protected fb: UntypedFormBuilder,
                         private candidateVisaCheckService: CandidateVisaCheckService) {
     super(candidateVisaCheckService);
   }

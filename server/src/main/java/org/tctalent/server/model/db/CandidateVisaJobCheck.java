@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -16,14 +16,13 @@
 
 package org.tctalent.server.model.db;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.SequenceGenerator;
+import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.lang.Nullable;
 import org.tctalent.server.request.candidate.visa.CandidateVisaCheckData;
-
-import javax.persistence.Entity;
-import javax.persistence.SequenceGenerator;
-import javax.persistence.Table;
 
 @Getter
 @Setter
@@ -117,9 +116,6 @@ public class CandidateVisaJobCheck extends CandidateVisaJobCheckBase {
         }
         if (data.getVisaJobLanguagesThresholdNotes() != null) {
             setLanguagesThresholdNotes(data.getVisaJobLanguagesThresholdNotes());
-        }
-        if (data.getVisaJobRelocatingDependantIds() != null) {
-            setRelocatingDependantIds(data.getVisaJobRelocatingDependantIds());
         }
 
     }

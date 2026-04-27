@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -15,7 +15,7 @@
  */
 
 import {Component, EventEmitter, Input, OnDestroy, OnInit, Output} from '@angular/core';
-import {FormBuilder, FormGroup} from "@angular/forms";
+import {UntypedFormBuilder, UntypedFormGroup} from "@angular/forms";
 import {Router} from "@angular/router";
 import {CandidateService} from "../../../services/candidate.service";
 import {EducationLevelService} from "../../../services/education-level.service";
@@ -50,7 +50,7 @@ export class RegistrationEducationComponent implements OnInit, OnDestroy {
     countries: true
   };
 
-  form: FormGroup;
+  form: UntypedFormGroup;
   majors: EducationMajor[];
   countries: Country[];
   educationLevels: EducationLevel[];
@@ -62,7 +62,7 @@ export class RegistrationEducationComponent implements OnInit, OnDestroy {
   editTarget: CandidateEducation;
   subscription;
 
-  constructor(private fb: FormBuilder,
+  constructor(private fb: UntypedFormBuilder,
               private router: Router,
               private candidateEducationService: CandidateEducationService,
               private candidateService: CandidateService,

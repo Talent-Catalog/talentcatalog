@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -16,29 +16,31 @@
 
 package org.tctalent.server.model.db;
 
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.SequenceGenerator;
+import jakarta.persistence.Table;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.util.HashSet;
 import java.util.Set;
 import javax.annotation.Nullable;
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
-import javax.persistence.SequenceGenerator;
-import javax.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
 
 /**
- * This is a copy of an Employer Job Opportunity on Salesforce
+ * This represents an Employer Job Opportunity.
+ * <p/>
+ * They are backed by equivalent Employer Job Opportunity objects on Salesforce.
  * <p/>
  * Job Opps are intended to only be used for the monitoring open job opps.
  * They are not intended to completely duplicate what is on SF - eg history
@@ -72,7 +74,7 @@ public class SalesforceJobOpp extends AbstractOpportunity {
      * TC user responsible for this job - will normally be "destination" staff located in the same
      * region as the {@link #employer}
      */
-    @OneToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "contact_user_id")
     private User contactUser;
 
@@ -104,6 +106,28 @@ public class SalesforceJobOpp extends AbstractOpportunity {
     private Employer employerEntity;
 
     /**
+     * True if this an evergreen job - ie a job that automatically replicates when it gets
+     * past the recruitment stage. A new copy of the original job is created so that new
+     * candidates matching the job's requirements can continue to apply.
+     */
+    private boolean evergreen;
+
+    /**
+     * Evergreen child of this job.
+     * <p/>
+     * A job can only have one child. The primary purpose of this field is just as a flag
+     * indicating that this job already has a child. This can be used to avoid a job spawning
+     * more than one child - if, for example, a job's stage is set to Recruitment, spawning a
+     * child, then the stage is set back to Prospect, then back to Recruitment again. That second
+     * time it is moved to Recruitment will not spawn another child because this field indicates
+     * that a child already exists.
+     */
+    @Nullable
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "evergreen_child_id")
+    private SalesforceJobOpp evergreenChild;
+
+    /**
      * Optional exclusion list associated with job.
      * <p/>
      * Used to exclude people who have already been seen and rejected for this job from future
@@ -113,6 +137,18 @@ public class SalesforceJobOpp extends AbstractOpportunity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "exclusion_list_id")
     private SavedList exclusionList;
+
+    /**
+     * This contains the text extracted from any uploaded Job Description Document.
+     * <p/>
+     * Note that, for legacy reasons, the url and name of the Job Description Document are stored
+     * with the job's submission list. (Originally there was no entity like this representing a
+     * job - there was just a special kind of list - the "submission list".)
+     * <p/>
+     * Eventually we plan to move those fields to this entity.
+     */
+    @Nullable
+    private String jdFileText;
 
     /**
      * Summary describing job
@@ -150,9 +186,15 @@ public class SalesforceJobOpp extends AbstractOpportunity {
     /**
      * Partner responsible for this job.
      */
-    @OneToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "recruiter_partner_id")
     private PartnerImpl jobCreator;
+
+    /**
+     * True if no candidate search is required. The candidates to be considered have already
+     * been added to the submission list.
+     */
+    private boolean skipCandidateSearch;
 
     /**
      * Stage of job opportunity
@@ -255,5 +297,9 @@ public class SalesforceJobOpp extends AbstractOpportunity {
     public void setStage(JobOpportunityStage stage) {
         this.stage = stage;
         setStageOrder(stage.ordinal());
+
+        //Set redundant closed and won fields.
+        setClosed(this.stage.isClosed());
+        setWon(this.stage.isWon());
     }
 }

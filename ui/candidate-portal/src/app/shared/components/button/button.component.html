@@ -1,0 +1,30 @@
+<ng-template #content>
+  <i class="fas fa-spinner fa-spin" *ngIf="loading"></i>
+  <ng-content></ng-content>
+</ng-template>
+
+<ng-container [ngSwitch]="isLink ? 'link' : 'button'">
+  <a *ngSwitchCase="'link'"
+     class="btn"
+     [ngClass]="classList"
+     [attr.href]="isDisabled ? null : href"
+     [attr.target]="target"
+     [attr.rel]="computedRel"
+     [attr.aria-label]="ariaLabel"
+     [attr.aria-disabled]="isDisabled ? 'true' : null"
+     [class.disabled]="isDisabled"
+     (click)="clicked($event)">
+    <ng-container *ngTemplateOutlet="content"></ng-container>
+  </a>
+
+  <button *ngSwitchDefault
+          class="btn"
+          [ngClass]="classList"
+          [disabled]="isDisabled"
+          [attr.aria-label]="ariaLabel"
+          [routerLink]="routerLink"
+          [queryParamsHandling]="queryParamsHandling"
+          (click)="clicked($event)">
+    <ng-container *ngTemplateOutlet="content"></ng-container>
+  </button>
+</ng-container>

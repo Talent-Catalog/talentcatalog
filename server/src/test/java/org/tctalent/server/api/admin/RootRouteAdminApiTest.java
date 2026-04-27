@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -67,21 +67,6 @@ class RootRouteAdminApiTest extends ApiTestBase {
   @Test
   public void testWebOnlyContextLoads() {
     assertThat(rootRouteAdminApi).isNotNull();
-  }
-
-  @Test
-  @DisplayName("redirect sub-domain url to plain url succeeds")
-  void redirectSubDomainUrlToPlainUrlSucceeds() throws Exception {
-
-    mockMvc.perform(get(BASE_PATH)
-            .header("Authorization", "Bearer " + "jwt-token")
-            .header("Host", "crs.tctalent.org")
-            .queryParam("h", "true")
-            .accept(MediaType.APPLICATION_JSON))
-
-        .andDo(print())
-        .andExpect(status().isFound())
-        .andExpect(header().string("Location", containsString(("tctalent.org?p=crs"))));
   }
 
   @Test

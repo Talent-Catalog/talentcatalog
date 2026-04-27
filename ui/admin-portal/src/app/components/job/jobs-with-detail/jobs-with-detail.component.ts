@@ -1,11 +1,27 @@
-import {Component, Input, OnInit} from '@angular/core';
+/*
+ * Copyright (c) 2024 Talent Catalog.
+ *
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see https://www.gnu.org/licenses/.
+ */
+
+import {Component, Input, OnInit, ViewChild} from '@angular/core';
 import {Job} from "../../../model/job";
 import {MainSidePanelBase} from "../../util/split/MainSidePanelBase";
-import {Router} from "@angular/router";
-import {isStarredByMe, SearchOppsBy} from "../../../model/base";
+import {SearchOppsBy} from "../../../model/base";
 import {JobService} from "../../../services/job.service";
-import {AuthenticationService} from "../../../services/authentication.service";
 import {BehaviorSubject} from "rxjs";
+import {JobsComponent} from "../jobs/jobs.component";
+import {AuthorizationService} from "../../../services/authorization.service";
 
 /**
  * Displays the jobs returned by the given type of search, together with extra details
@@ -23,7 +39,10 @@ export class JobsWithDetailComponent extends MainSidePanelBase implements OnInit
   error: any;
   loading: boolean;
 
+  private readonly jobCache = new Map<number, Job>();
+
   @Input() searchBy: SearchOppsBy;
+  @Input() tabIsActive: boolean;
 
   /**
    * This is passed in from a higher level component which tracks whether the overall read status
@@ -37,9 +56,11 @@ export class JobsWithDetailComponent extends MainSidePanelBase implements OnInit
    */
   @Input() chatsRead$: BehaviorSubject<boolean>;
 
+  //Pick up reference to child Jobs Component - so we can call methods on it - see below
+  @ViewChild(JobsComponent, { static: false }) jobsComponent: JobsComponent;
+
   constructor(
-    private router: Router,
-    private authenticationService: AuthenticationService,
+    private authorizationService: AuthorizationService,
     private jobService: JobService
   ) {
     super(6);
@@ -50,23 +71,64 @@ export class JobsWithDetailComponent extends MainSidePanelBase implements OnInit
   }
 
   onJobSelected(job: Job) {
-    this.selectedJob = job;
+    const cachedJob = this.jobCache.get(job.id);
+    if (cachedJob) {
+      this.selectedJob = cachedJob;
+      this.loading = false;
+      this.error = null;
+      return;
+    }
+
+    this.fetchFullJob(job.id);
+  }
+
+  onRefreshRequested() {
+    this.jobCache.clear();
+
+    if (!this.selectedJob) {
+      return;
+    }
+
+    this.fetchFullJob(this.selectedJob.id);
+  }
+
+  private fetchFullJob(jobId: number) {
+    this.loading = true;
+    this.error = null;
+    this.jobService.get(jobId).subscribe({
+      next: (fullJob: Job) => {
+        this.jobCache.set(fullJob.id, fullJob);
+        this.selectedJob = fullJob;
+        this.loading = false;
+      },
+      error: (error) => {
+        this.error = error;
+        this.loading = false;
+      }
+    });
   }
 
   doToggleStarred() {
     this.loading = true;
     this.error = null
     this.jobService.updateStarred(this.selectedJob.id, !this.isStarred()).subscribe(
-      (job: Job) => {this.selectedJob = job; this.loading = false},
+      (job: Job) => {
+        this.selectedJob = job;
+        this.jobCache.set(job.id, job);
+        this.loading = false
+      },
       (error) => {this.error = error; this.loading = false}
     )
   }
 
   isStarred(): boolean {
-    return isStarredByMe(this.selectedJob?.starringUsers, this.authenticationService);
+    return this.authorizationService.isStarredByMe(this.selectedJob?.starringUsers);
   }
 
-  onJobUpdated(opp: Job) {
-    //Currently we don't process this event
+  // Refresh the jobs component (list of jobs) so that the new updated details can be displayed.
+  onJobUpdated(job: Job) {
+    this.selectedJob = job;
+    this.jobCache.set(job.id, job);
+    this.jobsComponent.search();
   }
 }

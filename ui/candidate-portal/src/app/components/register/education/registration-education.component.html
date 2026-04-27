@@ -1,5 +1,5 @@
 <!--
-  ~ Copyright (c) 2021 Talent Beyond Boundaries.
+  ~ Copyright (c) 2024 Talent Catalog.
   ~
   ~ This program is free software: you can redistribute it and/or modify it under
   ~ the terms of the GNU Affero General Public License as published by the Free
@@ -16,7 +16,7 @@
 
 <div class="container">
 
-  <app-loading [loading]="loading"></app-loading>
+  <tc-loading [loading]="loading"></tc-loading>
 
   <ng-container *ngIf="!loading">
 
@@ -26,8 +26,8 @@
 
       <!-- MAX EDUCATION LEVEL -->
       <div class="mb-3">
-        <label class="form-label" for="maxEducationLevelId">{{ 'REGISTRATION.EDUCATION.LABEL.MAXEDUCATIONLEVELID' | translate }}</label>
-        <ng-select id="maxEducationLevelId" [formControlName]="'maxEducationLevelId'" [clearable]="false"
+        <tc-label for="maxEducationLevelId">{{ 'REGISTRATION.EDUCATION.LABEL.MAXEDUCATIONLEVELID' | translate }}</tc-label>
+        <ng-select class="tc-select" id="maxEducationLevelId" [formControlName]="'maxEducationLevelId'" [clearable]="false"
                    placeholder="{{ 'FORM.PLACEHOLDER.SELECT' | translate }}">
           <ng-option *ngFor="let educationLevel of educationLevels" [value]="educationLevel.id">{{educationLevel.name}}</ng-option>
         </ng-select>
@@ -58,7 +58,7 @@
     </div>
 
     <p *ngIf="addingEducation && !candidateEducationItems.length">
-      {{ 'REGISTRATION.EDUCATION.MESSAGE' | translate }}}
+      {{ 'REGISTRATION.EDUCATION.MESSAGE' | translate }}
     </p>
 
     <!-- CREATE NEW EDUCATION -->
@@ -71,11 +71,11 @@
     </app-candidate-education-form>
 
     <div class="text-center mt-4" *ngIf="!addingEducation">
-      <button class="btn btn-outline-primary"
+      <tc-button type="outline"
               [disabled]="loading || saving"
-              (click)="addEducation()">
+              (onClick)="addEducation()">
         {{ 'REGISTRATION.EDUCATION.BUTTON.ADD' | translate }}
-      </button>
+      </tc-button>
     </div>
 
   </ng-container>

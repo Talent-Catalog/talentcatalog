@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -14,18 +14,33 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, Input} from '@angular/core';
-import {IntakeComponentTabBase} from "../../../../../util/intake/IntakeComponentTabBase";
-import {CandidateIntakeData, CandidateVisa} from "../../../../../../model/candidate";
+import {Component, Input, OnInit} from '@angular/core';
+import {Candidate, CandidateIntakeData, CandidateVisa, CandidateVisaJobCheck} from "../../../../../../model/candidate";
+import {AuthorizationService} from "../../../../../../services/authorization.service";
 
 @Component({
   selector: 'app-visa-check-uk',
   templateUrl: './visa-check-uk.component.html',
   styleUrls: ['./visa-check-uk.component.scss']
 })
-export class VisaCheckUkComponent extends IntakeComponentTabBase {
-  @Input() selectedIndex: number;
+export class VisaCheckUkComponent implements OnInit {
+  @Input() candidate: Candidate;
   @Input() candidateIntakeData: CandidateIntakeData;
-  visaRecord: CandidateVisa;
+  @Input() visaCheckRecord: CandidateVisa;
+  selectedJob: CandidateVisaJobCheck
+
+  constructor(private authService: AuthorizationService) {}
+
+  ngOnInit() {
+    /**
+     * Default select the first job in the array on init. This gets changed and updated via
+     * two-way data binding of selectedJob on the CandidateVisaJobComponent.
+     */
+    this.selectedJob = this.visaCheckRecord.candidateVisaJobChecks[0]
+  }
+
+  isEditable(): boolean {
+    return this.authService.isEditableCandidate(this.candidate);
+  }
 }
 

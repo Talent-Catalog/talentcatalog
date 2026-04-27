@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -15,8 +15,7 @@
  */
 
 import {Component, Input, OnInit} from '@angular/core';
-import {ChartOptions, ChartType} from "chart.js";
-import {Label, MultiDataSet, SingleDataSet} from "ng2-charts";
+import {ChartData, ChartOptions, ChartType} from "chart.js";
 import {DataRow} from "../../../model/data-row";
 
 @Component({
@@ -28,13 +27,20 @@ export class ChartComponent implements OnInit {
 
   @Input() chartData: DataRow[];
   @Input() chartType: ChartType = 'doughnut';
-  @Input() chartLegend: boolean;
+  @Input() chartLegend: boolean = true;
 
-  chartLabels: Label[];
+  chartLabels: string[] = [];
   chartOptions: ChartOptions = {};
-  chartDataSet: SingleDataSet;
+  chartDataSet: ChartData;
 
-  constructor() { }
+  constructor() {
+    this.chartDataSet = {
+      labels: this.chartLabels,
+      datasets: [
+        { data: [] }
+      ]
+    };
+  }
 
   ngOnInit() {
     if (this.chartData){
@@ -42,24 +48,31 @@ export class ChartComponent implements OnInit {
       this.chartLabels = [];
       for (let i = 0; i < this.chartData.length; i++) {
         this.chartLabels.push(this.chartData[i] ? this.chartData[i].label : '');
-        amountArray.push(this.chartData[i] ? this.chartData[i].value : '');
+        amountArray.push(this.chartData[i] ? this.chartData[i].value : 0);
       }
       if (this.chartType === "bar") {
         this.chartOptions = {
+          responsive: true,
           scales: {
-            yAxes: [
-              {
-                ticks: {
-                  min: 0,
-                }
-              }
-            ]
+            y: {
+              beginAtZero: true,
+              min: 0
+            }
           }
         };
+      } else {
+        this.chartOptions = {
+          responsive: true
+        };
       }
-      this.chartDataSet = amountArray;
-    }
 
+      this.chartDataSet = {
+        labels: this.chartLabels,
+        datasets: [
+          { data: amountArray }
+        ]
+      };
+    }
   }
 
 }

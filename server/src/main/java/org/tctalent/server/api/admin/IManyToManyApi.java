@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -19,9 +19,10 @@ package org.tctalent.server.api.admin;
 import java.util.List;
 import java.util.Map;
 
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 
+import java.util.Set;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -162,6 +163,37 @@ public interface IManyToManyApi<SEARCH, CONTENT> extends ITalentCatalogWebApi {
             @PathVariable("id") long masterId, @Valid @RequestBody SEARCH request)
             throws NoSuchObjectException {
         throw new NotImplementedException(this.getClass(), "searchPaged");
+    }
+
+    /**
+     * Returns the public IDs of slave records associated with the given master public ID.
+     * <p/>
+     * @param masterPublicId public ID of the master record whose slave record public IDs we want
+     * @return Set of public IDs of slave records
+     * @throws NoSuchObjectException if masterPublicId is unknown
+     */
+    @GetMapping("public/{publicId}/public-ids")
+    default @NotNull Set<String> fetchPublicIds(
+            @PathVariable("publicId") String masterPublicId)
+            throws NoSuchObjectException {
+        throw new NotImplementedException(this.getClass(), "fetchPublicIds");
+    }
+
+    /**
+     * Returns a page of public IDs of slave records associated with the given master public ID,
+     * matching the provided request filters and pagination.
+     * <p/>
+     * @param masterPublicId public ID of the master record whose slave record public IDs we want
+     * @param request Defines filtering and pagination for slave records
+     * @return A page of public IDs of slave records
+     * @throws NoSuchObjectException if masterPublicId is unknown
+     */
+    @PostMapping("public/{publicId}/public-ids-paged")
+    default @NotNull Map<String, Object> fetchPublicIdsPaged(
+        @PathVariable("publicId") String masterPublicId,
+        @Valid @RequestBody SEARCH request)
+        throws NoSuchObjectException {
+        throw new NotImplementedException(this.getClass(), "fetchPublicIdsPaged");
     }
 
 }

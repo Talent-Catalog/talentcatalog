@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -20,12 +20,12 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.tctalent.server.model.db.Role;
 import org.tctalent.server.model.db.User;
+import org.tctalent.server.repository.db.UserRepository;
 import org.tctalent.server.security.JwtAuthenticationEntryPoint;
 import org.tctalent.server.security.JwtTokenProvider;
-import org.tctalent.server.security.TcUserDetails;
-import org.tctalent.server.security.TcUserDetailsService;
 import org.tctalent.server.service.db.email.EmailHelper;
 
 /**
@@ -33,6 +33,7 @@ import org.tctalent.server.service.db.email.EmailHelper;
  *
  * @author smalik
  */
+@WithMockUser()
 public class ApiTestBase {
     private static final String USER_NAME = "test_user";
     private static final String FIRST_NAME = "test";
@@ -43,7 +44,7 @@ public class ApiTestBase {
     protected User user;
 
     @MockBean
-    TcUserDetailsService tcUserDetailsService;
+    UserRepository userRepository;
     @MockBean
     JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
     @MockBean
@@ -57,8 +58,7 @@ public class ApiTestBase {
         when(jwtTokenProvider.validateToken(anyString())).thenReturn(true);
         when(jwtTokenProvider.getUsernameFromJwt(anyString())).thenReturn(USER_NAME);
 
-        when(tcUserDetailsService.loadUserByUsername(anyString()))
-                .thenReturn(new TcUserDetails(user));
+        when(userRepository.findByUsernameIgnoreCase(anyString())).thenReturn(user);
     }
 
 

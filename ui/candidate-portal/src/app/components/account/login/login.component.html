@@ -1,5 +1,5 @@
 <!--
-  ~ Copyright (c) 2021 Talent Beyond Boundaries.
+  ~ Copyright (c) 2024 Talent Catalog.
   ~
   ~ This program is free software: you can redistribute it and/or modify it under
   ~ the terms of the GNU Affero General Public License as published by the Free
@@ -19,20 +19,28 @@
 
   <app-error [error]="error"></app-error>
 
-  <div class="mb-3">
-    <label class="form-label" for="username">{{ 'LOGIN.LABEL.USERNAME' | translate }}</label>
-    <input id="username" class="form-control" type="text" [formControlName]="'username'">
-  </div>
+  <tc-field>
+    <tc-label for="username">{{ 'LOGIN.LABEL.USERNAME' | translate }}</tc-label>
+    <tc-input id="username"
+              type="text"
+              [formControlName]="'username'"
+              [invalid]="loginForm.controls['username'].touched && loginForm.controls['username'].invalid">
+    </tc-input>
+  </tc-field>
 
-  <div class="mb-3">
-    <label class="form-label" for="password">{{ 'LOGIN.LABEL.PASSWORD' | translate }}</label>
-    <input id="password" class="form-control" type="password" [formControlName]="'password'">
-  </div>
+  <tc-field>
+    <tc-label for="password">{{ 'LOGIN.LABEL.PASSWORD' | translate }}</tc-label>
+    <tc-input id="password"
+              type="password"
+              [formControlName]="'password'"
+              [invalid]="loginForm.controls['password'].touched && loginForm.controls['password'].invalid">
+    </tc-input>
+  </tc-field>
 
   <div class="text-center">
-    <button class="btn btn-primary w-75" type="submit" [disabled]="loading || !loginForm.valid">
+    <tc-button [disabled]="loading || !loginForm.valid">
       {{ 'LOGIN.BUTTON.LOGIN' | translate }}
-    </button>
+    </tc-button>
   </div>
 </form>
 

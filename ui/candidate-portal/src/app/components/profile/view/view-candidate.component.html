@@ -1,17 +1,38 @@
+<!--
+  ~ Copyright (c) 2024 Talent Catalog.
+  ~
+  ~ This program is free software: you can redistribute it and/or modify it under
+  ~ the terms of the GNU Affero General Public License as published by the Free
+  ~ Software Foundation, either version 3 of the License, or any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful, but WITHOUT
+  ~ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+  ~ FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+  ~ for more details.
+  ~
+  ~ You should have received a copy of the GNU Affero General Public License
+  ~ along with this program. If not, see https://www.gnu.org/licenses/.
+  -->
+
 <div class="container">
 
   <app-error [error]="error"></app-error>
 
-  <app-loading [loading]="loading"></app-loading>
+  <tc-loading [loading]="loading"></tc-loading>
 
   <ng-container *ngIf="!loading">
 
     <!-- TABS -->
-    <nav ngbNav #nav="ngbNav" class="nav-tabs" [activeId]="activeTabId" (navChange)="onTabChanged($event)">
+    <nav ngbNav #nav="ngbNav" class="nav-pills nav-fill flex-nowrap" [activeId]="activeTabId"
+         (navChange)="onTabChanged($event)">
 
       <!-- PROFILE -->
       <ng-container ngbNavItem="Profile">
-        <a ngbNavLink>{{ 'PROFILE.TAB.PROFILE' | translate }}</a>
+
+        <a ngbNavLink>
+          <span class="d-none d-md-inline me-2">{{ 'PROFILE.TAB.PROFILE' | translate }}</span>
+          <i class="fas fa-user"></i>
+        </a>
         <ng-template ngbNavContent>
           <app-candidate-profile
             [candidate]="candidate">
@@ -21,7 +42,10 @@
 
       <!-- TASKS -->
       <ng-container ngbNavItem="Tasks">
-        <a ngbNavLink>{{ 'PROFILE.TAB.TASKS' | translate }}</a>
+        <a ngbNavLink>
+          <span class="d-none d-md-inline me-2">{{ 'PROFILE.TAB.TASKS' | translate }}</span>
+          <i class="fas fa-list-check"></i>
+        </a>
         <ng-template ngbNavContent>
           <app-candidate-tasks
             [candidate]="candidate"
@@ -30,17 +54,62 @@
         </ng-template>
       </ng-container>
 
-      <!-- Candidate Opportunities (Jobs) -->
-      <ng-container ngbNavItem="Opps">
-        <a ngbNavLink>{{ 'PROFILE.TAB.OPPS' | translate }}
-          <app-chat-read-status
+      <!-- JOBS (Candidate Opportunities) -->
+      <ng-container *ngIf="canSeeJobTab" ngbNavItem="Opps">
+        <a ngbNavLink>
+          <span class="d-none d-md-inline me-2">{{ 'PROFILE.TAB.OPPS' | translate }}</span>
+          <i class="fas fa-briefcase me-1"></i>
+          <app-chat-read-status *ngIf="canViewChats"
             [chats]="chatsForAllJobs"
           ></app-chat-read-status>
         </a>
         <ng-template ngbNavContent>
           <app-candidate-opps
-            [candidate]="candidate">
+            [candidate]="candidate"
+            [filteredOpps]="filteredOpps">
           </app-candidate-opps>
+        </ng-template>
+      </ng-container>
+
+      <!-- CHAT with source partner -->
+      <ng-container *ngIf="canSeeChatTab" ngbNavItem="Chat">
+        <a ngbNavLink>
+          <span class="d-none d-md-inline me-2">{{ 'CHAT.HEADER' | translate }}</span>
+          <i class="fas fa-message me-1"></i>
+          <app-chat-read-status
+            [chats]="[sourceChat]"
+          ></app-chat-read-status>
+        </a>
+        <ng-template ngbNavContent>
+          <div class="chat-title">
+            <app-tab-header>
+              <h3>
+                {{ 'CANDIDATE-OPPS.TABLE.SOURCE-CHAT' | translate }}
+              </h3>
+            </app-tab-header>
+          </div>
+          <app-view-chat-posts
+            [chat]="sourceChat"
+            [readOnly]="isCandidateMuted()"
+          ></app-view-chat-posts>
+        </ng-template>
+      </ng-container>
+
+      <!-- SERVICES -->
+      <ng-container ngbNavItem="Services" *ngIf="showServicesTab$ | async">
+        <a ngbNavLink>
+          <span class="d-none d-md-inline me-2">{{ 'PROFILE.TAB.SERVICES' | translate }}</span>
+          <i class="fas fa-handshake"></i>
+        </a>
+        <ng-template ngbNavContent>
+          <app-services
+            [candidate]="candidate"
+            [activeDuolingoTask]="activeDuolingoTask"
+            (refresh)="fetchCandidate()"
+            [showLinkedin$]="linkedinEligible$"
+            [showReference$]="referenceEligible$"
+            [showUnhcr$]="unhcrEligible$"
+          ></app-services>
         </ng-template>
       </ng-container>
     </nav>

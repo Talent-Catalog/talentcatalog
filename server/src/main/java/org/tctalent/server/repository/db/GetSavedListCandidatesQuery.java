@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -18,20 +18,21 @@ package org.tctalent.server.repository.db;
 
 import static org.tctalent.server.repository.db.CandidateSpecificationUtil.getOrderByOrders;
 
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Fetch;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.JoinType;
+import jakarta.persistence.criteria.Order;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.Subquery;
 import java.util.List;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Fetch;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.JoinType;
-import javax.persistence.criteria.Order;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.persistence.criteria.Subquery;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.lang.NonNull;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.CandidateOpportunity;
 import org.tctalent.server.model.db.CandidateSavedList;
@@ -41,7 +42,7 @@ import org.tctalent.server.request.candidate.SavedListGetRequest;
 
 /**
  * MODEL - Alternate way of creating JPA Specifications
- *
+ * <p/>
  * "Specification" which defines the database query to retrieve all candidates
  * in a Saved List based on a {@link SavedListGetRequest}.
  * <p>
@@ -73,8 +74,11 @@ public class GetSavedListCandidatesQuery implements Specification<Candidate> {
     private final SavedListGetRequest request;
 
     @Override
-    public Predicate toPredicate(Root<Candidate> candidate,
-                                 CriteriaQuery<?> query, CriteriaBuilder cb) {
+    public Predicate toPredicate(@NonNull Root<Candidate> candidate,
+                                 CriteriaQuery<?> query, @NonNull CriteriaBuilder cb) {
+        if (query == null) {
+            throw new IllegalArgumentException("GetSavedListCandidatesQuery.CriteriaQuery should not be null");
+        }
 
         //Start by adding fetches and Order by
         boolean isCountQuery = query.getResultType().equals(Long.class);
@@ -109,7 +113,7 @@ public class GetSavedListCandidatesQuery implements Specification<Candidate> {
         Predicate conjunction = cb.conjunction();
 
         //Start with the basic candidate in list predicate
-        conjunction.getExpressions().add(
+        conjunction = cb.and(conjunction,
             cb.equal(csl.get("savedList").get("id"), savedList.getId())
         );
 
@@ -119,7 +123,7 @@ public class GetSavedListCandidatesQuery implements Specification<Candidate> {
             String likeMatchTerm = "%" + lowerCaseMatchTerm + "%";
 
             //Add predicate where the keyword matches any of the various fields
-            conjunction.getExpressions().add(
+            conjunction = cb.and(conjunction,
                 cb.or(
                     cb.like(cb.lower(candidate.get("candidateNumber")), likeMatchTerm),
                     cb.like(cb.lower(candidate.get("user").get("firstName")), likeMatchTerm),
@@ -142,12 +146,12 @@ public class GetSavedListCandidatesQuery implements Specification<Candidate> {
             //for the job.
             Join<Candidate, CandidateOpportunity> opp =
                 candidate.join("candidateOpportunities", JoinType.LEFT);
-            conjunction.getExpressions().add(
+            conjunction = cb.and(conjunction,
                 cb.equal(opp.get("jobOpp").get("id"), sfJobOpp.getId())
             );
             if (request.getShowClosedOpps() == null || !request.getShowClosedOpps()) {
                 //ShowClosedOpps is not true - so only select opps that are won or open (ie closed = true)
-                conjunction.getExpressions().add(
+                conjunction = cb.and(conjunction,
                     cb.or(
                         cb.equal(opp.get("closed"), false),
                         cb.equal(opp.get("won"), true)

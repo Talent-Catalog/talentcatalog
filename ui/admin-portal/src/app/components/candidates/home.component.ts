@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -15,18 +15,15 @@
  */
 
 import {Component, OnInit} from '@angular/core';
-import {NgbNavChangeEvent} from "@ng-bootstrap/ng-bootstrap";
 import {SavedSearchSubtype, SavedSearchType} from "../../model/saved-search";
 import {CandidateSourceType, SearchBy, SearchOppsBy} from "../../model/base"
-import {LocalStorageService} from "angular-2-local-storage";
-import {
-  SavedSearchService,
-  SavedSearchTypeInfo,
-  SavedSearchTypeSubInfo
-} from "../../services/saved-search.service";
+import {SavedSearchService, SavedSearchTypeInfo, SavedSearchTypeSubInfo} from "../../services/saved-search.service";
 import {AuthorizationService} from "../../services/authorization.service";
 import {Partner} from "../../model/partner";
 import {AuthenticationService} from "../../services/authentication.service";
+import {LocalStorageService} from "../../services/local-storage.service";
+import {Location} from "@angular/common";
+import {ActivatedRoute} from "@angular/router";
 
 @Component({
   selector: 'app-home',
@@ -49,57 +46,63 @@ export class HomeComponent implements OnInit {
     protected localStorageService: LocalStorageService,
     protected savedSearchService: SavedSearchService,
     protected authorizationService: AuthorizationService,
-    protected authenticationService: AuthenticationService
+    protected authenticationService: AuthenticationService,
+    protected location: Location,
+    protected route: ActivatedRoute
   ) {
     this.savedSearchTypeInfos = savedSearchService.getSavedSearchTypeInfos();
   }
 
   ngOnInit() {
     this.savedSearchTypeSubInfos = this.savedSearchTypeInfos[0].categories;
+    this.fetchCachedSubCategory();
     this.loggedInPartner = this.authenticationService.getLoggedInUser()?.partner;
     // This is called in order for the navigation tabs, this.nav, to be set.
     // Make this call in ngOnInit(). Do not do it ngAfterViewChecked() - doing so will throw
     // NG0100 errors because selectDefaultTabs() changes the activeTabId after the view has been
     // checked.
     // See: https://angular.io/errors/NG0100
-    this.selectDefaultTab();
+    this.route.queryParams.subscribe(params => {
+      const tab = params['tab'];
+      // If there is a tab param, set that as the active tab
+      // If there is no tab param, check the browser cache for the last active tab or if none get the default tab.
+      tab ? this.setActiveTabId(tab) : this.fetchCachedTab();
+    });
   }
 
-  onTabChanged(event: NgbNavChangeEvent) {
-    this.setActiveTabId(event.nextId);
+  onTabChanged(activeTabId: string) {
+    this.setActiveTabId(activeTabId);
+    this.setTabParam(activeTabId);
   }
 
   onSavedSearchSubtypeChange($event: SavedSearchTypeSubInfo) {
     this.setSelectedSavedSearchSubtype($event.savedSearchSubtype);
   }
 
-  private selectDefaultTab() {
-    const defaultActiveTabID: string = this.localStorageService.get(this.lastTabKey);
-    this.setActiveTabId(defaultActiveTabID == null ? this.defaultTabId : defaultActiveTabID);
+  private fetchCachedTab() {
+    const cachedActiveTabId: string = this.localStorageService.get(this.lastTabKey);
+    // If there isn't a cached active tab, set it to the defaultTabId
+    this.activeTabId = cachedActiveTabId != null ? cachedActiveTabId : this.defaultTabId;
+    this.setTabParam(this.activeTabId);
+  }
 
-    if (defaultActiveTabID == null) {
-      this.setSelectedSavedSearchSubtype(this.savedSearchTypeSubInfos[0].savedSearchSubtype);
-    } else {
-      const defaultCategory: string = this.localStorageService.get(this.lastCategoryTabKey);
-      this.setSelectedSavedSearchSubtype(defaultCategory == null ? 0 : +defaultCategory);
-    }
+  private fetchCachedSubCategory() {
+    // Get and set the subtype category (e.g. occupation category in search by occupations tab)
+    const cachedSubCategory: string = this.localStorageService.get(this.lastCategoryTabKey);
+    this.selectedSavedSearchSubtype = cachedSubCategory == null ? 0 : +cachedSubCategory;
   }
 
   protected setActiveTabId(id: string) {
-
     this.activeTabId = id;
-
-    //The typed saved search tabs have id's which look like "type:profession", "type:jobs",
-    //"type:other". Unpack the id to identify the search type
-    const parts = id.split(':');
-    if (parts[0] === 'type' && parts.length === 2) {
-
-      const type: SavedSearchType = SavedSearchType[parts[1]];
-      this.savedSearchTypeSubInfos = this.savedSearchTypeInfos[type].categories;
-
-    }
-
     this.localStorageService.set(this.lastTabKey, id);
+  }
+
+  // Update the URL to include the tab param and the current active tab
+  setTabParam(activeTab: string) {
+    const currentUrl = this.location.path();
+    const baseUrl = currentUrl.split('?')[0];
+    const updatedUrl = `${baseUrl}?tab=${activeTab}`;
+    this.location.replaceState(updatedUrl);
   }
 
   private setSelectedSavedSearchSubtype(savedSearchSubtype: number) {
@@ -136,7 +139,11 @@ export class HomeComponent implements OnInit {
   }
 
   isJobCreator(): boolean {
-    return this.authorizationService.isJobCreator();
+    return this.authorizationService.isJobCreatorPartner();
+  }
+
+  isReadOnly(): boolean {
+    return this.authorizationService.isReadOnly();
   }
 
   isSourcePartner(): boolean {

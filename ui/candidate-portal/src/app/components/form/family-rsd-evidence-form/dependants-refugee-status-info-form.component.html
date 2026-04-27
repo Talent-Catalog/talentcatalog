@@ -1,0 +1,109 @@
+<form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate class="container mt-4">
+  <tc-alert type="danger" *ngIf="error">{{ error?.message || error }}</tc-alert>
+
+  <div class="text-center my-4" *ngIf="loadingMembers">
+    <div class="spinner-border" role="status"></div>
+  </div>
+
+  <tc-alert type="info" *ngIf="!loadingMembers && members.length === 0">
+    <div *ngIf="noEligibleDependants">
+      {{ 'FAMILY-RSD.LABEL.NOTHING-TO-DO' | translate }}
+    </div>
+    <div *ngIf="!noEligibleDependants">
+      {{ 'FAMILY-RSD.LABEL.NO-MEMBER' | translate }}
+    </div>
+  </tc-alert>
+
+  <ng-container formArrayName="members" *ngIf="!loadingMembers && members.length > 0">
+    <div class="card mb-3" *ngFor="let group of members.controls; index as ix" [formGroupName]="ix">
+      <div class="card-header">
+        <strong>{{'FAMILY-DOC.LABEL.FAMILY-MEMBER' | translate}} #{{ ix + 1 }}:</strong> {{ composeDisplayName(relocatingDependants[ix]) }}
+      </div>
+
+      <div class="card-body">
+        <div class="row g-3">
+          <div class="col-md-12">
+            <tc-field>
+              <tc-label for="refugeeStatus-{{ ix }}">{{ 'RSD-EVIDENCE.LABEL.REFUGEE-STATUS' | translate }} *</tc-label>
+              <select
+                id="refugeeStatus-{{ ix }}"
+                class="form-select"
+                formControlName="TTH_IT$REFUGEE_STATUS"
+                [disabled]="readOnly"
+              >
+                <option value="" disabled>Select refugee status</option>
+                <option *ngFor="let status of (RsdRefugeeStatus | keyvalue)" [ngValue]="status.value">
+                  {{ status.value.replaceAll('_', ' ') }}
+                </option>
+              </select>
+              <tc-error-message
+                *ngIf="group.get('TTH_IT$REFUGEE_STATUS')?.touched && group.get('TTH_IT$REFUGEE_STATUS')?.hasError('required')"
+              >
+                {{ 'FORM.ERROR.REQUIRED' | translate }}
+              </tc-error-message>
+            </tc-field>
+          </div>
+
+          <div class="col-md-12">
+            <tc-field>
+              <tc-label for="documentType-{{ ix }}">{{ 'RSD-EVIDENCE.LABEL.DOCTYPE' | translate }} *</tc-label>
+              <select
+                id="documentType-{{ ix }}"
+                class="form-select"
+                formControlName="TTH_IT$REFUGEE_STATUS_EVIDENCE_DOCUMENT_TYPE"
+                [disabled]="readOnly"
+              >
+                <option value="" disabled>Select document type</option>
+                <option *ngFor="let type of (RefugeeStatusEvidenceDocumentType | keyvalue)"
+                        [ngValue]="type.value">
+                  {{ type.value.replaceAll('_', ' ') }}
+                </option>
+              </select>
+              <tc-error-message
+                *ngIf="group.get('TTH_IT$REFUGEE_STATUS_EVIDENCE_DOCUMENT_TYPE')?.touched && group.get('TTH_IT$REFUGEE_STATUS_EVIDENCE_DOCUMENT_TYPE')?.hasError('required')"
+              >
+                {{ 'FORM.ERROR.REQUIRED' | translate }}
+              </tc-error-message>
+            </tc-field>
+          </div>
+
+          <div class="col-md-12">
+            <tc-field>
+              <tc-label for="documentNumber-{{ ix }}">{{ 'RSD-EVIDENCE.LABEL.DOCNUMBER' | translate }}</tc-label>
+              <tc-input
+                id="documentNumber-{{ ix }}"
+                type="text"
+                [formControlName]="'TTH_IT$REFUGEE_STATUS_EVIDENCE_DOCUMENT_NUMBER'"
+                [readonly]="readOnly"
+                [invalid]="group.get('TTH_IT$REFUGEE_STATUS_EVIDENCE_DOCUMENT_NUMBER')?.touched && group.get('TTH_IT$REFUGEE_STATUS_EVIDENCE_DOCUMENT_NUMBER')?.hasError('maxlength')"
+              ></tc-input>
+              <tc-error-message
+                *ngIf="group.get('TTH_IT$REFUGEE_STATUS_EVIDENCE_DOCUMENT_NUMBER')?.touched && group.get('TTH_IT$REFUGEE_STATUS_EVIDENCE_DOCUMENT_NUMBER')?.hasError('maxlength')"
+              >
+                {{ 'RSD-EVIDENCE.LABEL.RSD-VALIDATION' | translate }}
+              </tc-error-message>
+            </tc-field>
+          </div>
+
+          <div class="col-md-12">
+            <tc-field>
+              <tc-label for="comment-{{ ix }}">{{ 'RSD-EVIDENCE.LABEL.COMMENT' | translate }}</tc-label>
+              <tc-textarea
+                id="comment-{{ ix }}"
+                rows="5"
+                [disabled]="readOnly"
+                [formControlName]="'TTH_IT$REFUGEE_STATUS_COMMENT'"
+              ></tc-textarea>
+            </tc-field>
+          </div>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+
+  <div class="text-end" *ngIf="!loadingMembers && members.length > 0">
+    <tc-button [disabled]="!canSubmit()">
+      {{ 'TASKS.TASK.SUBMIT' | translate }}
+    </tc-button>
+  </div>
+</form>

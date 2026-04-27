@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -19,6 +19,7 @@ package org.tctalent.server.service.db;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 import org.springframework.data.domain.Page;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
@@ -30,8 +31,10 @@ import org.tctalent.server.exception.SalesforceException;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.CandidateOpportunity;
 import org.tctalent.server.model.db.SalesforceJobOpp;
+import org.tctalent.server.model.db.partner.Partner;
 import org.tctalent.server.model.sf.Opportunity;
 import org.tctalent.server.request.candidate.UpdateCandidateOppsRequest;
+import org.tctalent.server.request.candidate.dependant.UpdateRelocatingDependantIds;
 import org.tctalent.server.request.candidate.opportunity.CandidateOpportunityParams;
 import org.tctalent.server.request.candidate.opportunity.SearchCandidateOpportunityRequest;
 
@@ -41,7 +44,11 @@ public interface CandidateOpportunityService {
      * Creates or updates Contact records on Salesforce for the given candidates and, if sfJobOpp
      * is not null, indicating that these candidates are associated with a job opportunity,
      * this will also create/update the associated candidate opportunities associated with that
-     * job on both Salesforce and on the local database.
+     * job on both Salesforce and on the TC.
+     * <p/>
+     * Note that it may be necessary to create contact records on Salesforce because Salesforce
+     * is designed to only store contact records for candidate who have opportunities - not ALL
+     * contacts registered on the TC.
      *
      * @param candidates Candidates to update
      * @param sfJobOpp If not null candidate opportunities are created/updated
@@ -71,6 +78,16 @@ public interface CandidateOpportunityService {
         throws SalesforceException, WebClientException;
 
     /**
+     * From Salesforce fetch the Salesforce id, if any, of the SF opp corresponding to the given
+     * TC candidate opp.
+     *
+     * @param opp Candidate opp on the TC
+     * @return Salesforce id if one found
+     */
+    @Nullable
+    String fetchSalesforceId(@NonNull CandidateOpportunity opp);
+
+    /**
      * Finds the candidate opportunity associated with the given candidate and job
      *
      * @param candidate Candidate
@@ -79,6 +96,40 @@ public interface CandidateOpportunityService {
      */
     @Nullable
     CandidateOpportunity findOpp(Candidate candidate, SalesforceJobOpp jobOpp);
+
+    /**
+     * Finds all opps associated with the given job creator partner
+     * @param partner Job creator partner
+     * @return Candidate opps associated with partner. Empty if none or if partner is null or not a job creator.
+     */
+    @NonNull
+    List<CandidateOpportunity> findJobCreatorPartnerOpps(@Nullable Partner partner);
+
+    /**
+     * Finds candidate ids that are fully visible to a job-creator partner.
+     * <p>
+     * "Fully visible" means the partner has at least one candidate opportunity at CV Review
+     * stage or later for that candidate. These ids are used by DTO property filtering logic
+     * to bypass property restrictions for qualifying candidates.
+     * </p>
+     *
+     * @param partner Job creator partner
+     * @return Candidate ids. Empty if partner is null or not a job creator.
+     */
+    @NonNull
+    Set<Long> findFullyVisibleCandidateIds(@Nullable Partner partner);
+
+    /**
+     * Finds user ids linked to candidates that are fully visible to a job-creator partner.
+     * <p>
+     * This mirrors {@link #findFullyVisibleCandidateIds(Partner)} for User DTO filtering.
+     * </p>
+     *
+     * @param partner Job creator partner
+     * @return User ids. Empty if partner is null or not a job creator.
+     */
+    @NonNull
+    Set<Long> findFullyVisibleUserIds(@Nullable Partner partner);
 
     /**
      * Get the CandidateOpportunity with the given id.
@@ -110,14 +161,17 @@ public interface CandidateOpportunityService {
     CandidateOpportunity loadCandidateOpportunity(Opportunity op) throws SalesforceException;
 
     /**
+     * This loads the last active stages of all cases from Salesforce.
+     */
+    void loadCandidateOpportunityLastActiveStages();
+
+    /**
      * Returns the ids of chats not fully read by the currently logged in user, which are
      * associated with candidate opportunities returned from the given search request.
      * @param request - Search Request
      * @return Ids of unread chats
      */
     List<Long> findUnreadChatsInOpps(SearchCandidateOpportunityRequest request);
-
-    void notifyOfChatsWithNewPosts();
 
     /**
      * Get candidate opportunities from a paged search request
@@ -149,4 +203,28 @@ public interface CandidateOpportunityService {
      */
     CandidateOpportunity uploadOffer(long id, MultipartFile file)
         throws InvalidRequestException, NoSuchObjectException, IOException;
+
+    /**
+     * Updates the CandidateOpportunity with the relocating dependants
+     * @param request relocating dependant ids
+     * @return CandidateOpportunity
+     * @throws NoSuchObjectException if there is no opportunity with this id.
+     */
+    CandidateOpportunity updateRelocatingDependants(long id, UpdateRelocatingDependantIds request)
+        throws NoSuchObjectException;
+
+    /**
+     * Processes a batch update of TC Opps from their Salesforce equivalents. Iterates through the
+     * provided Salesforce Opps, fetching the TC equivalent and updating accordingly.
+     * @param oppBatch List of Opportunities fetched from Salesforce
+     * @return updates - int count of TC Opps actually updated
+     */
+    int processCaseUpdateBatch(List<Opportunity> oppBatch);
+
+    /**
+     * Finds all open TC Candidate Opps with a linked SF Opp
+     * @return List of sfIds for all Candidate Opps matching the query criteria
+     */
+    List<String> findAllNonNullSfIdsByClosedFalse();
+
 }

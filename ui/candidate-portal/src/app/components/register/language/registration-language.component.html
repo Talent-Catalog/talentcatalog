@@ -1,5 +1,5 @@
 <!--
-  ~ Copyright (c) 2021 Talent Beyond Boundaries.
+  ~ Copyright (c) 2024 Talent Catalog.
   ~
   ~ This program is free software: you can redistribute it and/or modify it under
   ~ the terms of the GNU Affero General Public License as published by the Free
@@ -16,7 +16,7 @@
 
 <div class="container">
 
-  <app-loading [loading]="loading"></app-loading>
+  <tc-loading [loading]="loading"></tc-loading>
 
   <ng-container *ngIf="!loading">
 
@@ -37,8 +37,8 @@
 
       <!-- WHICH LANGUAGE -->
       <div class="mb-3" *ngIf="!isEnglish()">
-        <label class="form-label" for="id">{{ 'REGISTRATION.LANGUAGE.LABEL.LANGUAGE' | translate }} <sup>*</sup></label>
-        <ng-select id="id" [disabled]="" [formControlName]="'languageId'" [clearable]="false"
+        <tc-label for="id">{{ 'REGISTRATION.LANGUAGE.LABEL.LANGUAGE' | translate }} <sup>*</sup></tc-label>
+        <ng-select class="tc-select" id="id" [disabled]="" [formControlName]="'languageId'" [clearable]="false"
                    placeholder="{{ 'FORM.PLACEHOLDER.SELECTORTYPE' | translate }}">
           <ng-option *ngFor="let l of filteredLanguages" [value]="l.id">{{l.name}}</ng-option>
         </ng-select>
@@ -48,20 +48,20 @@
 
         <!-- HOW WELL DO YOU SPEAK -->
         <div class="mb-3">
-          <label class="form-label" for="spokenLevelId">
+          <tc-label for="spokenLevelId">
             {{ 'REGISTRATION.LANGUAGE.LABEL.SPEAK' | translate:{languageName: getLanguageName()} }} <sup>*</sup>
-          </label>
-          <ng-select id="spokenLevelId" [formControlName]="'spokenLevelId'" [items]="languageLevels" [clearable]="false"
+          </tc-label>
+          <ng-select class="tc-select" id="spokenLevelId" [formControlName]="'spokenLevelId'" [items]="languageLevels" [clearable]="false"
                      bindValue="id" bindLabel="name" placeholder="{{ 'FORM.PLACEHOLDER.SELECT' | translate }}">
           </ng-select>
         </div>
 
         <!-- HOW WELL DO YOU READ AND WRITE -->
         <div class="mb-3">
-          <label class="form-label" for="writtenLevelId">
+          <tc-label for="writtenLevelId">
             {{ 'REGISTRATION.LANGUAGE.LABEL.WRITTEN' | translate:{languageName: getLanguageName()} }} <sup>*</sup>
-          </label>
-          <ng-select id="writtenLevelId" [formControlName]="'writtenLevelId'" [items]="languageLevels" [clearable]="false"
+          </tc-label>
+          <ng-select class="tc-select" id="writtenLevelId" [formControlName]="'writtenLevelId'" [items]="languageLevels" [clearable]="false"
                      bindLabel="name" bindValue="id" placeholder="{{ 'FORM.PLACEHOLDER.SELECT' | translate }}">
           </ng-select>
         </div>
@@ -71,13 +71,11 @@
     </form>
 
     <div class="text-center mt-4">
-      <button class="btn"
-              [class.btn-outline-primary]="!addingLanguage"
-              [class.btn-primary]="addingLanguage"
-              [disabled]="addingLanguage && form.invalid || saving || loading"
-              (click)="addLanguage()">
+      <tc-button [type]="addingLanguage ? 'solid' : 'outline'"
+                 [disabled]="addingLanguage && form.invalid || saving || loading"
+                 (onClick)="addLanguage()">
         {{ 'REGISTRATION.LANGUAGE.BUTTON.ADD' | translate }}
-      </button>
+      </tc-button>
     </div>
 
     <app-error [error]="error"></app-error>
@@ -86,7 +84,7 @@
 
 </div>
 
-<app-registration-footer [nextDisabled]="loading || saving"
+<app-registration-footer [nextDisabled]="loading || saving || (!form.valid && candidateLanguages.length === 0)"
                          [type]="edit ? 'update' : 'step'"
                          (backClicked)="edit ? cancel() : back() "
                          (nextClicked)="next()">

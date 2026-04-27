@@ -1,0 +1,35 @@
+<form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
+  <tc-alert type="danger" *ngIf="error">
+    {{ error?.message || error }}
+  </tc-alert>
+
+  <tc-field>
+    <tc-label for="city">What city do you live in?</tc-label>
+    <tc-input
+      id="city"
+      type="text"
+      [readonly]="readOnly"
+      [formControlName]="'city'"
+      [invalid]="hasError('city', 'required')"
+    ></tc-input>
+    <tc-error-message *ngIf="hasError('city', 'required')">
+      City is required
+    </tc-error-message>
+  </tc-field>
+
+  <tc-field>
+    <tc-label for="hairColour">What colour is your hair?</tc-label>
+    <tc-input
+      id="hairColour"
+      type="text"
+      [readonly]="readOnly"
+      [formControlName]="'hairColour'"
+      [invalid]="hasError('hairColour', 'required')"
+    ></tc-input>
+    <tc-error-message *ngIf="hasError('hairColour', 'required')">
+      Hair colour is required
+    </tc-error-message>
+  </tc-field>
+
+  <tc-button [disabled]="!canSubmit()">Submit</tc-button>
+</form>

@@ -1,5 +1,5 @@
 <!--
-  ~ Copyright (c) 2021 Talent Beyond Boundaries.
+  ~ Copyright (c) 2024 Talent Catalog.
   ~
   ~ This program is free software: you can redistribute it and/or modify it under
   ~ the terms of the GNU Affero General Public License as published by the Free
@@ -14,9 +14,9 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<div *ngIf="error">
+<tc-alert type="danger" *ngIf="error">
   {{error}}
-</div>
+</tc-alert>
 <form [formGroup]="form">
   <div class="mb-3">
     <div class="mb-3">
@@ -27,8 +27,8 @@
           [typing]="typing">
         </app-autosave-status>
       </div>
-      <input type="text" class="form-control"
-             id="homeLocation" [formControlName]="'homeLocation'">
+      <tc-input type="text"
+                id="homeLocation" [formControlName]="'homeLocation'"></tc-input>
     </div>
   </div>
 </form>

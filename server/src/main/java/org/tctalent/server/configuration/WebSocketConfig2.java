@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -16,6 +16,7 @@
 
 package org.tctalent.server.configuration;
 
+import io.jsonwebtoken.JwtException;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
@@ -34,6 +35,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.util.StringUtils;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
+import org.springframework.messaging.MessageDeliveryException;
 import org.tctalent.server.security.JwtTokenProvider;
 import org.tctalent.server.security.TcUserDetailsService;
 
@@ -72,17 +74,39 @@ public class WebSocketConfig2 implements WebSocketMessageBrokerConfigurer {
             public Message<?> preSend(@NotNull Message<?> message, @NotNull MessageChannel channel) {
                 StompHeaderAccessor accessor =
                     MessageHeaderAccessor.getAccessor(message, StompHeaderAccessor.class);
+
                 if (accessor != null && StompCommand.CONNECT.equals(accessor.getCommand())) {
                     String jwt = getAuthorizationToken(accessor);
-                    if (StringUtils.hasText(jwt) && tokenProvider.validateToken(jwt)) {
-                        String username = tokenProvider.getUsernameFromJwt(jwt);
-                        UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-                        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-                        accessor.setUser(authentication);
+                    if (StringUtils.hasText(jwt)) {
+                        try {
+                            if (tokenProvider.validateToken(jwt)) {
+                                String username = tokenProvider.getUsernameFromJwt(jwt);
+                                UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+                                UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+                                accessor.setUser(authentication);
+                            } else {
+                                handleInvalidToken(message);
+                            }
+                        } catch (JwtException | IllegalArgumentException e) {
+                            handleInvalidToken(message);
+                        }
                     }
                 }
                 return message;
             }
+
+            /**
+             * Throws MessageDeliveryException rather than a plain RuntimeException so that
+             * Spring's channel infrastructure re-throws it as-is instead of wrapping it in a
+             * generic "Failed to send message to channel" MessageDeliveryException. This
+             * preserves our error message in the STOMP ERROR frame sent to the client, allowing
+             * the frontend to detect expired token errors and stop reconnecting.
+             */
+            private void handleInvalidToken(Message<?> message) {
+                throw new MessageDeliveryException(message,
+                    JwtTokenProvider.EXPIRED_OR_INVALID_TOKEN_MSG);
+            }
+
         });
     }
 

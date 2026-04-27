@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -16,32 +16,34 @@
 
 package org.tctalent.server.repository.db;
 
+import jakarta.persistence.criteria.Predicate;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.jpa.domain.Specification;
 import org.tctalent.server.model.db.LanguageLevel;
 import org.tctalent.server.request.language.level.SearchLanguageLevelRequest;
 
-import javax.persistence.criteria.Predicate;
-
 public class LanguageLevelSpecification {
 
     public static Specification<LanguageLevel> buildSearchQuery(final SearchLanguageLevelRequest request) {
-        return (languageLevel, query, builder) -> {
-            Predicate conjunction = builder.conjunction();
+        return (languageLevel, query, cb) -> {
+            if (query == null) {
+                throw new IllegalArgumentException("LanguageLevelSpecification.CriteriaQuery should not be null");
+            }
             query.distinct(true);
+
+            Predicate conjunction = cb.conjunction();
 
             // KEYWORD SEARCH
             if (!StringUtils.isBlank(request.getKeyword())){
                 String lowerCaseMatchTerm = request.getKeyword().toLowerCase();
                 String likeMatchTerm = "%" + lowerCaseMatchTerm + "%";
-                conjunction.getExpressions().add(
-                        builder.or(
-                                builder.like(builder.lower(languageLevel.get("name")), likeMatchTerm)
-                        ));
+                conjunction = cb.and(conjunction,
+                    cb.like(cb.lower(languageLevel.get("name")), likeMatchTerm));
             }
 
             if (request.getStatus() != null){
-                conjunction.getExpressions().add(builder.equal(languageLevel.get("status"), request.getStatus()));
+                conjunction = cb.and(conjunction,
+                    cb.equal(languageLevel.get("status"), request.getStatus()));
             }
 
             return conjunction;

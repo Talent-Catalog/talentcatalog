@@ -1,11 +1,34 @@
+<!--
+  ~ Copyright (c) 2024 Talent Catalog.
+  ~
+  ~ This program is free software: you can redistribute it and/or modify it under
+  ~ the terms of the GNU Affero General Public License as published by the Free
+  ~ Software Foundation, either version 3 of the License, or any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful, but WITHOUT
+  ~ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+  ~ FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+  ~ for more details.
+  ~
+  ~ You should have received a copy of the GNU Affero General Public License
+  ~ along with this program. If not, see https://www.gnu.org/licenses/.
+  -->
+
 <div class="alert alert-danger" *ngIf="error">
   {{error}}
 </div>
-<div *ngIf="jobPrepItems" class="card">
-  <div class="card-header d-flex align-items-baseline justify-content-between">
-    <h5>Suggested job preparation items</h5>
-  </div>
-  <div class="card-body">
+<tc-card *ngIf="jobPrepItems">
+  <tc-card-header>
+    Suggested job preparation items
+    <tc-button *ngIf="editable"
+               color="success"
+               (onClick)="publish()"
+               ngbTooltip=
+                 "Publish the job so other TC users can see it and begin the recruitment process.">
+      Publish Job
+    </tc-button>
+  </tc-card-header>
+  <div>
     <div>
       Clicking on each item will show you how you can complete it. A tick appears
       next to items which have been completed.
@@ -13,10 +36,10 @@
 <!-- Loop through job preparation items -->
     <div class="d-flex flex-column pt-4">
       <ul class="fa-ul">
-        <li *ngFor="let item of jobPrepItems" (click)="onItemSelected(item)"
+        <li class="prep-items" *ngFor="let item of jobPrepItems" (click)="onItemSelected(item)"
             [ngClass]="{'selected': isSelected(item)}"
         >
-          <span class="fa-li text-secondary">
+          <span class="fa-li">
              <i [ngClass]="item.isCompleted() ? 'far fa-check-square' : 'far fa-square'"></i>
           </span>
           {{item.description}}
@@ -24,4 +47,4 @@
       </ul>
     </div>
   </div>
-</div>
+</tc-card>

@@ -1,0 +1,47 @@
+<div class="modal-content">
+  <div class="modal-header">
+    <tc-button type="plain" color="gray" size="sm" (onClick)="closeModal()" ariaLabel="Close">
+      <i class="fa-solid fa-xmark"></i>
+    </tc-button>
+  </div>
+
+  <div class="modal-body">
+    <div *ngIf="state === 'idle'">
+      <tc-icon size="xl"><i class="fas fa-envelope fa-2xl mb-4"></i></tc-icon>
+      <h2>{{ 'HOME.EMAIL_VERIFICATION.IDLE.TITLE' | translate }}</h2>
+      <p>{{ 'HOME.EMAIL_VERIFICATION.IDLE.DESCRIPTION' | translate }} <b>{{ userEmail }}</b>.</p>
+      <p>
+        {{ 'HOME.EMAIL_VERIFICATION.IDLE.UPDATE_EMAIL' | translate }}
+        <a (click)="closeModal()" routerLink="/profile/edit/contact">{{ 'HOME.EMAIL_VERIFICATION.IDLE.LINK' | translate }}</a>
+      </p>
+      <tc-button *ngIf="state === 'idle'" (onClick)="sendVerifyEmail()">
+        {{ 'HOME.EMAIL_VERIFICATION.IDLE.SEND_BUTTON' | translate }}
+      </tc-button>
+    </div>
+
+    <div *ngIf="state === 'loading'">
+      <div class="spinner-border text-info" role="status"></div>
+      <h2>{{ "HOME.EMAIL_VERIFICATION.LOADING.TITLE" | translate }}.</h2>
+      <p>{{ "HOME.EMAIL_VERIFICATION.LOADING.DESCRIPTION" | translate }}</p>
+    </div>
+
+    <div *ngIf="state === 'emailSent'">
+      <tc-icon size="xl"><i class="fas fa-envelope-open fa-2xl mb-4"></i></tc-icon>
+      <h2>{{ "HOME.EMAIL_VERIFICATION.EMAIL_SENT.TITLE" | translate }}</h2>
+      <p>{{ "HOME.EMAIL_VERIFICATION.EMAIL_SENT.DESCRIPTION" | translate }}<b>{{ userEmail }}</b></p>
+      <p>{{ "HOME.EMAIL_VERIFICATION.EMAIL_SENT.SPAM" | translate }}</p>
+      <tc-button *ngIf="state === 'emailSent' || state === 'error'" (onClick)="sendVerifyEmail()">
+        {{ "HOME.EMAIL_VERIFICATION.EMAIL_SENT.BUTTON" | translate }}
+      </tc-button>
+    </div>
+
+    <div *ngIf="state === 'error'">
+      <tc-icon size="xl"><i class="fas fa-triangle-exclamation fa-2xl mb-4"></i></tc-icon>
+      <h2>{{ error }}</h2>
+      <tc-button (onClick)="sendVerifyEmail()">
+        {{ "HOME.EMAIL_VERIFICATION.ERROR.BUTTON" | translate }}
+      </tc-button>
+      <p></p>
+    </div>
+  </div>
+</div>

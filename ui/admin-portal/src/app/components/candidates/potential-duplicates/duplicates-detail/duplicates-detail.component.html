@@ -1,0 +1,68 @@
+<!--
+  ~ Copyright (c) 2024 Talent Catalog.
+  ~
+  ~ This program is free software: you can redistribute it and/or modify it under
+  ~ the terms of the GNU Affero General Public License as published by the Free
+  ~ Software Foundation, either version 3 of the License, or any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful, but WITHOUT
+  ~ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+  ~ FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+  ~ for more details.
+  ~
+  ~ You should have received a copy of the GNU Affero General Public License
+  ~ along with this program. If not, see https://www.gnu.org/licenses/.
+  -->
+
+<tc-modal [heading]="'Potential Duplicate Candidate'"
+          [showCancel]="false"
+          [actionText]="'Refresh'"
+          (onAction)="refresh()"
+          [showClose]="true">
+
+  <tc-alert type="danger" *ngIf="error">
+    <div><strong>{{error}}</strong></div>
+  </tc-alert>
+
+  <p>
+    You have selected the following candidate:
+    <a class="fw-bold"
+       target="_blank"
+       [routerLink]="['/candidate', selectedCandidate.candidateNumber]"
+       title="Show candidate in new tab"
+    >
+      <!-- All on one line to avoid anchor-styled trailing whitespace -->
+      {{selectedCandidate.candidateNumber}}<tc-icon [size]="'md'"><i class="fas fa-external-link-alt is-link ms-1 me-2" title="Show candidate in new tab"></i></tc-icon>
+
+    </a>
+  </p>
+  <span *ngIf="potentialDuplicates && potentialDuplicates.length > 0; else noDuplicates">
+  <p>
+    They may be a duplicate of the following candidate(s) with the same full name and date of birth:
+  </p>
+  <ul>
+    <li *ngFor="let candidate of potentialDuplicates" class="mb-2">
+      <a class="fw-bold"
+         target="_blank"
+         [routerLink]="['/candidate', candidate.candidateNumber]"
+         title="Show candidate in new tab"
+      >
+        <!-- All on one line to avoid anchor-styled trailing whitespace -->
+        {{candidate.candidateNumber}}<tc-icon [size]="'md'"><i class="fas fa-external-link-alt is-link ms-1 me-2" title="Show candidate in new tab"></i></tc-icon>
+      </a>
+    </li>
+  </ul>
+  <p>
+    Review each profile carefully. If you're certain that it's an unused duplicate, change the
+    status to 'Deleted'. Clicking 'Refresh' at any time will update the information displayed in
+    this modal.
+  </p>
+  </span>
+  <ng-template #noDuplicates>
+    <p>
+      Candidate data have been updated and there are currently no suspected duplicates of this
+      profile.
+    </p>
+  </ng-template>
+
+</tc-modal>

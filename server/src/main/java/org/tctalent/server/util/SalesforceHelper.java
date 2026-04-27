@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -21,8 +21,9 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.lang.Nullable;
+import org.tctalent.server.configuration.SalesforceConfig;
 
 /**
  * Some useful Salesforce utilities.
@@ -38,6 +39,8 @@ public class SalesforceHelper {
     /**
      * Converts a Salesforce record id to the opportunity link (url) for that record.
      * @param sfId Salesforce record id.
+     * @param baseLightningUrl whether url prefix is for SF sandbox or prod depends on running
+     *                         environment; obtained from {@link SalesforceConfig}
      * @return Url (ie link) to opportunity record with that id - null if sfId is null
      */
     @Nullable

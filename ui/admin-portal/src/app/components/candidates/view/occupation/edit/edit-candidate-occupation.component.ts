@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -15,7 +15,7 @@
  */
 
 import {Component, OnInit} from '@angular/core';
-import {FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {UntypedFormBuilder, UntypedFormGroup, Validators} from '@angular/forms';
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {CandidateOccupation} from "../../../../../model/candidate-occupation";
 import {CandidateOccupationService} from "../../../../../services/candidate-occupation.service";
@@ -31,7 +31,7 @@ export class EditCandidateOccupationComponent implements OnInit {
 
   candidateOccupation: CandidateOccupation;
 
-  form: FormGroup;
+  form: UntypedFormGroup;
 
   occupations: Occupation[];
   years = [];
@@ -40,7 +40,7 @@ export class EditCandidateOccupationComponent implements OnInit {
   saving: boolean;
 
   constructor(private activeModal: NgbActiveModal,
-              private fb: FormBuilder,
+              private fb: UntypedFormBuilder,
               private candidateOccupationService: CandidateOccupationService,
               private occupationService: OccupationService ) {
   }

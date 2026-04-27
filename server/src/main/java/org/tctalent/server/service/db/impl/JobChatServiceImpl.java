@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -20,8 +20,7 @@ import java.time.OffsetDateTime;
 import java.util.Collection;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.lang.NonNull;
@@ -35,22 +34,24 @@ import org.tctalent.server.model.db.JobChatType;
 import org.tctalent.server.model.db.PartnerImpl;
 import org.tctalent.server.model.db.SalesforceJobOpp;
 import org.tctalent.server.repository.db.JobChatRepository;
+import org.tctalent.server.security.AuthService;
 import org.tctalent.server.service.db.JobChatService;
 import org.tctalent.server.service.db.UserService;
 import org.tctalent.server.util.dto.DtoBuilder;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class JobChatServiceImpl implements JobChatService {
-    private static final Logger log = LoggerFactory.getLogger(JobChatServiceImpl.class);
 
     private final UserService userService;
     private final JobChatRepository jobChatRepository;
+    private final AuthService authService;
 
-    public @NonNull JobChat createJobChat(JobChatType type, @Nullable SalesforceJobOpp job,
+    private @NonNull JobChat createJobChat(JobChatType type, @Nullable SalesforceJobOpp job,
         @Nullable PartnerImpl sourcePartner, @Nullable Candidate candidate) {
         JobChat chat = new JobChat();
-        chat.setCreatedBy(userService.getLoggedInUser());
+        chat.setCreatedBy(authService.getLoggedInUser().orElse(userService.getSystemAdminUser()));
         chat.setCreatedDate(OffsetDateTime.now());
         if (type != null) {
             chat.setType(type);
@@ -72,6 +73,7 @@ public class JobChatServiceImpl implements JobChatService {
     public DtoBuilder getJobChatDtoBuilder() {
         return new DtoBuilder()
             .add("id")
+            .add("type")
             ;
     }
 
@@ -83,26 +85,26 @@ public class JobChatServiceImpl implements JobChatService {
             type != JobChatType.JobCreatorAllSourcePartners) {
             throw new InvalidRequestException("Unsupported type: " + type);
         }
-        return createJobChat(type, job, null, null);
+        return getOrCreateJobChat(type, job, null, null);
     }
 
     @Override
     public @NonNull JobChat createJobCreatorSourcePartnerChat(
         @NonNull SalesforceJobOpp job, @NonNull PartnerImpl sourcePartner) {
-        return createJobChat(
+        return getOrCreateJobChat(
             JobChatType.JobCreatorSourcePartner, job, sourcePartner, null);
     }
 
     @Override
     public @NonNull JobChat createCandidateProspectChat(@NonNull Candidate candidate) {
-        return createJobChat(JobChatType.CandidateProspect, null, null, candidate);
+        return getOrCreateJobChat(JobChatType.CandidateProspect, null, null, candidate);
     }
 
     @NonNull
     @Override
     public JobChat createCandidateRecruitingChat(@NonNull Candidate candidate,
         @NonNull SalesforceJobOpp job) throws InvalidRequestException {
-        return createJobChat(JobChatType.CandidateRecruiting, job, null, candidate);
+        return getOrCreateJobChat(JobChatType.CandidateRecruiting, job, null, candidate);
     }
 
     @Override
@@ -178,6 +180,15 @@ public class JobChatServiceImpl implements JobChatService {
 
     @Override
     public List<Long> findChatsWithPostsSinceDate(OffsetDateTime dateTime) {
-        return jobChatRepository.myFindChatsWithPostsSinceDate(dateTime);
+        return jobChatRepository.findChatsWithPostsSinceDate(dateTime);
     }
+
+    @Override
+    @Nullable
+    public JobChat getCandidateProspectChat(long candidateId) {
+        return jobChatRepository.findByTypeAndCandidate(
+            JobChatType.CandidateProspect, candidateId
+        );
+    }
+
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -19,57 +19,74 @@ import {RouterModule, Routes} from '@angular/router';
 import {LandingComponent} from './components/landing/landing.component';
 import {HomeComponent} from './components/home/home.component';
 import {ResetPasswordComponent} from './components/account/reset-password/reset-password.component';
-import {ChangePasswordComponent} from './components/account/change-password/change-password.component';
+import {
+  ChangePasswordComponent
+} from './components/account/change-password/change-password.component';
 import {RegisterComponent} from './components/register/register.component';
 import {AuthGuard} from './services/auth.guard';
 import {EditCandidateComponent} from './components/profile/edit/edit-candidate.component';
 import {ViewCandidateComponent} from "./components/profile/view/view-candidate.component";
+import {TermsComponent} from "./components/privacy-policy/terms.component";
 
 const routes: Routes = [
   {
     path: '',
     component: LandingComponent,
+    title: 'Landing Page'
   },
   {
     path: 'reset-password',
     component: ResetPasswordComponent,
+    title: 'Reset Password'
   },
   {
     path: 'reset-password/:token',
-    component: ChangePasswordComponent
+    component: ChangePasswordComponent,
+    title: 'Change Password'
   },
   {
     path: 'login',
-    component: LandingComponent
+    component: LandingComponent,
+    title: 'Login'
+  },
+  {
+    path: 'privacy',
+    component: TermsComponent,
+    title: 'Terms'
   },
   {
     path: 'register',
-    component: RegisterComponent
+    component: RegisterComponent,
+    title: 'Register'
   },
   {
     path: 'home',
     component: HomeComponent,
-    canActivate: [AuthGuard]
+    canActivate: [AuthGuard],
+    title: 'Home'
   },
   {
     path: 'profile',
     component: ViewCandidateComponent,
-    canActivate: [AuthGuard]
+    canActivate: [AuthGuard],
+    title: 'Profile'
   },
   {
     path: 'profile/edit/:section',
     component: EditCandidateComponent,
-    canActivate: [AuthGuard]
+    canActivate: [AuthGuard],
+    title: 'Edit Profile'
   },
   /* Keep wildcard redirect at the bottom of the array */
   {
     path: '**',
-    redirectTo: ''
+    redirectTo: '',
+    title: 'Redirecting...'
   },
 ];
 
 @NgModule({
-  imports: [RouterModule.forRoot(routes, { relativeLinkResolution: 'legacy' })],
+  imports: [RouterModule.forRoot(routes, {})],
   exports: [RouterModule]
 })
 export class AppRoutingModule { }

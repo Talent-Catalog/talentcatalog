@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -16,7 +16,7 @@
 
 package org.tctalent.server.request.candidate;
 
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -25,7 +25,7 @@ import org.tctalent.server.model.db.CandidateStatus;
 
 /**
  * Changing a candidate status includes more than just the new status.
- * In addition, an comment can be supplied which goes into a candidate note and also a
+ * In addition, a comment can be supplied which goes into a candidate note and also a
  * candidate message can be supplied which is emailed to the candidate.
  * <p/>
  * This class encapsulates all the above.

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -16,21 +16,36 @@
 
 package org.tctalent.server.service.db;
 
-import java.io.IOException;
 import java.util.List;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
-import org.springframework.web.multipart.MultipartFile;
-import org.tctalent.server.exception.InvalidRequestException;
 import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.model.db.ChatPost;
 import org.tctalent.server.model.db.JobChat;
+import org.tctalent.server.model.db.User;
 import org.tctalent.server.model.db.chat.Post;
 import org.tctalent.server.util.dto.DtoBuilder;
 
 public interface ChatPostService {
 
-    ChatPost createPost(@NonNull Post post, @NonNull JobChat jobChat);
+    /**
+     * This is the destination prefix for all our websocket topics
+     */
+    String TOPIC_PREFIX = "/topic";
+
+    /**
+     * This is root of all chat websocket destinations
+     */
+    String CHAT_PUBLISH_ROOT = TOPIC_PREFIX + "/chat";
+
+    /**
+     * Creates a new post on the given chat
+     * @param post Content of post
+     * @param jobChat Chat where posted
+     * @param user the user associated with the post - normally the person who made the post
+     * @return The chat post.
+     */
+    ChatPost createPost(@NonNull Post post, @NonNull JobChat jobChat, User user);
 
     /**
      * Get the ChatPost with the given id.
@@ -55,19 +70,27 @@ public interface ChatPostService {
     @Nullable
     ChatPost getLastChatPost(long chatId);
 
-    List<ChatPost> listChatPosts(long chatId);
+    /**
+     * Returns all posts associated with the given chat.
+     * @param chatId Chat whose posts we want
+     * @return posts (can be empty)
+     * @throws NoSuchObjectException if there is no chat with that id.
+     */
+    @NonNull
+    List<ChatPost> listChatPosts(long chatId) throws NoSuchObjectException;
 
     /**
-     * Upload a file to a chat post which is stored in the job's Google Drive folder, in a ChatUploads subfolder.
-     * This file upload is to be viewable by anyone with the link so that it can be displayed on the TC as part of the chat post.
-     * @param id Id of the chat post
-     * @param file The file to upload to the Google Drive
-     * @return String URL of the file location on the Google Drive.
-     * The URL isn't stored on the ChatPost object in the database, but instead it will be stored as part of an <img> tag in the ChatPost content.
-     * @throws InvalidRequestException
-     * @throws NoSuchObjectException
-     * @throws IOException
+     * Sends the given post out on a websocket with the chat's topic as a destination.
+     * So all subscribers to that chat will receive the post.
+     * <p/>
+     * Note that this has the same effect as @SendTo in
+     * {@link org.tctalent.server.api.chat.ChatPublishApi}.
+     * <p/>
+     * This method is used for auto generating and publishing posts from the server.
+     * By contrast ChatPublishApi publishes posts that have been manually entered on the chat
+     * by a user on their browser.
+     *
+     * @param post Post to be published
      */
-    String uploadFile(long id, MultipartFile file)
-        throws InvalidRequestException, NoSuchObjectException, IOException;
+    void publishChatPost(ChatPost post);
 }

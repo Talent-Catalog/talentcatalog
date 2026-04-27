@@ -1,5 +1,5 @@
 <!--
-  ~ Copyright (c) 2021 Talent Beyond Boundaries.
+  ~ Copyright (c) 2024 Talent Catalog.
   ~
   ~ This program is free software: you can redistribute it and/or modify it under
   ~ the terms of the GNU Affero General Public License as published by the Free
@@ -14,93 +14,126 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<div class="modal-header">
-
-  <h4 class="modal-title">Edit Job Experience</h4>
-
-  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" (click)="dismiss()"></button>
-
-</div>
-
-<div class="modal-body">
-
+<tc-modal heading="Edit Job Experience"
+          [showCancel]="true"
+          actionText="Save"
+          (onAction)="onSave()"
+          [disableAction]="candidateForm.invalid || loading || saving"
+          [showClose]="true"
+>
   <div *ngIf="loading">
     <i class="fas fa-spinner fa-spin"></i>
   </div>
 
   <div *ngIf="!loading">
-    <div class="alert alert-danger" *ngIf="error">
-      {{error}}
-    </div>
+    <tc-alert type="danger" *ngIf="error">
+      <div><strong>{{error}}</strong></div>
+    </tc-alert>
 
     <form [formGroup]="candidateForm">
 
       <!-- COMPANY NAME -->
-      <div class="mb-3">
-        <label class="form-label" for="companyName">Company Name *</label>
-        <input type="text" class="form-control" id="companyName"
-               [formControlName]="'companyName'">
-      </div>
+      <tc-field class="mb-3">
+        <tc-label for="companyName">
+          Company Name *
+        </tc-label>
+        <tc-input [type]="'text'"
+                  id="companyName"
+                  [formControlName]="'companyName'"
+        ></tc-input>
+      </tc-field>
 
       <!-- COUNTRY -->
-      <div class="mb-3">
-        <label class="form-label" for="countryId">Country *</label>
-        <ng-select id="countryId" name="country" [formControlName]="'countryId'" [items]="countries"
-                   [clearable]="false" bindValue="id" bindLabel="name"></ng-select>
-      </div>
+      <tc-field class="mb-3">
+        <tc-label for="countryId">
+          Country *
+        </tc-label>
+        <ng-select id="countryId"
+                   class="tc-select"
+                   [formControlName]="'countryId'"
+                   [items]="countries"
+                   [clearable]="false"
+                   bindValue="id"
+                   bindLabel="name"
+        ></ng-select>
+      </tc-field>
 
       <!-- START DATE -->
-      <div class="mb-3">
-        <label class="form-label" for="startDate">Start Date *</label>
-        <app-date-picker id="startDate" [control]="candidateForm.controls.startDate"></app-date-picker>
-      </div>
+      <tc-field class="mb-3">
+        <tc-label for="startDate">
+          Start Date *
+        </tc-label>
+        <tc-date-picker id="startDate"
+                        [control]="candidateForm.controls.startDate"
+                        [allowFuture]="false"
+                        [allowPast]="true"
+        ></tc-date-picker>
+      </tc-field>
 
       <!-- END DATE -->
-      <div class="mb-3">
-        <label class="form-label" for="endDate">End Date</label>
-        <app-date-picker id="endDate" [control]="candidateForm.controls.endDate"></app-date-picker>
-      </div>
+      <tc-field class="mb-3">
+        <tc-label for="endDate">
+          End Date
+        </tc-label>
+        <tc-date-picker id="endDate"
+                        [control]="candidateForm.controls.endDate"
+                        [allowPast]="true"
+                        [allowFuture]="true"
+        ></tc-date-picker>
+      </tc-field>
 
       <!-- FULL TIME -->
-      <div class="mb-3">
-        <label class="form-label" for="fullTime">Contract Type *</label>
-        <ng-select id="fullTime" [formControlName]="'fullTime'" [clearable]="false" [items]="fullTime"
-                   bindLabel="displayText" bindValue="value">
-        </ng-select>
-      </div>
+      <tc-field class="mb-3">
+        <tc-label for="fullTime">
+          Contract Type *
+        </tc-label>
+        <ng-select id="fullTime"
+                   class="tc-select"
+                   [formControlName]="'fullTime'"
+                   [clearable]="false"
+                   [items]="fullTime"
+                   bindLabel="displayText"
+                   bindValue="value"
+        ></ng-select>
+      </tc-field>
 
       <!-- PAID -->
-      <div class="mb-3">
-        <label class="form-label" for="paid">Employment Type *</label>
-        <ng-select id="paid" [formControlName]="'paid'" [clearable]="false" [items]="paid"
-                   bindLabel="displayText" bindValue="value">
-        </ng-select>
-      </div>
+      <tc-field class="mb-3">
+        <tc-label for="paid">
+          Employment Type *
+        </tc-label>
+        <ng-select id="paid"
+                   class="tc-select"
+                   [formControlName]="'paid'"
+                   [clearable]="false"
+                   [items]="paid"
+                   bindLabel="displayText"
+                   bindValue="value"
+        ></ng-select>
+      </tc-field>
 
       <!-- ROLE NAME -->
-      <div class="mb-3">
-        <label class="form-label" for="role">Role *</label>
-        <input type="text" class="form-control" id="role" [formControlName]="'role'">
-      </div>
+      <tc-field class="mb-3">
+        <tc-label for="role">
+          Role *
+        </tc-label>
+        <tc-input [type]="'text'"
+                  id="role"
+                  [formControlName]="'role'"
+        ></tc-input>
+      </tc-field>
 
       <!-- DESCRIPTION -->
-      <div class="mb-3">
-        <label class="form-label" for="description">Description *</label>
-        <ngx-wig id="description" placeholder="" [formControlName]="'description'"></ngx-wig>
-      </div>
-
-
-
-
-
-      <div class="modal-footer">
-        <button type="button" class="btn btn-primary" (click)="onSave()"
-                [disabled]="candidateForm.invalid || loading || saving">
-          <i class="fas fa-spinner fa-spin" *ngIf="saving"></i>
-          Save
-        </button>
-      </div>
+      <tc-field class="mb-3">
+        <tc-label for="description">
+          Description *
+        </tc-label>
+        <ngx-wig id="description"
+                 placeholder=""
+                 [formControlName]="'description'"
+        ></ngx-wig>
+      </tc-field>
     </form>
 
   </div>
-</div>
+</tc-modal>

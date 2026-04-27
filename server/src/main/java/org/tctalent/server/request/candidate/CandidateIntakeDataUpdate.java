@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -59,8 +59,12 @@ import org.tctalent.server.model.db.YesNoUnsure;
 @ToString
 public class CandidateIntakeDataUpdate {
 
+    private YesNoUnsure arrestImprison;
+    private String arrestImprisonNotes;
+
     private LocalDate asylumYear;
-    private YesNoUnsure availImmediate;
+    private LocalDate availDate;
+    private YesNo availImmediate;
     private String availImmediateJobOps;
     private AvailImmediateReason availImmediateReason;
     private String availImmediateNotes;
@@ -140,8 +144,11 @@ public class CandidateIntakeDataUpdate {
     private YesNoUnsure intRecruitRural;
     private String intRecruitRuralNotes;
 
-    private String langAssessment;
-    private String langAssessmentScore;
+    private String englishAssessment;
+    private String englishAssessmentScoreIelts;
+    private Long englishAssessmentScoreDet;
+    private String frenchAssessment;
+    private Long frenchAssessmentScoreNclc;
     private List<LeftHomeReason> leftHomeReasons;
     private String leftHomeNotes;
     private YesNo militaryService;
@@ -152,7 +159,6 @@ public class CandidateIntakeDataUpdate {
 
     private MaritalStatus maritalStatus;
     private String maritalStatusNotes;
-    private YesNo monitoringEvaluationConsent;
     private YesNoUnsure partnerRegistered;
     private Long partnerCandId;
     private Long partnerEduLevelId;
@@ -164,7 +170,7 @@ public class CandidateIntakeDataUpdate {
     private IeltsStatus partnerIelts;
     private String partnerIeltsScore;
     private Long partnerIeltsYr;
-    private Long partnerCitizenshipId;
+    private List<Long> partnerCitizenship;
 
     private ResidenceStatus residenceStatus;
     private String residenceStatusNotes;

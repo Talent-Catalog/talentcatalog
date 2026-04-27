@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -24,6 +24,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -32,6 +33,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.tctalent.server.data.CountryTestData.getSourceCountryList;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
@@ -53,6 +55,7 @@ import org.tctalent.server.model.db.Status;
 import org.tctalent.server.request.country.SearchCountryRequest;
 import org.tctalent.server.request.country.UpdateCountryRequest;
 import org.tctalent.server.service.db.CountryService;
+import org.tctalent.server.util.dto.DtoBuilder;
 
 /**
  * Unit tests for Country Admin Api endpoints.
@@ -70,7 +73,7 @@ class CountryAdminApiTest extends ApiTestBase {
   private static final String DESTINATIONS_LIST_PATH = "/destinations";
   private static final String SEARCH_PAGED_PATH = "/search-paged";
 
-  private static final List<Country> countries = AdminApiTestUtil.getCountries();
+  private static final List<Country> countries = getSourceCountryList();
 
   private final Page<Country> countryPage =
       new PageImpl<>(
@@ -88,6 +91,9 @@ class CountryAdminApiTest extends ApiTestBase {
   @BeforeEach
   void setUp() {
     configureAuthentication();
+    given(countryService
+        .selectBuilder())
+        .willReturn(new DtoBuilder().add("name").add("status"));
   }
 
   @Test
@@ -111,13 +117,11 @@ class CountryAdminApiTest extends ApiTestBase {
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
         .andExpect(jsonPath("$", notNullValue()))
         .andExpect(jsonPath("$").isArray())
-        .andExpect(jsonPath("$", hasSize(3)))
-        .andExpect(jsonPath("$[0].name", is("Jordan")))
+        .andExpect(jsonPath("$", hasSize(2)))
+        .andExpect(jsonPath("$[0].name", is("Lebanon")))
         .andExpect(jsonPath("$[0].status", is("active")))
-        .andExpect(jsonPath("$[1].name", is("Pakistan")))
-        .andExpect(jsonPath("$[1].status", is("active")))
-        .andExpect(jsonPath("$[2].name", is("Palestine")))
-        .andExpect(jsonPath("$[2].status", is("active")));
+        .andExpect(jsonPath("$[1].name", is("Jordan")))
+        .andExpect(jsonPath("$[1].status", is("active")));
 
     verify(countryService).listCountries(false);
   }
@@ -138,13 +142,11 @@ class CountryAdminApiTest extends ApiTestBase {
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
         .andExpect(jsonPath("$", notNullValue()))
         .andExpect(jsonPath("$").isArray())
-        .andExpect(jsonPath("$", hasSize(3)))
-        .andExpect(jsonPath("$[0].name", is("Jordan")))
+        .andExpect(jsonPath("$", hasSize(2)))
+        .andExpect(jsonPath("$[0].name", is("Lebanon")))
         .andExpect(jsonPath("$[0].status", is("active")))
-        .andExpect(jsonPath("$[1].name", is("Pakistan")))
-        .andExpect(jsonPath("$[1].status", is("active")))
-        .andExpect(jsonPath("$[2].name", is("Palestine")))
-        .andExpect(jsonPath("$[2].status", is("active")));
+        .andExpect(jsonPath("$[1].name", is("Jordan")))
+        .andExpect(jsonPath("$[1].status", is("active")));
 
     verify(countryService).listCountries(true);
   }
@@ -153,7 +155,7 @@ class CountryAdminApiTest extends ApiTestBase {
   @DisplayName("get destination countries succeeds")
   void getDestinationCountriesSucceeds() throws Exception {
     given(countryService
-        .getTBBDestinations())
+        .getTCDestinations())
         .willReturn(countries);
 
     mockMvc.perform(get(BASE_PATH + "/" + DESTINATIONS_LIST_PATH)
@@ -165,16 +167,14 @@ class CountryAdminApiTest extends ApiTestBase {
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
         .andExpect(jsonPath("$", notNullValue()))
         .andExpect(jsonPath("$").isArray())
-        .andExpect(jsonPath("$", hasSize(3)))
-        .andExpect(jsonPath("$[0].name", is("Jordan")))
+        .andExpect(jsonPath("$", hasSize(2)))
+        .andExpect(jsonPath("$[0].name", is("Lebanon")))
         .andExpect(jsonPath("$[0].status", is("active")))
-        .andExpect(jsonPath("$[1].name", is("Pakistan")))
-        .andExpect(jsonPath("$[1].status", is("active")))
-        .andExpect(jsonPath("$[2].name", is("Palestine")))
-        .andExpect(jsonPath("$[2].status", is("active")));
+        .andExpect(jsonPath("$[1].name", is("Jordan")))
+        .andExpect(jsonPath("$[1].status", is("active")));
 
 
-    verify(countryService).getTBBDestinations();
+    verify(countryService).getTCDestinations();
   }
 
   @Test
@@ -187,6 +187,7 @@ class CountryAdminApiTest extends ApiTestBase {
         .willReturn(countryPage);
 
     mockMvc.perform(post(BASE_PATH + SEARCH_PAGED_PATH)
+            .with(csrf())
             .header("Authorization", "Bearer " + "jwt-token")
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(request))
@@ -195,18 +196,16 @@ class CountryAdminApiTest extends ApiTestBase {
         .andDo(print())
         .andExpect(status().isOk())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-        .andExpect(jsonPath("$.totalElements", is(3)))
+        .andExpect(jsonPath("$.totalElements", is(2)))
         .andExpect(jsonPath("$.totalPages", is(1)))
         .andExpect(jsonPath("$.number", is(0)))
         .andExpect(jsonPath("$.hasNext", is(false)))
         .andExpect(jsonPath("$.hasPrevious", is(false)))
         .andExpect(jsonPath("$.content", notNullValue()))
-        .andExpect(jsonPath("$.content.[0].name", is("Jordan")))
+        .andExpect(jsonPath("$.content.[0].name", is("Lebanon")))
         .andExpect(jsonPath("$.content.[0].status", is("active")))
-        .andExpect(jsonPath("$.content.[1].name", is("Pakistan")))
-        .andExpect(jsonPath("$.content.[1].status", is("active")))
-        .andExpect(jsonPath("$.content.[2].name", is("Palestine")))
-        .andExpect(jsonPath("$.content.[2].status", is("active")));
+        .andExpect(jsonPath("$.content.[1].name", is("Jordan")))
+        .andExpect(jsonPath("$.content.[1].status", is("active")));
 
     verify(countryService).searchCountries(any(SearchCountryRequest.class));
   }
@@ -245,6 +244,7 @@ class CountryAdminApiTest extends ApiTestBase {
         .willReturn(new Country("Ukraine", Status.active));
 
     mockMvc.perform(post(BASE_PATH)
+            .with(csrf())
             .header("Authorization", "Bearer " + "jwt-token")
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(request))
@@ -272,6 +272,7 @@ class CountryAdminApiTest extends ApiTestBase {
         .willReturn(new Country("Ukraine", Status.active));
 
     mockMvc.perform(put(BASE_PATH + "/" + COUNTRY_ID)
+            .with(csrf())
             .header("Authorization", "Bearer " + "jwt-token")
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(request))
@@ -296,6 +297,7 @@ class CountryAdminApiTest extends ApiTestBase {
         .willReturn(true);
 
     mockMvc.perform(delete(BASE_PATH + "/" + COUNTRY_ID)
+            .with(csrf())
             .header("Authorization", "Bearer " + "jwt-token")
             .accept(MediaType.APPLICATION_JSON))
 

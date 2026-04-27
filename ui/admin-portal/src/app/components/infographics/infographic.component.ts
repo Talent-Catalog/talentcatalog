@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -17,7 +17,7 @@
 import {Component, OnInit} from '@angular/core';
 import {CandidateStatService, CandidateStatsRequest} from "../../services/candidate-stat.service";
 import {StatReport} from "../../model/stat-report";
-import {FormBuilder, FormGroup, Validators} from "@angular/forms";
+import {UntypedFormBuilder, UntypedFormGroup, Validators} from "@angular/forms";
 import {SavedList, SearchSavedListRequest} from "../../model/saved-list";
 import {SavedListService} from "../../services/saved-list.service";
 import {ActivatedRoute} from "@angular/router";
@@ -25,6 +25,8 @@ import {SavedSearch} from "../../model/saved-search";
 import {forkJoin} from "rxjs";
 import {SavedSearchService} from "../../services/saved-search.service";
 import {saveBlob} from "../../util/file";
+import {EnumOption, enumOptions} from "../../util/enum";
+import {Stat} from "../../model/stat";
 
 @Component({
   selector: 'app-infographic',
@@ -33,13 +35,15 @@ import {saveBlob} from "../../util/file";
 })
 export class InfographicComponent implements OnInit {
 
+  public statOptions: EnumOption[] = enumOptions(Stat);
+
   loading: boolean = false;
   dataLoaded: boolean = false;
   error: any;
   lists: SavedList[] = [];
   searches: SavedSearch[] = [];
   statReports: StatReport[];
-  statsFilter: FormGroup;
+  statsFilter: UntypedFormGroup;
   statsName: string;
   listFromUrl: boolean = false;
 
@@ -47,7 +51,7 @@ export class InfographicComponent implements OnInit {
               private statService: CandidateStatService,
               private savedListService: SavedListService,
               private savedSearchService: SavedSearchService,
-              private fb: FormBuilder) {
+              private fb: UntypedFormBuilder) {
   }
 
   ngOnInit() {
@@ -57,7 +61,8 @@ export class InfographicComponent implements OnInit {
       savedList: [null],
       savedSearch: [null],
       dateFrom: ['', [Validators.required]],
-      dateTo: ['', [Validators.required]]
+      dateTo: ['', [Validators.required]],
+      selectedStats: [[]]
     });
 
     this.loadListsAndSearches();
@@ -75,10 +80,15 @@ export class InfographicComponent implements OnInit {
     //Control always returns an object
     return savedSearch;
   }
+  get selectedStats(): Stat[] {
+    return this.statsFilter.value.selectedStats;
+  }
 
   private loadListsAndSearches() {
     /*load all our visible lists and searches */
-     this.loading = true;
+    this.loading = true;
+    this.error = null;
+
     const request: SearchSavedListRequest = {
       owned: true,
       shared: true,
@@ -138,12 +148,14 @@ export class InfographicComponent implements OnInit {
 
   submitStatsRequest(){
     this.loading = true;
+    this.error = null;
 
     const request: CandidateStatsRequest = {
       listId: this.savedList == null ? null : this.savedList.id,
       searchId: this.savedSearch == null ? null : this.savedSearch.id,
       dateFrom: this.dateFrom,
-      dateTo: this.dateTo
+      dateTo: this.dateTo,
+      selectedStats: this.selectedStats
     }
 
     if (this.savedList) {

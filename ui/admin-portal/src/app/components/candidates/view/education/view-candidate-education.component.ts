@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {Candidate} from "../../../../model/candidate";
 import {CandidateEducation} from "../../../../model/candidate-education";
@@ -22,13 +22,17 @@ import {CandidateEducationService} from "../../../../services/candidate-educatio
 import {EditCandidateEducationComponent} from "./edit/edit-candidate-education.component";
 import {CreateCandidateEducationComponent} from "./create/create-candidate-education.component";
 import {ConfirmationComponent} from "../../../util/confirm/confirmation.component";
+import {CandidateService} from "../../../../services/candidate.service";
+import {
+  EditMaxEducationLevelComponent
+} from "./edit-max-education-level/edit-max-education-level.component";
 
 @Component({
   selector: 'app-view-candidate-education',
   templateUrl: './view-candidate-education.component.html',
   styleUrls: ['./view-candidate-education.component.scss']
 })
-export class ViewCandidateEducationComponent implements OnInit, OnChanges {
+export class ViewCandidateEducationComponent implements OnInit {
 
   @Input() candidate: Candidate;
   @Input() editable: boolean;
@@ -39,30 +43,31 @@ export class ViewCandidateEducationComponent implements OnInit, OnChanges {
   error;
 
   constructor(private candidateEducationService: CandidateEducationService,
+              private candidateService: CandidateService,
               private modalService: NgbModal ) {
   }
 
   ngOnInit() {
   }
 
-  ngOnChanges(changes: SimpleChanges) {
-    if (changes && changes.candidate && changes.candidate.previousValue !== changes.candidate.currentValue) {
-       this.search();
-    }
-  }
+  editMaxEducationLevel() {
+    const modalRef = this.modalService.open(EditMaxEducationLevelComponent, {
+      centered: true,
+      backdrop: 'static'
+    });
 
-  search(){
-    this.loading = true;
-    this.candidateEducationService.list(this.candidate.id).subscribe(
-      candidateEducations => {
-        this.candidateEducations = candidateEducations;
-        this.loading = false;
-      },
-      error => {
-        this.error = error;
-        this.loading = false;
-      })
-    ;
+    modalRef.componentInstance.educationLevel = this.candidate.maxEducationLevel;
+    modalRef.result.then((newLevelId) => {
+      if (newLevelId) {
+        const candidatePayload = {
+          maxEducationLevel: newLevelId
+        };
+
+        this.candidateService.updateMaxEducationLevel(this.candidate.id, candidatePayload).subscribe(() => {
+          this.candidateService.updateCandidate(); // refresh candidate
+        });
+      }
+    }).catch(() => { /* dismissed */ });
   }
 
   editCandidateEducation(candidateEducation: CandidateEducation) {
@@ -74,7 +79,7 @@ export class ViewCandidateEducationComponent implements OnInit, OnChanges {
     editCandidateEducationModal.componentInstance.candidateEducation = candidateEducation;
 
     editCandidateEducationModal.result
-      .then((candidateEducation) => this.search())
+      .then((candidateEducation) => this.candidateService.updateCandidate())
       .catch(() => { /* Isn't possible */ });
 
   }
@@ -88,7 +93,7 @@ export class ViewCandidateEducationComponent implements OnInit, OnChanges {
     createCandidateEducationModal.componentInstance.candidateId = this.candidate.id;
 
     createCandidateEducationModal.result
-      .then((candidateEducation) => this.search())
+      .then((candidateEducation) => this.candidateService.updateCandidate())
       .catch(() => { /* Isn't possible */ });
 
   }
@@ -107,13 +112,12 @@ export class ViewCandidateEducationComponent implements OnInit, OnChanges {
           this.candidateEducationService.delete(candidateEducation.id).subscribe(
             (user) => {
               this.loading = false;
-              this.search();
+              this.candidateService.updateCandidate();
             },
             (error) => {
               this.error = error;
               this.loading = false;
             });
-          this.search();
         }
       })
       .catch(() => { /* Isn't possible */ });

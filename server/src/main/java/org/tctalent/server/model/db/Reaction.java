@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -17,17 +17,24 @@
 package org.tctalent.server.model.db;
 
 import java.util.Set;
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
-import javax.persistence.SequenceGenerator;
-import javax.persistence.Table;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.SequenceGenerator;
+import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
 
+/**
+ * At the end of a displayed sent post is a button allowing users to 'react' to its content by
+ * selecting an emoji which is then appended to the post with their name attributed. Each user
+ * selection is a unique reaction, but reactions using the same emoji are collated into one emoji
+ * badge display, with a hover-over list of associated users and a count thereof. Works in much the
+ * same way as Slack, Facebook et al. at time of writing (Aug '24).
+ */
 @Getter
 @Setter
 @Entity
@@ -53,5 +60,8 @@ public class Reaction extends AbstractDomainObject<Long> {
     @JoinColumn(name = "chat_post_id")
     private ChatPost chatPost;
 
+    /**
+     * The user-selected emoji
+     */
     private String emoji;
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -33,6 +33,12 @@ public class UpdateJobRequest extends OpportunityParams {
     private Long contactUserId;
 
     /**
+     * If present indicates that this job is an evergreen job.
+     */
+    @Nullable
+    private Boolean evergreen;
+
+    /**
      * Name of the role associated with the job - for example "Senior programmer"
      */
     @Nullable
@@ -53,9 +59,27 @@ public class UpdateJobRequest extends OpportunityParams {
     @Nullable
     private String sfJoblink;
 
+    /**
+     * If present indicates whether candidate search can be skipped
+     */
+    @Nullable
+    private Boolean skipCandidateSearch;
+
     @Nullable
     private JobOpportunityStage stage;
 
     @Nullable
     private LocalDate submissionDueDate;
+
+    /**
+     * If present, the job is to have certain fields copied from the job belonging to this job id.
+     */
+    @Nullable
+    private Long jobToCopyId;
+
+    /**
+     * If present, the name has been edited by the user who created the Job, or a System Admin.
+     */
+    @Nullable
+    private String jobName;
 }

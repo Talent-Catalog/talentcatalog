@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -24,6 +24,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -32,6 +33,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.tctalent.server.data.SavedListTestData.getSavedList;
+import static org.tctalent.server.data.SavedListTestData.getSavedLists;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.ArrayList;
@@ -43,12 +46,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.tctalent.server.api.dto.ExportColumnsBuilderSelector;
+import org.tctalent.server.api.dto.SavedListBuilderSelector;
 import org.tctalent.server.model.db.SavedList;
 import org.tctalent.server.request.candidate.PublishListRequest;
 import org.tctalent.server.request.candidate.PublishedDocImportReport;
@@ -67,6 +73,7 @@ import org.tctalent.server.service.db.SavedListService;
 
 @WebMvcTest(SavedListAdminApi.class)
 @AutoConfigureMockMvc
+@Import({SavedListBuilderSelector.class, ExportColumnsBuilderSelector.class})
 class SavedListAdminApiTest extends ApiTestBase {
 
     private static final long SAVED_LIST_ID = 1L;
@@ -85,8 +92,8 @@ class SavedListAdminApiTest extends ApiTestBase {
     private static final String SEARCH_PAGED_PATH = "/search-paged";
     private static final String SEARCH_PATH = "/search";
 
-    private static final SavedList savedList = AdminApiTestUtil.getSavedList();
-    private static final List<SavedList> savedLists = AdminApiTestUtil.getSavedLists();
+    private static final SavedList savedList = getSavedList();
+    private static final List<SavedList> savedLists = getSavedLists();
 
     private final Page<SavedList> savedListPage =
         new PageImpl<>(
@@ -130,6 +137,7 @@ class SavedListAdminApiTest extends ApiTestBase {
             .willReturn(savedList);
 
         mockMvc.perform(post(BASE_PATH)
+                .with(csrf())
                 .header("Authorization", "Bearer " + "jwt-token")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request))
@@ -153,6 +161,7 @@ class SavedListAdminApiTest extends ApiTestBase {
             .willReturn(true);
 
         mockMvc.perform(delete(BASE_PATH + "/" + SAVED_LIST_ID)
+                .with(csrf())
                 .header("Authorization", "Bearer " + "jwt-token")
                 .accept(MediaType.APPLICATION_JSON))
 
@@ -204,7 +213,7 @@ class SavedListAdminApiTest extends ApiTestBase {
             .andExpect(jsonPath("$.folderjdlink", is("http://folder.jd.link")))
             .andExpect(jsonPath("$.publishedDocLink", is("http://published.doc.link")))
             .andExpect(jsonPath("$.registeredJob", is(true)))
-            .andExpect(jsonPath("$.tbbShortName", is("Saved list Tbb short name")))
+            .andExpect(jsonPath("$.tcShortName", is("Saved list Tc short name")))
             .andExpect(jsonPath("$.createdBy.firstName", is("test")))
             .andExpect(jsonPath("$.createdBy.lastName", is("user")))
             .andExpect(jsonPath("$.createdDate", is("2023-10-30T12:30:00+02:00")))
@@ -214,7 +223,7 @@ class SavedListAdminApiTest extends ApiTestBase {
             .andExpect(jsonPath("$.users[0].firstName", is("test")))
             .andExpect(jsonPath("$.users[0].lastName", is("user")))
             .andExpect(jsonPath("$.tasks[0].id", is(148)))
-            .andExpect(jsonPath("$.tasks[0].helpLink", is("http://help.link")))
+            .andExpect(jsonPath("$.tasks[0].docLink", is("http://help.link")))
             .andExpect(jsonPath("$.tasks[0].taskType", is("Simple")))
             .andExpect(jsonPath("$.tasks[0].displayName", is("task display name")))
             .andExpect(jsonPath("$.tasks[0].name", is("a test task")))
@@ -230,10 +239,11 @@ class SavedListAdminApiTest extends ApiTestBase {
     void searchSavedListsSucceeds() throws Exception {
         SearchSavedListRequest request = new SearchSavedListRequest();
         given(savedListService
-            .listSavedLists(any(SearchSavedListRequest.class)))
+            .search(any(SearchSavedListRequest.class)))
             .willReturn(savedLists);
 
         mockMvc.perform(post(BASE_PATH + SEARCH_PATH)
+                .with(csrf())
                 .header("Authorization", "Bearer " + "jwt-token")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request))
@@ -246,7 +256,7 @@ class SavedListAdminApiTest extends ApiTestBase {
             .andExpect(jsonPath("$").isArray())
             .andExpect(jsonPath("$", hasSize(1)));
 
-        verify(savedListService).listSavedLists(any(SearchSavedListRequest.class));
+        verify(savedListService).search(any(SearchSavedListRequest.class));
     }
 
     @Test
@@ -255,10 +265,11 @@ class SavedListAdminApiTest extends ApiTestBase {
         SearchSavedListRequest request = new SearchSavedListRequest();
 
         given(savedListService
-            .searchSavedLists(any(SearchSavedListRequest.class)))
+            .searchPaged(any(SearchSavedListRequest.class)))
             .willReturn(savedListPage);
 
         mockMvc.perform(post(BASE_PATH + SEARCH_PAGED_PATH)
+                .with(csrf())
                 .header("Authorization", "Bearer " + "jwt-token")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request))
@@ -275,7 +286,7 @@ class SavedListAdminApiTest extends ApiTestBase {
             .andExpect(jsonPath("$.content", notNullValue()))
             .andExpect(jsonPath("$.content.[0].id", is(1)));
 
-        verify(savedListService).searchSavedLists(any(SearchSavedListRequest.class));
+        verify(savedListService).searchPaged(any(SearchSavedListRequest.class));
     }
 
     @Test
@@ -288,6 +299,7 @@ class SavedListAdminApiTest extends ApiTestBase {
             .willReturn(savedList);
 
         mockMvc.perform(put(BASE_PATH + "/" + SAVED_LIST_ID)
+                .with(csrf())
                 .header("Authorization", "Bearer " + "jwt-token")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request))
@@ -322,6 +334,7 @@ class SavedListAdminApiTest extends ApiTestBase {
             .willReturn(targetList);
 
         mockMvc.perform(put(BASE_PATH + COPY_PATH.replace("{id}", Long.toString(SAVED_LIST_ID)))
+                .with(csrf())
                 .header("Authorization", "Bearer " + "jwt-token")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request))
@@ -345,6 +358,7 @@ class SavedListAdminApiTest extends ApiTestBase {
                 .willReturn(savedList);
 
         mockMvc.perform(put(BASE_PATH + CREATE_FOLDER_PATH.replace("{id}", Long.toString(SAVED_LIST_ID)))
+                        .with(csrf())
                         .header("Authorization", "Bearer " + "jwt-token")
                         .accept(MediaType.APPLICATION_JSON))
 
@@ -367,6 +381,7 @@ class SavedListAdminApiTest extends ApiTestBase {
                 .willReturn(savedList);
 
         mockMvc.perform(put(BASE_PATH + ADD_SHARED_USER_PATH.replace("{id}", Long.toString(SAVED_LIST_ID)))
+                        .with(csrf())
                         .header("Authorization", "Bearer " + "jwt-token")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request))
@@ -391,6 +406,7 @@ class SavedListAdminApiTest extends ApiTestBase {
                 .willReturn(savedList);
 
         mockMvc.perform(put(BASE_PATH + REMOVE_SHARED_USER_PATH.replace("{id}", Long.toString(SAVED_LIST_ID)))
+                        .with(csrf())
                         .header("Authorization", "Bearer " + "jwt-token")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request))
@@ -416,6 +432,7 @@ class SavedListAdminApiTest extends ApiTestBase {
                 .willReturn(report);
 
         mockMvc.perform(put(BASE_PATH + FEEDBACK_PATH.replace("{id}", Long.toString(SAVED_LIST_ID)))
+                        .with(csrf())
                         .header("Authorization", "Bearer " + "jwt-token")
                         .accept(MediaType.APPLICATION_JSON))
 
@@ -439,6 +456,7 @@ class SavedListAdminApiTest extends ApiTestBase {
                 .willReturn(savedList);
 
         mockMvc.perform(put(BASE_PATH + PUBLISH_PATH.replace("{id}", Long.toString(SAVED_LIST_ID)))
+                        .with(csrf())
                         .header("Authorization", "Bearer " + "jwt-token")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request))
@@ -459,6 +477,7 @@ class SavedListAdminApiTest extends ApiTestBase {
         UpdateCandidateContextNoteRequest request = new UpdateCandidateContextNoteRequest();
 
         mockMvc.perform(put(BASE_PATH + CONTEXT_NOTE_PATH.replace("{id}", Long.toString(SAVED_LIST_ID)))
+                        .with(csrf())
                         .header("Authorization", "Bearer " + "jwt-token")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request))
@@ -476,6 +495,7 @@ class SavedListAdminApiTest extends ApiTestBase {
         UpdateCandidateSourceDescriptionRequest request = new UpdateCandidateSourceDescriptionRequest();
 
         mockMvc.perform(put(BASE_PATH + DESCRIPTION_PATH.replace("{id}", Long.toString(SAVED_LIST_ID)))
+                        .with(csrf())
                         .header("Authorization", "Bearer " + "jwt-token")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request))
@@ -493,6 +513,7 @@ class SavedListAdminApiTest extends ApiTestBase {
         UpdateDisplayedFieldPathsRequest request = new UpdateDisplayedFieldPathsRequest();
 
         mockMvc.perform(put(BASE_PATH + DISPLAYED_FIELDS_PATH.replace("{id}", Long.toString(SAVED_LIST_ID)))
+                        .with(csrf())
                         .header("Authorization", "Bearer " + "jwt-token")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request))
@@ -506,10 +527,11 @@ class SavedListAdminApiTest extends ApiTestBase {
 
     @Test
     @DisplayName("update tbb short name succeeds")
-    void updateTbbShortName() throws Exception {
+    void updateTcShortName() throws Exception {
         UpdateShortNameRequest request = new UpdateShortNameRequest();
 
         mockMvc.perform(put(BASE_PATH + SHORT_NAME_PATH.replace("{id}", Long.toString(SAVED_LIST_ID)))
+                        .with(csrf())
                         .header("Authorization", "Bearer " + "jwt-token")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request))
@@ -518,6 +540,6 @@ class SavedListAdminApiTest extends ApiTestBase {
                 .andDo(print())
                 .andExpect(status().isOk());
 
-        verify(savedListService).updateTbbShortName(any(UpdateShortNameRequest.class));
+        verify(savedListService).updateTcShortName(any(UpdateShortNameRequest.class));
     }
 }

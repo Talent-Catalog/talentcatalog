@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -16,9 +16,9 @@
 
 package org.tctalent.server.api.admin;
 
+import jakarta.servlet.http.HttpServletRequest;
 import java.net.URI;
 import java.util.Objects;
-import javax.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -29,11 +29,10 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.ModelAndView;
+import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.model.db.BrandingInfo;
 import org.tctalent.server.service.db.BrandingService;
 import org.tctalent.server.service.db.RootRequestService;
-import org.tctalent.server.util.SubdomainRedirectHelper;
 
 /**
  * Handle rerouting when user just types in a domain - eg just tctalent.org
@@ -74,32 +73,21 @@ public class RootRouteAdminApi {
 
         if (showHeaders != null) {
             headers.forEach((key, value) ->
-                log.info(String.format(
-                    "Header '%s' = %s", key, String.join("|", value))));
+                LogBuilder.builder(log)
+                    .action("Route")
+                    .message(String.format("Header '%s' = %s", key, String.join("|", value)))
+                    .logInfo());
+
             String ipAddress = request.getHeader("X-Forward-For");
             if(ipAddress == null) {
-                log.info("Ip address: " + request.getRemoteAddr());
+                LogBuilder.builder(log)
+                    .action("Route")
+                    .message("Ip address: " + request.getRemoteAddr())
+                    .logInfo();
             }
         }
 
         String queryString = request.getQueryString();
-
-        //Check for partner tctalent.org subdomains url can redirect to a plain url with p= query
-        //eg crs.tctalent.org --> tctalent.org?p=crs
-        //NOTE: We don't do this anymore - but keeping code in for now. Can be removed eventually
-        if (host != null) {
-            String redirectUrl = SubdomainRedirectHelper.computeRedirectUrl(host);
-            if (redirectUrl != null) {
-                storeQueryInfo(request, partnerParam, referrerParam, utmSource, utmMedium,
-                    utmCampaign, utmTerm, utmContent);
-                if (queryString != null) {
-                    redirectUrl += "&" + queryString;
-                }
-                log.info("Redirecting to: " + redirectUrl);
-                return new ModelAndView("redirect:" + redirectUrl);
-            }
-        }
-
         //Store query information
         if (queryString != null) {
             storeQueryInfo(request, partnerParam, referrerParam, utmSource, utmMedium, utmCampaign, utmTerm, utmContent);
@@ -122,8 +110,16 @@ public class RootRouteAdminApi {
                 infoMess += ": Host " + host;
             }
             infoMess += ", Partner specified 'p=" + partnerParam + "'";
-            log.info(infoMess);
-            log.info("Routing to landing page: " + routingUrl);
+
+            LogBuilder.builder(log)
+                .action("Route")
+                .message(infoMess)
+                .logInfo();
+
+            LogBuilder.builder(log)
+                .action("Route")
+                .message("Routing to landing page: " + routingUrl)
+                .logInfo();
         }
 
         return ResponseEntity.status(HttpStatus.FOUND).location(URI.create(routingUrl)).build();

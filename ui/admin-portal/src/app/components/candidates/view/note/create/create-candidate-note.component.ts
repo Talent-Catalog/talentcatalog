@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -15,11 +15,11 @@
  */
 
 import {Component, OnInit} from '@angular/core';
-import {FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {UntypedFormBuilder, UntypedFormGroup, Validators} from '@angular/forms';
 import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
 import {CandidateNoteService} from '../../../../../services/candidate-note.service';
 import {CandidateNote} from '../../../../../model/candidate-note';
-import {CountryService} from '../../../../../services/country.service';
+import {CandidateService} from "../../../../../services/candidate.service";
 
 @Component({
   selector: 'app-create-candidate-note',
@@ -30,7 +30,7 @@ export class CreateCandidateNoteComponent implements OnInit {
 
   candidateNote: CandidateNote;
 
-  candidateForm: FormGroup;
+  candidateForm: UntypedFormGroup;
 
   candidateId: number;
   countries = [];
@@ -39,9 +39,9 @@ export class CreateCandidateNoteComponent implements OnInit {
   saving: boolean;
 
   constructor(private activeModal: NgbActiveModal,
-              private fb: FormBuilder,
+              private fb: UntypedFormBuilder,
               private candidateNoteService: CandidateNoteService,
-              private countryService: CountryService ) {
+              private candidateService: CandidateService ) {
   }
 
   ngOnInit() {
@@ -59,6 +59,7 @@ export class CreateCandidateNoteComponent implements OnInit {
     this.saving = true;
     this.candidateNoteService.create(this.candidateForm.value).subscribe(
       (candidateNote) => {
+        this.candidateService.updateCandidate()
         this.closeModal(candidateNote);
         this.saving = false;
       },

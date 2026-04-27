@@ -1,0 +1,11 @@
+{
+  "dtoType": "EXTENDED",
+  "pageSize": 20,
+  "pageNumber": 0,
+  "sortFields": [
+    "id"
+  ],
+  "sortDirection": "DESC",
+  "keyword": "",
+  "showClosedOpps": true
+}

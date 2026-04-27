@@ -1,0 +1,3 @@
+
+alter table candidate_saved_list add column shareable_cv_attachment_id bigint references candidate_attachment;
+alter table candidate_saved_list add column shareable_doc_attachment_id bigint references candidate_attachment;

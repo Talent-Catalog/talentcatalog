@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -16,16 +16,19 @@
 
 package org.tctalent.server.model.db;
 
+import jakarta.persistence.Convert;
+import jakarta.persistence.DiscriminatorValue;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
+import org.tctalent.server.files.UploadType;
 import org.tctalent.server.model.db.task.TaskType;
 import org.tctalent.server.model.db.task.UploadTask;
-import org.tctalent.server.model.db.task.UploadType;
-
-import javax.persistence.*;
-import java.util.List;
 
 /**
  * Default Implementation
@@ -33,7 +36,7 @@ import java.util.List;
  * @author John Cameron
  */
 @Entity(name="UploadTask")
-@DiscriminatorValue("UploadTask")
+@DiscriminatorValue("Upload")
 @Getter
 @Setter
 public class UploadTaskImpl extends TaskImpl implements UploadTask {
@@ -55,7 +58,7 @@ public class UploadTaskImpl extends TaskImpl implements UploadTask {
      * Allowable file types (eg pdf, doc, jpg etc). If null, any file type is acceptable.
      */
     @Nullable
-    @Convert(converter = DelimitedStringsConverter.class)
+    @Convert(converter = CommaDelimitedStringsConverter.class)
     private List<String> uploadableFileTypes;
 
     /*

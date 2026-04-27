@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -16,6 +16,11 @@
 
 package org.tctalent.server.model.db;
 
+import jakarta.persistence.Convert;
+import jakarta.persistence.DiscriminatorValue;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Transient;
+import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.lang.Nullable;
@@ -23,19 +28,13 @@ import org.tctalent.server.model.db.task.AllowedQuestionTaskAnswer;
 import org.tctalent.server.model.db.task.QuestionTask;
 import org.tctalent.server.model.db.task.TaskType;
 
-import javax.persistence.Convert;
-import javax.persistence.DiscriminatorValue;
-import javax.persistence.Entity;
-import javax.persistence.Transient;
-import java.util.List;
-
 /**
  * Default Implementation
  *
  * @author John Cameron
  */
 @Entity(name="QuestionTask")
-@DiscriminatorValue("QuestionTask")
+@DiscriminatorValue("Question")
 @Getter
 @Setter
 public class QuestionTaskImpl extends TaskImpl implements QuestionTask {
@@ -45,11 +44,14 @@ public class QuestionTaskImpl extends TaskImpl implements QuestionTask {
      * If exist the question task answer format will be a dropdown.
      */
     @Nullable
-    @Convert(converter = DelimitedStringsConverter.class)
+    @Convert(converter = CommaDelimitedStringsConverter.class)
     private List<String> explicitAllowedAnswers;
 
+    //TODO JC This needs to be better documented. It is saying that the type of the Candidate
+    //field specified in candidateAnswerField can be used to limit allowable answers.
     /**
-     * Set by candidate answer field if present, otherwise if explicit answer is not null will be set as the explicit answers.
+     * Set by candidate answer field if present, otherwise if explicit answer is not null will be
+     * set as the explicit answers.
      * If allowedAnswers is not null, the quesiton task answer format will be a dropdown.
      * If allowedAnswers is null, the question answer format will be a text box.
      */

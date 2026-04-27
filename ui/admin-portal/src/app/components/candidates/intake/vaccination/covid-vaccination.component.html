@@ -1,5 +1,5 @@
 <!--
-  ~ Copyright (c) 2021 Talent Beyond Boundaries.
+  ~ Copyright (c) 2024 Talent Catalog.
   ~
   ~ This program is free software: you can redistribute it and/or modify it under
   ~ the terms of the GNU Affero General Public License as published by the Free
@@ -14,9 +14,9 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<div *ngIf="error">
+<tc-alert type="danger" *ngIf="error">
   {{error}}
-</div>
+</tc-alert>
 <form [formGroup]="form">
   <div class="mb-3">
     <label class="form-label" for="covidVaccinated">Are you vaccinated against Covid 19?</label>
@@ -26,7 +26,7 @@
         [typing]="typing">
       </app-autosave-status>
     </div>
-    <ng-select id="covidVaccinated" [formControlName]="'covidVaccinated'" (clear)="setNoResponse('covidVaccinated')"
+    <ng-select class="tc-select" id="covidVaccinated" [formControlName]="'covidVaccinated'" (clear)="setNoResponse('covidVaccinated')"
                [items]="vaccinationOptions" [clearOnBackspace]="false"
                placeholder="Select" bindLabel="stringValue" bindValue="key"></ng-select>
   </div>
@@ -34,7 +34,7 @@
   <div *ngIf="covidVaccinated === 'Yes'">
     <div class="mb-3">
       <label class="form-label" for="covidVaccinatedStatus">Are you fully vaccinated or partially vaccinated (1st dose only)?</label>
-      <ng-select id="covidVaccinatedStatus" [formControlName]="'covidVaccinatedStatus'" (clear)="setNoResponse('covidVaccinatedStatus')"
+      <ng-select class="tc-select" id="covidVaccinatedStatus" [formControlName]="'covidVaccinatedStatus'" (clear)="setNoResponse('covidVaccinatedStatus')"
                  [items]="vaccinationStatusOptions" [clearOnBackspace]="false"
                  placeholder="Select" bindLabel="stringValue" bindValue="key"></ng-select>
     </div>
@@ -43,21 +43,21 @@
       <label class="form-label" for="covidVaccinatedDate">
         What was the date of your last vaccine?
       </label>
-      <app-date-picker id="covidVaccinatedDate" [control]="form.controls.covidVaccinatedDate"></app-date-picker>
+      <tc-date-picker id="covidVaccinatedDate" [control]="form.controls.covidVaccinatedDate"></tc-date-picker>
     </div>
 
     <div class="mb-3">
       <label class="form-label" for="covidVaccineName">What is the name of the vaccine you received?</label>
-      <input type="text" class="form-control"
-             id="covidVaccineName" [formControlName]="'covidVaccineName'">
+      <tc-input type="text"
+                id="covidVaccineName" [formControlName]="'covidVaccineName'"></tc-input>
     </div>
   </div>
   <div *ngIf="this.covidVaccinated === 'Yes' || this.covidVaccinated === 'No'">
     <div class="mb-3">
       <label class="form-label" for="covidVaccineNotes">Additional Notes</label>
-      <textarea type="text" class="md-textarea-auto form-control" rows="4"
+      <tc-textarea type="text" rows="4"
                 id="covidVaccineNotes" [formControlName]="'covidVaccineNotes'"
-                placeholder="" ></textarea>
+                placeholder="" ></tc-textarea>
     </div>
   </div>
 </form>

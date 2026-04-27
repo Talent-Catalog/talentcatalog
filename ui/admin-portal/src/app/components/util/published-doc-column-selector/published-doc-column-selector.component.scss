@@ -1,24 +1,38 @@
+/*!
+ * Copyright (c) 2024 Talent Catalog.
+ *
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see https://www.gnu.org/licenses/.
+ */
+
 @import "src/scss/_variables.scss";
+@import "../../../../scss/color-mixins";
 
 .field {
-  background-color: $accent3;
+  @include background-color-light;
   list-style: none;
   padding: 8px;
   color: $dark;
   margin-bottom: 0.5em;
-  border-radius: 3px;
+  border-radius: 8px;
   text-align: center;
+  cursor: pointer;
   &:active,&:focus {
-    background-color: $accent2;
+    @include background-color-soft
   }
 }
 
 .container:not(:last-child) {
   margin-right: 4em;
-}
-
-.gu-mirror {
-  background-color: $info;
 }
 
 .edit-btn {
@@ -35,10 +49,26 @@ label {
   font-weight: 300;
 }
 
-.dragula-container {
-  height: 100%;
-}
-
 .modal-body {
   height: 100vh;
+}
+
+.dropdown-toggle::after {
+  display: none !important;
+}
+
+.scrollable-columns {
+  max-height: 400px;
+  overflow-y: auto;
+  padding-right: 8px;
+}
+
+/* smooth scrollbar look */
+.scrollable-columns::-webkit-scrollbar {
+  width: 8px;
+}
+
+.scrollable-columns::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
 }

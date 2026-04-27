@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -19,6 +19,8 @@ import {RegistrationService} from "../../services/registration.service";
 import {ActivatedRoute, Router} from "@angular/router";
 import {LanguageService} from "../../services/language.service";
 import {AuthenticationService} from "../../services/authentication.service";
+import {CandidateService} from "../../services/candidate.service";
+import {Partner} from "../../model/partner";
 
 @Component({
   selector: 'app-register',
@@ -27,7 +29,11 @@ import {AuthenticationService} from "../../services/authentication.service";
 })
 export class RegisterComponent implements OnInit, OnDestroy {
 
+  private partner: Partner;
+  private loadingPartner: boolean = false;
+
   constructor(public registrationService: RegistrationService,
+              private candidateService: CandidateService,
               public authenticationService: AuthenticationService,
               private route: ActivatedRoute,
               private languageService: LanguageService,
@@ -54,6 +60,37 @@ export class RegisterComponent implements OnInit, OnDestroy {
 
   logout() {
     this.authenticationService.logout();
+  }
+
+  get partnerName(): string {
+    if (!this.partner && !this.loadingPartner) {
+      this.loadPartner();
+    }
+    return this.partner?.name;
+  }
+
+  private loadPartner() {
+    if (!this.partner) {
+      this.loadingPartner = true;
+      //Grab partner from candidate
+      this.candidateService.getCandidatePersonal().subscribe(
+        {
+          next: candidate => {
+            this.partner = candidate?.user?.partner;
+            this.loadingPartner = false
+          },
+          error: err => {
+            this.partner = null;
+            this.loadingPartner = false;
+            console.log("RegisterComponent: failed to load candidate-" + err);
+          }
+        }
+      )
+    }
+  }
+
+  isRegistered(): boolean {
+    return this.authenticationService.isRegistered();
   }
 }
 

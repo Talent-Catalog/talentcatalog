@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -15,7 +15,7 @@
  */
 
 import {Component, OnInit} from '@angular/core';
-import {FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {UntypedFormBuilder, UntypedFormGroup, Validators} from '@angular/forms';
 import {LanguageLevel} from "../../../../model/language-level";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {LanguageLevelService} from "../../../../services/language-level.service";
@@ -28,18 +28,19 @@ import {LanguageLevelService} from "../../../../services/language-level.service"
 
 export class CreateLanguageLevelComponent implements OnInit {
 
-  languageLevelForm: FormGroup;
+  languageLevelForm: UntypedFormGroup;
   error;
   saving: boolean;
 
   constructor(private activeModal: NgbActiveModal,
-              private fb: FormBuilder,
+              private fb: UntypedFormBuilder,
               private languageLevelService: LanguageLevelService) {
   }
 
   ngOnInit() {
     this.languageLevelForm = this.fb.group({
       level: [null, Validators.required],
+      cefrLevel: [null, Validators.required],
       name: [null, Validators.required],
       status: [null, Validators.required],
     });

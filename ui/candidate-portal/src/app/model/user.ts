@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -37,6 +37,7 @@ export class User {
   usingMfa: boolean;
   mfaConfigured: boolean;
   partner: Partner;
+  emailVerified: boolean;
 
   //Can be populated after upload
   name: string;
@@ -107,4 +108,8 @@ export function roleGreaterThan(role1: Role, role2: Role): boolean {
   }
 
   return greaterRoles.includes(role1);
+}
+
+export class SendVerifyEmailRequest {
+  email: string;
 }

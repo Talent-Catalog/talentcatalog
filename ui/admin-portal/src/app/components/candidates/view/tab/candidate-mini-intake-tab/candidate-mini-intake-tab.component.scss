@@ -1,5 +1,5 @@
 /*!
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -14,12 +14,38 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
+@import 'src/scss/color-mixins';
+
 :host {
   display: block;
-  padding-top: 24px;
   padding-bottom: 24px;
 }
 
 :host ::ng-deep .read-only-white {
   background-color: white;
+}
+
+.intake-complete {
+  @include text-color-secondary
+}
+
+.highlight-button{
+  border-radius: 8px;
+  inset: -2px;
+  box-shadow: 0 0 0 0 rgba(251, 191, 36, 0.7);
+  animation: pulse-warning 1.2s ease-out infinite;
+}
+
+@keyframes pulse-warning {
+  0% {
+    box-shadow: 0 0 0 0 rgba(251, 191, 36, 0.85);
+
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(251, 191, 36, 0);
+
+  }
+  100% {
+    box-shadow: 0 0 0 14px rgba(251, 191, 36, 0);
+  }
 }

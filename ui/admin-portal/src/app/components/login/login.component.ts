@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -15,7 +15,7 @@
  */
 
 import {Component, OnInit} from '@angular/core';
-import {FormBuilder, FormGroup, Validators} from "@angular/forms";
+import {UntypedFormBuilder, UntypedFormGroup, Validators} from "@angular/forms";
 import {ActivatedRoute, Router} from "@angular/router";
 import {LoginRequest} from "../../model/base";
 import {User} from "../../model/user";
@@ -24,6 +24,8 @@ import {ShowQrCodeComponent} from "../util/qr/show-qr-code/show-qr-code.componen
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {AuthenticationService} from "../../services/authentication.service";
 import {environment} from "../../../environments/environment";
+import {PartnerService} from "../../services/partner.service";
+import {AuthorizationService} from "../../services/authorization.service";
 
 @Component({
   selector: 'app-login',
@@ -32,22 +34,26 @@ import {environment} from "../../../environments/environment";
 })
 export class LoginComponent implements OnInit {
 
-  loginForm: FormGroup;
+  loginForm: UntypedFormGroup;
   loading: boolean;
   returnUrl: string;
   error;
 
   backgroundImage: string;
+  loginImage: string;
 
-  constructor(private builder: FormBuilder,
+  constructor(private builder: UntypedFormBuilder,
               private authenticationService: AuthenticationService,
+              private authorizationService: AuthorizationService,
               private modalService: NgbModal,
               private route: ActivatedRoute,
+              private partnerService: PartnerService,
               private router: Router) {
   }
 
   ngOnInit() {
     this.backgroundImage = `url(${environment.assetBaseUrl}/assets/images/login-splash-v2.2.1.png)`;
+    this.loginImage = `${environment.assetBaseUrl}/assets/images/tcHorizontalLogo.png`;
 
     this.route.queryParams.subscribe(params => {
       this.returnUrl = params['returnUrl'] || '';
@@ -98,14 +104,14 @@ export class LoginComponent implements OnInit {
     req.reCaptchaV3Token = token;
 
     this.authenticationService.login(req)
-      .subscribe(() => {
-        this.loading = false;
-        this.checkMfaSetup();
-      }, error => {
-        // console.log(error);
-        this.error = error;
-        this.loading = false;
-      });
+    .subscribe(() => {
+      this.loading = false;
+      this.checkMfaAndDpa();
+    }, error => {
+      // console.log(error);
+      this.error = error;
+      this.loading = false;
+    });
 
   }
 
@@ -134,6 +140,27 @@ export class LoginComponent implements OnInit {
     })
     .catch(() => {
       this.router.navigateByUrl(this.returnUrl);
+    });
+  }
+
+  private checkMfaAndDpa() {
+    if (!this.authorizationService.isSourcePartner()) {
+      // Non-partner users skip DPA check and proceed to MFA
+      this.checkMfaSetup();
+      return;
+    }
+    this.partnerService.requiresDpaAcceptance().subscribe({
+      next: (requiresDpa: boolean) => {
+        if (requiresDpa) {
+          this.router.navigateByUrl('/dpa');
+        } else {
+          this.checkMfaSetup();
+        }
+      },
+      error: error => {
+        this.error = error;
+        this.loading = false;
+      }
     });
   }
 }

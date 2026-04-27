@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -16,12 +16,10 @@
 
 package org.tctalent.server.service.db;
 
-import java.util.List;
 import org.springframework.lang.Nullable;
 import org.tctalent.server.exception.EntityReferencedException;
 import org.tctalent.server.exception.InvalidRequestException;
 import org.tctalent.server.exception.NoSuchObjectException;
-import org.tctalent.server.model.db.CandidateDependant;
 import org.tctalent.server.model.db.CandidateVisaJobCheck;
 import org.tctalent.server.request.candidate.visa.CandidateVisaCheckData;
 import org.tctalent.server.request.candidate.visa.job.CreateCandidateVisaJobCheckRequest;
@@ -82,14 +80,5 @@ public interface CandidateVisaJobCheckService {
      */
     void updateIntakeData(
             @Nullable Long visaJobId, CandidateVisaCheckData data) throws NoSuchObjectException;
-
-    /**
-     * Gets relocating dependants listed on a given candidate visa job assessment.
-     * @param visaJobCheck instance of {@link CandidateVisaJobCheck}
-     * @return list of candidate dependant objects or null if there aren't any for that assessment
-     * @throws NoSuchObjectException if there's no candidate dependant with a given id
-     */
-    List<CandidateDependant> getRelocatingDependants(CandidateVisaJobCheck visaJobCheck)
-        throws NoSuchObjectException;
 
 }

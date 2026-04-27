@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -16,10 +16,10 @@
 
 package org.tctalent.server.model.db.task;
 
+import java.util.List;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
-
-import java.util.List;
+import org.tctalent.server.files.UploadType;
 
 /**
  * Task where candidate is required to upload a file.

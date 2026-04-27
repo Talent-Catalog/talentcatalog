@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -15,7 +15,7 @@
  */
 
 import {Component, OnInit} from '@angular/core';
-import {FormBuilder} from '@angular/forms';
+import {UntypedFormBuilder} from '@angular/forms';
 import {CandidateService} from '../../../../services/candidate.service';
 import {IntakeComponentBase} from '../../../util/intake/IntakeComponentBase';
 
@@ -29,17 +29,22 @@ export class LangAssessmentComponent extends IntakeComponentBase implements OnIn
   errorMsg: string;
   regexpIeltsScore: RegExp;
 
-  constructor(fb: FormBuilder, candidateService: CandidateService) {
+  constructor(fb: UntypedFormBuilder, candidateService: CandidateService) {
     super(fb, candidateService);
   }
 
   ngOnInit(): void {
     this.form = this.fb.group({
-      langAssessment: [this.candidateIntakeData?.langAssessment],
-      langAssessmentScore: [this.candidateIntakeData?.langAssessmentScore],
+      englishAssessment: [this.candidateIntakeData?.englishAssessment],
+      englishAssessmentScoreDet: [this.candidateIntakeData?.englishAssessmentScoreDet],
+      englishAssessmentScoreIelts: [this.candidateIntakeData?.englishAssessmentScoreIelts],
+      frenchAssessment: [this.candidateIntakeData?.frenchAssessment],
+      frenchAssessmentScoreNclc: [this.candidateIntakeData?.frenchAssessmentScoreNclc],
     });
     this.regexpIeltsScore = new RegExp('^([0-8](\\.5)?$)|(^9$)');
-    this.errorMsg = "The IELTS score must be between 0-9 and with decimal increments of .5 only."
+    this.errorMsg = "The IELTS score must be between 0-9 and with decimal increments of .5 only.";
+
+    this.updateDataOnFieldChange("englishAssessmentScoreIelts");
   }
 
 }

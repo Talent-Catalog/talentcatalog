@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -19,7 +19,7 @@ import {Component, Input, OnInit} from '@angular/core';
 
 import {SearchResults} from '../../../model/search-results';
 
-import {FormBuilder, FormGroup} from "@angular/forms";
+import {UntypedFormBuilder, UntypedFormGroup} from "@angular/forms";
 import {debounceTime, distinctUntilChanged} from "rxjs/operators";
 import {Country} from "../../../model/country";
 import {CountryService} from "../../../services/country.service";
@@ -39,7 +39,7 @@ export class SearchCountriesComponent implements OnInit {
 
   @Input() loggedInUser: User;
 
-  searchForm: FormGroup;
+  searchForm: UntypedFormGroup;
   loading: boolean;
   error: any;
   pageNumber: number;
@@ -47,7 +47,7 @@ export class SearchCountriesComponent implements OnInit {
   results: SearchResults<Country>;
 
 
-  constructor(private fb: FormBuilder,
+  constructor(private fb: UntypedFormBuilder,
               private countryService: CountryService,
               private modalService: NgbModal,
               private authService: AuthorizationService) {

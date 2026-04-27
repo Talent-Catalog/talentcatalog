@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -16,8 +16,8 @@
 
 import {Component, Input, OnInit} from '@angular/core';
 import {EnumOption, enumOptions} from '../../../../util/enum';
-import {NotRegisteredStatus, UnhcrStatus, YesNo, YesNoUnsure} from '../../../../model/candidate';
-import {FormBuilder} from '@angular/forms';
+import {NotRegisteredStatus, UnhcrStatus, YesNo} from '../../../../model/candidate';
+import {UntypedFormBuilder} from '@angular/forms';
 import {CandidateService} from '../../../../services/candidate.service';
 import {IntakeComponentBase} from '../../../util/intake/IntakeComponentBase';
 
@@ -30,18 +30,16 @@ export class RegistrationUnhcrComponent extends IntakeComponentBase implements O
 
   @Input() showAll: boolean = true;
 
-  public unhcrRegisteredOptions: EnumOption[] = enumOptions(YesNoUnsure);
   public unhcrConsentOptions: EnumOption[] = enumOptions(YesNo);
   public unhcrStatusOptions: EnumOption[] = enumOptions(UnhcrStatus);
   public NotRegisteredStatusOptions: EnumOption[] = enumOptions(NotRegisteredStatus);
 
-  constructor(fb: FormBuilder, candidateService: CandidateService) {
+  constructor(fb: UntypedFormBuilder, candidateService: CandidateService) {
     super(fb, candidateService);
   }
 
   ngOnInit(): void {
     this.form = this.fb.group({
-      unhcrRegistered: [this.candidateIntakeData?.unhcrRegistered],
       unhcrStatus: [this.candidateIntakeData?.unhcrStatus],
       unhcrNumber: [this.candidateIntakeData?.unhcrNumber],
       unhcrFile: [this.candidateIntakeData?.unhcrFile],
@@ -55,16 +53,17 @@ export class RegistrationUnhcrComponent extends IntakeComponentBase implements O
     return this.form.value?.unhcrStatus;
   }
 
-  get unhcrRegistered(): string {
-    return this.form.value?.unhcrRegistered;
+  get isRegistered() {
+    let registeredKeys: string[] = ["MandateRefugee", "RegisteredAsylum", "RegisteredStateless", "RegisteredStatusUnknown"];
+    return registeredKeys.includes(this.unhcrStatus);
+  }
+
+  get isNotRegistered() {
+    return this.unhcrStatus == "NotRegistered";
   }
 
   get hasNotes(): boolean {
-    if (this.unhcrRegistered == null || this.unhcrRegistered === 'NoResponse') {
-      return false;
-    } else {
-      return true;
-    }
+    return !(this.unhcrStatus == null || this.unhcrStatus === 'NoResponse');
   }
 
 }

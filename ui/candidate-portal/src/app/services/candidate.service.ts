@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -18,9 +18,13 @@ import {Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {environment} from '../../environments/environment';
 import {Observable} from 'rxjs';
-import {Candidate} from '../model/candidate';
+import {
+  Candidate,
+  SubmitRegistrationRequest,
+  UpdateCandidateNotificationPreferenceRequest
+} from '../model/candidate';
 import {map} from 'rxjs/operators';
-import {LocalStorageService} from "angular-2-local-storage";
+import {LocalStorageService} from "./local-storage.service";
 
 export interface UpdateCandidateAdditionalInfo extends UpdateCandidateSurvey {
   additionalInfo?: string,
@@ -40,7 +44,7 @@ export class CandidateService {
   apiUrl: string = environment.apiUrl + '/candidate';
 
   constructor(private http: HttpClient,
-              private localStorage: LocalStorageService) {
+              private localStorageService: LocalStorageService) {
   }
 
   /* Contact */
@@ -75,8 +79,8 @@ export class CandidateService {
     return this.http.get<Candidate>(`${this.apiUrl}/additional-info`);
   }
 
-  updateCandidateAdditionalInfo(request): Observable<Candidate> {
-    return this.http.post<Candidate>(`${this.apiUrl}/additional-info`, request);
+  updateCandidateOtherInfo(request): Observable<Candidate> {
+    return this.http.post<Candidate>(`${this.apiUrl}/other-info`, request);
   }
 
   /* Candidate Survey */
@@ -104,20 +108,17 @@ export class CandidateService {
     return this.http.get<Candidate>(`${this.apiUrl}/certifications`);
   }
 
+  updateAcceptedPrivacyPolicy(acceptedPrivacyPolicyId: string):
+    Observable<Candidate>  {
+    return this.http.put<Candidate>(`${this.apiUrl}/privacy/${acceptedPrivacyPolicyId}`, null);
+  }
+
   updateCandidateCertification(request): Observable<Candidate> {
     return this.http.post<Candidate>(`${this.apiUrl}/certifications`, request);
   }
 
-  getStatus() {
-    return this.http.get<Candidate>(`${this.apiUrl}/status`);
-  }
-
   getProfile(): Observable<Candidate> {
     return this.http.get<Candidate>(`${this.apiUrl}/profile`)
-  }
-
-  getCandidateNumber() {
-    return this.http.get<Candidate>(`${this.apiUrl}/candidate-number`);
   }
 
   downloadCv() {
@@ -126,19 +127,35 @@ export class CandidateService {
     }));
   }
 
-  submitRegistration(): Observable<Candidate> {
-    return this.http.post<Candidate>(`${this.apiUrl}/submit`, null);
+  submitRegistration(request: SubmitRegistrationRequest): Observable<Candidate> {
+    return this.http.post<Candidate>(`${this.apiUrl}/submit`, request);
   }
 
   getCandNumberStorage(): string {
-    return this.localStorage.get('candidateNumber');
+    return this.localStorageService.get('candidateNumber');
   }
 
   setCandNumberStorage(candidateNumber: string) {
-    this.localStorage.set('candidateNumber', candidateNumber);
+    this.localStorageService.set('candidateNumber', candidateNumber);
   }
 
   clearCandNumberStorage() {
-    this.localStorage.remove('candidateNumber');
+    this.localStorageService.remove('candidateNumber');
+  }
+  getCandidateCandidateExams(): Observable<Candidate> {
+    return this.http.get<Candidate>(`${this.apiUrl}/exams`);
+  }
+
+  getCandidateDestinations(): Observable<Candidate> {
+    return this.http.get<Candidate>(`${this.apiUrl}/destinations`);
+  }
+
+  updateNotificationPreference(request: UpdateCandidateNotificationPreferenceRequest):
+    Observable<void>  {
+    return this.http.put<void>(`${this.apiUrl}/notification`, request);
+  }
+
+  updatePendingTermsAcceptance(requestAcceptance: boolean): Observable<void> {
+    return this.http.put<void>(`${this.apiUrl}/pending-acceptance/${requestAcceptance}`, null);
   }
 }

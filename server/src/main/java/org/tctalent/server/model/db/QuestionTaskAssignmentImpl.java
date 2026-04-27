@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -16,9 +16,9 @@
 
 package org.tctalent.server.model.db;
 
-import javax.persistence.DiscriminatorValue;
-import javax.persistence.Entity;
-import javax.persistence.Transient;
+import jakarta.persistence.DiscriminatorValue;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Transient;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.lang.Nullable;
@@ -30,12 +30,14 @@ import org.tctalent.server.model.db.task.QuestionTaskAssignment;
  * @author John Cameron
  */
 @Entity(name="QuestionTaskAssignment")
-@DiscriminatorValue("QuestionTask")
+@DiscriminatorValue("Question")
 @Getter
 @Setter
 public class QuestionTaskAssignmentImpl extends TaskAssignmentImpl implements
     QuestionTaskAssignment {
 
+    //TODO JC Shouldn't this have an implementation that fetches the answer using the logic
+    //described in the JavaDoc for QuestionTask.getCandidateAnswerField
     @Transient
     @Nullable
     String answer;

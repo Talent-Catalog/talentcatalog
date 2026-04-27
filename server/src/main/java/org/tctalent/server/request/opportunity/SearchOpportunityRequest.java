@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -83,6 +83,14 @@ public class SearchOpportunityRequest extends PagedSearchRequest {
      */
     @Nullable
     private Boolean ownedByMyPartner;
+
+    /**
+     * If specified, match opportunities based on whether they have been published.
+     * (Currently only job opportunities support the idea of "publishing" but potentially it
+     * could apply to any opp - and it is useful to have it in this base class)
+     */
+    @Nullable
+    private Boolean published;
 
     /**
      * If specified, match opportunities based on whether the opportunity is closed.

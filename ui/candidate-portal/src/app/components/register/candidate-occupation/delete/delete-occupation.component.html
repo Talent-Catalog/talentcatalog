@@ -1,5 +1,5 @@
 <!--
-  ~ Copyright (c) 2021 Talent Beyond Boundaries.
+  ~ Copyright (c) 2024 Talent Catalog.
   ~
   ~ This program is free software: you can redistribute it and/or modify it under
   ~ the terms of the GNU Affero General Public License as published by the Free
@@ -16,18 +16,18 @@
 
 <div class="modal-header">
   <h4 class="modal-title">{{ 'REGISTRATION.OCCUPATION.DELETE.TITLE' | translate }}</h4>
-  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" (click)="cancel()"></button>
+  <tc-button type="plain" color="gray" class="btn-close" data-bs-dismiss="modal" aria-label="Close" (onClick)="cancel()"></tc-button>
 </div>
 <div class="modal-body">
   <p>{{ 'REGISTRATION.OCCUPATION.DELETE.CONFIRMATION' | translate }}</p>
 </div>
 <div class="modal-footer">
   <span *ngIf="deleting"><i class="fas fa-spinner fa-spin"></i> deleting...</span>
-  <button type="button" class="btn btn-danger"
-          [disabled]="deleting"
-          (click)="confirm()">{{ 'REGISTRATION.OCCUPATION.DELETE.YES' | translate }}</button>
-  <button type="button" class="btn btn-secondary"
-          [disabled]="deleting"
-          (click)="cancel()">{{ 'REGISTRATION.OCCUPATION.DELETE.NO' | translate }}</button>
+  <tc-button color="error" size="lg" class="btn"
+             [disabled]="deleting"
+             (onClick)="confirm()">{{ 'REGISTRATION.OCCUPATION.DELETE.YES' | translate }}</tc-button>
+  <tc-button color="gray" size="lg"
+             [disabled]="deleting"
+             (onClick)="cancel()">{{ 'REGISTRATION.OCCUPATION.DELETE.NO' | translate }}</tc-button>
 </div>
 

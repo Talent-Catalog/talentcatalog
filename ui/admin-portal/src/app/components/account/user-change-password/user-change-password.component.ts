@@ -1,7 +1,24 @@
+/*
+ * Copyright (c) 2024 Talent Catalog.
+ *
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see https://www.gnu.org/licenses/.
+ */
+
 import {Component, OnInit} from '@angular/core';
-import {FormBuilder, FormGroup, Validators} from "@angular/forms";
+import {UntypedFormBuilder, UntypedFormGroup, Validators} from "@angular/forms";
 import {UserService} from "../../../services/user.service";
 import {ActivatedRoute, Router} from "@angular/router";
+import {environment} from "../../../../environments/environment";
 
 @Component({
   selector: 'app-user-change-password',
@@ -14,17 +31,21 @@ export class UserChangePasswordComponent implements OnInit {
   reset: boolean;
   error: any;
   tokenInvalid: boolean;
-  changePasswordForm: FormGroup;
+  changePasswordForm: UntypedFormGroup;
   updated: boolean;
   token: string;
 
-  constructor(private fb: FormBuilder,
+  backgroundImage: string;
+
+  constructor(private fb: UntypedFormBuilder,
               private userService: UserService,
               private router: Router,
               private route: ActivatedRoute) {
   }
 
   ngOnInit(): void {
+    this.backgroundImage = `url(${environment.assetBaseUrl}/assets/images/login-splash-v2.2.1.png)`;
+
     this.loading = false;
     this.reset = false;
     this.error = null;

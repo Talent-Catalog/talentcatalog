@@ -1,5 +1,5 @@
 <!--
-  ~ Copyright (c) 2021 Talent Beyond Boundaries.
+  ~ Copyright (c) 2024 Talent Catalog.
   ~
   ~ This program is free software: you can redistribute it and/or modify it under
   ~ the terms of the GNU Affero General Public License as published by the Free
@@ -16,7 +16,7 @@
 
 <div class="container">
 
-  <app-loading [loading]="loading"></app-loading>
+  <tc-loading [loading]="loading"></tc-loading>
 
   <!-- REVIEW -->
   <ng-container *ngIf="!experienceFormOpen">
@@ -30,15 +30,15 @@
           <p class="text-danger warning-width mb-0" *ngIf="occupation.occupation.id === 0">
             {{ 'ERROR.UNKNOWN_OCCUPATION' | translate }}
           </p>
-          <button class="btn btn-outline-primary d-none d-md-block"
-                  (click)="addExperience(occupation)">
+          <tc-button type="outline" class="d-none d-md-block"
+                  (onClick)="addExperience(occupation)">
             {{ 'REGISTRATION.EXPERIENCE.BUTTON.ADD' | translate }} *
-          </button>
+          </tc-button>
         </div>
 
-        <div class="card alert alert-danger" *ngIf="experiencesByCandidateOccupation[occupation.id]?.length===0">
+        <tc-alert [showIcon]=false *ngIf="experiencesByCandidateOccupation[occupation.id]?.length===0" class="mx-4">
           {{ 'ERROR.MISSING_WORK_EXPERIENCE' | translate }}
-        </div>
+        </tc-alert>
         <ng-container *ngFor="let experience of experiencesByCandidateOccupation[occupation.id]; let i = index;">
           <div class="card">
             <app-candidate-job-experience-card [experience]="experience"
@@ -52,10 +52,10 @@
         </ng-container>
 
         <div class="text-center my-4 d-md-none">
-          <button class="btn btn-outline-primary"
-                  (click)="addExperience(occupation)">
+          <tc-button type="outline"
+                  (onClick)="addExperience(occupation)">
             {{ 'REGISTRATION.EXPERIENCE.BUTTON.ADD' | translate }} *
-          </button>
+          </tc-button>
         </div>
 
       </div>

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -16,9 +16,9 @@
 
 package org.tctalent.server.api.admin;
 
-import com.amazonaws.services.s3.model.S3ObjectSummary;
 import com.google.api.services.drive.model.FileList;
-import java.io.File;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.sql.Connection;
@@ -34,104 +34,149 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.springframework.batch.core.Job;
+import org.springframework.batch.item.ItemProcessor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.tctalent.server.batchjob.candidate.CandidateBatchJobFactory;
+import org.tctalent.server.batchjob.candidate.CandidateBatchJobFactory.CandidateBatchJobBuilder;
+import org.tctalent.server.casi.application.providers.linkedin.LinkedInService;
 import org.tctalent.server.configuration.GoogleDriveConfig;
 import org.tctalent.server.configuration.SalesforceConfig;
+import org.tctalent.server.exception.NoSuchObjectException;
+import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.model.db.AttachmentType;
 import org.tctalent.server.model.db.Candidate;
-import org.tctalent.server.model.db.CandidateAttachment;
 import org.tctalent.server.model.db.CandidateNote;
+import org.tctalent.server.model.db.CandidateOpportunity;
 import org.tctalent.server.model.db.CandidateStatus;
 import org.tctalent.server.model.db.EducationType;
 import org.tctalent.server.model.db.Gender;
+import org.tctalent.server.model.db.JobChat;
 import org.tctalent.server.model.db.NoteType;
+import org.tctalent.server.model.db.PartnerImpl;
 import org.tctalent.server.model.db.SalesforceJobOpp;
 import org.tctalent.server.model.db.SavedList;
+import org.tctalent.server.model.db.SavedSearch;
 import org.tctalent.server.model.db.Status;
 import org.tctalent.server.model.db.User;
+import org.tctalent.server.model.db.partner.Partner;
 import org.tctalent.server.model.sf.Contact;
-import org.tctalent.server.repository.db.CandidateAttachmentRepository;
 import org.tctalent.server.repository.db.CandidateNoteRepository;
+import org.tctalent.server.repository.db.CandidateOpportunityRepository;
 import org.tctalent.server.repository.db.CandidateRepository;
+import org.tctalent.server.repository.db.ChatPostRepository;
+import org.tctalent.server.repository.db.JobChatRepository;
+import org.tctalent.server.repository.db.JobChatUserRepository;
+import org.tctalent.server.repository.db.PartnerRepository;
+import org.tctalent.server.repository.db.SalesforceJobOppRepository;
 import org.tctalent.server.repository.db.SavedListRepository;
 import org.tctalent.server.repository.db.SavedSearchRepository;
+import org.tctalent.server.request.candidate.SavedListGetRequest;
+import org.tctalent.server.request.candidate.SearchCandidateRequest;
 import org.tctalent.server.request.job.SearchJobRequest;
 import org.tctalent.server.request.job.UpdateJobRequest;
+import org.tctalent.server.response.DuolingoCouponResponse;
+import org.tctalent.server.response.DuolingoDashboardResponse;
+import org.tctalent.server.response.DuolingoVerifyScoreResponse;
 import org.tctalent.server.security.AuthService;
+import org.tctalent.server.service.api.TcApiService;
+import org.tctalent.server.service.db.BackgroundProcessingService;
+import org.tctalent.server.service.db.BatchJobService;
+import org.tctalent.server.service.db.CandidateOppBackgroundProcessingService;
 import org.tctalent.server.service.db.CandidateOpportunityService;
 import org.tctalent.server.service.db.CandidateService;
 import org.tctalent.server.service.db.CountryService;
 import org.tctalent.server.service.db.DataSharingService;
+import org.tctalent.server.service.db.DuolingoApiService;
+import org.tctalent.server.service.db.DuolingoCouponService;
 import org.tctalent.server.service.db.FileSystemService;
-import org.tctalent.server.service.db.JobChatService;
 import org.tctalent.server.service.db.JobService;
 import org.tctalent.server.service.db.LanguageService;
+import org.tctalent.server.service.db.NotificationService;
+import org.tctalent.server.service.db.PartnerService;
 import org.tctalent.server.service.db.PopulateElasticsearchService;
-import org.tctalent.server.service.db.SalesforceJobOppService;
 import org.tctalent.server.service.db.SalesforceService;
 import org.tctalent.server.service.db.SavedListService;
 import org.tctalent.server.service.db.SavedSearchService;
-import org.tctalent.server.service.db.aws.S3ResourceHelper;
+import org.tctalent.server.service.db.UserService;
+import org.tctalent.server.service.db.cache.CacheService;
+import org.tctalent.server.storage.TranslationMigrationService;
 import org.tctalent.server.util.filesystem.GoogleFileSystemDrive;
 import org.tctalent.server.util.filesystem.GoogleFileSystemFile;
 import org.tctalent.server.util.filesystem.GoogleFileSystemFolder;
-import org.tctalent.server.util.textExtract.TextExtractHelper;
 
 @RestController
 @RequestMapping("/api/admin/system")
+@Slf4j
 public class SystemAdminApi {
-
-    private static final Logger log = LoggerFactory.getLogger(SystemAdminApi.class);
+    final static String DATE_FORMAT = "dd-MM-yyyy";
 
     private final AuthService authService;
-    final static String DATE_FORMAT = "dd-MM-yyyy";
 
     private final DataSharingService dataSharingService;
 
-    private final CandidateAttachmentRepository candidateAttachmentRepository;
+    private final CandidateBatchJobFactory candidateBatchJobFactory;
     private final CandidateNoteRepository candidateNoteRepository;
     private final CandidateRepository candidateRepository;
+    private final CandidateOpportunityRepository candidateOpportunityRepository;
     private final CandidateOpportunityService candidateOpportunityService;
     private final CandidateService candidateService;
     private final CountryService countryService;
     private final FileSystemService fileSystemService;
     private final JobService jobService;
-    private final JobChatService jobChatService;
     private final LanguageService languageService;
+    private final NotificationService notificationService;
     private final PopulateElasticsearchService populateElasticsearchService;
     private final SalesforceService salesforceService;
     private final SalesforceConfig salesforceConfig;
-    private final SalesforceJobOppService salesforceJobOppService;
     private final SavedListRepository savedListRepository;
+    private final SalesforceJobOppRepository salesforceJobOppRepository;
     private final SavedListService savedListService;
     private final SavedSearchRepository savedSearchRepository;
-    private final S3ResourceHelper s3ResourceHelper;
+    private final JobChatRepository jobChatRepository;
+    private final JobChatUserRepository jobChatUserRepository;
+    private final ChatPostRepository chatPostRepository;
+    private final PartnerRepository partnerRepository;
+    private final CacheService cacheService;
+    private final TranslationMigrationService translationMigrationService;
 
     private final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 
-    private final Map<Integer, Integer> countryForGeneralCountry;
+    final Map<Integer, Integer> countryForGeneralCountry;
 
     private final GoogleDriveConfig googleDriveConfig;
+    private final BackgroundProcessingService backgroundProcessingService;
+    private final BatchJobService batchJobService;
+    private final SavedSearchService savedSearchService;
+    private final PartnerService partnerService;
+    private final CandidateOppBackgroundProcessingService candidateOppBackgroundProcessingService;
+    private final TcApiService tcApiService;
+    private final LinkedInService linkedInService;
+    private final UserService userService;
 
     @Value("${spring.datasource.url}")
     private String targetJdbcUrl;
@@ -154,52 +199,379 @@ public class SystemAdminApi {
     @Value("${google.drive.listFoldersRootId}")
     private String listFoldersRootId;
 
+    @PersistenceContext
+    private EntityManager entityManager;
+
+    private final DuolingoApiService duolingoApiService;
+    private final DuolingoCouponService duolingoCouponService;
+
     @Autowired
     public SystemAdminApi(
-            DataSharingService dataSharingService,
-            AuthService authService,
-            CandidateAttachmentRepository candidateAttachmentRepository,
-            CandidateNoteRepository candidateNoteRepository,
-            CandidateRepository candidateRepository,
-            CandidateOpportunityService candidateOpportunityService, CandidateService candidateService,
-            CountryService countryService,
-            FileSystemService fileSystemService,
-            JobService jobService, JobChatService jobChatService, LanguageService languageService,
-            PopulateElasticsearchService populateElasticsearchService,
-            SalesforceService salesforceService,
-            SalesforceConfig salesforceConfig, SalesforceJobOppService salesforceJobOppService, SavedListService savedListService,
-            SavedListRepository savedListRepository, SavedSearchService savedSearchService,
-            SavedSearchRepository savedSearchRepository, S3ResourceHelper s3ResourceHelper,
-            GoogleDriveConfig googleDriveConfig) {
+        DataSharingService dataSharingService,
+        AuthService authService,
+        PartnerRepository partnerRepository,
+        CandidateBatchJobFactory candidateBatchJobFactory,
+        CandidateNoteRepository candidateNoteRepository,
+        CandidateRepository candidateRepository,
+        CandidateOpportunityRepository candidateOpportunityRepository,
+        CandidateOpportunityService candidateOpportunityService,
+        CandidateService candidateService,
+        CountryService countryService,
+        FileSystemService fileSystemService,
+        JobService jobService, LanguageService languageService,
+        NotificationService notificationService,
+        PopulateElasticsearchService populateElasticsearchService,
+        SalesforceService salesforceService,
+        SalesforceConfig salesforceConfig,
+        SalesforceJobOppRepository salesforceJobOppRepository,
+        SavedListService savedListService,
+        SavedListRepository savedListRepository,
+        JobChatRepository jobChatRepository,
+        JobChatUserRepository jobChatUserRepository,
+        ChatPostRepository chatPostRepository,
+        SavedSearchRepository savedSearchRepository,
+        TranslationMigrationService translationMigrationService,
+        GoogleDriveConfig googleDriveConfig,
+        CacheService cacheService,
+        BackgroundProcessingService backgroundProcessingService,
+        BatchJobService batchJobService,
+        SavedSearchService savedSearchService,
+        PartnerService partnerService,
+        CandidateOppBackgroundProcessingService candidateOppBackgroundProcessingService,
+        DuolingoApiService duolingoApiService,
+        DuolingoCouponService duolingoCouponService,
+        TcApiService tcApiService,
+        LinkedInService linkedInService,
+        UserService userService
+    ) {
         this.dataSharingService = dataSharingService;
         this.authService = authService;
-        this.candidateAttachmentRepository = candidateAttachmentRepository;
+        this.candidateBatchJobFactory = candidateBatchJobFactory;
         this.candidateNoteRepository = candidateNoteRepository;
         this.candidateRepository = candidateRepository;
+        this.candidateOpportunityRepository = candidateOpportunityRepository;
         this.candidateOpportunityService = candidateOpportunityService;
         this.candidateService = candidateService;
         this.countryService = countryService;
         this.fileSystemService = fileSystemService;
         this.jobService = jobService;
-        this.jobChatService = jobChatService;
         this.languageService = languageService;
+        this.notificationService = notificationService;
         this.populateElasticsearchService = populateElasticsearchService;
         this.salesforceService = salesforceService;
         this.salesforceConfig = salesforceConfig;
-        this.salesforceJobOppService = salesforceJobOppService;
         this.savedListRepository = savedListRepository;
+        this.salesforceJobOppRepository = salesforceJobOppRepository;
         this.savedListService = savedListService;
         this.savedSearchRepository = savedSearchRepository;
-        this.s3ResourceHelper = s3ResourceHelper;
+        this.jobChatRepository = jobChatRepository;
+        this.jobChatUserRepository = jobChatUserRepository;
+        this.chatPostRepository = chatPostRepository;
+        this.translationMigrationService = translationMigrationService;
         this.googleDriveConfig = googleDriveConfig;
+        this.cacheService = cacheService;
+        this.backgroundProcessingService = backgroundProcessingService;
+        this.batchJobService = batchJobService;
+        this.savedSearchService = savedSearchService;
+        this.partnerService = partnerService;
+        this.partnerRepository = partnerRepository;
+        this.candidateOppBackgroundProcessingService = candidateOppBackgroundProcessingService;
         countryForGeneralCountry = getExtraCountryMappings();
+        this.duolingoApiService = duolingoApiService;
+        this.duolingoCouponService = duolingoCouponService;
+        this.tcApiService = tcApiService;
+        this.linkedInService = linkedInService;
+        this.userService = userService;
     }
 
+    /**
+     * One-off relay migration endpoint for copying translation files between buckets that are
+     * accessed by different AWS identities/accounts. This performs a download (legacy source)
+     * followed by upload (configured destination), rather than S3 server-side copy.
+     *
+     * @param sourceBucket Source S3 bucket name (i.e. legacy TBB bucket)
+     * @param destinationBucket Destination S3 bucket name (i.e. GRN/OPC translations bucket)
+     * @param sourcePrefix Optional source prefix/folder. Defaults to {@code translations}.
+     * @param destinationPrefix Optional destination prefix/folder. Defaults to {@code translations}.
+     * @return Status map including copy mode and number of copied objects
+     */
+    @GetMapping("migrate-translations")
+    public Map<String, Object> migrateTranslations(
+        @RequestParam("sourceBucket") String sourceBucket,
+        @RequestParam("destinationBucket") String destinationBucket,
+        @RequestParam(value = "sourcePrefix", required = false) String sourcePrefix,
+        @RequestParam(value = "destinationPrefix", required = false) String destinationPrefix) {
 
-    @GetMapping("notifyOfChatsWithNewPosts")
+        String normalizedSourcePrefix = normalizeS3Prefix(
+            StringUtils.isBlank(sourcePrefix) ? "translations" : sourcePrefix);
+        String normalizedDestinationPrefix = normalizeS3Prefix(
+            StringUtils.isBlank(destinationPrefix) ? "translations" : destinationPrefix);
+
+        LogBuilder.builder(log)
+            .user(authService.getLoggedInUser())
+            .action("MigrateTranslations")
+            .message(sourceBucket + "/" + normalizedSourcePrefix
+                + " -> " + destinationBucket + "/" + normalizedDestinationPrefix)
+            .logInfo();
+
+        long startMs = System.currentTimeMillis();
+        int copiedCount = translationMigrationService.migrateBucketContents(
+            sourceBucket, normalizedSourcePrefix, destinationBucket, normalizedDestinationPrefix);
+        long durationMs = System.currentTimeMillis() - startMs;
+
+        LogBuilder.builder(log)
+            .user(authService.getLoggedInUser())
+            .action("MigrateTranslations")
+            .message("Completed: " + copiedCount + " file(s) in " + durationMs + "ms")
+            .logInfo();
+
+        return Map.of(
+            "status", "success",
+            "mode", "relay-copy",
+            "copiedCount", copiedCount,
+            "durationMs", durationMs,
+            "sourceBucket", sourceBucket,
+            "sourcePrefix", normalizedSourcePrefix,
+            "destinationBucket", destinationBucket,
+            "destinationPrefix", normalizedDestinationPrefix
+        );
+    }
+
+    private String normalizeS3Prefix(String prefix) {
+        return prefix.endsWith("/") ? prefix : prefix + "/";
+    }
+
+    /**
+     * Clears the firstDpaSeenDate field for the partner with the given ID.
+     * @param partnerId The ID of the partner
+     */
+    @GetMapping("partner/clear-first-dpa-seen/{partnerId}")
+    public void clearFirstDpaSeen(@PathVariable("partnerId") Long partnerId) {
+        // Fetch the partner by ID
+        PartnerImpl partner = (PartnerImpl) partnerService.getPartner(partnerId);
+
+        // Clear the firstDpaSeenDate field
+        partner.setFirstDpaSeenDate(null);
+
+        // Save the updated partner back to the repository
+        partnerRepository.save(partner);
+    }
+
+    @GetMapping("set_candidate_text/cpu-{cpu}")
+    public ResponseEntity<String> setCandidateText(
+        @PathVariable("cpu") int cpu) throws Exception {
+        return setCandidateTextCommon("", 0, cpu);
+    }
+
+    @GetMapping("set_candidate_text/search-{sourceId}-cpu-{cpu}")
+    public ResponseEntity<String> setCandidateTextBySearch(
+        @PathVariable("sourceId") int sourceId,
+        @PathVariable("cpu") int cpu) throws Exception {
+        return setCandidateTextCommon("search", sourceId, cpu);
+    }
+
+    @GetMapping("set_candidate_text/list-{sourceId}-cpu-{cpu}")
+    public ResponseEntity<String> setCandidateTextByList(
+        @PathVariable("sourceId") int sourceId,
+        @PathVariable("cpu") int cpu) throws Exception {
+        return setCandidateTextCommon("list", sourceId, cpu);
+    }
+
+    private ResponseEntity<String> setCandidateTextCommon(
+        @PathVariable("candidateSource") String candidateSource,
+        @PathVariable("sourceId") int sourceId,
+        @PathVariable("cpu") int cpu) throws Exception {
+
+        ItemProcessor<Candidate, Candidate> candidateUpdateTextProcessor =
+            candidate -> {
+                candidate.updateText();
+                return candidate;
+            };
+
+        CandidateBatchJobBuilder jobBuilder;
+        if (candidateSource.equals("list")) {
+            SavedList savedList = savedListService.get(sourceId);
+            jobBuilder = candidateBatchJobFactory
+                .builder("candidateTextJob", savedList, candidateUpdateTextProcessor);
+        } else if (candidateSource.equals("search")) {
+            SavedSearch search = savedSearchService.getSavedSearch(sourceId);
+            jobBuilder = candidateBatchJobFactory
+                .builder("candidateTextJob", search, candidateUpdateTextProcessor);
+        } else {
+            //If no source is specified, generate a default search request which processes all
+            //candidates except deleted or withdrawn
+            SearchCandidateRequest request = new SearchCandidateRequest();
+            EnumSet<CandidateStatus> includedStatuses = EnumSet.complementOf(
+                EnumSet.of(CandidateStatus.deleted, CandidateStatus.withdrawn));
+            request.setStatuses(new ArrayList<>(includedStatuses));
+            jobBuilder = candidateBatchJobFactory
+                .builder("candidateTextJob", request, candidateUpdateTextProcessor);
+        }
+
+        Job candidateUpdateTextJob= jobBuilder
+            .percentageOfCpu(cpu)
+            .build();
+
+        String response = batchJobService.launchJob(candidateUpdateTextJob, false);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("set_public_ids")
+    public void setPublicIds() {
+        backgroundProcessingService.setCandidatePublicIds();
+        backgroundProcessingService.setPartnerPublicIds();
+        backgroundProcessingService.setSavedListPublicIds();
+        backgroundProcessingService.setSavedSearchPublicIds();
+    }
+
+    @GetMapping("run_api_migration")
+    public ResponseEntity<String> runApiMigration() {
+        String response = tcApiService.runApiMigration();
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("run_api_migration/list/{listId}")
+    public ResponseEntity<String> runApiMigrationByListId(@PathVariable("listId") long listId) {
+        String response = tcApiService.runApiMigrationByListId(listId);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("run_api_migration/{name}")
+    public ResponseEntity<String> runApiMigration(@PathVariable("name") String name) {
+        if (name == null || name.isBlank()) {
+            return ResponseEntity.badRequest().body("Migration name cannot be null or empty");
+        }
+
+        return switch (name.toLowerCase()) {
+            case "mongo" -> ResponseEntity.ok(tcApiService.runMongoMigration());
+            case "aurora" -> ResponseEntity.ok(tcApiService.runAuroraMigration());
+            default -> ResponseEntity.badRequest().body("Invalid migration name: " + name);
+        };
+    }
+
+    @GetMapping("list_api_migrations")
+    public ResponseEntity<String> listApiMigrations() {
+        String response = tcApiService.listApiMigrations();
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("stop_api_migration/{id}")
+    public ResponseEntity<String> stopApiMigration(@PathVariable("id") long id) {
+        String response = tcApiService.stopApiMigration(id);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("restart_api_migration/{id}")
+    public ResponseEntity<String> restartApiMigration(@PathVariable("id") long id) {
+        String response = tcApiService.restartApiMigration(id);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("fix_null_case_sfids")
+    public void fixNullCaseSfids() {
+        List<CandidateOpportunity> opps = candidateOpportunityRepository.findAllBySfIdIsNull();
+        for (CandidateOpportunity opp : opps) {
+            String sfid = candidateOpportunityService.fetchSalesforceId(opp);
+            if (sfid == null) {
+                LogBuilder.builder(log)
+                    .caseId(opp.getId())
+                    .user(authService.getLoggedInUser())
+                    .action("FixNullCaseSfids")
+                    .message("No Salesforce opp for case " + opp.getId())
+                    .logInfo();
+            } else {
+                opp.setSfId(sfid);
+                candidateOpportunityRepository.save(opp);
+                LogBuilder.builder(log)
+                    .caseId(opp.getId())
+                    .user(authService.getLoggedInUser())
+                    .action("FixNullCaseSfids")
+                    .message("Updated Sfid of case " + opp.getId())
+                    .logInfo();
+            }
+        }
+    }
+    /**
+     * Fetches Duolingo dashboard results based on optional date filters.
+     *
+     * @param minDateTime Optional start date and time in 'yyyy-MM-ddTHH:mm:ss' format.
+     * @param maxDateTime Optional end date and time in 'yyyy-MM-ddTHH:mm:ss' format.
+     * @return A list of duolingo dashboard results within the specified date range.
+     */
+    @GetMapping("duolingo/dashboard-results")
+    public List<DuolingoDashboardResponse> fetchDashboardResults(
+        @RequestParam(required = false) String minDateTime,
+        @RequestParam(required = false) String maxDateTime) {
+
+        // Parse the minDateTime and maxDateTime only if they are provided
+        LocalDateTime min = (minDateTime != null) ? LocalDateTime.parse(minDateTime) : null;
+        LocalDateTime max = (maxDateTime != null) ? LocalDateTime.parse(maxDateTime) : null;
+
+        // Pass the parsed min and max values to the service method
+        return duolingoApiService.getDashboardResults(min, max);
+    }
+
+    /**
+     * Verifies a Duolingo score using the provided certificate ID and birthdate.
+     *
+     * @param certificateId The ID of the certificate to verify.
+     * @param birthdate The birthdate of the certificate holder in 'yyyy-MM-dd' format.
+     * @return A response containing the score verification details.
+     */
+    @GetMapping("duolingo/verify-score")
+    public DuolingoVerifyScoreResponse verifyScore(
+        @RequestParam String certificateId,
+        @RequestParam String birthdate) {
+        return duolingoApiService.verifyScore(certificateId, birthdate);
+    }
+
+    /**
+     * Reassigns a new Duolingo coupon to a candidate and marks any previously assigned coupons as redeemed.
+     *
+     * @param candidateNumber The ID of the candidate to whom the new coupon will be assigned.
+     * @return A ResponseEntity containing the details of the newly assigned coupon.
+     * @throws NoSuchObjectException If the candidate or available coupons are not found.
+     */
+    @GetMapping("reassign-duolingo-coupon/{candidateNumber}")
+    public ResponseEntity<DuolingoCouponResponse> reassignDuolingoCoupon(@PathVariable("candidateNumber") String candidateNumber) {
+        try {
+            User user = authService.getLoggedInUser()
+                .orElseThrow(() -> new NoSuchObjectException("No authenticated user found"));
+            DuolingoCouponResponse response = duolingoCouponService.reassignProctoredCouponToCandidate(candidateNumber, user);
+            return ResponseEntity.ok(response);
+        } catch (NoSuchObjectException e) {
+            LogBuilder.builder(log)
+                .user(authService.getLoggedInUser())
+                .action("ReassignDuolingoCoupon")
+                .message("Failed to reassign coupon for candidate " + candidateNumber + ": " + e.getMessage())
+                .logError();
+            return ResponseEntity.badRequest().body(null);
+        }
+    }
+
+    @GetMapping("flush_user_cache")
+    public void flushUserCache() {
+        cacheService.flushUserCache();
+        LogBuilder.builder(log)
+            .user(authService.getLoggedInUser())
+            .action("FlushUserCache")
+            .message("User cache flushed")
+            .logInfo();
+    }
+
+    @GetMapping("notifyOfChatsWithNewUnreadPosts")
     public void notifyOfNewChatPosts() {
-        candidateOpportunityService.notifyOfChatsWithNewPosts();
+        notificationService.notifyUsersOfChatsWithNewUnreadPosts();
     }
+
+    /**
+     * This loads the last active stages of all cases from Salesforce.
+     */
+    @GetMapping("load_case_last_active_stages")
+    public void loadCandidateOpportunityLastActiveStages() {
+        candidateOpportunityService.loadCandidateOpportunityLastActiveStages();
+    }
+
 
     @GetMapping("create_employer_for_all_jobs")
     public void createEmployerForAllJobs() {
@@ -224,7 +596,12 @@ public class SystemAdminApi {
 
         //For each closed job opp, closed it again (with the same closed stage).
         //This will trigger the automatic closing of associated candidate opps.
-        log.info("Processing " + jobOpps.size() + " closed jobs");
+        LogBuilder.builder(log)
+            .user(authService.getLoggedInUser())
+            .action("CloseCandidateOpportunitiesForClosedJobs")
+            .message("Processing " + jobOpps.size() + " closed jobs")
+            .logInfo();
+
         int count = 0;
         for (SalesforceJobOpp jobOpp : jobOpps) {
             UpdateJobRequest updateJobRequest = new UpdateJobRequest();
@@ -232,35 +609,94 @@ public class SystemAdminApi {
             try {
                 jobService.updateJob(jobOpp.getId(), updateJobRequest);
             } catch (Exception e) {
-                log.warn("Exception thrown updating job " + jobOpp.getId(), e);
+                LogBuilder.builder(log)
+                    .user(authService.getLoggedInUser())
+                    .action("CloseCandidateOpportunitiesForClosedJobs")
+                    .message("Exception thrown updating job " + jobOpp.getId())
+                    .logWarn(e);
             }
             count++;
             if (count%20 == 0) {
-                log.info("Processed " + count);
+                LogBuilder.builder(log)
+                    .user(authService.getLoggedInUser())
+                    .action("CloseCandidateOpportunitiesForClosedJobs")
+                    .message("Processed " + count)
+                    .logInfo();
             }
         }
-        log.info("Checked that cases are closed for " + jobOpps.size() + " closed jobs");
+        LogBuilder.builder(log)
+            .user(authService.getLoggedInUser())
+            .action("CloseCandidateOpportunitiesForClosedJobs")
+            .message("Checked that cases are closed for " + jobOpps.size() + " closed jobs")
+            .logInfo();
     }
 
-    @GetMapping("load_candidate_ops")
-    public void loadCandidateOpportunities() {
-        //Get all job opps known to TC
-        List<SavedList> listsWithJobs = savedListService.findListsAssociatedWithJobs();
-
-        //Extract their distinct ids
-        String[] jobIds = listsWithJobs.stream()
-            .filter(sl -> sl.getSfJobOpp() != null)
-            .map(sl -> sl.getSfJobOpp().getSfId())
-            .distinct()
-            .toArray(String[]::new);
-        candidateOpportunityService.loadCandidateOpportunities(jobIds);
-    }
+  // This method was written for the initial migration of opps from SF to the TC. It may have some
+  // future utility so is only commented out for the time being, but it should only be used again
+  // advisedly and probably with some modification for the current purpose.
+//    @GetMapping("load_candidate_ops")
+//    public void loadCandidateOpportunities() {
+//        //Get all job opps known to TC
+//        List<SavedList> listsWithJobs = savedListService.findListsAssociatedWithJobs();
+//
+//        //Extract their distinct ids
+//        String[] jobIds = listsWithJobs.stream()
+//            .filter(sl -> sl.getSfJobOpp() != null)
+//            .map(sl -> sl.getSfJobOpp().getSfId())
+//            .distinct()
+//            .toArray(String[]::new);
+//        candidateOpportunityService.loadCandidateOpportunities(jobIds);
+//    }
 
     @GetMapping("sf-sync-open-jobs")
-    public String sfSyncOpenJobs() {
-        jobService.updateOpenJobs();
-        return "started";
+    ResponseEntity<?> sfSyncOpenJobs() {
+      try {
+        LogBuilder.builder(log)
+            .action("Sync Open Jobs From SF")
+            .message("Manually triggered")
+            .logInfo();
+
+        jobService.initiateOpenJobSyncFromSf();
+
+        return ResponseEntity.ok().build(); // Return 200 OK - front-end will display 'Done'
+      } catch(Exception e) {
+        LogBuilder.builder(log)
+            .action("Sync Open Jobs From SF")
+            .message("Manually triggered operation failed")
+            .logInfo();
+
+        // Return 500 Internal Server Error including error in body for display on frontend
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e);
+      }
     }
+
+  /**
+   * Manual trigger for method that updates TC Candidate Opportunities from their Salesforce
+   * equivalents.
+   * @return ResponseEntity indicating success or failure
+   */
+  @GetMapping("sf-sync-open-cases")
+  ResponseEntity<?> sfSyncOpenCases() {
+    try {
+      LogBuilder.builder(log)
+          .action("Sync Open Cases From SF")
+          .message("Manually triggered")
+          .logInfo();
+
+      candidateOppBackgroundProcessingService.initiateBackgroundCaseUpdate();
+
+      return ResponseEntity.ok().build(); // Return 200 OK - front-end will display 'Done'
+
+    } catch(Exception e) {
+      LogBuilder.builder(log)
+          .action("Sync Open Cases From SF")
+          .message("Manually triggered operation failed")
+          .logInfo();
+
+      // Return 500 Internal Server Error including error in body for display on frontend
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e);
+    }
+  }
 
     /**
      * Move candidate to the current candidate data drive.
@@ -285,11 +721,21 @@ public class SystemAdminApi {
 
         final Set<Candidate> candidates = savedList.getCandidates();
         int count = candidates.size();
-        log.info(count + " candidates to move");
+
+        LogBuilder.builder(log)
+            .user(authService.getLoggedInUser())
+            .action("MoveCandidatesDrive")
+            .message(count + " candidates to move")
+            .logInfo();
+
         for (Candidate candidate : candidates) {
             String folder = candidate.getFolderlink();
             if (folder == null) {
-                log.info("Candidate " + candidate.getCandidateNumber() + " has no folder");
+                LogBuilder.builder(log)
+                    .user(authService.getLoggedInUser())
+                    .action("MoveCandidatesDrive")
+                    .message("Candidate " + candidate.getCandidateNumber() + " has no folder")
+                    .logInfo();
             } else {
                 GoogleFileSystemFolder candidateFolder = new GoogleFileSystemFolder(folder);
                 try {
@@ -297,17 +743,33 @@ public class SystemAdminApi {
                         fileSystemService.getDriveFromEntity(candidateFolder);
                     if (!googleDriveConfig.getCandidateDataDriveId().equals(currentDrive.getId())) {
                         doMoveCandidate(candidate.getCandidateNumber());
-                        log.info("Moved candidate " + candidate.getCandidateNumber());
+                        LogBuilder.builder(log)
+                            .user(authService.getLoggedInUser())
+                            .action("MoveCandidatesDrive")
+                            .message("Moved candidate " + candidate.getCandidateNumber())
+                            .logInfo();
                     } else {
-                        log.info("Candidate " + candidate.getCandidateNumber() + " already moved");
+                        LogBuilder.builder(log)
+                            .user(authService.getLoggedInUser())
+                            .action("MoveCandidatesDrive")
+                            .message("Candidate " + candidate.getCandidateNumber() + " already moved")
+                            .logInfo();
                     }
                 } catch (Exception ex) {
-                    log.error("Candidate " + candidate.getCandidateNumber() + " processing error: ", ex);
+                    LogBuilder.builder(log)
+                        .user(authService.getLoggedInUser())
+                        .action("MoveCandidatesDrive")
+                        .message("Candidate " + candidate.getCandidateNumber() + " processing error: ")
+                        .logError(ex);
                 }
             }
             count--;
             if (count%100 == 0) {
-                log.info(count + " candidates still to move");
+                LogBuilder.builder(log)
+                    .user(authService.getLoggedInUser())
+                    .action("MoveCandidatesDrive")
+                    .message(count + " candidates still to move")
+                    .logInfo();
             }
         }
     }
@@ -393,7 +855,12 @@ public class SystemAdminApi {
 
     //    @GetMapping("jd-folders-viewable")
     public String makeJobDescriptionFoldersViewable() throws GeneralSecurityException, IOException {
-        log.info("Making jd folders viewable. About to get folders.");
+        LogBuilder.builder(log)
+            .user(authService.getLoggedInUser())
+            .action("MakeJobDescriptionFoldersViewable")
+            .message("About to get folders")
+            .logInfo();
+
         String nextPageToken = null;
         int count = 0;
         do {
@@ -413,7 +880,13 @@ public class SystemAdminApi {
             nextPageToken = result.getNextPageToken();
             // Looping over folders
             int size = folders.size();
-            log.info("Got " + size + " ID folders. About to loop through.");
+
+            LogBuilder.builder(log)
+                .user(authService.getLoggedInUser())
+                .action("MakeJobDescriptionFoldersViewable")
+                .message("Got " + size + " ID folders. About to loop through.")
+                .logInfo();
+
             for(com.google.api.services.drive.model.File folder: folders) {
 
                 String folderId = folder.getId();
@@ -453,18 +926,28 @@ public class SystemAdminApi {
                         if (name.equals("JobDescription")) {
                             try {
                                 fileSystemService.publishFile(gsf);
-                                log.info(
-                                    "List " + folder.getName() + ": Made JobDescription viewable");
+                                LogBuilder.builder(log)
+                                    .user(authService.getLoggedInUser())
+                                    .action("MakeJobDescriptionFoldersViewable")
+                                    .message("List " + folder.getName() + ": Made JobDescription viewable")
+                                    .logInfo();
                             } catch (Exception ex) {
-                                log.error(
-                                    "List " + folder.getName() + ": Failed to make JobDescription viewable");
+                                LogBuilder.builder(log)
+                                    .user(authService.getLoggedInUser())
+                                    .action("MakeJobDescriptionFoldersViewable")
+                                    .message("List " + folder.getName() + ": Failed to make JobDescription viewable")
+                                    .logError(ex);
                             }
                         }
                     }
                 }
 
                 if (count%100 == 0) {
-                    log.info("Folders processed:" + count);
+                    LogBuilder.builder(log)
+                        .user(authService.getLoggedInUser())
+                        .action("MakeJobDescriptionFoldersViewable")
+                        .message("Folders processed:" + count)
+                        .logInfo();
                 }
                 count++;
             }
@@ -472,13 +955,23 @@ public class SystemAdminApi {
             nextPageToken != null
         );
 
-        log.info("Completed processing. Total: " + count);
+        LogBuilder.builder(log)
+            .user(authService.getLoggedInUser())
+            .action("MakeJobDescriptionFoldersViewable")
+            .message("Completed processing. Total: " + count)
+            .logInfo();
+
         return "Done";
     }
 
 //    @GetMapping("namedlist-folders-viewable")
     public String makeNamedListFoldersViewable() throws GeneralSecurityException, IOException {
-        log.info("Making named list folders viewable. About to get folders.");
+        LogBuilder.builder(log)
+            .user(authService.getLoggedInUser())
+            .action("MakeNamedListFoldersViewable")
+            .message("About to get folders")
+            .logInfo();
+
         String nextPageToken = null;
         int count = 0;
         do {
@@ -498,7 +991,13 @@ public class SystemAdminApi {
             nextPageToken = result.getNextPageToken();
             // Looping over folders
             int size = folders.size();
-            log.info("Got " + size + " ID folders. About to loop through.");
+
+            LogBuilder.builder(log)
+                .user(authService.getLoggedInUser())
+                .action("MakeNamedListFoldersViewable")
+                .message("Got " + size + " ID folders. About to loop through.")
+                .logInfo();
+
             for(com.google.api.services.drive.model.File folder: folders) {
 
                 String folderId = folder.getId();
@@ -516,18 +1015,30 @@ public class SystemAdminApi {
 
                 //Should only be one subfolder - the list name folder
                 if (subfolders.size() != 1) {
-                    log.warn("List " + folder.getName() + " has " + subfolders.size() + " subfolders");
+                    LogBuilder.builder(log)
+                        .user(authService.getLoggedInUser())
+                        .action("MakeNamedListFoldersViewable")
+                        .message("List " + folder.getName() + " has " + subfolders.size() + " subfolders")
+                        .logWarn();
                 }
                 for (com.google.api.services.drive.model.File subfolder : subfolders) {
                     GoogleFileSystemFile gsf = new GoogleFileSystemFile(
                         subfolder.getWebViewLink());
                     fileSystemService.publishFile(gsf);
                     final String name = subfolder.getName();
-                    log.info("List " + folder.getName() + ": Made " + name + " viewable");
+                    LogBuilder.builder(log)
+                        .user(authService.getLoggedInUser())
+                        .action("MakeNamedListFoldersViewable")
+                        .message("List " + folder.getName() + ": Made " + name + " viewable")
+                        .logInfo();
                 }
 
                 if (count%100 == 0) {
-                    log.info("Folders processed:" + count);
+                    LogBuilder.builder(log)
+                        .user(authService.getLoggedInUser())
+                        .action("MakeNamedListFoldersViewable")
+                        .message("Folders processed:" + count)
+                        .logInfo();
                 }
                 count++;
             }
@@ -535,13 +1046,23 @@ public class SystemAdminApi {
             nextPageToken != null
         );
 
-        log.info("Completed processing. Total: " + count);
+        LogBuilder.builder(log)
+            .user(authService.getLoggedInUser())
+            .action("MakeNamedListFoldersViewable")
+            .message("Completed processing. Total: " + count)
+            .logInfo();
+
         return "Done";
     }
 
 //    @GetMapping("rename-candidate-folders")
     public String renameCandidateFolders() throws GeneralSecurityException, IOException {
-        log.info("Starting candidate folder re-name. About to get folders.");
+        LogBuilder.builder(log)
+            .user(authService.getLoggedInUser())
+            .action("RenameCandidateFolders")
+            .message("Starting candidate folder re-name. About to get folders.")
+            .logInfo();
+
         Map<String, String> renames = new HashMap<>();
         renames.put("English", "Language");
         renames.put("Medicals", "Medical");
@@ -565,7 +1086,13 @@ public class SystemAdminApi {
             nextPageToken = result.getNextPageToken();
             // Looping over folders
             int size = folders.size();
-            log.info("Got " + size + " folders. About to loop through.");
+
+            LogBuilder.builder(log)
+                .user(authService.getLoggedInUser())
+                .action("RenameCandidateFolders")
+                .message("Got " + size + " folders. About to loop through.")
+                .logInfo();
+
             for(com.google.api.services.drive.model.File folder: folders) {
 
                 String folderId = folder.getId();
@@ -587,12 +1114,21 @@ public class SystemAdminApi {
                     if (newName != null) {
                         gsf.setName(newName);
                         fileSystemService.renameFile(gsf);
-                        log.info("Candidate " + folder.getName() + ": " + name + " --> " + newName);
+
+                        LogBuilder.builder(log)
+                            .user(authService.getLoggedInUser())
+                            .action("RenameCandidateFolders")
+                            .message("Candidate " + folder.getName() + ": " + name + " --> " + newName)
+                            .logInfo();
                     }
                 }
 
                 if (count%100 == 0) {
-                    log.info("Folders processed:" + count);
+                    LogBuilder.builder(log)
+                        .user(authService.getLoggedInUser())
+                        .action("RenameCandidateFolders")
+                        .message("Folders processed:" + count)
+                        .logInfo();
                 }
                 count++;
             }
@@ -600,95 +1136,131 @@ public class SystemAdminApi {
             nextPageToken != null
         );
 
-        log.info("Completed processing. Total: " + count);
+        LogBuilder.builder(log)
+            .user(authService.getLoggedInUser())
+            .action("RenameCandidateFolders")
+            .message("Completed processing. Total: " + count)
+            .logInfo();
+
         return "Done";
     }
 
     @GetMapping("updatesflinks")
     public String updateCandidateSalesforceLinks() throws GeneralSecurityException {
-        log.info("Searching Salesforce for candidate contact records");
+        LogBuilder.builder(log)
+            .user(authService.getLoggedInUser())
+            .action("UpdateCandidateSalesforceLinks")
+            .message("Searching Salesforce for candidate contact records")
+            .logInfo();
+
         List<Contact> contacts = salesforceService.findCandidateContacts();
-        log.info("Updating " + contacts.size() + " candidates");
+
+        LogBuilder.builder(log)
+            .user(authService.getLoggedInUser())
+            .action("UpdateCandidateSalesforceLinks")
+            .message("Updating " + contacts.size() + " candidates")
+            .logInfo();
+
         int count = 0;
         for (Contact contact : contacts) {
             final String candidateNumber = contact.getTbbId().toString();
             Candidate candidate = candidateRepository.findByCandidateNumber(candidateNumber);
             if (candidate == null) {
-                log.warn("No candidate found for TBBid " + candidateNumber
-                + " SF link " + contact.getUrl(salesforceConfig.getBaseLightningUrl()));
+                LogBuilder.builder(log)
+                    .user(authService.getLoggedInUser())
+                    .action("UpdateCandidateSalesforceLinks")
+                    .message("No candidate found for TBBid " + candidateNumber
+                        + " SF link " + contact.getUrl(salesforceConfig.getBaseLightningUrl()))
+                    .logWarn();
             } else {
                 candidate.setSflink(contact.getUrl(salesforceConfig.getBaseLightningUrl()));
                 candidateRepository.save(candidate);
             }
             count++;
             if (count%20 == 0) {
-                log.info("Processed " + count);
+                LogBuilder.builder(log)
+                    .user(authService.getLoggedInUser())
+                    .action("UpdateCandidateSalesforceLinks")
+                    .message("Processed " + count)
+                    .logInfo();
             }
         }
-        log.info("Done. Processed " + count);
+        LogBuilder.builder(log)
+            .user(authService.getLoggedInUser())
+            .action("UpdateCandidateSalesforceLinks")
+            .message("Done. Processed " + count)
+            .logInfo();
 
         return "done";
     }
 
     @GetMapping("sfcontactsupdate")
     public String updateContactsMatchingCondition(@RequestParam String q) throws GeneralSecurityException {
-        log.info("Searching Salesforce for contact records matching condition " + q);
+        LogBuilder.builder(log)
+            .user(authService.getLoggedInUser())
+            .action("UpdateContactsMatchingCondition")
+            .message("Searching Salesforce for contact records matching condition " + q)
+            .logInfo();
+
         List<Contact> contacts = salesforceService.findContacts(q);
-        log.info("Updating " + contacts.size() + " candidates");
+
+        LogBuilder.builder(log)
+            .user(authService.getLoggedInUser())
+            .action("UpdateContactsMatchingCondition")
+            .message("Updating " + contacts.size() + " candidates")
+            .logInfo();
+
         int count = 0;
         for (Contact contact : contacts) {
 
             final Long sfTbbId = contact.getTbbId();
             if (sfTbbId == null) {
-                log.warn("Contact is not a TBB candidate: " + contact.getUrl(salesforceConfig.getBaseLightningUrl()));
+                LogBuilder.builder(log)
+                    .user(authService.getLoggedInUser())
+                    .action("UpdateContactsMatchingCondition")
+                    .message("Contact is not a TBB candidate: " + contact.getUrl(salesforceConfig.getBaseLightningUrl()))
+                    .logWarn();
             } else {
                 final String candidateNumber = sfTbbId.toString();
                 Candidate candidate = candidateRepository.findByCandidateNumber(candidateNumber);
                 if (candidate == null) {
-                    log.warn("No candidate found for TBBid " + candidateNumber
-                            + " SF link " + contact.getUrl(salesforceConfig.getBaseLightningUrl()));
+                    LogBuilder.builder(log)
+                        .user(authService.getLoggedInUser())
+                        .action("UpdateContactsMatchingCondition")
+                        .message("No candidate found for TBBid " + candidateNumber
+                            + " SF link " + contact.getUrl(salesforceConfig.getBaseLightningUrl()))
+                        .logWarn();
                 } else {
                     try {
                         salesforceService.updateContact(candidate);
                     } catch (Exception ex) {
-                        log.warn("Problem updating candidate "
-                                + candidateNumber + ": " + ex.getMessage());
+                        LogBuilder.builder(log)
+                            .user(authService.getLoggedInUser())
+                            .action("UpdateContactsMatchingCondition")
+                            .message("Problem updating candidate "
+                                + candidateNumber + ": " + ex.getMessage())
+                            .logWarn();
                     }
                 }
             }
             count++;
             if (count%20 == 0) {
-                log.info("Processed " + count);
+                LogBuilder.builder(log)
+                    .user(authService.getLoggedInUser())
+                    .action("UpdateContactsMatchingCondition")
+                    .message("Processed " + count)
+                    .logInfo();
             }
         }
-        log.info("Done. Processed " + count);
+        LogBuilder.builder(log)
+            .user(authService.getLoggedInUser())
+            .action("UpdateContactsMatchingCondition")
+            .message("Done. Processed " + count)
+            .logInfo();
 
         return "done";
     }
 
-    @GetMapping("awsmetadata")
-    public String updateAwsFileTypes() {
-        List<S3ObjectSummary> objectSummaries = s3ResourceHelper.getObjectSummaries();
-        log.info("Got the object summaries. There is a total of: " + objectSummaries.size());
-        List<S3ObjectSummary> filteredSummaries = s3ResourceHelper.filterMigratedObjects(objectSummaries);
-        log.info("Filtered out the migrated objects. There is a total of: " + filteredSummaries.size());
-        int count = 0;
-        int success = 0;
-        for(S3ObjectSummary summary : filteredSummaries) {
-            try {
-                s3ResourceHelper.addObjectMetadata(summary);
-                success++;
-            } catch (Exception e) {
-                log.warn("Error adding metadata to object with key: " + summary.getKey(), e);
-            }
-            count++;
-            if (count%100 == 0) {
-                log.info("Processed " + count);
-            }
-        }
-        log.info("Finished processing. Success total of: " + success + " out of " + count);
-        return "done";
-    }
 
     //Remove after running. One off method. Login as System Admin user.
 //    @GetMapping("update-isocodes")
@@ -707,7 +1279,12 @@ public class SystemAdminApi {
     public String updateStatusesIneligible() {
         List<CandidateStatus> statuses = new ArrayList<>(EnumSet.of(CandidateStatus.pending, CandidateStatus.incomplete));
         List<Candidate> candidates = candidateRepository.findByStatuses(statuses);
-        log.info("Have all pending and incomplete candidates. There is a total of: " + candidates.size());
+        LogBuilder.builder(log)
+            .user(authService.getLoggedInUser())
+            .action("UpdateStatusesIneligible")
+            .message("Have all pending and incomplete candidates. There is a total of: " + candidates.size())
+            .logInfo();
+
         User loggedInUser = authService.getLoggedInUser().orElse(null);
         int count = 0;
         int success = 0;
@@ -725,25 +1302,47 @@ public class SystemAdminApi {
                         candidateNote.setAuditFields(loggedInUser);
                         candidateNoteRepository.save(candidateNote);
                     } catch (Exception e) {
-                        log.warn("Error creating note for candidate with candidate number: " + candidate.getCandidateNumber(), e);
+                        LogBuilder.builder(log)
+                            .user(authService.getLoggedInUser())
+                            .action("UpdateStatusesIneligible")
+                            .message("Error creating note for candidate with candidate number: " + candidate.getCandidateNumber())
+                            .logWarn(e);
                     }
                 }
                 success++;
             } catch (Exception e) {
-                log.warn("Error changing status for candidate with candidate number: " + candidate.getCandidateNumber(), e);
+                LogBuilder.builder(log)
+                    .user(authService.getLoggedInUser())
+                    .action("UpdateStatusesIneligible")
+                    .message("Error changing status for candidate with candidate number: " + candidate.getCandidateNumber())
+                    .logWarn(e);
             }
             count++;
             if (count%100 == 0) {
-                log.info("Processed " + count);
+                LogBuilder.builder(log)
+                    .user(authService.getLoggedInUser())
+                    .action("UpdateStatusesIneligible")
+                    .message("Processed " + count)
+                    .logInfo();
             }
         }
-        log.info("Finished processing. Success total of: " + success + " out of " + count);
+        LogBuilder.builder(log)
+            .user(authService.getLoggedInUser())
+            .action("UpdateStatusesIneligible")
+            .message("Finished processing. Success total of: " + success + " out of " + count)
+            .logInfo();
+
         return "Done. Now run esload to update elasticsearch.";
     }
 
     @GetMapping("google")
     public String migrateGoogleDriveFolders() throws IOException, GeneralSecurityException {
-        log.info("Starting google folder re-linking. About to get folders.");
+        LogBuilder.builder(log)
+            .user(authService.getLoggedInUser())
+            .action("MigrateGoogleDriveFolders")
+            .message("Starting google folder re-linking. About to get folders.")
+            .logInfo();
+
         String nextPageToken = null;
         int count = 0;
         do {
@@ -763,11 +1362,20 @@ public class SystemAdminApi {
             nextPageToken = result.getNextPageToken();
             // Looping over folders
             int size = folders.size();
-            log.info("Got " + size + " folders. About to loop through.");
+            LogBuilder.builder(log)
+                .user(authService.getLoggedInUser())
+                .action("MigrateGoogleDriveFolders")
+                .message("Got " + size + " folders. About to loop through.")
+                .logInfo();
+
             for(com.google.api.services.drive.model.File folder: folders) {
                 setCandidateFolderLink(folder);
                 if (count%100 == 0) {
-                    log.info("Folders processed:" + count);
+                    LogBuilder.builder(log)
+                        .user(authService.getLoggedInUser())
+                        .action("MigrateGoogleDriveFolders")
+                        .message("Folders processed:" + count)
+                        .logInfo();
                 }
                 count++;
             }
@@ -775,7 +1383,12 @@ public class SystemAdminApi {
            nextPageToken != null
         );
 
-        log.info("Completed processing. Total: " + count);
+        LogBuilder.builder(log)
+            .user(authService.getLoggedInUser())
+            .action("MigrateGoogleDriveFolders")
+            .message("Completed processing. Total: " + count)
+            .logInfo();
+
         return "done";
     }
 
@@ -789,7 +1402,11 @@ public class SystemAdminApi {
                 candidate.setFolderlink(folder.getWebViewLink());
                 candidateRepository.save(candidate);
             } else {
-                log.error("Can't find candidate with candidate number: " + cn + " " + folder.getName());
+                LogBuilder.builder(log)
+                    .user(authService.getLoggedInUser())
+                    .action("MigrateGoogleDriveFolders")
+                    .message("Can't find candidate with candidate number: " + cn + " " + folder.getName())
+                    .logError();
             }
         }
     }
@@ -826,7 +1443,11 @@ public class SystemAdminApi {
 
             Connection targetConn = DriverManager.getConnection(targetJdbcUrl, targetUser, targetPwd);
 
-            log.info("Migration data for candidates");
+            LogBuilder.builder(log)
+                .user(authService.getLoggedInUser())
+                .action("MigrateStatus")
+                .message("Migration data for candidates")
+                .logInfo();
 
             String updateSql = "update candidate set migration_status =  ? where candidate_number = ? ";
             String selectSql = "select user_id, u.status from  user_jobseeker j join user u on u.id = j.user_id";
@@ -841,22 +1462,45 @@ public class SystemAdminApi {
 
                 if (count%100 == 0) {
                     update.executeBatch();
-                    log.info("candidates - saving batch  " + count);
+                    LogBuilder.builder(log)
+                        .user(authService.getLoggedInUser())
+                        .action("MigrateStatus")
+                        .message("candidates - saving batch  " + count)
+                        .logInfo();
                 }
 
                 count++;
             }
             update.executeBatch();
-            log.info("candidates - saving batch " + count);
-            log.info("Migration data for candidates");
+
+            LogBuilder.builder(log)
+                .user(authService.getLoggedInUser())
+                .action("MigrateStatus")
+                .message("candidates - saving batch " + count)
+                .logInfo();
+
+            LogBuilder.builder(log)
+                .user(authService.getLoggedInUser())
+                .action("MigrateStatus")
+                .message("Migration data for candidates")
+                .logInfo();
 
             updateSql = "update candidate set status =  'deleted' where migration_status = '0' ";
             update = targetConn.prepareStatement(updateSql);
             update.execute();
-            log.info("candidates - fix deleted " + count);
+
+            LogBuilder.builder(log)
+                .user(authService.getLoggedInUser())
+                .action("MigrateStatus")
+                .message("candidates - fix deleted " + count)
+                .logInfo();
 
         } catch (Exception e){
-            log.error("unable to migrate status data", e);
+            LogBuilder.builder(log)
+                .user(authService.getLoggedInUser())
+                .action("MigrateStatus")
+                .message("unable to migrate status data")
+                .logError(e);
         }
 
         return "done";
@@ -879,75 +1523,9 @@ public class SystemAdminApi {
             deleteExisting, createElastic, fromPage, toPage);
     }
 
-    @GetMapping("migrate/extract")
-    public void migrateExtract() {
-        TextExtractHelper textExtractHelper = new TextExtractHelper(candidateAttachmentRepository, s3ResourceHelper);
-        Long userId = 1L;
-        if (authService != null) {
-            User loggedInUser = authService.getLoggedInUser().orElse(null);
-            if (loggedInUser != null){
-                userId = loggedInUser.getId();
-            }
-        }
-
-        List<String> types = Arrays.asList("pdf", "docx", "doc", "txt");
-        extractTextFromMigratedFiles(textExtractHelper, types);
-        extractTextFromNewFiles(textExtractHelper, types);
-    }
-
 //    @GetMapping("es-to-db/unhcr-status")
     public void migrateUnhcrStatus() {
         populateElasticsearchService.populateCandidateFromElastic();
-    }
-
-    private void extractTextFromMigratedFiles(TextExtractHelper textExtractHelper, List<String> types) {
-        List<CandidateAttachment> files = candidateAttachmentRepository.findByFileTypesAndMigrated(types, true);
-        int count = 0;
-        int success = 0;
-        for(CandidateAttachment file : files) {
-            try {
-                String uniqueFilename = file.getLocation();
-                String destination = "candidate/migrated/" + uniqueFilename;
-                File srcFile = this.s3ResourceHelper.downloadFile(this.s3ResourceHelper.getS3Bucket(), destination);
-                String extractedText = textExtractHelper.getTextExtractFromFile(srcFile, file.getFileType());
-                if(StringUtils.isNotBlank(extractedText)) {
-                    file.setTextExtract(extractedText);
-                    candidateAttachmentRepository.save(file);
-                    success++;
-                }
-            } catch (Exception e) {
-                log.error("Unable to extract text from file " + file.getLocation(), e.getMessage());
-            }
-            if (count%100 == 0) {
-                log.info(count + " new files processed, with " + success + " successfully extracted text.");
-            }
-            count++;
-        }
-    }
-
-    private void extractTextFromNewFiles(TextExtractHelper textExtractHelper, List<String> types) {
-        List<CandidateAttachment> files = candidateAttachmentRepository.findByFileTypesAndMigrated(types, false);
-        int count = 0;
-        int success = 0;
-        for(CandidateAttachment file : files) {
-            try {
-                String uniqueFilename = file.getLocation();
-                String destination = "candidate/" + file.getCandidate().getCandidateNumber() + "/" + uniqueFilename;
-                File srcFile = this.s3ResourceHelper.downloadFile(this.s3ResourceHelper.getS3Bucket(), destination);
-                String extractedText = textExtractHelper.getTextExtractFromFile(srcFile, file.getFileType());
-                if (StringUtils.isNotBlank(extractedText)) {
-                    file.setTextExtract(extractedText);
-                    candidateAttachmentRepository.save(file);
-                    success++;
-                }
-            } catch (Exception e) {
-                log.error("Unable to extract text from new file " + file.getLocation(), e.getMessage());
-            }
-            if (count%100 == 0) {
-                log.info(count + " new files processed, with " + success + " successfully extracted text.");
-            }
-            count++;
-        }
     }
 
 //    @GetMapping("migrate/survey")
@@ -966,7 +1544,11 @@ public class SystemAdminApi {
 
             Connection targetConn = DriverManager.getConnection(targetJdbcUrl, targetUser, targetPwd);
 
-            log.info("Migration survey data for candidates");
+            LogBuilder.builder(log)
+                .user(authService.getLoggedInUser())
+                .action("MigrateSurvey")
+                .message("Migration survey data for candidates")
+                .logInfo();
 
             String updateSql = "update candidate set survey_type_id = ?, " +
                     " survey_comment = ? where candidate_number = ?";
@@ -1012,17 +1594,35 @@ public class SystemAdminApi {
 
                 if (count%100 == 0) {
                     update.executeBatch();
-                    log.info("candidates - saving batch  " + count);
+                    LogBuilder.builder(log)
+                        .user(authService.getLoggedInUser())
+                        .action("MigrateSurvey")
+                        .message("candidates - saving batch  " + count)
+                        .logInfo();
                 }
 
                 count++;
             }
             update.executeBatch();
-            log.info("candidates - saving batch " + count);
-            log.info("Migration survey data for candidates");
+
+            LogBuilder.builder(log)
+                .user(authService.getLoggedInUser())
+                .action("MigrateSurvey")
+                .message("candidates - saving batch " + count)
+                .logInfo();
+
+            LogBuilder.builder(log)
+                .user(authService.getLoggedInUser())
+                .action("MigrateSurvey")
+                .message("Migration survey data for candidates")
+                .logInfo();
 
         } catch (Exception e){
-            log.error("unable to migrate survey data", e);
+            LogBuilder.builder(log)
+                .user(authService.getLoggedInUser())
+                .action("MigrateSurvey")
+                .message("unable to migrate survey data")
+                .logError(e);
         }
 
         return "done";
@@ -1045,7 +1645,12 @@ public class SystemAdminApi {
 
             Connection targetConn = DriverManager.getConnection(targetJdbcUrl, targetUser, targetPwd);
 
-            log.info("Preparing translations insert");
+            LogBuilder.builder(log)
+                .user(authService.getLoggedInUser())
+                .action("Migrate")
+                .message("Preparing translations insert")
+                .logInfo();
+
             PreparedStatement translationInsert = targetConn.prepareStatement("insert into translation (object_id, object_type, language, value, created_by, created_date) values (?, ?, ?, ?, ?, ?)");
 
             migrateFormOption(targetConn, sourceStmt, translationInsert, userId, "country", "country", false);
@@ -1063,7 +1668,12 @@ public class SystemAdminApi {
 
             migrateCandidates(targetConn, sourceStmt);
 
-            log.info("loading candidate ids");
+            LogBuilder.builder(log)
+                .user(authService.getLoggedInUser())
+                .action("Migrate")
+                .message("loading candidate ids")
+                .logInfo();
+
             Map<Long, Long> candidateIdsByUserId = loadCandidateIds(targetConn);
 
             migrateCandidateCertifications(targetConn, sourceStmt, candidateIdsByUserId);
@@ -1076,7 +1686,11 @@ public class SystemAdminApi {
             migrateCandidateSkills(targetConn, sourceStmt, candidateIdsByUserId);
 
         } catch (Exception e){
-            log.error("unable to migrate data", e);
+            LogBuilder.builder(log)
+                .user(authService.getLoggedInUser())
+                .action("Migrate")
+                .message("unable to migrate data")
+                .logError(e);
         }
 
         return "done";
@@ -1089,7 +1703,12 @@ public class SystemAdminApi {
                                    String tableName,
                                    String optionType,
                                    boolean hasLevel) throws SQLException {
-        log.info("Migration data for " + tableName);
+        LogBuilder.builder(log)
+            .user(authService.getLoggedInUser())
+            .action("Migrate")
+            .message("Migration data for " + tableName)
+            .logInfo();
+
         String insertSql = null;
         String selectSql = null;
         if (optionType == "education_level"){
@@ -1131,17 +1750,24 @@ public class SystemAdminApi {
             if (count%100 == 0) {
                 optionInsert.executeBatch();
                 translationInsert.executeBatch();
-                log.info(tableName + " - saving batch " + count);
+
+                LogBuilder.builder(log)
+                    .user(authService.getLoggedInUser())
+                    .action("Migrate")
+                    .message(tableName + " - saving batch " + count)
+                    .logInfo();
             }
 
             count++;
         }
         optionInsert.executeBatch();
         translationInsert.executeBatch();
-        log.info(tableName + " - saving batch " + count);
 
-
-
+        LogBuilder.builder(log)
+            .user(authService.getLoggedInUser())
+            .action("Migrate")
+            .message(tableName + " - saving batch " + count)
+            .logInfo();
     }
 
     private void addTranslation(PreparedStatement translationInsert,
@@ -1162,7 +1788,11 @@ public class SystemAdminApi {
 
     private void migrateUsers(Connection targetConn,
                               Statement sourceStmt) throws SQLException {
-        log.info("Migration data for users from user");
+        LogBuilder.builder(log)
+            .user(authService.getLoggedInUser())
+            .action("Migrate")
+            .message("Migration data for users from user")
+            .logInfo();
 
         String insertSql = "insert into users (id, username, first_name, last_name, email, role, status, password_enc, created_by, created_date, updated_date) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) on conflict (id) do nothing";
         String selectSql = "select u.id, username, j.first_name, j.last_name, email, status, password_hash, created_at, updated_at from user u join user_jobseeker j on j.user_id = u.id";
@@ -1186,18 +1816,31 @@ public class SystemAdminApi {
 
             if (count%100 == 0) {
                 insert.executeBatch();
-                log.info("users - saving batch " + count);
+                LogBuilder.builder(log)
+                    .user(authService.getLoggedInUser())
+                    .action("Migrate")
+                    .message("users - saving batch " + count)
+                    .logInfo();
             }
 
             count++;
         }
         insert.executeBatch();
-        log.info("users - saving batch " + count);
+
+        LogBuilder.builder(log)
+            .user(authService.getLoggedInUser())
+            .action("Migrate")
+            .message("users - saving batch " + count)
+            .logInfo();
     }
 
     private void migrateAdmins(Connection targetConn,
                               Statement sourceStmt) throws SQLException {
-        log.info("Migration data for users from admin");
+        LogBuilder.builder(log)
+            .user(authService.getLoggedInUser())
+            .action("Migrate")
+            .message("Migration data for admins from admin")
+            .logInfo();
 
         String insertSql = "insert into users (id, username, first_name, last_name, email, role, status, password_enc, created_by, created_date, updated_date) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) on conflict (id) do nothing";
         String selectSql = "select id, username, email, status, password_hash, created_at, updated_at from admin;";
@@ -1221,20 +1864,39 @@ public class SystemAdminApi {
 
             if (count%100 == 0) {
                 insert.executeBatch();
-                log.info("admins - saving batch " + count);
+
+                LogBuilder.builder(log)
+                    .user(authService.getLoggedInUser())
+                    .action("Migrate")
+                    .message("admins - saving batch " + count)
+                    .logInfo();
             }
 
             count++;
         }
         insert.executeBatch();
-        log.info("admins - saving batch " + count);
+
+        LogBuilder.builder(log)
+            .user(authService.getLoggedInUser())
+            .action("Migrate")
+            .message("admins - saving batch " + count)
+            .logInfo();
     }
 
     private void migrateCandidates(Connection targetConn,
                                    Statement sourceStmt) throws SQLException {
-        log.info("Migration data for candidates");
+        LogBuilder.builder(log)
+            .user(authService.getLoggedInUser())
+            .action("Migrate")
+            .message("Migration data for candidates")
+            .logInfo();
 
-        log.info("loading reference data");
+        LogBuilder.builder(log)
+            .user(authService.getLoggedInUser())
+            .action("Migrate")
+            .message("loading reference data")
+            .logInfo();
+
         Set<Long> countryIds = loadReferenceIds(targetConn, "country");
         Set<Long> nationalityIds = loadReferenceIds(targetConn, "nationality");
         Set<Long> eduLevelIds = loadReferenceIds(targetConn, "education_level");
@@ -1289,19 +1951,35 @@ public class SystemAdminApi {
 
             if (count%100 == 0) {
                 insert.executeBatch();
-                log.info("candidates - saving batch  " + count);
+
+                LogBuilder.builder(log)
+                    .user(authService.getLoggedInUser())
+                    .action("Migrate")
+                    .message("candidates - saving batch " + count)
+                    .logInfo();
             }
 
             count++;
         }
         insert.executeBatch();
-        log.info("candidates - saving batch " + count);
+
+        LogBuilder.builder(log)
+            .user(authService.getLoggedInUser())
+            .action("Migrate")
+            .message("candidates - saving batch " + count)
+            .logInfo();
     }
 
     private void migrateCandidateCertifications(Connection targetConn,
                                                 Statement sourceStmt,
                                                 Map<Long, Long> candidateIdsByUserId) throws SQLException {
-        log.info("Migration data for candidate certifications");
+
+        LogBuilder.builder(log)
+            .user(authService.getLoggedInUser())
+            .action("Migrate")
+            .message("Migration data for candidate certifications")
+            .logInfo();
+
         String insertSql = "insert into candidate_certification (id, candidate_id, name, institution, date_completed) values (?, ?, ?, ?, ?) on conflict (id) do nothing";
         String selectSql = "select id, user_id, certification_name, institution_name, date_of_receipt from user_jobseeker_certification order by user_id";
         PreparedStatement insert = targetConn.prepareStatement(insertSql);
@@ -1330,22 +2008,41 @@ public class SystemAdminApi {
 
                 if (count%100 == 0) {
                     insert.executeBatch();
-                    log.info("certificates - saving batch " + count);
+
+                    LogBuilder.builder(log)
+                        .user(authService.getLoggedInUser())
+                        .action("Migrate")
+                        .message("certificates - saving batch " + count)
+                        .logInfo();
                 }
 
                 count++;
             } else {
-                log.warn("skipping record - certifications: no candidate found for userId " + userId);
+                LogBuilder.builder(log)
+                    .user(authService.getLoggedInUser())
+                    .action("Migrate")
+                    .message("skipping record - certifications: no candidate found for userId " + userId)
+                    .logWarn();
             }
         }
         insert.executeBatch();
-        log.info("certificates - saving batch " + count);
+
+        LogBuilder.builder(log)
+            .user(authService.getLoggedInUser())
+            .action("Migrate")
+            .message("certificates - saving batch " + count)
+            .logInfo();
     }
 
     private void migrateCandidateLanguages(Connection targetConn,
                                            Statement sourceStmt,
                                            Map<Long, Long> candidateIdsByUserId) throws SQLException {
-        log.info("Migration data for candidate languages");
+
+        LogBuilder.builder(log)
+            .user(authService.getLoggedInUser())
+            .action("Migrate")
+            .message("Migration data for candidate languages")
+            .logInfo();
 
         Set<Long> languageIds = loadReferenceIds(targetConn, "language");
         Set<Long> languageLevelIds = loadReferenceIds(targetConn, "language_level");
@@ -1370,22 +2067,40 @@ public class SystemAdminApi {
 
                 if (count%100 == 0) {
                     insert.executeBatch();
-                    log.info("languages - saving batch " + count);
+
+                    LogBuilder.builder(log)
+                        .user(authService.getLoggedInUser())
+                        .action("Migrate")
+                        .message("languages - saving batch " + count)
+                        .logInfo();
                 }
 
                 count++;
             } else {
-                log.warn("skipping record - languages: no candidate found for userId " + userId );
+                LogBuilder.builder(log)
+                    .user(authService.getLoggedInUser())
+                    .action("Migrate")
+                    .message("skipping record - languages: no candidate found for userId " + userId)
+                    .logWarn();
             }
         }
         insert.executeBatch();
-        log.info("languages - saving batch " + count);
+
+        LogBuilder.builder(log)
+            .user(authService.getLoggedInUser())
+            .action("Migrate")
+            .message("languages - saving batch " + count)
+            .logInfo();
     }
 
     private void migrateCandidateEducations(Connection targetConn,
                                             Statement sourceStmt,
                                             Map<Long, Long> candidateIdsByUserId) throws SQLException {
-        log.info("Migration data for candidate educations");
+        LogBuilder.builder(log)
+            .user(authService.getLoggedInUser())
+            .action("Migrate")
+            .message("Migration data for candidate educations")
+            .logInfo();
 
         Set<Long> countryIds = loadReferenceIds(targetConn, "country");
 
@@ -1416,24 +2131,46 @@ public class SystemAdminApi {
 
                 if (count%100 == 0) {
                     insert.executeBatch();
-                    log.info("educations - saving batch " + count);
+
+                    LogBuilder.builder(log)
+                        .user(authService.getLoggedInUser())
+                        .action("Migrate")
+                        .message("educations - saving batch " + count)
+                        .logInfo();
                 }
 
                 count++;
             } else if (candidateId == null) {
-                log.warn("skipping record - educations: no candidate found for userId " + userId );
+                LogBuilder.builder(log)
+                    .user(authService.getLoggedInUser())
+                    .action("Migrate")
+                    .message("skipping record - educations: no candidate found for userId " + userId)
+                    .logWarn();
             } else {
-                log.warn("skipping record - educations: no country found for countryId " + countryId );
+                LogBuilder.builder(log)
+                    .user(authService.getLoggedInUser())
+                    .action("Migrate")
+                    .message("skipping record - educations: no country found for countryId " + countryId)
+                    .logWarn();
             }
         }
         insert.executeBatch();
-        log.info("educations - saving batch " + count);
+
+        LogBuilder.builder(log)
+            .user(authService.getLoggedInUser())
+            .action("Migrate")
+            .message("educations - saving batch " + count)
+            .logInfo();
     }
 
     private void migrateCandidateOccupations(Connection targetConn,
                                              Statement sourceStmt,
                                              Map<Long, Long> candidateIdsByUserId) throws SQLException {
-        log.info("Migration data for candidate occupations");
+        LogBuilder.builder(log)
+            .user(authService.getLoggedInUser())
+            .action("Migrate")
+            .message("Migration data for candidate occupations")
+            .logInfo();
 
         Set<Long> occupationIds = loadReferenceIds(targetConn, "occupation");
         Map<Long, String> otherOccupations = loadOtherReferenceIds(sourceStmt, "job_occupation");
@@ -1461,22 +2198,40 @@ public class SystemAdminApi {
 
                 if (count%100 == 0) {
                     insert.executeBatch();
-                    log.info("occupations - saving batch " + count);
+
+                    LogBuilder.builder(log)
+                        .user(authService.getLoggedInUser())
+                        .action("Migrate")
+                        .message("occupations - saving batch " + count)
+                        .logInfo();
                 }
 
                 count++;
             } else {
-                log.warn("skipping record - occupations: no candidate found for userId " + userId);
+                LogBuilder.builder(log)
+                    .user(authService.getLoggedInUser())
+                    .action("Migrate")
+                    .message("skipping record - occupations: no candidate found for userId " + userId)
+                    .logWarn();
             }
         }
         insert.executeBatch();
-        log.info("occupations - saving batch " + count);
+
+        LogBuilder.builder(log)
+            .user(authService.getLoggedInUser())
+            .action("Migrate")
+            .message("occupations - saving batch " + count)
+            .logInfo();
     }
 
     private void migrateCandidateExperiences(Connection targetConn,
                                              Statement sourceStmt,
                                              Map<Long, Long> candidateIdsByUserId) throws SQLException {
-        log.info("Migration data for candidate experiences");
+        LogBuilder.builder(log)
+            .user(authService.getLoggedInUser())
+            .action("Migrate")
+            .message("Migration data for candidate experiences")
+            .logInfo();
 
         Set<Long> countryIds = loadReferenceIds(targetConn, "country");
         Set<Long> occupationIds = loadReferenceIds(targetConn, "occupation");
@@ -1532,24 +2287,46 @@ public class SystemAdminApi {
 
                 if (count%100 == 0) {
                     insert.executeBatch();
-                    log.info("experiences - saving batch " + count);
+
+                    LogBuilder.builder(log)
+                        .user(authService.getLoggedInUser())
+                        .action("Migrate")
+                        .message("experiences - saving batch " + count)
+                        .logInfo();
                 }
 
                 count++;
             } else if (candidateId == null) {
-                log.warn("skipping record - experiences: no candidate found for userId " + userId);
+                LogBuilder.builder(log)
+                    .user(authService.getLoggedInUser())
+                    .action("Migrate")
+                    .message("skipping record - experiences: no candidate found for userId " + userId)
+                    .logWarn();
             } else {
-                log.warn("skipping record - experiences: no candidateOccupation found for candidateId " + candidateId + " and occupationId " + occupationId);
+                LogBuilder.builder(log)
+                    .user(authService.getLoggedInUser())
+                    .action("Migrate")
+                    .message("skipping record - experiences: no candidateOccupation found for candidateId " + candidateId + " and occupationId " + occupationId)
+                    .logWarn();
             }
         }
         insert.executeBatch();
-        log.info("experiences - saving batch " + count);
+
+        LogBuilder.builder(log)
+            .user(authService.getLoggedInUser())
+            .action("Migrate")
+            .message("experiences - saving batch " + count)
+            .logInfo();
     }
 
     private void migrateCandidateAdminNotes(Connection targetConn,
                                             Statement sourceStmt,
                                             Map<Long, Long> candidateIdsByUserId) throws SQLException {
-        log.info("Migration data for candidate admin notes");
+        LogBuilder.builder(log)
+            .user(authService.getLoggedInUser())
+            .action("Migrate")
+            .message("Migration data for candidate admin notes")
+            .logInfo();
 
         Set<Long> adminIds = loadAdminIds(targetConn);
 
@@ -1580,22 +2357,40 @@ public class SystemAdminApi {
 
                 if (count%100 == 0) {
                     insert.executeBatch();
-                    log.info("admin notes - saving batch " + count);
+
+                    LogBuilder.builder(log)
+                        .user(authService.getLoggedInUser())
+                        .action("Migrate")
+                        .message("admin notes - saving batch " + count)
+                        .logInfo();
                 }
 
                 count++;
             } else {
-                log.warn("skipping record - admin notes: no candidate found for userId " + userId);
+                LogBuilder.builder(log)
+                    .user(authService.getLoggedInUser())
+                    .action("Migrate")
+                    .message("skipping record - admin notes: no candidate found for userId " + userId)
+                    .logWarn();
             }
         }
         insert.executeBatch();
-        log.info("admin notes - saving batch " + count);
+
+        LogBuilder.builder(log)
+            .user(authService.getLoggedInUser())
+            .action("Migrate")
+            .message("admin notes - saving batch " + count)
+            .logInfo();
     }
 
     private void migrateCandidateLinks(Connection targetConn,
                                        Statement sourceStmt,
                                        Map<Long, Long> candidateIdsByUserId) throws SQLException {
-        log.info("Migration data for candidate attachment links");
+        LogBuilder.builder(log)
+            .user(authService.getLoggedInUser())
+            .action("Migrate")
+            .message("Migration data for candidate attachment links")
+            .logInfo();
 
         String insertSql = "insert into candidate_attachment (id, candidate_id, type, name, location, migrated, admin_only, created_date, created_by) values (?, ?, ?, ?, ?, ?, ?, ?, ?) on conflict (id) do nothing";
         String selectSql = "select id, user_id, name, link from user_jobseeker_link";
@@ -1620,17 +2415,30 @@ public class SystemAdminApi {
 
                 if (count%100 == 0) {
                     insert.executeBatch();
-                    log.info("links - saving batch " + count);
+
+                    LogBuilder.builder(log)
+                        .user(authService.getLoggedInUser())
+                        .action("Migrate")
+                        .message("attachment links - saving batch " + count)
+                        .logInfo();
                 }
 
                 count++;
             } else {
-                log.warn("skipping record - attachment links: no candidate found for userId " + userId);
+                LogBuilder.builder(log)
+                    .user(authService.getLoggedInUser())
+                    .action("Migrate")
+                    .message("skipping record - attachment links: no candidate found for userId " + userId)
+                    .logWarn();
             }
         }
         insert.executeBatch();
 
-        log.info("Migration data for candidate attachments");
+        LogBuilder.builder(log)
+            .user(authService.getLoggedInUser())
+            .action("Migrate")
+            .message("Migration data for candidate attachments")
+            .logInfo();
 
         Set<Long> adminIds = loadAdminIds(targetConn);
 
@@ -1662,22 +2470,40 @@ public class SystemAdminApi {
 
                 if (count%100 == 0) {
                     insert.executeBatch();
-                    log.info("links - saving batch " + count);
+
+                    LogBuilder.builder(log)
+                        .user(authService.getLoggedInUser())
+                        .action("Migrate")
+                        .message("attachment links - saving batch " + count)
+                        .logInfo();
                 }
 
                 count++;
             } else {
-                log.warn("skipping record - attachment links: no candidate found for userId " + userId);
+                LogBuilder.builder(log)
+                    .user(authService.getLoggedInUser())
+                    .action("Migrate")
+                    .message("skipping record - attachment links: no candidate found for userId " + userId)
+                    .logWarn();
             }
         }
         insert.executeBatch();
-        log.info("attachment links - saving batch " + count);
+
+        LogBuilder.builder(log)
+            .user(authService.getLoggedInUser())
+            .action("Migrate")
+            .message("attachment links - saving batch " + count)
+            .logInfo();
     }
 
     private void migrateCandidateSkills(Connection targetConn,
                                         Statement sourceStmt,
                                         Map<Long, Long> candidateIdsByUserId) throws SQLException {
-        log.info("Migration data for candidate skills");
+        LogBuilder.builder(log)
+            .user(authService.getLoggedInUser())
+            .action("Migrate")
+            .message("Migration data for candidate skills")
+            .logInfo();
 
         String insertSql = "insert into candidate_skill (id, candidate_id, skill, time_period) values (?, ?, ?, ?) on conflict (id) do nothing";
         String selectSql = "select id, user_id, skill, time_period from user_jobseeker_skills";
@@ -1697,16 +2523,30 @@ public class SystemAdminApi {
 
                 if (count%100 == 0) {
                     insert.executeBatch();
-                    log.info("skills - saving batch " + count);
+
+                    LogBuilder.builder(log)
+                        .user(authService.getLoggedInUser())
+                        .action("Migrate")
+                        .message("skills - saving batch " + count)
+                        .logInfo();
                 }
 
                 count++;
             } else {
-                log.warn("skipping record - skills: no candidate found for userId " + userId);
+                LogBuilder.builder(log)
+                    .user(authService.getLoggedInUser())
+                    .action("Migrate")
+                    .message("skipping record - skills: no candidate found for userId " + userId)
+                    .logWarn();
             }
         }
         insert.executeBatch();
-        log.info("skills - saving batch " + count);
+
+        LogBuilder.builder(log)
+            .user(authService.getLoggedInUser())
+            .action("Migrate")
+            .message("skills - saving batch " + count)
+            .logInfo();
     }
 
     private int setRefIdOrNull(ResultSet result,
@@ -1758,7 +2598,13 @@ public class SystemAdminApi {
         while (result.next()) {
             referenceIds.add(result.getLong(1));
         }
-        log.info("loaded " + referenceIds.size() + " reference ids for " + tableName);
+
+        LogBuilder.builder(log)
+            .user(authService.getLoggedInUser())
+            .action("Migrate")
+            .message("loaded " + referenceIds.size() + " reference ids for " + tableName)
+            .logInfo();
+
         return referenceIds;
     }
 
@@ -1769,7 +2615,13 @@ public class SystemAdminApi {
         while (result.next()) {
             referenceIds.put(result.getLong(1), result.getString(2));
         }
-        log.info("loaded " + referenceIds.size() + " other references for " + type);
+
+        LogBuilder.builder(log)
+            .user(authService.getLoggedInUser())
+            .action("Migrate")
+            .message("loaded " + referenceIds.size() + " other references for " + type)
+            .logInfo();
+
         return referenceIds;
     }
 
@@ -1780,7 +2632,13 @@ public class SystemAdminApi {
         while (result.next()) {
             candidateOccupations.put(result.getLong(2) + "~" + result.getLong(3), result.getLong(1));
         }
-        log.info("loaded " + candidateOccupations.size() + " candidateOccupationIds");
+
+        LogBuilder.builder(log)
+            .user(authService.getLoggedInUser())
+            .action("Migrate")
+            .message("loaded " + candidateOccupations.size() + " candidateOccupationIds")
+            .logInfo();
+
         return candidateOccupations;
     }
 
@@ -1791,7 +2649,13 @@ public class SystemAdminApi {
         while (result.next()) {
             referenceMap.put(result.getLong(2), result.getLong(1));
         }
-        log.info("loaded " + referenceMap.size() + " candidate ids");
+
+        LogBuilder.builder(log)
+            .user(authService.getLoggedInUser())
+            .action("Migrate")
+            .message("loaded " + referenceMap.size() + " candidate ids")
+            .logInfo();
+
         return referenceMap;
     }
 
@@ -1802,12 +2666,18 @@ public class SystemAdminApi {
         while (result.next()) {
             referenceMap.add(result.getLong(1));
         }
-        log.info("loaded " + referenceMap.size() + " admin ids");
+
+        LogBuilder.builder(log)
+            .user(authService.getLoggedInUser())
+            .action("Migrate")
+            .message("loaded " + referenceMap.size() + " admin ids")
+            .logInfo();
+
         return referenceMap;
     }
 
     private Long checkReference(int value,
-                                Set<Long> referenceIds) {
+        Set<Long> referenceIds) {
         // null values coming from source db are converted to integer 0 which would be incorrectly linked to "unknown", so treat as null
         Long lookupVal = value > 0 ? (long) value : null;
         if (referenceIds.contains(lookupVal)) {
@@ -1970,13 +2840,13 @@ public class SystemAdminApi {
 
     private Long whackyExtraCountryLookup(Integer origCountryId) {
         Integer val = countryForGeneralCountry.get(origCountryId);
-        if (val != null) return new Long(val);
+        if (val != null) return val.longValue();
         return null;
     }
 
     private Date getDate(ResultSet result,
-                         String columnName,
-                         Long candidateId) {
+        String columnName,
+        Long candidateId) {
         try {
             Date date = result.getDate(columnName);
             if (date != null && !"1970-01-01".equals(date.toString())) {
@@ -1984,7 +2854,12 @@ public class SystemAdminApi {
             }
         } catch (Exception e) {
             try {
-                log.error("candidateId " + candidateId + " - unparsable date for column: " + columnName + " - " + result.getString(columnName), e);
+                LogBuilder.builder(log)
+                    .user(authService.getLoggedInUser())
+                    .action("Migrate")
+                    .message("candidateId " + candidateId + " - unparsable date for column: " + columnName + " - " + result.getString(columnName))
+                    .logError(e);
+
             } catch (Exception e2) {
                 e.printStackTrace();
             }
@@ -2023,7 +2898,11 @@ public class SystemAdminApi {
                 java.util.Date date = sdf.parse(isoDateStr);
                 return new Date(date.getTime());
             } catch (Exception e) {
-                log.warn("invalid DOB " + isoDateStr);
+                LogBuilder.builder(log)
+                    .user(authService.getLoggedInUser())
+                    .action("Migrate")
+                    .message("invalid DOB " + isoDateStr)
+                    .logWarn();
             }
         }
         return null;
@@ -2068,8 +2947,220 @@ public class SystemAdminApi {
         this.targetPwd = targetPwd;
     }
 
-    @GetMapping("sf-update-candidates")
-    public void sfUpdateCandidates() {
-        candidateService.syncCandidatesToSf();
+    @GetMapping("delete-job/{jobId}")
+    @Transactional
+    public ResponseEntity<Void> deleteJob(@PathVariable("jobId") Long jobId) {
+        try {
+        // Check if the job exists before proceeding
+        Optional<SalesforceJobOpp> optionalJob = salesforceJobOppRepository.findById(jobId);
+        if (!optionalJob.isPresent()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build(); // Return 404 Not Found if job does not exist
+        }
+
+        SalesforceJobOpp job = optionalJob.get();
+        job.setSubmissionList(null);
+        job.setExclusionList(null);
+        salesforceJobOppRepository.save(job);
+
+        // Delete related entries in chat_post and job_chat_user
+        deleteChatAndJobChatUserEntries(jobId);
+
+        // Execute a native SQL query to delete records from job_suggested_saved_search table
+        deleteJobSuggestedSavedSearchEntries(jobId);
+
+        // Delete related entries in SavedList and SavedSearch
+        deleteSavedListAndSavedSearchEntries(jobId);
+
+        // Delete the job from salesforce_job_opp
+        salesforceJobOppRepository.deleteById(jobId);
+
+        return ResponseEntity.ok().build(); // Return 200 OK
+    } catch (Exception e) {
+        LogBuilder.builder(log)
+            .user(authService.getLoggedInUser())
+            .action("Delete")
+            .message("Error deleting job with id " + jobId)
+            .logError(e);
+
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build(); // Return 500 Internal Server Error
     }
+}
+    // Helper method to delete related entries in chat_post and job_chat_user
+    private void deleteChatAndJobChatUserEntries(Long jobId) {
+        List<JobChat> jobChats = jobChatRepository.findByJobOppId(jobId);
+        for (JobChat jobChat : jobChats) {
+            Long jobChatId = jobChat.getId();
+            jobChatUserRepository.deleteByJobChatId(jobChatId);
+            chatPostRepository.deleteByJobChatId(jobChatId);
+        }
+        jobChatRepository.deleteAll(jobChats);
+    }
+
+    // Helper method to delete records from job_suggested_saved_search table
+    private void deleteJobSuggestedSavedSearchEntries(Long jobId) {
+        String sql = "DELETE FROM job_suggested_saved_search WHERE tc_job_id = :jobId";
+        entityManager.createNativeQuery(sql)
+            .setParameter("jobId", jobId)
+            .executeUpdate();
+    }
+
+    // Helper method to delete related entries in SavedList and SavedSearch
+    private void deleteSavedListAndSavedSearchEntries(Long jobId) {
+        List<SavedList> savedLists = savedListRepository.findByJobIds(jobId);
+        savedLists.forEach(savedList -> {
+            savedList.setSavedSearch(null);
+            savedList.setSavedSearchSource(null);
+        });
+        savedListRepository.saveAll(savedLists);
+        savedListRepository.flush();
+        savedListRepository.deleteAll(savedLists);
+        savedSearchRepository.deleteByJobId(jobId);
+    }
+
+    /**
+     * Reassigns all candidates on saved list or search with given ID to partner organisation with
+     * given ID. Previously done by direct DB edit but this necessitated additional steps of
+     * flushing the Redis cache and updating the corresponding elasticsearch index entry. Cache
+     * evictions and ES index update proceed as usual with this in-code implementation.
+     * <p><strong>Check and double-check param for candidateSource — specifying the wrong one could
+     * be very problematic! Also be certain to 'Update' your saved search (i.e. save the current
+     * version, which is what this method will use).</strong></p>
+     * <p>
+     *   Examples of how to call this method from the Settings > System Admin API input:
+     *      <br><code>reassign-candidates/list-393-to-partner-16</code>
+     *      <br><code>reassign-candidates/search-211-to-partner-16</code>
+     * </p>
+     * @param candidateSource 'list' or 'search', depending on the source you're using
+     * @param sourceId id of source containing candidates to be reassigned
+     * @param partnerId id of the partner org to which the candidates will be reassigned
+     */
+    @Transactional
+    @GetMapping("reassign-candidates/{candidateSource}-{sourceId}-to-partner-{partnerId}")
+    public ResponseEntity<?> reassignCandidates(
+        @PathVariable("candidateSource") String candidateSource,
+        @PathVariable("sourceId") int sourceId,
+        @PathVariable("partnerId") int partnerId
+    ) {
+        try {
+            Partner newPartner = partnerService.getPartner(partnerId);
+            if (!newPartner.isSourcePartner() || !newPartner.getStatus().equals(Status.active)) {
+                throw new IllegalArgumentException("New partner must be an active source partner.");
+            }
+
+            int pagesProcessed = 0;
+            long totalPages;
+            long totalCandidates;
+
+            if (candidateSource.equals("list")) {
+                // Prepare first page and get metrics for logging and looping
+                SavedList savedList = savedListService.get(sourceId);
+                SavedListGetRequest request = new SavedListGetRequest();
+                Page<Candidate> candidatePage = candidateService.getSavedListCandidates(savedList, request);
+                totalPages = candidatePage.getTotalPages();
+                totalCandidates = candidatePage.getTotalElements();
+
+                while (pagesProcessed < totalPages) {
+                    candidateService.reassignCandidatesOnPage(candidatePage, newPartner);
+                    pagesProcessed++;
+                    request.setPageNumber(pagesProcessed);
+                    candidatePage = candidateService.getSavedListCandidates(savedList, request);
+                    totalPages = candidatePage.getTotalElements(); // In case list changing
+                }
+
+            } else if (candidateSource.equals("search")) {
+                SearchCandidateRequest request = savedSearchService.loadSavedSearch(sourceId);
+                Page<Candidate> candidatePage = savedSearchService.searchCandidates(request);
+                totalPages = candidatePage.getTotalPages();
+                totalCandidates = candidatePage.getTotalElements();
+
+                while (pagesProcessed < totalPages) {
+                    candidateService.reassignCandidatesOnPage(candidatePage, newPartner);
+                    pagesProcessed++;
+                    request.setPageNumber(pagesProcessed);
+                    candidatePage = savedSearchService.searchCandidates(request);
+                    totalPages = candidatePage.getTotalElements(); // In case results changing
+                }
+
+            } else {
+                LogBuilder.builder(log)
+                    .action("Reassign candidates")
+                    .message("Invalid parameter for candidateSource: " + candidateSource)
+                    .logInfo();
+
+                throw new IllegalArgumentException(
+                    "Parameter candidateSource must be \"search\" or \"list\"."
+                );
+            }
+
+            LogBuilder.builder(log)
+                .action("Reassign candidates")
+                .message(
+                    "Reassignment of " + totalCandidates + " candidates from " + candidateSource +
+                        " with ID " + sourceId + " to " + newPartner.getName() + " complete."
+                )
+                .logInfo();
+
+            return ResponseEntity.ok().build(); // Return 200 OK - front-end will display 'Done'
+
+        } catch(Exception e) {
+            LogBuilder.builder(log)
+                .action("Reassign candidates")
+                .message("Reassignment of candidates from " + candidateSource + " with ID " +
+                    sourceId + " to partner with ID " + partnerId + " failed.")
+                .logError(e);
+
+            // Return 500 Internal Server Error including error in body for display on frontend
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e);
+        }
+    }
+
+    @GetMapping("processPotentialDuplicateCandidates")
+    ResponseEntity<?> processPotentialDuplicateCandidates() {
+        try {
+            this.backgroundProcessingService.processPotentialDuplicateCandidates();
+
+            LogBuilder.builder(log)
+                .action("Process potential duplicates")
+                .message("Manually triggered")
+                .logInfo();
+
+            return ResponseEntity.ok().build(); // Return 200 OK - front-end will display 'Done'
+
+        } catch(Exception e) {
+            LogBuilder.builder(log)
+                .action("Process potential duplicates")
+                .message("Manual triggered operation failed")
+                .logError(e);
+
+            // Return 500 Internal Server Error including error in body for display on frontend
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e);
+        }
+    }
+
+    /**
+     * Cancels the candidate's previous coupon assignment and makes a new one.
+     */
+    @GetMapping("{candidateNumber}/reassign-linkedin-coupon")
+    ResponseEntity<?> reassignLinkedinCoupon(@PathVariable("candidateNumber") String candidateNumber) {
+        try {
+            linkedInService.reassignForCandidate(candidateNumber, userService.getLoggedInUser());
+
+            LogBuilder.builder(log)
+                .action("Reassign LinkedIn Coupon")
+                .message("For candidate " + candidateNumber + ": Success")
+                .logInfo();
+
+            return ResponseEntity.ok().build(); // Return 200 OK - front-end will display 'Done'
+
+        } catch(Exception e) {
+            LogBuilder.builder(log)
+                .action("Reassign LinkedIn Coupon")
+                .message("For candidate " + candidateNumber + ": Failure")
+                .logError(e);
+
+            // Return 500 Internal Server Error including error in body for display on frontend
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e);
+        }
+    }
+
 }

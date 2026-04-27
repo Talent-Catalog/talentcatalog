@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -15,6 +15,8 @@
  */
 
 package org.tctalent.server.configuration;
+
+import static org.tctalent.server.service.db.ChatPostService.TOPIC_PREFIX;
 
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
@@ -45,13 +47,13 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry config) {
-        config.enableSimpleBroker("/topic");
+        config.enableSimpleBroker(TOPIC_PREFIX);
         config.setApplicationDestinationPrefixes("/app");
     }
 
     @Override
     public void registerStompEndpoints(@NotNull StompEndpointRegistry registry) {
-        String urls = env.getProperty("tbb.cors.urls");
+        String urls = env.getProperty("tc.cors.urls");
         String[] corsUrls;
         if (StringUtils.isNotBlank(urls)) {
             corsUrls = urls.split(",");
@@ -60,7 +62,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         }
 
         registry.addEndpoint("/jobchat")
-            .setAllowedOrigins(corsUrls)
+            .setAllowedOriginPatterns(corsUrls)
             .withSockJS();
     }
 

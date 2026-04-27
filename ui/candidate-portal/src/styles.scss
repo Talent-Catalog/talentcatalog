@@ -1,5 +1,5 @@
 /*!
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -16,9 +16,12 @@
 
 /* You can add global styles to this file, and also import other style files */
 @import "scss/typography";
+@import "scss/nav";
 @import "scss/btn";
 @import "scss/overrides";
 @import "scss/chat";
+@import "scss/component/ngb-datepicker";
+@import "scss/component/ng-select";
 
 @import "scss/rtl";
 
@@ -28,6 +31,13 @@
 @import "~@ng-select/ng-select/themes/default.theme.css";
 @import "quill/dist/quill.snow.css";
 @import 'quill/dist/quill.bubble.css';
+
+/* Font Awesome */
+$fa-font-path: "~@fortawesome/fontawesome-free/webfonts";
+@import '@fortawesome/fontawesome-free/scss/fontawesome.scss';
+@import '@fortawesome/fontawesome-free/scss/brands.scss';
+@import '@fortawesome/fontawesome-free/scss/solid.scss';
+@import '@fortawesome/fontawesome-free/scss/regular.scss';
 
 
 // Card specific
@@ -42,6 +52,14 @@
     }
   }
 
+}
+
+//Links on tab headers need contrasting colours
+.tab-header a {
+  color: white;
+  &:hover {
+    color: grey;
+  }
 }
 
 /* FONT AWESOME */
@@ -85,4 +103,12 @@ label {
 
 .ql-container {
   background-color: white;
+}
+
+.nav-link {
+  cursor: pointer;
+}
+
+.link {
+  cursor: pointer;
 }

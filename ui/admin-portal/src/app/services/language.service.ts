@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -17,8 +17,7 @@
 import {Injectable} from '@angular/core';
 import {environment} from "../../environments/environment";
 import {HttpClient} from "@angular/common/http";
-import {Language} from "../model/language";
-import {SystemLanguage} from "../model/language";
+import {Language, SystemLanguage} from "../model/language";
 import {Observable} from "rxjs";
 import {SearchResults} from "../model/search-results";
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -16,8 +16,11 @@
 
 package org.tctalent.server.model.db.chat;
 
+import java.util.ArrayList;
+import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
+import org.tctalent.server.model.db.LinkPreview;
 import org.tctalent.server.util.html.HtmlSanitizer;
 
 /**
@@ -30,7 +33,9 @@ import org.tctalent.server.util.html.HtmlSanitizer;
 public class Post {
     private String content;
 
+    private List<LinkPreview> linkPreviews = new ArrayList<>();
+
     public void setContent(String content) {
-        this.content = HtmlSanitizer.sanitize(content);
+        this.content = HtmlSanitizer.sanitizeWithLinksNewTab(content);
     }
 }

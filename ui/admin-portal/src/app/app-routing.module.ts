@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -28,7 +28,6 @@ import {
 import {
   CandidatesListComponent
 } from "./components/candidates/candidates-list/candidates-list.component";
-import {NewJobComponent} from "./components/job/new-job/new-job.component";
 import {Role} from "./model/user";
 import {RoleGuardService} from "./services/role-guard.service";
 import {
@@ -45,6 +44,11 @@ import {ResetPasswordComponent} from "./components/account/reset-password/reset-
 import {
   UserChangePasswordComponent
 } from "./components/account/user-change-password/user-change-password.component";
+import {UnsavedChangesGuard} from "./services/unsaved-changes.guard";
+import {IntelligenceComponent} from "./components/intelligence/intelligence.component";
+import {DpaGuard} from "./services/dpa.guard";
+import {PartnerDpaComponent} from "./components/util/partner-dpa/partner-dpa.component";
+import {CasiManagementComponent} from "./components/casi-management/casi-management.component";
 
 const routes: Routes = [
   {
@@ -55,21 +59,24 @@ const routes: Routes = [
       {
         path: 'candidates/:id',
         redirectTo: 'candidate/:id',
+        data: { title: 'Redirecting to Candidate' }
       },
       {
         path: 'candidates',
         redirectTo: '',
+        data: { title: 'Redirecting to Home' }
       },
       {
         //Default to Jobs
         path: '',
         redirectTo: 'jobs',
-        pathMatch: 'full'
+        pathMatch: 'full' as const
       },
       {
         path: 'searches',
-        pathMatch: 'full',
+        pathMatch: 'full' as const,
         component: SearchHomeComponent,
+        canActivate: [DpaGuard],
         data: {title: 'TC Searches'}
       },
       {
@@ -77,21 +84,25 @@ const routes: Routes = [
         children: [
           {
             path: '',
-            pathMatch: 'full',
+            pathMatch: 'full' as const,
             component: CandidatesSearchComponent,
+            canActivate: [DpaGuard],
             data: {title: 'TC Search'}
           },
           {
             path: ':id',
             component: CandidatesSearchComponent,
-            data: {title: 'TC Search'}
+            canDeactivate: [UnsavedChangesGuard],
+            canActivate: [DpaGuard],
+            data: {title: 'TC Search'},
           },
         ]
       },
       {
         path: 'jobs',
-        pathMatch: 'full',
+        pathMatch: 'full' as const,
         component: JobHomeComponent,
+        canActivate: [DpaGuard],
         data: {title: 'TC Jobs'}
       },
       {
@@ -99,21 +110,24 @@ const routes: Routes = [
         children: [
           {
             path: '',
-            pathMatch: 'full',
-            component: NewJobComponent,
-            data: {title: 'TC New Job'}
+            pathMatch: 'full' as const,
+            component: JobHomeComponent,
+            canActivate: [DpaGuard],
+            data: {title: 'TC Jobs'}
           },
           {
             path: ':id',
             component: ViewJobFromUrlComponent,
+            canActivate: [DpaGuard],
             data: {title: 'TC Job'}
           },
         ]
       },
       {
         path: 'lists',
-        pathMatch: 'full',
+        pathMatch: 'full' as const,
         component: ListHomeComponent,
+        canActivate: [DpaGuard],
         data: {title: 'TC Candidate Lists'}
       },
       {
@@ -122,6 +136,7 @@ const routes: Routes = [
           {
             path: ':id',
             component: ViewCandidateOppFromUrlComponent,
+            canActivate: [DpaGuard],
             data: {title: 'TC Opp'}
           },
         ]
@@ -131,13 +146,15 @@ const routes: Routes = [
         children: [
           {
             path: '',
-            pathMatch: 'full',
+            pathMatch: 'full' as const,
             component: CandidatesListComponent,
+            canActivate: [DpaGuard],
             data: {title: 'TC List'}
           },
           {
             path: ':id',
             component: CandidatesListComponent,
+            canActivate: [DpaGuard],
             data: {title: 'TC List'}
           },
         ]
@@ -148,22 +165,38 @@ const routes: Routes = [
           {
             path: ':candidateNumber',
             component: ViewCandidateComponent,
+            canActivate: [DpaGuard],
             data: {title: 'TC Candidate'}
           },
         ]
       },
       {
         path: 'settings',
-        canActivate: [RoleGuardService],
+        canActivate: [RoleGuardService, DpaGuard],
         data: {
           expectedRoles: [Role.systemadmin, Role.admin, Role.partneradmin]
         },
         children: [
           {
             path: '',
-            pathMatch: 'full',
+            pathMatch: 'full' as const,
             component: SettingsComponent,
             data: {title: 'TC Settings'}
+          },
+        ]
+      },
+      {
+        path: 'candidate-services',
+        canActivate: [RoleGuardService, DpaGuard],
+        data: {
+          expectedRoles: [Role.systemadmin, Role.admin, Role.partneradmin]
+        },
+        children: [
+          {
+            path: '',
+            pathMatch: 'full' as const,
+            component: CasiManagementComponent,
+            data: {title: 'TC Candidate Services'}
           },
         ]
       },
@@ -172,15 +205,29 @@ const routes: Routes = [
         children: [
           {
             path: '',
-            pathMatch: 'full',
+            pathMatch: 'full' as const,
             component: InfographicComponent,
+            canActivate: [DpaGuard],
             data: {title: 'TC Stats'}
           },
           {
             path: ':source/:id',
             component: InfographicComponent,
+            canActivate: [DpaGuard],
             data: {title: 'TC Stats'}
           },
+        ]
+      },
+      {
+        path: 'intelligence',
+        children: [
+          {
+            path: '',
+            pathMatch: 'full' as const,
+            component: IntelligenceComponent,
+            canActivate: [DpaGuard],
+            data: {title: 'TC Intelligence'}
+          }
         ]
       },
       {
@@ -188,13 +235,20 @@ const routes: Routes = [
         children: [
           {
             path: '',
-            pathMatch: 'full',
+            pathMatch: 'full' as const,
             component: ManageChatsComponent,
+            canActivate: [DpaGuard],
             data: {title: 'Chat'}
           },
         ]
       },
-
+      {
+        path: 'dpa',
+        component: PartnerDpaComponent,
+        data: {
+          title: 'Data Processing Agreement',
+        }
+      },
     ]
   },
   {
@@ -225,7 +279,8 @@ const routes: Routes = [
     path: '**',
     component: NotFoundComponent,
     data: {
-      hideHeader: true
+      hideHeader: true,
+      title: 'Page Not Found'
     }
   }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -23,6 +23,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -30,6 +31,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.tctalent.server.data.TaskTestData.getListOfTasks;
+import static org.tctalent.server.data.TaskTestData.getTask;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
@@ -59,7 +62,7 @@ class TaskAdminApiTest extends ApiTestBase {
     private static final String BASE_PATH = "/api/admin/task";
     private static final String SEARCH_PAGED_PATH = "/search-paged";
 
-    private static final TaskImpl task = AdminApiTestUtil.getTask();
+    private static final TaskImpl task = getTask();
     private final Page<TaskImpl> tasksPage =
         new PageImpl<>(
             List.of(task),
@@ -67,7 +70,7 @@ class TaskAdminApiTest extends ApiTestBase {
             1
         );
 
-    private static final List<TaskImpl> taskList = AdminApiTestUtil.getListOfTasks();
+    private static final List<TaskImpl> taskList = getListOfTasks();
 
     @Autowired
     MockMvc mockMvc;
@@ -112,6 +115,7 @@ class TaskAdminApiTest extends ApiTestBase {
             .willReturn(tasksPage);
 
         mockMvc.perform(post(BASE_PATH + SEARCH_PAGED_PATH)
+                .with(csrf())
                 .header("Authorization", "Bearer " + "jwt-token")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request))
@@ -162,6 +166,7 @@ class TaskAdminApiTest extends ApiTestBase {
             .willReturn(task);
 
         mockMvc.perform(put(BASE_PATH + "/123")
+            .with(csrf())
             .header("Authorization", "Bearer " + "jwt-token")
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(request))

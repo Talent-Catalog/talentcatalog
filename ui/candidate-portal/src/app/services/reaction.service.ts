@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -20,7 +20,7 @@ import {HttpClient} from "@angular/common/http";
 import {Observable} from "rxjs";
 import {Reaction} from "../model/reaction";
 
-export interface CreateReactionRequest {
+export interface AddReactionRequest {
     emoji: string;
 }
 
@@ -32,12 +32,11 @@ export class ReactionService {
 
     constructor(private http: HttpClient) { }
 
-    createReaction(chatPostId: number, request: CreateReactionRequest): Observable<Reaction[]> {
-        return this.http.post<Reaction[]>(`${this.apiUrl}/${chatPostId}`, request);
+    addReaction(chatPostId: number, request: AddReactionRequest): Observable<Reaction[]> {
+        return this.http.post<Reaction[]>(`${this.apiUrl}/${chatPostId}/add-reaction`, request);
     }
 
-    updateReaction(id: number): Observable<Reaction[]> {
-        return this.http.put<Reaction[]>(`${this.apiUrl}/${id}/update-reaction`, null);
+    modifyReaction(chatPostId: number, id: number): Observable<Reaction[]> {
+        return this.http.put<Reaction[]>(`${this.apiUrl}/${chatPostId}/modify-reaction/${id}`, null);
     }
-
 }

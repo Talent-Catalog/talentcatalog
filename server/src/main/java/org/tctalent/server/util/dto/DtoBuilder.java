@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -119,6 +119,7 @@ public class DtoBuilder {
         if (page != null) {
             result.put("totalElements", page.getTotalElements());
             result.put("totalPages", page.getTotalPages());
+            result.put("size", page.getSize());
             result.put("number", page.getNumber());
             result.put("numberOfElements", page.getNumberOfElements());
             result.put("hasNext", page.hasNext());

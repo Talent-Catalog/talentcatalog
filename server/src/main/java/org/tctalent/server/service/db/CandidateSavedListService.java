@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -16,12 +16,16 @@
 
 package org.tctalent.server.service.db;
 
+import java.util.Map;
+import java.util.Set;
+import org.springframework.lang.NonNull;
 import org.tctalent.server.exception.EntityExistsException;
 import org.tctalent.server.exception.InvalidRequestException;
 import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.exception.UnauthorisedActionException;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.CandidateAttachment;
+import org.tctalent.server.model.db.CandidateSavedList;
 import org.tctalent.server.model.db.SavedList;
 import org.tctalent.server.request.candidate.IHasSetOfSavedLists;
 import org.tctalent.server.request.candidate.UpdateCandidateContextNoteRequest;
@@ -31,10 +35,13 @@ import org.tctalent.server.request.list.UpdateExplicitSavedListContentsRequest;
 
 /**
  * Handle anything to do with deletion of candidate savedList relationships.
- * <p/>
+ * <p>
  * Relying on Cascading from SavedList or Candidate candidateSavedList
  * collections doesn't work.
+ * </p>
+ * <p>
  * See doc on SavedList and Candidate where candidateSavedList is declared
+ * </p>
  */
 public interface CandidateSavedListService {
 
@@ -119,6 +126,21 @@ public interface CandidateSavedListService {
      * @throws InvalidRequestException if not authorized to delete this list.
      */
     boolean deleteSavedList(long savedListId) throws InvalidRequestException;
+
+    /**
+     * Finds all CandidateSavedList records for the given candidate ids in the give saved list.
+     * <p>
+     *     Every candidate in a saved list has a CandidateSavedList record.
+     *     If a candidate id is not in the given list, it will not be returned in the results.
+     *     So, effectively this method returns an entry in the map for every candidate id that is in
+     *     the list.
+     * </p>
+     * @param ids Candidate ids that we are looking for in the list.
+     * @param savedListId Id of a saved list
+     * @return Map of candidate id to CandidateSavedList record.
+     */
+    @NonNull
+    Map<Long, CandidateSavedList> findByCandidateIds(Set<Long> ids, long savedListId);
 
     /**
      * Merge the saved lists indicated in the request into the given candidate's

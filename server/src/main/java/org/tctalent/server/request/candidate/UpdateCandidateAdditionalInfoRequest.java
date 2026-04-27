@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -16,25 +16,15 @@
 
 package org.tctalent.server.request.candidate;
 
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+
+@Setter
+@Getter
+@ToString
 public class UpdateCandidateAdditionalInfoRequest {
 
     private String additionalInfo;
-    private String linkedInLink;
-    private Boolean submit;
 
-    public String getAdditionalInfo() { return additionalInfo; }
-
-    public void setAdditionalInfo(String additionalInfo) { this.additionalInfo = additionalInfo; }
-
-    public String getLinkedInLink() { return linkedInLink; }
-
-    public void setLinkedInLink(String linkedInLink) { this.linkedInLink = linkedInLink; }
-
-    public Boolean getSubmit() {
-        return submit;
-    }
-
-    public void setSubmit(Boolean submit) {
-        this.submit = submit;
-    }
 }

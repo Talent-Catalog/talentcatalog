@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -17,7 +17,7 @@
 package org.tctalent.server.repository.db;
 
 import java.util.List;
-
+import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
@@ -35,4 +35,6 @@ public interface LanguageRepository extends JpaRepository<Language, Long>, JpaSp
             + " where lower(l.name) = lower(:name)"
             + " and l.status != 'deleted' order by l.name asc" )
     Language findByNameIgnoreCase(@Param("name") String name);
+
+    Optional<Language> findByIsoCode(String isoCode);
 }

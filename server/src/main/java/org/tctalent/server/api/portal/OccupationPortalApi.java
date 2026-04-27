@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -18,14 +18,12 @@ package org.tctalent.server.api.portal;
 
 import java.util.List;
 import java.util.Map;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.tctalent.server.model.db.Occupation;
 import org.tctalent.server.service.db.OccupationService;
-import org.tctalent.server.util.dto.DtoBuilder;
 
 @RestController()
 @RequestMapping("/api/portal/occupation")
@@ -41,14 +39,7 @@ public class OccupationPortalApi {
     @GetMapping()
     public List<Map<String, Object>> listAllOccupations() {
         List<Occupation> occupations = occupationService.listOccupations();
-        return occupationDto().buildList(occupations);
-    }
-
-    private DtoBuilder occupationDto() {
-        return new DtoBuilder()
-                .add("id")
-                .add("name")
-                ;
+        return occupationService.selectBuilder().buildList(occupations);
     }
 
 }

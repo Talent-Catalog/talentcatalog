@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -17,17 +17,17 @@
 package org.tctalent.server.repository.db;
 
 import io.jsonwebtoken.lang.Collections;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.Order;
+import jakarta.persistence.criteria.Path;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.Subquery;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.Order;
-import javax.persistence.criteria.Path;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.persistence.criteria.Subquery;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
@@ -50,13 +50,17 @@ public class CandidateOpportunitySpecification {
 
     public static Specification<CandidateOpportunity> buildSearchQuery(
         final SearchCandidateOpportunityRequest request, User loggedInUser) {
-        return (opp, query, builder) -> {
-            Predicate conjunction = builder.conjunction();
+        return (opp, query, cb) -> {
+            if (query == null) {
+                throw new IllegalArgumentException("CandidateOpportunitySpecification.CriteriaQuery should not be null");
+            }
+
+            Predicate conjunction = cb.conjunction();
 
             boolean isCountQuery = query.getResultType().equals(Long.class);
             if (!isCountQuery) {
                 //Manage sorting for non count queries
-                List<Order> ordering = getOrdering(request, opp, builder);
+                List<Order> ordering = getOrdering(request, opp, cb);
                 query.orderBy(ordering);
             }
 
@@ -64,10 +68,7 @@ public class CandidateOpportunitySpecification {
             if (!StringUtils.isBlank(request.getKeyword())){
                 String lowerCaseMatchTerm = request.getKeyword().toLowerCase();
                 String likeMatchTerm = "%" + lowerCaseMatchTerm + "%";
-                conjunction.getExpressions().add(
-                        builder.or(
-                                builder.like(builder.lower(opp.get("name")), likeMatchTerm)
-                        ));
+                conjunction = cb.and(conjunction, cb.like(cb.lower(opp.get("name")), likeMatchTerm));
             }
 
 
@@ -79,7 +80,7 @@ public class CandidateOpportunitySpecification {
             // STAGE
             List<CandidateOpportunityStage> stages = request.getStages();
             if (!Collections.isEmpty(stages)) {
-                conjunction.getExpressions().add(builder.isTrue(opp.get("stage").in(stages)));
+                conjunction = cb.and(conjunction, cb.isTrue(opp.get("stage").in(stages)));
                 isStageFilterActive = true;
             }
 
@@ -90,17 +91,17 @@ public class CandidateOpportunitySpecification {
                     //Only apply filter when we just want to display active stages
                     //Otherwise, if false, it will ONLY display inactive stages which we don't want
                     if (showActiveStages) {
-                        final Predicate activePredicate = builder.between(opp.get("stageOrder"),
+                        final Predicate activePredicate = cb.between(opp.get("stageOrder"),
                             CandidateOpportunityStage.prospect.ordinal(),
                             CandidateOpportunityStage.relocating.ordinal());
                         if (showClosed != null && showClosed) {
                             //When active stages are requested as well as closed, we need both.
                             //ie We need to show opps which are active OR closed
-                            conjunction.getExpressions().add(
-                                builder.or(activePredicate,
-                                builder.equal(opp.get("closed"), true)));
+                            conjunction = cb.and(conjunction,
+                                cb.or(activePredicate,
+                                cb.equal(opp.get("closed"), true)));
                         } else {
-                            conjunction.getExpressions().add(activePredicate);
+                            conjunction = cb.and(conjunction, activePredicate);
                         }
                     }
                 }
@@ -111,20 +112,17 @@ public class CandidateOpportunitySpecification {
                 //Only apply filter if we want to exclude closed opps.
                 //Otherwise the filter when true will only show closed opps - which we don't want.
                 if (!showClosed) {
-                    conjunction.getExpressions().add(builder.equal(opp.get("closed"), false));
+                    conjunction = cb.and(conjunction, cb.equal(opp.get("closed"), false));
                 }
             }
 
             //OVERDUE - if true we only display overdue opps
             if (request.getOverdue() != null) {
                 if (request.getOverdue()) {
-                    conjunction.getExpressions()
-                        .add(
-                            builder.and(
-                                builder.isNotNull(opp.get("nextStepDueDate")),
-                                builder.lessThan(opp.get("nextStepDueDate"), LocalDate.now())
-                            )
-                        );
+                    conjunction = cb.and(conjunction,
+                                cb.isNotNull(opp.get("nextStepDueDate")),
+                                cb.lessThan(opp.get("nextStepDueDate"), LocalDate.now())
+                            );
                 }
             }
 
@@ -134,24 +132,24 @@ public class CandidateOpportunitySpecification {
                 Subquery<Long> numberOfChatsToRead = query.subquery(Long.class);
                 Root<JobChat> numberOfChatsToReadRoot = numberOfChatsToRead.from(JobChat.class);
 
-                final Predicate chatIsLinkedToJob = builder.equal(
+                final Predicate chatIsLinkedToJob = cb.equal(
                     numberOfChatsToReadRoot.get("candidate").get("id"), opp.get("candidate").get("id"));
 
                 //Create predicate so that we just look at chats directly associated with jobs
                 List<JobChatType> belongsToOpp = Arrays.asList(
                     JobChatType.CandidateProspect, JobChatType.CandidateRecruiting);
-                final Predicate chatTypeBelongsToOpp = builder
+                final Predicate chatTypeBelongsToOpp = cb
                     .in(numberOfChatsToReadRoot.get("type")).value(belongsToOpp);
 
-                final Predicate chatBelongsToOpp = builder
+                final Predicate chatBelongsToOpp = cb
                     .and(chatIsLinkedToJob, chatTypeBelongsToOpp);
 
 
                 final Predicate oppHasUnreadChats = SpecificationHelper
-                    .hasUnreadChats(loggedInUser, query, builder,
+                    .hasUnreadChats(loggedInUser, query, cb,
                         numberOfChatsToRead, numberOfChatsToReadRoot, chatBelongsToOpp);
 
-                conjunction.getExpressions().add(oppHasUnreadChats);
+                conjunction = cb.and(conjunction, oppHasUnreadChats);
             }
 
             //OWNERSHIP
@@ -173,7 +171,7 @@ public class CandidateOpportunitySpecification {
                                 //Just check that the job associated with the opportunity was created
                                 //by the logged in user's partner.
                                 Join<Object, Object> jobOpp = opp.join("jobOpp");
-                                conjunction.getExpressions().add(builder.equal(
+                                conjunction = cb.and(conjunction, cb.equal(
                                     jobOpp.get("jobCreator").get("id"), loggedInUserPartner.getId())
                                 );
                             } else {
@@ -181,18 +179,18 @@ public class CandidateOpportunitySpecification {
                                 if (request.getOwnedByMe() != null && request.getOwnedByMe()) {
                                     Join<Object, Object> jobOpp = opp.join("jobOpp");
                                     //Not null contact user is me or I am createdBy user
-                                    final Predicate matchContactUser = builder.and(
-                                        builder.isNotNull(jobOpp.get("contactUser")),
-                                        builder.equal(jobOpp.get("contactUser").get("id"),
+                                    final Predicate matchContactUser = cb.and(
+                                        cb.isNotNull(jobOpp.get("contactUser")),
+                                        cb.equal(jobOpp.get("contactUser").get("id"),
                                             loggedInUser.getId())
                                     );
-                                    final Predicate matchCreatingUser = builder.and(
-                                        builder.isNotNull(jobOpp.get("createdBy")),
-                                        builder.equal(jobOpp.get("createdBy").get("id"),
+                                    final Predicate matchCreatingUser = cb.and(
+                                        cb.isNotNull(jobOpp.get("createdBy")),
+                                        cb.equal(jobOpp.get("createdBy").get("id"),
                                             loggedInUser.getId())
                                     );
-                                    conjunction.getExpressions().add(
-                                        builder.or(matchContactUser, matchCreatingUser)
+                                    conjunction = cb.and(conjunction,
+                                        cb.or(matchContactUser, matchCreatingUser)
                                     );
                                 }
                             }
@@ -207,8 +205,8 @@ public class CandidateOpportunitySpecification {
                                     //Just check that the candidate associated with the opportunity is managed
                                     //by the logged in user's partner.
                                     Join<Object, Object> partner = getOppCandidatePartnerJoin(opp);
-                                    conjunction.getExpressions().add(
-                                        builder.equal(partner.get("id"), loggedInUserPartner.getId())
+                                    conjunction = cb.and(conjunction,
+                                        cb.equal(partner.get("id"), loggedInUserPartner.getId())
                                     );
                                 } else {
                                     //If owned by this user (ie by logged in user)
@@ -219,8 +217,8 @@ public class CandidateOpportunitySpecification {
 
                                         //Candidate must be owned by user's partner
                                         Join<Object, Object> partner = getOppCandidatePartnerJoin(opp);
-                                        conjunction.getExpressions().add(
-                                            builder.equal(partner.get("id"), loggedInUserPartner.getId())
+                                        conjunction = cb.and(conjunction,
+                                            cb.equal(partner.get("id"), loggedInUserPartner.getId())
                                         );
 
                                         //And...
@@ -228,7 +226,7 @@ public class CandidateOpportunitySpecification {
                                         //the source contact for.
                                         //  or (if I am the default partner contact)
                                         //Nobody else is nominated as the contact, so use me
-                                        Predicate ors = builder.disjunction();
+                                        Predicate disjunction = cb.disjunction();
 
                                         Long partnerId = loggedInUserPartner.getId();
                                         Long userId = loggedInUser.getId();
@@ -238,15 +236,15 @@ public class CandidateOpportunitySpecification {
                                             SalesforceJobOpp.class);
                                         Root<PartnerJobRelation> pjr = usersJobs.from(PartnerJobRelation.class);
                                         usersJobs.select(pjr.get("job")).where(
-                                            builder.and(
-                                                builder.equal(pjr.get("partner").get("id"), partnerId),
-                                                builder.equal(pjr.get("contact").get("id"), userId)
+                                            cb.and(
+                                                cb.equal(pjr.get("partner").get("id"), partnerId),
+                                                cb.equal(pjr.get("contact").get("id"), userId)
                                             )
                                         );
                                         //Get the opp's jobOpp and check whether it is one of the above jobs
                                         Join<Object, Object> jobOpp = opp.join("jobOpp");
-                                        ors.getExpressions().add(
-                                            builder.in(jobOpp).value(usersJobs)
+                                        disjunction = cb.or(disjunction,
+                                            cb.in(jobOpp).value(usersJobs)
                                         );
 
                                         //Special case if I am the default partner contact
@@ -262,17 +260,16 @@ public class CandidateOpportunitySpecification {
                                             Root<PartnerJobRelation> pjrc = contact.from(
                                                 PartnerJobRelation.class);
                                             contact.select(pjrc.get("contact")).where(
-                                                builder.and(
-                                                    builder.equal(pjrc.get("partner").get("id"), partnerId),
-                                                    builder.equal(pjrc.get("job").get("id"), jobOpp.get("id"))
+                                                cb.and(
+                                                    cb.equal(pjrc.get("partner").get("id"), partnerId),
+                                                    cb.equal(pjrc.get("job").get("id"), jobOpp.get("id"))
                                                 )
                                             );
-                                            ors.getExpressions().add(builder.isNull(contact));
+                                            disjunction = cb.or(disjunction, cb.isNull(contact));
                                         }
 
-                                        //Only add ors if we have some
-                                        if (!ors.getExpressions().isEmpty()) {
-                                            conjunction.getExpressions().add(ors);
+                                        if (!disjunction.getExpressions().isEmpty()) {
+                                            conjunction = cb.and(conjunction, disjunction);
                                         }
                                     }
                                 }

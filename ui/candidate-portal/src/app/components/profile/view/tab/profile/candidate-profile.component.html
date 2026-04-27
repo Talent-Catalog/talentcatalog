@@ -1,5 +1,5 @@
 <!--
-  ~ Copyright (c) 2022 Talent Beyond Boundaries.
+  ~ Copyright (c) 2024 Talent Catalog.
   ~
   ~ This program is free software: you can redistribute it and/or modify it under
   ~ the terms of the GNU Affero General Public License as published by the Free
@@ -18,52 +18,76 @@
 
   <app-error [error]="error"></app-error>
 
-  <app-loading [loading]="loading"></app-loading>
+  <tc-loading [loading]="loading"></tc-loading>
 
   <ng-container *ngIf="!loading">
-    <div class="d-sm-flex justify-content-between">
-      <h3 class="mb-3 text-center text-sm-left">
-        {{ 'HEADER.NAV.ACCOUNT' | translate }} {{candidate?.candidateNumber}}</h3>
+    <app-tab-header>
+    <div class="d-sm-flex justify-content-between align-items-center">
+      <div class="mb-3 text-center text-sm-start">
+        <h3>{{ 'PROFILE.TAB.PROFILE' | translate }}</h3>
+        <h5 class="text-muted">{{ 'HEADER.NAV.ACCOUNT' | translate }} #{{candidate?.candidateNumber}}</h5>
+      </div>
       <app-download-cv></app-download-cv>
     </div>
+    </app-tab-header>
 
     <!-- CONTACT -->
-    <section>
+    <section class="mt-4 mt-sm-0">
 
       <div class="section-heading">
 
         <h5>{{ 'PROFILE.CONTACT.TITLE' | translate }}</h5>
 
-        <a class="btn btn-outline-primary" [routerLink]="['edit', 'contact']">
+        <tc-button type="outline" color="primary" [routerLink]="['edit', 'contact']">
           {{ 'PROFILE.BUTTON.EDIT' | translate }}
-        </a>
+        </tc-button>
 
       </div>
 
       <div class="card">
 
         <div class="row">
-
           <div class="col-md-6">
-              <h6>{{ 'PROFILE.CONTACT.EMAIL' | translate }}</h6>
-              <p>
+            <tc-description-list direction="column" compact size="lg">
+              <tc-description-item [label]="'PROFILE.CONTACT.EMAIL' | translate">
                 {{candidate?.user?.email || ''}}
-              </p>
+              </tc-description-item>
+            </tc-description-list>
           </div>
 
           <div class="col-md-6">
-              <h6>{{ 'PROFILE.CONTACT.PHONE' | translate }}</h6>
-              <p>
+            <tc-description-list direction="column" compact size="lg">
+              <tc-description-item [label]="'PROFILE.CONTACT.PHONE' | translate">
                 {{candidate?.phone || ''}}
-              </p>
+              </tc-description-item>
+            </tc-description-list>
           </div>
         </div>
         <div class="row">
+          <div class="col-md-6 mb-2">
+            <tc-button type="outline" color="primary" (onClick)="openChangePasswordModal()">Edit Password</tc-button>
+          </div>
           <div class="col-md-6">
-              <h6>{{ 'PROFILE.CONTACT.WHATSAPP' | translate }}</h6>
-              <p>
+            <tc-description-list direction="column" compact size="lg">
+              <tc-description-item [label]="'PROFILE.CONTACT.WHATSAPP' | translate">
                 {{candidate?.whatsapp || ''}}
-              </p>
+              </tc-description-item>
+            </tc-description-list>
+          </div>
+        </div>
+
+        <hr *ngIf="showRelocatedAddress()">
+
+        <div *ngIf="showRelocatedAddress()" class="row">
+          <div>
+            <tc-description-list direction="column" compact size="lg">
+              <tc-description-item [label]="'PROFILE.CONTACT.RELOCATEDADDRESS' | translate">
+                <span>{{candidate?.relocatedAddress || '' }} </span>
+                <span>{{candidate?.relocatedCity || '' }} </span>
+                <span>{{candidate?.relocatedState || '' }} </span>
+                <span>{{candidate?.relocatedCountry?.name || '' }} </span>
+              </tc-description-item>
+            </tc-description-list>
           </div>
         </div>
 
@@ -78,9 +102,9 @@
 
         <h5>{{ 'PROFILE.PERSONAL.TITLE' | translate }}</h5>
 
-        <a class="btn btn-outline-primary" [routerLink]="['edit', 'personal']">
+        <tc-button type="outline" color="primary" [routerLink]="['edit', 'personal']">
           {{ 'PROFILE.BUTTON.EDIT' | translate }}
-        </a>
+        </tc-button>
 
       </div>
 
@@ -88,31 +112,35 @@
 
         <div class="row">
           <div class="col-md-6">
-            <h6>{{ 'PROFILE.PERSONAL.FIRSTNAME' | translate }}</h6>
-            <p>
-              {{candidate?.user?.firstName || ''}}
-            </p>
+            <tc-description-list direction="column" compact size="lg">
+              <tc-description-item [label]="'PROFILE.PERSONAL.FIRSTNAME' | translate">
+                {{candidate?.user?.firstName || ''}}
+              </tc-description-item>
+            </tc-description-list>
           </div>
           <div class="col-md-6">
-            <h6>{{ 'PROFILE.PERSONAL.LASTNAME' | translate }}</h6>
-            <p>
-              {{candidate?.user?.lastName || ''}}
-            </p>
+            <tc-description-list direction="column" compact size="lg">
+              <tc-description-item [label]="'PROFILE.PERSONAL.LASTNAME' | translate">
+                {{candidate?.user?.lastName || ''}}
+              </tc-description-item>
+            </tc-description-list>
           </div>
         </div>
 
         <div class="row">
           <div class="col-md-6">
-            <h6>{{ 'PROFILE.PERSONAL.GENDER' | translate }}</h6>
-            <p>
-              {{candidate?.gender || ''}}
-            </p>
+            <tc-description-list direction="column" compact size="lg">
+              <tc-description-item [label]="'PROFILE.PERSONAL.GENDER' | translate">
+                {{candidate?.gender || ''}}
+              </tc-description-item>
+            </tc-description-list>
           </div>
           <div class="col-md-6">
-            <h6>{{ 'PROFILE.PERSONAL.DOB' | translate }}</h6>
-            <p>
-              {{(candidate?.dob | date) || ''}}
-            </p>
+            <tc-description-list direction="column" compact size="lg">
+              <tc-description-item [label]="'PROFILE.PERSONAL.DOB' | translate">
+                {{(candidate?.dob | date) || ''}}
+              </tc-description-item>
+            </tc-description-list>
           </div>
         </div>
 
@@ -120,42 +148,54 @@
 
         <div class="row">
           <div class="col-md-6">
-            <h6>{{ 'PROFILE.PERSONAL.COUNTRY' | translate }}</h6>
-            <p *ngIf="candidate?.country">
-              {{getCountryName(candidate.country) || ''}}
-            </p>
+            <tc-description-list direction="column" compact size="lg">
+              <tc-description-item [label]="'PROFILE.PERSONAL.COUNTRY' | translate">
+                <span *ngIf="candidate?.country">
+                  {{getCountryName(candidate.country) || ''}}
+                </span>
+              </tc-description-item>
+            </tc-description-list>
           </div>
           <div class="col-md-6">
-              <h6>{{ 'PROFILE.PERSONAL.YEAROFARRIVAL' | translate }}</h6>
-              <p>
+            <tc-description-list direction="column" compact size="lg">
+              <tc-description-item [label]="'PROFILE.PERSONAL.YEAROFARRIVAL' | translate">
                 {{candidate?.yearOfArrival || ''}}
-              </p>
+              </tc-description-item>
+            </tc-description-list>
           </div>
         </div>
 
         <div class="row">
           <div class="col-md-6">
-            <h6>{{ 'PROFILE.PERSONAL.CITY' | translate }}</h6>
-            <p>
-              {{candidate?.city || ''}}
-            </p>
+            <tc-description-list direction="column" compact size="lg">
+              <tc-description-item [label]="'PROFILE.PERSONAL.CITY' | translate">
+                {{candidate?.city || ''}}
+              </tc-description-item>
+            </tc-description-list>
           </div>
           <div class="col-md-6">
-            <h6>{{ 'PROFILE.PERSONAL.STATE' | translate }}</h6>
-            <p>
-              {{candidate?.state || ''}}
-            </p>
+            <tc-description-list direction="column" compact size="lg">
+              <tc-description-item [label]="'PROFILE.PERSONAL.STATE' | translate">
+                {{candidate?.state || ''}}
+              </tc-description-item>
+            </tc-description-list>
           </div>
         </div>
 
         <div class="row">
           <div class="col-md-6">
-            <h6>{{ 'PROFILE.PERSONAL.NATIONALITY' | translate }}</h6>
-            <p>{{getCountryName(candidate?.nationality) || '' }}</p>
+            <tc-description-list direction="column" compact size="lg">
+              <tc-description-item [label]="'PROFILE.PERSONAL.NATIONALITY' | translate">
+                {{getCountryName(candidate?.nationality) || '' }}
+              </tc-description-item>
+            </tc-description-list>
           </div>
            <div class="col-md-6" *ngIf="usAfghan">
-             <h6>{{ 'REGISTRATION.PERSONAL.LABEL.EXTERNALID' | translate }}</h6>
-             <p>{{candidate?.externalId || '' }}</p>
+             <tc-description-list direction="column" compact size="lg">
+               <tc-description-item [label]="'REGISTRATION.PERSONAL.LABEL.EXTERNALID' | translate">
+                 {{candidate?.externalId || '' }}
+               </tc-description-item>
+             </tc-description-list>
            </div>
         </div>
 
@@ -163,22 +203,29 @@
 
         <div *ngIf="!usAfghan" class="row">
           <div  class="col-md-6">
-            <h6>{{ 'REGISTRATION.PERSONAL.LABEL.REGISTEREDWITHUN' | translate }}</h6>
-            <p *ngIf="candidate?.unhcrRegistered === 'Yes'">{{ 'CONFIRMATION.YES' | translate }}</p>
-            <p *ngIf="candidate?.unhcrRegistered === 'No'">{{ 'CONFIRMATION.NO' | translate }}</p>
-            <p *ngIf="candidate?.unhcrRegistered === 'Unsure'">{{ 'CONFIRMATION.UNSURE' | translate }}</p>
+            <tc-description-list direction="column" compact size="lg">
+              <tc-description-item [label]="'REGISTRATION.PERSONAL.LABEL.REGISTEREDWITHUN' | translate">
+                <span *ngIf="candidate?.unhcrRegistered === 'Yes'">{{ 'CONFIRMATION.YES' | translate }}</span>
+                <span *ngIf="candidate?.unhcrRegistered === 'No'">{{ 'CONFIRMATION.NO' | translate }}</span>
+                <span *ngIf="candidate?.unhcrRegistered === 'Unsure'">{{ 'CONFIRMATION.UNSURE' | translate }}</span>
+              </tc-description-item>
+            </tc-description-list>
           </div>
           <div class="col-md-6">
-            <h6>{{ 'REGISTRATION.PERSONAL.LABEL.REGISTRATIONID' | translate }}</h6>
-            <p>
-              {{candidate?.unhcrNumber || '' }}
-            </p>
+            <tc-description-list direction="column" compact size="lg">
+              <tc-description-item [label]="'REGISTRATION.PERSONAL.LABEL.REGISTRATIONID' | translate">
+                {{candidate?.unhcrNumber || '' }}
+              </tc-description-item>
+            </tc-description-list>
           </div>
           <div class="row">
             <div class="col-md-6">
-              <h6>{{ 'REGISTRATION.PERSONAL.LABEL.UNHCRCONSENT' | translate }}</h6>
-              <p *ngIf="candidate?.unhcrConsent === 'Yes'">{{ 'CONFIRMATION.YES' | translate }}</p>
-              <p *ngIf="candidate?.unhcrConsent === 'No'">{{ 'CONFIRMATION.NO' | translate }}</p>
+              <tc-description-list direction="column" compact size="lg">
+                <tc-description-item [label]="'REGISTRATION.PERSONAL.LABEL.UNHCRCONSENT' | translate">
+                  <span *ngIf="candidate?.unhcrConsent === 'Yes'">{{ 'CONFIRMATION.YES' | translate }}</span>
+                  <span *ngIf="candidate?.unhcrConsent === 'No'">{{ 'CONFIRMATION.NO' | translate }}</span>
+                </tc-description-item>
+              </tc-description-list>
             </div>
           </div>
         </div>
@@ -189,9 +236,9 @@
     <section>
       <div class="section-heading">
         <h5>{{ 'PROFILE.OCCUPATIONS.TITLE' | translate }}</h5>
-        <a class="btn btn-outline-primary" [routerLink]="['edit', 'occupations']">
+        <tc-button type="outline" color="primary" [routerLink]="['edit', 'occupations']">
           {{ 'PROFILE.BUTTON.EDIT' | translate }}
-        </a>
+        </tc-button>
       </div>
 
       <div class="card">
@@ -219,9 +266,9 @@
 
         <h5>{{ 'PROFILE.EXPERIENCE.TITLE' | translate }}</h5>
 
-        <a class="btn btn-outline-primary" [routerLink]="['edit', 'experience']">
+        <tc-button type="outline" color="primary" [routerLink]="['edit', 'experience']">
           {{ 'PROFILE.BUTTON.EDIT' | translate }}
-        </a>
+        </tc-button>
 
       </div>
 
@@ -249,9 +296,9 @@
 
         <h5>{{ 'PROFILE.EDUCATION.TITLE' | translate }}</h5>
 
-        <a class="btn btn-outline-primary" [routerLink]="['edit', 'education']">
+        <tc-button type="outline" color="primary" [routerLink]="['edit', 'education']">
           {{ 'PROFILE.BUTTON.EDIT' | translate }}
-        </a>
+        </tc-button>
 
       </div>
 
@@ -272,6 +319,32 @@
       </div>
 
     </section>
+    <!-- EXAMS -->
+    <section>
+
+      <div class="section-heading">
+
+        <h5>{{ 'PROFILE.EXAMS.TITLE' | translate }}</h5>
+
+        <tc-button type="outline" color="primary" [routerLink]="['edit', 'exams']">
+          {{ 'PROFILE.BUTTON.EDIT' | translate }}
+        </tc-button>
+
+      </div>
+
+      <div class="card">
+        <ng-container *ngFor="let exam of candidate?.candidateExams; let i = index;">
+          <app-candidate-exam-card [exam]="exam"
+                                            [preview]="true">
+          </app-candidate-exam-card>
+
+          <div class="text-center" *ngIf="i < candidate?.candidateExams?.length - 1">
+            <hr>
+          </div>
+        </ng-container>
+      </div>
+
+    </section>
 
     <!-- CERTIFICATIONS -->
     <section>
@@ -280,9 +353,9 @@
 
         <h5>{{ 'PROFILE.CERTIFICATIONS.TITLE' | translate }}</h5>
 
-        <a class="btn btn-outline-primary" [routerLink]="['edit', 'certifications']">
+        <tc-button type="outline" color="primary" [routerLink]="['edit', 'certifications']">
           {{ 'PROFILE.BUTTON.EDIT' | translate }}
-        </a>
+        </tc-button>
 
       </div>
 
@@ -307,9 +380,9 @@
 
         <h5>{{ 'PROFILE.LANGUAGES.TITLE' | translate }}</h5>
 
-        <a class="btn btn-outline-primary" [routerLink]="['edit', 'languages']">
+        <tc-button type="outline" color="primary" [routerLink]="['edit', 'languages']">
           {{ 'PROFILE.BUTTON.EDIT' | translate }}
-        </a>
+        </tc-button>
 
       </div>
 
@@ -328,6 +401,35 @@
 
     </section>
 
+    <!-- DESTINATIONS -->
+    <section>
+
+      <div class="section-heading">
+
+        <h5>{{ 'PROFILE.DESTINATIONS.TITLE' | translate }}</h5>
+
+        <tc-button type="outline" color="primary" [routerLink]="['edit', 'destinations']">
+          {{ 'PROFILE.BUTTON.EDIT' | translate }}
+        </tc-button>
+
+      </div>
+
+      <div class="card">
+        <div class="row">
+          <ng-container *ngFor="let destination of candidate?.candidateDestinations; let i = index;">
+            <div class="col-md-6">
+              <tc-description-list direction="column" compact size="lg">
+                <tc-description-item [label]="destination.country.name">
+                  {{destination.interest}} {{destination.notes}}
+                </tc-description-item>
+              </tc-description-list>
+            </div>
+          </ng-container>
+        </div>
+      </div>
+
+    </section>
+
     <!-- OTHER -->
     <section>
 
@@ -335,9 +437,9 @@
 
         <h5>{{ 'PROFILE.OTHER.TITLE' | translate }}</h5>
 
-        <a class="btn btn-outline-primary" [routerLink]="['edit', 'additional']">
+        <tc-button type="outline" color="primary" [routerLink]="['edit', 'additional']">
           {{ 'PROFILE.BUTTON.EDIT' | translate }}
-        </a>
+        </tc-button>
 
       </div>
 
@@ -346,33 +448,47 @@
         <div class="row">
 
           <div class="col-md-6">
-              <h6>{{ 'PROFILE.OTHER.ADDITIONALINFO' | translate }}</h6>
-              <p>
+            <tc-description-list direction="column" compact size="lg">
+              <tc-description-item [label]="'PROFILE.OTHER.ADDITIONALINFO' | translate">
                 {{candidate?.additionalInfo || ''}}
-              </p>
+              </tc-description-item>
+            </tc-description-list>
           </div>
 
           <div class="col-md-6">
-              <h6>{{ 'PROFILE.OTHER.LINKEDIN' | translate }}</h6>
-              <p>
+            <tc-description-list direction="column" compact size="lg">
+              <tc-description-item [label]="'PROFILE.OTHER.LINKEDIN' | translate">
                 <a href="{{candidate?.linkedInLink}}" target="_blank">{{candidate?.linkedInLink || ''}}</a>
-              </p>
+              </tc-description-item>
+            </tc-description-list>
           </div>
+
+<!-- Temporarily commented out as opt-in setting currently unavailable to candidates -->
+<!--          <div class="col-md-6">-->
+<!--              <h6>{{ 'CHAT.NOTIFICATION_PREFERENCE' | translate }}</h6>-->
+<!--              <p>-->
+<!--                {{candidate?.allNotifications ? "Yes" : "No"}}-->
+<!--              </p>-->
+<!--          </div>-->
 
         </div>
 
         <div *ngIf="!usAfghan" class="row">
           <div class="col-md-6">
-              <h6>{{ 'PROFILE.OTHER.SURVEY' | translate }}</h6>
-              <p *ngIf="this.candidate?.surveyType?.name">
-                {{getSurveyTypeName() || ''}}
-              </p>
+            <tc-description-list direction="column" compact size="lg">
+              <tc-description-item [label]="'PROFILE.OTHER.SURVEY' | translate">
+                <span *ngIf="this.candidate?.surveyType?.name">
+                  {{getSurveyTypeName() || ''}}
+                </span>
+              </tc-description-item>
+            </tc-description-list>
           </div>
           <div class="col-md-6">
-              <h6>{{ 'PROFILE.OTHER.SURVEYCOMMENT' | translate }}</h6>
-              <p>
+            <tc-description-list direction="column" compact size="lg">
+              <tc-description-item [label]="'PROFILE.OTHER.SURVEYCOMMENT' | translate">
                 {{candidate?.surveyComment || ''}}
-              </p>
+              </tc-description-item>
+            </tc-description-list>
           </div>
         </div>
 
@@ -386,9 +502,9 @@
 
         <h5>{{ 'PROFILE.UPLOAD.TITLE' | translate }}</h5>
 
-        <a class="btn btn-outline-primary" [routerLink]="['edit', 'upload']">
+        <tc-button type="outline" color="primary" [routerLink]="['edit', 'upload']">
           {{ 'PROFILE.BUTTON.EDIT' | translate }}
-        </a>
+        </tc-button>
 
       </div>
 

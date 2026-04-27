@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -33,6 +33,7 @@ import org.tctalent.server.request.job.JobIntakeData;
 import org.tctalent.server.request.job.SearchJobRequest;
 import org.tctalent.server.request.job.UpdateJobRequest;
 import org.tctalent.server.request.link.UpdateLinkRequest;
+import org.tctalent.server.service.api.SkillName;
 
 /**
  * Service for managing {@link SalesforceJobOpp}
@@ -74,6 +75,15 @@ public interface JobService {
      */
     @NonNull
     SalesforceJobOpp getJob(long id) throws NoSuchObjectException;
+
+    /**
+     * Get the skills associated with the job with the given id.
+     * @param id Job id
+     * @param lang Language code for the skill names - eg "en" or "de"
+     * @return List of skill names
+     */
+    @NonNull
+    List<SkillName> getSkills(long id, @NonNull String lang);
 
     /**
      * Creates a suggested saved search for the job with the given id.
@@ -227,6 +237,18 @@ public interface JobService {
         throws InvalidRequestException, NoSuchObjectException;
 
     /**
+     * Updates the signed MOU file link of the job with the given id
+     * @param id ID of job
+     * @param updateLinkRequest Details of link (name and url)
+     * @return Updated job
+     * @throws InvalidRequestException if the job does not have a submission list
+     * @throws NoSuchObjectException if there is no Job with this id.
+     */
+    @NonNull
+    SalesforceJobOpp updateMouLink(long id, UpdateLinkRequest updateLinkRequest)
+            throws InvalidRequestException, NoSuchObjectException;
+
+    /**
      * Updates whether or not the job wth the given id is starred by the current user
      * @param id ID of job
      * @param starred True if job should be starred, false if not
@@ -239,7 +261,7 @@ public interface JobService {
     /**
      * Updates all open Jobs from their corresponding records on Salesforce
      */
-    void updateOpenJobs();
+    void initiateOpenJobSyncFromSf();
 
     /**
      * Uploads the given file to the JobDescription subfolder of the folder associated with the
@@ -287,5 +309,19 @@ public interface JobService {
      * @throws InvalidRequestException if the job does not have a submission list
      */
     SalesforceJobOpp uploadInterviewGuidance(long id, MultipartFile file)
+            throws InvalidRequestException, NoSuchObjectException, IOException;
+
+    /**
+     * Uploads the signed MOU to the JobDescription subfolder of the folder associated with the
+     * submission list of the job with the given id.
+     * <p/>
+     * @param id ID of job
+     * @param file File containing the signed MOU
+     * @return Updated job
+     * @throws NoSuchObjectException if there is no Job with this id.
+     * @throws IOException           if there is a problem uploading the file.
+     * @throws InvalidRequestException if the job does not have a submission list
+     */
+    SalesforceJobOpp uploadMou(long id, MultipartFile file)
             throws InvalidRequestException, NoSuchObjectException, IOException;
 }

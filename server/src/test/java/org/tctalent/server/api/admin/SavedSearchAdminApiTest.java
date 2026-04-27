@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -23,6 +23,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -31,6 +32,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.tctalent.server.data.SavedListTestData.getSavedList;
+import static org.tctalent.server.data.SavedSearchTestData.getListOfSavedSearches;
+import static org.tctalent.server.data.SavedSearchTestData.getSavedSearch;
 import static org.tctalent.server.model.db.SavedSearchType.other;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -42,12 +46,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.tctalent.server.api.dto.ExportColumnsBuilderSelector;
+import org.tctalent.server.api.dto.SavedListBuilderSelector;
 import org.tctalent.server.model.db.CandidateStatus;
 import org.tctalent.server.model.db.Gender;
 import org.tctalent.server.model.db.SavedList;
@@ -71,7 +78,6 @@ import org.tctalent.server.service.db.CandidateSavedListService;
 import org.tctalent.server.service.db.CandidateService;
 import org.tctalent.server.service.db.SavedListService;
 import org.tctalent.server.service.db.SavedSearchService;
-import org.tctalent.server.service.db.UserService;
 
 /**
  * Unit tests for Saved Search Admin Api endpoints
@@ -81,6 +87,7 @@ import org.tctalent.server.service.db.UserService;
 
 @WebMvcTest(SavedSearchAdminApi.class)
 @AutoConfigureMockMvc
+@Import({SavedListBuilderSelector.class, ExportColumnsBuilderSelector.class})
 class SavedSearchAdminApiTest extends ApiTestBase {
 
   private static final long SAVED_SEARCH_ID = 123L;
@@ -89,9 +96,9 @@ class SavedSearchAdminApiTest extends ApiTestBase {
   private static final String BASE_PATH = "/api/admin/saved-search";
   private static final String SEARCH_PATH = "/search";
   private static final String SEARCH_PAGED_PATH = "/search-paged";
-  private static final SavedSearch savedSearch = AdminApiTestUtil.getSavedSearch();
-  private static final SavedList savedList = AdminApiTestUtil.getSavedList();
-  private static final List<SavedSearch> savedSearchList = AdminApiTestUtil.getListOfSavedSearches();
+  private static final SavedSearch savedSearch = getSavedSearch();
+  private static final SavedList savedList = getSavedList();
+  private static final List<SavedSearch> savedSearchList = getListOfSavedSearches();
   private static final String CLEAR_SELECTION_PATH = "/clear-selection/";
   private static final String CREATE_FROM_DEFAULT_PATH = "/create-from-default";
   private static final String SAVE_SELECTION_PATH = "/save-selection/";
@@ -123,12 +130,6 @@ class SavedSearchAdminApiTest extends ApiTestBase {
   SavedListService savedListService;
   @MockBean
   SavedSearchService savedSearchService;
-  @MockBean
-  UserService userService;
-  @MockBean
-  SavedListBuilderSelector savedListBuilderSelector;
-  @MockBean
-  ExportColumnsBuilderSelector exportColumnsBuilderSelector;
 
   @Autowired
   MockMvc mockMvc;
@@ -173,6 +174,7 @@ class SavedSearchAdminApiTest extends ApiTestBase {
         .willReturn(true);
 
     mockMvc.perform(delete(BASE_PATH + "/" + SAVED_SEARCH_ID)
+            .with(csrf())
             .header("Authorization", "Bearer " + "jwt-token"))
 
         .andExpect(status().isOk())
@@ -206,6 +208,7 @@ class SavedSearchAdminApiTest extends ApiTestBase {
         .willReturn(savedSearchList);
 
     mockMvc.perform(post(BASE_PATH + SEARCH_PATH)
+        .with(csrf())
         .header("Authorization", "Bearer " + "jwt-token")
         .contentType(MediaType.APPLICATION_JSON)
         .content(objectMapper.writeValueAsString(request))
@@ -256,6 +259,7 @@ class SavedSearchAdminApiTest extends ApiTestBase {
         .willReturn(savedSearchPage);
 
     mockMvc.perform(post(BASE_PATH + SEARCH_PAGED_PATH)
+            .with(csrf())
             .header("Authorization", "Bearer " + "jwt-token")
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(request))
@@ -361,6 +365,7 @@ class SavedSearchAdminApiTest extends ApiTestBase {
         .willReturn(savedList);
 
     mockMvc.perform(put(BASE_PATH + SAVE_SELECTION_PATH + SAVED_SEARCH_ID)
+            .with(csrf())
             .header("Authorization", "Bearer " + "jwt-token")
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(request))
@@ -393,7 +398,7 @@ class SavedSearchAdminApiTest extends ApiTestBase {
         .andExpect(jsonPath("$.folderjdlink", is("http://folder.jd.link")))
         .andExpect(jsonPath("$.publishedDocLink", is("http://published.doc.link")))
         .andExpect(jsonPath("$.registeredJob", is(true)))
-        .andExpect(jsonPath("$.tbbShortName", is("Saved list Tbb short name")))
+        .andExpect(jsonPath("$.tcShortName", is("Saved list Tc short name")))
         .andExpect(jsonPath("$.createdBy.firstName", is("test")))
         .andExpect(jsonPath("$.createdBy.lastName", is("user")))
         .andExpect(jsonPath("$.createdDate", is("2023-10-30T12:30:00+02:00")))
@@ -403,7 +408,7 @@ class SavedSearchAdminApiTest extends ApiTestBase {
         .andExpect(jsonPath("$.users[0].firstName", is("test")))
         .andExpect(jsonPath("$.users[0].lastName", is("user")))
         .andExpect(jsonPath("$.tasks[0].id", is(148)))
-        .andExpect(jsonPath("$.tasks[0].helpLink", is("http://help.link")))
+        .andExpect(jsonPath("$.tasks[0].docLink", is("http://help.link")))
         .andExpect(jsonPath("$.tasks[0].taskType", is("Simple")))
         .andExpect(jsonPath("$.tasks[0].displayName", is("task display name")))
         .andExpect(jsonPath("$.tasks[0].name", is("a test task")))
@@ -441,6 +446,7 @@ class SavedSearchAdminApiTest extends ApiTestBase {
         .willReturn(savedList);
 
     mockMvc.perform(get(BASE_PATH + GET_SELECTION_COUNT_PATH + SAVED_SEARCH_ID)
+            .with(csrf())
             .header("Authorization", "Bearer " + "jwt-token")
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON))
@@ -633,6 +639,7 @@ class SavedSearchAdminApiTest extends ApiTestBase {
 
   private void updateSavedSearchAndVerifyResponse(String path, String body) throws Exception {
     mockMvc.perform(put(BASE_PATH + path)
+            .with(csrf())
             .header("Authorization", "Bearer " + "jwt-token")
             .contentType(MediaType.APPLICATION_JSON)
             .content(body)
@@ -657,6 +664,7 @@ class SavedSearchAdminApiTest extends ApiTestBase {
 
   private void updateSavedSearch(String path, String body) throws Exception {
     mockMvc.perform(put(BASE_PATH + path + SAVED_SEARCH_ID)
+            .with(csrf())
             .header("Authorization", "Bearer " + "jwt-token")
             .contentType(MediaType.APPLICATION_JSON)
             .content(body)
@@ -690,6 +698,7 @@ class SavedSearchAdminApiTest extends ApiTestBase {
 
   private void createSavedSearchAndVerifyResponse(String path, String body) throws Exception {
     mockMvc.perform(post(path)
+            .with(csrf())
             .header("Authorization", "Bearer " + "jwt-token")
             .contentType(MediaType.APPLICATION_JSON)
             .content(body)

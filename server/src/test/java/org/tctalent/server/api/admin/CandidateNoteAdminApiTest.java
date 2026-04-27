@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -45,12 +45,14 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.tctalent.server.data.CandidateTestData.getCandidateNote;
 
 /**
  * Unit tests for Candidate Note Admin Api endpoints.
@@ -65,7 +67,7 @@ class CandidateNoteAdminApiTest extends ApiTestBase {
     private static final String BASE_PATH = "/api/admin/candidate-note";
     private static final String SEARCH_PATH = "/search";
 
-    private static final CandidateNote candidateNote = AdminApiTestUtil.getCandidateNote();
+    private static final CandidateNote candidateNote = getCandidateNote();
 
     private final Page<CandidateNote> candidateNotesPage =
             new PageImpl<>(
@@ -100,6 +102,7 @@ class CandidateNoteAdminApiTest extends ApiTestBase {
                 .willReturn(candidateNotesPage);
 
         mockMvc.perform(post(BASE_PATH + SEARCH_PATH)
+                        .with(csrf())
                         .header("Authorization", "Bearer " + "jwt-token")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request))
@@ -133,6 +136,7 @@ class CandidateNoteAdminApiTest extends ApiTestBase {
                 .willReturn(candidateNote);
 
         mockMvc.perform(post(BASE_PATH)
+                        .with(csrf())
                         .header("Authorization", "Bearer " + "jwt-token")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request))
@@ -161,6 +165,7 @@ class CandidateNoteAdminApiTest extends ApiTestBase {
                 .willReturn(candidateNote);
 
         mockMvc.perform(put(BASE_PATH + "/" + CANDIDATE_ID)
+                        .with(csrf())
                         .header("Authorization", "Bearer " + "jwt-token")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request))

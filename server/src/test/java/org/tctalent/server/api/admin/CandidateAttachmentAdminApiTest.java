@@ -1,16 +1,16 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or any later version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT
+ * This program is distributed in the hope that it will be useful, but WITHOUT 
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
  * for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
+ * You should have received a copy of the GNU Affero General Public License 
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
@@ -25,6 +25,7 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
@@ -53,6 +54,7 @@ import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.multipart.MultipartFile;
+import org.tctalent.server.files.UploadType;
 import org.tctalent.server.model.db.AttachmentType;
 import org.tctalent.server.model.db.CandidateAttachment;
 import org.tctalent.server.request.attachment.CreateCandidateAttachmentRequest;
@@ -119,6 +121,7 @@ class CandidateAttachmentAdminApiTest extends ApiTestBase {
                 .willReturn(List.of(candidateAttachments));
 
         mockMvc.perform(post(BASE_PATH + SEARCH_PATH)
+                .with(csrf())
                         .header("Authorization", "Bearer " + "jwt-token")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request))
@@ -146,6 +149,7 @@ class CandidateAttachmentAdminApiTest extends ApiTestBase {
                 .willReturn(List.of(candidateAttachmentsCvOnly));
 
         mockMvc.perform(post(BASE_PATH + SEARCH_PATH)
+                .with(csrf())
                         .header("Authorization", "Bearer " + "jwt-token")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request))
@@ -172,6 +176,7 @@ class CandidateAttachmentAdminApiTest extends ApiTestBase {
                 .willReturn(pageCandidateAttachments);
 
         mockMvc.perform(post(BASE_PATH + SEARCH_PAGED_PATH)
+                .with(csrf())
                         .header("Authorization", "Bearer " + "jwt-token")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request))
@@ -202,6 +207,7 @@ class CandidateAttachmentAdminApiTest extends ApiTestBase {
                 .willReturn(candidateAttachments);
 
         mockMvc.perform(post(BASE_PATH)
+                .with(csrf())
                         .header("Authorization", "Bearer " + "jwt-token")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
@@ -249,7 +255,7 @@ class CandidateAttachmentAdminApiTest extends ApiTestBase {
                         .accept(MediaType.APPLICATION_JSON))
 
                 .andDo(print())
-                .andExpect(status().isBadRequest())
+                .andExpect(status().isNotFound())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.code", is("missing_object")))
                 .andExpect(jsonPath("$.message", is("Missing FileSystemService with ID 99")));
@@ -269,6 +275,7 @@ class CandidateAttachmentAdminApiTest extends ApiTestBase {
 
         mockMvc.perform(multipart(BASE_PATH + UPLOAD_BY_ID_PATH.replace("{id}", Long.toString(CANDIDATE_ID)))
                         .file("file", file.getBytes())
+                        .with(csrf())
                         .header("Authorization", "Bearer " + "jwt-token")
                         .param("cv", "true"))
 
@@ -292,6 +299,7 @@ class CandidateAttachmentAdminApiTest extends ApiTestBase {
                 .willReturn(candidateAttachments);
 
         mockMvc.perform(put(BASE_PATH + "/" + CANDIDATE_ID)
+                .with(csrf())
                         .header("Authorization", "Bearer " + "jwt-token")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
@@ -315,6 +323,7 @@ class CandidateAttachmentAdminApiTest extends ApiTestBase {
                 .willReturn(List.of(candidateAttachments));
 
         mockMvc.perform(post(BASE_PATH + LIST_BY_TYPE_PATH)
+                .with(csrf())
                         .header("Authorization", "Bearer " + "jwt-token")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
@@ -333,6 +342,7 @@ class CandidateAttachmentAdminApiTest extends ApiTestBase {
     @DisplayName("delete attachment by id succeeds")
     void deleteByIdSucceeds() throws Exception {
         mockMvc.perform(delete(BASE_PATH + "/" + CANDIDATE_ID)
+                .with(csrf())
                         .header("Authorization", "Bearer " + "jwt-token"))
 
                 .andDo(print())
@@ -343,7 +353,7 @@ class CandidateAttachmentAdminApiTest extends ApiTestBase {
 
     private static CandidateAttachment getCandidateAttachments(boolean isCvOnly) {
         CandidateAttachment candidateAttachment = new CandidateAttachment();
-        candidateAttachment.setCv(isCvOnly);
+        candidateAttachment.setUploadType(isCvOnly ? UploadType.cv : UploadType.other);
         return candidateAttachment;
     }
 

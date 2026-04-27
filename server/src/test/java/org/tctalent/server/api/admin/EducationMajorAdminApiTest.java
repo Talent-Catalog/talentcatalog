@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -25,6 +25,7 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
@@ -34,6 +35,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.tctalent.server.data.CandidateTestData.getEducationMajors;
+import static org.tctalent.server.data.LanguageTestData.getSystemLanguage;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.InputStream;
@@ -76,9 +79,9 @@ class EducationMajorAdminApiTest extends ApiTestBase {
   private static final String SYSTEM_LANGUAGE_TRANSLATION_PATH = "/system/{langCode}";
   private static final String SEARCH_PAGED_PATH = "/search";
 
-  private final SystemLanguage systemLanguage = AdminApiTestUtil.getSystemLanguage();
+  private final SystemLanguage systemLanguage = getSystemLanguage();
 
-  private final List<EducationMajor> educationMajors = AdminApiTestUtil.getEducationMajors();
+  private final List<EducationMajor> educationMajors = getEducationMajors();
 
   private final Page<EducationMajor> educationLevelPage =
       new PageImpl<>(
@@ -117,6 +120,7 @@ class EducationMajorAdminApiTest extends ApiTestBase {
 
     mockMvc.perform(multipart(BASE_PATH + SYSTEM_LANGUAGE_TRANSLATION_PATH.replace("{langCode}", LANG_CODE))
             .file("file", file.getBytes())
+            .with(csrf())
             .header("Authorization", "Bearer " + "jwt-token"))
 
         .andDo(print())
@@ -167,6 +171,7 @@ class EducationMajorAdminApiTest extends ApiTestBase {
         .willReturn(educationLevelPage);
 
     mockMvc.perform(post(BASE_PATH + SEARCH_PAGED_PATH)
+            .with(csrf())
             .header("Authorization", "Bearer " + "jwt-token")
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(request))
@@ -225,6 +230,7 @@ class EducationMajorAdminApiTest extends ApiTestBase {
         .willReturn(new EducationMajor("Wizardry", Status.active));
 
     mockMvc.perform(post(BASE_PATH)
+            .with(csrf())
             .header("Authorization", "Bearer " + "jwt-token")
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(request))
@@ -252,6 +258,7 @@ class EducationMajorAdminApiTest extends ApiTestBase {
         .willReturn(new EducationMajor("Wizardry", Status.active));
 
     mockMvc.perform(put(BASE_PATH + "/" + EDUCATION_MAJOR_ID)
+            .with(csrf())
             .header("Authorization", "Bearer " + "jwt-token")
             .contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(request))
@@ -276,6 +283,7 @@ class EducationMajorAdminApiTest extends ApiTestBase {
         .willReturn(true);
 
     mockMvc.perform(delete(BASE_PATH + "/" + EDUCATION_MAJOR_ID)
+            .with(csrf())
             .header("Authorization", "Bearer " + "jwt-token")
             .accept(MediaType.APPLICATION_JSON))
 

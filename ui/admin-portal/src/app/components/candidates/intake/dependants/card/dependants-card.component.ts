@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -23,7 +23,7 @@ import {
   Registrations,
   YesNo
 } from '../../../../../model/candidate';
-import {FormBuilder} from '@angular/forms';
+import {UntypedFormBuilder} from '@angular/forms';
 import {CandidateService} from '../../../../../services/candidate.service';
 import {CandidateDependantService} from '../../../../../services/candidate-dependant.service';
 import {IntakeComponentBase} from '../../../../util/intake/IntakeComponentBase';
@@ -44,7 +44,7 @@ export class DependantsCardComponent extends IntakeComponentBase implements OnIn
   dependantRegisterOptions: EnumOption[] = enumOptions(Registrations);
   dependentHealthConcerns: EnumOption[] = enumOptions(YesNo);
 
-  constructor(fb: FormBuilder, candidateService: CandidateService,
+  constructor(fb: UntypedFormBuilder, candidateService: CandidateService,
               private candidateDependantService: CandidateDependantService) {
     super(fb, candidateService);
   }
@@ -62,6 +62,18 @@ export class DependantsCardComponent extends IntakeComponentBase implements OnIn
       dependantRegisteredNotes: [this.myRecord?.registeredNotes],
       dependantHealthConcerns: [this.myRecord?.healthConcern],
       dependantHealthNotes: [this.myRecord?.healthNotes],
+    });
+
+    this.form.controls['dependantDob']?.valueChanges.subscribe(dob => {
+      this.candidateIntakeData.candidateDependants[this.myRecordIndex].dob = dob;
+    });
+
+    this.form.controls['dependantGender']?.valueChanges.subscribe(gender => {
+      this.candidateIntakeData.candidateDependants[this.myRecordIndex].gender = gender;
+    });
+
+    this.form.controls['dependantHealthConcerns']?.valueChanges.subscribe(health => {
+      this.candidateIntakeData.candidateDependants[this.myRecordIndex].healthConcern = health;
     });
   }
 

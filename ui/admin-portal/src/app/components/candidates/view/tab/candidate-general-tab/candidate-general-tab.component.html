@@ -1,5 +1,5 @@
 <!--
-  ~ Copyright (c) 2021 Talent Beyond Boundaries.
+  ~ Copyright (c) 2024 Talent Catalog.
   ~
   ~ This program is free software: you can redistribute it and/or modify it under
   ~ the terms of the GNU Affero General Public License as published by the Free
@@ -16,29 +16,40 @@
 
 <app-view-candidate-contact
   [candidate]="candidate"
-  [editable]="editable">
-</app-view-candidate-contact>
-
-<hr/>
+  [editable]="editable"
+  [compact]="compact"
+></app-view-candidate-contact>
 
 <app-view-candidate-registration
   [candidate]="candidate"
-  [editable]="editable">
-</app-view-candidate-registration>
-
-<hr/>
+  [editable]="editable"
+  [compact]="compact"
+></app-view-candidate-registration>
 
 <app-view-candidate-language
   [candidate]="candidate"
   [editable]="editable"
-  [adminUser]="adminUser">
-</app-view-candidate-language>
+  [adminUser]="adminUser"
+></app-view-candidate-language>
+
+<app-view-candidate-destinations
+  [candidate]="candidate"
+  [editable]="editable"
+></app-view-candidate-destinations>
 
 <ng-container *ngIf="adminUser">
-  <hr/>
   <app-view-candidate-account
     [candidate]="candidate"
-    [editable]="editable">
-  </app-view-candidate-account>
+    [editable]="editable"
+    [compact]="compact"
+  ></app-view-candidate-account>
+</ng-container>
+
+<ng-container *ngIf="adminUser">
+  <app-view-privacy-policy-info
+    [candidate]="candidate"
+    [editable]="editable"
+    [compact]="compact"
+  ></app-view-privacy-policy-info>
 </ng-container>
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -27,6 +27,8 @@ import {
   checkForOverdue,
   TaskAssignment
 } from "../model/task-assignment";
+import {CandidateOpportunity} from "../model/candidate-opportunity";
+import {SavedList} from "../model/saved-list";
 
 @Injectable({
   providedIn: 'root'
@@ -46,9 +48,22 @@ export class CandidateFieldService {
   private intakeTypeFormatter = (value) => {
     return this.getIntakesCompleted(value);
   }
-  private getIeltsScoreType = (value) => {
+
+  private intakeDateFormatter = (value) => {
+    return this.getLatestIntakeDates(value);
+  }
+
+  private ieltsScoreFormatter = (value) => {
     return this.getIeltsScore(value);
   }
+  private englishAssessmentScoreDetFormatter = (value) => {
+    return this.getEnglishAssessmentScoreDet(value);
+  }
+
+  private nclcScoreFormatter = (value) => {
+    return this.getNclcScore(value);
+  }
+
   private getOverallTasksStatus = (value) => {
     return this.getTasksStatus(value);
   }
@@ -57,6 +72,18 @@ export class CandidateFieldService {
 
   private intakeDatesTooltip = (value) => {
     return this.getIntakeDates(value);
+  }
+
+  private nextStepFormatter = (value: any, value2: any) => {
+    return this.getNextStep(value, value2);
+  }
+
+  private addedByFormatter = (value: any, value2: any) => {
+    return this.getAddedBy(value, value2);
+  }
+
+  private addedByTooltip = (value: any, value2: any) => {
+    return this.getAddedByPartner(value, value2);
   }
 
   private allDisplayableFields = [];
@@ -70,8 +97,8 @@ export class CandidateFieldService {
     "user.firstName",
     "user.lastName",
     "status",
-    "intakeStatus",
-    "updatedDate",
+    "latestIntake",
+    "ieltsScore",
     "nationality.name",
     "country.name",
     "user.partner.abbreviation",
@@ -115,8 +142,12 @@ export class CandidateFieldService {
       new CandidateFieldInfo("Partner", "user.partner.abbreviation", null,
         null, null, true),
       new CandidateFieldInfo("Phone", "phone", null,
-        null, null, true),
-      new CandidateFieldInfo("Referrer", "regoReferrerParam", null,
+        null, this.isCandidateContactViewable, true),
+      new CandidateFieldInfo("Whatsapp", "whatsapp", null,
+        null, this.isCandidateContactViewable, true),
+      new CandidateFieldInfo("Email", "user.email", null,
+        null, this.isCandidateContactViewable, true),
+    new CandidateFieldInfo("Referrer", "regoReferrerParam", null,
         null, null, true),
       new CandidateFieldInfo("Status", "status", null,
         this.titleCaseFormatter, null, true),
@@ -129,15 +160,27 @@ export class CandidateFieldService {
       new CandidateFieldInfo("Highest Level of Edu", "maxEducationLevel.level", null,
         this.levelGetNameFormatter, null, true),
       new CandidateFieldInfo("IELTS Score", "ieltsScore", null,
-        this.getIeltsScoreType, null, true),
+        this.ieltsScoreFormatter, null, true),
+    new CandidateFieldInfo("DET Score", "englishAssessmentScoreDet", null,
+      this.englishAssessmentScoreDetFormatter, null, true),
+      new CandidateFieldInfo("NCLC Score", "frenchAssessmentScoreNclc", null,
+        this.nclcScoreFormatter, null, true),
       new CandidateFieldInfo("Legal status", "residenceStatus", null,
         this.residenceStatusFormatter, null, true),
       new CandidateFieldInfo("Dependants", "numberDependants", null,
+        null, null, false),
+      new CandidateFieldInfo("Next Step", "nextStep", null,
+      this.nextStepFormatter, this.isSourceSubmissionList, false),
+      new CandidateFieldInfo("Added By", "addedBy", this.addedByTooltip,
+      this.addedByFormatter, this.isSourceSubmissionList, false),
+      new CandidateFieldInfo("Latest Intake", "latestIntake", this.intakeDatesTooltip,
+      this.intakeTypeFormatter, null, false),
+      new CandidateFieldInfo("Latest Intake Date", "latestIntakeDate", null,
+      this.intakeDateFormatter, null, false),
+      new CandidateFieldInfo("Survey Type", "surveyType.name", null,
         null, null, true),
-      new CandidateFieldInfo("NextStep", "candidateOpportunities.nextStep", null,
-      null, null, true),
-      new CandidateFieldInfo("Intake Status", "intakeStatus", this.intakeDatesTooltip,
-      this.intakeTypeFormatter, null, false)
+      new CandidateFieldInfo("Survey Comment", "surveyComment", null,
+        null, null, true)
       // REMOVED THIS COLUMN FOR NOW, AS IT ISN'T SORTABLE. INSTEAD ADDED TASKS MONITOR.
       // new CandidateFieldInfo("Tasks Status", "taskAssignments", null,
       //   this.getOverallTasksStatus, null),
@@ -148,19 +191,19 @@ export class CandidateFieldService {
     }
   }
 
-  get defaultDisplayableFieldsLong(): CandidateFieldInfo[] {
-    return this.getFieldsFromPaths(this.defaultDisplayedFieldPathsLong);
+  getDefaultDisplayableFieldsLong(source: CandidateSource): CandidateFieldInfo[] {
+    return this.getFieldsFromPaths(this.defaultDisplayedFieldPathsLong, source);
   }
 
-  get defaultDisplayableFieldsShort(): CandidateFieldInfo[] {
-    return this.getFieldsFromPaths(this.defaultDisplayedFieldPathsShort);
+  getDefaultDisplayableFieldsShort(source: CandidateSource): CandidateFieldInfo[] {
+    return this.getFieldsFromPaths(this.defaultDisplayedFieldPathsShort, source);
   }
 
-  get displayableFieldsMap(): Map<string, CandidateFieldInfo> {
+  getDisplayableFieldsMap(source: CandidateSource): Map<string, CandidateFieldInfo> {
     const fields = new Map<string, CandidateFieldInfo>();
     //Filter based on field selectors
     for (const field of this.allDisplayableFields) {
-      if (field.fieldSelector == null || field.fieldSelector()) {
+      if (field.fieldSelector == null || field.fieldSelector(source)) {
         fields.set(field.fieldPath, field);
       }
     }
@@ -185,13 +228,13 @@ export class CandidateFieldService {
           fieldPaths = this.defaultDisplayedFieldPathsShort;
         }
       }
-      fields = this.getFieldsFromPaths(fieldPaths);
+      fields = this.getFieldsFromPaths(fieldPaths, source);
     }
     return fields;
   }
 
 
-  getFieldsFromPaths(fieldPaths: string []): CandidateFieldInfo[] {
+  getFieldsFromPaths(fieldPaths: string [], source:CandidateSource): CandidateFieldInfo[] {
     const fields: CandidateFieldInfo[] = [];
 
     for (const fieldPath of fieldPaths) {
@@ -200,7 +243,7 @@ export class CandidateFieldService {
         console.error("CandidateFieldService: Could not find field for " + fieldPath)
       } else {
         //Ignore fields with a selector which returns false
-        if (field.fieldSelector == null || field.fieldSelector()) {
+        if (field.fieldSelector == null || field.fieldSelector(source)) {
           fields.push(field);
         }
       }
@@ -231,9 +274,21 @@ export class CandidateFieldService {
     return this.authService.canViewCandidateCountry()
   }
 
+  /**
+   * Regarding funny syntax, see above comments for isCandidateNameViewable
+   */
+  isCandidateContactViewable = (): boolean => {
+    return this.authService.canViewCandidateContact()
+  }
+
   isAnAdmin(): boolean {
     return this.authService.isAnAdmin();
   }
+
+  isSourceSubmissionList = (source: CandidateSource): boolean => {
+    return (source as SavedList).registeredJob === true;
+  };
+
 
   isDefault(fieldPaths: string[], longFormat: boolean) {
     if (fieldPaths == null) {
@@ -260,7 +315,7 @@ export class CandidateFieldService {
 
   getIeltsScore(candidate: Candidate): string {
     let score: string = null;
-    if (candidate?.ieltsScore) {
+    if (candidate?.ieltsScore != null) {
       const type = checkIeltsScoreType(candidate)
       if (type === "IELTSGen") {
         score = candidate?.ieltsScore + ' (Gen)';
@@ -272,17 +327,46 @@ export class CandidateFieldService {
     }
     return score;
   }
+  getEnglishAssessmentScoreDet(candidate: Candidate): string {
+    let score: string = null;
+    if (candidate?.englishAssessmentScoreDet != null) {
+      score = candidate.englishAssessmentScoreDet + ' (Det)';
+    }
+    return score;
+  }
+  getNclcScore(candidate: Candidate): string {
+    let score: string = null;
+    if (candidate?.frenchAssessmentScoreNclc != null) {
+      // todo - add check for type of score (e.g. TEF, TCF, etc.) when available - see #768
+      score = candidate?.frenchAssessmentScoreNclc + ' (Est)'
+    }
+    return score;
+  }
 
   getIntakesCompleted(candidate: Candidate): string {
-    let mini = candidate?.miniIntakeCompletedDate != null ? 'Mini' : null;
     let full = candidate?.fullIntakeCompletedDate != null ? 'Full' : null;
-    if (mini && full) {
-      return mini + ', ' + full;
+    let mini = candidate?.miniIntakeCompletedDate != null ? 'Mini' : null;
+    let intakeStatus = null;
+    if (full) {
+      intakeStatus = mini ? full : full + ' *no mini';
     } else if (mini) {
-      return mini;
-    } else if (full) {
-      return full;
+      intakeStatus = mini;
     }
+    return intakeStatus;
+  }
+
+  getLatestIntakeDates(candidate: Candidate): string {
+    let full = candidate?.fullIntakeCompletedDate != null ?
+      this.dateFormatter(candidate.fullIntakeCompletedDate) : null;
+    let mini = candidate?.miniIntakeCompletedDate != null ?
+      this.dateFormatter(candidate.miniIntakeCompletedDate) : null;
+    let intakeDate = null;
+    if (full) {
+      intakeDate = full;
+    } else if (mini) {
+      intakeDate = mini;
+    }
+    return intakeDate;
   }
 
   getIntakeDates(candidate: Candidate): string {
@@ -312,6 +396,48 @@ export class CandidateFieldService {
       status = null;
     }
     return status;
+  }
+
+  public getNextStep(candidate: Candidate, source: CandidateSource): string {
+    let candidateOppForThisList: CandidateOpportunity =
+      this.findRelevantCandidateOpp(candidate, source);
+
+    return candidateOppForThisList === null ? '?' : candidateOppForThisList.nextStep;
+  }
+
+  public getAddedBy(candidate: Candidate, source: CandidateSource): string {
+    const candidateOppForThisList: CandidateOpportunity =
+      this.findRelevantCandidateOpp(candidate, source);
+
+    return candidateOppForThisList === null ? '?' : candidateOppForThisList.createdBy.firstName + " " +
+      candidateOppForThisList.createdBy.lastName;
+  }
+
+  /**
+   * Populates the tooltip for values in the Added By column — saves table space by providing the
+   * partner name in this form.
+   * @param candidate the given candidate for this table row
+   * @param source the source that the displayed candidates belong to, e.g., submission list, saved
+   * search.
+   */
+  public getAddedByPartner(candidate: Candidate, source: CandidateSource): string {
+    const candidateOppForThisList: CandidateOpportunity =
+      this.findRelevantCandidateOpp(candidate, source);
+
+    return candidateOppForThisList === null ? '?' : candidateOppForThisList.createdBy.partner.name;
+  }
+
+  // When displaying a submission list, will find the relevant candidate opp for given candidate.
+  private findRelevantCandidateOpp(candidate: Candidate, source: CandidateSource): CandidateOpportunity {
+    const opp = candidate.candidateOpportunities.find(
+      opp => opp.jobOpp.submissionList.id == source.id
+    );
+    if (opp == null) {
+      console.warn('No matching opp found for this candidate and source');
+      return null;
+    } else {
+      return opp;
+    }
   }
 
 }

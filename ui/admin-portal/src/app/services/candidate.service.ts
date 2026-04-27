@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -20,18 +20,21 @@ import {
   CandidateIntakeData,
   CandidateOpportunityParams,
   UpdateCandidateListOppsRequest,
+  UpdateCandidateMutedRequest,
+  UpdateCandidateNotificationPreferenceRequest,
   UpdateCandidateOppsRequest,
   UpdateCandidateShareableDocsRequest,
   UpdateCandidateShareableNotesRequest,
   UpdateCandidateStatusRequest
 } from '../model/candidate';
-import {Observable} from 'rxjs';
+import {Observable, Subject} from 'rxjs';
 import {environment} from '../../environments/environment';
 import {HttpClient} from '@angular/common/http';
 import {SearchResults} from '../model/search-results';
 import {map} from "rxjs/operators";
-import {CandidateSource} from "../model/base";
+import {CandidateSource, FetchCandidatesWithChatRequest} from "../model/base";
 import {IntakeService} from "../components/util/intake/IntakeService";
+import {JobChatUserInfo} from "../model/chat";
 
 export interface DownloadCVRequest {
   candidateId: number,
@@ -39,23 +42,35 @@ export interface DownloadCVRequest {
   showContact: boolean
 }
 
+// If a completed date is provided, this intake is an external intake entered to the TC at a later date.
+export interface IntakeAuditRequest {
+  completedDate: Date,
+  fullIntake: boolean
+}
+
 @Injectable({providedIn: 'root'})
 export class CandidateService implements IntakeService {
+
+  private candidateUpdatedSource = new Subject<Candidate>();
 
   private apiUrl = environment.apiUrl + '/candidate';
 
   constructor(private http: HttpClient) {}
 
-  search(request): Observable<SearchResults<Candidate>> {
-    return this.http.post<SearchResults<Candidate>>(`${this.apiUrl}/search`, request);
+  search(request, useOldFetch: boolean): Observable<SearchResults<Candidate>> {
+    let suffix = "search";
+    if (useOldFetch) {
+      suffix += "-old-fetch";
+    }
+    return this.http.post<SearchResults<Candidate>>(`${this.apiUrl}/${suffix}`, request);
   }
 
   findByCandidateEmail(request): Observable<SearchResults<Candidate>> {
     return this.http.post<SearchResults<Candidate>>(`${this.apiUrl}/findbyemail`, request);
   }
 
-  findByCandidateEmailOrPhone(request): Observable<SearchResults<Candidate>> {
-    return this.http.post<SearchResults<Candidate>>(`${this.apiUrl}/findbyemailorphone`, request);
+  findByCandidateEmailPhoneOrWhatsapp(request): Observable<SearchResults<Candidate>> {
+    return this.http.post<SearchResults<Candidate>>(`${this.apiUrl}/findbyemailphoneorwhatsapp`, request);
   }
 
   findByCandidateNumberOrName(request): Observable<SearchResults<Candidate>> {
@@ -64,6 +79,10 @@ export class CandidateService implements IntakeService {
 
   findByExternalId(request): Observable<SearchResults<Candidate>> {
     return this.http.post<SearchResults<Candidate>>(`${this.apiUrl}/findbyexternalid`, request);
+  }
+
+  findByPublicId(request): Observable<SearchResults<Candidate>> {
+    return this.http.post<SearchResults<Candidate>>(`${this.apiUrl}/findbypublicid`, request);
   }
 
   getByNumber(number: string): Observable<Candidate> {
@@ -82,6 +101,11 @@ export class CandidateService implements IntakeService {
     return this.http.put<Candidate>(`${this.apiUrl}/${id}/links`, details);
   }
 
+  updateNotificationPreference(id: number, request: UpdateCandidateNotificationPreferenceRequest):
+    Observable<void>  {
+    return this.http.put<void>(`${this.apiUrl}/${id}/notification`, request);
+  }
+
   updateShareableNotes(
     id: number, request: UpdateCandidateShareableNotesRequest): Observable<Candidate> {
     return this.http.put<Candidate>(`${this.apiUrl}/${id}/shareable-notes`, request);
@@ -96,12 +120,20 @@ export class CandidateService implements IntakeService {
     return this.http.put<void>(`${this.apiUrl}/status`, details);
   }
 
+  updateMuted(id: number, request: UpdateCandidateMutedRequest): Observable<void>  {
+    return this.http.put<void>(`${this.apiUrl}/${id}/muted`, request);
+  }
+
   updateInfo(id: number, details): Observable<Candidate>  {
     return this.http.put<Candidate>(`${this.apiUrl}/${id}/info`, details);
   }
 
   updateSurvey(id: number, details): Observable<Candidate>  {
     return this.http.put<Candidate>(`${this.apiUrl}/${id}/survey`, details);
+  }
+
+  updateMaxEducationLevel(id: number, details): Observable<Candidate>  {
+    return this.http.put<Candidate>(`${this.apiUrl}/${id}/education`, details);
   }
 
   updateMedia(id: number, details): Observable<Candidate>  {
@@ -177,8 +209,8 @@ export class CandidateService implements IntakeService {
     return this.http.put<void>(`${this.apiUrl}/${candidateId}/intake`, formData);
   }
 
-  completeIntake(candidateId: number, full: boolean): Observable<Candidate> {
-    return this.http.post<Candidate>(`${this.apiUrl}/${candidateId}/intake`, full);
+  completeIntake(candidateId: number, request: IntakeAuditRequest): Observable<Candidate> {
+    return this.http.post<Candidate>(`${this.apiUrl}/${candidateId}/intake`, request);
   }
 
   resolveOutstandingTasks(details): Observable<void>  {
@@ -198,4 +230,35 @@ export class CandidateService implements IntakeService {
         responseType: 'text'
       });
   }
+
+  checkUnreadChats(): Observable<JobChatUserInfo> {
+    return this.http.post<JobChatUserInfo>(`${this.apiUrl}/check-unread-chats`, null);
+  }
+
+  fetchCandidatesWithChat(request: FetchCandidatesWithChatRequest):
+    Observable<SearchResults<Candidate>> {
+    return this.http.post<SearchResults<Candidate>>(
+      `${this.apiUrl}/fetch-candidates-with-chat`, request
+    );
+  }
+
+  // In the candidate-search-card we pass in the updated candidate object to merge with the extended
+  // candidate DTO.
+  // This reduces an additional API call to fetch the updated extended candidate object.
+  // But in candidate profile we fetch the updated object so we don't need the updated object,
+  // just need to refetch the current candidate.
+  updateCandidate(candidate?: Candidate) {
+    candidate ? this.candidateUpdatedSource.next(candidate) : this.candidateUpdatedSource.next();
+  }
+
+  candidateUpdated() {
+    return this.candidateUpdatedSource.asObservable();
+  }
+
+  fetchPotentialDuplicates(id: number): Observable<Candidate[]> {
+    return this.http.get<Candidate[]>(
+      `${this.apiUrl}/${id}/fetch-potential-duplicates-of-given-candidate`
+    );
+  }
+
 }

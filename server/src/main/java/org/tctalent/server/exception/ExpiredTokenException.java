@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -20,6 +20,10 @@ public class ExpiredTokenException extends ServiceException {
 
     public ExpiredTokenException() {
         super("expired_password_token", "The reset password token has expired");
+    }
+
+    public ExpiredTokenException(String message) {
+        super("expired_password_token", message);
     }
 
     public ExpiredTokenException(Throwable cause) {

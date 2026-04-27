@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -20,9 +20,8 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import java.util.concurrent.TimeUnit;
-import javax.servlet.http.HttpServletRequest;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import jakarta.servlet.http.HttpServletRequest;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
@@ -41,10 +40,9 @@ import org.tctalent.server.service.db.CaptchaService;
  * @author John Cameron
  */
 @Service
+@Slf4j
 public class CaptchaServiceImpl implements CaptchaService {
     private final LoadingCache<String, Integer> attemptsCache;
-
-    private final static Logger log = LoggerFactory.getLogger(CaptchaServiceImpl.class);
 
     protected static final String RECAPTCHA_URL_TEMPLATE =
             "https://www.google.com/recaptcha/api/siteverify?secret=%s&response=%s&remoteip=%s";

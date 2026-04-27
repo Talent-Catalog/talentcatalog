@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -16,11 +16,10 @@
 
 package org.tctalent.server.service.db.impl;
 
+import io.jsonwebtoken.lang.Collections;
 import java.util.List;
-
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
@@ -28,6 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.tctalent.server.exception.EntityExistsException;
 import org.tctalent.server.exception.EntityReferencedException;
 import org.tctalent.server.exception.NoSuchObjectException;
+import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.model.db.CandidateLanguage;
 import org.tctalent.server.model.db.LanguageLevel;
 import org.tctalent.server.model.db.Status;
@@ -40,13 +40,9 @@ import org.tctalent.server.request.language.level.UpdateLanguageLevelRequest;
 import org.tctalent.server.service.db.LanguageLevelService;
 import org.tctalent.server.service.db.TranslationService;
 
-import io.jsonwebtoken.lang.Collections;
-
 @Service
+@Slf4j
 public class LanguageLevelServiceImpl implements LanguageLevelService {
-
-
-    private static final Logger log = LoggerFactory.getLogger(LanguageLevelServiceImpl.class);
 
     private final CandidateLanguageRepository candidateLanguageRepository;
     private final LanguageLevelRepository languageLevelRepository;
@@ -72,11 +68,21 @@ public class LanguageLevelServiceImpl implements LanguageLevelService {
     public Page<LanguageLevel> searchLanguageLevels(SearchLanguageLevelRequest request) {
         Page<LanguageLevel> languageLevels = languageLevelRepository.findAll(
                 LanguageLevelSpecification.buildSearchQuery(request), request.getPageRequest());
-        log.info("Found " + languageLevels.getTotalElements() + " language levels in search");
+        LogBuilder.builder(log)
+            .action("SearchLanguageLevels")
+            .message("Found " + languageLevels.getTotalElements() + " language levels in search")
+            .logInfo();
+
         if (!StringUtils.isBlank(request.getLanguage())){
             translationService.translate(languageLevels.getContent(), "language_level", request.getLanguage());
         }
         return languageLevels;
+    }
+
+    @Override
+    public LanguageLevel findByLevel(int level) {
+        return languageLevelRepository.findByLevel(level)
+            .orElseThrow(() -> new NoSuchObjectException(LanguageLevel.class, level));
     }
 
     @Override
@@ -90,11 +96,10 @@ public class LanguageLevelServiceImpl implements LanguageLevelService {
     public LanguageLevel createLanguageLevel(
         CreateLanguageLevelRequest request) throws EntityExistsException {
         LanguageLevel languageLevel = new LanguageLevel(
-                request.getName(), request.getStatus(), request.getLevel());
+                request.getName(), request.getStatus(), request.getLevel(), request.getCefrLevel());
         checkDuplicates(null, request.getName(), request.getLevel());
         return this.languageLevelRepository.save(languageLevel);
     }
-
 
     @Override
     @Transactional
@@ -106,6 +111,7 @@ public class LanguageLevelServiceImpl implements LanguageLevelService {
         languageLevel.setName(request.getName());
         languageLevel.setLevel(request.getLevel());
         languageLevel.setStatus(request.getStatus());
+        languageLevel.setCefrLevel(request.getCefrLevel());
         return languageLevelRepository.save(languageLevel);
     }
 

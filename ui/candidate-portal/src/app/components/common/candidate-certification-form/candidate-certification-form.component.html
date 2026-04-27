@@ -1,5 +1,5 @@
 <!--
-  ~ Copyright (c) 2021 Talent Beyond Boundaries.
+  ~ Copyright (c) 2024 Talent Catalog.
   ~
   ~ This program is free software: you can redistribute it and/or modify it under
   ~ the terms of the GNU Affero General Public License as published by the Free
@@ -17,20 +17,20 @@
 <form class="card" [formGroup]="form">
 
   <div class="mb-3">
-    <label class="form-label" for="name">{{ 'REGISTRATION.CERTIFICATIONS.LABEL.NAME' | translate }} <sup>*</sup></label>
-    <input type="text" class="form-control" id="name" placeholder="" [formControlName]="'name'">
+    <tc-label for="name">{{ 'REGISTRATION.CERTIFICATIONS.LABEL.NAME' | translate }} <sup>*</sup></tc-label>
+    <tc-input type="text" id="name" placeholder="" [formControlName]="'name'"></tc-input>
     <app-form-control-error [control]="form.controls.name"></app-form-control-error>
   </div>
 
   <div class="mb-3">
-    <label class="form-label" for="institution">{{ 'REGISTRATION.CERTIFICATIONS.LABEL.INSTITUTION' | translate }} <sup>*</sup></label>
-    <input type="text" class="form-control" id="institution" placeholder="" [formControlName]="'institution'">
+    <tc-label for="institution">{{ 'REGISTRATION.CERTIFICATIONS.LABEL.INSTITUTION' | translate }} <sup>*</sup></tc-label>
+    <tc-input type="text" id="institution" placeholder="" [formControlName]="'institution'"></tc-input>
     <app-form-control-error [control]="form.controls.institution"></app-form-control-error>
   </div>
 
   <div class="mb-3">
-    <label class="form-label" for="dateCompleted">{{ 'REGISTRATION.CERTIFICATIONS.LABEL.DATECOMPLETED' | translate }} <sup>*</sup></label>
-    <app-date-picker id="dateCompleted" [control]="form.controls.dateCompleted"></app-date-picker>
+    <tc-label for="dateCompleted">{{ 'REGISTRATION.CERTIFICATIONS.LABEL.DATECOMPLETED' | translate }} <sup>*</sup></tc-label>
+    <tc-date-picker id="dateCompleted" [control]="form.controls.dateCompleted"></tc-date-picker>
     <app-form-control-error [control]="form.controls.dateCompleted"></app-form-control-error>
     <p class="small mt-2 mb-0">
       {{ 'FORM.LABEL.APPROX' | translate }}
@@ -38,11 +38,10 @@
   </div>
 
   <div class="text-center mt-4 submit">
-    <button class="btn btn-primary"
-            [disabled]="form.invalid"
-            (click)="save()">
+    <tc-button [disabled]="form.invalid"
+            (onClick)="save()">
       {{ 'FORM.LABEL.SAVE' | translate }}
-    </button>
+    </tc-button>
   </div>
 
 </form>

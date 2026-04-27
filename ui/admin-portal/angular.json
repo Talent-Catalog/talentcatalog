@@ -112,6 +112,29 @@
                   "maximumError": "5mb"
                 }
               ]
+            },
+            "staging": {
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.staging.ts"
+                }
+              ],
+              "optimization": true,
+              "outputHashing": "all",
+              "sourceMap": false,
+              "namedChunks": false,
+              "aot": true,
+              "extractLicenses": true,
+              "vendorChunk": false,
+              "buildOptimizer": true,
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "4mb",
+                  "maximumError": "5mb"
+                }
+              ]
             }
           },
           "defaultConfiguration": ""
@@ -120,18 +143,21 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
             "port": 4201,
-            "browserTarget": "admin-portal:build"
+            "buildTarget": "admin-portal:build"
           },
           "configurations": {
             "production": {
-              "browserTarget": "admin-portal:build:production"
+              "buildTarget": "admin-portal:build:production"
+            },
+            "staging": {
+              "buildTarget": "admin-portal:build:staging"
             }
           }
         },
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "admin-portal:build"
+            "buildTarget": "admin-portal:build"
           }
         },
         "test": {
@@ -167,13 +193,15 @@
           "configurations": {
             "production": {
               "devServerTarget": "admin-portal:serve:production"
+            },
+            "staging": {
+              "devServerTarget": "admin-portal:serve:staging"
             }
           }
         }
       }
     }
   },
-  "defaultProject": "admin-portal",
   "cli": {
     "analytics": "3297a4ca-e37f-405c-a912-c00461005436"
   }

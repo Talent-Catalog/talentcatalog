@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -15,14 +15,20 @@
  */
 
 import {TestBed} from '@angular/core/testing';
+import {HttpClientTestingModule} from '@angular/common/http/testing';
 
 import {CandidateService} from './candidate.service';
 
 describe('CandidateService', () => {
-  beforeEach(() => TestBed.configureTestingModule({}));
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      imports: [HttpClientTestingModule],
+      providers: [CandidateService]
+    });
+  });
 
   it('should be created', () => {
-    const service: CandidateService = TestBed.get(CandidateService);
+    const service: CandidateService = TestBed.inject(CandidateService);
     expect(service).toBeTruthy();
   });
 });

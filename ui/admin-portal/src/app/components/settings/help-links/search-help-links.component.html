@@ -1,0 +1,89 @@
+<!--
+  ~ Copyright (c) 2024 Talent Catalog.
+  ~
+  ~ This program is free software: you can redistribute it and/or modify it under
+  ~ the terms of the GNU Affero General Public License as published by the Free
+  ~ Software Foundation, either version 3 of the License, or any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful, but WITHOUT
+  ~ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+  ~ FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+  ~ for more details.
+  ~
+  ~ You should have received a copy of the GNU Affero General Public License
+  ~ along with this program. If not, see https://www.gnu.org/licenses/.
+  -->
+
+<tc-alert *ngIf="error">
+  {{error}}
+</tc-alert>
+<form [formGroup]="searchForm" (ngSubmit)="search()">
+  <div class="row">
+    <div class="mb-3 col-4">
+      <tc-input type="text" placeholder="Search..." aria-label="Search" formControlName="keyword"
+                id="keyword"></tc-input>
+    </div>
+    <div class="mb-3 col-4">
+      <ng-select class="tc-select" id="countryId" [formControlName]="'countryId'" [items]="destinationCountries"
+                 placeholder="Filter by country..." bindLabel="name" bindValue="id">
+      </ng-select>
+    </div>
+    <div class="col-4 text-end">
+      <tc-button *ngIf="!readOnly" (onClick)="addHelpLink()">Add</tc-button>
+    </div>
+  </div>
+</form>
+
+<tc-table [results]="results"
+          [loading]="loading"
+          [paginationPosition]="'top'"
+          [(pageNumber)]="pageNumber"
+          (pageChange)="search()"
+          [clickableRows]="false"
+>
+
+  <thead>
+  <tr>
+    <th>
+      Label <app-help [request]="labelHelpRequest" placement="right"></app-help>
+    </th>
+    <th>Link</th>
+    <th>Country</th>
+    <th>Case Stage</th>
+    <th>Job Stage</th>
+    <th>Focus</th>
+    <th>Next Step Name</th>
+    <th>Next Step Text</th>
+    <th>Next Step Days</th>
+    <th *ngIf="!readOnly"></th>
+  </tr>
+  </thead>
+
+  <tbody>
+  <tr *ngFor="let helpLink of results?.content">
+    <td>{{helpLink.label}}</td>
+    <td>
+      <a [href]="helpLink.link" target="_blank"
+         rel="noopener">{{helpLink.link}}</a>
+    </td>
+    <td>{{helpLink?.country?.name}}</td>
+    <td>{{caseStageKeyToValue(helpLink?.caseStage)}}</td>
+    <td>{{jobStageKeyToValue(helpLink?.jobStage)}}</td>
+    <td>{{focusKeyToValue(helpLink?.focus)}}</td>
+    <td>{{helpLink?.nextStepInfo?.nextStepName}}</td>
+    <td>{{helpLink?.nextStepInfo?.nextStepText}}</td>
+    <td>{{helpLink?.nextStepInfo?.nextStepDays}}</td>
+    <td class="d-flex justify-content-end gap-3 me-3">
+      <div *ngIf="!readOnly">
+        <tc-button [type]="'plain'"
+                   [color]="'secondary'"
+                   (onClick)="editHelpLink(helpLink)"
+        >
+          <i class="fas fa-edit" title="Change partner details"></i>
+        </tc-button>
+      </div>
+    </td>
+  </tr>
+  </tbody>
+
+</tc-table>

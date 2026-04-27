@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -20,7 +20,7 @@ import {HttpClient} from '@angular/common/http';
 import {Language, SystemLanguage} from '../model/language';
 import {Observable, Subject, throwError} from 'rxjs';
 import {catchError, map, tap} from 'rxjs/operators';
-import {LocalStorageService} from 'angular-2-local-storage';
+import {LocalStorageService} from "./local-storage.service";
 
 export class DataPickerNames {
   monthNames: string[];

@@ -1,13 +1,30 @@
+/*
+ * Copyright (c) 2024 Talent Catalog.
+ *
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see https://www.gnu.org/licenses/.
+ */
+
 import {Injectable, OnDestroy} from '@angular/core';
 import {environment} from "../../environments/environment";
 import {HttpClient} from "@angular/common/http";
 import {BehaviorSubject, combineLatest, Observable, Subject} from "rxjs";
-import {ChatPost, CreateChatRequest, JobChat, JobChatUserInfo} from "../model/chat";
+import {ChatPost, CreateChatRequest, JobChat, JobChatType, JobChatUserInfo} from "../model/chat";
 import {RxStompService} from "./rx-stomp.service";
 import {Message} from "@stomp/stompjs";
 import {map, share, shareReplay, takeUntil, tap} from "rxjs/operators";
 import {RxStompConfig} from "@stomp/rx-stomp";
 import {AuthenticationService} from "./authentication.service";
+import {ERROR_MESSAGES} from "../app.constants";
 
 @Injectable({
   providedIn: 'root'
@@ -48,11 +65,24 @@ export class ChatService implements OnDestroy {
    */
   private chatByRequest$: Map<string, Observable<JobChat>> = new Map();
 
+  /**
+   * Tracks which chats are already loading, as we are using tabs there are multiple subscription points using
+   * getChatIsRead$ (tc-tab-header, tc-tab-content).
+   * @private
+   */
+  private chatsLoading = new Set<number>();
+
   constructor(
     private authenticationService: AuthenticationService,
     private http: HttpClient,
     private rxStompService: RxStompService
-  ) {}
+  ) {
+    this.authenticationService.loggedInUser$.subscribe(user => {
+      if (user === null) {
+        this.cleanUp();
+      }
+    });
+  }
 
   ngOnDestroy(): void {
     //Note that there seems to be some doubt whether this is called when a service is destroyed.
@@ -73,6 +103,70 @@ export class ChatService implements OnDestroy {
     this.chatPosts$.clear();
     this.chatByRequest$.clear();
 
+    //Reinitialize so new takeUntil pipes work after re-login
+    this.destroyStompSubscriptions$ = new Subject<void>();
+  }
+
+  /**
+   * Returns the translation key suffix corresponding to the given chat type.
+   * <p/>
+   * These keys match the key suffixes of CHAT_INFO in GeneralTranslationsComponent.
+   * @param type Chat type
+   */
+  private getChatTypeKey(type: JobChatType): string {
+    let key: string;
+    switch (type) {
+      case JobChatType.CandidateProspect:
+        key = "CANDIDATE_PROSPECT";
+        break;
+
+      case JobChatType.AllJobCandidates:
+        key = "ALL_JOB_CANDIDATES";
+        break;
+
+      case JobChatType.JobCreatorSourcePartner:
+        key = "JOB_CREATOR_SOURCE_PARTNER";
+        break;
+
+      case JobChatType.CandidateRecruiting:
+        key = "CANDIDATE_RECRUITING";
+        break;
+
+      case JobChatType.JobCreatorAllSourcePartners:
+        key = "JOB_CREATOR_ALL_SOURCE_PARTNERS";
+        break;
+    }
+    return key;
+  }
+  /**
+   * Translation key for the heading of the given chat type
+   * <p/>
+   * This key appears in GeneralTranslationsComponent.
+   * @param type Chat type
+   */
+  getChatHeadingKey(type: JobChatType): string {
+    return "CHAT_INFO.HEADING." + this.getChatTypeKey(type);
+  }
+
+
+  /**
+   * Translation key for info about the participants of the given chat type
+   * <p/>
+   * This key appears in GeneralTranslationsComponent.
+   * @param type Chat type
+   */
+  getChatInfoParticipantsKey(type: JobChatType): string {
+    return "CHAT_INFO.PARTICIPANTS." + this.getChatTypeKey(type);
+  }
+
+  /**
+   * Translation key for info about the purpose of the given chat type
+   * <p/>
+   * This key appears in GeneralTranslationsComponent.
+   * @param type Chat type
+   */
+  getChatInfoPurposeKey(type: JobChatType): string {
+    return "CHAT_INFO.PURPOSE." + this.getChatTypeKey(type);
   }
 
   /**
@@ -95,6 +189,11 @@ export class ChatService implements OnDestroy {
 
   create(request: CreateChatRequest): Observable<JobChat> {
     return this.http.post<JobChat>(`${this.apiUrl}`, request);
+  }
+
+  // Returns null if there isn't one already
+  getCandidateProspectChat(candidateId: number): Observable<JobChat> {
+    return this.http.get<JobChat>(`${this.apiUrl}/${candidateId}/get-cp-chat`);
   }
 
   getOrCreate(request: CreateChatRequest): Observable<JobChat> {
@@ -129,7 +228,7 @@ export class ChatService implements OnDestroy {
    * chat.
    * @param chat
    */
-  private getJobChatUserInfo(chat: JobChat): Observable<JobChatUserInfo> {
+  public getJobChatUserInfo(chat: JobChat): Observable<JobChatUserInfo> {
     // console.log('Browser requests server for status of chat ' + chat.id);
     const user = this.authenticationService.getLoggedInUser();
     return this.http.get<JobChatUserInfo>(
@@ -173,7 +272,7 @@ export class ChatService implements OnDestroy {
         takeUntil(this.destroyStompSubscriptions$),
         tap( message => console.log('Post received from server for chat ' + chat.id
         + ': ' + JSON.stringify(message.body))),
-        tap(() => this.changeChatReadStatus(chat,false))
+        tap(message => this.updateReadStatusBasedOnIncomingPost(chat, message))
       );
 
       if (this.chatPosts$.has(chat.id)) {
@@ -184,6 +283,27 @@ export class ChatService implements OnDestroy {
     }
 
     return observable;
+  }
+
+  /**
+   * Processes the given incoming message to the given chat, checking how it should affect my
+   * read status for the chat.
+   * @param chat Chat
+   * @param message Raw message received to chat
+   */
+  private updateReadStatusBasedOnIncomingPost(chat: JobChat, message: Message) {
+    //Extract Post and check if mine
+    const post: ChatPost = JSON.parse(message.body);
+    if (post) {
+      const me = this.authenticationService.getLoggedInUser();
+      //Only change read status if this is not my post.
+      //My posts do not affect read status (see server code as well - my posts to not change
+      //my read status of chats)
+      if (post.createdBy?.id != me?.id) {
+        //New posts (by others) mark the chat as unread
+        this.changeChatReadStatus(chat,false);
+      }
+    }
   }
 
   disconnect() {
@@ -205,8 +325,27 @@ export class ChatService implements OnDestroy {
       let stompConfig = this.getRxStompConfig();
       this.rxStompService.configure(stompConfig);
       this.rxStompService.activate();
+      this.configureErrorHandling();
       this.stompServiceConfigured = true;
     }
+  }
+
+  private configureErrorHandling(): void {
+    this.rxStompService.stompErrors$
+    .pipe(
+      takeUntil(this.destroyStompSubscriptions$)
+    )
+    .subscribe((error) => {
+      if (error.headers && error.headers.message &&
+        error.headers.message.includes(ERROR_MESSAGES.EXPIRED_OR_INVALID_JWT)) {
+        this.handleExpiredOrInvalidToken();
+      }
+    });
+  }
+
+  private handleExpiredOrInvalidToken(): void {
+    console.log('Expired or invalid JWT  - logging out');
+    this.authenticationService.logout();
   }
 
   /**
@@ -269,7 +408,10 @@ export class ChatService implements OnDestroy {
   getChatIsRead$(chat: JobChat): Observable<boolean> {
     const subject = this.getChatIsReadSubject(chat);
 
-    if (subject.value == null) {
+    if (subject.value == null && !this.chatsLoading.has(chat.id)) {
+      console.log('Fetching read status for chat', chat.id);
+      this.chatsLoading.add(chat.id);
+
       //If we don't know the status, we need to get it from the server.
       this.getJobChatUserInfo(chat).subscribe({
           next: info => {

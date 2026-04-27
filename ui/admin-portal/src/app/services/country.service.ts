@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -37,7 +37,7 @@ export class CountryService {
   private apiUrl: string = environment.apiUrl + '/country';
   private countries: Country[] = [];
   private countriesRestricted: Country[] = [];
-  private tbbDestinations: Country[] = [];
+  private tcDestinations: Country[] = [];
 
   constructor(private http: HttpClient) { }
 
@@ -62,15 +62,15 @@ export class CountryService {
     return this.http.get<Country[]>(`${this.apiUrl}/restricted`);
   }
 
-  listTBBDestinations(): Observable<Country[]> {
+  listTCDestinations(): Observable<Country[]> {
     //If we already have the data return it, otherwise get it.
-    return this.tbbDestinations.length > 0 ?
+    return this.tcDestinations.length > 0 ?
       //"of" turns the data into an Observable
-      of(this.tbbDestinations) :
+      of(this.tcDestinations) :
       this.http.get<Country[]>(`${this.apiUrl}/destinations`)
         .pipe(
           //Save data the first time we fetch it
-          tap(data => {this.tbbDestinations = data})
+          tap(data => {this.tcDestinations = data})
         );
   }
 

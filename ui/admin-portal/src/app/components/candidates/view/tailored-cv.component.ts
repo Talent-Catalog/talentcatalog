@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -14,10 +14,10 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import { Component, OnInit } from "@angular/core";
-import { NgbActiveModal } from "@ng-bootstrap/ng-bootstrap";
-import { CandidateOccupationService } from "src/app/services/candidate-occupation.service";
-import { CandidateService } from "src/app/services/candidate.service";
+import {Component, OnInit} from "@angular/core";
+import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
+import {CandidateOccupationService} from "src/app/services/candidate-occupation.service";
+import {CandidateService} from "src/app/services/candidate.service";
 
 @Component({
   selector: "app-tailored-cv",
@@ -115,6 +115,7 @@ export class TailoredCvComponent implements OnInit {
     return `${protocol}//${origin}${path}${this.token}`;
   }
 
+  protected readonly window = window;
 }
 
 export class CandidateOccupationModel {

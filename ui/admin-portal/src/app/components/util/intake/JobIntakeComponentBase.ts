@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -14,8 +14,8 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Directive, Input, OnInit} from '@angular/core';
-import {FormBuilder} from '@angular/forms';
+import {Directive, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {UntypedFormBuilder} from '@angular/forms';
 import {AutoSaveComponentBase} from "../autosave/AutoSaveComponentBase";
 import {Job} from "../../../model/job";
 import {JobOppIntake} from "../../../model/job-opp-intake";
@@ -44,11 +44,22 @@ export abstract class JobIntakeComponentBase extends AutoSaveComponentBase imple
   @Input() editable: boolean = true;
 
   /**
+   * This provides the base translation key for the component which is used to construct both the
+   * displayed label and the tooltip for the component.
+   * See {@link componentLabelKey} and {@link componentTooltipKey}
+   */
+  @Input() componentKey: string;
+
+  @Output() intakeChanged = new EventEmitter<JobOppIntake>();
+
+  protected tooltip = "";
+
+  /**
    * Inject in a FormBuilder to create the form and an IntakeService to perform the saves.
    * @param fb FormBuilder
    * @param jobService JobService which saves the intake data
    */
-  protected constructor(protected fb: FormBuilder, jobService: JobService) {
+  protected constructor(protected fb: UntypedFormBuilder, jobService: JobService) {
     super(jobService);
   }
 
@@ -59,6 +70,14 @@ export abstract class JobIntakeComponentBase extends AutoSaveComponentBase imple
    */
   get job(): Job {
     return <Job>this.entity;
+  }
+
+  get componentLabelKey(): string {
+    return this.componentKey + ".LABEL"
+  }
+
+  get componentTooltipKey(): string {
+    return this.componentKey + ".TOOLTIP"
   }
 
   /**

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -38,6 +38,25 @@ public class HtmlSanitizer {
      */
     @Nullable
     public static String sanitize(@Nullable String html) {
-        return html == null ? null : Jsoup.clean(html, Safelist.relaxed());
+        return html == null ? null :
+            StringSanitizer.removeControlCharacters(Jsoup.clean(html, Safelist.relaxed()));
     }
+
+    /**
+     * Same as sanitize method above, but without stripping <a> tags of 'target=' or 'rel=' to allow links to open in new tab.
+     * As adding this target attribute back can open up site to risks, also adding the attribute "rel=noopener" or
+     * "rel=noreferrer" helps avoid these issues.
+     * See here: https://developer.chrome.com/docs/lighthouse/best-practices/external-anchors-use-rel-noopener/
+     * @param html an untrusted HTML string
+     * @return an HTML string with any potentially XSS tags removed but allowing links to open in new tab safely, or
+     * null if html was null
+     */
+    @Nullable
+    public static String sanitizeWithLinksNewTab(@Nullable String html) {
+        return html == null ? null :
+            StringSanitizer.removeControlCharacters(
+                Jsoup.clean(html, Safelist.relaxed().addAttributes("a", "target", "rel"))
+            );
+    }
+
 }

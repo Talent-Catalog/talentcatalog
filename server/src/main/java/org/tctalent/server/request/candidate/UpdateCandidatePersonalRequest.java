@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -16,14 +16,17 @@
 
 package org.tctalent.server.request.candidate;
 
+import java.time.LocalDate;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import lombok.Getter;
+import lombok.Setter;
 import org.tctalent.server.model.db.Gender;
 import org.tctalent.server.model.db.YesNo;
 import org.tctalent.server.model.db.YesNoUnsure;
 
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import java.time.LocalDate;
-
+@Getter
+@Setter
 public class UpdateCandidatePersonalRequest {
 
     /* PERSONAL */
@@ -38,6 +41,7 @@ public class UpdateCandidatePersonalRequest {
     private Integer yearOfArrival;
     /* NATIONALITY */
     private Long nationalityId;
+    private Long[] otherNationalityIds;
     /* EXTERNAL ID */
     private String externalId;
     private String externalIdSource;
@@ -47,88 +51,4 @@ public class UpdateCandidatePersonalRequest {
     private String unhcrNumber;
     @Enumerated(EnumType.STRING)
     private YesNo unhcrConsent;
-
-    public String getFirstName() {
-        return firstName;
-    }
-
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
-    public String getLastName() {
-        return lastName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
-
-    public Gender getGender() { return gender; }
-
-    public void setGender(Gender gender) { this.gender = gender; }
-
-    public LocalDate getDob() {
-        return dob;
-    }
-
-    public void setDob(LocalDate dob) {
-        this.dob = dob;
-    }
-
-    public Long getCountryId() {
-        return countryId;
-    }
-
-    public void setCountryId(Long countryId) {
-        this.countryId = countryId;
-    }
-
-    public String getCity() {
-        return city;
-    }
-
-    public void setCity(String city) {
-        this.city = city;
-    }
-
-    public String getState() {return state;}
-
-    public void setState(String state) {this.state = state;}
-
-    public Integer getYearOfArrival() {
-        return yearOfArrival;
-    }
-
-    public void setYearOfArrival(Integer yearOfArrival) {
-        this.yearOfArrival = yearOfArrival;
-    }
-
-    public Long getNationalityId() {
-        return nationalityId;
-    }
-
-    public void setNationalityId(Long nationalityId) {
-        this.nationalityId = nationalityId;
-    }
-
-    public String getExternalId() {return externalId;}
-
-    public void setExternalId(String externalId) {this.externalId = externalId;}
-
-    public String getExternalIdSource() {return externalIdSource;}
-
-    public void setExternalIdSource(String externalIdSource) {this.externalIdSource = externalIdSource;}
-
-    public YesNoUnsure getUnhcrRegistered() {return unhcrRegistered;}
-
-    public void setUnhcrRegistered(YesNoUnsure unhcrRegistered) {this.unhcrRegistered = unhcrRegistered;}
-
-    public String getUnhcrNumber() {return unhcrNumber;}
-
-    public void setUnhcrNumber(String unhcrNumber) {this.unhcrNumber = unhcrNumber;}
-
-    public YesNo getUnhcrConsent() {return unhcrConsent;}
-
-    public void setUnhcrConsent(YesNo unhcrConsent) {this.unhcrConsent = unhcrConsent;}
 }

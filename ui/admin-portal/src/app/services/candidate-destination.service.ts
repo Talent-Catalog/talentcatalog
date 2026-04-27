@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -20,6 +20,17 @@ import {environment} from '../../environments/environment';
 import {HttpClient} from '@angular/common/http';
 import {CandidateDestination} from '../model/candidate-destination';
 
+export interface CreateCandidateDestinationRequest {
+  countryId: number,
+  interest: string,
+  notes?: string
+}
+
+export interface UpdateCandidateDestinationRequest {
+  interest: string,
+  notes?: string
+}
+
 @Injectable({providedIn: 'root'})
 export class CandidateDestinationService {
 
@@ -27,10 +38,15 @@ export class CandidateDestinationService {
 
   constructor(private http: HttpClient) {}
 
-  create(candidateId: number, countryName: {}):
-    Observable<CandidateDestination>  {
-    return this.http.post<CandidateDestination>(
-      `${this.apiUrl}/${candidateId}`, countryName);
+  create(candidateId: number, countryName: {}): Observable<CandidateDestination>  {
+    return this.http.post<CandidateDestination>(`${this.apiUrl}/${candidateId}`, countryName);
+  }
+
+  update(id: number, request: UpdateCandidateDestinationRequest): Observable<CandidateDestination>  {
+    return this.http.put<CandidateDestination>(`${this.apiUrl}/${id}`, request);
+  }
+  list(candidateId: number): Observable<CandidateDestination[]> {
+    return this.http.get<CandidateDestination[]>(`${this.apiUrl}/${candidateId}/list`);
   }
 
 }

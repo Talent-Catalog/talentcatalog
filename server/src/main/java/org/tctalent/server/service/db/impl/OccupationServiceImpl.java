@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -16,19 +16,20 @@
 
 package org.tctalent.server.service.db.impl;
 
+import io.jsonwebtoken.lang.Collections;
 import java.util.List;
-
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tctalent.server.exception.EntityExistsException;
 import org.tctalent.server.exception.EntityReferencedException;
 import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.exception.NotImplementedException;
+import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.model.db.CandidateOccupation;
 import org.tctalent.server.model.db.Occupation;
 import org.tctalent.server.model.db.Status;
@@ -40,13 +41,11 @@ import org.tctalent.server.request.occupation.SearchOccupationRequest;
 import org.tctalent.server.request.occupation.UpdateOccupationRequest;
 import org.tctalent.server.service.db.OccupationService;
 import org.tctalent.server.service.db.TranslationService;
-
-import io.jsonwebtoken.lang.Collections;
+import org.tctalent.server.util.dto.DtoBuilder;
 
 @Service
+@Slf4j
 public class OccupationServiceImpl implements OccupationService {
-
-    private static final Logger log = LoggerFactory.getLogger(OccupationService.class);
 
     private final CandidateOccupationRepository candidateOccupationRepository;
     private final OccupationRepository occupationRepository;
@@ -61,6 +60,13 @@ public class OccupationServiceImpl implements OccupationService {
         this.translationService = translationService;
     }
 
+    @NonNull
+    @Override
+    public Occupation findByIsco08Code(String isco08Code) {
+        return occupationRepository.findByIsco08Code(isco08Code)
+            .orElseThrow(() -> new NoSuchObjectException(Occupation.class, isco08Code));
+    }
+
     @Override
     public List<Occupation> listOccupations() {
         List<Occupation> occupations = occupationRepository.findByStatus(Status.active);
@@ -72,7 +78,12 @@ public class OccupationServiceImpl implements OccupationService {
     public Page<Occupation> searchOccupations(SearchOccupationRequest request) {
         Page<Occupation> occupations = occupationRepository.findAll(
                 OccupationSpecification.buildSearchQuery(request), request.getPageRequest());
-        log.info("Found " + occupations.getTotalElements() + " occupations in search");
+
+        LogBuilder.builder(log)
+            .action("SearchOccupations")
+            .message("Found " + occupations.getTotalElements() + " occupations in search")
+            .logInfo();
+
         if (!StringUtils.isBlank(request.getLanguage())){
             translationService.translate(occupations.getContent(), "occupation", request.getLanguage());
         }
@@ -133,5 +144,12 @@ public class OccupationServiceImpl implements OccupationService {
         }
     }
 
-
+    @Override
+    public DtoBuilder selectBuilder() {
+        return new DtoBuilder()
+            .add("id")
+            .add("name")
+            .add("isco08Code")
+            ;
+    }
 }

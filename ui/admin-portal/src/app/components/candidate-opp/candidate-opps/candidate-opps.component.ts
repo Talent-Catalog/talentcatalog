@@ -1,12 +1,27 @@
-import {Component, Inject, Input, LOCALE_ID, SimpleChanges} from '@angular/core';
+/*
+ * Copyright (c) 2024 Talent Catalog.
+ *
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU Affero General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see https://www.gnu.org/licenses/.
+ */
+
+import {Component, Inject, Input, LOCALE_ID, SimpleChanges, ViewChild} from '@angular/core';
 import {
   CandidateOpportunity,
   CandidateOpportunityStage,
   SearchOpportunityRequest
 } from "../../../model/candidate-opportunity";
 import {CandidateOpportunityService} from "../../../services/candidate-opportunity.service";
-import {LocalStorageService} from "angular-2-local-storage";
-import {FormBuilder} from "@angular/forms";
+import {UntypedFormBuilder} from "@angular/forms";
 import {SalesforceService} from "../../../services/salesforce.service";
 import {AuthorizationService} from "../../../services/authorization.service";
 import {EnumOption, enumOptions} from "../../../util/enum";
@@ -17,6 +32,8 @@ import {forkJoin, Observable} from "rxjs";
 import {ChatService} from "../../../services/chat.service";
 import {SearchResults} from "../../../model/search-results";
 import {PartnerService} from "../../../services/partner.service";
+import {LocalStorageService} from "../../../services/local-storage.service";
+import {InputComponent} from "../../../shared/components/input/input.component";
 
 @Component({
   selector: 'app-candidate-opps',
@@ -44,6 +61,9 @@ export class CandidateOppsComponent extends FilteredOppsComponentBase<CandidateO
    */
   @Input() preview: boolean = false;
 
+  /** Pass false when the context doesn't require any clicked/selected table row behaviour/styling */
+  @Input() clickableRows: boolean = true;
+
   //Override text to replace "opps" text with "cases"
   myOppsOnlyLabel = "My cases only";
   myOppsOnlyTip = "Only show cases that I am the contact for";
@@ -57,11 +77,13 @@ export class CandidateOppsComponent extends FilteredOppsComponentBase<CandidateO
   withUnreadMessagesLabel = "Cases with unread chat messages only";
   withUnreadMessagesTip = "Only show cases which have unread chat messages";
 
+  @ViewChild("searchFilter")
+  declare searchFilter: InputComponent;
 
   constructor(
     chatService: ChatService,
-    fb: FormBuilder,
-    authService: AuthorizationService,
+    fb: UntypedFormBuilder,
+    authorizationService: AuthorizationService,
     localStorageService: LocalStorageService,
     oppService: CandidateOpportunityService,
     salesforceService: SalesforceService,
@@ -69,7 +91,7 @@ export class CandidateOppsComponent extends FilteredOppsComponentBase<CandidateO
     partnerService: PartnerService,
     @Inject(LOCALE_ID) locale: string
   ) {
-    super(chatService, fb, authService, localStorageService, oppService, salesforceService,
+    super(chatService, fb, authorizationService, localStorageService, oppService, salesforceService,
       countryService, partnerService, locale,"Opps")
 
   }
@@ -111,8 +133,10 @@ export class CandidateOppsComponent extends FilteredOppsComponentBase<CandidateO
     //Call standard processing (which puts the results into this.opps)
     super.processSearchResults(results);
 
-    //Then fetch the chats associated with all opps.
-    this.fetchChats();
+    if (this.canViewChats()) {
+      //Then fetch the chats associated with all opps.
+      this.fetchChats();
+    }
   }
 
   private fetchChats() {

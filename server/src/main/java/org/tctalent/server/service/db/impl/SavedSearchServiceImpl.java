@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -16,46 +16,54 @@
 
 package org.tctalent.server.service.db.impl;
 
+import static java.util.stream.Collectors.toMap;
 import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
+import static org.tctalent.server.configuration.SystemAdminConfiguration.PENDING_TERMS_ACCEPTANCE_LIST_ID;
+import static org.tctalent.server.util.StringHelper.getIdsFromString;
+import static org.tctalent.server.util.StringHelper.getListAsString;
+import static org.tctalent.server.util.StringHelper.getStringListAsString;
+import static org.tctalent.server.util.StringHelper.getStringListFromString;
+import static org.tctalent.server.util.locale.LocaleHelper.getOffsetDateTime;
 
+import co.elastic.clients.elasticsearch._types.query_dsl.BoolQuery;
 import com.opencsv.CSVWriter;
-import io.jsonwebtoken.lang.Collections;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.Query;
+import jakarta.validation.constraints.NotNull;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.net.URI;
+import java.net.URL;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.EnumSet;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import javax.validation.constraints.NotNull;
+import javax.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
-import org.apache.lucene.search.join.ScoreMode;
-import org.elasticsearch.index.query.BoolQueryBuilder;
-import org.elasticsearch.index.query.QueryBuilder;
-import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.index.query.RangeQueryBuilder;
-import org.elasticsearch.index.query.SimpleQueryStringBuilder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.elasticsearch.client.elc.NativeQuery;
 import org.springframework.data.elasticsearch.core.SearchHit;
 import org.springframework.data.elasticsearch.core.SearchHits;
-import org.springframework.data.elasticsearch.core.mapping.IndexCoordinates;
-import org.springframework.data.elasticsearch.core.query.NativeSearchQuery;
-import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
@@ -63,6 +71,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 import org.tctalent.server.exception.CircularReferencedException;
 import org.tctalent.server.exception.CountryRestrictionException;
@@ -71,6 +80,7 @@ import org.tctalent.server.exception.ExportFailedException;
 import org.tctalent.server.exception.InvalidRequestException;
 import org.tctalent.server.exception.InvalidSessionException;
 import org.tctalent.server.exception.NoSuchObjectException;
+import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.CandidateFilterByOpps;
 import org.tctalent.server.model.db.CandidateStatus;
@@ -90,6 +100,7 @@ import org.tctalent.server.model.db.SavedSearchType;
 import org.tctalent.server.model.db.SearchJoin;
 import org.tctalent.server.model.db.SearchType;
 import org.tctalent.server.model.db.Status;
+import org.tctalent.server.model.db.UnhcrStatus;
 import org.tctalent.server.model.db.User;
 import org.tctalent.server.model.db.partner.Partner;
 import org.tctalent.server.model.es.CandidateEs;
@@ -109,6 +120,8 @@ import org.tctalent.server.repository.db.SavedSearchSpecification;
 import org.tctalent.server.repository.db.SearchJoinRepository;
 import org.tctalent.server.repository.db.SurveyTypeRepository;
 import org.tctalent.server.repository.db.UserRepository;
+import org.tctalent.server.repository.db.read.dto.CandidateReadDto;
+import org.tctalent.server.request.IdsRequest;
 import org.tctalent.server.request.candidate.SavedSearchGetRequest;
 import org.tctalent.server.request.candidate.SearchCandidateRequest;
 import org.tctalent.server.request.candidate.SearchJoinRequest;
@@ -120,34 +133,47 @@ import org.tctalent.server.request.search.SearchSavedSearchRequest;
 import org.tctalent.server.request.search.UpdateSavedSearchRequest;
 import org.tctalent.server.request.search.UpdateSharingRequest;
 import org.tctalent.server.request.search.UpdateWatchingRequest;
-import org.tctalent.server.service.db.CandidateReviewStatusService;
+import org.tctalent.server.security.AuthService;
+import org.tctalent.server.service.db.CandidateDtoFetchService;
 import org.tctalent.server.service.db.CandidateSavedListService;
 import org.tctalent.server.service.db.CandidateService;
 import org.tctalent.server.service.db.CountryService;
 import org.tctalent.server.service.db.EducationMajorService;
+import org.tctalent.server.service.db.LanguageService;
 import org.tctalent.server.service.db.OccupationService;
 import org.tctalent.server.service.db.PartnerService;
+import org.tctalent.server.service.db.PublicIDService;
 import org.tctalent.server.service.db.SalesforceJobOppService;
 import org.tctalent.server.service.db.SavedListService;
 import org.tctalent.server.service.db.SavedSearchService;
 import org.tctalent.server.service.db.UserService;
 import org.tctalent.server.service.db.email.EmailHelper;
+import org.tctalent.server.service.db.email.EmailNotificationLink;
+import org.tctalent.server.service.db.es.ElasticsearchService;
+import org.tctalent.server.util.CandidateSearchUtils;
+import org.tctalent.server.util.PersistenceContextHelper;
+import org.tctalent.server.util.textExtract.IdAndRank;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class SavedSearchServiceImpl implements SavedSearchService {
+    @Value("${web.admin}")
+    private String adminUrl;
 
-    private static final Logger log = LoggerFactory.getLogger(SavedSearchServiceImpl.class);
+    @PersistenceContext
+    private EntityManager entityManager;
 
     private final CandidateRepository candidateRepository;
     private final CandidateService candidateService;
-    private final CandidateReviewStatusService candidateReviewStatusService;
+    private final CandidateDtoFetchService candidateDtoFetchService;
     private final CandidateReviewStatusRepository candidateReviewStatusRepository;
     private final CandidateSavedListService candidateSavedListService;
     private final CountryService countryService;
     private final PartnerService partnerService;
-    private final ElasticsearchOperations elasticsearchOperations;
+    private final ElasticsearchService esService;
     private final EmailHelper emailHelper;
+    private final PublicIDService publicIDService;
     private final UserRepository userRepository;
     private final UserService userService;
     private final SalesforceJobOppService salesforceJobOppService;
@@ -157,6 +183,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
     private final SearchJoinRepository searchJoinRepository;
     private final LanguageLevelRepository languageLevelRepository;
     private final LanguageRepository languageRepository;
+    private final LanguageService languageService;
     private final CountryRepository countryRepository;
     private final PartnerRepository partnerRepository;
     private final OccupationRepository occupationRepository;
@@ -165,21 +192,36 @@ public class SavedSearchServiceImpl implements SavedSearchService {
     private final EducationMajorRepository educationMajorRepository;
     private final EducationMajorService educationMajorService;
     private final EducationLevelRepository educationLevelRepository;
+    private final PersistenceContextHelper persistenceContextHelper;
+    private final AuthService authService;
+
+    private long ENGLISH_LANGUAGE_ID;
 
     /**
      * These are the default candidate statuses to included in searches when no statuses are
      * specified.
      * Basically all "inactive" statuses such as draft, deleted, employed and ineligible.
      */
-    private static final List<CandidateStatus> defaultSearchStatuses = new ArrayList<>(
-        EnumSet.complementOf(EnumSet.of(
-            CandidateStatus.autonomousEmployment,
-            CandidateStatus.deleted,
-            CandidateStatus.draft,
-            CandidateStatus.employed,
-            CandidateStatus.ineligible,
-            CandidateStatus.withdrawn
-        )));
+    private static final List<CandidateStatus> defaultSearchStatuses = new ArrayList<>();
+
+    @PostConstruct
+    void init() {
+        for (CandidateStatus candidateStatus : CandidateStatus.values()) {
+            if (!candidateStatus.isInactive()) {
+                defaultSearchStatuses.add(candidateStatus);
+            }
+        }
+        Language english = languageService.getLanguage("english");
+        if (english == null) {
+            throw new RuntimeException("English language not found in database");
+        }
+        ENGLISH_LANGUAGE_ID = english.getId();
+    }
+
+    @Override
+    public List<SavedSearch> search(IdsRequest request) {
+        return savedSearchRepository.findByIds(request.getIds());
+    }
 
     @Override
     public List<SavedSearch> search(SearchSavedSearchRequest request) {
@@ -200,7 +242,11 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             savedSearches = savedSearchRepository.findAll(
                 SavedSearchSpecification.buildSearchQuery(request, loggedInUser));
         }
-        log.info("Found " + savedSearches.size() + " savedSearches in search");
+        LogBuilder.builder(log)
+            .user(authService.getLoggedInUser())
+            .action("SearchSavedSearches")
+            .message("Found " + savedSearches.size() + " savedSearches in search")
+            .logInfo();
 
         for (SavedSearch savedSearch: savedSearches) {
             savedSearch.parseType();
@@ -231,7 +277,11 @@ public class SavedSearchServiceImpl implements SavedSearchService {
                     SavedSearchSpecification.buildSearchQuery(request, loggedInUser),
                 request.getPageRequest());
         }
-        log.info("Found " + savedSearches.getTotalElements() + " savedSearches in search");
+        LogBuilder.builder(log)
+            .user(authService.getLoggedInUser())
+            .action("SearchSavedSearches")
+            .message("Found " + savedSearches.getTotalElements() + " savedSearches in search")
+            .logInfo();
 
         for (SavedSearch savedSearch: savedSearches) {
             savedSearch.parseType();
@@ -268,6 +318,32 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         return candidates;
     }
 
+    @Override
+    public Page<CandidateReadDto> searchCandidateDtos(long savedSearchId,
+        SavedSearchGetRequest request) throws NoSuchObjectException {
+        SearchCandidateRequest searchRequest =
+            loadSavedSearch(savedSearchId);
+
+        //Merge the SavedSearchGetRequest - notably the page request - in to
+        //the standard saved search request.
+        searchRequest.merge(request);
+
+        //If user filters on unverified statuses we bypass performing a full search
+        //Simply return candidates that the user has already reviewed as verified and/or rejected
+        if (request.getReviewStatusFilter() != null &&
+            request.getReviewStatusFilter().contains(ReviewStatus.unverified)) {
+            return reviewedCandidateDtos(searchRequest);
+        }
+
+        //Do the search
+        final Page<CandidateReadDto> candidates = doSearchCandidateDtos(searchRequest);
+
+        //Add in any selections
+        markUserSelectedCandidateDtos(savedSearchId, candidates);
+
+        return candidates;
+    }
+
     private Page<Candidate> reviewedCandidates(SearchCandidateRequest request) {
         Page<Candidate> candidates = candidateRepository.findReviewedCandidatesBySavedSearchId(
             request.getSavedSearchId(),
@@ -277,51 +353,64 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         return candidates;
     }
 
+    private Page<CandidateReadDto> reviewedCandidateDtos(SearchCandidateRequest request) {
+        Page<Candidate> candidates = reviewedCandidates(request);
+
+        List<Long> ids = candidates.stream().map(Candidate::getId).collect(Collectors.toList());
+        final Map<Long, CandidateReadDto> dtos = candidateDtoFetchService.fetchByIds(ids);
+
+        //Construct a sortedlist of DTOs in the same order as the ids.
+        List<CandidateReadDto> candidateDtos = new ArrayList<>();
+        for (Long id : ids) {
+            candidateDtos.add(dtos.get(id));
+        }
+
+        return new PageImpl<>(candidateDtos, request.getPageRequest(), candidates.getTotalElements());
+    }
+
     @Override
     public @NotNull Set<Long> searchCandidates(long savedSearchId)
-        throws NoSuchObjectException {
+        throws NoSuchObjectException, InvalidRequestException {
         SearchCandidateRequest searchRequest =
             loadSavedSearch(savedSearchId);
 
-        // Compute the candidates which should be excluded from search
-        Set<Candidate> excludedCandidates =
-            computeCandidatesExcludedFromSearchCandidateRequest(searchRequest);
-
-        // Modify request, doing standard defaults
-        addDefaultsToSearchCandidateRequest(searchRequest);
-
         Set<Long> candidateIds = new HashSet<>();
-        String simpleQueryString = searchRequest.getSimpleQueryString();
-        if (simpleQueryString != null && simpleQueryString.length() > 0) {
-            // This is an elasticsearch request
 
-            // Combine any joined searches (which will all be processed as elastic)
-            BoolQueryBuilder boolQueryBuilder = processElasticRequest(searchRequest,
-                simpleQueryString, excludedCandidates);
+        searchRequest.setPageSize(10000);
+        long count = 0;
+        int pageNum = 0;
 
-            NativeSearchQuery query = new NativeSearchQueryBuilder()
-                .withQuery(boolQueryBuilder)
-                .build()
-                .setPageable(Pageable.unpaged());
+        Page<Candidate> pageOfCandidates;
+        do {
+            searchRequest.setPageNumber(pageNum++);
+            pageOfCandidates = doSearchCandidates(searchRequest);
 
-            SearchHits<CandidateEs> hits = elasticsearchOperations.search(
-                query, CandidateEs.class, IndexCoordinates.of("candidates"));
-
-            //Get candidate ids from the returned results
-            for (SearchHit<CandidateEs> hit : hits) {
-                candidateIds.add(hit.getContent().getMasterId());
+            int limit = 32000;
+            if (pageOfCandidates.getTotalElements() > limit) {
+                throw new InvalidRequestException(
+                    "Sorry, but there is currently a limit on doing stats on searches returning more than "
+                        + limit + " candidates. We are working to remove this limit.");
             }
-        } else {
-            //Compute the non-elastic search query
-            final Specification<Candidate> query = computeQuery(searchRequest, excludedCandidates);
 
-            List<Candidate> candidates = candidateRepository.findAll(query);
+            count += pageOfCandidates.getNumberOfElements();
 
+            LogBuilder.builder(log)
+                .user(authService.getLoggedInUser())
+                .searchId(savedSearchId)
+                .action("SearchCandidates")
+                .message("Processing page " + pageNum + ". "
+                    + count + " candidates of "
+                    + pageOfCandidates.getTotalElements())
+                .logInfo();
+
+            //Extract candidate ids
+            List<Candidate> candidates = pageOfCandidates.getContent();
             for (Candidate candidate : candidates) {
                 candidateIds.add(candidate.getId());
             }
-        }
-        log.info("Found " + candidateIds.size() + " candidates in search");
+
+            persistenceContextHelper.clearEntityManager(); // Detach in-memory managed entities
+        } while (pageOfCandidates.hasNext());
         return candidateIds;
     }
 
@@ -329,7 +418,8 @@ public class SavedSearchServiceImpl implements SavedSearchService {
      * Added @Transactional to this method as it is calling another method (updateSavedSearch) which requires
      * the @Transactional annotation.
      * Transaction needs to wrap the database modifying operation (searchJoinRepository.deleteBySearchId(id)) or
-     * else an exception will be thrown. See: https://www.baeldung.com/jpa-transaction-required-exception
+     * else an exception will be thrown. See: <a href="https://www.baeldung.com/jpa-transaction-required-exception">
+     * https://www.baeldung.com/jpa-transaction-required-exception</a>
      */
     @Override
     @Transactional
@@ -339,27 +429,63 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         if (user == null) {
             candidates = doSearchCandidates(request);
         } else {
-            //Update default search
-            SavedSearch defaultSavedSearch =
-                getDefaultSavedSearch();
-            Long savedSearchId = defaultSavedSearch.getId();
-            UpdateSavedSearchRequest updateRequest = new UpdateSavedSearchRequest();
-            updateRequest.setSearchCandidateRequest(request);
-            //Set other fields - no changes there
-            updateRequest.setName(defaultSavedSearch.getName());
-            updateRequest.setDefaultSearch(defaultSavedSearch.getDefaultSearch());
-            updateRequest.setFixed(defaultSavedSearch.getFixed());
-            updateRequest.setReviewable(defaultSavedSearch.getReviewable());
-            updateRequest.setSavedSearchType(defaultSavedSearch.getSavedSearchType());
-            updateRequest.setSavedSearchSubtype(defaultSavedSearch.getSavedSearchSubtype());
-            //todo Need special method which only updates search part. Then don't need the above "no changes there" stuff
-            updateSavedSearch(savedSearchId, updateRequest);
+            SavedSearch savedSearch = getSavedSearch(request.getSavedSearchId());
+            // If searching a default search, update the default search with every search (aka Autosave).
+            // Else it is a saved search and those are updated upon 'Update Search' button only.
+            if (savedSearch.getDefaultSearch()) {
+                UpdateSavedSearchRequest updateRequest = new UpdateSavedSearchRequest();
+                updateRequest.setSearchCandidateRequest(request);
+                //Set other fields - no changes there
+                updateRequest.setName(savedSearch.getName());
+                updateRequest.setDefaultSearch(savedSearch.getDefaultSearch());
+                updateRequest.setFixed(savedSearch.getFixed());
+                updateRequest.setReviewable(savedSearch.getReviewable());
+                updateRequest.setSavedSearchType(savedSearch.getSavedSearchType());
+                updateRequest.setSavedSearchSubtype(savedSearch.getSavedSearchSubtype());
+                //todo Need special method which only updates search part. Then don't need the above "no changes there" stuff
+                updateSavedSearch(savedSearch.getId(), updateRequest);
+            }
 
             //Do the search
             candidates = doSearchCandidates(request);
 
             //Add in any selections
-            markUserSelectedCandidates(savedSearchId, candidates);
+            markUserSelectedCandidates(savedSearch.getId(), candidates);
+        }
+
+        return candidates;
+    }
+
+    @Override
+    @Transactional
+    public Page<CandidateReadDto> searchCandidateDtos(SearchCandidateRequest request) {
+        Page<CandidateReadDto> candidates;
+        User user = userService.getLoggedInUser();
+        if (user == null) {
+            candidates = doSearchCandidateDtos(request);
+        } else {
+            SavedSearch savedSearch = getSavedSearch(request.getSavedSearchId());
+            // If searching a default search, update the default search with every search (aka Autosave).
+            // Else it is a saved search and those are updated upon 'Update Search' button only.
+            if (savedSearch.getDefaultSearch()) {
+                UpdateSavedSearchRequest updateRequest = new UpdateSavedSearchRequest();
+                updateRequest.setSearchCandidateRequest(request);
+                //Set other fields - no changes there
+                updateRequest.setName(savedSearch.getName());
+                updateRequest.setDefaultSearch(savedSearch.getDefaultSearch());
+                updateRequest.setFixed(savedSearch.getFixed());
+                updateRequest.setReviewable(savedSearch.getReviewable());
+                updateRequest.setSavedSearchType(savedSearch.getSavedSearchType());
+                updateRequest.setSavedSearchSubtype(savedSearch.getSavedSearchSubtype());
+                //todo Need special method which only updates search part. Then don't need the above "no changes there" stuff
+                updateSavedSearch(savedSearch.getId(), updateRequest);
+            }
+
+            //Do the search
+            candidates = doSearchCandidateDtos(request);
+
+            //Add in any selections
+            markUserSelectedCandidateDtos(savedSearch.getId(), candidates);
         }
 
         return candidates;
@@ -391,6 +517,19 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         }
     }
 
+    @Transactional
+    @Override
+    public void setPublicIds(List<SavedSearch> savedSearches) {
+        for (SavedSearch savedSearch : savedSearches) {
+            if (savedSearch.getPublicId() == null) {
+                savedSearch.setPublicId(publicIDService.generatePublicID());
+            }
+        }
+        if (!savedSearches.isEmpty()) {
+            savedSearchRepository.saveAll(savedSearches);
+        }
+    }
+
     @Override
     public SearchCandidateRequest loadSavedSearch(long id) {
         SavedSearch savedSearch = this.savedSearchRepository.findByIdLoadSearchJoins(id)
@@ -412,22 +551,22 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         Map<Integer, String> educationLevelMap = educationLevelRepository.findAllActive().stream().collect(
                 Collectors.toMap(EducationLevel::getLevel, EducationLevel::getName, (l1, l2) ->  l1));
 
-        if (!StringUtils.isEmpty(savedSearch.getCountryIds())){
+        if (!ObjectUtils.isEmpty(savedSearch.getCountryIds())){
             savedSearch.setCountryNames(countryRepository.getNamesForIds(getIdsFromString(savedSearch.getCountryIds())));
         }
-        if (!StringUtils.isEmpty(savedSearch.getPartnerIds())){
+        if (!ObjectUtils.isEmpty(savedSearch.getPartnerIds())){
             savedSearch.setPartnerNames(partnerRepository.getNamesForIds(getIdsFromString(savedSearch.getPartnerIds())));
         }
-        if (!StringUtils.isEmpty(savedSearch.getNationalityIds())){
+        if (!ObjectUtils.isEmpty(savedSearch.getNationalityIds())){
             savedSearch.setNationalityNames(countryRepository.getNamesForIds(getIdsFromString(savedSearch.getNationalityIds())));
         }
-        if (!StringUtils.isEmpty(savedSearch.getOccupationIds())){
+        if (!ObjectUtils.isEmpty(savedSearch.getOccupationIds())){
             savedSearch.setOccupationNames(occupationRepository.getNamesForIds(getIdsFromString(savedSearch.getOccupationIds())));
         }
-        if (!StringUtils.isEmpty(savedSearch.getEducationMajorIds())){
+        if (!ObjectUtils.isEmpty(savedSearch.getEducationMajorIds())){
             savedSearch.setEducationMajors(educationMajorRepository.getNamesForIds(getIdsFromString(savedSearch.getEducationMajorIds())));
         }
-        if (!StringUtils.isEmpty(savedSearch.getSurveyTypeIds())){
+        if (!ObjectUtils.isEmpty(savedSearch.getSurveyTypeIds())){
             savedSearch.setSurveyTypeNames(surveyTypeRepository.getNamesForIds(getIdsFromString(savedSearch.getSurveyTypeIds())));
         }
         if (savedSearch.getEnglishMinWrittenLevel() != null){
@@ -491,7 +630,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
 
         UpdateSavedSearchRequest createRequest = new UpdateSavedSearchRequest();
         createRequest.setName(name);
-        createRequest.setSfJoblink(request.getSfJoblink());
+        createRequest.setJobId(request.getJobId());
 
         //Default to job type
         createRequest.setSavedSearchType(SavedSearchType.job);
@@ -524,7 +663,25 @@ public class SavedSearchServiceImpl implements SavedSearchService {
     @Transactional
     public SavedSearch createSavedSearch(UpdateSavedSearchRequest request)
             throws EntityExistsException {
-        SavedSearch savedSearch = convertToSavedSearch(request);
+        SavedSearch defaultSavedSearch = getDefaultSavedSearch();
+        return createSavedSearchBase(request, defaultSavedSearch);
+    }
+
+    private SavedSearch createDefaultSavedSearch(User user) {
+        UpdateSavedSearchRequest request = new UpdateSavedSearchRequest();
+        request.setName(constructDefaultSearchName(user));
+        request.setSavedSearchType(SavedSearchType.other);
+        request.setDefaultSearch(true);
+        return createSavedSearchBase(request, null);
+    }
+
+    private SavedSearch createSavedSearchBase(
+        UpdateSavedSearchRequest request, @Nullable SavedSearch template) {
+        SavedSearch savedSearch = convertToSavedSearch(template, request);
+
+        //Set PublicId
+        savedSearch.setPublicId(publicIDService.generatePublicID());
+
         final User loggedInUser = userService.getLoggedInUser();
         if (loggedInUser != null) {
             checkDuplicates(null, request.getName(), loggedInUser.getId());
@@ -532,31 +689,41 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         }
 
         savedSearch = savedSearchRepository.save(savedSearch);
-        savedSearch = addSearchJoins(request, savedSearch);
+        addSearchJoins(request, savedSearch);
 
-        //Copy across the user's selections (including context notes)
-        //of the default saved search.
+        if (template != null) {
+            //Copy across the user's selections (including context notes)
+            //of the template saved search.
+            copySelectionsAndContextNotes(template, savedSearch, true);
+        }
+
+        return savedSearch;
+    }
+
+    private void copySelectionsAndContextNotes(@NonNull SavedSearch fromSavedSearch,
+        SavedSearch toSavedSearch, boolean clearFromSavedSearch) {
+        final User loggedInUser = userService.getLoggedInUser();
         if (loggedInUser != null) {
-            SavedSearch defaultSavedSearch = getDefaultSavedSearch();
-            Long savedSearchId = defaultSavedSearch.getId();
+            Long fromSavedSearchId = fromSavedSearch.getId();
 
-            //Get the default selection list.
-            SavedList defaultSelectionList =
-                    getSelectionList(savedSearchId, loggedInUser.getId());
+            //Get the original selection list.
+            SavedList fromSelectionList =
+                getSelectionList(fromSavedSearchId, loggedInUser.getId());
 
             //Get the selection list of the new saved search
-            SavedList newSelectionList =
-                    getSelectionList(savedSearch.getId(), loggedInUser.getId());
+            SavedList toSelectionList =
+                getSelectionList(toSavedSearch.getId(), loggedInUser.getId());
 
-            //Copy default list to the selection list of the new saved search.
+            //Copy the contents of the original selection list to the selection list of the
+            //destination search.
             candidateSavedListService.copyContents(
-                    defaultSelectionList, newSelectionList, false);
+                fromSelectionList, toSelectionList, false);
 
-            //Clear search attributes and selections of default saved search
-            clearSavedSearch(defaultSavedSearch, loggedInUser);
-
+            if (clearFromSavedSearch) {
+                //Clear search attributes and selections of original saved search
+                clearSavedSearch(fromSavedSearch, loggedInUser);
+            }
         }
-        return savedSearch;
     }
 
     @Override
@@ -568,36 +735,45 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             throw new InvalidSessionException("Not logged in");
         }
 
+        SavedSearch savedSearch = savedSearchRepository.findById(id)
+            .orElseThrow(() -> new NoSuchObjectException(SavedSearch.class, id));
         if(request.getSearchCandidateRequest() == null){
-            SavedSearch savedSearch = savedSearchRepository.findById(id)
-                    .orElseThrow(() -> new NoSuchObjectException(SavedSearch.class, id));
             // If a saved search isn't global and belongs to loggedInUser, allow changes
             if (!savedSearch.getFixed() || savedSearch.getCreatedBy().getId().equals(loggedInUser.getId())) {
                 savedSearch.setName(request.getName());
                 savedSearch.setFixed(request.getFixed());
                 savedSearch.setReviewable(request.getReviewable());
-                savedSearch.setSfJobOpp(
-                    salesforceJobOppService.getOrCreateJobOppFromLink(request.getSfJoblink()));
+
+                final Long jobId = request.getJobId();
+                if (jobId != null) {
+                    savedSearch.setSfJobOpp(salesforceJobOppService.getJobOpp(jobId));
+                }
 
                 savedSearch.setType(request.getSavedSearchType(), request.getSavedSearchSubtype());
                 return savedSearchRepository.save(savedSearch);
             } else {
-                log.warn("Can't update saved search " + savedSearch.getId() + " - " + savedSearch.getName());
+                LogBuilder.builder(log)
+                    .user(authService.getLoggedInUser())
+                    .searchId(savedSearch.getId())
+                    .action("UpdateSavedSearch")
+                    .message("Can't update saved search " + savedSearch.getId() + " - " + savedSearch.getName())
+                    .logWarn();
+
                 return savedSearch;
             }
         }
 
-        SavedSearch savedSearch = convertToSavedSearch(request);
+        SavedSearch newSavedSearch = convertToSavedSearch(savedSearch, request);
 
         //delete and recreate all joined searches
         searchJoinRepository.deleteBySearchId(id);
 
-        savedSearch.setId(id);
-        savedSearch = addSearchJoins(request, savedSearch);
+        newSavedSearch.setId(id);
+        newSavedSearch = addSearchJoins(request, newSavedSearch);
 
-        savedSearch.setAuditFields(loggedInUser);
+        newSavedSearch.setAuditFields(loggedInUser);
         checkDuplicates(id, request.getName(), loggedInUser.getId());
-        return savedSearchRepository.save(savedSearch);
+        return savedSearchRepository.save(newSavedSearch);
     }
 
     @Override
@@ -647,6 +823,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             request.setPageSize(500);
             boolean hasMore = true;
             while (hasMore) {
+                persistenceContextHelper.clearEntityManager(); // Detach in-memory managed entities
                 Page<Candidate> result = doSearchCandidates(request);
                 setCandidateContext(request.getSavedSearchId(), result);
                 for (Candidate candidate : result.getContent()) {
@@ -742,30 +919,25 @@ public class SavedSearchServiceImpl implements SavedSearchService {
                 .orElse(null);
         if (savedSearch == null) {
             //Create a default saved search for logged in user
-            UpdateSavedSearchRequest request = new UpdateSavedSearchRequest();
-            request.setName(constructDefaultSearchName(loggedInUser));
-            request.setSavedSearchType(SavedSearchType.other);
-            request.setDefaultSearch(true);
-            savedSearch = createSavedSearch(request);
+            savedSearch = createDefaultSavedSearch(loggedInUser);
         } else {
             savedSearch.parseType();
         }
 
         return savedSearch;
     }
-
     @Override
     public @NotNull SavedList getSelectionList(long id, Long userId)
-            throws NoSuchObjectException {
+        throws NoSuchObjectException {
         //Check that saved search and user are valid.
         SavedSearch savedSearch = savedSearchRepository.findById(id)
-                .orElseThrow(() -> new NoSuchObjectException(SavedSearch.class, id));
-
+            .orElseThrow(() -> new NoSuchObjectException(SavedSearch.class, id));
+        
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new NoSuchObjectException(User.class, userId));
+            .orElseThrow(() -> new NoSuchObjectException(User.class, userId));
 
         SavedList savedList = savedListRepository.findSelectionList(id, userId)
-                        .orElse(null);
+            .orElse(null);
         if (savedList == null) {
             savedList = new SavedList();
             savedList.setSavedSearch(savedSearch);
@@ -814,6 +986,28 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         }
 
         return getSelectionList(id, loggedInUser.getId());
+    }
+
+    public boolean includesElasticSearch(long savedSearchId) {
+
+        SearchCandidateRequest searchRequest = loadSavedSearch(savedSearchId);
+        if (!ObjectUtils.isEmpty(searchRequest.getSimpleQueryString())) {
+            return true;
+        }
+
+        List<SearchJoinRequest> searchJoinRequests = searchRequest.getSearchJoinRequests();
+        while (!ObjectUtils.isEmpty(searchJoinRequests)) {
+            //Note that in practice there is now only ever one searchJoinRequest
+            final Long id = searchJoinRequests.get(0).getSavedSearchId();
+            searchRequest = loadSavedSearch(id);
+            if (!ObjectUtils.isEmpty(searchRequest.getSimpleQueryString())) {
+                return true;
+            }
+            searchJoinRequests = searchRequest.getSearchJoinRequests();
+        }
+
+        //Didn't find any Elastic search
+        return false;
     }
 
     @Override
@@ -889,39 +1083,24 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         return query;
     }
 
-    private BoolQueryBuilder computeElasticQuery(BoolQueryBuilder boolQueryBuilder,
+    private BoolQuery.Builder computeElasticQuery(
         SearchCandidateRequest request, @Nullable String simpleQueryString,
-        @Nullable Collection<Candidate> excludedCandidates) {
-    /*
-       Constructing a filtered simple query that looks like this:
-
-       GET /candidates/_search
-        {
-          "query": {
-            "bool": {
-              "must": [
-                { "simple_query_string": {"query":"the +jet+ engine"}}
-              ],
-              "filter": [
-                { "term":  { "status": "pending" }},
-                { "range":  { "minEnglishSpokenLevel": {"gte": 2}}}
-              ]
-            }
-          }
-        }
-     */
+        @Nullable Collection<Candidate> excludedCandidates,
+        @Nullable SearchType searchType1, @Nullable Collection<Long> candidateIds1,
+        @Nullable SearchType searchType2, @Nullable Collection<Long> candidateIds2) {
 
         User user = userService.getLoggedInUser();
 
-        // Not every base search will contain an elastic search term, since we're processing
-        // joined regular searches here too — so we need a safe escape here
-        if (simpleQueryString != null && simpleQueryString.length() > 0) {
-            // Create a simple query string builder from the given string
-            SimpleQueryStringBuilder simpleQueryStringBuilder =
-                QueryBuilders.simpleQueryStringQuery(simpleQueryString);
+        //This is the conjunction that we will build, and'ing all the search filters together.
+        BoolQuery.Builder boolQueryBuilder = new BoolQuery.Builder();
 
-            // The simple query will be part of a composite query containing filters
-            boolQueryBuilder.must(simpleQueryStringBuilder);
+        //This is used a temporary variable to hold queries build from the search filters.
+        NativeQuery nq;
+
+        //Simple query string
+        if (!ObjectUtils.isEmpty(simpleQueryString)) {
+            nq = esService.makeSimpleStringQuery(simpleQueryString);
+            esService.addAnd(boolQueryBuilder, nq);
         }
 
         //Add filters - each filter must return true for a hit
@@ -933,20 +1112,30 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         //multiselected values will result in the filter returning true.
         //There is also a TermQuery which takes only one value.
 
+        // AGE
+        // Note that the orders of filters is reversed, since we're using DOB — i.e., min age has
+        // higher DOB-as-a-number than max age (e.g., 19690101 vs 19920101)
+        Integer minAge = request.getMinAge();
+        Integer maxAge = request.getMaxAge();
+        if (minAge != null || maxAge != null) {
+            String maxAgeDob = constructDobFilter(maxAge);
+            String minAgeDob = constructDobFilter(minAge);
+            nq = esService.makeRangeQuery("dob", maxAgeDob, minAgeDob);
+            esService.addAnd(boolQueryBuilder, nq);
+        }
+
         //English levels
         Integer minSpokenLevel = request.getEnglishMinSpokenLevel();
         if (minSpokenLevel != null) {
-            boolQueryBuilder =
-                addElasticRangeFilter(boolQueryBuilder,
-                    "minEnglishSpokenLevel",
-                    minSpokenLevel, null);
+            nq = esService.makeRangeQuery(
+                "minEnglishSpokenLevel", minSpokenLevel, null);
+            esService.addAnd(boolQueryBuilder, nq);
         }
         Integer minWrittenLevel = request.getEnglishMinWrittenLevel();
         if (minWrittenLevel != null) {
-            boolQueryBuilder =
-                addElasticRangeFilter(boolQueryBuilder,
-                    "minEnglishWrittenLevel",
-                    minWrittenLevel, null);
+            nq = esService.makeRangeQuery(
+                "minEnglishWrittenLevel", minWrittenLevel, null);
+            esService.addAnd(boolQueryBuilder, nq);
         }
 
         //Other languages
@@ -955,50 +1144,97 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             Optional<Language> otherLanguage = languageRepository.findById(request.getOtherLanguageId());
             if (otherLanguage.isPresent()) {
 
-                BoolQueryBuilder nestedQueryBuilder = QueryBuilders.boolQuery().must(
-                        QueryBuilders.termQuery("otherLanguages.name.keyword", otherLanguage.get().getName()));
+                BoolQuery.Builder nestedQueryBuilder = new BoolQuery.Builder();
+
+                nq = esService.makeTermQuery(
+                    "otherLanguages.name.keyword", otherLanguage.get().getName());
+                esService.addAnd(nestedQueryBuilder, nq);
 
                 Integer minOtherSpokenLevel = request.getOtherMinSpokenLevel();
                 if (minOtherSpokenLevel != null) {
-                    nestedQueryBuilder =
-                            addElasticRangeFilter(nestedQueryBuilder,
-                                    "otherLanguages.minSpokenLevel",
-                                    minOtherSpokenLevel, null);
+                    nq = esService.makeRangeQuery(
+                        "otherLanguages.minSpokenLevel", minOtherSpokenLevel, null);
+                    esService.addAnd(nestedQueryBuilder, nq);
                 }
 
                 Integer minOtherWrittenLevel = request.getOtherMinWrittenLevel();
                 if (minOtherWrittenLevel != null) {
-                    nestedQueryBuilder =
-                            addElasticRangeFilter(nestedQueryBuilder,
-                                    "otherLanguages.minWrittenLevel",
-                                    minOtherWrittenLevel, null);
+                    nq = esService.makeRangeQuery(
+                        "otherLanguages.minWrittenLevel", minOtherWrittenLevel, null);
+                    esService.addAnd(nestedQueryBuilder, nq);
                 }
 
-                boolQueryBuilder = boolQueryBuilder.filter(
-                        QueryBuilders.nestedQuery("otherLanguages", nestedQueryBuilder, ScoreMode.Avg));
+                nq = esService.makeNestedQuery("otherLanguages", nestedQueryBuilder);
+                esService.addAnd(boolQueryBuilder, nq);
             }
 
         }
 
         //Exclude given candidates
-        if (excludedCandidates != null && excludedCandidates.size() > 0) {
+        if (!ObjectUtils.isEmpty(excludedCandidates)) {
             List<Object> candidateIds = excludedCandidates.stream()
                 .map(Candidate::getId).collect(Collectors.toList());
-            boolQueryBuilder = addElasticTermFilter(boolQueryBuilder,
-                SearchType.not,"masterId", candidateIds);
+            nq = esService.makeTermsQuery("masterId", candidateIds);
+            nq = esService.not(nq);
+            esService.addAnd(boolQueryBuilder, nq);
+        }
+
+        //List any and all candidates
+        if (!CollectionUtils.isEmpty(candidateIds1)) {
+            //Cast to Collection<Object> using Collections.unmodifiableCollection
+            //See https://stackoverflow.com/a/63441108/929968
+            nq = esService.makeTermsQuery(
+                "masterId", Collections.unmodifiableCollection(candidateIds1));
+            if (SearchType.not.equals(searchType1)) {
+                nq = esService.not(nq);
+            }
+            esService.addAnd(boolQueryBuilder, nq);
+        }
+        if (!CollectionUtils.isEmpty(candidateIds2)) {
+            nq = esService.makeTermsQuery(
+                "masterId", Collections.unmodifiableCollection(candidateIds2));
+            if (SearchType.not.equals(searchType2)) {
+                nq = esService.not(nq);
+            }
+            esService.addAnd(boolQueryBuilder, nq);
         }
 
         //Occupations
         final List<Long> occupationIds = request.getOccupationIds();
-        if (occupationIds != null) {
+        final Integer minYrs = request.getMinYrs();
+        final Integer maxYrs = request.getMaxYrs();
+        if (!ObjectUtils.isEmpty(occupationIds)) {
             //Look up names from ids.
             List<Object> reqOccupations = new ArrayList<>();
             for (Long id : occupationIds) {
                 final Occupation occupation = occupationService.getOccupation(id);
                 reqOccupations.add(occupation.getName());
             }
-            boolQueryBuilder = addElasticTermFilter(boolQueryBuilder,
-                    null,"occupations.keyword", reqOccupations);
+            if (!reqOccupations.isEmpty()) {
+
+                //Loop through occupation names
+                // or'ing together "name in equOccupations" and "experience in range"
+                BoolQuery.Builder disjunctionBuilder = new BoolQuery.Builder();
+
+                for (Object occupationName : reqOccupations) {
+                    //Loop through constructing queries
+                    BoolQuery.Builder conjunctionBuilder = new BoolQuery.Builder();
+                    nq = esService.makeTermQuery("occupations.name.keyword", occupationName);
+                    esService.addAnd(conjunctionBuilder, nq);
+                    nq = esService.makeRangeQuery("occupations.yearsExperience", minYrs, maxYrs);
+                    esService.addAnd(conjunctionBuilder, nq);
+
+                    //Make the conjunction into a query
+                    //eg Occupation name = Basket weaver and Years experience >= 4
+                    nq = esService.makeCompoundQuery(conjunctionBuilder);
+                    //And "or" it into the disjunction builder
+                    esService.addOr(disjunctionBuilder, nq);
+                }
+
+                nq = esService.makeNestedQuery("occupations", disjunctionBuilder);
+
+                esService.addAnd(boolQueryBuilder, nq);
+            }
         }
 
         //Countries - need to take account of source country restrictions
@@ -1006,100 +1242,198 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         List<Object> reqCountries = new ArrayList<>();
         // If countryIds is NOT EMPTY we can just accept them because the options
         // presented to the user will be limited to the allowed source countries
-        if (!Collections.isEmpty(countryIds)) {
+        if (!ObjectUtils.isEmpty(countryIds)) {
             //Look up country names from ids.
             for (Long countryId : countryIds) {
                 final Country country = countryService.getCountry(countryId);
                 reqCountries.add(country.getName());
             }
-        } else if (user != null && !Collections.isEmpty(user.getSourceCountries())){
+        } else if (user != null && !ObjectUtils.isEmpty(user.getSourceCountries())){
             for (Country country: user.getSourceCountries()) {
                 reqCountries.add(country.getName());
             }
         }
 
-        if (reqCountries.size() > 0) {
-            boolQueryBuilder = addElasticTermFilter(boolQueryBuilder,
-                request.getCountrySearchType(),
-                "country.keyword", reqCountries);
-        }
-
-        //Partners
-        final List<Long> partnerIds = request.getPartnerIds();
-        if (partnerIds != null) {
-            //Look up names from ids.
-            List<Object> reqPartners = new ArrayList<>();
-            for (Long id : partnerIds) {
-                final Partner partner = partnerService.getPartner(id);
-                reqPartners.add(partner.getAbbreviation());
+        if (!reqCountries.isEmpty()) {
+            nq = esService.makeTermsQuery("country.keyword", reqCountries);
+            if (SearchType.not.equals(request.getCountrySearchType())) {
+                nq = esService.not(nq);
             }
-            boolQueryBuilder = addElasticTermFilter(boolQueryBuilder,
-                null,"partner.keyword", reqPartners);
+            esService.addAnd(boolQueryBuilder, nq);
         }
 
         //Nationalities
         final List<Long> nationalityIds = request.getNationalityIds();
-        if (nationalityIds != null) {
+        if (!ObjectUtils.isEmpty(nationalityIds)) {
             //Look up names from ids.
             List<Object> reqNationalities = new ArrayList<>();
             for (Long id : nationalityIds) {
                 final Country nationality = countryService.getCountry(id);
                 reqNationalities.add(nationality.getName());
             }
-            boolQueryBuilder = addElasticTermFilter(boolQueryBuilder,
-                request.getNationalitySearchType(),
-                "nationality.keyword", reqNationalities);
+            if (!reqNationalities.isEmpty()) {
+                nq = esService.makeTermsQuery(
+                    "nationality.keyword", reqNationalities);
+                if (SearchType.not.equals(request.getNationalitySearchType())) {
+                    nq = esService.not(nq);
+                }
+                esService.addAnd(boolQueryBuilder, nq);
+            }
+        }
+
+        //Partners
+        final List<Long> partnerIds = request.getPartnerIds();
+        if (!ObjectUtils.isEmpty(partnerIds)) {
+            //Look up names from ids.
+            List<Object> reqPartners = new ArrayList<>();
+            for (Long id : partnerIds) {
+                final Partner partner = partnerService.getPartner(id);
+                reqPartners.add(partner.getAbbreviation());
+            }
+            nq = esService.makeTermsQuery("partner.keyword", reqPartners);
+            esService.addAnd(boolQueryBuilder, nq);
         }
 
         //Statuses
         List<CandidateStatus> statuses = request.getStatuses();
-        if (statuses != null) {
+        if (!ObjectUtils.isEmpty(statuses)) {
             //Extract names from enums
             List<Object> reqStatuses = new ArrayList<>();
             for (CandidateStatus status : statuses) {
                 reqStatuses.add(status.name());
             }
-            boolQueryBuilder =
-                addElasticTermFilter(boolQueryBuilder,
-                    null,"status.keyword", reqStatuses);
+            nq = esService.makeTermsQuery("status.keyword", reqStatuses);
+            esService.addAnd(boolQueryBuilder, nq);
+        }
+
+        //UNHCR Statuses
+        List<UnhcrStatus> unhcrStatuses = request.getUnhcrStatuses();
+        //Empty or null means nothing to check
+        if (!ObjectUtils.isEmpty(unhcrStatuses)) {
+            //Extract names from enums
+            List<Object> reqUnhcrStatuses = new ArrayList<>();
+            for (UnhcrStatus unhcrStatus : unhcrStatuses) {
+                reqUnhcrStatuses.add(unhcrStatus.name());
+            }
+            nq = esService.makeTermsQuery(
+                "unhcrStatus.keyword", reqUnhcrStatuses);
+            esService.addAnd(boolQueryBuilder, nq);
         }
 
         //Referrer
         String referrer = request.getRegoReferrerParam();
-        if (referrer != null) {
-            boolQueryBuilder = boolQueryBuilder.filter(
-                QueryBuilders.termQuery("regoReferrerParam", referrer));
+        if (referrer != null && !referrer.isEmpty()) {
+            nq = esService.makeTermQuery(
+                "regoReferrerParam.keyword", referrer);
+            esService.addAnd(boolQueryBuilder, nq);
         }
 
         //Gender
         Gender gender = request.getGender();
         if (gender != null) {
-            boolQueryBuilder = boolQueryBuilder.filter(
-                QueryBuilders.termQuery("gender", gender.name()));
+            nq = esService.makeTermQuery("gender", gender.name());
+            esService.addAnd(boolQueryBuilder, nq);
         }
 
         //Education Level (minimum)
         Integer minEducationLevel = request.getMinEducationLevel();
         if (minEducationLevel != null) {
-            boolQueryBuilder =
-                    addElasticRangeFilter(boolQueryBuilder,
-                            "maxEducationLevel",
-                            minEducationLevel, null);
+            nq = esService.makeRangeQuery(
+                "maxEducationLevel", minEducationLevel, null);
+            esService.addAnd(boolQueryBuilder, nq);
         }
 
         //Educations
         final List<Long> educationMajorIds = request.getEducationMajorIds();
-        if (educationMajorIds != null) {
+        if (!ObjectUtils.isEmpty(educationMajorIds)) {
             //Look up names from ids.
             List<Object> reqEducations = new ArrayList<>();
             for (Long id : educationMajorIds) {
                 final EducationMajor educationMajor = educationMajorService.getEducationMajor(id);
                 reqEducations.add(educationMajor.getName());
             }
-            boolQueryBuilder = addElasticTermFilter(boolQueryBuilder,
-                    null, "educationMajors.keyword", reqEducations);
+            nq = esService.makeTermsQuery(
+                "educationMajors.keyword", reqEducations);
+            esService.addAnd(boolQueryBuilder, nq);
         }
+
+        //Mini Intake
+        final Boolean miniIntakeCompleted = request.getMiniIntakeCompleted();
+        if (miniIntakeCompleted != null) {
+            SearchType searchType;
+            if (miniIntakeCompleted) {
+                searchType = null;
+            } else {
+                searchType = SearchType.not;
+            }
+            nq = esService.makeExistsQuery("miniIntakeCompletedDate");
+            if (SearchType.not.equals(searchType)) {
+                nq = esService.not(nq);
+            }
+            esService.addAnd(boolQueryBuilder, nq);
+        }
+
+        //Full Intake
+        final Boolean fullIntakeCompleted = request.getFullIntakeCompleted();
+        if (fullIntakeCompleted != null) {
+            SearchType searchType;
+            if (fullIntakeCompleted) {
+                searchType = null;
+            } else {
+                searchType = SearchType.not;
+            }
+            nq = esService.makeExistsQuery("fullIntakeCompletedDate");
+            if (SearchType.not.equals(searchType)) {
+                nq = esService.not(nq);
+            }
+            esService.addAnd(boolQueryBuilder, nq);
+        }
+
+        // Last Modified
+        // updatedDate is converted for the ES field 'updated' to a long denoting no. of
+        // milliseconds elapsed since 1970-01-01T00:00:00Z. This enables an ES range query by
+        // converting the dates in the request in the same way, as below.
+        if (request.getLastModifiedFrom() != null) {
+            Long lastModifiedFrom = OffsetDateTime.of(
+                request.getLastModifiedFrom(),
+                LocalTime.MIN,
+                ZoneOffset.UTC
+            ).toInstant().toEpochMilli();
+
+            Long lastModifiedTo = request.getLastModifiedTo() == null ?
+                null : OffsetDateTime.of(
+                    request.getLastModifiedTo(),
+                    LocalTime.MAX,
+                    ZoneOffset.UTC
+                ).toInstant().toEpochMilli();
+
+            nq = esService.makeRangeQuery(
+                "updated", lastModifiedFrom, lastModifiedTo);
+            esService.addAnd(boolQueryBuilder, nq);
+        }
+
+        // Survey types
+        final List<Long> surveyTypeIds = request.getSurveyTypeIds();
+        if (!ObjectUtils.isEmpty(surveyTypeIds)) {
+            List<Object> surveyTypeObjList = new ArrayList<>(surveyTypeIds);
+            nq = esService.makeTermsQuery("surveyType", surveyTypeObjList);
+            esService.addAnd(boolQueryBuilder, nq);
+        }
+
         return boolQueryBuilder;
+    }
+
+    /**
+     * Takes a min or max age as specified in candidate search and returns a term for filtering on
+     * the DOB field in elasticsearch.
+     * @param age min or max age as an Integer
+     * @return String term for adding to search query as min or max value for a range filter
+     */
+    private String constructDobFilter(Integer age) {
+        return age == null ? null : LocalDate.now()
+            .minusYears(age + 1)
+            .toString()
+            .replaceAll("-", "");
     }
 
     private static String constructDefaultSearchName(User user) {
@@ -1132,37 +1466,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         }
     }
 
-    private BoolQueryBuilder addElasticRangeFilter(
-        BoolQueryBuilder builder, String field,
-        @Nullable Object min, @Nullable Object max) {
-        if (min != null || max != null) {
-            RangeQueryBuilder rangeQueryBuilder =
-                QueryBuilders.rangeQuery(field).from(min).to(max);
-            builder = builder.filter(rangeQueryBuilder);
-        }
-        return builder;
-    }
-
-    private BoolQueryBuilder addElasticTermFilter(
-        BoolQueryBuilder builder, @Nullable SearchType searchType, String field,
-        List<Object> values) {
-        final int nValues = values.size();
-        if (nValues > 0) {
-            QueryBuilder queryBuilder;
-            if (nValues == 1) {
-                queryBuilder = QueryBuilders.termQuery(field, values.get(0));
-            } else {
-                queryBuilder = QueryBuilders.termsQuery(field, values.toArray());
-            }
-            if (searchType == SearchType.not) {
-                builder = builder.mustNot(queryBuilder);
-            } else {
-                builder = builder.filter(queryBuilder);
-            }
-        } return builder;
-    }
-
-    private BoolQueryBuilder addElasticQuery(BoolQueryBuilder boolQueryBuilder,
+    private BoolQuery.Builder addElasticQuery(BoolQuery.Builder boolQueryBuilder,
         SearchJoinRequest searchJoinRequest, List<Long> savedSearchIds) {
         // We don't want searches built on themselves - this is also guarded against in frontend
         if (savedSearchIds.contains(searchJoinRequest.getSavedSearchId())) {
@@ -1179,11 +1483,22 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         Set<Candidate> excludeCandidates =
             computeCandidatesExcludedFromSearchCandidateRequest(request);
 
-        // Each recursion, if any, builds on the query
-        boolQueryBuilder = computeElasticQuery(boolQueryBuilder, request,
-            simpleStringQuery, excludeCandidates);
+        // Add in any listAny/All collections
+        Set<Long> listAllCandidateIds =
+            savedListService.fetchIntersectionCandidateIds(request.getListAllIds());
+        final SearchType listAllSearchType = request.getListAllSearchType();
 
-        // Like addQuery() this method uses recursion to get every nested SearchJoinRequest
+        Set<Long> listAnyCandidateIds =
+            savedListService.fetchUnionCandidateIds(request.getListAnyIds());
+        final SearchType listAnySearchType = request.getListAnySearchType();
+
+        // Each recursion, if any, is added to the query as an additional must clause
+        final BoolQuery.Builder builder = computeElasticQuery(request, simpleStringQuery, excludeCandidates,
+            listAllSearchType, listAllCandidateIds, listAnySearchType, listAnyCandidateIds);
+        final BoolQuery boolQuery = builder.build();
+        boolQueryBuilder = boolQueryBuilder.must(boolQuery.filter());
+
+        // Like addQuery(), this method uses recursion to get every nested SearchJoinRequest
         if (!request.getSearchJoinRequests().isEmpty()) {
             for (SearchJoinRequest joinRequest : request.getSearchJoinRequests()) {
                 boolQueryBuilder = addElasticQuery(boolQueryBuilder, joinRequest, savedSearchIds);
@@ -1192,11 +1507,14 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         return boolQueryBuilder;
     }
 
-    private Specification<Candidate> addQuery(Specification<Candidate> query, SearchJoinRequest searchJoinRequest, List<Long> savedSearchIds) {
+    private Specification<Candidate> addQuery(
+        Specification<Candidate> query, SearchJoinRequest searchJoinRequest,
+        List<Long> savedSearchIds) {
         if (savedSearchIds.contains(searchJoinRequest.getSavedSearchId())) {
             throw new CircularReferencedException(searchJoinRequest.getSavedSearchId());
         }
         User user = userService.getLoggedInUser();
+        //TODO JC this code needs to be replicated in new SQL search technique
         //add id to list as do not want circular references
         savedSearchIds.add(searchJoinRequest.getSavedSearchId());
         //load saved search
@@ -1236,16 +1554,25 @@ public class SavedSearchServiceImpl implements SavedSearchService {
 
 
     //---------------------------------------------------------------------------------------------------
-    private SavedSearch convertToSavedSearch(UpdateSavedSearchRequest request) {
-
+    private SavedSearch convertToSavedSearch(
+        @Nullable SavedSearch origSavedSearch, UpdateSavedSearchRequest request) {
 
         SavedSearch savedSearch = new SavedSearch();
         savedSearch.setName(request.getName());
         savedSearch.setFixed(request.getFixed());
         savedSearch.setDefaultSearch(request.getDefaultSearch());
         savedSearch.setReviewable(request.getReviewable());
-        savedSearch.setSfJobOpp(
-            salesforceJobOppService.getOrCreateJobOppFromLink(request.getSfJoblink()));
+        if (origSavedSearch != null) {
+            savedSearch.setDescription(origSavedSearch.getDescription());
+            savedSearch.setDisplayedFieldsLong(origSavedSearch.getDisplayedFieldsLong());
+            savedSearch.setDisplayedFieldsShort(origSavedSearch.getDisplayedFieldsShort());
+        }
+        final Long jobId = request.getJobId();
+        if (jobId != null) {
+            final SalesforceJobOpp jobOpp =
+                jobId < 0 ? null : salesforceJobOppService.getJobOpp(jobId);
+            savedSearch.setSfJobOpp(jobOpp);
+        }
 
         savedSearch.setType(request.getSavedSearchType(), request.getSavedSearchSubtype());
 
@@ -1266,9 +1593,34 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             }
             if (selectionList != null) {
                 Set<Candidate> selectedCandidates = selectionList.getCandidates();
-                if (selectedCandidates.size() > 0) {
+                if (!selectedCandidates.isEmpty()) {
+                    Set<Long> selectedIds = selectedCandidates.stream().map(Candidate::getId).collect(Collectors.toSet());
                     for (Candidate candidate : candidates) {
-                        if (selectedCandidates.contains(candidate)) {
+                        if (selectedIds.contains(candidate.getId())) {
+                            candidate.setSelected(true);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private void markUserSelectedCandidateDtos(
+        @Nullable Long savedSearchId, Page<CandidateReadDto> candidates) {
+        if (savedSearchId != null) {
+            //Check for selection list to set the selected attribute on returned
+            // candidates.
+            SavedList selectionList = null;
+            User user = userService.getLoggedInUser();
+            if (user != null) {
+                selectionList = getSelectionList(savedSearchId, user.getId());
+            }
+            if (selectionList != null) {
+                Set<Candidate> selectedCandidates = selectionList.getCandidates();
+                if (!selectedCandidates.isEmpty()) {
+                    Set<Long> selectedIds = selectedCandidates.stream().map(Candidate::getId).collect(Collectors.toSet());
+                    for (CandidateReadDto candidate : candidates) {
+                        if (selectedIds.contains(candidate.getId())) {
                             candidate.setSelected(true);
                         }
                     }
@@ -1300,7 +1652,11 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             Set<SavedSearch> searches = savedSearchRepository.findByWatcherIdsIsNotNull();
             Map<Long, Set<SavedSearch>> userNotifications = new HashMap<>();
 
-            log.info("Notify watchers: running " + searches.size() + " searches");
+            LogBuilder.builder(log)
+                .user(authService.getLoggedInUser())
+                .action("notifySearchWatchers")
+                .message("Notify watchers: running " + searches.size() + " searches")
+                .logInfo();
 
             int count = 0;
 
@@ -1313,7 +1669,12 @@ public class SavedSearchServiceImpl implements SavedSearchService {
 
                 count++;
                 currentSearch = savedSearch.getName() + " (" + savedSearch.getId() + ")";
-                log.info("Running search " + count + ": " + currentSearch);
+
+                LogBuilder.builder(log)
+                    .user(authService.getLoggedInUser())
+                    .action("notifySearchWatchers")
+                    .message("Running search " + count + ": " + currentSearch)
+                    .logInfo();
 
                 SearchCandidateRequest searchCandidateRequest =
                     convertToSearchCandidateRequest(savedSearch);
@@ -1351,21 +1712,61 @@ public class SavedSearchServiceImpl implements SavedSearchService {
                 String s = savedSearches.stream()
                     .map(SavedSearch::getName)
                     .collect(Collectors.joining("/"));
-                log.info("Tell user " + userId + " about searches " + s);
+
+                LogBuilder.builder(log)
+                    .user(authService.getLoggedInUser())
+                    .action("notifySearchWatchers")
+                    .message("Tell user " + userId + " about searches " + s)
+                    .logInfo();
+
                 User user = this.userRepository.findById(userId).orElse(null);
                 if (user == null) {
                     final String mess = "Unknown user watcher id " + userId + " watching searches " + s;
-                    log.warn(mess);
+                    LogBuilder.builder(log)
+                        .user(authService.getLoggedInUser())
+                        .action("notifySearchWatchers")
+                        .message(mess)
+                        .logWarn();
+
                     emailHelper.sendAlert(mess);
                 } else {
-                    emailHelper.sendWatcherEmail(user, savedSearches);
+                    //Compute email notification links from SavedSearches
+                    List<EmailNotificationLink> links = new ArrayList<>();
+                    for (SavedSearch savedSearch : savedSearches) {
+                        links.add(new EmailNotificationLink(
+                            savedSearch.getId(), computeSearchUrl(savedSearch), savedSearch.getName()));
+                    }
+                    emailHelper.sendWatcherEmail(user, links);
                 }
             }
         } catch (Exception ex) {
             String mess = "Watcher notification failure (" + currentSearch + ")";
-            log.error(mess, ex);
+            LogBuilder.builder(log)
+                .user(authService.getLoggedInUser())
+                .action("notifySearchWatchers")
+                .message(mess)
+                .logError(ex);
+
             emailHelper.sendAlert(mess, ex);
         }
+    }
+
+    private URL computeSearchUrl(SavedSearch savedSearch) {
+        URL url = null;
+        if (savedSearch != null) {
+            String urlStr = adminUrl + "/search/" + savedSearch.getId();
+            try {
+                url = new URI(urlStr).toURL();
+            } catch (Exception e) {
+                LogBuilder.builder(log)
+                    .user(authService.getLoggedInUser())
+                    .action("computeSearchUrl")
+                    .message("Bad url created from search " +
+                        savedSearch.getId() + ": '" + urlStr + "'")
+                    .logError(e);
+            }
+        }
+        return url;
     }
 
     private void populateSearchAttributes(
@@ -1373,15 +1774,20 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         if (request != null) {
             savedSearch.setSimpleQueryString(request.getSimpleQueryString());
             savedSearch.setKeyword(request.getKeyword());
+            savedSearch.setCandidateNumbers(getStringListAsString(request.getCandidateNumbers()));
             savedSearch.setStatuses(getStatusListAsString(request.getStatuses()));
+            savedSearch.setUnhcrStatuses(getUnhcrStatusListAsString(request.getUnhcrStatuses()));
             savedSearch.setGender(request.getGender());
             savedSearch.setOccupationIds(getListAsString(request.getOccupationIds()));
             savedSearch.setMinYrs(request.getMinYrs());
             savedSearch.setMaxYrs(request.getMaxYrs());
             savedSearch.setRegoReferrerParam(request.getRegoReferrerParam());
             savedSearch.setPartnerIds(getListAsString(request.getPartnerIds()));
-            savedSearch.setNationalityIds(
-                    getListAsString(request.getNationalityIds()));
+            savedSearch.setListAllIds(getListAsString(request.getListAllIds()));
+            savedSearch.setListAllSearchType(request.getListAllSearchType());
+            savedSearch.setListAnyIds(getListAsString(request.getListAnyIds()));
+            savedSearch.setListAnySearchType(request.getListAnySearchType());
+            savedSearch.setNationalityIds(getListAsString(request.getNationalityIds()));
             savedSearch.setNationalitySearchType(request.getNationalitySearchType());
             savedSearch.setCountryIds(getListAsString(request.getCountryIds()));
             savedSearch.setCountrySearchType(request.getCountrySearchType());
@@ -1415,10 +1821,13 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             savedSearch.setMinEducationLevel(request.getMinEducationLevel());
             savedSearch.setEducationMajorIds(
                     getListAsString(request.getEducationMajorIds()));
+            savedSearch.setIncludePendingTermsCandidates(request.getIncludePendingTermsCandidates());
             savedSearch.setMiniIntakeCompleted(request.getMiniIntakeCompleted());
             savedSearch.setFullIntakeCompleted(request.getFullIntakeCompleted());
+            savedSearch.setPotentialDuplicate(request.getPotentialDuplicate());
 
             //Save Boolean filters corresponding to enum name
+            // Not currently in use as of Jun '24 - preserved for now in case of reinstatement.
             final CandidateFilterByOpps candidateFilterByOpps = request.getCandidateFilterByOpps();
             if (candidateFilterByOpps == null) {
                 savedSearch.setAnyOpps(null);
@@ -1439,23 +1848,28 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         searchCandidateRequest.setSimpleQueryString(search.getSimpleQueryString());
         searchCandidateRequest.setKeyword(search.getKeyword());
         searchCandidateRequest.setStatuses(getStatusListFromString(search.getStatuses()));
+        searchCandidateRequest.setUnhcrStatuses(getUnhcrStatusListFromString(search.getUnhcrStatuses()));
         searchCandidateRequest.setGender(search.getGender());
         searchCandidateRequest.setOccupationIds(getIdsFromString(search.getOccupationIds()));
         searchCandidateRequest.setMinYrs(search.getMinYrs());
         searchCandidateRequest.setMaxYrs(search.getMaxYrs());
         searchCandidateRequest.setRegoReferrerParam(search.getRegoReferrerParam());
         searchCandidateRequest.setPartnerIds(getIdsFromString(search.getPartnerIds()));
+        searchCandidateRequest.setListAllIds(getIdsFromString(search.getListAllIds()));
+        searchCandidateRequest.setListAllSearchType(search.getListAllSearchType());
+        searchCandidateRequest.setListAnyIds(getIdsFromString(search.getListAnyIds()));
+        searchCandidateRequest.setListAnySearchType(search.getListAnySearchType());
         searchCandidateRequest.setNationalityIds(getIdsFromString(search.getNationalityIds()));
-        searchCandidateRequest.setSurveyTypeIds(getIdsFromString(search.getSurveyTypeIds()));
         searchCandidateRequest.setNationalitySearchType(search.getNationalitySearchType());
-        searchCandidateRequest.setCountrySearchType(search.getCountrySearchType());
+        searchCandidateRequest.setSurveyTypeIds(getIdsFromString(search.getSurveyTypeIds()));
+        searchCandidateRequest.setCandidateNumbers(getStringListFromString(search.getCandidateNumbers()));
 
         // Check if the saved search countries match the source countries of the user
         List<Long> requestCountries = getIdsFromString(search.getCountryIds());
 
         // if a user has source country restrictions AND IF the request has countries selected
         if(user != null
-                && user.getSourceCountries().size() > 0
+                && !user.getSourceCountries().isEmpty()
                 && search.getCountryIds() != null) {
             List<Long> sourceCountries = user.getSourceCountries().stream()
                     .map(Country::getId)
@@ -1469,6 +1883,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
 //            }
         }
         searchCandidateRequest.setCountryIds(requestCountries);
+        searchCandidateRequest.setCountrySearchType(search.getCountrySearchType());
 
         searchCandidateRequest.setEnglishMinSpokenLevel(search.getEnglishMinSpokenLevel());
         searchCandidateRequest.setEnglishMinWrittenLevel(search.getEnglishMinWrittenLevel());
@@ -1486,9 +1901,12 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         searchCandidateRequest.setMaxAge(search.getMaxAge());
         searchCandidateRequest.setMinEducationLevel(search.getMinEducationLevel());
         searchCandidateRequest.setEducationMajorIds(getIdsFromString(search.getEducationMajorIds()));
+        searchCandidateRequest.setIncludePendingTermsCandidates(search.getIncludePendingTermsCandidates());
         searchCandidateRequest.setMiniIntakeCompleted(search.getMiniIntakeCompleted());
         searchCandidateRequest.setFullIntakeCompleted(search.getFullIntakeCompleted());
+        searchCandidateRequest.setPotentialDuplicate(search.getPotentialDuplicate());
 
+        // Not currently in use as of Jun '24 - preserved for now in case of reinstatement.
         CandidateFilterByOpps candidateFilterByOpps = CandidateFilterByOpps.mapToEnum(
             search.getAnyOpps(), search.getClosedOpps(), search.getRelocatedOpps());
         searchCandidateRequest.setCandidateFilterByOpps(candidateFilterByOpps);
@@ -1504,18 +1922,6 @@ public class SavedSearchServiceImpl implements SavedSearchService {
     }
 
 
-
-    String getListAsString(List<Long> ids){
-        return !CollectionUtils.isEmpty(ids) ? ids.stream().map(String::valueOf)
-                .collect(Collectors.joining(",")) : null;
-    }
-
-    List<Long> getIdsFromString(String listIds){
-        return listIds != null ? Stream.of(listIds.split(","))
-                .map(Long::parseLong)
-                .collect(Collectors.toList()) : null;
-    }
-
     String getStatusListAsString(List<CandidateStatus> statuses){
         return !CollectionUtils.isEmpty(statuses) ? statuses.stream().map(String::valueOf)
                 .collect(Collectors.joining(",")) : null;
@@ -1523,8 +1929,20 @@ public class SavedSearchServiceImpl implements SavedSearchService {
 
     List<CandidateStatus> getStatusListFromString(String statusList){
         return statusList != null ? Stream.of(statusList.split(","))
-                .map(s -> CandidateStatus.valueOf(s))
+                .map(CandidateStatus::valueOf)
                 .collect(Collectors.toList()) : null;
+    }
+
+    String getUnhcrStatusListAsString(List<UnhcrStatus> unhcrStatuses){
+        return !CollectionUtils.isEmpty(unhcrStatuses) ? unhcrStatuses.stream().map(
+                Enum::name)
+            .collect(Collectors.joining(",")) : null;
+    }
+
+    List<UnhcrStatus> getUnhcrStatusListFromString(String unhcrStatusList){
+        return unhcrStatusList != null ? Stream.of(unhcrStatusList.split(","))
+            .map(UnhcrStatus::valueOf)
+            .collect(Collectors.toList()) : null;
     }
 
     private Page<Candidate> doSearchCandidates(SearchCandidateRequest searchRequest) {
@@ -1538,27 +1956,29 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         // Modify request, doing standard defaults
         addDefaultsToSearchCandidateRequest(searchRequest);
 
+        //Processing can change if search is based on another search.
+        final boolean hasBaseSearch = searchRequest.getSearchJoinRequests() != null &&
+                !searchRequest.getSearchJoinRequests().isEmpty();
+
         String simpleQueryString = searchRequest.getSimpleQueryString();
-        if (simpleQueryString != null && simpleQueryString.length() > 0) {
-            // This is an elasticsearch request
+        boolean haveSimpleQueryString = simpleQueryString != null && !simpleQueryString.isEmpty();
+
+        boolean useOldSearch = searchRequest.isUseOldSearch();
+        if (!useOldSearch) {
+            //New search is Postgres SQL only - no elastic search and no CandidateSpecification
+            candidates = doSQLSearchCandidates(searchRequest, excludedCandidates);
+        } else if (haveSimpleQueryString || hasBaseSearch) {
+            // This is an elasticsearch request OR is built on one or more other searches.
 
             // Combine any joined searches (which will all be processed as elastic)
-            BoolQueryBuilder boolQueryBuilder = processElasticRequest(searchRequest,
+            BoolQuery.Builder boolQueryBuilder = processElasticRequest(searchRequest,
                 simpleQueryString, excludedCandidates);
 
             //Define sort from request
             PageRequest req = CandidateEs.convertToElasticSortField(searchRequest);
 
-            log.info("Elasticsearch query:\n" + boolQueryBuilder);
-            log.info("Elasticsearch sort:\n" + req);
-
-            NativeSearchQuery query = new NativeSearchQueryBuilder()
-                .withQuery(boolQueryBuilder)
-                .withPageable(req)
-                .build();
-
-            SearchHits<CandidateEs> hits = elasticsearchOperations.search(
-                query, CandidateEs.class, IndexCoordinates.of("candidates"));
+            NativeQuery nativeQuery = esService.makeCompoundQueryWithPaging(boolQueryBuilder, req);
+            SearchHits<CandidateEs> hits = esService.searchCandidateEs(nativeQuery);
 
             //Get candidate ids from the returned results - maintaining the sort
             //Avoid duplicates, but maintaining order by using a LinkedHashSet
@@ -1588,10 +2008,676 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         } else {
             //Compute the non-elastic query
             Specification<Candidate> query = computeQuery(searchRequest, excludedCandidates);
+
+            //The above query generates the sorting so it does not need to be passed in here.
             candidates = candidateRepository.findAll(query, searchRequest.getPageRequestWithoutSort());
         }
-        log.info("Found " + candidates.getTotalElements() + " candidates in search");
+        LogBuilder.builder(log)
+            .user(authService.getLoggedInUser())
+            .searchId(searchRequest.getSavedSearchId())
+            .action("doSearchCandidates")
+            .message("Found " + candidates.getTotalElements() + " candidates in search")
+            .logInfo();
+
         return candidates;
+    }
+
+    private Page<CandidateReadDto> doSearchCandidateDtos(SearchCandidateRequest searchRequest) {
+
+        Page<CandidateReadDto> candidates;
+
+        // Compute the candidates which should be excluded from search
+        Set<Candidate> excludedCandidates =
+            computeCandidatesExcludedFromSearchCandidateRequest(searchRequest);
+
+        // Modify request, doing standard defaults
+        addDefaultsToSearchCandidateRequest(searchRequest);
+
+        candidates = doSQLSearchCandidateDtos(searchRequest, excludedCandidates);
+
+        LogBuilder.builder(log)
+            .user(authService.getLoggedInUser())
+            .searchId(searchRequest.getSavedSearchId())
+            .action("doSearchCandidateDtos")
+            .message("Found " + candidates.getTotalElements() + " candidates in search")
+            .logInfo();
+
+        return candidates;
+    }
+
+    /**
+     * Do a paged search for candidates according to the given request but excluding the given
+     * candidates. Sorting and paging are supported as specified in the request.
+     * Overview of searching:
+     * <ol>
+     *    <li>
+     *        Construct a query which collects the sorted candidate ids of a page of candidates who
+     *        match the given search request.
+     *        This request will look like:
+     *        <p>
+     *           <code>
+     *              select distinct candidate.id from candidate ...
+     *              <br>
+     *              where ...
+     *              <br>
+     *              order by ...
+     *           </code>
+     *        </p>
+     *    </li>
+     *    <li>
+     *      Construct a very similar query which counts the total number of candidates matching
+     *      the search request. This count is used to support paging.
+     *      This request will look like:
+     *        <p>
+     *           <code>
+     *              select count(distinct candidate.id) from candidate ...
+     *              <br>
+     *              where ...
+     *           </code>
+     *        </p>
+     *        <p>
+     *            Note that there is no order by. It is unnecessary to get the total count. But the
+     *            where clause is the same for both queries.
+     *        </p>
+     *    </li>
+     *    <li>
+     *        Retrieve the candidate entities for the page of id's that are returned in the first
+     *        query and sort those candidates in the same order as the retrieved ids.
+     *    </li>
+     *    <li>
+     *        <p>
+     *        If the original query was sorted by a computed ranking then the ranking values will
+     *        have been returned in the results of the first query. Those ranks are
+     *        added to the candidate entity data so that they can be displayed to the user.
+     *        </p>
+     *        <p>
+     *           Matching keywords against a candidate's text data is an example of a ranking.
+     *           Close matches will display a higher ranking.
+     *        </p>
+     *    </li>
+     * </ol>
+     * @param request Specifies the details of the search
+     * @param excludedCandidates If specified, indicates candidates to be excluded from the search.
+     * @return Sorted page of candidates
+     */
+    private Page<Candidate> doSQLSearchCandidates(
+        SearchCandidateRequest request, @Nullable Set<Candidate> excludedCandidates) {
+        User user = userService.getLoggedInUser();
+        final PageRequest pageRequest = request.getPageRequest();
+
+        String sql = extractFetchSQL(request, user, excludedCandidates, true);
+        LogBuilder.builder(log).action("findCandidates")
+            .message("Query: " + sql).logInfo();
+
+        //Create and execute the query to return the candidate ids
+        Query query = entityManager.createNativeQuery(sql);
+        query.setFirstResult((int) pageRequest.getOffset());
+        query.setMaxResults(pageRequest.getPageSize());
+
+        long start = System.currentTimeMillis();
+        long end;
+
+        //Get results
+        final List<?> results = query.getResultList();
+
+        end = System.currentTimeMillis();
+        long fetchIdsTime = end - start;
+        start = end;
+
+        //Process the results
+        List<IdAndRank> idAndRanks =
+            CandidateSearchUtils.processIdRankSearchResults(results, request.getSort());
+
+        end = System.currentTimeMillis();
+        long convertTime = end - start;
+        start = end;
+
+        //Get ids of sorted candidates
+        List<Long> ids = idAndRanks.stream().map(IdAndRank::id).toList();
+
+        //Retrieve the candidate entities for those ids. They will come back unsorted.
+        List<Candidate> candidatesUnsorted = candidateRepository.findByIds(ids);
+
+        end = System.currentTimeMillis();
+        long fetchEntitiesTime = end - start;
+        start = end;
+
+        //Candidates need to be sorted the same as the ids.
+        //Map the unsorted candidates by their ids
+        Map<Long, Candidate> candidatesById = candidatesUnsorted.stream()
+            .collect(toMap(Candidate::getId, c -> c));
+
+        //Construct a sorted list of the candidates in the same order as the returned ids.
+        List<Candidate> candidatesSorted = new ArrayList<>();
+        for (IdAndRank idAndRank : idAndRanks) {
+            final Candidate candidate = candidatesById.get(idAndRank.id());
+
+            //Optionally update candidate data with any ranking values.
+            final Number rank = idAndRank.rank();
+            //Rank is a transient field so no need to set to null
+            if (rank != null) {
+                candidate.setRank(rank);
+            }
+            candidatesSorted.add(candidate);
+        }
+
+        end = System.currentTimeMillis();
+        long sortTime = end - start;
+        start = end;
+
+        //Compute count
+        String countSql = extractCountSQL(request, user, excludedCandidates);
+        LogBuilder.builder(log).action("countCandidates")
+            .message("Query: " + countSql).logInfo();
+        long total =  ((Number) entityManager.createNativeQuery(countSql).getSingleResult()).longValue();
+
+        end = System.currentTimeMillis();
+        long countTime = end - start;
+
+        LogBuilder.builder(log).action("findCandidates")
+            .message("Timings: fetchIds: " + fetchIdsTime
+                + " convert: " + convertTime
+                + " fetchEntities: " + fetchEntitiesTime
+                + " sort: " + sortTime
+                + " count: " + countTime
+            ).logInfo();
+
+        return new PageImpl<>(candidatesSorted, pageRequest, total);
+    }
+
+    private Page<CandidateReadDto> doSQLSearchCandidateDtos(
+        SearchCandidateRequest request, @Nullable Set<Candidate> excludedCandidates) {
+        User user = userService.getLoggedInUser();
+        final PageRequest pageRequest = request.getPageRequest();
+
+        String sql = extractFetchSQL(request, user, excludedCandidates, true);
+        String countSql = extractCountSQL(request, user, excludedCandidates);
+
+        return candidateDtoFetchService.fetchPage(sql, countSql, pageRequest);
+    }
+
+
+    /**
+     * <p>
+     * Extracts native database count query SQL corresponding to the given search request.
+     * </p>
+     * <p>
+     *     The SQL will always be a "SELECT COUNT DISTINCT id FROM candidate" statement plus joins to other tables
+     *     as needed and a WHERE clause.
+     * </p>
+     * @param request Search request being processed
+     * @param user User making the request. If not null, user-specific constraints are added to the
+     *             generated SQL - for example, some users are restricted to seeing candidates
+     *             located in certain countries.
+     * @param excludedCandidates Candidates to be excluded from results - defaults to none if null
+     *
+     * @return String containing the SQL
+     */
+    private String extractCountSQL(SearchCandidateRequest request,
+        @Nullable User user, @Nullable Collection<Candidate> excludedCandidates) {
+        //Initialize used searches with root search. This can't appear again in base searches
+        //otherwise we get a circular exception.
+        Set<Long> excludedSavedSearchIds = new HashSet<>();
+        excludedSavedSearchIds.add(request.getSavedSearchId());
+        return extractCountSQL(request, user, excludedCandidates, excludedSavedSearchIds);
+    }
+
+    /**
+     * This is designed to be called recursively, adding saved search ids of base searches as they
+     * are encountered to make sure that each id only occurs once - otherwise we will loop
+     * forever.
+     */
+    private String extractCountSQL(SearchCandidateRequest request,
+        @Nullable User user, @Nullable Collection<Candidate> excludedCandidates,
+        @NonNull Set<Long> excludedSavedSearchIds) {
+
+        String joinAndWhereSql = extractJoinAndWhereSQL(
+            request, user, excludedCandidates, false, excludedSavedSearchIds);
+        String selectSql = extractCountSelectSql();
+        return selectSql + joinAndWhereSql;
+    }
+
+    private String extractCountSelectSql() {
+        return "select count(distinct candidate.id) from candidate";
+    }
+
+    /**
+     * <p>
+     * Extracts native database query SQL corresponding to the given search request.
+     * </p>
+     * <p>
+     *     The SQL will always be a "SELECT FROM candidate" statement plus joins to other tables
+     *     as needed and a WHERE clause.
+     * </p>
+     * <p>
+     *     The request will return candidate data without duplicates.
+     * </p>
+     * @return String containing the SQL
+     */
+    public String extractFetchSQL(SearchCandidateRequest request) {
+        //Initialize used searches with root search. This can't appear again in base searches
+        //otherwise we get a circular exception.
+        Set<Long> excludedSavedSearchIds = new HashSet<>();
+        excludedSavedSearchIds.add(request.getSavedSearchId());
+        return extractFetchSQL(request, excludedSavedSearchIds);
+    }
+
+    /**
+     * This is designed to be called recursively, adding saved search ids of base searches as they
+     * are encountered to make sure that each id only occurs once - otherwise we will loop
+     * forever.
+     * @param request Search request being processed
+     * @param excludedSavedSearchIds ids of saved search ids that have been encountered.
+     * @return String containing the extracted SQL
+     */
+    private String extractFetchSQL(SearchCandidateRequest request, @NonNull Set<Long> excludedSavedSearchIds) {
+        return extractFetchSQL(
+            request, null, null, false, excludedSavedSearchIds);
+    }
+
+    /**
+     * <p>
+     * Extracts native database query SQL corresponding to the given search request.
+     * </p>
+     * <p>
+     *     The SQL will always be a "SELECT FROM candidate" statement plus joins to other tables
+     *     as needed and a WHERE clause.
+     *     If ordered is true, there will also be an ORDER BY clause.
+     * </p>
+     * <p>
+     *     The request will return candidate data without duplicates.
+     * </p>
+     * @param request Search request being processed
+     * @param user User making the request. If not null, user-specific constraints are added to the
+     *             generated SQL - for example, some users are restricted to seeing candidates
+     *             located in certain countries.
+     * @param excludedCandidates Candidates to be excluded from results - defaults to none if null
+     *
+     * @param ordered If true the generated sql will return ordered data as specified in the request.
+     * @return String containing the SQL
+     */
+    String extractFetchSQL(SearchCandidateRequest request,
+        @Nullable User user, @Nullable Collection<Candidate> excludedCandidates, boolean ordered) {
+        //Initialize used searches with root search. This can't appear again in base searches
+        //otherwise we get a circular exception.
+        Set<Long> excludedSavedSearchIds = new HashSet<>();
+        excludedSavedSearchIds.add(request.getSavedSearchId());
+        return extractFetchSQL(request, user, excludedCandidates, ordered, excludedSavedSearchIds);
+    }
+
+    /**
+     * This is designed to be called recursively, adding saved search ids of base searches as they
+     * are encountered to make sure that each id only occurs once - otherwise we will loop
+     * forever.
+     */
+    private String extractFetchSQL(SearchCandidateRequest request,
+        @Nullable User user, @Nullable Collection<Candidate> excludedCandidates, boolean ordered,
+        @NonNull Set<Long> excludedSavedSearchIds) {
+
+        String joinAndWhereSql = extractJoinAndWhereSQL(
+            request, user, excludedCandidates, ordered, excludedSavedSearchIds);
+
+        String selectSql = extractFetchSelectSql(request, ordered);
+
+        String sql = selectSql + joinAndWhereSql;
+
+        if (ordered) {
+            Sort sort = request.getSort();
+            String orderBySql = CandidateSearchUtils.buildOrderByClause(sort);
+            sql += orderBySql;
+        }
+
+        return sql;
+    }
+
+    private String extractFetchSelectSql(SearchCandidateRequest request, boolean ordered) {
+        String sql;
+        if (!ordered) {
+            sql = "select distinct candidate.id from candidate";
+        } else {
+            Sort sort = request.getSort();
+
+            sql = "select distinct candidate.id";
+            String nonIdSortFields =
+                CandidateSearchUtils.buildNonIdFieldList(sort, request.getSimpleQueryString());
+            if (!nonIdSortFields.isEmpty()) {
+                sql += "," + nonIdSortFields;
+            }
+            sql += " from candidate";
+        }
+        return sql;
+    }
+
+    private String extractJoinAndWhereSQL(SearchCandidateRequest request,
+        @Nullable User user, @Nullable Collection<Candidate> excludedCandidates, boolean ordered,
+        @NonNull Set<Long> excludedSavedSearchIds) {
+
+        //Uses a LinkedHashSet so that ordering is predictable - which helps unit testing
+        Set<String> joins = new LinkedHashSet<>();
+        List<String> ands = new ArrayList<>();
+
+        //Text search
+        if (StringUtils.hasText(request.getSimpleQueryString())) {
+            String to_tsquery = CandidateSearchUtils.buildToTsQueryFunction(request.getSimpleQueryString());
+            String clause = CandidateSearchUtils.CANDIDATE_TS_TEXT_FIELD + " @@ " + to_tsquery;
+            ands.add(clause);
+        }
+
+        // STATUS SEARCH
+        if (!ObjectUtils.isEmpty(request.getStatuses())) {
+            String values = request.getStatuses().stream()
+                .map(Enum::name).map(val -> "'" + val + "'").collect(Collectors.joining(","));
+            ands.add("candidate.status in (" + values + ")");
+        }
+
+        // CANDIDATE NUMBER SEARCH (exact match)
+        if (!ObjectUtils.isEmpty(request.getCandidateNumbers())) {
+            String values = request.getCandidateNumbers().stream()
+                .filter(StringUtils::hasText)
+                .map(String::trim)
+                .map(val -> val.replace("'", "''"))
+                .map(val -> "'" + val + "'")
+                .collect(Collectors.joining(","));
+
+            ands.add("candidate.candidate_number in (" + values + ")");
+        }
+
+
+        // Occupations SEARCH
+        if (!ObjectUtils.isEmpty(request.getOccupationIds())) {
+            joins.add("candidate_occupation");
+            String values = request.getOccupationIds().stream()
+                .map(Objects::toString).collect(Collectors.joining(","));
+            ands.add("candidate_occupation.occupation_id in (" + values + ")");
+
+            if (request.getMinYrs() != null) {
+                ands.add("candidate_occupation.years_experience >= " + request.getMinYrs());
+            }
+            if (request.getMaxYrs() != null) {
+                ands.add("candidate_occupation.years_experience <= " + request.getMaxYrs());
+            }
+        }
+
+        // EXCLUDED CANDIDATES (eg from Review Status)
+        if (!ObjectUtils.isEmpty(excludedCandidates)) {
+            String values = excludedCandidates.stream()
+                .map(candidate -> candidate.getId().toString())
+                .collect(Collectors.joining(","));
+            ands.add("candidate.id not in (" + values + ")");
+        }
+
+        // Exclude candidates belonging to the PENDING_TERMS_ACCEPTANCE_LIST unless specifically
+        // asked to include them.
+        boolean excludePendingTermsCandidates
+            = request.getIncludePendingTermsCandidates() == null || !request.getIncludePendingTermsCandidates();
+        if (excludePendingTermsCandidates) {
+            ands.add("candidate.id not in"
+                + " (select candidate_id from candidate_saved_list"
+                + " where saved_list_id = " + PENDING_TERMS_ACCEPTANCE_LIST_ID + ")");
+        }
+
+        // NATIONALITY SEARCH
+        if (!ObjectUtils.isEmpty(request.getNationalityIds())) {
+            String values = request.getNationalityIds().stream()
+                .map(Objects::toString).collect(Collectors.joining(","));
+            if (request.getNationalitySearchType() == null || request.getNationalitySearchType().equals(SearchType.or)) {
+                ands.add("candidate.nationality_id in (" + values + ")");
+            } else {
+                ands.add("candidate.nationality_id not in (" + values + ")");
+            }
+        }
+
+        // COUNTRY SEARCH - taking into account user source country limitations
+        // If request ids is NOT EMPTY we can just accept them because the options
+        // presented to the user will be limited to the allowed source countries
+        if (!ObjectUtils.isEmpty(request.getCountryIds())) {
+            String values = request.getCountryIds().stream()
+                .map(Objects::toString).collect(Collectors.joining(","));
+            if (request.getCountrySearchType() == null || request.getCountrySearchType().equals(SearchType.or)) {
+                ands.add("candidate.country_id in (" + values + ")");
+            } else {
+                ands.add("candidate.country_id not in (" + values + ")");
+            }
+            // If request's countryIds IS EMPTY only show user's source countries
+        } else if (user != null && !ObjectUtils.isEmpty(user.getSourceCountries())) {
+            String values = user.getSourceCountries().stream()
+                .map(country -> country.getId().toString())
+                .collect(Collectors.joining(","));
+            ands.add("candidate.country_id in (" + values + ")");
+        }
+
+        // PARTNER SEARCH
+        if (!ObjectUtils.isEmpty(request.getPartnerIds())) {
+            joins.add("users");
+            String values = request.getPartnerIds().stream()
+                .map(Objects::toString).collect(Collectors.joining(","));
+            ands.add("users.partner_id in (" + values + ")");
+        }
+
+        // SURVEY TYPE SEARCH
+        if (!ObjectUtils.isEmpty(request.getSurveyTypeIds())) {
+            String values = request.getSurveyTypeIds().stream()
+                .map(Objects::toString).collect(Collectors.joining(","));
+            ands.add("candidate.survey_type_id in (" + values + ")");
+        }
+
+        // REFERRER
+        final String referrerParam =
+            request.getRegoReferrerParam() == null ? null : request.getRegoReferrerParam().trim().toLowerCase();
+        if (referrerParam != null && !referrerParam.isEmpty()) {
+            ands.add("lower(candidate.rego_referrer_param) like '" + referrerParam + "'");
+        }
+
+        // UTM: Campaign
+        final String utmCampaigns =
+            request.getRegoUtmCampaign() == null ? null : request.getRegoUtmCampaign().trim().toLowerCase();
+        if (utmCampaigns != null && !utmCampaigns.isEmpty()) {
+            ands.add("lower(candidate.rego_utm_campaign) like '" + utmCampaigns + "'");
+        }
+
+        // UTM: Sources
+        final String regoUtmSources =
+            request.getRegoUtmSource() == null ? null : request.getRegoUtmSource().trim().toLowerCase();
+        if (regoUtmSources != null && !regoUtmSources.isEmpty()) {
+            ands.add("lower(candidate.rego_utm_source) like '" + regoUtmSources + "'");
+        }
+
+        // UTM: MEDIUM
+        final String regoUtmMedium =
+            request.getRegoUtmMedium() == null ? null : request.getRegoUtmMedium().trim().toLowerCase();
+        if (regoUtmMedium != null && !regoUtmMedium.isEmpty()) {
+            ands.add("lower(candidate.rego_utm_medium) like '" + regoUtmMedium + "'");
+        }
+
+        // GENDER SEARCH
+        if (request.getGender() != null) {
+            ands.add("candidate.gender = '" + request.getGender().name() + "'");
+        }
+
+        //Modified From
+        if (request.getLastModifiedFrom() != null) {
+            ands.add("candidate.updated_date >= '" +
+                getOffsetDateTime(request.getLastModifiedFrom(), LocalTime.MIN, request.getTimezone()) + "'");
+        }
+
+        //Modified To
+        if (request.getLastModifiedTo() != null) {
+            ands.add("candidate.updated_date <= '" +
+                getOffsetDateTime(request.getLastModifiedTo(), LocalTime.MAX, request.getTimezone()) + "'");
+        }
+
+        //Min / Max Age
+        if (request.getMinAge() != null) {
+            LocalDate minDob = LocalDate.now().minusYears(request.getMinAge() + 1);
+            ands.add("(candidate.dob <= '" + minDob + "' or candidate.dob is null)" );
+        }
+        if (request.getMaxAge() != null) {
+            LocalDate maxDob = LocalDate.now().minusYears(request.getMaxAge() + 1);
+            ands.add("(candidate.dob > '" + maxDob + "' or candidate.dob is null)" );
+        }
+
+        // UNHCR STATUSES
+        if (!ObjectUtils.isEmpty(request.getUnhcrStatuses())) {
+            String values = request.getUnhcrStatuses().stream()
+                .map(Enum::name).map(val -> "'" + val + "'").collect(Collectors.joining(","));
+            ands.add("candidate.unhcr_status in (" + values + ")");
+        }
+
+        // EDUCATION LEVEL SEARCH
+        if (request.getMinEducationLevel() != null || request.getMaxEducationLevel() != null) {
+            joins.add("education_level");
+            if (request.getMinEducationLevel() != null) {
+                ands.add("education_level.level >= " + request.getMinEducationLevel());
+            }
+            if (request.getMaxEducationLevel() != null) {
+                ands.add("education_level.level <= " + request.getMaxEducationLevel());
+            }
+        }
+
+        // MINI INTAKE COMPLETE
+        if (request.getMiniIntakeCompleted() != null) {
+            boolean completed = request.getMiniIntakeCompleted();
+            ands.add("mini_intake_completed_date " + (completed ? "is not null" : "is null"));
+        }
+
+        // FULL INTAKE COMPLETE
+        if (request.getFullIntakeCompleted() != null) {
+            boolean completed = request.getFullIntakeCompleted();
+            ands.add("full_intake_completed_date " + (completed ? "is not null" : "is null"));
+        }
+
+        // POTENTIAL DUPLICATE
+        if (request.getPotentialDuplicate() != null) {
+            boolean potentialDuplicate = request.getPotentialDuplicate();
+            ands.add("candidate.potential_duplicate = " + potentialDuplicate);
+        }
+
+        // MAJOR SEARCH
+        if (!ObjectUtils.isEmpty(request.getEducationMajorIds())) {
+            String values = request.getEducationMajorIds().stream()
+                .map(Objects::toString).collect(Collectors.joining(","));
+            joins.add("candidate_education");
+            ands.add("major_id in (" + values + ")");
+        }
+
+        // LANGUAGE SEARCH
+        if (request.getEnglishMinSpokenLevel() != null || request.getEnglishMinWrittenLevel() != null
+            || request.getOtherLanguageId() != null
+            || request.getOtherMinSpokenLevel() != null || request.getOtherMinWrittenLevel() != null) {
+            String selection;
+
+            if (request.getEnglishMinSpokenLevel() != null) {
+                selection = computeLanguageLevelSelection(
+                    ENGLISH_LANGUAGE_ID, true, request.getEnglishMinSpokenLevel());
+                ands.add("exists (" + selection + ")");
+            }
+            if (request.getEnglishMinWrittenLevel() != null) {
+                selection = computeLanguageLevelSelection(
+                    ENGLISH_LANGUAGE_ID, false, request.getEnglishMinWrittenLevel());
+                ands.add("exists (" + selection + ")");
+            }
+
+            if (request.getOtherLanguageId() != null) {
+                long languageId = request.getOtherLanguageId();
+                if (request.getOtherMinSpokenLevel() != null) {
+                    selection = computeLanguageLevelSelection(
+                        languageId, true, request.getOtherMinSpokenLevel());
+                    ands.add("exists (" + selection + ")");
+                }
+                if (request.getOtherMinWrittenLevel() != null) {
+                    selection = computeLanguageLevelSelection(
+                        languageId, false, request.getOtherMinWrittenLevel());
+                    ands.add("exists (" + selection + ")");
+                }
+            }
+        }
+
+        //LIST ANY
+        SearchType listAnySearchType = request.getListAnySearchType();
+        final List<Long> listAnyIds = request.getListAnyIds();
+        if (!ObjectUtils.isEmpty(listAnyIds)) {
+            String values = listAnyIds.stream()
+                .map(Objects::toString).collect(Collectors.joining(","));
+            String clause = "candidate.id in"
+                + " (select candidate_id from candidate_saved_list"
+                + " where saved_list_id in (" + values + "))";
+            if (SearchType.not.equals(listAnySearchType)) {
+                clause = "not (" + clause + ")";
+            }
+            ands.add(clause);
+        }
+
+        //LIST ALL
+        SearchType listAllSearchType = request.getListAllSearchType();
+        final List<Long> listAllIds = request.getListAllIds();
+        if (!ObjectUtils.isEmpty(listAllIds)) {
+            List<String> clauses = new ArrayList<>();
+            for (Long listAllId : listAllIds) {
+                clauses.add("candidate.id in"
+                    + " (select candidate_id from candidate_saved_list"
+                    + " where saved_list_id = " + listAllId + ")");
+            }
+            //All clauses must be true so and together.
+            String clause = String.join(" and ", clauses);
+            if (SearchType.not.equals(listAllSearchType)) {
+                clause = "not (" + clause + ")";
+            }
+            ands.add(clause);
+        }
+
+        /*
+         * Loop through base searches constructing predicates like this anded together:
+         *     clauses.add("candidate.id in (Base search query without ts_rank and order by)")
+         * String clause = String.join(" and ", clauses);
+         * ands.add(clause);
+         */
+        if (!ObjectUtils.isEmpty(request.getSearchJoinRequests())) {
+
+            List<String> clauses = new ArrayList<>();
+
+            for (SearchJoinRequest searchJoinRequest : request.getSearchJoinRequests()) {
+                Long baseSearchId = searchJoinRequest.getSavedSearchId();
+                if (excludedSavedSearchIds.contains(baseSearchId)) {
+                    throw new CircularReferencedException(searchJoinRequest.getSavedSearchId());
+                }
+                SearchCandidateRequest searchRequest = loadSavedSearch(baseSearchId);
+                String sql = extractFetchSQL(searchRequest, excludedSavedSearchIds);
+
+                clauses.add("candidate.id in (" + sql + ")");
+            }
+            ands.add(String.join(" and ", clauses));
+        }
+        if (ordered) {
+            List<String> tableSet = CandidateSearchUtils.buildNonCandidateTableList(request.getSort());
+            if (!tableSet.isEmpty()) {
+                joins.addAll(tableSet);
+            }
+        }
+
+        String joinClause = joins.stream()
+            .map(CandidateSearchUtils::getTableJoin)
+            .collect(Collectors.joining(" left join "));
+
+        String whereClause = String.join(" and ", ands);
+
+        String query = "";
+        if (!joinClause.isEmpty()) {
+            query += " left join " + joinClause;
+        }
+        if (!whereClause.isEmpty()) {
+            query += " where " + whereClause;
+        }
+
+        return query;
+    }
+
+    private String computeLanguageLevelSelection(long languageId, boolean spoken, int level) {
+        String selection = "select 1 from candidate_language join language_level"
+            + " on language_level.id = " + (spoken ? "spoken_level_id" : "written_level_id")
+            + " where candidate_language.candidate_id = candidate.id"
+            + " and candidate_language.language_id = " + languageId
+            + " and language_level.level >= " + level;
+        return selection;
     }
 
     @NonNull
@@ -1638,7 +2724,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
                     request.setPartnerIds(List.of(partner.getId()));
                 } else {
                     //Every one else defaults to seeing candidates from all partners
-                    List<PartnerImpl> sourcePartners = partnerService.listSourcePartners();
+                    List<PartnerImpl> sourcePartners = partnerService.listAllSourcePartners();
                     List<Long> partnerIds =
                             sourcePartners.stream().map(PartnerImpl::getId).collect(Collectors.toList());
                     request.setPartnerIds(partnerIds);
@@ -1647,7 +2733,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         }
     }
 
-    private BoolQueryBuilder processElasticRequest(SearchCandidateRequest searchRequest,
+    private BoolQuery.Builder processElasticRequest(SearchCandidateRequest searchRequest,
         String simpleQueryString, Set<Candidate> excludedCandidates) {
         // If saved search, add to searchIds to guard against circular dependencies
         List<Long> searchIds = new ArrayList<>();
@@ -1655,10 +2741,17 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             searchIds.add(searchRequest.getSavedSearchId());
         }
 
-        BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder();
+        Set<Long> listAllCandidateIds =
+            savedListService.fetchIntersectionCandidateIds(searchRequest.getListAllIds());
+        final SearchType listAllSearchType = searchRequest.getListAllSearchType();
 
-        boolQueryBuilder = computeElasticQuery(boolQueryBuilder, searchRequest,
-            simpleQueryString, excludedCandidates);
+        Set<Long> listAnyCandidateIds =
+            savedListService.fetchUnionCandidateIds(searchRequest.getListAnyIds());
+        final SearchType listAnySearchType = searchRequest.getListAnySearchType();
+
+        BoolQuery.Builder boolQueryBuilder = computeElasticQuery(searchRequest,
+            simpleQueryString, excludedCandidates,
+            listAllSearchType, listAllCandidateIds, listAnySearchType, listAnyCandidateIds);
 
         // Add any joined searches to the builder
         if (!searchRequest.getSearchJoinRequests().isEmpty()) {
@@ -1667,6 +2760,17 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             }
         }
         return boolQueryBuilder;
+    }
+
+    public void updateSuggestedSearchesNames(SalesforceJobOpp job, String oldJobName) {
+        Set<SavedSearch> suggestedSearches = job.getSuggestedSearches();
+
+        for (SavedSearch search : suggestedSearches) {
+            String oldSearchName = search.getName();
+            String newSearchName = oldSearchName.replace(oldJobName, job.getName());
+            search.setName(newSearchName);
+            savedSearchRepository.save(search);
+        }
     }
 
 }

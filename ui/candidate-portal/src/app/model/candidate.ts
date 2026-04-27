@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -36,6 +36,7 @@ import {getExternalHref} from "../util/url";
 import {CandidateReviewStatusItem} from "./candidate-review-status-item";
 import {TaskAssignment} from "./task-assignment";
 import {Job} from "./job";
+import {Partner} from "./partner";
 
 export interface ShortCandidate {
   id: number;
@@ -46,7 +47,12 @@ export interface ShortCandidate {
 export interface Candidate extends HasId {
   id: number;
   candidateNumber: string;
+  acceptedPrivacyPolicyId: string;
+  acceptedPrivacyPolicyDate:string;
+  acceptedPrivacyPolicyPartner?: Partner;
+  publicId: string;
   status: string;
+  allNotifications: boolean;
   gender: string;
   dob: Date;
   address1: string;
@@ -55,6 +61,7 @@ export interface Candidate extends HasId {
   country: Country;
   yearOfArrival: number;
   nationality: Country;
+  candidateCitizenships: CandidateCitizenship[];
   phone: string;
   whatsapp: string;
   externalId: string;
@@ -69,6 +76,7 @@ export interface Candidate extends HasId {
   candidateReviewStatusItems: CandidateReviewStatusItem[];
   migrationEducationMajor: EducationMajor;
   additionalInfo: string;
+  aspirations?: string;
   linkedInLink: string;
   candidateMessage: string;
   maxEducationLevel: EducationLevel;
@@ -86,6 +94,8 @@ export interface Candidate extends HasId {
   shareableDoc: CandidateAttachment;
   listShareableCv: CandidateAttachment;
   listShareableDoc: CandidateAttachment;
+  muted: boolean;
+  changePassword: boolean;
   shareableNotes: string;
   surveyType: SurveyType;
   surveyComment: string;
@@ -98,13 +108,19 @@ export interface Candidate extends HasId {
   unhcrStatus: UnhcrStatus;
   ieltsScore: string;
   numberDependants: number;
-  langAssessmentScore: string;
+  englishAssessmentScoreIelts: string;
+  frenchAssessmentScoreNclc: number;
   candidateExams: CandidateExam[];
   candidateAttachments?: CandidateAttachment[];
   taskAssignments?: TaskAssignment[];
   candidateOpportunities: CandidateOpportunity[];
   candidateProperties?: CandidateProperty[];
   mediaWillingness?: string;
+  // relocated address fields
+  relocatedAddress: string;
+  relocatedCity: string;
+  relocatedState: string;
+  relocatedCountry: Country;
 
   //These are only used in the candidate portal on the browser code
   candidateCertifications?: CandidateCertification[];
@@ -112,6 +128,7 @@ export interface Candidate extends HasId {
   candidateJobExperiences?: CandidateJobExperience[];
   candidateLanguages?: CandidateLanguage[];
   candidateOccupations?: CandidateOccupation[];
+  candidateDestinations?: CandidateDestination[];
 
 }
 
@@ -122,7 +139,8 @@ export interface CandidateProperty {
 
 export interface CandidateIntakeData {
   asylumYear?: string;
-  availImmediate?: YesNoUnsure;
+  availDate?: string;
+  availImmediate?: YesNo;
   availImmediateJobOps?: string;
   availImmediateReason?: AvailImmediateReason;
   availImmediateNotes?: string;
@@ -158,6 +176,9 @@ export interface CandidateIntakeData {
   crimeConvict?: YesNoUnsure;
   crimeConvictNotes?: string;
 
+  arrestImprison?: YesNoUnsure;
+  arrestImprisonNotes?: string;
+
   destLimit?: YesNo;
   destLimitNotes?: string;
 
@@ -189,8 +210,8 @@ export interface CandidateIntakeData {
   intRecruitOther?: string;
   intRecruitRural?: YesNoUnsure;
   intRecruitRuralNotes?: string;
-  langAssessment?: string;
-  langAssessmentScore?: string;
+  englishAssessment?: string;
+  englishAssessmentScoreIelts?: string;
   leftHomeReasons?: LeftHomeReason[];
   leftHomeNotes?: string;
   militaryService?: YesNo;
@@ -211,7 +232,7 @@ export interface CandidateIntakeData {
   partnerIelts?: IeltsStatus;
   partnerIeltsScore?: string;
   partnerIeltsYr?: number;
-  partnerCitizenship?: Country;
+  partnerCitizenship?: number[];
 
   returnedHome?: YesNoUnsure;
   returnedHomeNotes?: string;
@@ -288,7 +309,7 @@ export interface CandidateExam {
 export interface CandidateDestination {
   id?: number;
   country?: Country;
-  interest?: YesNoUnsure;
+  interest?: YesNoUnsureLearn;
   family?: FamilyRelations;
   location?: string;
   notes?: string;
@@ -327,8 +348,6 @@ export interface CandidateVisa {
 export interface CandidateVisaJobCheck {
   jobOpp?: Job;
   id?: number;
-  name?: string;
-  sfJobLink?: string;
   occupation?: Occupation;
   occupationNotes?: string;
   qualification?: YesNo;
@@ -384,24 +403,11 @@ export enum CandidateStatus {
   employed = "employed (inactive)",
   incomplete = "incomplete",
   ineligible = "ineligible (inactive)",
+  ineligibleReview = "ineligible (review)",
   pending = "pending",
+  relocatedIndependently = "relocated independently (inactive)",
   unreachable = "unreachable",
   withdrawn = "withdrawn (inactive)"
-}
-
-export enum CandidateFilterByOpps {
-  someOpps = "Some cases",
-
-  noOpps = "No cases",
-
-  openOpps = "Some open cases",
-
-  closedOpps = "Some closed cases",
-
-  preRelocationOpps = "Some cases not yet at relocated stage - ie 'live' cases",
-
-  postRelocationOpps = "Some cases at the relocated or later stage"
-
 }
 
 export interface CandidateOpportunityParams extends OpportunityProgressParams {
@@ -431,6 +437,10 @@ export class RegisterCandidateRequest extends BaseCandidateContactRequest {
   utmTerm?: string;
   contactConsentRegistration?: string;
   contactConsentPartners?: string;
+}
+
+export class SubmitRegistrationRequest {
+  acceptedPrivacyPolicyId?: string;
 }
 
 export interface UpdateCandidateOppsRequest {
@@ -463,6 +473,10 @@ export interface UpdateCandidateStatusInfo {
 export interface UpdateCandidateStatusRequest {
   candidateIds: number[];
   info: UpdateCandidateStatusInfo;
+}
+
+export interface UpdateCandidateNotificationPreferenceRequest {
+  allNotifications: boolean;
 }
 
 export enum FamilyRelations {
@@ -588,6 +602,7 @@ export enum Exam {
   IELTSGen = "IELTS General",
   IELTSAca = "IELTS Academic",
   TOEFL = "TOEFL",
+  DETOfficial = "DETOfficial",
   Other = "Other"
 }
 
@@ -690,6 +705,19 @@ export function hasIeltsExam(candidate: Candidate): boolean {
   }
 }
 
+export function isMuted(candidate: Candidate): boolean {
+  //Default is to treat as muted if the candidate or muted attribute is not defined
+  let isMuted = true;
+  if (candidate) {
+    //Candidate is defined
+    if (candidate.muted != null) {
+      //Muted attribute is defined - so just use it
+      isMuted = candidate.muted;
+    }
+  }
+  return isMuted;
+}
+
 export function checkIeltsScoreType(candidate: Candidate): string {
   if (candidate.candidateExams.length > 0) {
     const type: CandidateExam = candidate.candidateExams?.find(e => e?.score === candidate.ieltsScore.toString());
@@ -716,8 +744,7 @@ export function getIeltsScoreTypeString(candidate: Candidate): string {
  * Returns the immigration pathway link for each destination country. Used in the visa intake.
  * We are hard coding these links as the websites should stay the same.
  * Note: These are currently for demo purposes only.
- * todo get the desired links from destination
- * @param countryId: The country we want the relevant links for.
+ * @param countryId The country we want the relevant links for.
  */
 export function getDestinationPathwayInfoLink(countryId: number): string {
   switch (countryId) {
@@ -735,8 +762,7 @@ export function getDestinationPathwayInfoLink(countryId: number): string {
  * Returns the occupation category help link for each destination country. Used in the visa intake.
  * We are hard coding these links as the websites should stay the same.
  * Note: These are currently for demo purposes only.
- * todo get the desired links from destination
- * @param countryId: The country we want the relevant links for.
+ * @param countryId The country we want the relevant links for.
  */
 export function getDestinationOccupationCatLink(countryId: number): string {
   switch (countryId) {
@@ -754,8 +780,7 @@ export function getDestinationOccupationCatLink(countryId: number): string {
  * Returns the occupation sub category help link for each destination country. Used in the visa intake.
  * We are hard coding these links as the websites should stay the same.
  * Note: These are currently for demo purposes only.
- * todo get the desired links from destination
- * @param countryId: The country we want the relevant links for.
+ * @param countryId The country we want the relevant links for.
  */
 export function getDestinationOccupationSubcatLink(countryId: number): string {
   switch (countryId) {

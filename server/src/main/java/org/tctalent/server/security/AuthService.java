@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -34,6 +34,26 @@ public class AuthService {
         Role.partneradmin, Role.admin, Role.systemadmin));
 
     /**
+     * Return logged in user in form of their TcUserDetails object (ie their security principal.
+     * This has the user's role and authorities.
+     *
+     * @return Logged in user details or empty if not logged in.
+     */
+    public Optional<TcUserDetails> getLoggedInUserDetails() {
+        Authentication authentication =
+            SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication == null ||
+            !authentication.isAuthenticated() ||
+            authentication.getPrincipal() instanceof String) {
+
+            return Optional.empty();
+        }
+
+        return Optional.of((TcUserDetails) authentication.getPrincipal());
+    }
+
+    /**
      * Return logged in user. Optional empty if not logged in.
      * <p/>
      * Note that this User object is not fetched from the database - so if you need a live
@@ -43,11 +63,8 @@ public class AuthService {
      * @return Logged in user or empty if not logged in.
      */
     public Optional<User> getLoggedInUser() {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth != null && auth.getPrincipal() instanceof TcUserDetails) {
-            return Optional.of(((TcUserDetails) auth.getPrincipal()).getUser());
-        }
-        return Optional.empty();
+        Optional<TcUserDetails> userDetails = getLoggedInUserDetails();
+        return userDetails.map(TcUserDetails::getUser);
     }
 
     /**

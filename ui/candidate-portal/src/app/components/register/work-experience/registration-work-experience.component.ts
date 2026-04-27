@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021 Talent Beyond Boundaries.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -22,7 +22,7 @@ import {
   OnInit,
   Output
 } from '@angular/core';
-import {FormBuilder, FormGroup} from "@angular/forms";
+import {UntypedFormBuilder, UntypedFormGroup} from "@angular/forms";
 import {Router} from "@angular/router";
 import {CandidateService} from "../../../services/candidate.service";
 import {CandidateJobExperienceService} from "../../../services/candidate-job-experience.service";
@@ -53,7 +53,7 @@ export class RegistrationWorkExperienceComponent implements OnInit, OnDestroy {
     occupations: true
   };
 
-  form: FormGroup;
+  form: UntypedFormGroup;
   candidateJobExperiences: CandidateJobExperience[];
   countries: Country[];
   occupations: CandidateOccupation[];
@@ -65,7 +65,7 @@ export class RegistrationWorkExperienceComponent implements OnInit, OnDestroy {
 
   subscription;
 
-  constructor(private fb: FormBuilder,
+  constructor(private fb: UntypedFormBuilder,
               private router: Router,
               private candidateService: CandidateService,
               private candidateOccupationService: CandidateOccupationService,
