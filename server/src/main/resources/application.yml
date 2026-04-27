@@ -107,7 +107,7 @@ spring:
     driverClassName: org.postgresql.Driver
     url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/tctalent}
     username: tctalent
-    password: ${SPRING_DATASOURCE_PASSWORD:tctalent}
+    password: ${SPRING_DATASOURCE_PASSWORD}
     hikari:
       maximum-pool-size: ${SPRING_DBPOOL_MAX:10}
       minimum-idle:  ${SPRING_DBPOOL_MIN:10}
@@ -138,7 +138,7 @@ management:
       enabled: false
 
 jwt:
-  secret: ${JWT_SECRET:RX4bokONoSrrNLM6CMTij9iG9jHFG5VfsN1zIi9UqDGK3pQXASG7xMEga2VrAj3P1SNmywqnWRoTXnltuJ5l+A==}
+  secret: ${JWT_SECRET}
   # This equates to 24 hours in milliseconds
   expirationInMs: 86400000
 
@@ -323,7 +323,7 @@ anthropic:
 
 #Support for in context language translation
 translation:
-  password: ${TRANSLATION_PASSWORD:TGFM}
+  password: ${TRANSLATION_PASSWORD}
 
 #Identifies the running environment — AWS task definitions hold the corresponding value, e.g. 'prod'/'staging'
 #Options for injecting into code: https://www.baeldung.com/spring-boot-properties-env-variables
