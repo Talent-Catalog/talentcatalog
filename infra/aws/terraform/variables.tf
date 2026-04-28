@@ -226,7 +226,7 @@ variable "s3_region" {
 
 variable "environment" {
   type        = string
-  description = "Denotes running environment (e.g., opc-staging, opc-prod)"
+  description = "Denotes running environment; must match app enum values (local, staging, prod)"
 }
 
 variable "email_default" {
