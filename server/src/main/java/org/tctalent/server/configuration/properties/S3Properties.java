@@ -31,14 +31,20 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class S3Properties {
 
     /**
-     * AWS access key
+     * AWS app credentials.
+     * In staging and production environments these fields are empty; S3 access is granted
+     * instead via the ECS task role assigned to the Fargate container.
      */
     private String accessKey;
+    private String secretKey;
 
     /**
-     * AWS secret key
+     * Per-instance-type translation bucket names for local development.
+     * These are selected at runtime based on tc.instance-type when S3_TRANSLATIONS_BUCKET
+     * is not explicitly set.
      */
-    private String secretKey;
+    private String tbbTranslationsBucket;
+    private String grnTranslationsBucket;
 
     /**
      * Max file size
