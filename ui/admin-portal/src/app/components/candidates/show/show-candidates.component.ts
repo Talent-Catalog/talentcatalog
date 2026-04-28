@@ -116,6 +116,14 @@ import {DownloadCvComponent} from "../../util/download-cv/download-cv.component"
 import {CandidateSourceBaseComponent} from "./candidate-source-base";
 import {LocalStorageService} from "../../../services/local-storage.service";
 import {TcModalComponent} from "../../../shared/components/modal/tc-modal.component";
+import {CasiAdminService} from "../../../services/casi-admin.service";
+import {
+  ListAction,
+  listActionIcons,
+  listActionLabels,
+  listActionTooltips,
+  ServiceList
+} from "../../../model/service-list";
 
 interface CachedTargetList {
   sourceID: number;
@@ -199,6 +207,8 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
 
   public filterSearch: boolean = false;
 
+  serviceList: ServiceList | null = null;
+
   private savedListStateKeyPrefix: string = 'ListKey';
   private showClosedOppsSuffix: string = 'ShowClosedOpps';
 
@@ -207,6 +217,7 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
   constructor(private http: HttpClient,
               private fb: UntypedFormBuilder,
               private candidateService: CandidateService,
+              private casiAdminService: CasiAdminService,
               private candidateSourceService: CandidateSourceService,
               private savedSearchService: SavedSearchService,
               private savedListCandidateService: SavedListCandidateService,
@@ -369,6 +380,7 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
           // Set the selected candidates (List only) to null when changing candidate source.
           this.selectedCandidates = [];
 
+          this.loadServiceList();
         }
       }
     }
@@ -842,6 +854,40 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
     return !isSavedSearch(this.candidateSource);
   }
 
+  readonly listActionIcons = listActionIcons;
+  readonly listActionLabels = listActionLabels;
+  readonly listActionTooltips = listActionTooltips;
+
+  actionSuccessMessage: string | null = null;
+
+  private readonly ACTION_SUCCESS_MESSAGES: Record<ListAction, string> = {
+    [ListAction.REASSIGN]: 'New coupon assigned. To give candidate(s) access to their new coupon,' +
+      ' use the \'Remove\' button to clear them from this list.'
+  };
+
+  onServiceListAction(action: ListAction): void {
+    const candidateNumbers = this.selectedCandidates.map(c => c.candidateNumber);
+    this.casiAdminService.performServiceListAction(
+      this.serviceList.id, action, candidateNumbers
+    ).subscribe({
+      next: () => {
+        this.actionSuccessMessage = this.ACTION_SUCCESS_MESSAGES[action];
+      },
+      error: (e) => this.error = e
+    });
+  }
+
+  private loadServiceList(): void {
+    if (!this.isSavedList()) {
+      this.serviceList = null;
+      return;
+    }
+    this.casiAdminService.getServiceList(this.candidateSource.id).subscribe({
+      next: (sl) => this.serviceList = sl,
+      error: () => this.serviceList = null
+    });
+  }
+
   isSavedSearch(): boolean {
     return isSavedSearch(this.candidateSource);
   }
@@ -1303,6 +1349,7 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
   }
 
   private removeFromList(candidates: Candidate[]) {
+    this.actionSuccessMessage = null;
 
     //Need to deselect any candidates being removed.
     this.selectedCandidates = this.selectedCandidates.filter(c => !candidates.includes(c));
