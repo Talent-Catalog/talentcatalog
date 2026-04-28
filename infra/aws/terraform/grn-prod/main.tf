@@ -244,7 +244,7 @@ module "grn_prod" {
   translations_bucket                   = "translations.globalrefugee.net"
   translations_folder                   = "translations"
   s3_region                             = "eu-west-2"
-  environment                           = "grn-prod"
+  environment                           = "prod"
   email_default                         = "noreply@globalrefugee.net"
   email_test_override                   = "-"
   email_user                            = "noreply@globalrefugee.net"
