@@ -15,8 +15,7 @@
  */
 
 import {Inject, Injectable, OnDestroy} from '@angular/core';
-import {JwtAuthenticationResponse} from "../model/jwt-authentication-response";
-import {Observable, Subject} from "rxjs";
+import {from, Observable, Subject, throwError} from "rxjs";
 import {HttpClient} from "@angular/common/http";
 import {environment} from "../../environments/environment";
 import {User} from "../model/user";
@@ -27,13 +26,15 @@ import {TermsType} from "../model/terms-info-dto";
 import {AuthProvider} from "./auth-provider";
 import {AUTH_PROVIDER} from "./auth.tokens";
 import {AuthStatus} from "./auth-status";
+import {catchError, map, switchMap} from "rxjs/operators";
+import {AuthenticationResponse} from "../model/authentication-response";
 
 export class AuthenticateInContextTranslationRequest {
   password: string;
 }
 
 /**
- * Manages authentication - ie login/logout and registration
+ * Manages authentication - i.e., login/logout and registration
  */
 @Injectable({
   providedIn: 'root'
@@ -50,9 +51,9 @@ export class AuthenticationService implements OnDestroy {
   private loggedInUser: User = null;
 
   /**
-   * Can be used to subscribe to logged in state changes - ie logins and logouts.
+   * Can be used to subscribe to logged-in state changes - i.e., logins and logouts.
    * <p/>
-   * Note that this automatically completes when app is destroyed - which will clean up any
+   * Note that this automatically completes when the app is destroyed - which will clean up any
    * subscriptions - so no need to manage clean of subscriptions in calling code.
    */
   loggedInUser$ = new Subject<User>();
@@ -77,8 +78,8 @@ export class AuthenticationService implements OnDestroy {
   }
 
   login(): Promise<void> {
-    return this.authProvider.login();
-  }
+     return this.authProvider.login();
+   }
 
   register(): Promise<void> {
      return this.authProvider.register();
@@ -86,7 +87,6 @@ export class AuthenticationService implements OnDestroy {
 
   logout(): Promise<void> {
     this.localStorageService.remove('user');
-    this.localStorageService.remove('access-token');
     localStorage.clear();
 
     this.setLoggedInUser(null);
@@ -95,7 +95,50 @@ export class AuthenticationService implements OnDestroy {
     return this.authProvider.logout();
    }
 
+  completeLogin(): Observable<void> {
+    //Retrieve current profile from provider and send to server so that it can be stored in the
+    //database.
+    return from(this.authProvider.getProfile()).pipe(
+      switchMap(profile =>
+        this.http.post(`${this.apiUrl}/login`, profile).pipe(
+          map((response: AuthenticationResponse) => {
+            this.storeAuthenticationData(response);
+          }),
+          catchError(e => {
+              console.log('error', e);
+              return throwError(e);
+            }
+          )
+        )
+      )
+    )
+  }
+
+  completeRegister(): Observable<void> {
+    //Retrieve current profile from provider and send to server so that it can be stored in the
+    //database.
+    return from(this.authProvider.getProfile()).pipe(
+      switchMap(profile =>
+        this.http.post(`${this.apiUrl}/register`, profile).pipe(
+          map((response: AuthenticationResponse) => {
+            this.storeAuthenticationData(response);
+          }),
+          catchError(e => {
+              console.log('error', e);
+              return throwError(e);
+            }
+          )
+        )
+      )
+    )
+  }
+
   getToken(): string | undefined {
+    if (this.authProvider.isAuthenticated()) {
+      return this.authProvider.getToken();
+    } else {
+      console.log("Not authenticated");
+    }
      return this.authProvider.getToken();
   }
 
@@ -173,15 +216,13 @@ export class AuthenticationService implements OnDestroy {
     this.loggedInUser$.next(this.loggedInUser);
   }
 
-  private storeCredentials(response: JwtAuthenticationResponse) {
-    //Remove any old credentials from storage
-    this.localStorageService.remove('access-token');
+  private storeAuthenticationData(response: AuthenticationResponse) {
+    //Remove any old data from storage
     this.localStorageService.remove('user');
     this.localStorageService.remove('can_view_chats');
     this.localStorageService.remove('tc_instance_type');
 
-    //Update new credentials in storage
-    this.localStorageService.set('access-token', response.accessToken);
+    //Update new data in storage
     this.localStorageService.set('can_view_chats', response.canViewChats);
     this.localStorageService.set('tc_instance_type', response.tcInstanceType);
 

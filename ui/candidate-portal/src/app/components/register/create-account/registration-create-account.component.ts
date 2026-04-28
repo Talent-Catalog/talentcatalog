@@ -64,9 +64,9 @@ export class RegistrationCreateAccountComponent implements OnInit {
     this.loading = true;
 
     this.registrationForm = this.builder.group({
-      username: ['', Validators.required],
-      password: ['', Validators.required],
-      passwordConfirmation: ['', Validators.required]
+      username: [''],
+      password: [''],
+      passwordConfirmation: ['']
     });
 
     if (this.authenticationService.isAuthenticated()) {
@@ -111,11 +111,8 @@ export class RegistrationCreateAccountComponent implements OnInit {
   }
 
   register() {
-    this.saving = true;
-    this.error = null;
 
-    // The user has not yet registered - create an account for them
-    this.authenticationService.register();
+    //todo Is this still needed?
 
     this.registrationService.next();
 

@@ -17,6 +17,7 @@
 package org.tctalent.server.service.db.impl;
 
 import static dev.samstevens.totp.util.Utils.getDataUriForImage;
+import static org.tctalent.server.configuration.SystemAdminConfiguration.SYSTEM_PARTNER_ABBREVIATION;
 
 import dev.samstevens.totp.code.CodeVerifier;
 import dev.samstevens.totp.exceptions.QrGenerationException;
@@ -27,6 +28,7 @@ import dev.samstevens.totp.secret.SecretGenerator;
 import java.time.OffsetDateTime;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -39,7 +41,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.lang.Nullable;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tctalent.server.configuration.SystemAdminConfiguration;
@@ -74,7 +75,9 @@ import org.tctalent.server.request.user.UpdateUserPasswordRequest;
 import org.tctalent.server.request.user.UpdateUserRequest;
 import org.tctalent.server.request.user.emailverify.SendVerifyEmailRequest;
 import org.tctalent.server.request.user.emailverify.VerifyEmailRequest;
+import org.tctalent.server.response.AuthenticationResponse;
 import org.tctalent.server.response.JwtAuthenticationResponse;
+import org.tctalent.server.security.AuthProfile;
 import org.tctalent.server.security.AuthService;
 import org.tctalent.server.security.JwtTokenProvider;
 import org.tctalent.server.service.db.PartnerService;
@@ -148,6 +151,61 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public AuthenticationResponse createOrUpdateUser(
+        String idpIssuer, String idpSubject, AuthProfile profile) {
+        //Look up based on idpIssuer and idpSubject
+        Optional<User> userOptional = userRepository.findByIdpIssuerAndIdpSubject(
+            idpIssuer, idpSubject);
+
+        if (userOptional.isEmpty()) {
+            //Try to find the user by email. This will be necessary when migrating existing,
+            //pre-OAuth2 users to the new system.
+            User userByEmail = userRepository.findByEmailIgnoreCase(profile.getEmail());
+            if (userByEmail != null) {
+                //Found user by email, update any changed fields.
+                userOptional = Optional.of(userByEmail);
+            }
+        }
+
+        User user;
+        if (userOptional.isEmpty()) {
+            //Create a minimal user object.
+            user = new User();
+            user.setIdpIssuer(idpIssuer);
+            user.setIdpSubject(idpSubject);
+            user.setFirstName(profile.getFirstName());
+            user.setLastName(profile.getLastName());
+            user.setEmail(profile.getEmail());
+            user.setUsername(profile.getEmail());
+            user.setStatus(Status.active);
+            user.setRole(Role.user);
+
+            Partner systemPartner = partnerService.getPartnerFromAbbreviation(SYSTEM_PARTNER_ABBREVIATION);
+            user.setPartner((PartnerImpl) systemPartner);
+        } else {
+            user = userOptional.get();
+            //Found, update any changed fields.
+            //Idp fields can be null in the case of migrating pre OAuth2 users.
+            if (user.getIdpIssuer() == null) {
+                user.setIdpIssuer(idpIssuer);
+            }
+            if (user.getIdpSubject() == null) {
+                user.setIdpSubject(idpSubject);
+            }
+            user.setFirstName(profile.getFirstName());
+            user.setLastName(profile.getLastName());
+            user.setEmail(profile.getEmail());
+            user.setUsername(profile.getEmail());
+        }
+        user = userRepository.save(user);
+
+        AuthenticationResponse response = new AuthenticationResponse(user);
+        response.setCanViewChats(false);
+        response.setTcInstanceType(tcInstanceService.getInstanceType());
+        return response;
+    }
+
+    @Override
     public User createUser(UpdateUserRequest request, @Nullable User creatingUser)
         throws UsernameTakenException {
 
@@ -158,7 +216,7 @@ public class UserServiceImpl implements UserService {
         //        /* Validate the password before account creation */
 //        String passwordEncrypted = passwordHelper.validateAndEncodePassword(request.getPassword());
 //        user.setPasswordEnc(passwordEncrypted);
-        return this.userRepository.save(user);
+        return userRepository.save(user);
     }
 
     private void populateUserFields(User user, UpdateUserRequest request, @Nullable User creatingUser) {
@@ -479,7 +537,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void logout() {
-        SecurityContextHolder.getContext().setAuthentication(null);
+        throw new UnsupportedOperationException("Disabled");
+
+//        SecurityContextHolder.getContext().setAuthentication(null);
     }
 
     private User fetchLoggedInUser() {

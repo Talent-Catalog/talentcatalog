@@ -1,10 +1,10 @@
-// keycloak-authentication.service.ts
 import {Injectable} from '@angular/core';
 import {BehaviorSubject, Observable} from 'rxjs';
 import {KeycloakService} from 'keycloak-angular';
 import {AuthProvider} from './auth-provider';
 import {AuthStatus} from './auth-status';
 import {reportAuthError} from './auth-error.util';
+import {AuthProfile} from "./auth-profile";
 
 /**
  * Keycloak authentication service.
@@ -89,7 +89,7 @@ export class KeycloakAuthenticationService implements AuthProvider {
 
     try {
       await this.keycloakService.login({
-        redirectUri: window.location.origin + '/home'
+        redirectUri: window.location.origin + '/?authAction=login'
       });
 
       this.patchStatus({ busy: false });
@@ -110,7 +110,7 @@ export class KeycloakAuthenticationService implements AuthProvider {
 
     try {
       await this.keycloakService.register({
-        redirectUri: window.location.origin + '/home'
+        redirectUri: window.location.origin + '/?authAction=register'
       });
 
       this.patchStatus({ busy: false });
@@ -147,6 +147,19 @@ export class KeycloakAuthenticationService implements AuthProvider {
 
       throw e;
     }
+  }
+
+  async getProfile(): Promise<AuthProfile> {
+    const profile = await this.keycloakService.loadUserProfile(true);
+    const keycloak = this.keycloakService.getKeycloakInstance();
+
+    return {
+      idpIssuer: keycloak.tokenParsed?.iss as string,
+      idpSubject: keycloak.subject,
+      email: profile.email,
+      firstName: profile.firstName,
+      lastName: profile.lastName
+    };
   }
 
   getToken(): string | undefined {

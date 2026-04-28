@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2026 Talent Catalog.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -13,25 +13,15 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-// auth-provider.ts
-import {Observable} from 'rxjs';
-import {AuthStatus} from './auth-status';
-import {AuthProfile} from "./auth-profile";
+
+import {User} from "./user";
+import {TcInstanceType} from "./tc-instance-type";
 
 /**
- * Interface for an OAuth2 authentication provider - eg Keycloak or Cognito.
+ * Response from the server in response to a successful login or registration
  */
-export interface AuthProvider {
-  init(): Promise<boolean>;
-  isAuthenticated(): boolean;
-  login(): Promise<void>;
-  register(): Promise<void>;
-  logout(): Promise<void>;
-  getProfile(): Promise<AuthProfile>;
-  getToken(): string | undefined;
-  refreshToken(minValiditySeconds?: number): Promise<void>;
-
-  getStatus(): Observable<AuthStatus>;
-  getCurrentStatus(): AuthStatus;
-  clearError(): void;
+export interface AuthenticationResponse {
+  tcInstanceType: TcInstanceType;
+  user: User;
+  canViewChats: boolean;
 }

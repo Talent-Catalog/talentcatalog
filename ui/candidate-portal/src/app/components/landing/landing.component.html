@@ -28,6 +28,20 @@
     <div class="col-sm-12 col-lg-6">
 
       <tc-card [header]="false">
+        <tc-button
+          color="primary"
+          type="outline"
+          (onClick)="onLogin()"
+          [queryParamsHandling]="'merge'">
+          Login
+        </tc-button>
+        <tc-button
+          color="primary"
+          type="outline"
+          (onClick)="onRegister()"
+          [queryParamsHandling]="'merge'">
+          Register
+        </tc-button>
 
         <app-login></app-login>
 

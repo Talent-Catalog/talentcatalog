@@ -16,27 +16,21 @@
 
 package org.tctalent.server.api.portal;
 
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.validation.Valid;
 import java.util.Map;
-import javax.security.auth.login.AccountLockedException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.tctalent.server.configuration.TranslationConfig;
 import org.tctalent.server.exception.InvalidCredentialsException;
-import org.tctalent.server.exception.InvalidPasswordFormatException;
-import org.tctalent.server.exception.PasswordExpiredException;
-import org.tctalent.server.exception.ReCaptchaInvalidException;
-import org.tctalent.server.exception.UserDeactivatedException;
 import org.tctalent.server.request.AuthenticateInContextTranslationRequest;
-import org.tctalent.server.request.LoginRequest;
-import org.tctalent.server.request.candidate.SelfRegistrationRequest;
-import org.tctalent.server.response.JwtAuthenticationResponse;
+import org.tctalent.server.response.AuthenticationResponse;
+import org.tctalent.server.security.AuthProfile;
 import org.tctalent.server.service.db.CandidateService;
 import org.tctalent.server.service.db.UserService;
 import org.tctalent.server.util.dto.DtoBuilder;
@@ -60,37 +54,38 @@ public class AuthPortalApi {
         }
     }
 
-    @PostMapping("login")
-    public Map<String, Object> login(@RequestBody LoginRequest request)
-            throws AccountLockedException, PasswordExpiredException, InvalidCredentialsException,
-        InvalidPasswordFormatException, UserDeactivatedException,
-        ReCaptchaInvalidException {
-
-        JwtAuthenticationResponse response = userService.login(request);
-        return jwtDto().build(response);
-    }
-
     @PostMapping("logout")
     public ResponseEntity<Void> logout() {
         this.userService.logout();
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping("register")
-    public Map<String, Object> register(
-        HttpServletRequest httpRequest, @Valid @RequestBody SelfRegistrationRequest request)
-            throws AccountLockedException, ReCaptchaInvalidException {
+    @PostMapping("login")
+    public Map<String, Object> login(
+        @AuthenticationPrincipal Jwt jwt,
+        @RequestBody AuthProfile profile
+    ) {
+        String issuer = jwt.getIssuer().toString();
+        String subject = jwt.getSubject();
 
-        LoginRequest loginRequest = candidateService.register(request, httpRequest);
-
-        JwtAuthenticationResponse jwt = userService.login(loginRequest);
-        return jwtDto().build(jwt);
+        AuthenticationResponse response = userService.createOrUpdateUser(issuer, subject, profile);
+        return authenticationDto().build(response);
     }
 
-    DtoBuilder jwtDto() {
+    @PostMapping("register")
+    public Map<String, Object> register(
+        @AuthenticationPrincipal Jwt jwt,
+        @RequestBody AuthProfile profile
+    ) {
+        String issuer = jwt.getIssuer().toString();
+        String subject = jwt.getSubject();
+
+        AuthenticationResponse response = userService.createOrUpdateUser(issuer, subject, profile);
+        return authenticationDto().build(response);
+    }
+
+    DtoBuilder authenticationDto() {
         return new DtoBuilder()
-            .add("accessToken")
-            .add("tokenType")
             .add("canViewChats")
             .add("tcInstanceType")
             .add("user", candidateBriefDto())
@@ -99,9 +94,11 @@ public class AuthPortalApi {
 
     private DtoBuilder candidateBriefDto() {
         return new DtoBuilder()
-                .add("id")
-                .add("username")
-                .add("email")
-                ;
+            .add("id")
+            .add("username")
+            .add("firstName")
+            .add("lastName")
+            .add("email")
+            ;
     }
 }

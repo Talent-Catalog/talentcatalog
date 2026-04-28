@@ -1,9 +1,12 @@
-// cognito-authentication.service.ts
 import {Injectable} from '@angular/core';
 import {BehaviorSubject, Observable} from 'rxjs';
 import {AuthProvider} from './auth-provider';
 import {AuthStatus} from './auth-status';
+import {AuthProfile} from "./auth-profile";
 
+/**
+ * Implementation of AuthProvider for Cognito authentication.
+ */
 @Injectable()
 export class CognitoAuthenticationService implements AuthProvider {
   private readonly status$ = new BehaviorSubject<AuthStatus>({
@@ -49,6 +52,11 @@ export class CognitoAuthenticationService implements AuthProvider {
 
   getToken(): string | undefined {
     return undefined;
+  }
+
+  async getProfile(): Promise<AuthProfile> {
+    this.patchStatus({ error: 'Cognito getProfile is not implemented yet.' });
+    throw new Error('Cognito getProfile is not implemented yet.');
   }
 
   async refreshToken(_minValiditySeconds = 30): Promise<void> {

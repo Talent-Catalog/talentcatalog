@@ -35,9 +35,11 @@ import org.tctalent.server.request.user.SearchUserRequest;
 import org.tctalent.server.request.user.SendResetPasswordEmailRequest;
 import org.tctalent.server.request.user.UpdateUserPasswordRequest;
 import org.tctalent.server.request.user.UpdateUserRequest;
-import org.tctalent.server.request.user.emailverify.VerifyEmailRequest;
 import org.tctalent.server.request.user.emailverify.SendVerifyEmailRequest;
+import org.tctalent.server.request.user.emailverify.VerifyEmailRequest;
+import org.tctalent.server.response.AuthenticationResponse;
 import org.tctalent.server.response.JwtAuthenticationResponse;
+import org.tctalent.server.security.AuthProfile;
 import org.tctalent.server.security.AuthService;
 import org.tctalent.server.util.qr.EncodedQrImage;
 
@@ -80,9 +82,26 @@ public interface UserService {
 
     User getSystemAdminUser();
 
+    /**
+     * Creates or updates a user based on the given OAuth profile and identity provider (IDP) values
+     * for the user
+     * <p>
+     * This is used to auto-create a minimal user record from the data held by the IDP, or update
+     * an existing user record if it already exists with the data that is managed by the IDP.
+     * @param idpIssuer This identifies the IDP.
+     * @param idpSubject The IDP subject. The IDP guarantees that this is unique within the IDP.
+     * @param profile User profile data managed by the IDP. It overwrites any data on the user
+     *                record on our database.
+     * @return Information about the user that has been authenticated (through a login or
+     * registration) plus other information that we want to pass up to the client following
+     * user login or registration.
+     */
+    AuthenticationResponse createOrUpdateUser(String idpIssuer, String idpSubject, AuthProfile profile);
+
     void resetPassword(ResetPasswordRequest request);
     void checkResetToken(CheckPasswordResetTokenRequest request);
     void generateResetPasswordToken(SendResetPasswordEmailRequest request);
+
     void updatePassword(UpdateUserPasswordRequest request);
     void updateUserPassword(long id, UpdateUserPasswordRequest request);
 

@@ -27,6 +27,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -83,7 +84,37 @@ public class SecurityConfiguration {
     @Autowired
     private OAuth2UserAuthenticationConverter oAuth2UserAuthenticationConverter;
 
+    /**
+     * This filter chain is specifically designed for handling registration and login requests
+     * for the portal API. It disables CSRF protection, sets session management to stateless,
+     * and requires authentication for all requests. JWT authentication is enabled for this chain.
+     * <p>
+     * For logins and registrations, new users can be auto-created by the controller from the data
+     * in the JWT token.
+     * <p>
+     * See {@link #filterChain(HttpSecurity)} for the normal filter chain configuration, where
+     * if a user cannot be looked up from the JWT token, a 401 Unauthorized response is returned.
+     * That logic is handled by {@link OAuth2UserAuthenticationConverter}
+     */
     @Bean
+    @Order(1)
+    SecurityFilterChain registrationSecurityFilterChain(HttpSecurity http) throws Exception {
+        http
+            .securityMatcher("/api/portal/auth/register", "/api/portal/auth/login")
+            .cors(withDefaults())
+            .csrf(CsrfConfigurer::disable)
+            .sessionManagement(session ->
+                session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .authorizeHttpRequests(auth -> auth
+                .anyRequest().authenticated())
+            .oauth2ResourceServer(
+                oauth2 -> oauth2.jwt(withDefaults()));
+
+        return http.build();
+    }
+
+    @Bean
+    @Order(2)
     protected SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
             //Default is to use a Bean called corsConfigurationSource - defined
