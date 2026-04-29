@@ -25,7 +25,6 @@ import org.tctalent.server.exception.InvalidSessionException;
 import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.CandidateExam;
-import org.tctalent.server.model.db.User;
 import org.tctalent.server.repository.db.CandidateExamRepository;
 import org.tctalent.server.repository.db.CandidateRepository;
 import org.tctalent.server.request.candidate.exam.CreateCandidateExamRequest;
@@ -34,7 +33,6 @@ import org.tctalent.server.security.AuthService;
 import org.tctalent.server.service.db.CandidateExamService;
 import org.tctalent.server.service.db.CandidateService;
 import org.tctalent.server.service.db.email.EmailHelper;
-import org.tctalent.server.util.audit.AuditHelper;
 
 /**
  * Manage candidate exams
@@ -84,7 +82,7 @@ public class CandidateExamServiceImpl implements CandidateExamService {
 
     @Override
     public @NotNull CandidateExam updateCandidateExam(UpdateCandidateExamRequest request) {
-        User loggedInUser = authService.getLoggedInUser()
+        authService.getLoggedInUser()
             .orElseThrow(() -> new InvalidSessionException("Not logged in"));
 
         CandidateExam candidateExam = this.candidateExamRepository.findByIdLoadCandidate(request.getId())
@@ -102,7 +100,6 @@ public class CandidateExamServiceImpl implements CandidateExamService {
         // Save the candidate exam
         candidateExam = candidateExamRepository.save(candidateExam);
 
-        AuditHelper.setAuditFieldsFromUser(candidate, loggedInUser);
         candidateService.save(candidate, true);
 
         return candidateExam;
