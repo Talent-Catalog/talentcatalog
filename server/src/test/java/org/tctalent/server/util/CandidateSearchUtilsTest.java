@@ -78,10 +78,25 @@ class CandidateSearchUtilsTest {
         String textQuery = "accountant + (excel powerpoint)";
         s = CandidateSearchUtils.buildNonIdFieldList(
             Sort.by("text_match"), textQuery);
-        String tsQuerySql = CandidateSearchUtils.buildTsQuerySQL(textQuery);
         Assertions.assertEquals("ts_rank("
             + CandidateSearchUtils.CANDIDATE_TS_TEXT_FIELD
-            +",to_tsquery('english','" + tsQuerySql + "')) as rank", s);
+            + ",plainto_tsquery('english', ?1)) as rank", s);
+    }
+
+    @Test
+    void buildToTsQueryFunctionUsesParameterForUserInput() {
+        String textQuery = "foo') | !bar & baz:*";
+        String s = CandidateSearchUtils.buildToTsQueryFunction(textQuery);
+
+        Assertions.assertEquals("plainto_tsquery('english', ?1)", s);
+        Assertions.assertFalse(s.contains(textQuery));
+    }
+
+    @Test
+    void buildToTsQueryFunctionDoesNotNeedParameterForBlankInput() {
+        String s = CandidateSearchUtils.buildToTsQueryFunction("   ");
+
+        Assertions.assertEquals("plainto_tsquery('english', '')", s);
     }
 
     @Test
