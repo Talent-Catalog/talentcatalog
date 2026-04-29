@@ -45,12 +45,12 @@ public class AuthService {
 
         if (authentication == null ||
             !authentication.isAuthenticated() ||
-            authentication.getPrincipal() instanceof String) {
+            !(authentication.getPrincipal() instanceof TcUserDetails userDetails)) {
 
             return Optional.empty();
         }
 
-        return Optional.of((TcUserDetails) authentication.getPrincipal());
+        return Optional.of(userDetails);
     }
 
     /**
