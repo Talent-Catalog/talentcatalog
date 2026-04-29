@@ -21,6 +21,7 @@ import java.util.Map;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.repository.db.read.dto.CandidateReadDto;
 
@@ -50,6 +51,10 @@ public interface CandidateDtoFetchService {
      */
     Page<CandidateReadDto> fetchPage(
         String fetchIdsSql, String countSql, @NonNull PageRequest pageRequest);
+
+    Page<CandidateReadDto> fetchPage(
+        String fetchIdsSql, String countSql, @NonNull PageRequest pageRequest,
+        @Nullable String textQuery);
 
     /**
      * Fetches Candidate DTOs into a Map of ids to CandidateReadDto objects
