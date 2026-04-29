@@ -27,7 +27,6 @@ import org.tctalent.server.model.db.CandidateEducation;
 import org.tctalent.server.model.db.Country;
 import org.tctalent.server.model.db.EducationMajor;
 import org.tctalent.server.model.db.EducationType;
-import org.tctalent.server.model.db.User;
 import org.tctalent.server.repository.db.CandidateEducationRepository;
 import org.tctalent.server.repository.db.CountryRepository;
 import org.tctalent.server.repository.db.EducationMajorRepository;
@@ -36,7 +35,6 @@ import org.tctalent.server.request.candidate.education.UpdateCandidateEducationR
 import org.tctalent.server.security.AuthService;
 import org.tctalent.server.service.db.CandidateEducationService;
 import org.tctalent.server.service.db.CandidateService;
-import org.tctalent.server.util.audit.AuditHelper;
 
 @Service
 @AllArgsConstructor
@@ -55,8 +53,8 @@ public class CandidateEducationServiceImpl implements CandidateEducationService 
 
     @Override
     public CandidateEducation createCandidateEducation(CreateCandidateEducationRequest request) {
-        User loggedInUser = authService.getLoggedInUser()
-                .orElseThrow(() -> new InvalidSessionException("Not logged in"));
+        authService.getLoggedInUser()
+            .orElseThrow(() -> new InvalidSessionException("Not logged in"));
 
         Candidate candidate = candidateService.getCandidateFromRequest(request.getCandidateId());
 
@@ -87,7 +85,6 @@ public class CandidateEducationServiceImpl implements CandidateEducationService 
         // Save the candidate education
         candidateEducation = candidateEducationRepository.save(candidateEducation);
 
-        AuditHelper.setAuditFieldsFromUser(candidate, loggedInUser);
         candidateService.save(candidate, true);
 
         return candidateEducation;
@@ -95,8 +92,8 @@ public class CandidateEducationServiceImpl implements CandidateEducationService 
 
     @Override
     public CandidateEducation updateCandidateEducation(UpdateCandidateEducationRequest request) {
-        User loggedInUser = authService.getLoggedInUser()
-                .orElseThrow(() -> new InvalidSessionException("Not logged in"));
+        authService.getLoggedInUser()
+            .orElseThrow(() -> new InvalidSessionException("Not logged in"));
 
         // Get ENUM for education type
         EducationType educationType = request.getEducationType();
@@ -125,7 +122,6 @@ public class CandidateEducationServiceImpl implements CandidateEducationService 
         candidateEducation = candidateEducationRepository.save(candidateEducation);
 
         Candidate candidate = candidateEducation.getCandidate();
-        AuditHelper.setAuditFieldsFromUser(candidate, loggedInUser);
         candidateService.save(candidate, true);
 
         return candidateEducation;
@@ -133,8 +129,8 @@ public class CandidateEducationServiceImpl implements CandidateEducationService 
 
     @Override
     public void deleteCandidateEducation(Long id) throws UnauthorisedActionException {
-        User loggedInUser = authService.getLoggedInUser()
-                .orElseThrow(() -> new InvalidSessionException("Not logged in"));
+        authService.getLoggedInUser()
+            .orElseThrow(() -> new InvalidSessionException("Not logged in"));
 
         CandidateEducation candidateEducation = candidateEducationRepository.findByIdLoadCandidate(id)
                 .orElseThrow(() -> new NoSuchObjectException(CandidateEducation.class, id));
@@ -142,7 +138,6 @@ public class CandidateEducationServiceImpl implements CandidateEducationService 
 
         if (authService.authoriseLoggedInUser(candidate)) {
             candidateEducationRepository.delete(candidateEducation);
-            AuditHelper.setAuditFieldsFromUser(candidate, loggedInUser);
             candidateService.save(candidate, true);
         } else {
             throw new UnauthorisedActionException("delete");
