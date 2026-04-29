@@ -36,7 +36,7 @@ import org.tctalent.server.request.candidate.CandidateIntakeDataUpdate;
 @Table(name = "candidate_destination")
 @SequenceGenerator(name = "seq_gen", sequenceName = "candidate_destination_id_seq", allocationSize = 1)
 @NoArgsConstructor
-public class CandidateDestination extends AbstractDomainObject<Long>
+public class CandidateDestination extends AbstractCandidateDataDomainObject<Long>
         implements Comparable<CandidateDestination> {
 
     @ManyToOne(fetch = FetchType.LAZY)

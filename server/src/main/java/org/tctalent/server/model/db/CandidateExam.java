@@ -34,7 +34,7 @@ import lombok.Setter;
 @Table(name = "candidate_exam")
 @SequenceGenerator(name = "seq_gen", sequenceName = "candidate_exam_id_seq", allocationSize = 1)
 @NoArgsConstructor
-public class CandidateExam extends AbstractDomainObject<Long> {
+public class CandidateExam extends AbstractCandidateDataDomainObject<Long> {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "candidate_id")
