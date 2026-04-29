@@ -107,11 +107,6 @@ public class CandidateJobExperienceServiceImpl implements CandidateJobExperience
         // Save the candidateOccupation
         final CandidateJobExperience jobExperience = candidateJobExperienceRepository.save(candidateJobExperience);
 
-        // Update candidate audit fields
-        User user = authService.getLoggedInUser()
-                .orElseThrow(() -> new InvalidSessionException("Not logged in"));
-        candidate.setAuditFields(user);
-
         //Save the candidate
         candidateService.save(candidate, true, true);
 
@@ -124,7 +119,6 @@ public class CandidateJobExperienceServiceImpl implements CandidateJobExperience
         if (candidate == null) {
             throw new InvalidSessionException("Not logged in");
         }
-        candidate.setAuditFields(candidate.getUser());
         CandidateJobExperience experience = updateCandidateJobExperience(request.getId(), request);
 
         return experience;
@@ -163,12 +157,7 @@ public class CandidateJobExperienceServiceImpl implements CandidateJobExperience
         // Save the candidate experience
         candidateJobExperience = candidateJobExperienceRepository.save(candidateJobExperience);
 
-        // Set candidate + update audit fields
-        Candidate candidate;
-        User user = authService.getLoggedInUser()
-                .orElseThrow(() -> new InvalidSessionException("Not logged in"));
-        candidate = candidateJobExperience.getCandidate();
-        candidate.setAuditFields(user);
+        Candidate candidate = candidateJobExperience.getCandidate();
 
         candidateService.save(candidate, true, true);
 
@@ -200,7 +189,6 @@ public class CandidateJobExperienceServiceImpl implements CandidateJobExperience
 
         candidateJobExperienceRepository.delete(candidateJobExperience);
 
-        candidate.setAuditFields(user);
         candidateService.save(candidate, true, true);
     }
 
