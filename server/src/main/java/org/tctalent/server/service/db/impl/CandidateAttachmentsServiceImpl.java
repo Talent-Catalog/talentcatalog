@@ -147,7 +147,6 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
         attachment.setActive(true);
         attachment.setCandidate(candidate);
         attachment.setMigrated(false);
-        attachment.setAuditFields(user);
         
         //Add a publicId
         String publicId = publicIDService.generatePublicID();
@@ -185,7 +184,6 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
 
         //Now update candidate audit fields and potentially update candidate text to take
         //account of any cv text in the attachment we just updated above.
-        candidate.setAuditFields(user);
         boolean updateCandidateText = UploadType.cv.equals(request.getUploadType());
         candidateService.save(candidate, true, updateCandidateText);
 
@@ -243,8 +241,6 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
             }
         }
 
-        // Update the candidate audit fields
-        candidate.setAuditFields(user);
         candidateService.save(candidate, true);
 
         //Try and delete associated file on file system
@@ -385,12 +381,9 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
             if (candidateAttachment.getType().equals(AttachmentType.link)) {
                 candidateAttachment.setUrl(request.getUrl());
             }
-            candidateAttachment.setAuditFields(user);
             candidateAttachment = candidateAttachmentRepository.save(candidateAttachment);
 
-            // UPDATE THE CANDIDATE AUDIT FIELDS
             Candidate candidate = candidateAttachment.getCandidate();
-            candidate.setAuditFields(user);
             candidateService.save(candidate, true, extractedCvTextChanged);
         } else {
             throw new UnauthorisedActionException("update");
