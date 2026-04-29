@@ -412,7 +412,6 @@ public class TestDataFactory {
     user.setEmail("JO.BLOgs@email.com");
     user.setFirstName("jo");
     user.setLastName("blogs");
-    user.setPasswordEnc("password");
     user.setRole(Role.user);
     user.setStatus(Status.active);
     user.setPasswordEnc(TEST_PASSWORD_HASH);
