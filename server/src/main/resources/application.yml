@@ -107,7 +107,7 @@ spring:
     driverClassName: org.postgresql.Driver
     url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/tctalent}
     username: tctalent
-    password: ${SPRING_DATASOURCE_PASSWORD:tctalent}
+    password: ${SPRING_DATASOURCE_PASSWORD}
     hikari:
       maximum-pool-size: ${SPRING_DBPOOL_MAX:10}
       minimum-idle:  ${SPRING_DBPOOL_MIN:10}
@@ -138,7 +138,7 @@ management:
       enabled: false
 
 jwt:
-  secret: ${JWT_SECRET:RX4bokONoSrrNLM6CMTij9iG9jHFG5VfsN1zIi9UqDGK3pQXASG7xMEga2VrAj3P1SNmywqnWRoTXnltuJ5l+A==}
+  secret: ${JWT_SECRET}
   # This equates to 24 hours in milliseconds
   expirationInMs: 86400000
 
@@ -231,19 +231,17 @@ google:
 
 s3:
   region: ${S3_REGION:eu-west-2}
-  # For dev this should be set in tc-secrets.
-  #GRN instance uses these keys for both candidate file S3 storage and S3 translations
-  #TBB instance does not use these keys. For S3 storage of translations it uses the keys in 
-  #aws.s3 (see below)  
+  # For local dev this should be set in tc-secrets.
+  # ECS environments intentionally leave these empty and use task-role credentials.
   access-key: ${AWS_CREDENTIALS_APP_ACCESSKEY:}
   secret-key: ${AWS_CREDENTIALS_APP_SECRETKEY:}
   max-size: 52428800
   candidate-files-bucket: ${S3_CANDIDATE_FILES_BUCKET:candidate-files.test.globalrefugee.net}
-  
-  #GRN staging Instance default
-  translations-bucket: ${S3_TRANSLATIONS_BUCKET:translations.test.globalrefugee.net}
-  #TBB staging Instance default
-#  translations-bucket: ${S3_TRANSLATIONS_BUCKET:dev.files.tbbtalent.org}
+
+  # ECS environments set this via SSM; local dev falls back to per-instance defaults below.
+  translations-bucket: ${S3_TRANSLATIONS_BUCKET:}
+  tbb-translations-bucket: ${S3_TBB_TRANSLATIONS_BUCKET:translations.test.tctalent.org}
+  grn-translations-bucket: ${S3_GRN_TRANSLATIONS_BUCKET:translations.test.globalrefugee.net}
   translations-folder: ${S3_TRANSLATIONS_FOLDER:translations}
 
 candidate-file-urls:
@@ -323,7 +321,7 @@ anthropic:
 
 #Support for in context language translation
 translation:
-  password: ${TRANSLATION_PASSWORD:TGFM}
+  password: ${TRANSLATION_PASSWORD}
 
 #Identifies the running environment — AWS task definitions hold the corresponding value, e.g. 'prod'/'staging'
 #Options for injecting into code: https://www.baeldung.com/spring-boot-properties-env-variables
