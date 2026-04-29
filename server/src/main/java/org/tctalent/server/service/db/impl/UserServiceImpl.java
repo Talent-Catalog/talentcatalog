@@ -39,6 +39,7 @@ import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
+import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -151,11 +152,21 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public AuthenticationResponse createOrUpdateUser(
-        String idpIssuer, String idpSubject, AuthProfile profile) {
+    public AuthenticationResponse createAuthenticationResponse(User user) {
+        AuthenticationResponse response = new AuthenticationResponse(user);
+        response.setCanViewChats(false);
+        response.setTcInstanceType(tcInstanceService.getInstanceType());
+        return response;
+    }
+
+    @Override
+    public User createOrUpdateUser(AuthProfile profile, @NonNull Partner partner) {
+        String idpIssuer = profile.getIdpIssuer();
+        String idpSubject = profile.getIdpSubject();
+
         //Look up based on idpIssuer and idpSubject
-        Optional<User> userOptional = userRepository.findByIdpIssuerAndIdpSubject(
-            idpIssuer, idpSubject);
+        Optional<User> userOptional = userRepository
+            .findByIdpIssuerAndIdpSubject(idpIssuer, idpSubject);
 
         if (userOptional.isEmpty()) {
             //Try to find the user by email. This will be necessary when migrating existing,
@@ -180,8 +191,7 @@ public class UserServiceImpl implements UserService {
             user.setStatus(Status.active);
             user.setRole(Role.user);
 
-            Partner systemPartner = partnerService.getPartnerFromAbbreviation(SYSTEM_PARTNER_ABBREVIATION);
-            user.setPartner((PartnerImpl) systemPartner);
+            user.setPartner((PartnerImpl) partner);
         } else {
             user = userOptional.get();
             //Found, update any changed fields.
@@ -197,12 +207,7 @@ public class UserServiceImpl implements UserService {
             user.setEmail(profile.getEmail());
             user.setUsername(profile.getEmail());
         }
-        user = userRepository.save(user);
-
-        AuthenticationResponse response = new AuthenticationResponse(user);
-        response.setCanViewChats(false);
-        response.setTcInstanceType(tcInstanceService.getInstanceType());
-        return response;
+        return userRepository.save(user);
     }
 
     @Override
@@ -465,6 +470,19 @@ public class UserServiceImpl implements UserService {
     @Override
     public boolean isCandidate(@Nullable User user) {
         return user != null && user.getRole().equals(Role.user);
+    }
+
+    @Override
+    public User login(AuthProfile profile) {
+        Partner systemPartner = partnerService.getPartnerFromAbbreviation(SYSTEM_PARTNER_ABBREVIATION);
+        if (systemPartner == null) {
+            throw new IllegalStateException("System partner not found");
+        }
+
+        User user = createOrUpdateUser(profile, systemPartner);
+
+        //TODO JC See logic below including lastLogin
+        return user;
     }
 
     @Override

@@ -16,19 +16,21 @@
 
 package org.tctalent.server.api.portal;
 
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.tctalent.server.configuration.TranslationConfig;
 import org.tctalent.server.exception.InvalidCredentialsException;
+import org.tctalent.server.model.db.Candidate;
+import org.tctalent.server.model.db.User;
 import org.tctalent.server.request.AuthenticateInContextTranslationRequest;
+import org.tctalent.server.request.candidate.OauthRegistrationRequest;
 import org.tctalent.server.response.AuthenticationResponse;
 import org.tctalent.server.security.AuthProfile;
 import org.tctalent.server.service.db.CandidateService;
@@ -61,26 +63,19 @@ public class AuthPortalApi {
     }
 
     @PostMapping("login")
-    public Map<String, Object> login(
-        @AuthenticationPrincipal Jwt jwt,
-        @RequestBody AuthProfile profile
-    ) {
-        String issuer = jwt.getIssuer().toString();
-        String subject = jwt.getSubject();
-
-        AuthenticationResponse response = userService.createOrUpdateUser(issuer, subject, profile);
+    public Map<String, Object> login(@RequestBody AuthProfile profile) {
+        User user = userService.login(profile);
+        AuthenticationResponse response = userService.createAuthenticationResponse(user);
         return authenticationDto().build(response);
     }
 
     @PostMapping("register")
     public Map<String, Object> register(
-        @AuthenticationPrincipal Jwt jwt,
-        @RequestBody AuthProfile profile
-    ) {
-        String issuer = jwt.getIssuer().toString();
-        String subject = jwt.getSubject();
+        @RequestBody OauthRegistrationRequest request, HttpServletRequest httpRequest) {
 
-        AuthenticationResponse response = userService.createOrUpdateUser(issuer, subject, profile);
+        Candidate candidate = candidateService.register(request, httpRequest);
+        AuthenticationResponse response = userService.createAuthenticationResponse(candidate.getUser());
+
         return authenticationDto().build(response);
     }
 
