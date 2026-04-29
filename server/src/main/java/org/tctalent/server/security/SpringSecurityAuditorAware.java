@@ -27,9 +27,9 @@ import org.tctalent.server.repository.db.UserRepository;
 import org.tctalent.server.service.db.UserService;
 
 /**
- * Implementation of AuditorAware that retrieves the current auditor (user) from the AuthService. If
- * no user is logged in, it falls back to a system admin user. This class is used for JPA auditing
- * to automatically populate createdBy and lastModifiedBy fields in entities.
+ * Implementation of AuditorAware that retrieves the current user from the AuthService. If no user
+ * is logged in, it falls back to a system admin user. This class is used for JPA auditing to
+ * automatically populate createdBy and lastModifiedBy fields in entities.
  *
  * @author sadatmalik
  */
