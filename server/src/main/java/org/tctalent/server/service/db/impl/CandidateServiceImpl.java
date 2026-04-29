@@ -412,7 +412,6 @@ public class CandidateServiceImpl implements CandidateService {
      * @param candidate Entity to save
      */
     public void saveIt(Candidate candidate) {
-        candidate.setAuditFields(authService.getLoggedInUser().orElse(null));
         save(candidate, true);
     }
 
@@ -967,7 +966,7 @@ public class CandidateServiceImpl implements CandidateService {
 
     @Override
     public Candidate updateCandidateMaxEducationLevel(long id, UpdateCandidateMaxEducationLevelRequest request) {
-        User loggedInUser = authService.getLoggedInUser()
+        authService.getLoggedInUser()
             .orElseThrow(() -> new InvalidSessionException("Not logged in"));
 
         Candidate candidate = this.candidateRepository.findById(id)
@@ -980,7 +979,6 @@ public class CandidateServiceImpl implements CandidateService {
                 .orElseThrow(() -> new NoSuchObjectException(EducationLevel.class, request.getMaxEducationLevel()));
         }
         candidate.setMaxEducationLevel(educationLevel);
-        candidate.setAuditFields(loggedInUser);
         return save(candidate, true);
     }
 
@@ -1275,8 +1273,6 @@ public class CandidateServiceImpl implements CandidateService {
             CandidateStatus.pending : CandidateStatus.incomplete;
         candidate.setStatus(candidateStatus);
 
-        candidate.setAuditFields(userService.getSystemAdminUser());
-
         //Save the candidate to the DB
         candidate = saveNewCandidate(sourcePartner, candidate);
 
@@ -1369,8 +1365,6 @@ public class CandidateServiceImpl implements CandidateService {
         candidate.setRelocatedCity(request.getRelocatedCity());
         candidate.setRelocatedState(request.getRelocatedState());
         candidate.setRelocatedCountry(relocatedCountry);
-
-        candidate.setAuditFields(user);
         candidate.setUser(user);
         candidate = save(candidate, true);
         return candidate;
@@ -1428,8 +1422,6 @@ public class CandidateServiceImpl implements CandidateService {
         candidate.setUnhcrRegistered(request.getUnhcrRegistered());
         candidate.setUnhcrNumber(request.getUnhcrNumber());
         candidate.setUnhcrConsent(request.getUnhcrConsent());
-
-        candidate.setAuditFields(user);
 
         updateCitizenships(candidate, nationalities);
 
@@ -1574,7 +1566,6 @@ public class CandidateServiceImpl implements CandidateService {
         }
 
         candidate.setMaxEducationLevel(educationLevel);
-        candidate.setAuditFields(candidate.getUser());
         return save(candidate, true);
     }
 
@@ -1594,8 +1585,6 @@ public class CandidateServiceImpl implements CandidateService {
         }
         candidate.setSurveyType(surveyType);
         candidate.setSurveyComment(request.getSurveyComment());
-
-        candidate.setAuditFields(candidate.getUser());
         return save(candidate, true);
     }
 
@@ -1622,7 +1611,6 @@ public class CandidateServiceImpl implements CandidateService {
         } else {
             candidate.setLinkedInLink(null);
         }
-        candidate.setAuditFields(candidate.getUser());
         return save(candidate, true);
     }
 
@@ -1797,7 +1785,6 @@ public class CandidateServiceImpl implements CandidateService {
                 candidate = updateCandidateStatus(candidate, info);
             }
         }
-        candidate.setAuditFields(candidate.getUser());
         return save(candidate, true);
     }
 
