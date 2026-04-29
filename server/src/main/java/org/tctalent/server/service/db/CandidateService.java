@@ -153,6 +153,10 @@ public interface CandidateService {
     @NotNull
     Set<Long> searchCandidatesUsingSql(String sql) throws PersistenceException;
 
+    @NotNull
+    Set<Long> searchCandidatesUsingSql(String sql, @Nullable String textQuery)
+        throws PersistenceException;
+
     Page<Candidate> getSavedListCandidates(SavedList savedList, SavedListGetRequest request);
 
     List<Candidate> getSavedListCandidatesUnpaged(SavedList savedList, SavedListGetRequest request);
