@@ -191,6 +191,10 @@ public class UserServiceImpl implements UserService {
             user.setStatus(Status.active);
             user.setRole(Role.user);
 
+            //Need to make password end non-null even though OAuth2 now managed passwords
+            //Eventually this field will be removed.
+            user.setPasswordEnc("N/A OAuth");
+
             user.setPartner((PartnerImpl) partner);
         } else {
             user = userOptional.get();
