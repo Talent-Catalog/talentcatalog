@@ -9,7 +9,7 @@ tc:
     #See SystemAdminConfiguration.java.
     boot-admin-password: ${TC_BOOT_ADMIN_PASSWORD:}
 
-  destinations: ${TC_DESTINATIONS:Australia,Canada,New Zealand,United Kingdom}
+  destinations: ${TC_DESTINATIONS:Australia,Belgium,Canada,France,Germany,Ireland,Italy,Slovakia,Spain,United Kingdom,United States}
 
   flyway:
     repair: true  #  Set this to true if you need to repair the Flyway history.
