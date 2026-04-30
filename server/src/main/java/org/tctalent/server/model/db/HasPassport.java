@@ -20,5 +20,7 @@ public enum HasPassport {
     NoResponse,
     ValidPassport,
     InvalidPassport,
+    ValidDocument,
+    InvalidDocument,
     NoPassport
 }
