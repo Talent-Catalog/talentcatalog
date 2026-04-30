@@ -161,7 +161,7 @@ class CandidateExamServiceImplTest {
         CandidateExam result = examCaptor.getValue();
         verifyExam(result);
 
-        verify(candidateService).save(candidate, true);
+        verify(candidateService).save(candidate);
         assertEquals(ADMIN_USER, candidate.getUpdatedBy());
     }
 

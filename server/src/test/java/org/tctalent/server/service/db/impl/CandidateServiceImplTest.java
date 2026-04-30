@@ -20,9 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
@@ -30,8 +28,8 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-import java.util.List;
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import org.junit.jupiter.api.Assertions;
@@ -53,16 +51,16 @@ import org.tctalent.server.model.db.PartnerImpl;
 import org.tctalent.server.model.db.User;
 import org.tctalent.server.model.db.partner.Partner;
 import org.tctalent.server.repository.db.CandidateRepository;
-import org.tctalent.server.service.db.CountryService;
-import org.tctalent.server.service.db.SystemNotificationService;
-import org.tctalent.server.util.PersistenceContextHelper;
 import org.tctalent.server.repository.db.CountryRepository;
 import org.tctalent.server.repository.db.UserRepository;
 import org.tctalent.server.request.candidate.UpdateCandidatePersonalRequest;
 import org.tctalent.server.request.candidate.citizenship.CreateCandidateCitizenshipRequest;
 import org.tctalent.server.security.AuthService;
 import org.tctalent.server.service.db.CandidateCitizenshipService;
+import org.tctalent.server.service.db.CountryService;
 import org.tctalent.server.service.db.PartnerService;
+import org.tctalent.server.service.db.SystemNotificationService;
+import org.tctalent.server.util.PersistenceContextHelper;
 
 @ExtendWith(MockitoExtension.class)
 class CandidateServiceImplTest {
@@ -124,13 +122,13 @@ class CandidateServiceImplTest {
   @Test
   @DisplayName("reassign candidates on page succeeds with valid partner and page")
   void reassignCandidatesOnPageSucceeds() {
-    doReturn(mockCandidate).when(candidateService).save(any(Candidate.class), eq(true));
+    doReturn(mockCandidate).when(candidateService).save(any(Candidate.class));
 
     candidateService.reassignCandidatesOnPage(candidatePage, partner2);
 
     assertEquals(partner2, user.getPartner()); // Verify partner assignment
     verify(candidateService, times(2))
-        .save(any(Candidate.class), eq(true)); // Verify save called
+        .save(any(Candidate.class)); // Verify save called
     verify(persistenceContextHelper).flushAndClearEntityManager(); // Ensure flush and clear
   }
 
@@ -144,7 +142,7 @@ class CandidateServiceImplTest {
             candidateService.reassignCandidatesOnPage(candidatePage, invalidPartner)
     );
     // Shouldn't happen:
-    verify(candidateService, never()).save(any(), anyBoolean());
+    verify(candidateService, never()).save(any());
     verify(persistenceContextHelper, never()).flushAndClearEntityManager();
   }
 
@@ -156,7 +154,7 @@ class CandidateServiceImplTest {
             candidateService.reassignCandidatesOnPage(candidatePage, null)
     );
     // Shouldn't happen:
-    verify(candidateService, never()).save(any(), anyBoolean());
+    verify(candidateService, never()).save(any());
     verify(persistenceContextHelper, never()).flushAndClearEntityManager();
   }
 
@@ -178,7 +176,7 @@ class CandidateServiceImplTest {
 
     // Check that candidate has flag cleared and is saved:
     verify(mockCandidate).setPotentialDuplicate(false);
-    verify(candidateService).save(mockCandidate, false);
+    verify(candidateService).save(mockCandidate);
   }
 
   @Test
@@ -198,7 +196,7 @@ class CandidateServiceImplTest {
     candidateService.cleanUpResolvedDuplicates(); // Act
 
     verify(candidateService, never()).getCandidate(anyLong());
-    verify(candidateService, never()).save(any(), anyBoolean());
+    verify(candidateService, never()).save(any());
   }
 
   @Test
@@ -226,7 +224,7 @@ class CandidateServiceImplTest {
 
     verify(mockCandidate, times(3)).setPotentialDuplicate(true);
     verify(candidateService, times(3))
-        .save(mockCandidate, false);
+        .save(mockCandidate);
   }
 
   @Test
@@ -352,7 +350,7 @@ class CandidateServiceImplTest {
         CreateCandidateCitizenshipRequest.class))).willReturn(null);
 
     // Handles save() after setter block
-    doReturn(candidate).when(candidateService).save(any(Candidate.class), eq(true));
+    doReturn(candidate).when(candidateService).save(any(Candidate.class));
   }
 
 }
