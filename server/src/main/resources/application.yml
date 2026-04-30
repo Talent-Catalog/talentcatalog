@@ -12,7 +12,7 @@ tc:
   destinations: ${TC_DESTINATIONS:Australia,Canada,New Zealand,United Kingdom}
 
   flyway:
-    repair: true  #  Set this to true if you need to repair the Flyway history.
+    repair: false  #  Set this to true if you need to repair the Flyway history.
 
   instance-type: ${TC_INSTANCE_TYPE:GRN}
 
