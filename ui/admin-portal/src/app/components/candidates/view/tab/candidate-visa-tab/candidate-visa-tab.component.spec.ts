@@ -21,7 +21,9 @@ import {AuthorizationService} from "../../../../../services/authorization.servic
 import {CandidateVisaCheckService} from "../../../../../services/candidate-visa-check.service";
 import {CountryService} from "../../../../../services/country.service";
 import {MockCandidate} from "../../../../../MockData/MockCandidate";
-import {HasNameSelectorComponent} from "../../../../util/has-name-selector/has-name-selector.component";
+import {
+  HasNameSelectorComponent
+} from "../../../../util/has-name-selector/has-name-selector.component";
 import {FormsModule, ReactiveFormsModule, UntypedFormBuilder} from "@angular/forms";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {NgSelectModule} from "@ng-select/ng-select";
@@ -66,6 +68,10 @@ describe('CandidateVisaTabComponent', () => {
     fixture = TestBed.createComponent(CandidateVisaTabComponent);
     component = fixture.componentInstance;
     component.candidate = mockCandidate;
+    component.tabIsActive = true;
+    component.form = TestBed.inject(UntypedFormBuilder).group({
+      visaCountry: [0]
+    });
     candidateServiceMock.getIntakeData.and.returnValue(of({}));
     countryServiceMock.listTCDestinations.and.returnValue(of([MockJob.country]));
     candidateVisaCheckServiceMock.list.and.returnValue(of([]));
@@ -79,6 +85,7 @@ describe('CandidateVisaTabComponent', () => {
   it('should create a visa check when a country is selected', fakeAsync(() => {
     const country: Country = MockJob.country;
     const newVisaCheck: CandidateVisa = { id: 1, country: country } as CandidateVisa;
+    component.visaChecks = [];
 
     // Mock the modal result
     const modalRef = {

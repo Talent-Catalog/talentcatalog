@@ -248,7 +248,8 @@ module "tc-plus-staging" {
   s3_bucket                             = "files.tbbtalent.org" # todo: confirm bucket name
   translations_bucket                   = "translations.test.tctalent.org"
   translations_folder                   = "translations"
-  environment                           = "opc-staging"
+  s3_region                             = "eu-west-2"
+  environment                           = "staging"
   email_default                         = "UPDATE_DEFAULT_EMAIL_HERE"                         # todo: confirm if used/needed
   email_test_override                   = "john@cameronfoundation.org"                        # todo: change to shared address
   email_user                            = "UPDATE_EMAIL_USER_HERE"                            # todo: confirm if used/needed

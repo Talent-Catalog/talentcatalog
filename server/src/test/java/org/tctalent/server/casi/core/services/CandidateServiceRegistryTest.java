@@ -51,6 +51,12 @@ class CandidateServiceRegistryTest {
       ServiceProvider provider, ServiceCode serviceCode) {
     return new CandidateAssistanceService() {
       @Override
+      public ServiceProvider provider() { return provider; }
+
+      @Override
+      public ServiceCode serviceCode() { return serviceCode; }
+
+      @Override
       public String providerKey() {
         return provider.name() + "::" + serviceCode.name();
       }

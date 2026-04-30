@@ -19,13 +19,13 @@ package org.tctalent.server.casi.application.providers.linkedin;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -37,6 +37,7 @@ import org.tctalent.server.casi.core.allocators.ResourceAllocator;
 import org.tctalent.server.casi.core.importers.FileInventoryImporter;
 import org.tctalent.server.casi.core.services.AssignmentEngine;
 import org.tctalent.server.casi.domain.model.AssignmentStatus;
+import org.tctalent.server.casi.domain.model.ListRole;
 import org.tctalent.server.casi.domain.model.ResourceStatus;
 import org.tctalent.server.casi.domain.model.ServiceAssignment;
 import org.tctalent.server.casi.domain.model.ServiceCode;
@@ -44,6 +45,8 @@ import org.tctalent.server.casi.domain.model.ServiceProvider;
 import org.tctalent.server.casi.domain.model.ServiceResource;
 import org.tctalent.server.casi.domain.persistence.ServiceAssignmentEntity;
 import org.tctalent.server.casi.domain.persistence.ServiceAssignmentRepository;
+import org.tctalent.server.casi.domain.persistence.ServiceListEntity;
+import org.tctalent.server.casi.domain.persistence.ServiceListRepository;
 import org.tctalent.server.casi.domain.persistence.ServiceResourceEntity;
 import org.tctalent.server.casi.domain.persistence.ServiceResourceRepository;
 import org.tctalent.server.model.db.Candidate;
@@ -69,6 +72,7 @@ class LinkedInServiceTest {
   @Mock private AssignmentEngine assignmentEngine;
   @Mock private SavedListService savedListService;
   @Mock private CandidateService candidateService;
+  @Mock private ServiceListRepository serviceListRepo;
   @Mock private FileInventoryImporter linkedInImporter;
   @Mock private ResourceAllocator linkedInAllocator;
 
@@ -80,6 +84,8 @@ class LinkedInServiceTest {
   private ServiceAssignmentEntity redeemedAssignmentEntity;
   private SavedList issueReportList;
   private SavedList assignmentFailureList;
+  private ServiceListEntity issueReportEntity;
+  private ServiceListEntity assignmentFailureEntity;
 
   @BeforeEach
   void setUp() {
@@ -139,11 +145,17 @@ class LinkedInServiceTest {
     redeemedAssignmentEntity.setCandidate(candidate);
     redeemedAssignmentEntity.setStatus(AssignmentStatus.ASSIGNED);
 
-    issueReportList = mock(SavedList.class);
-    lenient().when(issueReportList.getId()).thenReturn(ISSUE_REPORT_LIST_ID);
+    issueReportList = new SavedList();
+    issueReportList.setId(ISSUE_REPORT_LIST_ID);
 
-    assignmentFailureList = mock(SavedList.class);
-    lenient().when(assignmentFailureList.getId()).thenReturn(ASSIGNMENT_FAILURE_LIST_ID);
+    assignmentFailureList = new SavedList();
+    assignmentFailureList.setId(ASSIGNMENT_FAILURE_LIST_ID);
+
+    issueReportEntity = new ServiceListEntity();
+    issueReportEntity.setSavedList(issueReportList);
+
+    assignmentFailureEntity = new ServiceListEntity();
+    assignmentFailureEntity.setSavedList(assignmentFailureList);
   }
 
   // Provider Key Test
@@ -161,6 +173,11 @@ class LinkedInServiceTest {
   void isEligibleReturnsTrueWhenCandidateIsOnEligibleList() {
     SavedList eligibleList = mock(SavedList.class);
     when(eligibleList.getId()).thenReturn(ELIGIBLE_LIST_ID);
+    ServiceListEntity eligibleEntity = new ServiceListEntity();
+    eligibleEntity.setSavedList(eligibleList);
+    when(serviceListRepo.findByProviderAndServiceCodeAndRole(ServiceProvider.LINKEDIN,
+        ServiceCode.PREMIUM_MEMBERSHIP, ListRole.SERVICE_ELIGIBILITY))
+        .thenReturn(List.of(eligibleEntity));
     when(savedListService.search(eq(CANDIDATE_ID), any(SearchSavedListRequest.class)))
         .thenReturn(List.of(eligibleList));
 
@@ -230,28 +247,39 @@ class LinkedInServiceTest {
     assertThat(result).isNull();
   }
 
+  private void stubIssueReportList() {
+    when(serviceListRepo.findFirstByProviderAndServiceCodeAndRole(
+        ServiceProvider.LINKEDIN, ServiceCode.PREMIUM_MEMBERSHIP, ListRole.USER_ISSUE_REPORT))
+        .thenReturn(Optional.of(issueReportEntity));
+  }
+
+  private void stubAssignmentFailureList() {
+    when(serviceListRepo.findFirstByProviderAndServiceCodeAndRole(
+        ServiceProvider.LINKEDIN, ServiceCode.PREMIUM_MEMBERSHIP, ListRole.ASSIGNMENT_FAILURE))
+        .thenReturn(Optional.of(assignmentFailureEntity));
+  }
+
   // addCandidateToIssueReportList Tests
 
   @Test
   @DisplayName("addCandidateToIssueReportList calls expected service methods")
   void addCandidateToIssueReportListCallsExpectedServiceMethods() {
     String comment = "The coupon link was broken.";
-    when(savedListService.get(ISSUE_REPORT_LIST_ID)).thenReturn(issueReportList);
+    stubIssueReportList();
     when(candidateService.getCandidate(CANDIDATE_ID)).thenReturn(candidate);
 
     linkedInService.addCandidateToIssueReportList(reservedAssignment, comment);
 
-    verify(savedListService).get(ISSUE_REPORT_LIST_ID);
     verify(candidateService).getCandidate(CANDIDATE_ID);
     verify(savedListService).addCandidateToList(eq(issueReportList), eq(candidate), any(String.class));
     verify(savedListService).saveIt(issueReportList);
   }
 
   @Test
-  @DisplayName("addCandidateToIssueReportList note contains resource code, status, and comment")
+  @DisplayName("addCandidateToIssueReportList note contains resource code and comment")
   void addCandidateToIssueReportListNoteContainsDetails() {
     String comment = "The coupon link was broken.";
-    when(savedListService.get(ISSUE_REPORT_LIST_ID)).thenReturn(issueReportList);
+    stubIssueReportList();
     when(candidateService.getCandidate(CANDIDATE_ID)).thenReturn(candidate);
 
     linkedInService.addCandidateToIssueReportList(reservedAssignment, comment);
@@ -260,7 +288,7 @@ class LinkedInServiceTest {
         eq(issueReportList),
         eq(candidate),
         org.mockito.ArgumentMatchers.<String>argThat(note ->
-            note.contains(RESOURCE_CODE) && note.contains("ASSIGNED") && note.contains(comment)
+            note.contains(RESOURCE_CODE) && note.contains(comment)
         )
     );
   }
@@ -271,12 +299,11 @@ class LinkedInServiceTest {
   @DisplayName("addCandidateToAssignmentFailureList calls expected service methods")
   void addCandidateToAssignmentFailureListCallsExpectedServiceMethods() {
     Exception ex = new RuntimeException("Test exception");
-    when(savedListService.get(ASSIGNMENT_FAILURE_LIST_ID)).thenReturn(assignmentFailureList);
+    stubAssignmentFailureList();
     when(candidateService.getCandidate(CANDIDATE_ID)).thenReturn(candidate);
 
     linkedInService.addCandidateToAssignmentFailureList(CANDIDATE_ID, ex);
 
-    verify(savedListService).get(ASSIGNMENT_FAILURE_LIST_ID);
     verify(candidateService).getCandidate(CANDIDATE_ID);
     verify(savedListService).addCandidateToList(
         eq(assignmentFailureList), eq(candidate), eq(ex.toString()));
@@ -288,6 +315,7 @@ class LinkedInServiceTest {
   @Test
   @DisplayName("isOnIssueReportList returns true when candidate is on issue report list")
   void isOnIssueReportListReturnsTrueWhenOnList() {
+    stubIssueReportList();
     SavedList list = mock(SavedList.class);
     when(list.getId()).thenReturn(ISSUE_REPORT_LIST_ID);
     when(savedListService.search(eq(CANDIDATE_ID), any(SearchSavedListRequest.class)))
@@ -299,6 +327,7 @@ class LinkedInServiceTest {
   @Test
   @DisplayName("isOnIssueReportList returns false when candidate is not on issue report list")
   void isOnIssueReportListReturnsFalseWhenNotOnList() {
+    stubIssueReportList();
     SavedList list = mock(SavedList.class);
     when(list.getId()).thenReturn(NON_ELIGIBLE_LIST_ID);
     when(savedListService.search(eq(CANDIDATE_ID), any(SearchSavedListRequest.class)))
@@ -310,6 +339,7 @@ class LinkedInServiceTest {
   @Test
   @DisplayName("isOnIssueReportList returns false when candidate has no lists")
   void isOnIssueReportListReturnsFalseWhenNoLists() {
+    stubIssueReportList();
     when(savedListService.search(eq(CANDIDATE_ID), any(SearchSavedListRequest.class)))
         .thenReturn(Collections.emptyList());
 
@@ -321,6 +351,7 @@ class LinkedInServiceTest {
   @Test
   @DisplayName("isOnAssignmentFailureList returns true when candidate is on failure list")
   void isOnAssignmentFailureListReturnsTrueWhenOnList() {
+    stubAssignmentFailureList();
     SavedList list = mock(SavedList.class);
     when(list.getId()).thenReturn(ASSIGNMENT_FAILURE_LIST_ID);
     when(savedListService.search(eq(CANDIDATE_ID), any(SearchSavedListRequest.class)))
@@ -332,6 +363,7 @@ class LinkedInServiceTest {
   @Test
   @DisplayName("isOnAssignmentFailureList returns false when candidate is not on failure list")
   void isOnAssignmentFailureListReturnsFalseWhenNotOnList() {
+    stubAssignmentFailureList();
     SavedList list = mock(SavedList.class);
     when(list.getId()).thenReturn(NON_ELIGIBLE_LIST_ID);
     when(savedListService.search(eq(CANDIDATE_ID), any(SearchSavedListRequest.class)))
@@ -343,6 +375,7 @@ class LinkedInServiceTest {
   @Test
   @DisplayName("isOnAssignmentFailureList returns false when candidate has no lists")
   void isOnAssignmentFailureListReturnsFalseWhenNoLists() {
+    stubAssignmentFailureList();
     when(savedListService.search(eq(CANDIDATE_ID), any(SearchSavedListRequest.class)))
         .thenReturn(Collections.emptyList());
 

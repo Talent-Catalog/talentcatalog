@@ -219,7 +219,7 @@ module "grn_staging" {
 
   # Database configuration
   db_enable               = true
-§ db_public_access        = true
+  db_public_access        = true
   db_multi_az             = false
   db_instance_class       = "db.t3.medium"
   db_engine_version       = "17.5"
@@ -243,7 +243,8 @@ module "grn_staging" {
   s3_bucket                             = "files.tbbtalent.org" # todo: confirm or set GRN bucket
   translations_bucket                   = "translations.test.globalrefugee.net"
   translations_folder                   = "translations"
-  environment                           = "grn-staging"
+  s3_region                             = "eu-west-2"
+  environment                           = "staging"
   email_default                         = "-"
   email_test_override                   = "-"
   email_user                            = "-"

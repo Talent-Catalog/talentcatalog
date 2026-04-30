@@ -67,6 +67,7 @@ export class ViewCandidateComponent extends MainSidePanelBase implements OnInit,
 
   activeTabId: string;
   loading: boolean;
+  tabLoading: boolean = false;
   loadingButton: boolean;
   savingList: boolean;
   loadingError: boolean;
@@ -333,7 +334,26 @@ export class ViewCandidateComponent extends MainSidePanelBase implements OnInit,
   }
 
   onTabChanged(activeTabId: string) {
+    if (this.activeTabId === activeTabId) {
+      return;
+    }
+
+    this.tabLoading = true;
     this.setActiveTabId(activeTabId);
+
+    const asyncTabs = ['MiniIntake', 'FullIntake', 'Visa'];
+
+    if (!asyncTabs.includes(activeTabId)) {
+      setTimeout(() => {
+        this.tabLoading = false;
+      });
+    }
+  }
+
+  onTabLoadingChange(event: { loading: boolean; tabId: string }) {
+    if (event.tabId === this.activeTabId) {
+      this.tabLoading = event.loading;
+    }
   }
 
   publicCvUrl() {
