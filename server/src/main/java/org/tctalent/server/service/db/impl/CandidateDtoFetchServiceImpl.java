@@ -32,6 +32,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.logging.LogBuilder;
@@ -79,8 +80,16 @@ public class CandidateDtoFetchServiceImpl implements CandidateDtoFetchService {
     @Override
     public Page<CandidateReadDto> fetchPage(
         String fetchIdsSql, String countSql, @NonNull PageRequest pageRequest) {
+        return fetchPage(fetchIdsSql, countSql, pageRequest, null);
+    }
+
+    @Override
+    public Page<CandidateReadDto> fetchPage(
+        String fetchIdsSql, String countSql, @NonNull PageRequest pageRequest,
+        @Nullable String textQuery) {
         //Create and execute the query to return the candidate ids
         Query query = entityManager.createNativeQuery(fetchIdsSql);
+        CandidateSearchUtils.bindTextSearchParameter(query, fetchIdsSql, textQuery);
         query.setFirstResult((int) pageRequest.getOffset());
         query.setMaxResults(pageRequest.getPageSize());
 
@@ -142,7 +151,9 @@ public class CandidateDtoFetchServiceImpl implements CandidateDtoFetchService {
             .message("Query: " + countSql).logInfo();
         start = end;
         //Compute count
-        long total =  ((Number) entityManager.createNativeQuery(countSql).getSingleResult()).longValue();
+        Query countQuery = entityManager.createNativeQuery(countSql);
+        CandidateSearchUtils.bindTextSearchParameter(countQuery, countSql, textQuery);
+        long total =  ((Number) countQuery.getSingleResult()).longValue();
 
         end = System.currentTimeMillis();
         long countTime = end - start;

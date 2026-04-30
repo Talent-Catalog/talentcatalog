@@ -16,6 +16,7 @@
 
 package org.tctalent.server.util;
 
+import jakarta.persistence.Query;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -70,6 +71,8 @@ public abstract class CandidateSearchUtils {
     }
 
     public static final String CANDIDATE_TS_TEXT_FIELD = "candidate.ts_text";
+    public static final int TS_QUERY_PARAM_POSITION = 1;
+    private static final String TS_QUERY_PARAM_TOKEN = "?" + TS_QUERY_PARAM_POSITION;
 
     /**
      * Generates ORDER BY clause given a Sort.
@@ -174,9 +177,29 @@ public abstract class CandidateSearchUtils {
      * @return to_tsquery function call suitable for inserting into Postgres SQL
      */
     public static @NonNull String buildToTsQueryFunction(@Nullable String esQuery) {
-        return "to_tsquery('english','" + buildTsQuerySQL(esQuery) + "')";
+        if (!StringUtils.hasText(esQuery)) {
+            return "plainto_tsquery('english', '')";
+        }
+        return "plainto_tsquery('english', " + TS_QUERY_PARAM_TOKEN + ")";
     }
 
+    /**
+     * Binds the text search parameter used by {@link #buildToTsQueryFunction(String)}.
+     * <p>
+     * Only binds when the generated SQL contains the text search positional parameter.
+     * This keeps callers that do not include text ranking/search unaffected.
+     * </p>
+     *
+     * @param query Native query to bind
+     * @param sql SQL used to create the native query
+     * @param textQuery Raw user search text
+     */
+    public static void bindTextSearchParameter(
+        @NonNull Query query, @Nullable String sql, @Nullable String textQuery) {
+        if (StringUtils.hasText(textQuery) && sql != null && sql.contains(TS_QUERY_PARAM_TOKEN)) {
+            query.setParameter(TS_QUERY_PARAM_POSITION, textQuery);
+        }
+    }
     /**
      * Builds a Postgres tsQuery string which corresponds to the given Elasticsearch Simple Query.
      * <p>

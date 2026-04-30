@@ -1726,7 +1726,8 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         String sql = extractFetchSQL(request, user, excludedCandidates, true);
         String countSql = extractCountSQL(request, user, excludedCandidates);
 
-        return candidateDtoFetchService.fetchPage(sql, countSql, pageRequest);
+        return candidateDtoFetchService.fetchPage(
+            sql, countSql, pageRequest, request.getSimpleQueryString());
     }
 
 

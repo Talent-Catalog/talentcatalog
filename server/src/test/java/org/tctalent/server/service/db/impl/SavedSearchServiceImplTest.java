@@ -59,7 +59,7 @@ class SavedSearchServiceImplTest {
         final Page<Candidate> candidatesByCriteriaAPI = savedSearchService.searchCandidates(request);
 
         String sql = savedSearchService.extractFetchSQL(request);
-        Set<Long> candidatesBySQL = candidateService.searchCandidatesUsingSql(sql);
+        Set<Long> candidatesBySQL = candidateService.searchCandidatesUsingSql(sql, request.getSimpleQueryString());
 
         assertEquals(candidatesByCriteriaAPI.getTotalElements(), candidatesBySQL.size());
 
