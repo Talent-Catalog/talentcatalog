@@ -58,7 +58,6 @@ import org.springframework.core.io.Resource;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
@@ -105,17 +104,14 @@ import org.tctalent.server.model.db.SavedList;
 import org.tctalent.server.model.db.Status;
 import org.tctalent.server.model.db.SurveyType;
 import org.tctalent.server.model.db.TaskAssignmentImpl;
-import org.tctalent.server.model.db.UnhcrStatus;
 import org.tctalent.server.model.db.UploadTaskImpl;
 import org.tctalent.server.model.db.User;
-import org.tctalent.server.model.db.YesNoUnsure;
 import org.tctalent.server.model.db.mapper.CandidateMapper;
 import org.tctalent.server.model.db.mapper.UserMapper;
 import org.tctalent.server.model.db.partner.Partner;
 import org.tctalent.server.model.db.task.QuestionTask;
 import org.tctalent.server.model.db.task.QuestionTaskAssignment;
 import org.tctalent.server.model.db.task.Task;
-import org.tctalent.server.model.es.CandidateEs;
 import org.tctalent.server.model.sf.Contact;
 import org.tctalent.server.repository.db.CandidateExamRepository;
 import org.tctalent.server.repository.db.CandidateRepository;
@@ -127,7 +123,6 @@ import org.tctalent.server.repository.db.OccupationRepository;
 import org.tctalent.server.repository.db.SurveyTypeRepository;
 import org.tctalent.server.repository.db.TaskAssignmentRepository;
 import org.tctalent.server.repository.db.UserRepository;
-import org.tctalent.server.repository.es.CandidateEsRepository;
 import org.tctalent.server.request.LoginRequest;
 import org.tctalent.server.request.PagedSearchRequest;
 import org.tctalent.server.request.RegisterCandidateByPartnerRequest;
@@ -243,7 +238,6 @@ public class CandidateServiceImpl implements CandidateService {
     private final CandidateMapper candidateMapper;
     private final CandidateNumberGenerator candidateNumberGenerator;
     private final CandidateRepository candidateRepository;
-    private final CandidateEsRepository candidateEsRepository;
     private final FileSystemService fileSystemService;
     private final GoogleDriveConfig googleDriveConfig;
     private final SalesforceConfig salesforceConfig;
@@ -272,108 +266,6 @@ public class CandidateServiceImpl implements CandidateService {
     private final EntityManager entityManager;
     private final PersistenceContextHelper persistenceContextHelper;
     private final SystemNotificationService systemNotificationService;
-
-    @Transactional
-    @Override
-    public int populateElasticCandidates(
-            Pageable pageable, boolean logTotal, boolean createElastic) {
-        persistenceContextHelper.flushAndClearEntityManager();
-        Page<Candidate> candidates = candidateRepository.findCandidatesWhereStatusNotDeleted(pageable);
-        if (logTotal) {
-            LogBuilder.builder(log)
-                .user(authService.getLoggedInUser())
-                .action("Populate Elastic Candidates")
-                .message(candidates.getTotalElements() + " candidates to be processed.")
-                .logInfo();
-        }
-
-        int count = 0;
-        for (Candidate candidate : candidates) {
-            try {
-                if (createElastic) {
-                    CandidateEs ces = new CandidateEs();
-                    ces.copy(candidate, textExtracter);
-                    ces = candidateEsRepository.save(ces);
-
-                    //Update textSearchId on candidate.
-                    String textSearchId = ces.getId();
-                    candidate.setTextSearchId(textSearchId);
-                    save(candidate, false);
-                } else {
-                    //This also handles all the awkward cases - such as
-                    //links to non existent proxies - creating them as needed.
-                    updateElasticProxy(candidate);
-                }
-
-                count++;
-            } catch (Exception ex) {
-                LogBuilder.builder(log)
-                    .user(authService.getLoggedInUser())
-                    .action("Populate Elastic Candidates")
-                    .message("Could not load candidate " + candidate.getId())
-                    .logError(ex);
-            }
-        }
-
-        return count;
-    }
-
-    @Transactional
-    @Override
-    public int populateCandidatesFromElastic(Pageable pageable) {
-        Page<Candidate> candidates = candidateRepository.findCandidatesWhereStatusNotDeleted(pageable);
-
-        int count = 0;
-        for (Candidate candidate : candidates) {
-            try {
-                CandidateEs twin;
-                String textSearchId = candidate.getTextSearchId();
-                if (textSearchId != null) {
-                    twin = candidateEsRepository.findById(textSearchId)
-                            .orElse(null);
-                    if (twin != null) {
-                        //Get the desired field from twin and save to candidate
-                        if (twin.getUnhcrStatus() == UnhcrStatus.NotRegistered) {
-                            candidate.setUnhcrRegistered(YesNoUnsure.No);
-                            candidate.setUnhcrStatus(twin.getUnhcrStatus());
-                            save(candidate, false);
-
-                            LogBuilder.builder(log)
-                                .user(authService.getLoggedInUser())
-                                .action("Populate Candidates From Elastic")
-                                .message("Updated candidate " + candidate.getId() + " with Not Registered status to Not Registered and UnhcrRegistered is No!")
-                                .logWarn();
-
-                        } else if (twin.getUnhcrStatus() == UnhcrStatus.RegisteredAsylum) {
-                            candidate.setUnhcrRegistered(YesNoUnsure.Yes);
-                            save(candidate, false);
-
-                            LogBuilder.builder(log)
-                                .user(authService.getLoggedInUser())
-                                .action("Populate Candidates From Elastic")
-                                .message("Updated candidate " + candidate.getId() + " with Registered Asylum status to UnhcrRegistered is Yes!")
-                                .logWarn();
-                        }
-                    } else {
-                        LogBuilder.builder(log)
-                            .user(authService.getLoggedInUser())
-                            .action("Populate Candidates From Elastic")
-                            .message("Could not find twin in database")
-                            .logWarn();
-                    }
-                }
-                count++;
-            } catch (Exception ex) {
-                LogBuilder.builder(log)
-                    .user(authService.getLoggedInUser())
-                    .action("Populate Candidates From Elastic")
-                    .message("Could not load candidate " + candidate.getId())
-                    .logWarn(ex);
-            }
-        }
-
-        return count;
-    }
 
     @Override
     public Page<Candidate> getSavedListCandidates(SavedList savedList, SavedListGetRequest request) {
@@ -413,7 +305,7 @@ public class CandidateServiceImpl implements CandidateService {
      */
     public void saveIt(Candidate candidate) {
         candidate.setAuditFields(authService.getLoggedInUser().orElse(null));
-        save(candidate, true);
+        save(candidate);
     }
 
     @Override
@@ -596,7 +488,7 @@ public class CandidateServiceImpl implements CandidateService {
         }
 
         if (addedDestinations) {
-            candidate = save(candidate, false);
+            candidate = save(candidate);
         }
         return candidate;
     }
@@ -754,7 +646,7 @@ public class CandidateServiceImpl implements CandidateService {
 
     private Candidate saveNewCandidate(Partner partner, Candidate candidate) {
         //Save candidate to get id (but don't update Elasticsearch yet)
-        candidate = save(candidate, false);
+        candidate = save(candidate);
 
         final String candidateNumber = candidateNumberGenerator.generateCandidateNumber(candidate);
         candidate.setCandidateNumber(candidateNumber);
@@ -765,7 +657,7 @@ public class CandidateServiceImpl implements CandidateService {
         }
 
         //Save candidate to get id (but don't update Elasticsearch yet)
-        return save(candidate, false);
+        return save(candidate);
     }
 
     @Override
@@ -798,7 +690,7 @@ public class CandidateServiceImpl implements CandidateService {
     @Override
     public Candidate updateCandidateSalesforceLink(Candidate candidate, String sfLink) {
         candidate.setSflink(sfLink);
-        return save(candidate, false);
+        return save(candidate);
     }
 
     /**
@@ -811,7 +703,7 @@ public class CandidateServiceImpl implements CandidateService {
         CandidateStatus originalStatus = candidate.getStatus();
         candidate.setStatus(info.getStatus());
         candidate.setCandidateMessage(info.getCandidateMessage());
-        candidate = save(candidate, true);
+        candidate = save(candidate);
         if (!info.getStatus().equals(originalStatus)) {
             candidateNoteService.createCandidateNote(new CreateCandidateNoteRequest(candidate.getId(),
                     "Status change from " + originalStatus + " to " + info.getStatus(),
@@ -898,7 +790,7 @@ public class CandidateServiceImpl implements CandidateService {
         candidate.setFolderlink(request.getFolderlink());
         candidate.setVideolink(request.getVideolink());
         candidate.setLinkedInLink(request.getLinkedInLink());
-        candidate = save(candidate, true);
+        candidate = save(candidate);
         return candidate;
     }
 
@@ -962,7 +854,7 @@ public class CandidateServiceImpl implements CandidateService {
         candidate.setRelocatedState(request.getRelocatedState());
         candidate.setRelocatedCountry(relocatedCountry);
 
-        return save(candidate, true);
+        return save(candidate);
     }
 
     @Override
@@ -981,7 +873,7 @@ public class CandidateServiceImpl implements CandidateService {
         }
         candidate.setMaxEducationLevel(educationLevel);
         candidate.setAuditFields(loggedInUser);
-        return save(candidate, true);
+        return save(candidate);
     }
 
     @Override
@@ -994,7 +886,7 @@ public class CandidateServiceImpl implements CandidateService {
                 .orElseThrow(() -> new NoSuchObjectException(Candidate.class, id));
 
         candidate.setAdditionalInfo(request.getAdditionalInfo());
-        return save(candidate, true);
+        return save(candidate);
     }
 
     @Override
@@ -1007,7 +899,7 @@ public class CandidateServiceImpl implements CandidateService {
             .orElseThrow(() -> new NoSuchObjectException(Candidate.class, id));
 
         candidate.setShareableNotes(request.getShareableNotes());
-        return save(candidate, true, true);
+        return save(candidate, true);
     }
 
     @Override
@@ -1027,7 +919,7 @@ public class CandidateServiceImpl implements CandidateService {
         }
         candidate.setSurveyType(surveyType);
         candidate.setSurveyComment(request.getSurveyComment());
-        return save(candidate, true);
+        return save(candidate);
     }
 
     @Override
@@ -1040,7 +932,7 @@ public class CandidateServiceImpl implements CandidateService {
                 .orElseThrow(() -> new NoSuchObjectException(Candidate.class, id));
 
         candidate.setMediaWillingness(request.getMediaWillingness());
-        return save(candidate, true);
+        return save(candidate);
     }
 
     @Override
@@ -1060,7 +952,7 @@ public class CandidateServiceImpl implements CandidateService {
         candidate.setUnhcrNumber(request.getUnhcrNumber());
         candidate.setUnrwaRegistered(request.getUnrwaRegistered());
         candidate.setUnrwaNumber(request.getUnrwaNumber());
-        return save(candidate, true);
+        return save(candidate);
     }
 
     @Override
@@ -1068,11 +960,7 @@ public class CandidateServiceImpl implements CandidateService {
     public boolean deleteCandidate(long id) {
         Candidate candidate = candidateRepository.findById(id).orElse(null);
         if (candidate != null) {
-            String textSearchId = candidate.getTextSearchId();
             candidateRepository.delete(candidate);
-            if (textSearchId != null) {
-                candidateEsRepository.deleteById(textSearchId);
-            }
             return true;
         } else {
             return false;
@@ -1325,7 +1213,7 @@ public class CandidateServiceImpl implements CandidateService {
             .orElseThrow(() -> new InvalidSessionException("Not logged in"));
         Candidate candidate = user.getCandidate();
         updatePolicyId(acceptedPrivacyPolicyId, candidate);
-        candidate = save(candidate, false);
+        candidate = save(candidate);
         return candidate;
     }
 
@@ -1372,7 +1260,7 @@ public class CandidateServiceImpl implements CandidateService {
 
         candidate.setAuditFields(user);
         candidate.setUser(user);
-        candidate = save(candidate, true);
+        candidate = save(candidate);
         return candidate;
     }
 
@@ -1433,7 +1321,7 @@ public class CandidateServiceImpl implements CandidateService {
 
         updateCitizenships(candidate, nationalities);
 
-        candidate = save(candidate, true);
+        candidate = save(candidate);
 
         // Change status if is required, and create note if changed.
         if (newStatus == CandidateStatus.ineligible) {
@@ -1575,7 +1463,7 @@ public class CandidateServiceImpl implements CandidateService {
 
         candidate.setMaxEducationLevel(educationLevel);
         candidate.setAuditFields(candidate.getUser());
-        return save(candidate, true);
+        return save(candidate);
     }
 
     /**
@@ -1596,7 +1484,7 @@ public class CandidateServiceImpl implements CandidateService {
         candidate.setSurveyComment(request.getSurveyComment());
 
         candidate.setAuditFields(candidate.getUser());
-        return save(candidate, true);
+        return save(candidate);
     }
 
     /**
@@ -1623,7 +1511,7 @@ public class CandidateServiceImpl implements CandidateService {
             candidate.setLinkedInLink(null);
         }
         candidate.setAuditFields(candidate.getUser());
-        return save(candidate, true);
+        return save(candidate);
     }
 
     public void storeCandidateTaskAnswer(
@@ -1690,7 +1578,7 @@ public class CandidateServiceImpl implements CandidateService {
                                 + "'");
                     }
 
-                    save(candidate, true);
+                    save(candidate);
                 }
             }
         } else {
@@ -1798,7 +1686,7 @@ public class CandidateServiceImpl implements CandidateService {
             }
         }
         candidate.setAuditFields(candidate.getUser());
-        return save(candidate, true);
+        return save(candidate);
     }
 
     @Override
@@ -2414,83 +2302,17 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     @Override
-    public Candidate save(Candidate candidate, boolean updateCandidateEs) {
+    public Candidate save(Candidate candidate) {
         candidate = candidateRepository.save(candidate);
-
-        if (updateCandidateEs) {
-            candidate = updateElasticProxy(candidate);
-        }
         return candidate;
     }
 
     @Override
-    public Candidate save(Candidate candidate, boolean updateCandidateEs,
-        boolean updateCandidateText) {
+    public Candidate save(Candidate candidate, boolean updateCandidateText) {
         if (updateCandidateText) {
             candidate.updateText();
         }
-        return save(candidate, updateCandidateEs);
-    }
-
-    /**
-     * Does whatever is needed to bring the Elastic proxy into sync with
-     * its parent candidate on the normal database.
-     * <p>
-     *     Handles the following cases:
-     * </p>
-     * <ul>
-     *     <li>Normal case: updates proxy indicated by textSearchId of master</li>
-     *     <li>Master has no linked proxy (no textSearchId) - create one </li>
-     *     <li>Master has a textSearchId, but no such proxy is found,
-     *     log warning but create a proxy</li>
-     * </ul>
-     * @param candidate Candidate entity (the master) from thr normal database
-     * @return Potentially modified candidate entity (with latest textSearchId)
-     */
-    private Candidate updateElasticProxy(Candidate candidate) {
-        //Find/create Elasticsearch twin candidate
-        CandidateEs twin;
-        //Get textSearchId, if any
-        String textSearchId = candidate.getTextSearchId();
-        String originalTextSearchId = textSearchId;
-        if (textSearchId == null) {
-            //No twin - create one
-            twin = new CandidateEs();
-            twin.copy(candidate, textExtracter);
-
-        } else {
-            //Get twin
-            twin = candidateEsRepository.findById(textSearchId)
-                    .orElse(null);
-            if (twin == null) {
-                //Candidate is referring to non existent twin.
-                //Create new twin
-                twin = new CandidateEs();
-                twin.copy(candidate, textExtracter);
-
-                //Shouldn't really happen (except during a complete reload)
-                //so log warning
-                LogBuilder.builder(log)
-                    .user(authService.getLoggedInUser())
-                    .action("Update Elastic Proxy")
-                    .message("Candidate " + candidate.getId() +
-                        " refers to non existent Elasticsearch id "
-                        + textSearchId + ". Creating new twin.")
-                    .logWarn();
-            } else {
-                //Update twin from candidate
-                twin.copy(candidate, textExtracter);
-            }
-        }
-        twin = candidateEsRepository.save(twin);
-        textSearchId = twin.getId();
-
-        //Update textSearchId on candidate if necessary
-        if (!textSearchId.equals(originalTextSearchId)) {
-            candidate.setTextSearchId(textSearchId);
-            candidate = candidateRepository.save(candidate);
-        }
-        return candidate;
+        return save(candidate);
     }
 
     @Override
@@ -2613,7 +2435,7 @@ public class CandidateServiceImpl implements CandidateService {
                 .logError(ex);
         }
 
-        save(candidate, false);
+        save(candidate);
         return candidate;
     }
 
@@ -2634,7 +2456,7 @@ public class CandidateServiceImpl implements CandidateService {
         Contact candidateSf = salesforceService.createOrUpdateContact(candidate);
         candidate.setSflink(candidateSf.getUrl(salesforceConfig.getBaseLightningUrl()));
 
-        save(candidate, false);
+        save(candidate);
         return candidate;
     }
 
@@ -2715,7 +2537,7 @@ public class CandidateServiceImpl implements CandidateService {
         populateIntakeData(candidate, data, partnerCandidate, partnerEducationLevel,
                 partnerOccupation, partnerEnglishLevel, drivingLicenseCountry, birthCountry);
 
-        save(candidate, true);
+        save(candidate);
 
     }
 
@@ -2727,7 +2549,7 @@ public class CandidateServiceImpl implements CandidateService {
 
         if (request.isAllNotifications() != candidate.isAllNotifications()) {
             candidate.setAllNotifications(request.isAllNotifications());
-            save(candidate, false);
+            save(candidate);
 
             //Generate candidate note
             String message = "Candidate's chat notification preference was changed to " +
@@ -2762,7 +2584,7 @@ public class CandidateServiceImpl implements CandidateService {
                 candidate.setMiniIntakeCompletedDate(OffsetDateTime.now());
             }
         }
-        save(candidate, true);
+        save(candidate);
         return candidate;
 
     }
@@ -3175,7 +2997,7 @@ public class CandidateServiceImpl implements CandidateService {
         candidateExamRepository.deleteById(examId);
 
         computeIeltsScore(candidate);
-        save(candidate, true);
+        save(candidate);
         return true;
     }
 
@@ -3364,7 +3186,7 @@ public class CandidateServiceImpl implements CandidateService {
             for (Candidate candidate : candidateList) {
                 User candidateUser = candidate.getUser();
                 candidateUser.setPartner((PartnerImpl) newPartner);
-                save(candidate, true);
+                save(candidate);
             }
         } else {
             throw new IllegalArgumentException("newPartner must be valid implementation of Partner.");
@@ -3391,7 +3213,7 @@ public class CandidateServiceImpl implements CandidateService {
             if (!newCandidateIds.contains(id)) {
                 Candidate candidate = getCandidate(id);
                 candidate.setPotentialDuplicate(false);
-                save(candidate, false);
+                save(candidate);
                 resolvedDuplicates++;
             }
         }
@@ -3411,7 +3233,7 @@ public class CandidateServiceImpl implements CandidateService {
 
             for (Candidate candidate : candidateList) {
                 candidate.setPotentialDuplicate(true);
-                save(candidate, false);
+                save(candidate);
             }
 
             // Log completed page
@@ -3458,7 +3280,7 @@ public class CandidateServiceImpl implements CandidateService {
         // status to 'Deleted')
         if (candidates.isEmpty()) {
             candidate.setPotentialDuplicate(false);
-            save(candidate, false);
+            save(candidate);
         }
 
         return candidates;

@@ -77,7 +77,7 @@ public class CandidateCertificationServiceImpl implements CandidateCertification
         candidateCertification = candidateCertificationRepository.save(candidateCertification);
 
         AuditHelper.setAuditFieldsFromUser(candidate, loggedInUser);
-        candidateService.save(candidate, true);
+        candidateService.save(candidate);
 
         return candidateCertification;
     }
@@ -101,7 +101,7 @@ public class CandidateCertificationServiceImpl implements CandidateCertification
         candidateCertification = candidateCertificationRepository.save(candidateCertification);
 
         AuditHelper.setAuditFieldsFromUser(candidate, loggedInUser);
-        candidateService.save(candidate, true);
+        candidateService.save(candidate);
 
         return candidateCertification;
     }
@@ -124,7 +124,7 @@ public class CandidateCertificationServiceImpl implements CandidateCertification
         candidateCertificationRepository.delete(candidateCertification);
 
         AuditHelper.setAuditFieldsFromUser(candidate, loggedInUser);
-        candidateService.save(candidate, true);
+        candidateService.save(candidate);
 
     }
 }
