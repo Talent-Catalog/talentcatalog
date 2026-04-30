@@ -27,4 +27,8 @@ export class VisaCheckNzComponent extends IntakeComponentTabBase {
   @Input() selectedIndex: number;
   @Input() declare candidateIntakeData: CandidateIntakeData;
   visaRecord: CandidateVisa;
+
+  protected getTabId(): string {
+    return 'Visa';
+  }
 }

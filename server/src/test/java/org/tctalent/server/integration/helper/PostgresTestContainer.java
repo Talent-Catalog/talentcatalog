@@ -34,7 +34,8 @@ public class PostgresTestContainer {
       .withDatabaseName(DB_NAME)
       .withUsername(DB_USER)
       .withPassword(DB_PASSWORD)
-      .withReuse(true);
+      .withReuse(true)
+      .withCreateContainerCmdModifier(cmd -> cmd.withName("tc-postgres-integration"));
 
   static {
     log.info("Initializing PostgreSQL Testcontainer...");

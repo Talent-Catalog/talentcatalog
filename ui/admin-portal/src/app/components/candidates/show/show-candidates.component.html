@@ -419,6 +419,17 @@
             <i class="fas fa-sync"></i><i class="fas fa-user-check"></i>
           </tc-button>
 
+          <ng-container *ngIf="isSavedList() && serviceList">
+            <tc-button [color]="'secondary'"
+                       *ngFor="let action of serviceList.permittedActions"
+                       [disabled]="!isSelection()"
+                       (onClick)="onServiceListAction(action)"
+                       [title]="listActionTooltips[action]"
+            >
+              <i class="fas fa-ticket"></i> <i class="fas {{listActionIcons[action]}}"></i> {{listActionLabels[action]}}
+            </tc-button>
+          </ng-container>
+
         </div>
       </div>
 
@@ -465,6 +476,13 @@
         {{numberSelections}} candidate(s) selected
       </small>
     </div>
+
+    <tc-alert *ngIf="actionSuccessMessage"
+              [type]="'success'"
+              (closed)="actionSuccessMessage = null"
+    >
+      {{actionSuccessMessage}}
+    </tc-alert>
 
     <!-- Table of list contents - plus candidate details of selected candidate -->
     <div class="py-2">

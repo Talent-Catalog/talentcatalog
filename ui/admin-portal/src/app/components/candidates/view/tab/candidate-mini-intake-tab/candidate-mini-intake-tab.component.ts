@@ -138,4 +138,8 @@ export class CandidateMiniIntakeTabComponent extends IntakeComponentTabBase {
     }
     return issues.join(", ");
   }
+
+  protected getTabId(): string {
+    return 'MiniIntake';
+  }
 }
