@@ -48,7 +48,6 @@ import org.tctalent.server.service.api.TcApiService;
 import org.tctalent.server.service.db.BackgroundProcessingService;
 import org.tctalent.server.service.db.CandidateOpportunityService;
 import org.tctalent.server.service.db.DataSharingService;
-import org.tctalent.server.service.db.PopulateElasticsearchService;
 import org.tctalent.server.service.db.SalesforceService;
 import org.tctalent.server.service.db.aws.S3ResourceHelper;
 
@@ -99,9 +98,6 @@ class SystemAdminApiTest {
 
   @Mock
   private Drive.Files.List fileListRequest;
-
-  @Mock
-  private PopulateElasticsearchService populateElasticsearchService;
 
   @Mock
   private Connection connection;
@@ -377,20 +373,6 @@ class SystemAdminApiTest {
 
     assertEquals("done", result);
     verify(dataSharingService).dbCopy();
-  }
-
-  @Test
-  void testLoadElasticsearch_withResetFlag() {
-    systemAdminApi.loadElasticsearch("true", 1, 5);
-
-    verify(populateElasticsearchService).populateElasticCandidates(true, true, 1, 5);
-  }
-
-  @Test
-  void testLoadElasticsearch_withoutResetFlag() {
-    systemAdminApi.loadElasticsearch(null, null, null);
-
-    verify(populateElasticsearchService).populateElasticCandidates(false, false, null, null);
   }
 
   @Test

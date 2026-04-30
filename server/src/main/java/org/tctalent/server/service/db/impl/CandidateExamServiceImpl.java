@@ -17,8 +17,8 @@
 package org.tctalent.server.service.db.impl;
 
 
-import java.util.List;
 import jakarta.validation.constraints.NotNull;
+import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.tctalent.server.exception.InvalidSessionException;
@@ -103,7 +103,7 @@ public class CandidateExamServiceImpl implements CandidateExamService {
         candidateExam = candidateExamRepository.save(candidateExam);
 
         AuditHelper.setAuditFieldsFromUser(candidate, loggedInUser);
-        candidateService.save(candidate, true);
+        candidateService.save(candidate);
 
         return candidateExam;
     }
