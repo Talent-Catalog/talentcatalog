@@ -71,8 +71,8 @@ public abstract class AbstractCandidateAssistanceService implements CandidateAss
   protected final SavedListService savedListService;
 
   // provider-specific hooks
-  protected abstract ServiceProvider provider();               // e.g. "DUOLINGO"
-  protected abstract ServiceCode serviceCode();                // e.g. "TEST_PROCTORED"
+  public abstract ServiceProvider provider();               // e.g. "DUOLINGO"
+  public abstract ServiceCode serviceCode();                // e.g. "TEST_PROCTORED"
   protected abstract ResourceAllocator allocator(); // TODO -- SM -- have a default allocator that assigns a single resource to multiple candidates?
   protected FileInventoryImporter importer() { return null; }  // Optional
 

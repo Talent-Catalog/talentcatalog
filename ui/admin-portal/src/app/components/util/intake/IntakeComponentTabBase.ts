@@ -14,7 +14,16 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Directive, inject, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
+import {
+  Directive,
+  EventEmitter,
+  inject,
+  Input,
+  OnChanges,
+  OnInit,
+  Output,
+  SimpleChanges
+} from '@angular/core';
 import {forkJoin, Subject} from 'rxjs';
 import {filter, takeUntil} from 'rxjs/operators';
 import {Candidate, CandidateExam, CandidateIntakeData} from '../../../model/candidate';
@@ -64,6 +73,18 @@ export abstract class IntakeComponentTabBase implements OnInit, OnChanges {
    * Indicates whether the tab is active (i.e., the user is currently viewing it).
    */
   @Input() tabIsActive: boolean;
+
+  /**
+   * Emits loading state changes for the initial load of this tab
+   * so the parent candidate page can show or hide the tab-level spinner.
+   */
+  @Output() loadingChange = new EventEmitter<{ loading: boolean; tabId: string }>();
+
+  /**
+   * Returns the id of the tab so parent loading events can be matched
+   * to the currently active tab.
+   */
+  protected abstract getTabId(): string;
 
   /**
    * This is the existing candidate intake data (if any) which is used to
@@ -195,7 +216,9 @@ export abstract class IntakeComponentTabBase implements OnInit, OnChanges {
   ngOnChanges(changes: SimpleChanges): void {
     if (changes.tabIsActive) {
       if (this.tabIsActive) {
-        this.refreshIntakeDataInternal(true);
+        setTimeout(() => {
+          this.refreshIntakeDataInternal(true);
+        });
       }
     }
   }
@@ -225,6 +248,9 @@ export abstract class IntakeComponentTabBase implements OnInit, OnChanges {
     //Load existing candidateIntakeData and other data needed by intake
     this.error = null;
     this.loading = true;
+    if (init) {
+      this.loadingChange.emit({ loading: true, tabId: this.getTabId() });
+    }
     forkJoin({
       'countries': this.countryService.listCountries(),
       'tcDestinations': this.countryService.listTCDestinations(),
@@ -237,6 +263,9 @@ export abstract class IntakeComponentTabBase implements OnInit, OnChanges {
       'candidate': this.candidateService.get(this.candidate.id)
     }).subscribe(results => {
       this.loading = false;
+      if (init) {
+        this.loadingChange.emit({ loading: false, tabId: this.getTabId() });
+      }
       this.countries = results['countries'];
       this.tcDestinations = results['tcDestinations'];
       this.nationalities = results['nationalities'];
@@ -248,6 +277,9 @@ export abstract class IntakeComponentTabBase implements OnInit, OnChanges {
       this.onDataLoaded(init);
     }, error => {
       this.loading = false;
+      if (init) {
+        this.loadingChange.emit({ loading: false, tabId: this.getTabId() });
+      }
       this.error = error;
     });
   }

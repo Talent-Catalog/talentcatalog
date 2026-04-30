@@ -106,9 +106,27 @@ This environment has `cloudfront_enable = true`, which creates:
 | ACM certificate (CloudFront) | us-east-1 | TLS cert for CloudFront (AWS requires us-east-1) |
 
 The S3 bucket is fully private (public access blocked). CloudFront reads files via OAC. The application
-writes files to S3 using static AWS credentials injected via SSM environment variables.
+writes files to S3 using the ECS task role (see [S3 credentials and ECS task role](#s3-credentials-and-ecs-task-role) below).
 
 The bucket name is available to the application as the `AWS_S3_CANDIDATE_FILES_BUCKET` environment variable.
+
+## S3 credentials and ECS task role
+
+The application references two distinct sets of AWS credentials for S3 access:
+
+| Environment variable | Source | Used by |
+|---------------------|--------|---------|
+| `AWS_CREDENTIALS_ACCESSKEY` / `AWS_CREDENTIALS_SECRETKEY` | SSM (from `secrets.auto.tfvars`) | Legacy `AwsConfiguration` / `S3ResourceHelper` |
+| `AWS_CREDENTIALS_APP_ACCESSKEY` / `AWS_CREDENTIALS_APP_SECRETKEY` | **Not set** (empty) | `S3Config` (candidate files, translations) |
+
+`AWS_CREDENTIALS_APP_ACCESSKEY` and `AWS_CREDENTIALS_APP_SECRETKEY` are **not managed by Terraform**
+and have no corresponding SSM parameters. They resolve to empty strings at runtime. When blank,
+`S3Config` falls back to the AWS default credential provider chain, which in ECS resolves to the
+**task role** (`<app>-<env>-fargate-task-role`). The task role has an S3 policy granting access to
+the configured buckets (`s3_bucket`, `translations_bucket`, and `candidate_files_bucket`).
+
+This is intentional — using the task role avoids long-lived static IAM user credentials for S3
+operations performed by the newer code paths.
 
 ## State and coexistence with opc-prod
 

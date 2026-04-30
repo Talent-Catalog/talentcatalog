@@ -14,7 +14,6 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<tc-loading [loading]="loading"></tc-loading>
 <tc-alert *ngIf="error">{{error}}</tc-alert>
 
 <div *ngIf="!loading" id="VisaIntakes">
@@ -23,7 +22,7 @@
       <h5 class="mb-3">Visa Eligibility Checks</h5>
     </div>
     <div class="row">
-      <form [formGroup]="form">
+      <form *ngIf="form"  [formGroup]="form">
         <div class="d-flex flex-column">
           <div *ngFor="let visaCheck of visaChecks; let i = index"
                class="my-1 mx-3"

@@ -20,21 +20,14 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 public class TcPasswordEncoder extends BCryptPasswordEncoder {
 
-    private static final String DEFAULT_PASSWORD = "password";
-
     /**
-     * Null encoded passwords match the default password.
-     * <p/>
-     * Used to bootstrap initial users.
+     * Null encoded passwords are never valid.
      */
     @Override
     public boolean matches(CharSequence rawPassword, String encodedPassword) {
-        boolean match;
         if (encodedPassword == null) {
-            match = DEFAULT_PASSWORD.equals(rawPassword.toString());
-        } else {
-            match = super.matches(rawPassword, encodedPassword);
+            return false;
         }
-        return match;
+        return super.matches(rawPassword, encodedPassword);
     }
 }
