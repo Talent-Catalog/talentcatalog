@@ -28,6 +28,7 @@ import {AUTH_PROVIDER} from "./auth.tokens";
 import {AuthStatus} from "./auth-status";
 import {catchError, map, switchMap} from "rxjs/operators";
 import {AuthenticationResponse} from "../model/authentication-response";
+import {OauthRegistrationRequest} from "../model/oauth-registration-request";
 
 export class AuthenticateInContextTranslationRequest {
   password: string;
@@ -114,21 +115,25 @@ export class AuthenticationService implements OnDestroy {
     )
   }
 
-  completeRegister(): Observable<void> {
+  completeRegister(request: OauthRegistrationRequest): Observable<void> {
     //Retrieve current profile from provider and send to server so that it can be stored in the
     //database.
     return from(this.authProvider.getProfile()).pipe(
-      switchMap(profile =>
-        this.http.post(`${this.apiUrl}/register`, profile).pipe(
-          map((response: AuthenticationResponse) => {
-            this.storeAuthenticationData(response);
-          }),
-          catchError(e => {
-              console.log('error', e);
-              return throwError(e);
-            }
-          )
-        )
+      switchMap(profile => {
+          request.profile = profile;
+          request.contactConsentRegistration = true;
+          request.contactConsentPartners = true;
+          return this.http.post(`${this.apiUrl}/register`, request).pipe(
+            map((response: AuthenticationResponse) => {
+              this.storeAuthenticationData(response);
+            }),
+            catchError(e => {
+                console.log('error', e);
+                return throwError(e);
+              }
+            )
+          );
+        }
       )
     )
   }

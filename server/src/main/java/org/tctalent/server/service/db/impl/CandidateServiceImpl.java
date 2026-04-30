@@ -1065,12 +1065,6 @@ public class CandidateServiceImpl implements CandidateService {
             }
         }
 
-        LogBuilder.builder(log)
-            .user(authService.getLoggedInUser())
-            .action("Register Candidate")
-            .message("Registration with partner: " + sourcePartner.getName())
-            .logInfo();
-
         return sourcePartner;
     }
 
@@ -1082,7 +1076,7 @@ public class CandidateServiceImpl implements CandidateService {
         validateEmail(null, profile.getEmail());
 
         /* Validate that the candidate has marked email consent partners as true in order to continue registration */
-        if (!request.getContactConsentRegistration()) {
+        if (!request.isContactConsentRegistration()) {
             throw new InvalidRequestException("Consent required to register.");
         }
 

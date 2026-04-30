@@ -16,7 +16,6 @@
 
 package org.tctalent.server.request.candidate;
 
-import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 import org.tctalent.server.model.db.HasTcQueryParameters;
@@ -30,10 +29,8 @@ public class OauthRegistrationRequest implements HasTcQueryParameters {
     /**
      * Consent fields - both not null as should be true/false from the front end checkbox.
      */
-    @NotNull
-    private Boolean contactConsentRegistration;
-    @NotNull
-    private Boolean contactConsentPartners;
+    private boolean contactConsentRegistration;
+    private boolean contactConsentPartners;
 
     /**
      * If not null, can be used to look up partner to which the candidate belongs.

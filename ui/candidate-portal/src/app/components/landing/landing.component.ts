@@ -22,6 +22,7 @@ import {BrandingInfo, BrandingService} from "../../services/branding.service";
 import {AuthenticationService} from "../../services/authentication.service";
 import {Subscription} from "rxjs";
 import {AuthStatus} from "../../services/auth-status";
+import {OauthRegistrationRequest} from "../../model/oauth-registration-request";
 
 @Component({
   selector: 'app-landing',
@@ -71,7 +72,10 @@ export class LandingComponent implements OnInit, OnDestroy {
     if (this.authenticationService.isAuthenticated()) {
       this.authenticationService.clearAuthError();
       if (authAction === 'register') {
-        this.completeRegister();
+        let request: OauthRegistrationRequest = {
+
+        }
+        this.completeRegister(request);
       } else if (authAction === 'login') {
         this.completeLogin();
       }
@@ -145,8 +149,8 @@ export class LandingComponent implements OnInit, OnDestroy {
     })
   }
 
-  completeRegister() {
-    this.authenticationService.completeRegister().subscribe({
+  completeRegister(request: OauthRegistrationRequest) {
+    this.authenticationService.completeRegister(request).subscribe({
       next: (response) => {
         this.router.navigate(['/register']);
       },
@@ -170,16 +174,16 @@ export class LandingComponent implements OnInit, OnDestroy {
       //todo If this is registration we also want the utm params. See
       //todo getParamsAndRegister in RegistrationCreateAccountComponent.
       //Update the auth profile (this will include idp keys and email)
-      this.authenticationService.completeRegister().subscribe({
-        next: (response) => {
-          this.router.navigate(['/home']);
-        },
-        error: (error) => {
-          console.error('Error updating auth profile:', error);
-          this.authenticationService.clearAuthError();
-          this.router.navigate(['/home']);
-        }
-      })
+      // this.authenticationService.completeRegister().subscribe({
+      //   next: (response) => {
+      //     this.router.navigate(['/home']);
+      //   },
+      //   error: (error) => {
+      //     console.error('Error updating auth profile:', error);
+      //     this.authenticationService.clearAuthError();
+      //     this.router.navigate(['/home']);
+      //   }
+      // })
     } else {
       //Logging in or registering
       const usAfghan: boolean = this.route.snapshot.queryParams['source'] === 'us-afghan';
