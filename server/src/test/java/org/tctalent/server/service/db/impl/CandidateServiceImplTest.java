@@ -86,6 +86,7 @@ class CandidateServiceImplTest {
   @Mock private User mockUser;
   @Mock private CandidateCitizenshipService candidateCitizenshipService;
   @Mock private PartnerImpl mockPartner;
+  @Mock private TcInstanceService tcInstanceService;
 
   @Spy
   @InjectMocks
@@ -327,6 +328,8 @@ class CandidateServiceImplTest {
     updateCandidatePersonalRequest.setCountryId(1L);
     updateCandidatePersonalRequest.setNationalityId(2L);
     updateCandidatePersonalRequest.setOtherNationalityIds(new Long[0]);
+    
+    given(tcInstanceService.isTBB()).willReturn(true);
 
     // Set current partner source country
     partner.setSourcePartner(true);

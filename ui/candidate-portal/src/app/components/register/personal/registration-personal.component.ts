@@ -25,6 +25,8 @@ import {generateYearArray} from "../../../util/year-helper";
 import {LangChangeEvent, TranslateService} from "@ngx-translate/core";
 import {LanguageService} from "../../../services/language.service";
 import {ExternalLinkService} from "../../../services/external-link.service";
+import {AuthenticationService} from "../../../services/authentication.service";
+import {TcInstanceType} from "../../../model/tc-instance-type";
 
 @Component({
   selector: 'app-registration-personal',
@@ -67,7 +69,8 @@ export class RegistrationPersonalComponent implements OnInit, OnDestroy {
               public translateService: TranslateService,
               public languageService: LanguageService,
               public registrationService: RegistrationService,
-              public externalLinkService: ExternalLinkService) { }
+              public externalLinkService: ExternalLinkService,
+              private authenticationService: AuthenticationService) { }
 
   ngOnInit() {
     this.saving = false;
@@ -166,6 +169,13 @@ export class RegistrationPersonalComponent implements OnInit, OnDestroy {
   }
 
   get tcCriteriaFailed() {
+    // This same-country/nationality eligibility warning is TBB policy only.
+    // GRN accepts refugee registrations even if the candidate is already relocated
+    // or located in a destination country.
+    if (this.authenticationService.getTcInstanceType() === TcInstanceType.GRN) {
+      return false;
+    }
+
     let failed: boolean = false;
     if (this.country !== null) {
       if (this.country === this.nationality && !this.inCountryRegistrationAllowed(this.country)) {
