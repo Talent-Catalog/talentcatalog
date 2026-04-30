@@ -207,6 +207,8 @@ public class JobServiceImpl implements JobService {
                         s, CandidateOpportunityStage.jobWithdrawn);
                     addClosingLogic(JobOpportunityStage.tooLong,
                         s, CandidateOpportunityStage.jobWithdrawn);
+                    addClosingLogic(JobOpportunityStage.inadequatePathwayProvision,
+                        s, CandidateOpportunityStage.jobWithdrawn);
 
                     // Recruitment doesn't proceed for reasons related to candidate:
                     addClosingLogic(JobOpportunityStage.noSuitableCandidates,
