@@ -13,7 +13,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-import {TestBed, ComponentFixture} from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {Component, DebugElement} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {LowercaseDirective} from './lowercase.directive';
@@ -28,10 +28,10 @@ import {SearchQueryService} from "../services/search-query.service";
   template: `
     <div appLowercase></div>
     <div class="highlight" appHighlightSearch>Angular is amazing. Learn Angular today!</div>
+    <div id="word-boundary-test" appHighlightSearch>It is a bite writing situation.</div>
   `
 })
 class TestComponent {}
-
 describe('DirectiveModule', () => {
   let fixture: ComponentFixture<TestComponent>;
   let debugElement: DebugElement;
@@ -126,5 +126,20 @@ describe('DirectiveModule', () => {
     fixture.destroy();
 
     expect(destroySpy).toHaveBeenCalled();
+  });
+
+  it('should not highlight a search term inside another word', () => {
+    searchTerms$.next(['it']);
+    fixture.detectChanges();
+
+    const testElement = fixture.nativeElement.querySelector('#word-boundary-test');
+    const spans = testElement.querySelectorAll('span.highlight');
+
+    expect(spans.length).toBe(1);
+    expect(spans[0].textContent).toBe('It');
+
+    expect(testElement.innerHTML).not.toContain('b<span class="highlight">it</span>e');
+    expect(testElement.innerHTML).not.toContain('wr<span class="highlight">it</span>ing');
+    expect(testElement.innerHTML).not.toContain('s<span class="highlight">it</span>uation');
   });
 });
