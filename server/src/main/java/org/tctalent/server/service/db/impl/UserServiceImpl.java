@@ -489,6 +489,9 @@ public class UserServiceImpl implements UserService {
         }
 
         user.setLastLogin(OffsetDateTime.now());
+        user.setAuditFields(user);
+        //TODO JC Need these fields for register as well
+        //TODO JC Also Partner is coming out as TBB
         user = userRepository.save(user);
 
         return user;
