@@ -484,8 +484,13 @@ public class UserServiceImpl implements UserService {
         }
 
         User user = createOrUpdateUser(profile, systemPartner);
+        if (user.getStatus().equals(Status.inactive)) {
+            throw new InvalidCredentialsException("Sorry, it looks like that account is no longer active.");
+        }
 
-        //TODO JC See logic below including lastLogin
+        user.setLastLogin(OffsetDateTime.now());
+        user = userRepository.save(user);
+
         return user;
     }
 
