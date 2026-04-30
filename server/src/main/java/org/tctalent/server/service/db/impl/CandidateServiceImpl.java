@@ -1095,6 +1095,7 @@ public class CandidateServiceImpl implements CandidateService {
         candidate.setUser(user);
         candidate.setAuditFields(user);
         candidate.setContactConsentRegistration(true);
+        candidate.setStatus(CandidateStatus.draft);
 
         populateCandidate(candidate, queryParameters, httpRequest);
 
