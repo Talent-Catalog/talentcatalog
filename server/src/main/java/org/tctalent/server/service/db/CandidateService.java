@@ -486,7 +486,15 @@ public interface CandidateService {
     List<DataRow> computeStatusStats(Gender gender, String country, LocalDate dateFrom, LocalDate dateTo, Set<Long> candidateIds, List<Long> sourceCountryIds);
 
     Resource generateCv(Candidate candidate, Boolean showName, Boolean showContact);
-
+    /**
+     * Generates a candidate CV in Microsoft Word (.docx) format.
+     *
+     * @param candidate the candidate whose CV will be generated
+     * @param showName whether the candidate's name should be included in the generated CV
+     * @param showContact whether the candidate's contact details should be included in the generated CV
+     * @return a {@link Resource} containing the generated CV as a DOCX document
+     */
+    Resource generateCvDocx(Candidate candidate, Boolean showName, Boolean showContact);
     /**
      * IMPORTANT: Use this instead of {@link CandidateRepository#save} Saves
      * candidate to repository, but also optionally updates corresponding

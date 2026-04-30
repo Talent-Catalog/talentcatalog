@@ -166,6 +166,23 @@ export class CandidateService implements IntakeService {
       );
   }
 
+  downloadCvDocx(request: DownloadCVRequest) {
+    return this.http.post(
+      `${this.apiUrl}/${request.candidateId}/cv.docx`,
+      request,
+      {responseType: 'blob'}
+    ).pipe(
+      map(res => {
+        return new Blob(
+          [res],
+          {
+            type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+          }
+        );
+      })
+    );
+  }
+
   createCandidateFolder(candidateId: number): Observable<Candidate> {
     return this.http.put<Candidate>(
       `${this.apiUrl}/${candidateId}/create-folder`, null);
