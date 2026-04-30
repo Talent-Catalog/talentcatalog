@@ -13,28 +13,33 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-
 import {Injectable} from '@angular/core';
 import {HttpEvent, HttpHandler, HttpInterceptor, HttpRequest} from '@angular/common/http';
-import {Observable} from 'rxjs';
+import {from, Observable} from 'rxjs';
 import {AuthenticationService} from "./authentication.service";
-
+import {switchMap} from "rxjs/operators";
 
 @Injectable()
 export class JwtInterceptor implements HttpInterceptor {
-  constructor(private authenticationService: AuthenticationService) { }
+
+  constructor(private authenticationService: AuthenticationService) {}
 
   intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-    // add authorization header with jwt token if available
-    let token = this.authenticationService.getToken();
-    if (token) {
-      request = request.clone({
-        setHeaders: {
-          Authorization: `Bearer ${token}`
-        }
-      });
-    }
 
-    return next.handle(request);
+    return from(this.authenticationService.refreshToken()).pipe(
+      switchMap(() => {
+        const token = this.authenticationService.getToken();
+
+        if (token) {
+          request = request.clone({
+            setHeaders: {
+              Authorization: `Bearer ${token}`
+            }
+          });
+        }
+
+        return next.handle(request);
+      })
+    );
   }
 }

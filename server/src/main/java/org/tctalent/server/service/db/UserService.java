@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Set;
 import javax.security.auth.login.AccountLockedException;
 import org.springframework.data.domain.Page;
+import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.tctalent.server.exception.InvalidCredentialsException;
 import org.tctalent.server.exception.NoSuchObjectException;
@@ -35,9 +36,11 @@ import org.tctalent.server.request.user.SearchUserRequest;
 import org.tctalent.server.request.user.SendResetPasswordEmailRequest;
 import org.tctalent.server.request.user.UpdateUserPasswordRequest;
 import org.tctalent.server.request.user.UpdateUserRequest;
-import org.tctalent.server.request.user.emailverify.VerifyEmailRequest;
 import org.tctalent.server.request.user.emailverify.SendVerifyEmailRequest;
+import org.tctalent.server.request.user.emailverify.VerifyEmailRequest;
+import org.tctalent.server.response.AuthenticationResponse;
 import org.tctalent.server.response.JwtAuthenticationResponse;
+import org.tctalent.server.security.AuthProfile;
 import org.tctalent.server.security.AuthService;
 import org.tctalent.server.util.qr.EncodedQrImage;
 
@@ -50,6 +53,16 @@ public interface UserService {
      */
     boolean isCandidate(@Nullable User user);
 
+    /**
+     * Log in a user based on the given OAuth2 profile.
+     * @param profile Profile data managed by the IDP.
+     * @return User logged in.
+     */
+    User login(AuthProfile profile);
+
+    /**
+     * Old, pre OAuth2, login
+     */
     JwtAuthenticationResponse login(LoginRequest request) throws AccountLockedException;
 
     void logout();
@@ -80,9 +93,18 @@ public interface UserService {
 
     User getSystemAdminUser();
 
+    /**
+     * Creates an AuthenticationResponse object for the given user.
+     * This is the response returned on successful login or registration
+     * @param user User associated with the authentication response
+     * @return AuthenticationResponse returned on successful login or registration
+     */
+    AuthenticationResponse createAuthenticationResponse(User user);
+
     void resetPassword(ResetPasswordRequest request);
     void checkResetToken(CheckPasswordResetTokenRequest request);
     void generateResetPasswordToken(SendResetPasswordEmailRequest request);
+
     void updatePassword(UpdateUserPasswordRequest request);
     void updateUserPassword(long id, UpdateUserPasswordRequest request);
 
@@ -109,6 +131,19 @@ public interface UserService {
      * Get a user’s source countries, defaulting to all countries if empty
      */
     Set<Country> getDefaultSourceCountries(User user);
+
+    /**
+     * Creates or updates a user based on the given OAuth profile for the user.
+     * <p>
+     * This is used to auto-create a minimal user record from the data held by the OAuth IDP,
+     * or update an existing user record if it already exists with the data that is managed by the
+     * IDP.
+     * @param profile User profile data managed by the IDP. It overwrites any data on the user
+     *                record on our database.
+     * @param partner Partner assigned to the user
+     * @return User created or updated.
+     */
+    User createOrUpdateUser(AuthProfile profile, @NonNull Partner partner);
 
     User createUser(
         UpdateUserRequest request, @Nullable User creatingUser) throws UsernameTakenException;

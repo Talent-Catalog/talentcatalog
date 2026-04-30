@@ -18,6 +18,7 @@ package org.tctalent.server.repository.db;
 
 import java.util.List;
 
+import java.util.Optional;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
@@ -40,6 +41,8 @@ public interface UserRepository extends CacheEvictingRepository<User, Long>, Jpa
     @Override
     @CacheEvict(value = "users", key = "#p0.username")
     void delete(@NonNull User user);
+
+    Optional<User> findByIdpIssuerAndIdpSubject(String idpIssuer, String idpSubject);
 
     @Query("select distinct u from User u "
             + " where lower(u.username) = lower(:username) "

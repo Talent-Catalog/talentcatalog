@@ -1,0 +1,7 @@
+<!-- auth-error.component.html -->
+<div *ngIf="error" class="alert alert-danger d-flex justify-content-between align-items-center" role="alert">
+  <span>{{ error }}</span>
+  <button type="button" class="btn btn-sm btn-outline-danger ms-3" (click)="dismiss()">
+    Dismiss
+  </button>
+</div>

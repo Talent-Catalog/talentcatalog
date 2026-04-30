@@ -16,9 +16,6 @@
 
 package org.tctalent.server.model.db;
 
-import java.time.OffsetDateTime;
-import java.util.HashSet;
-import java.util.Set;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -33,8 +30,15 @@ import jakarta.persistence.OneToOne;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
+import java.time.OffsetDateTime;
+import java.util.HashSet;
+import java.util.Set;
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
 
+@Getter
+@Setter
 @Entity
 @Table(name = "users")
 @SequenceGenerator(name = "seq_gen", sequenceName = "users_id_seq", allocationSize = 1)
@@ -58,6 +62,17 @@ public class User extends AbstractAuditableDomainObject<Long> {
      * email - user's email, has to be unique
      */
     private String email;
+
+    /**
+     * The issuer of the user's identity, as provided by the identity provider (IDP).
+     */
+    private String idpIssuer;
+
+    /**
+     * The subject (unique identifier in the IDP) of the user, as provided by the identity provider
+     * (IDP).
+     */
+    private String idpSubject;
 
     /**
      * role is the user's level of access to the TC (system admin / full admin / source partner admin / semi limited / limited)
@@ -181,12 +196,6 @@ public class User extends AbstractAuditableDomainObject<Long> {
     private Set<SavedList> sharedLists = new HashSet<>();
 
     /**
-     * selectedLanguage sets the display language of the TC admin portal — at May '23 only English is available
-     */
-    @Transient
-    private String selectedLanguage = "en";
-
-    /**
      * sourceCountries can be used to restrict certain users to viewing candidates in only one or more countries
      */
     @ManyToMany(fetch = FetchType.EAGER)
@@ -214,133 +223,15 @@ public class User extends AbstractAuditableDomainObject<Long> {
         this.setCreatedDate(OffsetDateTime.now());
     }
 
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public String getFirstName() {
-        return firstName;
-    }
-
     public void setFirstName(String firstName) {
         this.firstName = firstName == null ? null : firstName.trim();
-    }
-
-    public String getLastName() {
-        return lastName;
     }
 
     public void setLastName(String lastName) {
         this.lastName = lastName == null ? null : lastName.trim();
     }
 
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public boolean isJobCreator() {
-        return jobCreator;
-    }
-
-    public void setJobCreator(boolean jobCreator) {
-        this.jobCreator = jobCreator;
-    }
-
-    public Role getRole() {
-        return role;
-    }
-
-    public void setRole(Role role) {
-        this.role = role;
-    }
-
     public boolean getReadOnly() { return readOnly; }
-
-    public String getPurpose() { return purpose; }
-
-    public void setPurpose(String purpose) { this.purpose = purpose; }
-
-    public void setReadOnly(boolean readOnly) { this.readOnly = readOnly; }
-
-    public String getPasswordEnc() {
-        return passwordEnc;
-    }
-
-    public void setPasswordEnc(String passwordEnc) {
-        this.passwordEnc = passwordEnc;
-    }
-
-    public Status getStatus() {
-        return status;
-    }
-
-    public void setStatus(Status status) {
-        this.status = status;
-    }
-
-    public OffsetDateTime getLastLogin() {
-        return lastLogin;
-    }
-
-    public void setLastLogin(OffsetDateTime lastLogin) {
-        this.lastLogin = lastLogin;
-    }
-
-    public Candidate getCandidate() {
-        return candidate;
-    }
-
-    public void setCandidate(Candidate candidate) {
-        this.candidate = candidate;
-    }
-
-    public String getResetToken() {
-        return resetToken;
-    }
-
-    public void setResetToken(String resetToken) {
-        this.resetToken = resetToken;
-    }
-
-    public OffsetDateTime getResetTokenIssuedDate() {
-        return resetTokenIssuedDate;
-    }
-
-    public void setResetTokenIssuedDate(OffsetDateTime resetTokenIssuedDate) {
-        this.resetTokenIssuedDate = resetTokenIssuedDate;
-    }
-
-    public OffsetDateTime getPasswordUpdatedDate() {
-        return passwordUpdatedDate;
-    }
-
-    public void setPasswordUpdatedDate(OffsetDateTime passwordUpdatedDate) {
-        this.passwordUpdatedDate = passwordUpdatedDate;
-    }
-
-    public String getEmailVerificationToken() {
-        return emailVerificationToken;
-    }
-
-    public void setEmailVerificationToken(String emailVerificationToken) {
-        this.emailVerificationToken = emailVerificationToken;
-    }
-
-    public OffsetDateTime getEmailVerificationTokenIssuedDate() {
-        return emailVerificationTokenIssuedDate;
-    }
-
-    public void setEmailVerificationTokenIssuedDate(OffsetDateTime emailVerificationTokenIssuedDate) {
-        this.emailVerificationTokenIssuedDate = emailVerificationTokenIssuedDate;
-    }
 
     public Boolean getEmailVerified() {
         return emailVerified;
@@ -350,36 +241,12 @@ public class User extends AbstractAuditableDomainObject<Long> {
         this.emailVerified = emailVerified;
     }
 
-    public String getSelectedLanguage() {
-        return selectedLanguage;
-    }
-
-    public void setSelectedLanguage(String selectedLanguage) {
-        this.selectedLanguage = selectedLanguage;
-    }
-
     public boolean getUsingMfa() {
         return usingMfa;
     }
 
-    public void setUsingMfa(boolean usingMFA) {
-        this.usingMfa = usingMFA;
-    }
-
     public boolean getMfaConfigured() {
         return mfaSecret != null;
-    }
-
-    public String getMfaSecret() {
-        return mfaSecret;
-    }
-
-    public void setMfaSecret(String totpSecret) {
-        this.mfaSecret = totpSecret;
-    }
-
-    public Set<SavedList> getSharedLists() {
-        return sharedLists;
     }
 
     public void setSharedLists(Set<SavedList> sharedLists) {
@@ -399,10 +266,6 @@ public class User extends AbstractAuditableDomainObject<Long> {
         savedList.getUsers().remove(this);
     }
 
-    public Set<SavedSearch> getSharedSearches() {
-        return sharedSearches;
-    }
-
     public void setSharedSearches(Set<SavedSearch> sharedSearches) {
         this.sharedSearches.clear();
         for (SavedSearch sharedSearch : sharedSearches) {
@@ -418,26 +281,6 @@ public class User extends AbstractAuditableDomainObject<Long> {
     public void removeSharedSearch(SavedSearch savedSearch) {
         sharedSearches.remove(savedSearch);
         savedSearch.getUsers().remove(this);
-    }
-
-    public Set<Country> getSourceCountries() { return sourceCountries; }
-
-    public void setSourceCountries(Set<Country> sourceCountries) { this.sourceCountries = sourceCountries; }
-
-    public PartnerImpl getPartner() {
-        return partner;
-    }
-
-    public void setPartner(PartnerImpl partner) {
-        this.partner = partner;
-    }
-
-    public User getApprover() {
-        return approver;
-    }
-
-    public void setApprover(User approver) {
-        this.approver = approver;
     }
 
     @Transient

@@ -17,6 +17,7 @@
 package org.tctalent.server.service.db.impl;
 
 import static dev.samstevens.totp.util.Utils.getDataUriForImage;
+import static org.tctalent.server.configuration.SystemAdminConfiguration.SYSTEM_PARTNER_ABBREVIATION;
 
 import dev.samstevens.totp.code.CodeVerifier;
 import dev.samstevens.totp.exceptions.QrGenerationException;
@@ -27,6 +28,7 @@ import dev.samstevens.totp.secret.SecretGenerator;
 import java.time.OffsetDateTime;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -37,16 +39,9 @@ import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
+import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.CredentialsExpiredException;
-import org.springframework.security.authentication.DisabledException;
-import org.springframework.security.authentication.LockedException;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tctalent.server.configuration.SystemAdminConfiguration;
@@ -59,13 +54,9 @@ import org.tctalent.server.exception.InvalidPasswordTokenException;
 import org.tctalent.server.exception.InvalidRequestException;
 import org.tctalent.server.exception.InvalidSessionException;
 import org.tctalent.server.exception.NoSuchObjectException;
-import org.tctalent.server.exception.PasswordExpiredException;
-import org.tctalent.server.exception.PasswordMatchException;
 import org.tctalent.server.exception.ServiceException;
-import org.tctalent.server.exception.UserDeactivatedException;
 import org.tctalent.server.exception.UsernameTakenException;
 import org.tctalent.server.logging.LogBuilder;
-import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.Country;
 import org.tctalent.server.model.db.PartnerImpl;
 import org.tctalent.server.model.db.Role;
@@ -85,10 +76,11 @@ import org.tctalent.server.request.user.UpdateUserPasswordRequest;
 import org.tctalent.server.request.user.UpdateUserRequest;
 import org.tctalent.server.request.user.emailverify.SendVerifyEmailRequest;
 import org.tctalent.server.request.user.emailverify.VerifyEmailRequest;
+import org.tctalent.server.response.AuthenticationResponse;
 import org.tctalent.server.response.JwtAuthenticationResponse;
+import org.tctalent.server.security.AuthProfile;
 import org.tctalent.server.security.AuthService;
 import org.tctalent.server.security.JwtTokenProvider;
-import org.tctalent.server.security.PasswordHelper;
 import org.tctalent.server.service.db.PartnerService;
 import org.tctalent.server.service.db.UserService;
 import org.tctalent.server.service.db.email.EmailHelper;
@@ -103,8 +95,8 @@ public class UserServiceImpl implements UserService {
     private final CandidateRepository candidateRepository;
     private final ChatPolicy chatPolicy;
     private final CountryRepository countryRepository;
-    private final PasswordHelper passwordHelper;
-    private final AuthenticationManager authenticationManager;
+//    private final PasswordHelper passwordHelper;
+//    private final AuthenticationManager authenticationManager;
     private final JwtTokenProvider tokenProvider;
     private final AuthService authService;
     private final EmailHelper emailHelper;
@@ -160,17 +152,76 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public AuthenticationResponse createAuthenticationResponse(User user) {
+        AuthenticationResponse response = new AuthenticationResponse(user);
+        response.setCanViewChats(false);
+        response.setTcInstanceType(tcInstanceService.getInstanceType());
+        return response;
+    }
+
+    @Override
+    public User createOrUpdateUser(AuthProfile profile, @NonNull Partner partner) {
+        String idpIssuer = profile.getIdpIssuer();
+        String idpSubject = profile.getIdpSubject();
+
+        //Look up based on idpIssuer and idpSubject
+        Optional<User> userOptional = userRepository
+            .findByIdpIssuerAndIdpSubject(idpIssuer, idpSubject);
+
+        if (userOptional.isEmpty()) {
+            //Try to find the user by email. This will be necessary when migrating existing,
+            //pre-OAuth2 users to the new system.
+            User userByEmail = userRepository.findByEmailIgnoreCase(profile.getEmail());
+            if (userByEmail != null) {
+                //Found user by email, update any changed fields.
+                userOptional = Optional.of(userByEmail);
+            }
+        }
+
+        User user;
+        if (userOptional.isEmpty()) {
+            //Create a minimal user object.
+            user = new User();
+            user.setIdpIssuer(idpIssuer);
+            user.setIdpSubject(idpSubject);
+            user.setFirstName(profile.getFirstName());
+            user.setLastName(profile.getLastName());
+            user.setEmail(profile.getEmail());
+            user.setUsername(profile.getEmail());
+            user.setStatus(Status.active);
+            user.setRole(Role.user);
+
+            user.setPartner((PartnerImpl) partner);
+        } else {
+            user = userOptional.get();
+            //Found, update any changed fields.
+            //Idp fields can be null in the case of migrating pre OAuth2 users.
+            if (user.getIdpIssuer() == null) {
+                user.setIdpIssuer(idpIssuer);
+            }
+            if (user.getIdpSubject() == null) {
+                user.setIdpSubject(idpSubject);
+            }
+            user.setFirstName(profile.getFirstName());
+            user.setLastName(profile.getLastName());
+            user.setEmail(profile.getEmail());
+            user.setUsername(profile.getEmail());
+        }
+        return userRepository.save(user);
+    }
+
+    @Override
     public User createUser(UpdateUserRequest request, @Nullable User creatingUser)
         throws UsernameTakenException {
 
         User user = new User();
 
         populateUserFields(user, request, creatingUser);
-
-        /* Validate the password before account creation */
-        String passwordEncrypted = passwordHelper.validateAndEncodePassword(request.getPassword());
-        user.setPasswordEnc(passwordEncrypted);
-        return this.userRepository.save(user);
+        //TODO JC Remove
+        //        /* Validate the password before account creation */
+//        String passwordEncrypted = passwordHelper.validateAndEncodePassword(request.getPassword());
+//        user.setPasswordEnc(passwordEncrypted);
+        return userRepository.save(user);
     }
 
     private void populateUserFields(User user, UpdateUserRequest request, @Nullable User creatingUser) {
@@ -422,75 +473,91 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public JwtAuthenticationResponse login(LoginRequest request) throws AccountLockedException {
-        try {
-            String loggedInName = request.getUsername();
-            if (loggedInName.contains("@")) {
-                //User has supplied email as username.
-                //See if we have a user with this email.
-                try {
-                    User exists = userRepository.findByEmailIgnoreCase(loggedInName);
-                    if (exists != null) {
-                        loggedInName = exists.getUsername();
-                    }
-                } catch (Exception ex) {
-                    //Log details to check for nature of brute force attacks.
-                    LogBuilder.builder(log)
-                        .action("Login")
-                        .message("Invalid credentials for user with given username: " +
-                            request.getUsername())
-                        .logError(ex);
-
-                    //Exception if there is more than one user associated with email.
-                    throw new InvalidCredentialsException("Sorry, that email is not unique. Log in with your username.");
-                }
-                //Just continue if we couldn't find user for email
-            }
-
-
-            Authentication auth = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
-                    loggedInName, request.getPassword()
-            ));
-            User user = userRepository.findByUsernameIgnoreCase(loggedInName);
-
-            if (user.getStatus().equals(Status.inactive)) {
-                throw new InvalidCredentialsException("Sorry, it looks like that account is no longer active.");
-            }
-
-            user.setLastLogin(OffsetDateTime.now());
-            user = userRepository.save(user);
-
-            SecurityContextHolder.getContext().setAuthentication(auth);
-            String jwt = tokenProvider.generateToken(auth);
-
-            JwtAuthenticationResponse response = new JwtAuthenticationResponse(jwt, user);
-            response.setCanViewChats(
-                chatPolicy.canSubscribeToChats(authService.getLoggedInUserDetails()));
-            response.setTcInstanceType(tcInstanceService.getInstanceType());
-            return response;
-
-        } catch (BadCredentialsException e) {
-            //Log details to check for nature of brute force attacks.
-            LogBuilder.builder(log)
-                .action("Login")
-                .message("Invalid credentials for user with given username: " +
-                    request.getUsername())
-                .logError(e);
-
-            // map spring exception to a service exception for better handling
-            throw new InvalidCredentialsException("Invalid credentials for user");
-        } catch (LockedException e) {
-            throw new AccountLockedException("Account locked");
-        } catch (DisabledException e) {
-            throw new UserDeactivatedException();
-        } catch (CredentialsExpiredException e) {
-            throw new PasswordExpiredException();
+    public User login(AuthProfile profile) {
+        Partner systemPartner = partnerService.getPartnerFromAbbreviation(SYSTEM_PARTNER_ABBREVIATION);
+        if (systemPartner == null) {
+            throw new IllegalStateException("System partner not found");
         }
+
+        User user = createOrUpdateUser(profile, systemPartner);
+
+        //TODO JC See logic below including lastLogin
+        return user;
+    }
+
+    @Override
+    public JwtAuthenticationResponse login(LoginRequest request) throws AccountLockedException {
+        throw new UnsupportedOperationException("Disabled");
+//        try {
+//            String loggedInName = request.getUsername();
+//            if (loggedInName.contains("@")) {
+//                //User has supplied email as username.
+//                //See if we have a user with this email.
+//                try {
+//                    User exists = userRepository.findByEmailIgnoreCase(loggedInName);
+//                    if (exists != null) {
+//                        loggedInName = exists.getUsername();
+//                    }
+//                } catch (Exception ex) {
+//                    //Log details to check for nature of brute force attacks.
+//                    LogBuilder.builder(log)
+//                        .action("Login")
+//                        .message("Invalid credentials for user with given username: " +
+//                            request.getUsername())
+//                        .logError(ex);
+//
+//                    //Exception if there is more than one user associated with email.
+//                    throw new InvalidCredentialsException("Sorry, that email is not unique. Log in with your username.");
+//                }
+//                //Just continue if we couldn't find user for email
+//            }
+//
+//
+//            Authentication auth = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
+//                    loggedInName, request.getPassword()
+//            ));
+//            User user = userRepository.findByUsernameIgnoreCase(loggedInName);
+//
+//            if (user.getStatus().equals(Status.inactive)) {
+//                throw new InvalidCredentialsException("Sorry, it looks like that account is no longer active.");
+//            }
+//
+//            user.setLastLogin(OffsetDateTime.now());
+//            user = userRepository.save(user);
+//
+//            SecurityContextHolder.getContext().setAuthentication(auth);
+//            String jwt = tokenProvider.generateToken(auth);
+//
+//            JwtAuthenticationResponse response = new JwtAuthenticationResponse(jwt, user);
+//            response.setCanViewChats(
+//                chatPolicy.canSubscribeToChats(authService.queryLoggedInUserAuthorities()));
+//            response.setTcInstanceType(tcInstanceService.getInstanceType());
+//            return response;
+//
+//        } catch (BadCredentialsException e) {
+//            //Log details to check for nature of brute force attacks.
+//            LogBuilder.builder(log)
+//                .action("Login")
+//                .message("Invalid credentials for user with given username: " +
+//                    request.getUsername())
+//                .logError(e);
+//
+//            // map spring exception to a service exception for better handling
+//            throw new InvalidCredentialsException("Invalid credentials for user");
+//        } catch (LockedException e) {
+//            throw new AccountLockedException("Account locked");
+//        } catch (DisabledException e) {
+//            throw new UserDeactivatedException();
+//        } catch (CredentialsExpiredException e) {
+//            throw new PasswordExpiredException();
+//        }
     }
 
     @Override
     public void logout() {
-        SecurityContextHolder.getContext().setAuthentication(null);
+        throw new UnsupportedOperationException("Disabled");
+
+//        SecurityContextHolder.getContext().setAuthentication(null);
     }
 
     private User fetchLoggedInUser() {
@@ -584,34 +651,30 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void updatePassword(UpdateUserPasswordRequest request) {
-        /* Check that the new passwords match */
-        if (!request.getPassword().equals(request.getPasswordConfirmation())) {
-            throw new PasswordMatchException();
-        }
-
-        /* Check that the old passwords match */
-        User user = authService.getLoggedInUser()
-                .orElseThrow(() -> new InvalidSessionException("Not logged in"));
-
-        // TODO extend PasswordEncoder to expose BCrypts `checkpw` method (to compare plaintext and hashed passwords)
-//        String oldPasswordEnc = passwordHelper.encodePassword(request.getOldPassword());
-//        if (!passwordHelper.isValidPassword(user.getPasswordEnc(), oldPasswordEnc)) {
-//            throw new InvalidCredentialsException("Invalid credentials for this user");
+        throw new UnsupportedOperationException("Disabled");
+//        /* Check that the new passwords match */
+//TODO JC Remove
+//        if (!request.getPassword().equals(request.getPasswordConfirmation())) {
+//            throw new PasswordMatchException();
 //        }
-
-        /* Change the password */
-        String passwordEnc = passwordHelper.validateAndEncodePassword(request.getPassword());
-        user.setPasswordEnc(passwordEnc);
-        userRepository.save(user);
-
-        /* Update changePassword */
-        if (user.getCandidate() != null && user.getCandidate().isChangePassword()) {
-            Candidate candidate = candidateRepository.findById(user.getCandidate().getId())
-                .orElseThrow(
-                    () -> new NoSuchObjectException(Candidate.class, user.getCandidate().getId()));
-            candidate.setChangePassword(false);
-            candidateRepository.save(candidate);
-        }
+//
+//        /* Check that the old passwords match */
+//        User user = authService.getLoggedInUser()
+//                .orElseThrow(() -> new InvalidSessionException("Not logged in"));
+//
+//        /* Change the password */
+//        String passwordEnc = passwordHelper.validateAndEncodePassword(request.getPassword());
+//        user.setPasswordEnc(passwordEnc);
+//        userRepository.save(user);
+//
+//        /* Update changePassword */
+//        if (user.getCandidate() != null && user.getCandidate().isChangePassword()) {
+//            Candidate candidate = candidateRepository.findById(user.getCandidate().getId())
+//                .orElseThrow(
+//                    () -> new NoSuchObjectException(Candidate.class, user.getCandidate().getId()));
+//            candidate.setChangePassword(false);
+//            candidateRepository.save(candidate);
+//        }
     }
 
     /**
@@ -622,22 +685,24 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void updateUserPassword(long id, UpdateUserPasswordRequest request) throws InvalidRequestException {
-        /* Get user */
-        User user = this.userRepository.findById(id)
-                .orElseThrow(() -> new NoSuchObjectException(User.class, id));
-        if (authoriseAdminUser()) {
-            /* Check that the new passwords match */
-            if (!request.getPassword().equals(request.getPasswordConfirmation())) {
-                throw new PasswordMatchException();
-            }
-
-            /* Change the password */
-            String passwordEnc = passwordHelper.validateAndEncodePassword(request.getPassword());
-            user.setPasswordEnc(passwordEnc);
-            userRepository.save(user);
-        } else {
-            throw new InvalidRequestException("You don't have permission to update this user's password.");
-        }
+        throw new UnsupportedOperationException("Disabled");
+//
+//        /* Get user */
+//        User user = this.userRepository.findById(id)
+//                .orElseThrow(() -> new NoSuchObjectException(User.class, id));
+//        if (authoriseAdminUser()) {
+//            /* Check that the new passwords match */
+//            if (!request.getPassword().equals(request.getPasswordConfirmation())) {
+//                throw new PasswordMatchException();
+//            }
+//
+//            /* Change the password */
+//            String passwordEnc = passwordHelper.validateAndEncodePassword(request.getPassword());
+//            user.setPasswordEnc(passwordEnc);
+//            userRepository.save(user);
+//        } else {
+//            throw new InvalidRequestException("You don't have permission to update this user's password.");
+//        }
     }
 
     @Override
@@ -687,26 +752,27 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void resetPassword(ResetPasswordRequest request) {
-        if (!request.getPassword().equals(request.getPasswordConfirmation())) {
-            throw new PasswordMatchException();
-        }
-
-        User user = userRepository.findByResetToken(request.getToken());
-
-        if (user != null) {
-            String passwordEnc = passwordHelper.validateAndEncodePassword(request.getPassword());
-
-            LogBuilder.builder(log)
-                .action("ResetPassword")
-                .message("Saving new password for user with id " + user.getId())
-                .logInfo();
-
-            user.setPasswordEnc(passwordEnc);
-            user.setPasswordUpdatedDate(OffsetDateTime.now());
-            user.setResetTokenIssuedDate(null);
-            user.setResetToken(null);
-            userRepository.save(user);
-        }
+        throw new UnsupportedOperationException("Disabled");
+//        if (!request.getPassword().equals(request.getPasswordConfirmation())) {
+//            throw new PasswordMatchException();
+//        }
+//
+//        User user = userRepository.findByResetToken(request.getToken());
+//
+//        if (user != null) {
+//            String passwordEnc = passwordHelper.validateAndEncodePassword(request.getPassword());
+//
+//            LogBuilder.builder(log)
+//                .action("ResetPassword")
+//                .message("Saving new password for user with id " + user.getId())
+//                .logInfo();
+//
+//            user.setPasswordEnc(passwordEnc);
+//            user.setPasswordUpdatedDate(OffsetDateTime.now());
+//            user.setResetTokenIssuedDate(null);
+//            user.setResetToken(null);
+//            userRepository.save(user);
+//        }
     }
 
     @Override

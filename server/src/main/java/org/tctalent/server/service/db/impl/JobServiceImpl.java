@@ -89,7 +89,7 @@ import org.tctalent.server.request.link.UpdateLinkRequest;
 import org.tctalent.server.request.list.UpdateSavedListInfoRequest;
 import org.tctalent.server.request.search.UpdateSavedSearchRequest;
 import org.tctalent.server.security.AuthService;
-import org.tctalent.server.security.TcUserDetails;
+import org.tctalent.server.security.QueryAuthorities;
 import org.tctalent.server.service.api.SkillName;
 import org.tctalent.server.service.db.CandidateOpportunityService;
 import org.tctalent.server.service.db.CandidateSavedListService;
@@ -350,8 +350,8 @@ public class JobServiceImpl implements JobService {
 
         job = salesforceJobOppRepository.save(job);
 
-        final Optional<TcUserDetails> userOpt = authService.getLoggedInUserDetails();
-        if (chatPolicy.canCreateChats(userOpt)) {
+        final Optional<QueryAuthorities> opt = authService.queryLoggedInUserAuthorities();
+        if (chatPolicy.canCreateChats(opt)) {
             //Create the chats associated with this job
             createJobChats(job);
         }
@@ -992,8 +992,8 @@ public class JobServiceImpl implements JobService {
 
         child = updateJobOnSalesforce(child);
 
-        final Optional<TcUserDetails> userOpt = authService.getLoggedInUserDetails();
-        if (chatPolicy.canCreateChats(userOpt)) {
+        final Optional<QueryAuthorities> opt = authService.queryLoggedInUserAuthorities();
+        if (chatPolicy.canCreateChats(opt)) {
             createJobChats(child);
         }
 

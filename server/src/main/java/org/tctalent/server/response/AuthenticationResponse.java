@@ -14,22 +14,26 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tctalent.server.security;
+package org.tctalent.server.response;
 
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.stereotype.Component;
+import lombok.Getter;
+import lombok.Setter;
+import org.tctalent.server.model.db.TcInstanceType;
+import org.tctalent.server.model.db.User;
 
-@Component
-public class TcPasswordEncoder extends BCryptPasswordEncoder {
+/**
+ * Response from the server in response to a successful login or registration
+ */
+@Getter
+@Setter
+public class AuthenticationResponse {
 
-    /**
-     * Null encoded passwords are never valid.
-     */
-    @Override
-    public boolean matches(CharSequence rawPassword, String encodedPassword) {
-        if (encodedPassword == null) {
-            return false;
-        }
-        return super.matches(rawPassword, encodedPassword);
+    private boolean canViewChats;
+    private User user;
+    private TcInstanceType tcInstanceType;
+
+    public AuthenticationResponse(User user) {
+      this.user = user;
     }
+
 }

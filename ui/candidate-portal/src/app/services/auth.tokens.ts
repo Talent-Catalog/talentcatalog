@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Catalog.
+ * Copyright (c) 2026 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -13,23 +13,8 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
+// auth.tokens.ts
+import {InjectionToken} from '@angular/core';
+import {AuthProvider} from './auth-provider';
 
-package org.tctalent.server.security;
-
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.stereotype.Component;
-
-@Component
-public class TcPasswordEncoder extends BCryptPasswordEncoder {
-
-    /**
-     * Null encoded passwords are never valid.
-     */
-    @Override
-    public boolean matches(CharSequence rawPassword, String encodedPassword) {
-        if (encodedPassword == null) {
-            return false;
-        }
-        return super.matches(rawPassword, encodedPassword);
-    }
-}
+export const AUTH_PROVIDER = new InjectionToken<AuthProvider>('AUTH_PROVIDER');

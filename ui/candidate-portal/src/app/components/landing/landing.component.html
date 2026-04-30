@@ -13,6 +13,14 @@
   ~ You should have received a copy of the GNU Affero General Public License
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
+<app-auth-error
+  [error]="authStatus?.error"
+  (dismissed)="dismissAuthError()">
+</app-auth-error>
+
+<div *ngIf="authStatus?.busy" class="alert alert-info">
+  Connecting to authentication service...
+</div>
 <div class="container">
 
   <div class="row justify-content-center mt-4">
@@ -20,6 +28,20 @@
     <div class="col-sm-12 col-lg-6">
 
       <tc-card [header]="false">
+        <tc-button
+          color="primary"
+          type="outline"
+          (onClick)="onLogin()"
+          [queryParamsHandling]="'merge'">
+          Login
+        </tc-button>
+        <tc-button
+          color="primary"
+          type="outline"
+          (onClick)="onRegister()"
+          [queryParamsHandling]="'merge'">
+          Register
+        </tc-button>
 
         <app-login></app-login>
 

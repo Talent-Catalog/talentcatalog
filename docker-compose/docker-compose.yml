@@ -12,6 +12,34 @@ services:
     volumes:
       - postgres-data:/var/lib/postgresql/data
 
+  keycloak-db:
+    image: postgres:17
+    environment:
+      POSTGRES_USER: keycloak
+      POSTGRES_PASSWORD: keycloak
+      POSTGRES_DB: keycloak
+    ports:
+      - "5434:5432"
+    volumes:
+      - keycloak-db-data:/var/lib/postgresql/data
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.6.1
+    command: start-dev
+    environment:
+      KC_BOOTSTRAP_ADMIN_USERNAME: admin
+      KC_BOOTSTRAP_ADMIN_PASSWORD: admin
+      KC_DB: postgres
+      KC_DB_URL_HOST: keycloak-db
+      KC_DB_URL_PORT: 5432
+      KC_DB_URL_DATABASE: keycloak
+      KC_DB_USERNAME: keycloak
+      KC_DB_PASSWORD: keycloak
+    ports:
+      - "8082:8080"
+    depends_on:
+      - keycloak-db
+
   redis:
     image: redis:7.2.4
     privileged: true
@@ -20,14 +48,7 @@ services:
     volumes:
       - redis-data:/data
 
-  kibana:
-    image: docker.elastic.co/kibana/kibana:7.17.11
-    ports:
-      - "5601:5601"
-    environment:
-      ELASTICSEARCH_HOSTS: "http://elasticsearch:9200"
-
 volumes:
   postgres-data:
+  keycloak-db-data:
   redis-data:
-  es-data:

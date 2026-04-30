@@ -27,31 +27,23 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpMethod;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.BeanIds;
-import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.CsrfConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.server.resource.web.authentication.BearerTokenAuthenticationFilter;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.tctalent.server.logging.LogBuilder;
-import org.tctalent.server.security.JwtAuthenticationEntryPoint;
-import org.tctalent.server.security.JwtAuthenticationFilter;
-import org.tctalent.server.security.JwtTokenProvider;
 import org.tctalent.server.security.LanguageFilter;
-import org.tctalent.server.security.TcAuthenticationProvider;
-import org.tctalent.server.security.TcPasswordEncoder;
-import org.tctalent.server.security.TcUserDetailsService;
+import org.tctalent.server.security.OAuth2UserAuthenticationConverter;
 
 /**
  * Talent Catalog security configuration.
@@ -64,34 +56,16 @@ import org.tctalent.server.security.TcUserDetailsService;
  *
  * <ul>
  *     <li>
- *         We manage our own users and passwords, stored in the users table of the database
- *     </li>
- *     <li>
- *         At login we issue JSON Web Tokens (JWTs) which appear on each HTTP request in the
+ *         We authenticate users using an Oauth2 server (eg Keycloak or Cognito).
+ *         That server supplies JSON Web Tokens (JWTs) which appear on each HTTP request in the
  *         Authorization header as a Bearer token.
  *         See https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Authorization
  *         and https://developer.mozilla.org/en-US/docs/Web/HTTP/Authentication#authentication_schemes.
- *         This is OAUTH 2.0 with us acting as the Authorization server -
- *         see https://www.marcobehler.com/guides/spring-security-oauth2
- *     </li>
- * </ul>
- * The following classes support the above:
- * <ul>
- *     <li>
- *         {@link JwtTokenProvider} generates JWT tokens
  *     </li>
  *     <li>
- *         {@link JwtAuthenticationFilter} is a filter which checks incoming JWT tokens, validating
- *         them.
- *     </li>
- *     <li>
- *         {@link TcUserDetailsService} implements UserDetailsService providing access to the user
- *         table in our database
- *     </li>
- *     <li>
- *         {@link TcAuthenticationProvider} implements AuthenticationProvider passing in our
- *         wired in instance of the above TcUserDetailsService, and the PasswordEncoder defined
- *         below in {@link #passwordEncoder()}.
+ *         We manage users' details, including their roles, stored in the user's table of the
+ *         database. User details are retrieved from the user table by
+ *         {@link OAuth2UserAuthenticationConverter}.
  *     </li>
  * </ul>
  */
@@ -108,20 +82,45 @@ public class SecurityConfiguration {
     private Environment env;
 
     @Autowired
-    private TcUserDetailsService userDetailsService;
+    private OAuth2UserAuthenticationConverter oAuth2UserAuthenticationConverter;
 
-    @Autowired
-    private JwtAuthenticationEntryPoint unauthorizedHandler;
+    /**
+     * This filter chain is specifically designed for handling registration and login requests
+     * for the portal API. It disables CSRF protection, sets session management to stateless,
+     * and requires authentication for all requests. JWT authentication is enabled for this chain.
+     * <p>
+     * For logins and registrations, new users can be auto-created by the controller from the data
+     * in the JWT token.
+     * <p>
+     * See {@link #filterChain(HttpSecurity)} for the normal filter chain configuration, where
+     * if a user cannot be looked up from the JWT token, a 401 Unauthorized response is returned.
+     * That logic is handled by {@link OAuth2UserAuthenticationConverter}
+     */
+    @Bean
+    @Order(1)
+    SecurityFilterChain registrationSecurityFilterChain(HttpSecurity http) throws Exception {
+        http
+            .securityMatcher("/api/portal/auth/register", "/api/portal/auth/login")
+            .cors(withDefaults())
+            .csrf(CsrfConfigurer::disable)
+            .sessionManagement(session ->
+                session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .authorizeHttpRequests(auth -> auth
+                .anyRequest().authenticated())
+            .oauth2ResourceServer(
+                oauth2 -> oauth2.jwt(withDefaults()));
+
+        return http.build();
+    }
 
     @Bean
+    @Order(2)
     protected SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
             //Default is to use a Bean called corsConfigurationSource - defined
             //below.
             .cors(withDefaults())
             .csrf(CsrfConfigurer::disable)
-            .exceptionHandling(exception ->
-                exception.authenticationEntryPoint(unauthorizedHandler))
             .sessionManagement(session ->
                 session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(authorize -> authorize
@@ -427,7 +426,12 @@ public class SecurityConfiguration {
                     // GET
                 .requestMatchers(HttpMethod.GET, "/api/admin/**")
                 .hasAnyRole("SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
-            );
+
+                .anyRequest().authenticated()
+            )
+            .oauth2ResourceServer(oauth2 -> oauth2
+
+                .jwt(jwt -> jwt.jwtAuthenticationConverter(oAuth2UserAuthenticationConverter)));
 
         //Commented out below code because it was causing "Too many redirects" error as described below
         //https://stackoverflow.com/questions/42715718/aws-load-balancer-err-too-many-redirects/52598630#52598630
@@ -449,10 +453,8 @@ public class SecurityConfiguration {
 //See https://www.lenar.io/force-redirect-http-to-https-in-spring-boot/
 //        .requiresChannel().requestMatchers( r -> r.getHeader("X-Forwarded-Proto") != null).requiresSecure()
 
-        // Add the JWT security filter
-        http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
-        http.addFilterAfter(languageFilter(), UsernamePasswordAuthenticationFilter.class);
-
+        // Add the language filter
+        http.addFilterAfter(languageFilter(), BearerTokenAuthenticationFilter.class);
         return http.build();
         // See https://docs.spring.io/spring-security/site/docs/5.2.0.RELEASE/reference/html/default-security-headers-2.html#webflux-headers-csp
         // And about allowing Google see https://developers.google.com/web/fundamentals/security/csp/
@@ -486,29 +488,7 @@ public class SecurityConfiguration {
     }
 
     @Bean
-    public JwtAuthenticationFilter jwtAuthenticationFilter() {
-        return new JwtAuthenticationFilter();
-    }
-
-    @Bean
     public LanguageFilter languageFilter() {
         return new LanguageFilter();
-    }
-
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new TcPasswordEncoder();
-    }
-
-    @Bean(name = BeanIds.AUTHENTICATION_MANAGER)
-    public AuthenticationManager authenticationManager(
-        AuthenticationConfiguration authenticationConfiguration) throws Exception {
-        return authenticationConfiguration.getAuthenticationManager();
-    }
-
-    private TcAuthenticationProvider userAuthenticationProvider() {
-        TcAuthenticationProvider tcAuthenticationProvider = new TcAuthenticationProvider(userDetailsService);
-        tcAuthenticationProvider.setPasswordEncoder(passwordEncoder());
-        return tcAuthenticationProvider;
     }
 }
