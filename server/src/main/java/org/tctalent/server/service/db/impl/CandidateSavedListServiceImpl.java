@@ -16,7 +16,6 @@
 
 package org.tctalent.server.service.db.impl;
 
-import jakarta.validation.constraints.NotNull;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -393,7 +392,7 @@ public class CandidateSavedListServiceImpl implements CandidateSavedListService 
             candidate.setShareableCv(cv);
             candidate.setShareableDoc(doc);
         }
-        return candidateService.save(candidate, true);
+        return candidateService.save(candidate);
     }
 
     @Override

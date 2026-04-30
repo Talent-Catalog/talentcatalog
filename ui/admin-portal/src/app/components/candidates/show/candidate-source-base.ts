@@ -55,8 +55,6 @@ export class CandidateSourceBaseComponent {
   reviewStatusFilter: string[] = defaultReviewStatusFilter;
 
   @Input() candidateSource: CandidateSource;
-  //Temporary - todo to be removed when we no longer use Elasticsearch or CandidateSpecifications
-  @Input() useOldSearch: boolean;
 
   //Temporary - todo to be removed when we no longer use old fetching
   useOldFetch: boolean = false;
@@ -153,11 +151,9 @@ export class CandidateSourceBaseComponent {
     let defaultSortField = 'id';
     let defaultSortDirection = 'DESC';
     if (isSavedSearch(this.candidateSource)) {
-      if (this.useOldSearch == null || !this.useOldSearch) {
         if (!isNullOrEmpty(this.candidateSource.simpleQueryString)) {
           defaultSortField = 'text_match'
         }
-      }
     }
 
     this.sortField = this.sortField || defaultSortField;

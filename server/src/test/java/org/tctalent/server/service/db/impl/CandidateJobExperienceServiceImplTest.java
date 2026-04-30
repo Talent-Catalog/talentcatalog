@@ -246,7 +246,7 @@ class CandidateJobExperienceServiceImplTest {
         assertEquals(candidate, result.getCandidate());
         verifyExperience(result, OCCUPATION);
 
-        verify(candidateService).save(candidate, true, true);
+        verify(candidateService).save(candidate, true);
         assertEquals(candidateUser, candidate.getUpdatedBy());
     }
 
@@ -330,7 +330,7 @@ class CandidateJobExperienceServiceImplTest {
         verify(jobExperienceRepository).save(experience);
         verifyExperience(experience, ALT_OCCUPATION);
 
-        verify(candidateService).save(candidate, true, true);
+        verify(candidateService).save(candidate, true);
         assertEquals(candidateUser, candidate.getUpdatedBy());
     }
 
@@ -416,7 +416,7 @@ class CandidateJobExperienceServiceImplTest {
 
         verify(jobExperienceRepository).delete(experience);
         assertEquals(ADMIN_USER, candidate.getUpdatedBy());
-        verify(candidateService).save(candidate, true, true);
+        verify(candidateService).save(candidate, true);
     }
 
     @Test
@@ -432,7 +432,7 @@ class CandidateJobExperienceServiceImplTest {
 
         verify(jobExperienceRepository).delete(experience);
         assertEquals(candidateUser, candidate.getUpdatedBy());
-        verify(candidateService).save(candidate, true, true);
+        verify(candidateService).save(candidate, true);
     }
 
 }
