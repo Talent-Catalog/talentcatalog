@@ -48,7 +48,7 @@ public class CreateCandidateAttachmentRequest implements StoredFile {
     private UploadType uploadType;
 
     /**
-     * Only used by attachments stored on S3
+     * Candidate upload subfolder where this attachment was uploaded, eg immigration, identity.
      */
     private String folder;
 

@@ -93,6 +93,11 @@ public class CandidateAttachment extends AbstractAuditableDomainObject<Long> imp
     private UploadType uploadType;
 
     /**
+     * Candidate upload subfolder where this attachment was uploaded, eg immigration, identity.
+     */
+    private String folder;
+
+    /**
      * See IStoredFile Javadoc
      */
     private boolean active;

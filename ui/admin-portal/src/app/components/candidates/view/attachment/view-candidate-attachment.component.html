@@ -73,6 +73,9 @@
           {{attachment.name}}
         </a>
         <span class="small text-dark"> - {{attachment.type}}</span>
+        <span *ngIf="attachment.folder" class="small text-muted ms-1 attachment-folder">
+          | <i class="fas fa-folder"></i> {{attachment.folder | titlecase}}
+        </span>
         <div class="d-inline ms-2" *ngIf="attachment.uploadType === UploadType.cv">
           <app-cv-icon
             [candidate]="candidate"

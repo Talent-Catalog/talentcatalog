@@ -20,6 +20,7 @@ import {UploadType} from "./task";
 export enum AttachmentType {
   googlefile = 'googlefile',
   file = 'file',
+  grnfile = 'grnfile',
   link = 'link'
 }
 
@@ -34,6 +35,7 @@ export interface CandidateAttachment {
   updatedBy: User
   updatedDate: number;
   uploadType: UploadType;
+  folder?: string;
   url: string;
 }
 
