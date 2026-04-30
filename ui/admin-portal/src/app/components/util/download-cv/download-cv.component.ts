@@ -17,10 +17,21 @@
 import {Component, OnInit} from '@angular/core';
 import {UntypedFormBuilder, UntypedFormGroup} from "@angular/forms";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
+import {finalize} from "rxjs/operators";
 import {CandidateService, DownloadCVRequest} from "../../../services/candidate.service";
 
 /**
- * Modal component fills request to open/DL CV generated from given candidates profile.
+ * Modal component fills request to open or download a generated candidate CV.
+ *
+ * <p>
+ * Supported output formats:
+ * </p>
+ * <ul>
+ *   <li>PDF download</li>
+ *   <li>Word (.docx)</li>
+ *   <li>Native Google Doc creation in the candidate's existing Drive folder</li>
+ * </ul>
+ *
  * Usage examples {@link ShowCandidatesComponent.downloadGeneratedCV},
  * {@link ViewCandidateComponent.downloadGeneratedCV}
  */
@@ -31,8 +42,8 @@ import {CandidateService, DownloadCVRequest} from "../../../services/candidate.s
 })
 export class DownloadCvComponent implements OnInit {
   error = null;
-  loading = null;
-  saving = null;
+  loading = false;
+  saving = false;
   form: UntypedFormGroup;
   candidateId: number;
 
@@ -44,33 +55,83 @@ export class DownloadCvComponent implements OnInit {
     this.form = this.fb.group({
       name: [false],
       contact: [false],
+      format: ['pdf'],
     });
   }
 
-  onSave() {
-    const request: DownloadCVRequest = {
+  onSave(): void {
+    this.error = null;
+    this.loading = true;
+
+    const request = this.buildRequest();
+    const format = this.form.value.format;
+
+    if (format === 'google-doc') {
+      this.createGoogleDoc(request);
+      return;
+    }
+
+    this.downloadFile(request, format);
+  }
+
+  private buildRequest(): DownloadCVRequest {
+    return {
       candidateId: this.candidateId,
       showName: this.form.value.name,
       showContact: this.form.value.contact
-    }
-    const tab = window.open();
-    this.candidateService.downloadCv(request).subscribe(
+    };
+  }
+
+  private createGoogleDoc(request: DownloadCVRequest): void {
+    this.candidateService.createGoogleDoc(request)
+    .pipe(finalize(() => this.loading = false))
+    .subscribe(
       result => {
-        tab.location.href = URL.createObjectURL(result);
-        this.closeModal()
+        this.openUrl(result.url);
+        this.closeModal();
       },
-      error => {
-        this.error = error;
-      }
+      error => this.handleError(error)
     );
   }
 
-  closeModal() {
+  private downloadFile(request: DownloadCVRequest, format: string): void {
+    const download$ = format === 'docx'
+      ? this.candidateService.downloadCvDocx(request)
+      : this.candidateService.downloadCv(request);
+
+    download$
+    .pipe(finalize(() => this.loading = false))
+    .subscribe(
+      result => {
+        this.openBlobInNewTab(result);
+        this.closeModal();
+      },
+      error => this.handleError(error)
+    );
+  }
+
+  private openUrl(url: string): void {
+    window.open(url, '_blank');
+  }
+
+  private openBlobInNewTab(blob: Blob): void {
+    const objectUrl = URL.createObjectURL(blob);
+    const tab = window.open('', '_blank');
+
+    if (tab) {
+      tab.location.href = objectUrl;
+    }
+  }
+
+  private handleError(error: any): void {
+    this.error = error;
+  }
+
+  closeModal(): void {
     this.activeModal.close();
   }
 
-  dismiss() {
+  dismiss(): void {
     this.activeModal.dismiss(false);
   }
-
 }

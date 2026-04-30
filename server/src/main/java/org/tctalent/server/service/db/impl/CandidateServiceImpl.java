@@ -23,10 +23,14 @@ import jakarta.servlet.http.HttpServletRequest;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.OffsetDateTime;
@@ -183,10 +187,12 @@ import org.tctalent.server.service.db.SavedSearchService;
 import org.tctalent.server.service.db.SystemNotificationService;
 import org.tctalent.server.service.db.UserService;
 import org.tctalent.server.service.db.email.EmailHelper;
+import org.tctalent.server.service.db.util.DocxHelper;
 import org.tctalent.server.service.db.util.PdfHelper;
 import org.tctalent.server.util.BeanHelper;
 import org.tctalent.server.util.PersistenceContextHelper;
 import org.tctalent.server.util.filesystem.GoogleFileSystemDrive;
+import org.tctalent.server.util.filesystem.GoogleFileSystemFile;
 import org.tctalent.server.util.filesystem.GoogleFileSystemFolder;
 import org.tctalent.server.util.html.TextExtracter;
 
@@ -268,6 +274,7 @@ public class CandidateServiceImpl implements CandidateService {
     private final TaskAssignmentRepository taskAssignmentRepository;
     private final EmailHelper emailHelper;
     private final PdfHelper pdfHelper;
+    private final DocxHelper docxHelper;
     private final TextExtracter textExtracter;
     private final EntityManager entityManager;
     private final PersistenceContextHelper persistenceContextHelper;
@@ -2241,6 +2248,67 @@ public class CandidateServiceImpl implements CandidateService {
     @Override
     public Resource generateCv(Candidate candidate, Boolean showName, Boolean showContact) {
        return pdfHelper.generatePdf(candidate, showName, showContact);
+    }
+
+    @Override
+    public Resource generateCvDocx(Candidate candidate, Boolean showName, Boolean showContact) {
+        return docxHelper.generateDocx(candidate, showName, showContact);
+    }
+
+    @Override
+    public GoogleFileSystemFile createCvGoogleDoc(
+        Candidate candidate,
+        Boolean showName,
+        Boolean showContact
+    ) throws IOException {
+
+        final String cvFolderName = "CV";
+
+        Candidate candidateWithFolder = candidate;
+
+        if (candidateWithFolder.getFolderlink() == null
+            || !candidateWithFolder.getFolderlink().startsWith("http")) {
+            candidateWithFolder = createCandidateFolder(candidate.getId());
+        }
+
+        GoogleFileSystemFolder candidateFolder =
+            new GoogleFileSystemFolder(candidateWithFolder.getFolderlink());
+
+        GoogleFileSystemDrive candidateDrive =
+            fileSystemService.getDriveFromEntity(candidateFolder);
+
+        GoogleFileSystemFolder cvFolder =
+            fileSystemService.findAFolder(candidateDrive, candidateFolder, cvFolderName);
+
+        if (cvFolder == null) {
+            cvFolder = fileSystemService.createFolder(candidateDrive, candidateFolder, cvFolderName);
+        }
+
+        String fileName;
+        if (candidateWithFolder.getUser() != null
+            && candidateWithFolder.getUser().getDisplayName() != null) {
+            fileName = candidateWithFolder.getUser().getDisplayName() + "-CV";
+        } else {
+            fileName = "Candidate-CV";
+        }
+
+        Path tempFile = Files.createTempFile("candidate-cv-", ".docx");
+        try {
+            Resource docx = generateCvDocx(candidateWithFolder, showName, showContact);
+
+            try (InputStream inputStream = docx.getInputStream()) {
+                Files.copy(inputStream, tempFile, StandardCopyOption.REPLACE_EXISTING);
+            }
+
+            return fileSystemService.uploadFileAsGoogleDoc(
+                candidateDrive,
+                cvFolder,
+                fileName,
+                tempFile.toFile()
+            );
+        } finally {
+            Files.deleteIfExists(tempFile);
+        }
     }
 
     // List export

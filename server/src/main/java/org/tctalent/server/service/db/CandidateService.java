@@ -80,6 +80,7 @@ import org.tctalent.server.request.candidate.UpdateCandidateStatusRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateSurveyRequest;
 import org.tctalent.server.request.chat.FetchCandidatesWithChatRequest;
 import org.tctalent.server.util.dto.DtoBuilder;
+import org.tctalent.server.util.filesystem.GoogleFileSystemFile;
 
 public interface CandidateService {
 
@@ -486,6 +487,31 @@ public interface CandidateService {
     List<DataRow> computeStatusStats(Gender gender, String country, LocalDate dateFrom, LocalDate dateTo, Set<Long> candidateIds, List<Long> sourceCountryIds);
 
     Resource generateCv(Candidate candidate, Boolean showName, Boolean showContact);
+    /**
+     * Generates a candidate CV in Microsoft Word (.docx) format.
+     *
+     * @param candidate the candidate whose CV will be generated
+     * @param showName whether the candidate's name should be included in the generated CV
+     * @param showContact whether the candidate's contact details should be included in the generated CV
+     * @return a {@link Resource} containing the generated CV as a DOCX document
+     */
+    Resource generateCvDocx(Candidate candidate, Boolean showName, Boolean showContact);
+
+    /**
+     * Creates a native Google Docs version of a generated candidate CV in the
+     * candidate's existing Google Drive folder.
+     *
+     * @param candidate Candidate whose CV should be generated
+     * @param showName Whether the candidate's name should be shown
+     * @param showContact Whether the candidate's contact details should be shown
+     * @return Metadata describing the created Google Docs file
+     * @throws IOException If there is a problem generating or uploading the document
+     */
+    GoogleFileSystemFile createCvGoogleDoc(
+        Candidate candidate,
+        Boolean showName,
+        Boolean showContact
+    ) throws IOException;
 
     /**
      * IMPORTANT: Use this instead of {@link CandidateRepository#save} Saves
