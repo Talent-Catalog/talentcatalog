@@ -299,14 +299,6 @@ public class CandidateServiceImpl implements CandidateService {
         return candidates;
     }
 
-    /**
-     * Update audit fields and use repository to save the Candidate
-     * @param candidate Entity to save
-     */
-    public void saveIt(Candidate candidate) {
-        save(candidate);
-    }
-
     @Override
     public Page<Candidate> searchCandidates(CandidateEmailSearchRequest request) {
         String s = request.getCandidateEmail();

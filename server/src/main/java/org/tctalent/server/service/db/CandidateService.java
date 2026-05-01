@@ -571,9 +571,6 @@ public interface CandidateService {
     // TODO: 12/2/22 Doc
     Candidate findByIdLoadSavedLists(long candidateId);
 
-    //TODO JC Doc
-    void saveIt(Candidate candidate);
-
     //todo doc
     Candidate findByIdLoadUser(long id, Set<Country> sourceCountries);
 
