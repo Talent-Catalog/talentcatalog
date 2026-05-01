@@ -86,15 +86,24 @@ public class SecurityConfiguration {
 
     /**
      * This filter chain is specifically designed for handling registration and login requests
-     * for the portal API. It disables CSRF protection, sets session management to stateless,
-     * and requires authentication for all requests. JWT authentication is enabled for this chain.
+     * for the portal API.
      * <p>
-     * For logins and registrations, new users can be auto-created by the controller from the data
-     * in the JWT token.
+     * In this chain no attempt is made to process the JWT token. The token itself
+     * becomes the security principal. It just has to be a validly signed token.
      * <p>
-     * See {@link #filterChain(HttpSecurity)} for the normal filter chain configuration, where
-     * if a user cannot be looked up from the JWT token, a 401 Unauthorized response is returned.
-     * That logic is handled by {@link OAuth2UserAuthenticationConverter}
+     * <code>
+     * .oauth2ResourceServer(oauth2 -> oauth2.jwt(withDefaults()));
+     * </code>
+     * <p>
+     * withDefaults() just passes the input jwt unchanged and unprocessed to the next step in the
+     * chain.
+     * <p>
+     *     It is up to the login and registration controllers to handle the JWT token and extract
+     *     user information from it. Given that the Oauth provider is managing user log-ins
+     *     and registrations, the job of those controllers is just to keep the Postgres database
+     *     in sync with the user info in the Oauth provider.
+     * <p>
+     * See {@link #filterChain(HttpSecurity)} below for the normal filter chain configuration.
      */
     @Bean
     @Order(1)
@@ -113,6 +122,18 @@ public class SecurityConfiguration {
         return http.build();
     }
 
+    /**
+     * This is the normal filter chain.
+     * <p>
+     * If a user cannot be looked up from the JWT token, a 401 Unauthorized response is returned.
+     * <p>
+     * That logic is handled by {@link OAuth2UserAuthenticationConverter}
+     * <p>
+     * <code>
+     * .oauth2ResourceServer(oauth2 -> oauth2.jwt(
+     * jwt -> jwt.jwtAuthenticationConverter(oAuth2UserAuthenticationConverter)));
+     * </code>
+     */
     @Bean
     @Order(2)
     protected SecurityFilterChain filterChain(HttpSecurity http) throws Exception {

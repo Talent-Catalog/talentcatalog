@@ -20,9 +20,16 @@ import org.springframework.core.convert.converter.Converter;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Component;
+import org.tctalent.server.configuration.SecurityConfiguration;
 
 /**
- * Converts a JWT into a TcAuthenticationToken
+ * Converts a JWT into a TcAuthenticationToken by looking up the user in the database from
+ * the Oauth issuer and subject data contained in the JWT. If the user is not found,
+ * an exception is thrown and the authentication fails.
+ * <p>
+ * This is the normal authentication flow.
+ * <p>
+ * It is configured into our application's security configuration in {@link SecurityConfiguration}.
  */
 @Component
 @RequiredArgsConstructor
