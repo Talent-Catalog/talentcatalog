@@ -24,6 +24,7 @@ import java.time.OffsetDateTime;
 import java.util.List;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -129,6 +130,7 @@ class CandidateDataAuditingIntegrationTest {
     }
 
     @Test
+    @DisplayName("CandidateOccupation: admin flow sets audit fields on create and update")
     void candidateOccupationAuditsAdminFlow() {
         authenticateAs(systemAdmin);
         Candidate candidate = createCandidateFor(createUser("occ-admin", Role.user));
@@ -145,6 +147,7 @@ class CandidateDataAuditingIntegrationTest {
     }
 
     @Test
+    @DisplayName("CandidateOccupation: candidate user flow sets audit fields on create and update")
     void candidateOccupationAuditsCandidateFlow() {
         User candidateUser = createUser("occ-candidate", Role.user);
         authenticateAs(candidateUser);
@@ -162,6 +165,7 @@ class CandidateDataAuditingIntegrationTest {
     }
 
     @Test
+    @DisplayName("CandidateAttachment: admin flow sets audit fields on create and update")
     void candidateAttachmentAuditsAdminFlow() {
         authenticateAs(systemAdmin);
         Candidate candidate = createCandidateFor(createUser("att-admin", Role.user));
@@ -178,6 +182,7 @@ class CandidateDataAuditingIntegrationTest {
     }
 
     @Test
+    @DisplayName("CandidateAttachment: candidate user flow sets audit fields on create and update")
     void candidateAttachmentAuditsCandidateFlow() {
         User candidateUser = createUser("att-candidate", Role.user);
         authenticateAs(candidateUser);
@@ -195,6 +200,7 @@ class CandidateDataAuditingIntegrationTest {
     }
 
     @Test
+    @DisplayName("CandidateCertification: sets audit fields on create and update")
     void candidateCertificationAudits() {
         authenticateAs(systemAdmin);
         Candidate candidate = createCandidateFor(createUser("cert", Role.user));
@@ -211,6 +217,7 @@ class CandidateDataAuditingIntegrationTest {
     }
 
     @Test
+    @DisplayName("CandidateDestination: sets audit fields on create and update")
     void candidateDestinationAudits() {
         authenticateAs(systemAdmin);
         Candidate candidate = createCandidateFor(createUser("dest", Role.user));
@@ -227,6 +234,7 @@ class CandidateDataAuditingIntegrationTest {
     }
 
     @Test
+    @DisplayName("CandidateEducation: sets audit fields on create and update")
     void candidateEducationAudits() {
         authenticateAs(systemAdmin);
         Candidate candidate = createCandidateFor(createUser("edu", Role.user));
@@ -245,6 +253,7 @@ class CandidateDataAuditingIntegrationTest {
     }
 
     @Test
+    @DisplayName("CandidateExam: sets audit fields on create and update")
     void candidateExamAudits() {
         authenticateAs(systemAdmin);
         Candidate candidate = createCandidateFor(createUser("exam", Role.user));
@@ -261,6 +270,7 @@ class CandidateDataAuditingIntegrationTest {
     }
 
     @Test
+    @DisplayName("CandidateJobExperience: sets audit fields on create and update")
     void candidateJobExperienceAudits() {
         authenticateAs(systemAdmin);
         Candidate candidate = createCandidateFor(createUser("job-exp", Role.user));
@@ -285,6 +295,7 @@ class CandidateDataAuditingIntegrationTest {
     }
 
     @Test
+    @DisplayName("CandidateLanguage: sets audit fields on create and update")
     void candidateLanguageAudits() {
         authenticateAs(systemAdmin);
         Candidate candidate = createCandidateFor(createUser("language", Role.user));
@@ -303,6 +314,7 @@ class CandidateDataAuditingIntegrationTest {
     }
 
     @Test
+    @DisplayName("CandidateDependant: sets audit fields on create and update")
     void candidateDependantAudits() {
         authenticateAs(systemAdmin);
         Candidate candidate = createCandidateFor(createUser("dependant", Role.user));
@@ -319,6 +331,7 @@ class CandidateDataAuditingIntegrationTest {
     }
 
     @Test
+    @DisplayName("CandidateNote: admin flow sets audit fields on create and update")
     void candidateNoteAuditsAdminFlow() {
         authenticateAs(systemAdmin);
         Candidate candidate = createCandidateFor(createUser("note-admin", Role.user));
@@ -335,6 +348,7 @@ class CandidateDataAuditingIntegrationTest {
     }
 
     @Test
+    @DisplayName("CandidateNote: candidate user flow sets audit fields on create and update")
     void candidateNoteAuditsCandidateFlow() {
         User candidateUser = createUser("note-candidate", Role.user);
         authenticateAs(candidateUser);
@@ -352,6 +366,7 @@ class CandidateDataAuditingIntegrationTest {
     }
 
     @Test
+    @DisplayName("CandidateReviewStatusItem: sets audit fields on create and update")
     void candidateReviewStatusItemAudits() {
         authenticateAs(systemAdmin);
         Candidate candidate = createCandidateFor(createUser("review-status", Role.user));
@@ -369,6 +384,7 @@ class CandidateDataAuditingIntegrationTest {
     }
 
     @Test
+    @DisplayName("CandidateVisaCheck: sets audit fields on create and update")
     void candidateVisaCheckAudits() {
         authenticateAs(systemAdmin);
         Candidate candidate = createCandidateFor(createUser("visa-check", Role.user));
@@ -384,6 +400,7 @@ class CandidateDataAuditingIntegrationTest {
     }
 
     @Test
+    @DisplayName("CandidateCitizenship: sets audit fields on create and update")
     void candidateCitizenshipAudits() {
         authenticateAs(systemAdmin);
         Candidate candidate = createCandidateFor(createUser("citizenship", Role.user));
@@ -400,6 +417,7 @@ class CandidateDataAuditingIntegrationTest {
     }
 
     @Test
+    @DisplayName("CandidateVisaJobCheck: sets audit fields on create and update")
     void candidateVisaJobCheckAudits() {
         authenticateAs(systemAdmin);
         Candidate candidate = createCandidateFor(createUser("visa-job-check", Role.user));
