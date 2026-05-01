@@ -16,6 +16,8 @@
 
 package org.tctalent.server.service.db.impl;
 
+import static org.tctalent.server.configuration.SystemAdminConfiguration.SYSTEM_PARTNER_ABBREVIATION;
+
 import com.opencsv.CSVWriter;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
@@ -268,6 +270,7 @@ public class CandidateServiceImpl implements CandidateService {
     private final EntityManager entityManager;
     private final PersistenceContextHelper persistenceContextHelper;
     private final SystemNotificationService systemNotificationService;
+    private final TcInstanceService tcInstanceService;
 
     @Override
     public Page<Candidate> getSavedListCandidates(SavedList savedList, SavedListGetRequest request) {
@@ -301,10 +304,6 @@ public class CandidateServiceImpl implements CandidateService {
         return candidates;
     }
 
-    /**
-     * Update audit fields and use repository to save the Candidate
-     * @param candidate Entity to save
-     */
     public void saveIt(Candidate candidate) {
         candidate.setAuditFields(authService.getLoggedInUser().orElse(null));
         save(candidate);
@@ -622,9 +621,15 @@ public class CandidateServiceImpl implements CandidateService {
         return candidate;
     }
 
-    //TODO JC Doc
+    /**
+     * Populate some created candidate fields based on an HTTP request and query parameters.
+     * @param candidate Candidate to populate
+     * @param queryParameters Optional query parameters
+     * @param httpRequest HTTP request
+     */
     private void populateCandidate(
-        Candidate candidate, HasTcQueryParameters queryParameters, HttpServletRequest httpRequest) {
+        Candidate candidate,
+        @Nullable HasTcQueryParameters queryParameters, @Nullable HttpServletRequest httpRequest) {
 
         candidate.setPublicId(publicIDService.generatePublicID());
 
@@ -633,7 +638,9 @@ public class CandidateServiceImpl implements CandidateService {
         //For now generate a random candidate number so that it is not null.
         candidate.setCandidateNumber("TEMP%04d" + RandomStringUtils.random(6));
 
-        candidate.setRegoIp(httpRequest.getRemoteAddr());
+        if (httpRequest != null) {
+            candidate.setRegoIp(httpRequest.getRemoteAddr());
+        }
         if (queryParameters != null) {
             candidate.setRegoPartnerParam(queryParameters.getPartnerAbbreviation());
             candidate.setRegoReferrerParam(queryParameters.getReferrerParam());
@@ -644,7 +651,7 @@ public class CandidateServiceImpl implements CandidateService {
             candidate.setRegoUtmTerm(queryParameters.getUtmTerm());
         }
 
-        //set some fields to unknown on create as required for search
+        //set some fields to unknown on creation as required for search
         //see CandidateSpecification. It works better if these attributes are not null, but instead
         //point to an "Unknown" value.
         candidate.setCountry(countryRepository.getReferenceById(0L));
@@ -975,8 +982,12 @@ public class CandidateServiceImpl implements CandidateService {
         }
     }
 
-    //TODO JC Doc
-    private @Nullable RootRequest computeRootRequest(HttpServletRequest httpRequest) {
+    /**
+     * Look up if we have recorded a previous request for a candidate coming from the given IP address.
+     * @param httpRequest HTTP request from a candidate
+     * @return Previous request from same IP, or null if none found
+     */
+    private @Nullable RootRequest computeRootRequest(@NonNull HttpServletRequest httpRequest) {
         //Fetch any recent Root Request by this candidate from their ip address.
         //Candidate may have been referred to our website by a partner with query parameters
         //identifying the partner as well as how the candidate was referred (in UTM parameters).
@@ -990,10 +1001,15 @@ public class CandidateServiceImpl implements CandidateService {
         return rootRequestService.getMostRecentRootRequest(ipAddress, 36);
     }
 
-    //TODO JC Doc
+    /**
+     * Pick up query parameters from the first request if there are any, otherwise check for
+     * query parameters in the given root request.
+     * @param request Request with query parameters
+     * @param rootRequest Root request with query parameters
+     * @return Query parameters retrieved from request or root request
+     */
     private @Nullable HasTcQueryParameters computeQueryParameters(
-        //Pick up query parameters from request if they are passed in
-        HasTcQueryParameters request, RootRequest rootRequest) {
+        @NonNull HasTcQueryParameters request, @Nullable RootRequest rootRequest) {
         //Pick up query parameters from request if they are passed in
         HasTcQueryParameters queryParameters;
         if (areQueryParametersPresent(request)) {
@@ -1004,12 +1020,27 @@ public class CandidateServiceImpl implements CandidateService {
         return queryParameters;
     }
 
-    //TODO JC Doc
+    /**
+     * Compute candidate partner based on the TC instance, provided partner abbreviation,
+     * root request, and query parameters.
+     * @param partnerAbbreviation Abbreviation of the partner
+     * @param rootRequest Root request with partner information
+     * @param queryParameters Query parameters for partner retrieval
+     * @return Partner object based on the provided information
+     */
     private @NonNull Partner computePartner(
         @Nullable String partnerAbbreviation, @Nullable RootRequest rootRequest,
         @Nullable HasTcQueryParameters queryParameters) {
 
-        //TODO JC There is a GRN thing here where we don't have source partners.
+        //The GRN instance does not have source partners.
+        //All candidates are associated with the system partner.
+        if (tcInstanceService.isGRN()) {
+            Partner systemPartner = partnerService.getPartnerFromAbbreviation(SYSTEM_PARTNER_ABBREVIATION);
+            if (systemPartner == null) {
+                throw new IllegalStateException("System partner not found");
+            }
+            return systemPartner;
+        }
 
         //Compute and assign partner.
         //A non-null partner abbreviation can define partner
@@ -1070,7 +1101,7 @@ public class CandidateServiceImpl implements CandidateService {
 
     @Transactional
     @Override
-    public Candidate register(OauthRegistrationRequest request, HttpServletRequest httpRequest) {
+    public Candidate register(OauthRegistrationRequest request, @NotNull HttpServletRequest httpRequest) {
         AuthProfile profile = request.getProfile();
 
         validateEmail(null, profile.getEmail());
@@ -1104,7 +1135,8 @@ public class CandidateServiceImpl implements CandidateService {
 
     @Override
     @Transactional
-    public LoginRequest register(SelfRegistrationRequest request, HttpServletRequest httpRequest) {
+    public LoginRequest register(
+        SelfRegistrationRequest request, @NonNull HttpServletRequest httpRequest) {
         if (!request.getPassword().equals(request.getPasswordConfirmation())) {
             throw new PasswordMatchException();
         }

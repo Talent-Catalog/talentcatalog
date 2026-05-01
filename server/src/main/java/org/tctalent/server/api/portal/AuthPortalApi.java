@@ -21,6 +21,7 @@ import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.NonNull;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -71,7 +72,7 @@ public class AuthPortalApi {
 
     @PostMapping("register")
     public Map<String, Object> register(
-        @RequestBody OauthRegistrationRequest request, HttpServletRequest httpRequest) {
+        @RequestBody OauthRegistrationRequest request, @NonNull HttpServletRequest httpRequest) {
 
         Candidate candidate = candidateService.register(request, httpRequest);
         AuthenticationResponse response = userService.createAuthenticationResponse(candidate.getUser());
