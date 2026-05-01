@@ -24,8 +24,16 @@ import org.springframework.data.auditing.DateTimeProvider;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
 /**
- * Configuration class for JPA auditing. It enables JPA auditing and provides a custom DateTimeProvider
- * that returns the current time as an OffsetDateTime.
+ * Spring Data JPA auditing configuration for candidate/domain entities.
+ * <p>
+ * {@link EnableJpaAuditing} turns on auditing support so entities annotated with
+ * {@code @CreatedBy}, {@code @CreatedDate}, {@code @LastModifiedBy}, and
+ * {@code @LastModifiedDate} can be auto-populated by {@code AuditingEntityListener}.
+ * <p>
+ * The {@code auditorAwareRef} points to {@code auditorProvider}
+ * ({@link org.tctalent.server.security.SpringSecurityAuditorAware}) to resolve the current
+ * auditor user, and {@code dateTimeProviderRef} uses {@link #offsetDateTimeProvider()} to supply
+ * {@link OffsetDateTime} timestamps for created/updated dates.
  *
  * @author sadatmalik
  */

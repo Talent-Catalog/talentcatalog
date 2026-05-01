@@ -31,7 +31,16 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 /**
- * Abstract base class for candidate data domain objects, providing auditing fields and functionality.
+ * Audited base class for candidate-data entities.
+ * <p>
+ * The {@link EntityListeners} declaration wires {@link AuditingEntityListener} into the JPA
+ * lifecycle for all subclasses, so Spring Data auditing runs on persist/update callbacks.
+ * For fields annotated with {@link CreatedBy}, {@link CreatedDate}, {@link LastModifiedBy},
+ * and {@link LastModifiedDate}, the listener populates values automatically.
+ * <p>
+ * The auditing infrastructure is enabled by {@link org.tctalent.server.configuration.JpaAuditingConfig}
+ * and uses the configured {@code auditorProvider} ({@link org.tctalent.server.security.SpringSecurityAuditorAware})
+ * to resolve the current {@link User} for {@code createdBy}/{@code updatedBy}.
  *
  * @author sadatmalik
  */

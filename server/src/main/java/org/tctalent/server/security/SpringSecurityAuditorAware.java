@@ -24,9 +24,19 @@ import org.springframework.stereotype.Component;
 import org.tctalent.server.model.db.User;
 
 /**
- * Implementation of AuditorAware that retrieves the current user from the AuthService. If no user
- * is logged in, it falls back to a system admin user. This class is used for JPA auditing to
- * automatically populate createdBy and lastModifiedBy fields in entities.
+ * Resolves the current auditor {@link User} for Spring Data JPA auditing.
+ * <p>
+ * {@link org.tctalent.server.configuration.JpaAuditingConfig} references this bean as
+ * {@code auditorProvider}. When {@link org.springframework.data.jpa.domain.support.AuditingEntityListener}
+ * handles entity lifecycle callbacks, it calls this {@link AuditorAware} to determine values for
+ * {@code @CreatedBy} and {@code @LastModifiedBy}.
+ * <p>
+ * Strategy:
+ * <ul>
+ *   <li>Use the logged-in user from {@link AuthService} when available.</li>
+ *   <li>Otherwise use a startup-cached system admin id and return a lightweight user shell
+ *   (id only), so auditing can write FK values without loading the full User graph.</li>
+ * </ul>
  *
  * @author sadatmalik
  */
