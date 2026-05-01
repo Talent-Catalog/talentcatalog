@@ -568,16 +568,43 @@ public interface CandidateService {
      */
     Candidate getTestCandidate();
 
-    // TODO: 12/2/22 Doc
+    /**
+     * Returns the candidate with the given id, preloading the candidate's saved-list memberships.
+     * <p/>
+     * This is a convenience wrapper around a repository query that join-fetches the saved-list
+     * association so callers can read saved-list data without triggering additional lazy loads.
+     *
+     * @param candidateId candidate id
+     * @return candidate with saved-list associations loaded, or null if not found
+     */
     Candidate findByIdLoadSavedLists(long candidateId);
 
-    //todo doc
+    /**
+     * Returns the candidate with the given id and preloaded user association, applying source-country
+     * access restrictions for the current operation.
+     *
+     * @param id candidate id
+     * @param sourceCountries source-country restrictions to apply when resolving candidate visibility
+     * @return candidate with user association loaded, or null if not found or not visible for the
+     *         provided source-country restrictions
+     */
     Candidate findByIdLoadUser(long id, Set<Country> sourceCountries);
 
-    //todo doc
+    /**
+     * Builds one CSV export row for the given candidate, with values already formatted for output.
+     * <p/>
+     * Visibility and redaction rules are applied based on the logged-in user's role/permissions.
+     *
+     * @param candidate candidate to convert
+     * @return ordered column values for one exported CSV row
+     */
     String[] getExportCandidateStrings(Candidate candidate);
 
-    //todo doc
+    /**
+     * Returns the CSV export header row for candidate exports.
+     *
+     * @return ordered column titles matching {@link #getExportCandidateStrings(Candidate)}
+     */
     String[] getExportTitles();
 
     /**
