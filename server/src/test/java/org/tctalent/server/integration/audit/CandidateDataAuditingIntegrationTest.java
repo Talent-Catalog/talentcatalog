@@ -37,38 +37,54 @@ import org.tctalent.server.model.db.Auditable;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.CandidateAttachment;
 import org.tctalent.server.model.db.CandidateCertification;
+import org.tctalent.server.model.db.CandidateCitizenship;
 import org.tctalent.server.model.db.CandidateDependant;
 import org.tctalent.server.model.db.CandidateDestination;
 import org.tctalent.server.model.db.CandidateEducation;
 import org.tctalent.server.model.db.CandidateExam;
 import org.tctalent.server.model.db.CandidateJobExperience;
 import org.tctalent.server.model.db.CandidateLanguage;
+import org.tctalent.server.model.db.CandidateNote;
 import org.tctalent.server.model.db.CandidateOccupation;
+import org.tctalent.server.model.db.CandidateReviewStatusItem;
+import org.tctalent.server.model.db.CandidateVisaCheck;
+import org.tctalent.server.model.db.CandidateVisaJobCheck;
 import org.tctalent.server.model.db.Country;
 import org.tctalent.server.model.db.DependantRelations;
 import org.tctalent.server.model.db.EducationType;
 import org.tctalent.server.model.db.Exam;
+import org.tctalent.server.model.db.HasPassport;
 import org.tctalent.server.model.db.Language;
 import org.tctalent.server.model.db.LanguageLevel;
+import org.tctalent.server.model.db.NoteType;
 import org.tctalent.server.model.db.Occupation;
+import org.tctalent.server.model.db.ReviewStatus;
 import org.tctalent.server.model.db.Role;
+import org.tctalent.server.model.db.SavedSearch;
 import org.tctalent.server.model.db.Status;
 import org.tctalent.server.model.db.User;
+import org.tctalent.server.model.db.YesNo;
 import org.tctalent.server.model.db.YesNoUnsure;
 import org.tctalent.server.repository.db.CandidateAttachmentRepository;
 import org.tctalent.server.repository.db.CandidateCertificationRepository;
+import org.tctalent.server.repository.db.CandidateCitizenshipRepository;
 import org.tctalent.server.repository.db.CandidateDependantRepository;
 import org.tctalent.server.repository.db.CandidateDestinationRepository;
 import org.tctalent.server.repository.db.CandidateEducationRepository;
 import org.tctalent.server.repository.db.CandidateExamRepository;
 import org.tctalent.server.repository.db.CandidateJobExperienceRepository;
 import org.tctalent.server.repository.db.CandidateLanguageRepository;
+import org.tctalent.server.repository.db.CandidateNoteRepository;
 import org.tctalent.server.repository.db.CandidateOccupationRepository;
 import org.tctalent.server.repository.db.CandidateRepository;
+import org.tctalent.server.repository.db.CandidateReviewStatusRepository;
+import org.tctalent.server.repository.db.CandidateVisaJobRepository;
+import org.tctalent.server.repository.db.CandidateVisaRepository;
 import org.tctalent.server.repository.db.CountryRepository;
 import org.tctalent.server.repository.db.LanguageLevelRepository;
 import org.tctalent.server.repository.db.LanguageRepository;
 import org.tctalent.server.repository.db.OccupationRepository;
+import org.tctalent.server.repository.db.SavedSearchRepository;
 import org.tctalent.server.repository.db.UserRepository;
 import org.tctalent.server.security.TcUserDetails;
 import org.tctalent.server.service.db.UserService;
@@ -89,6 +105,12 @@ class CandidateDataAuditingIntegrationTest {
     @Autowired private CandidateJobExperienceRepository candidateJobExperienceRepository;
     @Autowired private CandidateLanguageRepository candidateLanguageRepository;
     @Autowired private CandidateDependantRepository candidateDependantRepository;
+    @Autowired private CandidateNoteRepository candidateNoteRepository;
+    @Autowired private CandidateReviewStatusRepository candidateReviewStatusRepository;
+    @Autowired private CandidateCitizenshipRepository candidateCitizenshipRepository;
+    @Autowired private CandidateVisaRepository candidateVisaRepository;
+    @Autowired private CandidateVisaJobRepository candidateVisaJobRepository;
+    @Autowired private SavedSearchRepository savedSearchRepository;
     @Autowired private OccupationRepository occupationRepository;
     @Autowired private CountryRepository countryRepository;
     @Autowired private LanguageRepository languageRepository;
@@ -296,6 +318,107 @@ class CandidateDataAuditingIntegrationTest {
         assertAuditUpdate(dependant, entity -> entity.setName("Jane Updated"));
     }
 
+    @Test
+    void candidateNoteAuditsAdminFlow() {
+        authenticateAs(systemAdmin);
+        Candidate candidate = createCandidateFor(createUser("note-admin", Role.user));
+
+        CandidateNote note = new CandidateNote();
+        note.setCandidate(candidate);
+        note.setNoteType(NoteType.admin);
+        note.setTitle("Initial title");
+        note.setComment("Initial comment");
+        note = candidateNoteRepository.saveAndFlush(note);
+
+        assertAuditFields(note, systemAdmin);
+        assertAuditUpdate(note, entity -> entity.setComment("Updated comment"));
+    }
+
+    @Test
+    void candidateNoteAuditsCandidateFlow() {
+        User candidateUser = createUser("note-candidate", Role.user);
+        authenticateAs(candidateUser);
+        Candidate candidate = createCandidateFor(candidateUser);
+
+        CandidateNote note = new CandidateNote();
+        note.setCandidate(candidate);
+        note.setNoteType(NoteType.candidate);
+        note.setTitle("Candidate title");
+        note.setComment("Candidate comment");
+        note = candidateNoteRepository.saveAndFlush(note);
+
+        assertAuditFields(note, candidateUser);
+        assertAuditUpdate(note, entity -> entity.setTitle("Candidate title updated"));
+    }
+
+    @Test
+    void candidateReviewStatusItemAudits() {
+        authenticateAs(systemAdmin);
+        Candidate candidate = createCandidateFor(createUser("review-status", Role.user));
+        SavedSearch savedSearch = getOrCreateSavedSearch();
+
+        CandidateReviewStatusItem item = new CandidateReviewStatusItem();
+        item.setCandidate(candidate);
+        item.setSavedSearch(savedSearch);
+        item.setReviewStatus(ReviewStatus.verified);
+        item.setComment("Initial review comment");
+        item = candidateReviewStatusRepository.saveAndFlush(item);
+
+        assertAuditFields(item, systemAdmin);
+        assertAuditUpdate(item, entity -> entity.setComment("Updated review comment"));
+    }
+
+    @Test
+    void candidateVisaCheckAudits() {
+        authenticateAs(systemAdmin);
+        Candidate candidate = createCandidateFor(createUser("visa-check", Role.user));
+
+        CandidateVisaCheck visaCheck = new CandidateVisaCheck();
+        visaCheck.setCandidate(candidate);
+        visaCheck.setCountry(getAnyCountry());
+        visaCheck.setProtection(YesNo.Yes);
+        visaCheck = candidateVisaRepository.saveAndFlush(visaCheck);
+
+        assertAuditFields(visaCheck, systemAdmin);
+        assertAuditUpdate(visaCheck, entity -> entity.setProtection(YesNo.No));
+    }
+
+    @Test
+    void candidateCitizenshipAudits() {
+        authenticateAs(systemAdmin);
+        Candidate candidate = createCandidateFor(createUser("citizenship", Role.user));
+
+        CandidateCitizenship citizenship = new CandidateCitizenship();
+        citizenship.setCandidate(candidate);
+        citizenship.setNationality(getAnyCountry());
+        citizenship.setHasPassport(HasPassport.ValidPassport);
+        citizenship.setNotes("Initial citizenship notes");
+        citizenship = candidateCitizenshipRepository.saveAndFlush(citizenship);
+
+        assertAuditFields(citizenship, systemAdmin);
+        assertAuditUpdate(citizenship, entity -> entity.setNotes("Updated citizenship notes"));
+    }
+
+    @Test
+    void candidateVisaJobCheckAudits() {
+        authenticateAs(systemAdmin);
+        Candidate candidate = createCandidateFor(createUser("visa-job-check", Role.user));
+
+        CandidateVisaCheck visaCheck = new CandidateVisaCheck();
+        visaCheck.setCandidate(candidate);
+        visaCheck.setCountry(getAnyCountry());
+        visaCheck.setProtection(YesNo.Yes);
+        visaCheck = candidateVisaRepository.saveAndFlush(visaCheck);
+
+        CandidateVisaJobCheck visaJobCheck = new CandidateVisaJobCheck();
+        visaJobCheck.setCandidateVisaCheck(visaCheck);
+        visaJobCheck.setInterest(YesNo.Yes);
+        visaJobCheck = candidateVisaJobRepository.saveAndFlush(visaJobCheck);
+
+        assertAuditFields(visaJobCheck, systemAdmin);
+        assertAuditUpdate(visaJobCheck, entity -> entity.setInterest(YesNo.No));
+    }
+
     private void assertAuditFields(Auditable auditable, User expectedUser) {
         assertNotNull(auditable.getCreatedBy());
         assertNotNull(auditable.getCreatedDate());
@@ -349,6 +472,21 @@ class CandidateDataAuditingIntegrationTest {
         if (entity instanceof CandidateDependant dependant) {
             return (T) candidateDependantRepository.saveAndFlush(dependant);
         }
+        if (entity instanceof CandidateNote note) {
+            return (T) candidateNoteRepository.saveAndFlush(note);
+        }
+        if (entity instanceof CandidateReviewStatusItem reviewStatusItem) {
+            return (T) candidateReviewStatusRepository.saveAndFlush(reviewStatusItem);
+        }
+        if (entity instanceof CandidateCitizenship citizenship) {
+            return (T) candidateCitizenshipRepository.saveAndFlush(citizenship);
+        }
+        if (entity instanceof CandidateVisaCheck visaCheck) {
+            return (T) candidateVisaRepository.saveAndFlush(visaCheck);
+        }
+        if (entity instanceof CandidateVisaJobCheck visaJobCheck) {
+            return (T) candidateVisaJobRepository.saveAndFlush(visaJobCheck);
+        }
         throw new IllegalArgumentException("Unsupported entity type: " + entity.getClass().getName());
     }
 
@@ -377,6 +515,20 @@ class CandidateDataAuditingIntegrationTest {
         user.setCreatedBy(systemAdmin);
         user.setCreatedDate(OffsetDateTime.now().minusDays(1));
         return userRepository.saveAndFlush(user);
+    }
+
+    private SavedSearch getOrCreateSavedSearch() {
+        return savedSearchRepository.findAll().stream().findFirst().orElseGet(() -> {
+            SavedSearch savedSearch = new SavedSearch();
+            String token = "saved-search-" + System.nanoTime();
+            savedSearch.setName(token);
+            savedSearch.setType("candidate-search");
+            savedSearch.setStatus(Status.active);
+            savedSearch.setDefaultSearch(false);
+            savedSearch.setCreatedBy(systemAdmin);
+            savedSearch.setCreatedDate(OffsetDateTime.now().minusMinutes(1));
+            return savedSearchRepository.saveAndFlush(savedSearch);
+        });
     }
 
     private void authenticateAs(User user) {
