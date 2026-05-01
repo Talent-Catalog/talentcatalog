@@ -32,7 +32,7 @@ import java.time.LocalDate;
 @Table(name = "candidate_citizenship")
 @SequenceGenerator(name = "seq_gen", sequenceName = "candidate_citizenship_id_seq", allocationSize = 1)
 @NoArgsConstructor
-public class CandidateCitizenship extends AbstractDomainObject<Long> {
+public class CandidateCitizenship extends AbstractCandidateDataDomainObject<Long> {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "candidate_id")
