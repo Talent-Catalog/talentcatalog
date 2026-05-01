@@ -160,7 +160,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User createOrUpdateUser(AuthProfile profile, @NonNull Partner partner) {
+    public User syncOauthUserAtLoginOrRegister(AuthProfile profile, @NonNull Partner partner) {
         String idpIssuer = profile.getIdpIssuer();
         String idpSubject = profile.getIdpSubject();
 
@@ -178,8 +178,10 @@ public class UserServiceImpl implements UserService {
             }
         }
 
+        boolean created = false;
         User user;
         if (userOptional.isEmpty()) {
+            created = true;
             //Create a minimal user object.
             user = new User();
             user.setIdpIssuer(idpIssuer);
@@ -211,6 +213,17 @@ public class UserServiceImpl implements UserService {
             user.setEmail(profile.getEmail());
             user.setUsername(profile.getEmail());
         }
+
+        //Last login is timestamped on either a login or registration.
+        user.setLastLogin(OffsetDateTime.now());
+
+        if (created) {
+            //If the user was just created, we need to save it before setting audit fields
+            //because setAuditFields needs to be given an existing user on the database (i.e., with
+            //an id).
+            user = userRepository.save(user);
+        }
+        user.setAuditFields(user);
         return userRepository.save(user);
     }
 
@@ -483,16 +496,10 @@ public class UserServiceImpl implements UserService {
             throw new IllegalStateException("System partner not found");
         }
 
-        User user = createOrUpdateUser(profile, systemPartner);
+        User user = syncOauthUserAtLoginOrRegister(profile, systemPartner);
         if (user.getStatus().equals(Status.inactive)) {
             throw new InvalidCredentialsException("Sorry, it looks like that account is no longer active.");
         }
-
-        user.setLastLogin(OffsetDateTime.now());
-        user.setAuditFields(user);
-        //TODO JC Need these fields for register as well
-        //TODO JC Also Partner is coming out as TBB
-        user = userRepository.save(user);
 
         return user;
     }

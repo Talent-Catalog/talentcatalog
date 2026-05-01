@@ -133,7 +133,9 @@ public interface UserService {
     Set<Country> getDefaultSourceCountries(User user);
 
     /**
-     * Creates or updates a user based on the given OAuth profile for the user.
+     * Should be called when an Oauth managed user logs in or registers.
+     * <p>
+     * It creates or updates a user based on the given OAuth profile for the user.
      * <p>
      * This is used to auto-create a minimal user record from the data held by the OAuth IDP,
      * or update an existing user record if it already exists with the data that is managed by the
@@ -143,7 +145,7 @@ public interface UserService {
      * @param partner Partner assigned to the user
      * @return User created or updated.
      */
-    User createOrUpdateUser(AuthProfile profile, @NonNull Partner partner);
+    User syncOauthUserAtLoginOrRegister(AuthProfile profile, @NonNull Partner partner);
 
     User createUser(
         UpdateUserRequest request, @Nullable User creatingUser) throws UsernameTakenException;

@@ -1068,7 +1068,7 @@ public class CandidateServiceImpl implements CandidateService {
         return sourcePartner;
     }
 
-
+    @Transactional
     @Override
     public Candidate register(OauthRegistrationRequest request, HttpServletRequest httpRequest) {
         AuthProfile profile = request.getProfile();
@@ -1089,7 +1089,7 @@ public class CandidateServiceImpl implements CandidateService {
             request.getPartnerAbbreviation(), rootRequest, queryParameters);
 
         //Create or update the user.
-        User user = userService.createOrUpdateUser(profile, partner);
+        User user = userService.syncOauthUserAtLoginOrRegister(profile, partner);
 
         Candidate candidate = new Candidate();
         candidate.setUser(user);
@@ -1103,7 +1103,7 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     @Override
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional
     public LoginRequest register(SelfRegistrationRequest request, HttpServletRequest httpRequest) {
         if (!request.getPassword().equals(request.getPasswordConfirmation())) {
             throw new PasswordMatchException();
