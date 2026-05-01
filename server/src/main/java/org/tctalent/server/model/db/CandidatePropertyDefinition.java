@@ -19,6 +19,7 @@ package org.tctalent.server.model.db;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
@@ -41,6 +42,7 @@ import org.springframework.lang.Nullable;
  */
 @Entity
 @Table(name = "candidate_property_definition")
+@SequenceGenerator(name = "seq_gen", sequenceName = "candidate_property_definition_id_seq", allocationSize = 1)
 @Getter
 @Setter
 public class CandidatePropertyDefinition extends AbstractDomainObject<Long> {

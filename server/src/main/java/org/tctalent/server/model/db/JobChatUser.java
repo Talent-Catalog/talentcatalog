@@ -16,19 +16,19 @@
 
 package org.tctalent.server.model.db;
 
+import jakarta.persistence.EmbeddedId;
+import jakarta.persistence.Entity;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.MapsId;
+import jakarta.persistence.SequenceGenerator;
+import jakarta.persistence.Table;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
-
-import jakarta.persistence.EmbeddedId;
-import jakarta.persistence.Entity;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.MapsId;
-import jakarta.persistence.Table;
 
 /**
  * Used to keep track of which post in a chat each user has read up to.
@@ -41,6 +41,7 @@ import jakarta.persistence.Table;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Entity
 @Table(name = "job_chat_user")
+@SequenceGenerator(name = "seq_gen", sequenceName = "job_chat_user_id_seq", allocationSize = 1)
 public class JobChatUser {
 
     @EqualsAndHashCode.Include

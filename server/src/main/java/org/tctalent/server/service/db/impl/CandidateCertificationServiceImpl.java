@@ -74,7 +74,7 @@ public class CandidateCertificationServiceImpl implements CandidateCertification
         // Save the entity
         candidateCertification = candidateCertificationRepository.save(candidateCertification);
 
-        candidateService.save(candidate, true);
+        candidateService.save(candidate);
 
         return candidateCertification;
     }
@@ -97,7 +97,7 @@ public class CandidateCertificationServiceImpl implements CandidateCertification
         // Save the candidate certification
         candidateCertification = candidateCertificationRepository.save(candidateCertification);
 
-        candidateService.save(candidate, true);
+        candidateService.save(candidate);
 
         return candidateCertification;
     }
@@ -119,7 +119,7 @@ public class CandidateCertificationServiceImpl implements CandidateCertification
 
         candidateCertificationRepository.delete(candidateCertification);
 
-        candidateService.save(candidate, true);
+        candidateService.save(candidate);
 
     }
 }

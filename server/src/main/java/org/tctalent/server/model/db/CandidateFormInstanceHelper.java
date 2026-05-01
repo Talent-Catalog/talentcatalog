@@ -87,6 +87,6 @@ public class CandidateFormInstanceHelper {
     }
 
     public void save() {
-        candidateService.save(getCandidate(), false, false);
+        candidateService.save(getCandidate(), false);
     }
 }

@@ -16,10 +16,10 @@
 
 package org.tctalent.server.api.admin;
 
-import java.util.List;
-import java.util.Map;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
+import java.util.List;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -58,7 +58,7 @@ public class CandidateDependantAdminApi
             throws NoSuchObjectException {
         CandidateDependant candidateDependant = candidateDependantService.createDependant(candidateId, request);
         // Need to save the Candidate as we set the number of dependants value on the candidate object when creating dependant.
-        candidateService.save(candidateDependant.getCandidate(), true);
+        candidateService.save(candidateDependant.getCandidate());
         return candidateDependantDto().build(candidateDependant);
     }
 
@@ -75,7 +75,7 @@ public class CandidateDependantAdminApi
             throws EntityReferencedException, InvalidRequestException {
         Candidate ownerOfDependant = candidateDependantService.deleteDependant(id);
         // Need to save the Candidate as we set the number of dependants value on the candidate object when deleting dependant.
-        candidateService.save(ownerOfDependant, true);
+        candidateService.save(ownerOfDependant);
         return true;
     }
 

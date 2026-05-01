@@ -118,7 +118,6 @@ import org.tctalent.server.service.db.JobService;
 import org.tctalent.server.service.db.LanguageService;
 import org.tctalent.server.service.db.NotificationService;
 import org.tctalent.server.service.db.PartnerService;
-import org.tctalent.server.service.db.PopulateElasticsearchService;
 import org.tctalent.server.service.db.SalesforceService;
 import org.tctalent.server.service.db.SavedListService;
 import org.tctalent.server.service.db.SavedSearchService;
@@ -150,7 +149,6 @@ public class SystemAdminApi {
     private final JobService jobService;
     private final LanguageService languageService;
     private final NotificationService notificationService;
-    private final PopulateElasticsearchService populateElasticsearchService;
     private final SalesforceService salesforceService;
     private final SalesforceConfig salesforceConfig;
     private final SavedListRepository savedListRepository;
@@ -220,7 +218,6 @@ public class SystemAdminApi {
         FileSystemService fileSystemService,
         JobService jobService, LanguageService languageService,
         NotificationService notificationService,
-        PopulateElasticsearchService populateElasticsearchService,
         SalesforceService salesforceService,
         SalesforceConfig salesforceConfig,
         SalesforceJobOppRepository salesforceJobOppRepository,
@@ -257,7 +254,6 @@ public class SystemAdminApi {
         this.jobService = jobService;
         this.languageService = languageService;
         this.notificationService = notificationService;
-        this.populateElasticsearchService = populateElasticsearchService;
         this.salesforceService = salesforceService;
         this.salesforceConfig = salesforceConfig;
         this.savedListRepository = savedListRepository;
@@ -1506,27 +1502,6 @@ public class SystemAdminApi {
         return "done";
     }
 
-    /**
-     * @see PopulateElasticsearchService#populateElasticCandidates(boolean, boolean, Integer, Integer)
-     */
-    @GetMapping("esload")
-    public void loadElasticsearch(
-        @RequestParam(value = "reset", required = false) String reset,
-        @RequestParam(value = "frompage", required = false) Integer fromPage,
-        @RequestParam(value = "topage", required = false) Integer toPage) {
-
-        boolean deleteExisting = reset != null;
-
-        boolean createElastic = deleteExisting;
-
-        populateElasticsearchService.populateElasticCandidates(
-            deleteExisting, createElastic, fromPage, toPage);
-    }
-
-//    @GetMapping("es-to-db/unhcr-status")
-    public void migrateUnhcrStatus() {
-        populateElasticsearchService.populateCandidateFromElastic();
-    }
 
 //    @GetMapping("migrate/survey")
     public String migrateSurvey() {

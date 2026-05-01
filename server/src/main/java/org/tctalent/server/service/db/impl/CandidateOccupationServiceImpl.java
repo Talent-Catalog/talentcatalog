@@ -108,7 +108,7 @@ public class CandidateOccupationServiceImpl implements CandidateOccupationServic
         // Save the candidateOccupation
         candidateOccupation = candidateOccupationRepository.save(candidateOccupation);
 
-        candidateService.save(candidate, true);
+        candidateService.save(candidate);
 
         return candidateOccupation;
     }
@@ -140,7 +140,7 @@ public class CandidateOccupationServiceImpl implements CandidateOccupationServic
 
         candidateOccupationRepository.delete(candidateOccupation);
 
-        candidateService.save(candidate, true);
+        candidateService.save(candidate);
     }
 
     @Override
@@ -264,7 +264,7 @@ public class CandidateOccupationServiceImpl implements CandidateOccupationServic
             }
         }
 
-        candidateService.save(candidate, true);
+        candidateService.save(candidate);
 
         return candidateOccupations;
     }
@@ -287,7 +287,7 @@ public class CandidateOccupationServiceImpl implements CandidateOccupationServic
         candidateOccupation.setOccupation(occupationToBeUpdated);
         candidateOccupation.setYearsExperience(request.getYearsExperience());
 
-        candidateService.save(candidateOccupation.getCandidate(), true);
+        candidateService.save(candidateOccupation.getCandidate());
 
         return candidateOccupationRepository.save(candidateOccupation);
 

@@ -85,7 +85,7 @@ public class CandidateEducationServiceImpl implements CandidateEducationService 
         // Save the candidate education
         candidateEducation = candidateEducationRepository.save(candidateEducation);
 
-        candidateService.save(candidate, true);
+        candidateService.save(candidate);
 
         return candidateEducation;
     }
@@ -122,7 +122,7 @@ public class CandidateEducationServiceImpl implements CandidateEducationService 
         candidateEducation = candidateEducationRepository.save(candidateEducation);
 
         Candidate candidate = candidateEducation.getCandidate();
-        candidateService.save(candidate, true);
+        candidateService.save(candidate);
 
         return candidateEducation;
     }
@@ -138,7 +138,7 @@ public class CandidateEducationServiceImpl implements CandidateEducationService 
 
         if (authService.authoriseLoggedInUser(candidate)) {
             candidateEducationRepository.delete(candidateEducation);
-            candidateService.save(candidate, true);
+            candidateService.save(candidate);
         } else {
             throw new UnauthorisedActionException("delete");
         }

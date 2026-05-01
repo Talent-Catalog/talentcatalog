@@ -98,7 +98,7 @@ public class CandidateLanguageServiceImpl implements CandidateLanguageService {
 
         // Save the candidateLanguage
         candidateLanguage = candidateLanguageRepository.save(candidateLanguage);
-        candidateService.save(candidate, true);
+        candidateService.save(candidate);
         return candidateLanguage;
     }
 
@@ -134,7 +134,7 @@ public class CandidateLanguageServiceImpl implements CandidateLanguageService {
         candidateLanguage = candidateLanguageRepository.save(candidateLanguage);
 
         Candidate candidate = candidateLanguage.getCandidate();
-        candidateService.save(candidate, true);
+        candidateService.save(candidate);
 
         return candidateLanguage;
     }
@@ -153,7 +153,7 @@ public class CandidateLanguageServiceImpl implements CandidateLanguageService {
 
         Candidate candidate = candidateLanguage.getCandidate();
         candidateLanguageRepository.delete(candidateLanguage);
-        candidateService.save(candidate, true);
+        candidateService.save(candidate);
     }
 
     @Override
@@ -217,7 +217,7 @@ public class CandidateLanguageServiceImpl implements CandidateLanguageService {
             }
         }
 
-        candidateService.save(candidate, true);
+        candidateService.save(candidate);
 
         return candidateLanguages;
     }

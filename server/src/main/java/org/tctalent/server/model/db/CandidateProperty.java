@@ -23,6 +23,7 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.MapsId;
+import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
@@ -40,6 +41,7 @@ import org.springframework.lang.Nullable;
  */
 @Entity
 @Table(name = "candidate_property")
+@SequenceGenerator(name = "seq_gen", sequenceName = "candidate_property_id_seq", allocationSize = 1)
 @Getter
 @Setter
 public class CandidateProperty {

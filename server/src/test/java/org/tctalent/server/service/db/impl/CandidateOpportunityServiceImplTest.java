@@ -385,7 +385,7 @@ public class CandidateOpportunityServiceImplTest {
         candidateOpportunityService.createUpdateCandidateOpportunities(candidateList, jobOpp,
             updateRequest.getCandidateOppParams());
 
-        verify(candidateService).save(candidateCaptor.capture(), eq(false));
+        verify(candidateService).save(candidateCaptor.capture());
         assertEquals(UNITED_KINGDOM, candidateCaptor.getValue().getRelocatedCountry());
     }
 

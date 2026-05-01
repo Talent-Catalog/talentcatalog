@@ -39,8 +39,6 @@ import org.tctalent.server.request.PagedSearchRequest;
 @ToString(callSuper = true)
 public class SearchCandidateRequest extends PagedSearchRequest {
 
-    private boolean useOldSearch;
-
     private String simpleQueryString;
     @NotNull
     private Long savedSearchId;

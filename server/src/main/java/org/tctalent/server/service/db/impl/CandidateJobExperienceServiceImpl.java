@@ -108,7 +108,7 @@ public class CandidateJobExperienceServiceImpl implements CandidateJobExperience
         final CandidateJobExperience jobExperience = candidateJobExperienceRepository.save(candidateJobExperience);
 
         //Save the candidate
-        candidateService.save(candidate, true, true);
+        candidateService.save(candidate, true);
 
         return jobExperience;
     }
@@ -159,7 +159,7 @@ public class CandidateJobExperienceServiceImpl implements CandidateJobExperience
 
         Candidate candidate = candidateJobExperience.getCandidate();
 
-        candidateService.save(candidate, true, true);
+        candidateService.save(candidate, true);
 
         return candidateJobExperience;
     }
@@ -189,7 +189,7 @@ public class CandidateJobExperienceServiceImpl implements CandidateJobExperience
 
         candidateJobExperienceRepository.delete(candidateJobExperience);
 
-        candidateService.save(candidate, true, true);
+        candidateService.save(candidate, true);
     }
 
     // Load the country from the database - throw an exception if not found

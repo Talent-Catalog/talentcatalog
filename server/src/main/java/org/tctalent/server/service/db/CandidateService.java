@@ -29,7 +29,6 @@ import java.util.Optional;
 import java.util.Set;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.web.reactive.function.client.WebClientException;
@@ -83,55 +82,6 @@ import org.tctalent.server.util.dto.DtoBuilder;
 
 public interface CandidateService {
 
-    /**
-     * Adds or updates the Elasticsearch records corresponding to candidates on
-     * our standard database.
-     * <p/>
-     * This is intended to be a bulk update which updates the contents of the
-     * elasticsearch server to for ALL non deleted candidates on our database.
-     * <p/>
-     * For performance reasons (and to minimize memory use) this update is done
-     * a page of records (eg 20) at a time - as defined by the "pageable"
-     * parameter passed to this method. This method will normally be called
-     * repeatedly from a background Async task, triggered by an API call to
-     * SystemAdminApi, starting with page 0, page 1, etc, until all candidates
-     * have been added/updated.
-     *
-     * @param pageable      The page request - basically the page number.
-     * @param logTotal      If true, the method is requested to log the total
-     *                      number of candidates to be updated.
-     * @param createElastic If true, it is assumed that the Elasticsearch has
-     *                      started empty, so new records need to be created
-     *                      (rather than updating existing records).
-     * @return The number of candidates added or updated on this call. Normally
-     * that will be page full (eg 20).
-     */
-    int populateElasticCandidates(
-            Pageable pageable, boolean logTotal, boolean createElastic);
-
-    /**
-     * Updates the candidates database records corresponding to candidates on
-     * elasticsearch.
-     * <p/>
-     * This is intended to be a bulk update which updates the contents of the
-     * database server for ALL non deleted candidates on our database and
-     * updates a specific field/fields in the database from ES.
-     * This was made to handle if the two databases get out of sync
-     * (e.g. due to a bad flyway) and we want the restore the data from the ES.
-     * As long as the ES hasn't been reloaded (so retains the original data before flyway).
-     * <p/>
-     * For performance reasons (and to minimize memory use) this update is done
-     * a page of records (eg 20) at a time - as defined by the "pageable"
-     * parameter passed to this method. This method will normally be called
-     * repeatedly from a background Async task, triggered by an API call to
-     * SystemAdminApi, starting with page 0, page 1, etc, until all candidates
-     * have been added/updated.
-     *
-     * @param pageable      The page request - basically the page number.
-     * @return The number of candidates added or updated on this call. Normally
-     * that will be page full (eg 20).
-     */
-    int populateCandidatesFromElastic(Pageable pageable);
 
     Page<Candidate> searchCandidates(CandidateEmailSearchRequest request);
 
@@ -488,22 +438,22 @@ public interface CandidateService {
     Resource generateCv(Candidate candidate, Boolean showName, Boolean showContact);
 
     /**
-     * IMPORTANT: Use this instead of {@link CandidateRepository#save} Saves
-     * candidate to repository, but also optionally updates corresponding
-     * Elasticsearch CandidateEs
+     * Best to use this rather than {@link CandidateRepository#save}.
+     * Saves the candidate to repository.
      *
      * @param candidate         Candidate to be saved
-     * @param updateCandidateEs If true, will also update Elasticsearch
      * @return Candidate object as returned by {@link CandidateRepository#save}
      */
-    Candidate save(Candidate candidate, boolean updateCandidateEs);
+    Candidate save(Candidate candidate);
 
     /**
      * Allows for automatic updating of the candidate text before saving the candidate.
-     * @see #save(Candidate, boolean)
+     * @see #save(Candidate)
+     * @param candidate         Candidate to be saved
+     * @param updateCandidateText   Whether to update candidate text before saving
      * @return Candidate object as returned by {@link CandidateRepository#save}
      */
-    Candidate save(Candidate candidate, boolean updateCandidateEs, boolean updateCandidateText);
+    Candidate save(Candidate candidate, boolean updateCandidateText);
 
     /**
      * Creates a folder for the given candidate on Google Drive, as well as standard subfolders.

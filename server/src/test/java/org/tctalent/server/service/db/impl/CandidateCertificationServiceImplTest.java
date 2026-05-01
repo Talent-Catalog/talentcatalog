@@ -170,7 +170,7 @@ class CandidateCertificationServiceImplTest {
 
     private void verifyCandidateCertification(CandidateCertification certification) {
         verify(candidateCertificationRepository).save(any(CandidateCertification.class));
-        verify(candidateService).save(candidate, true);
+        verify(candidateService).save(candidate);
         assertEquals(NAME, certification.getName());
         assertEquals(INSTITUTION, certification.getInstitution());
         assertEquals(DATE_COMPLETED, certification.getDateCompleted());
@@ -208,7 +208,7 @@ class CandidateCertificationServiceImplTest {
 
         verify(candidateCertificationRepository).delete(certification);
         assertEquals(ADMIN_USER, candidate.getUpdatedBy());
-        verify(candidateService).save(candidate, true);
+        verify(candidateService).save(candidate);
     }
 
 }

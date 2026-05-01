@@ -291,7 +291,7 @@ public class CandidateAttachmentsServiceImplTest {
 
         candidateAttachmentsService.createCandidateAttachment(createRequest);
 
-        verify(candidateService).save(candidate, true,false);
+        verify(candidateService).save(candidate, false);
         verify(candidateAttachmentRepository).save(attachmentCaptor.capture());
         CandidateAttachment attachment = attachmentCaptor.getValue();
         assertEquals(NAME, attachment.getName());
@@ -315,7 +315,7 @@ public class CandidateAttachmentsServiceImplTest {
 
         candidateAttachmentsService.createCandidateAttachment(createRequest);
 
-        verify(candidateService).save(candidate, true, true);
+        verify(candidateService).save(candidate, true);
         verify(candidateAttachmentRepository).save(attachmentCaptor.capture());
         CandidateAttachment attachment = attachmentCaptor.getValue();
         assertEquals(NAME, attachment.getName());
@@ -408,7 +408,7 @@ public class CandidateAttachmentsServiceImplTest {
 
         verify(candidateAttachmentRepository).delete(attachment);
         assertEquals(ADMIN_USER, candidate2.getUpdatedBy());
-        verify(candidateService).save(candidate2, true);
+        verify(candidateService).save(candidate2);
     }
 
     @Test
@@ -429,7 +429,7 @@ public class CandidateAttachmentsServiceImplTest {
 
         verify(candidateAttachmentRepository).delete(attachment);
         assertEquals(candidate2.getUser(), candidate2.getUpdatedBy());
-        verify(candidateService).save(candidate2, true);
+        verify(candidateService).save(candidate2);
         verify(fileSystemService).renameFile(any(GoogleFileSystemFile.class));
         verify(fileSystemService, never()).deleteFile(any(GoogleFileSystemFile.class));
     }
@@ -452,7 +452,7 @@ public class CandidateAttachmentsServiceImplTest {
 
         verify(candidateAttachmentRepository).delete(attachment);
         assertEquals(candidate2.getUser(), candidate2.getUpdatedBy());
-        verify(candidateService).save(candidate2, true);
+        verify(candidateService).save(candidate2);
         verify(fileSystemService).renameFile(any(GoogleFileSystemFile.class));
         verify(fileSystemService, never()).deleteFile(any(GoogleFileSystemFile.class));
     }
@@ -473,7 +473,7 @@ public class CandidateAttachmentsServiceImplTest {
 
         verify(candidateAttachmentRepository).delete(attachment);
         assertEquals(ADMIN_USER, candidate.getUpdatedBy());
-        verify(candidateService).save(candidate, true);
+        verify(candidateService).save(candidate);
         verify(fileSystemService).deleteFile(any(GoogleFileSystemFile.class));
     }
 
@@ -636,7 +636,7 @@ public class CandidateAttachmentsServiceImplTest {
         assertEquals(newName, attachment.getName());
         verify(fileSystemService).renameFile(any(GoogleFileSystemFile.class));
         assertEquals(ADMIN_USER, candidate.getUpdatedBy());
-        verify(candidateService).save(candidate, true, false);
+        verify(candidateService).save(candidate, false);
         assertEquals(ADMIN_USER, attachment.getUpdatedBy());
         verify(candidateAttachmentRepository).save(attachment);
     }
@@ -662,7 +662,7 @@ public class CandidateAttachmentsServiceImplTest {
         assertEquals(newName, attachment.getName());
         assertEquals(newLocation, attachment.getUrl());
         assertEquals(ADMIN_USER, candidate.getUpdatedBy());
-        verify(candidateService).save(candidate, true, false);
+        verify(candidateService).save(candidate, false);
         assertEquals(ADMIN_USER, attachment.getUpdatedBy());
         verify(candidateAttachmentRepository).save(attachment);
     }
@@ -700,7 +700,7 @@ public class CandidateAttachmentsServiceImplTest {
         candidateAttachmentsService.uploadAttachment(candidateId, false, file);
 
         assertEquals(ADMIN_USER, candidate.getUpdatedBy());
-        verify(candidateService).save(candidate, true, false);
+        verify(candidateService).save(candidate, false);
         verify(candidateAttachmentRepository).save(attachmentCaptor.capture());
         CandidateAttachment upload = attachmentCaptor.getValue();
         assertEquals(candidate, upload.getCandidate());
