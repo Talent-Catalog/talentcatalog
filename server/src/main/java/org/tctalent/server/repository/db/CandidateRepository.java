@@ -25,12 +25,10 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
-import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
-import org.springframework.transaction.annotation.Transactional;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.CandidateStatus;
 import org.tctalent.server.model.db.Country;
@@ -158,12 +156,6 @@ public interface CandidateRepository extends CacheEvictingRepository<Candidate, 
         + "and cri.reviewStatus not in (:statuses)")
     Page<Candidate> findReviewedCandidatesBySavedSearchId(@Param("savedSearchId") Long savedSearchId,
         @Param("statuses") List<ReviewStatus> statuses, Pageable pageable);
-
-    @Transactional
-    @Modifying
-    @Query("update Candidate c set c.textSearchId = null")
-    @CacheEvict(value = "users", allEntries = true)
-    void clearAllCandidateTextSearchIds();
 
     /**
      * ADMIN PORTAL DISPLAY CANDIDATE METHODS: includes source country restrictions.

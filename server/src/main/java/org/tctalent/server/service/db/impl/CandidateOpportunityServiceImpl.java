@@ -838,7 +838,7 @@ public class CandidateOpportunityServiceImpl implements CandidateOpportunityServ
             candidateService.auditNoteIfRelocatedAddressChange(candidate, null,
                     null, null, opp.getJobOpp().getCountry().getName());
             candidate.setRelocatedCountry(jobOpp.getCountry());
-            candidateService.save(candidate, false);
+            candidateService.save(candidate);
         }
     }
 

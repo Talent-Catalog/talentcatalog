@@ -67,11 +67,6 @@ spring:
       max-file-size: ${SPRING_SERVLET_MULTIPART_MAX_FILE_SIZE:10MB}
       max-request-size: ${SPRING_SERVLET_MULTIPART_MAX_REQUEST_SIZE:10MB}
 
-  elasticsearch:
-    uris: ${ELASTICSEARCH_URL:http://localhost:9200}
-    username: ${ELASTICSEARCH_USERNAME:}
-    password: ${ELASTICSEARCH_PASSWORD:}
-
   cache:
     type: redis
     redis:
@@ -250,15 +245,15 @@ candidate-file-urls:
   cloudfront-key-pair-id: ${CLOUDFRONT_KEY_PAIR_ID:}
   cloudfront-private-key-pem-path: ${CLOUDFRONT_PRIVATE_KEY_PEM_PATH:}
   origin-expiry-minutes: 15
-  
+
   #In this configuration the server url points to Cloudfront which manages the routing to the
   #S3 origin of files if needed. So both origin and public URLs point to Cloudfront.
-  #The default values are designed for testing on developer's local computers uploading to GRN 
+  #The default values are designed for testing on developer's local computers uploading to GRN
   #staging's S3, where the localhost machine will intercept public urls, but downloads will
   #come from the GRN staging S3.
-  origin-base-url: ${SERVER_URL:https://test.globalrefugee.net} 
+  origin-base-url: ${SERVER_URL:https://test.globalrefugee.net}
   public-base-url: ${SERVER_URL:http://localhost:8080}
-  
+
 aws:
   # Legacy S3 configuration retained for translation file migration support.
   # The primary app S3 client now uses the s3: block above, but aws.s3 is still

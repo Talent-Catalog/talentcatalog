@@ -17,13 +17,18 @@
 package org.tctalent.server.model.db.chatbot;
 
 import io.hypersistence.utils.hibernate.type.json.JsonBinaryType;
-import jakarta.persistence.*;
-import lombok.Data;
-import org.hibernate.annotations.Type;
-
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.Id;
+import jakarta.persistence.SequenceGenerator;
+import jakarta.persistence.Table;
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.UUID;
+import lombok.Data;
+import org.hibernate.annotations.Type;
 
 /**
  * Represents a message in a chatbot conversation.
@@ -31,6 +36,7 @@ import java.util.UUID;
  */
 @Entity
 @Table(name = "chatbot_message")
+@SequenceGenerator(name = "seq_gen", sequenceName = "chatbot_message_id_seq", allocationSize = 1)
 @Data
 public class ChatbotMessage {
 
