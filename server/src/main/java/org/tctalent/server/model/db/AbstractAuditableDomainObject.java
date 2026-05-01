@@ -23,7 +23,11 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.MappedSuperclass;
 import java.io.Serializable;
 import java.time.OffsetDateTime;
+import lombok.Getter;
+import lombok.Setter;
 
+@Setter
+@Getter
 @MappedSuperclass
 public abstract class AbstractAuditableDomainObject<IdType extends Serializable>
     extends AbstractDomainObject<IdType>
@@ -50,38 +54,10 @@ public abstract class AbstractAuditableDomainObject<IdType extends Serializable>
         setAuditFields(createdBy);
     }
 
-    public OffsetDateTime getCreatedDate() {
-        return createdDate;
-    }
-
-    public void setCreatedDate(OffsetDateTime createdDate) {
-        this.createdDate = createdDate;
-    }
-
-    public User getCreatedBy() {
-        return createdBy;
-    }
-
-    public void setCreatedBy(User createdBy) {
-        this.createdBy = createdBy;
-    }
-
-    public OffsetDateTime getUpdatedDate() {
-        return updatedDate;
-    }
-
-    public void setUpdatedDate(OffsetDateTime updatedDate) {
-        this.updatedDate = updatedDate;
-    }
-
-    public User getUpdatedBy() {
-        return updatedBy;
-    }
-
-    public void setUpdatedBy(User updatedBy) {
-        this.updatedBy = updatedBy;
-    }
-
+    /**
+     * Updates the audit fields of the object.
+     * @param modifiedBy The user who modified the object.
+     */
     public void setAuditFields(User modifiedBy){
         if(createdBy == null){
             this.createdBy = modifiedBy;
