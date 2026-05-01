@@ -32,7 +32,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @MappedSuperclass
-public class CandidateVisaJobCheckBase extends AbstractDomainObject<Long> {
+public class CandidateVisaJobCheckBase extends AbstractCandidateDataDomainObject<Long> {
 
     /**
      * This is only present so that this table has a candidate_id.

@@ -32,7 +32,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @MappedSuperclass
-public class CandidateVisaCheckBase extends AbstractAuditableDomainObject<Long> implements Comparable<CandidateVisaCheck> {
+public class CandidateVisaCheckBase extends AbstractCandidateDataDomainObject<Long> implements Comparable<CandidateVisaCheck> {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "candidate_id")

@@ -35,7 +35,7 @@ import jakarta.persistence.Table;
 @Table(name = "candidate_note")
 @SequenceGenerator(name = "seq_gen", sequenceName = "candidate_note_id_seq", allocationSize = 1)
 @NoArgsConstructor
-public class CandidateNote extends AbstractAuditableDomainObject<Long>  {
+public class CandidateNote extends AbstractCandidateDataDomainObject<Long>  {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "candidate_id")
