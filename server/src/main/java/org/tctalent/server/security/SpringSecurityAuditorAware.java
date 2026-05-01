@@ -19,12 +19,9 @@ package org.tctalent.server.security;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
-import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.data.domain.AuditorAware;
 import org.springframework.stereotype.Component;
 import org.tctalent.server.model.db.User;
-import org.tctalent.server.repository.db.UserRepository;
-import org.tctalent.server.service.db.UserService;
 
 /**
  * Implementation of AuditorAware that retrieves the current user from the AuthService. If no user
@@ -38,30 +35,41 @@ import org.tctalent.server.service.db.UserService;
 public class SpringSecurityAuditorAware implements AuditorAware<User> {
 
     private final AuthService authService;
-    private final UserRepository userRepository;
-    private final ObjectProvider<UserService> userServiceProvider;
+
+    /**
+     * Cached once during startup and then read by request threads.
+     * Volatile guarantees once startup sets this value, all requests see the latest value,
+     * even if the practical risk is near zero.
+     */
+    private volatile Long systemAdminId;
+
+    /**
+     * Called during startup to seed the fallback auditor user id.
+     * This avoids querying/loading the full system-admin entity inside auditing callbacks,
+     * which can trigger unwanted eager associations during flush.
+     */
+    public void setSystemAdminId(Long systemAdminId) {
+        this.systemAdminId = systemAdminId;
+    }
 
     @NotNull
     @Override
     public Optional<User> getCurrentAuditor() {
-        Optional<User> loggedInUser = authService.getLoggedInUser();
+        Optional<User> loggedInUser = authService.getLoggedInUser()
+            .filter(user -> user.getId() != null);
         if (loggedInUser.isPresent()) {
-            return resolveManagedUser(loggedInUser.get());
+            return loggedInUser;
         }
 
-        try {
-            User systemAdminUser = userServiceProvider.getObject().getSystemAdminUser();
-            return resolveManagedUser(systemAdminUser);
-        } catch (RuntimeException ex) {
-            // Some tests persist entities without seeded system admin users.
-            return Optional.empty();
+        if (systemAdminId != null) {
+            // Fallback for anonymous/system-triggered writes: return a lightweight User carrying
+            // only the id so Hibernate can write created_by/updated_by without loading User graph.
+            User systemAdminUserShell = new User();
+            systemAdminUserShell.setId(systemAdminId);
+            return Optional.of(systemAdminUserShell);
         }
-    }
 
-    private Optional<User> resolveManagedUser(User user) {
-        if (user == null || user.getId() == null) {
-            return Optional.empty();
-        }
-        return userRepository.findById(user.getId());
+        // Some tests persist entities before startup auto-create has seeded system admin data.
+        return Optional.empty();
     }
 }
