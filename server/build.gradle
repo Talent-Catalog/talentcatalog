@@ -152,7 +152,6 @@ dependencies {
     implementation 'dev.samstevens.totp:totp-spring-boot-starter:1.7.1'
 
     // https://mvnrepository.com/artifact/com.opencsv/opencsv
-//    implementation group: 'com.opencsv', name: 'opencsv', version: '5.12'
     implementation("com.opencsv:opencsv:5.8")
 
     // https://github.com/lukas-krecan/ShedLock
