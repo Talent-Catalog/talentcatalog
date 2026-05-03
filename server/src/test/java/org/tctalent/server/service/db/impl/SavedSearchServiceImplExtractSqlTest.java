@@ -18,8 +18,10 @@ package org.tctalent.server.service.db.impl;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.lang.reflect.Method;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -69,6 +71,24 @@ class SavedSearchServiceImplExtractSqlTest {
         SystemAdminConfiguration.PENDING_TERMS_ACCEPTANCE_LIST_ID = 123L;
     }
 
+    private String extractFetchSQL(
+        SearchCandidateRequest request, User user, Collection<Candidate> excludedCandidates,
+        boolean ordered) {
+        try {
+            Method method = SavedSearchServiceImpl.class.getDeclaredMethod(
+                "extractFetchSQLQuery",
+                SearchCandidateRequest.class, User.class, Collection.class, boolean.class);
+            method.setAccessible(true);
+            Object sqlQuery = method.invoke(savedSearchService, request, user, excludedCandidates, ordered);
+
+            Method getSql = sqlQuery.getClass().getDeclaredMethod("getSql");
+            getSql.setAccessible(true);
+            return (String) getSql.invoke(sqlQuery);
+        } catch (ReflectiveOperationException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     @Test
     @DisplayName("SQL generated from empty request")
     void extractFetchSQLFromEmptyRequest() {
@@ -79,7 +99,7 @@ class SavedSearchServiceImplExtractSqlTest {
     @Test
     @DisplayName("SQL generated from empty ordered request")
     void extractFetchSQLFromEmptyOrderedRequest() {
-        String sql = savedSearchService.extractFetchSQL(request, null, null, true);
+        String sql = extractFetchSQL(request, null, null, true);
         assertEquals(ORDERED_SELECT_PREFIX + FROM_CANDIDATE + ORDER_BY + ID_SORT, sql);
     }
 
@@ -88,7 +108,7 @@ class SavedSearchServiceImplExtractSqlTest {
     void extractFetchSQLFromOrderedRequest() {
         request.setSortFields(new String[] {"gender"});
         request.setSortDirection(Direction.ASC);
-        String sql = savedSearchService.extractFetchSQL(request, null, null, true);
+        String sql = extractFetchSQL(request, null, null, true);
         assertEquals(ORDERED_SELECT_PREFIX + ",candidate.gender" + FROM_CANDIDATE +
             ORDER_BY + "candidate.gender " + Direction.ASC + "," + ID_SORT, sql);
     }
@@ -98,7 +118,7 @@ class SavedSearchServiceImplExtractSqlTest {
     void extractFetchSQLFromOrderedRequestRequiringJoin() {
         request.setSortFields(new String[] {"user.firstName"});
         request.setSortDirection(Direction.ASC);
-        String sql = savedSearchService.extractFetchSQL(request, null, null, true);
+        String sql = extractFetchSQL(request, null, null, true);
         assertEquals(ORDERED_SELECT_PREFIX + ",users.first_name" + FROM_CANDIDATE +
             JOIN + CandidateSearchUtils.getTableJoin("users") +
             ORDER_BY + "users.first_name " + Direction.ASC + "," + ID_SORT, sql);
@@ -110,10 +130,10 @@ class SavedSearchServiceImplExtractSqlTest {
         request.setPartnerIds(List.of(123L));
         request.setSortFields(new String[] {"user.lastName"});
         request.setSortDirection(Direction.ASC);
-        String sql = savedSearchService.extractFetchSQL(request, null, null, true);
+        String sql = extractFetchSQL(request, null, null, true);
         assertEquals(ORDERED_SELECT_PREFIX + ",users.last_name" + FROM_CANDIDATE +
             JOIN + CandidateSearchUtils.getTableJoin("users") +
-            WHERE + "users.partner_id in (123)" +
+            WHERE + "users.partner_id in (:p1)" +
             ORDER_BY + "users.last_name " + Direction.ASC + "," + ID_SORT, sql);
     }
 
@@ -123,11 +143,11 @@ class SavedSearchServiceImplExtractSqlTest {
         request.setPartnerIds(List.of(123L));
         request.setSortFields(new String[] {"nationality.name"});
         request.setSortDirection(Direction.ASC);
-        String sql = savedSearchService.extractFetchSQL(request, null, null, true);
+        String sql = extractFetchSQL(request, null, null, true);
         assertEquals(ORDERED_SELECT_PREFIX + ",nationality.name" + FROM_CANDIDATE +
             JOIN + CandidateSearchUtils.getTableJoin("users") +
             JOIN + CandidateSearchUtils.getTableJoin("nationality") +
-            WHERE + "users.partner_id in (123)" +
+            WHERE + "users.partner_id in (:p1)" +
             ORDER_BY + "nationality.name " + Direction.ASC + "," + ID_SORT, sql);
     }
 
@@ -137,11 +157,11 @@ class SavedSearchServiceImplExtractSqlTest {
         request.setPartnerIds(List.of(1L));
         request.setSortFields(new String[] {"country.name"});
         request.setSortDirection(Direction.ASC);
-        String sql = savedSearchService.extractFetchSQL(request, null, null, true);
+        String sql = extractFetchSQL(request, null, null, true);
         assertEquals(ORDERED_SELECT_PREFIX + ",country.name" + FROM_CANDIDATE +
             JOIN + CandidateSearchUtils.getTableJoin("users") +
             JOIN + CandidateSearchUtils.getTableJoin("country") +
-            WHERE + "users.partner_id in (1)" +
+            WHERE + "users.partner_id in (:p1)" +
             ORDER_BY + "country.name " + Direction.ASC + "," + ID_SORT, sql);
     }
 
@@ -151,11 +171,11 @@ class SavedSearchServiceImplExtractSqlTest {
         request.setPartnerIds(List.of(1L));
         request.setSortFields(new String[] {"user.partner.abbreviation"});
         request.setSortDirection(Direction.ASC);
-        String sql = savedSearchService.extractFetchSQL(request, null, null, true);
+        String sql = extractFetchSQL(request, null, null, true);
         assertEquals(ORDERED_SELECT_PREFIX + ",partner.abbreviation" + FROM_CANDIDATE +
             JOIN + CandidateSearchUtils.getTableJoin("users") +
             JOIN + CandidateSearchUtils.getTableJoin("partner") +
-            WHERE + "users.partner_id in (1)" +
+            WHERE + "users.partner_id in (:p1)" +
             ORDER_BY + "partner.abbreviation " + Direction.ASC + "," + ID_SORT, sql);
     }
 
@@ -164,7 +184,7 @@ class SavedSearchServiceImplExtractSqlTest {
     void extractFetchSQLFromOrderedRequestOnPartnerAbbreviationWithoutUserJoin() {
         request.setSortFields(new String[] {"user.partner.abbreviation"});
         request.setSortDirection(Direction.ASC);
-        String sql = savedSearchService.extractFetchSQL(request, null, null, true);
+        String sql = extractFetchSQL(request, null, null, true);
         assertEquals(ORDERED_SELECT_PREFIX + ",partner.abbreviation" + FROM_CANDIDATE +
             JOIN + CandidateSearchUtils.getTableJoin("users") +
             JOIN + CandidateSearchUtils.getTableJoin("partner") +
@@ -178,7 +198,7 @@ class SavedSearchServiceImplExtractSqlTest {
         request.setGender(gender);
         String sql = savedSearchService.extractFetchSQL(request);
         assertEquals(UNORDERED_SELECT +
-            " where candidate.gender = '" + gender.name() + "'", sql);
+            " where candidate.gender = :p1", sql);
     }
 
     @Test
@@ -190,7 +210,27 @@ class SavedSearchServiceImplExtractSqlTest {
         request.setPartnerIds(partnerIds);
         String sql = savedSearchService.extractFetchSQL(request);
         assertEquals(UNORDERED_SELECT + " left join users on candidate.user_id = users.id"
-            + " where users.partner_id in (123,456)", sql);
+            + " where users.partner_id in (:p1,:p2)", sql);
+    }
+
+    @Test
+    @DisplayName("SQL generated from candidate numbers and marketing fields")
+    void extractFetchSQLFromCandidateNumbersAndMarketingFieldsRequest() {
+        request.setCandidateNumbers(List.of("TC-1' OR '1'='1"));
+        request.setRegoReferrerParam("ref' OR '1'='1");
+        request.setRegoUtmCampaign("campaign' OR '1'='1");
+        request.setRegoUtmSource("source' OR '1'='1");
+        request.setRegoUtmMedium("medium' OR '1'='1");
+
+        String sql = savedSearchService.extractFetchSQL(request);
+
+        assertEquals(UNORDERED_SELECT
+                + " where candidate.candidate_number in (:p1)"
+                + " and lower(candidate.rego_referrer_param) like :p2"
+                + " and lower(candidate.rego_utm_campaign) like :p3"
+                + " and lower(candidate.rego_utm_source) like :p4"
+                + " and lower(candidate.rego_utm_medium) like :p5"
+            , sql);
     }
 
     @Test
@@ -205,7 +245,7 @@ class SavedSearchServiceImplExtractSqlTest {
         assertEquals( UNORDERED_SELECT +
                 " left join users on candidate.user_id = users.id"
                 + " left join education_level on candidate.max_education_level_id = education_level.id"
-                + " where users.partner_id in (123,456) and education_level.level >= 1"
+                + " where users.partner_id in (:p1,:p2) and education_level.level >= :p3"
             , sql);
     }
 
@@ -218,7 +258,7 @@ class SavedSearchServiceImplExtractSqlTest {
         String sql = savedSearchService.extractFetchSQL(request);
         assertEquals(UNORDERED_SELECT +
                 " left join candidate_education on candidate.id = candidate_education.candidate_id"
-                + " where major_id in (123)"
+                + " where major_id in (:p1)"
             , sql);
     }
 
@@ -230,14 +270,14 @@ class SavedSearchServiceImplExtractSqlTest {
         String sql = savedSearchService.extractFetchSQL(request);
         assertEquals(UNORDERED_SELECT +
                 " where candidate.id in (select candidate_id from candidate_saved_list"
-                + " where saved_list_id in (123,456))"
+                + " where saved_list_id in (:p1,:p2))"
             , sql);
 
         request.setListAnySearchType(SearchType.not);
         sql = savedSearchService.extractFetchSQL(request);
         assertEquals(UNORDERED_SELECT +
                 " where not (candidate.id in (select candidate_id from candidate_saved_list"
-                + " where saved_list_id in (123,456)))"
+                + " where saved_list_id in (:p1,:p2)))"
             , sql);
     }
 
@@ -249,18 +289,18 @@ class SavedSearchServiceImplExtractSqlTest {
         String sql = savedSearchService.extractFetchSQL(request);
         assertEquals(UNORDERED_SELECT +
                 " where candidate.id in (select candidate_id from candidate_saved_list"
-                + " where saved_list_id = 123)"
+                + " where saved_list_id = :p1)"
                 + " and candidate.id in (select candidate_id from candidate_saved_list"
-                + " where saved_list_id = 456)"
+                + " where saved_list_id = :p2)"
             , sql);
 
         request.setListAllSearchType(SearchType.not);
         sql = savedSearchService.extractFetchSQL(request);
         assertEquals(UNORDERED_SELECT +
                 " where not (candidate.id in (select candidate_id from candidate_saved_list"
-                + " where saved_list_id = 123)"
+                + " where saved_list_id = :p1)"
                 + " and candidate.id in (select candidate_id from candidate_saved_list"
-                + " where saved_list_id = 456))"
+                + " where saved_list_id = :p2))"
             , sql);
     }
 
@@ -292,22 +332,22 @@ class SavedSearchServiceImplExtractSqlTest {
         String sql = savedSearchService.extractFetchSQL(request);
         assertEquals(UNORDERED_SELECT +
             " left join candidate_occupation on candidate.id = candidate_occupation.candidate_id"
-            + " where candidate_occupation.occupation_id in (9426)", sql);
+            + " where candidate_occupation.occupation_id in (:p1)", sql);
 
         request.setMinYrs(1);
         sql = savedSearchService.extractFetchSQL(request);
         assertEquals(UNORDERED_SELECT +
             " left join candidate_occupation on candidate.id = candidate_occupation.candidate_id"
-            + " where candidate_occupation.occupation_id in (9426)"
-            + " and candidate_occupation.years_experience >= 1", sql);
+            + " where candidate_occupation.occupation_id in (:p1)"
+            + " and candidate_occupation.years_experience >= :p2", sql);
 
         request.setMaxYrs(5);
         sql = savedSearchService.extractFetchSQL(request);
         assertEquals(UNORDERED_SELECT +
             " left join candidate_occupation on candidate.id = candidate_occupation.candidate_id"
-            + " where candidate_occupation.occupation_id in (9426)"
-            + " and candidate_occupation.years_experience >= 1"
-            + " and candidate_occupation.years_experience <= 5", sql);
+            + " where candidate_occupation.occupation_id in (:p1)"
+            + " and candidate_occupation.years_experience >= :p2"
+            + " and candidate_occupation.years_experience <= :p3", sql);
     }
 
     @Test
@@ -317,34 +357,34 @@ class SavedSearchServiceImplExtractSqlTest {
         request.setIncludePendingTermsCandidates(false);
         String sql = savedSearchService.extractFetchSQL(request);
         assertEquals(UNORDERED_SELECT
-            + " where "
-            + EXCLUDE_PENDING_TERMS_CLAUSE
-            + SystemAdminConfiguration.PENDING_TERMS_ACCEPTANCE_LIST_ID + ")"
-            + " and exists ("
+                + " where "
+                + EXCLUDE_PENDING_TERMS_CLAUSE
+                + ":p1)"
+                + " and exists ("
                 + "select 1 from candidate_language "
                 + "join language_level on language_level.id = spoken_level_id "
                 + "where candidate_language.candidate_id = candidate.id and "
-                + "candidate_language.language_id = 0 and language_level.level >= 20"
+                + "candidate_language.language_id = :p2 and language_level.level >= :p3"
                 + ")"
             , sql);
 
         request.setEnglishMinWrittenLevel(20);
         sql = savedSearchService.extractFetchSQL(request);
         assertEquals(UNORDERED_SELECT
-            + " where "
-            + EXCLUDE_PENDING_TERMS_CLAUSE
-            + SystemAdminConfiguration.PENDING_TERMS_ACCEPTANCE_LIST_ID + ")"
+                + " where "
+                + EXCLUDE_PENDING_TERMS_CLAUSE
+                + ":p1)"
                 + " and exists ("
                 + "select 1 from candidate_language "
                 + "join language_level on language_level.id = spoken_level_id "
                 + "where candidate_language.candidate_id = candidate.id and "
-                + "candidate_language.language_id = 0 and language_level.level >= 20"
+                + "candidate_language.language_id = :p2 and language_level.level >= :p3"
                 + ")"
                 + " and exists ("
                 + "select 1 from candidate_language "
                 + "join language_level on language_level.id = written_level_id "
                 + "where candidate_language.candidate_id = candidate.id and "
-                + "candidate_language.language_id = 0 and language_level.level >= 20"
+                + "candidate_language.language_id = :p4 and language_level.level >= :p5"
                 + ")"
             , sql);
 
@@ -352,26 +392,26 @@ class SavedSearchServiceImplExtractSqlTest {
         request.setOtherMinSpokenLevel(30);
         sql = savedSearchService.extractFetchSQL(request);
         assertEquals(UNORDERED_SELECT
-            + " where "
-            + EXCLUDE_PENDING_TERMS_CLAUSE
-            + SystemAdminConfiguration.PENDING_TERMS_ACCEPTANCE_LIST_ID + ")"
+                + " where "
+                + EXCLUDE_PENDING_TERMS_CLAUSE
+                + ":p1)"
                 + " and exists ("
                 + "select 1 from candidate_language "
                 + "join language_level on language_level.id = spoken_level_id "
                 + "where candidate_language.candidate_id = candidate.id and "
-                + "candidate_language.language_id = 0 and language_level.level >= 20"
+                + "candidate_language.language_id = :p2 and language_level.level >= :p3"
                 + ")"
                 + " and exists ("
                 + "select 1 from candidate_language "
                 + "join language_level on language_level.id = written_level_id "
                 + "where candidate_language.candidate_id = candidate.id and "
-                + "candidate_language.language_id = 0 and language_level.level >= 20"
+                + "candidate_language.language_id = :p4 and language_level.level >= :p5"
                 + ")"
                 + " and exists ("
                 + "select 1 from candidate_language "
                 + "join language_level on language_level.id = spoken_level_id "
                 + "where candidate_language.candidate_id = candidate.id and "
-                + "candidate_language.language_id = 344 and language_level.level >= 30"
+                + "candidate_language.language_id = :p6 and language_level.level >= :p7"
                 + ")"
             , sql);
 
@@ -387,7 +427,7 @@ class SavedSearchServiceImplExtractSqlTest {
         request.setStatuses(statuses);
         String sql = savedSearchService.extractFetchSQL(request);
         assertEquals(UNORDERED_SELECT +
-            " where candidate.status in ('active','pending')", sql);
+            " where candidate.status in (:p1,:p2)", sql);
     }
 
     @Test
@@ -400,7 +440,7 @@ class SavedSearchServiceImplExtractSqlTest {
         request.setUnhcrStatuses(statuses);
         String sql = savedSearchService.extractFetchSQL(request);
         assertEquals(UNORDERED_SELECT +
-            " where candidate.unhcr_status in ('NoResponse','MandateRefugee')", sql);
+            " where candidate.unhcr_status in (:p1,:p2)", sql);
     }
 
     @Test
@@ -414,9 +454,9 @@ class SavedSearchServiceImplExtractSqlTest {
         candidate = new Candidate();
         candidate.setId(456L);
         excluded.add(candidate);
-        String sql = savedSearchService.extractFetchSQL(request, null, excluded, false);
+        String sql = extractFetchSQL(request, null, excluded, false);
         assertEquals(UNORDERED_SELECT +
-            " where candidate.id not in (123,456)", sql);
+            " where candidate.id not in (:p1,:p2)", sql);
     }
 
     @Test
@@ -432,9 +472,9 @@ class SavedSearchServiceImplExtractSqlTest {
         country.setId(456L);
         countries.add(country);
         user.setSourceCountries(countries);
-        String sql = savedSearchService.extractFetchSQL(request, user, null, false);
+        String sql = extractFetchSQL(request, user, null, false);
         assertEquals(UNORDERED_SELECT +
-            " where candidate.country_id in (456,123)", sql);
+            " where candidate.country_id in (:p1,:p2)", sql);
     }
 
     @Test
@@ -443,13 +483,13 @@ class SavedSearchServiceImplExtractSqlTest {
         request.setLastModifiedFrom(LocalDate.parse("2019-01-01"));
         String sql = savedSearchService.extractFetchSQL(request);
         assertEquals(UNORDERED_SELECT +
-            " where candidate.updated_date >= '2019-01-01T00:00Z'", sql);
+            " where candidate.updated_date >= :p1", sql);
 
         request.setLastModifiedFrom(LocalDate.parse("2019-01-01"));
         request.setTimezone("Australia/Brisbane");
         sql = savedSearchService.extractFetchSQL(request);
         assertEquals(UNORDERED_SELECT +
-            " where candidate.updated_date >= '2019-01-01T00:00+10:00'", sql);
+            " where candidate.updated_date >= :p1", sql);
     }
 
     //    @Test - modify for current date before running test
@@ -458,7 +498,7 @@ class SavedSearchServiceImplExtractSqlTest {
         request.setMinAge(20);
         String sql = savedSearchService.extractFetchSQL(request);
         assertEquals(UNORDERED_SELECT +
-                " where (candidate.dob <= '2003-07-15' or candidate.dob is null)"
+                " where (candidate.dob <= :p1 or candidate.dob is null)"
             , sql);
     }
 
@@ -468,7 +508,7 @@ class SavedSearchServiceImplExtractSqlTest {
         request.setMaxAge(20);
         String sql = savedSearchService.extractFetchSQL(request);
         assertEquals(UNORDERED_SELECT +
-                " where (candidate.dob > '2003-07-15' or candidate.dob is null)"
+                " where (candidate.dob > :p1 or candidate.dob is null)"
             , sql);
     }
 
@@ -486,7 +526,7 @@ class SavedSearchServiceImplExtractSqlTest {
 
         String sql = savedSearchService.extractFetchSQL(request);
         assertEquals(UNORDERED_SELECT +
-                " where candidate.status in ('active','pending') and candidate.gender = 'male'"
+                " where candidate.status in (:p1,:p2) and candidate.gender = :p3"
             , sql);
     }
 }
