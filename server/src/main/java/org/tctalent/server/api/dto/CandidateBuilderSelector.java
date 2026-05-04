@@ -241,7 +241,7 @@ public class CandidateBuilderSelector {
                     .add("shareableNotes")
                     .add("additionalInfo")
                     .add("candidateMessage")
-                    .add("additionalInfo")
+                    .add("aspirations")
                 ;
             }
 

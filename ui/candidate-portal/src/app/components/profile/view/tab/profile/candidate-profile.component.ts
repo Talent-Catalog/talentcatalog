@@ -33,7 +33,10 @@ import {LanguageLevel} from "../../../../../model/language-level";
 import {SurveyTypeService} from "../../../../../services/survey-type.service";
 import {isOppStageGreaterThanOrEqualTo} from "../../../../../model/candidate-opportunity";
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
-import {ChangePasswordComponent} from '../../../../account/change-password/change-password.component';
+import {
+  ChangePasswordComponent
+} from '../../../../account/change-password/change-password.component';
+import {AuthenticationService} from "../../../../../services/authentication.service";
 
 @Component({
   selector: 'app-candidate-profile',
@@ -73,7 +76,8 @@ export class CandidateProfileComponent implements OnInit {
               private languageLevelService: LanguageLevelService,
               private surveyTypeService: SurveyTypeService,
               private route: ActivatedRoute,
-              private modalService: NgbModal) { }
+              private modalService: NgbModal,
+              private authenticationService: AuthenticationService) { }
 
   ngOnInit() {
     const lang = this.route.snapshot.queryParams['lang'];
@@ -187,6 +191,10 @@ export class CandidateProfileComponent implements OnInit {
 
   getCountryName(country: Country) {
     return this.countries?.find(c => c.id === country?.id)?.name;
+  }
+
+  showAspirations(): boolean {
+    return this.authenticationService.isGrnInstance();
   }
 
   showRelocatedAddress(): boolean {

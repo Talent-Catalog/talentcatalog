@@ -21,6 +21,7 @@ import {
   EditCandidateAdditionalInfoComponent
 } from "./edit/edit-candidate-additional-info.component";
 import {CandidateService} from "../../../../services/candidate.service";
+import {AuthenticationService} from "../../../../services/authentication.service";
 
 @Component({
   selector: 'app-view-candidate-additional-info',
@@ -33,7 +34,8 @@ export class ViewCandidateAdditionalInfoComponent implements OnInit {
   @Input() editable: boolean;
 
   constructor(private modalService: NgbModal,
-              private candidateService: CandidateService) { }
+              private candidateService: CandidateService,
+              private authenticationService: AuthenticationService) { }
 
   ngOnInit() {
   }
@@ -52,4 +54,7 @@ export class ViewCandidateAdditionalInfoComponent implements OnInit {
 
   }
 
+  showAspirations(): boolean {
+     return this.authenticationService.isGrnInstance();
+  }
 }

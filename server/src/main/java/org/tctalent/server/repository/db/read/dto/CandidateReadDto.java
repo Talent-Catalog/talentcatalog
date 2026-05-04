@@ -57,6 +57,7 @@ public class CandidateReadDto {
     @JsonOneToOne(joinColumn = "accepted_privacy_policy_partner_id")
     private PartnerReadDto acceptedPrivacyPolicyPartner;
     private String additionalInfo;
+    private String aspirations;
     private String address1;
     private boolean allNotifications;
     private String candidateMessage;

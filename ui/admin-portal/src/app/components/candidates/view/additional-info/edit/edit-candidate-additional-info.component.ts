@@ -20,6 +20,7 @@ import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {CandidateService} from "../../../../../services/candidate.service";
 import {Candidate} from "../../../../../model/candidate";
 import {CountryService} from "../../../../../services/country.service";
+import {AuthenticationService} from "../../../../../services/authentication.service";
 
 @Component({
   selector: 'app-edit-candidate-additional-info',
@@ -39,7 +40,8 @@ export class EditCandidateAdditionalInfoComponent implements OnInit {
   constructor(private activeModal: NgbActiveModal,
               private fb: UntypedFormBuilder,
               private candidateService: CandidateService,
-              private countryService: CountryService ) {
+              private countryService: CountryService,
+              private authenticationService: AuthenticationService) {
   }
 
   ngOnInit() {
@@ -48,6 +50,7 @@ export class EditCandidateAdditionalInfoComponent implements OnInit {
     this.candidateService.get(this.candidateId).subscribe(candidate => {
       this.candidateForm = this.fb.group({
         additionalInfo: [candidate.additionalInfo],
+        aspirations: [candidate.aspirations]
       });
       this.loading = false;
     });
@@ -72,5 +75,9 @@ export class EditCandidateAdditionalInfoComponent implements OnInit {
 
   dismiss() {
     this.activeModal.dismiss(false);
+  }
+
+  showAspirations(): boolean {
+    return this.authenticationService.isGrnInstance();
   }
 }

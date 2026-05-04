@@ -40,6 +40,14 @@
         ></tc-textarea>
       </div>
 
+      <div class="mb-3" *ngIf="showAspirations()">
+        <tc-label for="'aspirations'">
+          Aspirations
+        </tc-label>
+        <tc-textarea id="aspirations"
+                     [formControlName]="'aspirations'"
+        ></tc-textarea>
+      </div>
     </form>
 
   </div>
