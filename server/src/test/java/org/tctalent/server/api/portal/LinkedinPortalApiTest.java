@@ -20,6 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
@@ -41,12 +42,16 @@ import org.tctalent.server.casi.domain.model.ServiceAssignment;
 import org.tctalent.server.casi.domain.model.ServiceCode;
 import org.tctalent.server.casi.domain.model.ServiceProvider;
 import org.tctalent.server.casi.domain.model.ServiceResource;
+import org.tctalent.server.exception.InvalidSessionException;
+import org.tctalent.server.exception.UnauthorisedActionException;
 import org.tctalent.server.model.db.User;
+import org.tctalent.server.security.AuthService;
 import org.tctalent.server.service.db.UserService;
 
 class LinkedinPortalApiTest {
 
   private static final Long CANDIDATE_ID = 123L;
+  private static final Long OTHER_CANDIDATE_ID = 456L;
   private static final String RESOURCE_CODE =
       "https://www.linkedin.com/premium/redeem/promo?coupon=ABC123";
 
@@ -55,6 +60,9 @@ class LinkedinPortalApiTest {
 
   @Mock
   private UserService userService;
+
+  @Mock
+  private AuthService authService;
 
   @InjectMocks
   private LinkedinPortalApi linkedinPortalApi;
@@ -65,6 +73,9 @@ class LinkedinPortalApiTest {
   @BeforeEach
   void setUp() {
     MockitoAnnotations.openMocks(this);
+
+    // Default: logged-in candidate matches the requested candidate
+    when(authService.getLoggedInCandidateId()).thenReturn(CANDIDATE_ID);
 
     systemAdmin = new User();
     systemAdmin.setId(1L);
@@ -90,6 +101,26 @@ class LinkedinPortalApiTest {
         .build();
   }
 
+  // checkAuthorisation Tests
+
+  @Test
+  @DisplayName("checkAuthorisation throws InvalidSessionException when not logged in")
+  void checkAuthorisationThrowsWhenNotLoggedIn() {
+    when(authService.getLoggedInCandidateId()).thenReturn(null);
+
+    assertThrows(InvalidSessionException.class,
+        () -> linkedinPortalApi.isEligible(CANDIDATE_ID));
+  }
+
+  @Test
+  @DisplayName("checkAuthorisation throws UnauthorisedActionException when candidate ID does not match")
+  void checkAuthorisationThrowsWhenCandidateIdMismatch() {
+    when(authService.getLoggedInCandidateId()).thenReturn(OTHER_CANDIDATE_ID);
+
+    assertThrows(UnauthorisedActionException.class,
+        () -> linkedinPortalApi.isEligible(CANDIDATE_ID));
+  }
+
   // isEligible Tests
 
   @Test
@@ -100,6 +131,7 @@ class LinkedinPortalApiTest {
     Boolean result = linkedinPortalApi.isEligible(CANDIDATE_ID);
 
     assertTrue(result);
+    verify(authService).getLoggedInCandidateId();
     verify(linkedInService).isEligible(CANDIDATE_ID);
   }
 
@@ -111,6 +143,7 @@ class LinkedinPortalApiTest {
     Boolean result = linkedinPortalApi.isEligible(CANDIDATE_ID);
 
     assertFalse(result);
+    verify(authService).getLoggedInCandidateId();
     verify(linkedInService).isEligible(CANDIDATE_ID);
   }
 
@@ -128,6 +161,7 @@ class LinkedinPortalApiTest {
     assertNotNull(result);
     assertEquals(CANDIDATE_ID, result.getCandidateId());
     assertEquals(ResourceStatus.RESERVED, result.getResource().getStatus());
+    verify(authService).getLoggedInCandidateId();
     verify(linkedInService).findAssignmentWithReservedOrRedeemedResource(CANDIDATE_ID);
   }
 
@@ -141,6 +175,7 @@ class LinkedinPortalApiTest {
         linkedinPortalApi.findAssignmentWithReservedOrRedeemedResource(CANDIDATE_ID);
 
     assertNull(result);
+    verify(authService).getLoggedInCandidateId();
     verify(linkedInService).findAssignmentWithReservedOrRedeemedResource(CANDIDATE_ID);
   }
 
@@ -156,6 +191,7 @@ class LinkedinPortalApiTest {
 
     assertNotNull(result);
     assertEquals(CANDIDATE_ID, result.getCandidateId());
+    verify(authService).getLoggedInCandidateId();
     verify(userService).getSystemAdminUser();
     verify(linkedInService).assignToCandidate(CANDIDATE_ID, systemAdmin);
   }
@@ -170,6 +206,7 @@ class LinkedinPortalApiTest {
     ServiceAssignment result = linkedinPortalApi.assign(CANDIDATE_ID);
 
     assertNull(result);
+    verify(authService).getLoggedInCandidateId();
     verify(linkedInService).addCandidateToAssignmentFailureList(CANDIDATE_ID, ex);
   }
 
@@ -182,8 +219,9 @@ class LinkedinPortalApiTest {
     request.setResourceCode(RESOURCE_CODE);
     request.setStatus(ResourceStatus.REDEEMED);
 
-    linkedinPortalApi.updateCouponStatus(request);
+    linkedinPortalApi.updateCouponStatus(CANDIDATE_ID, request);
 
+    verify(authService).getLoggedInCandidateId();
     verify(linkedInService).updateResourceStatus(RESOURCE_CODE, ResourceStatus.REDEEMED);
   }
 
@@ -193,6 +231,7 @@ class LinkedinPortalApiTest {
   @DisplayName("addCandidateToIssueReportList delegates assignment and comment to service")
   void addCandidateToIssueReportListDelegatesToService() {
     IssueReportRequest request = new IssueReportRequest();
+    request.setCandidateId(CANDIDATE_ID);
     request.setAssignment(assignment);
     request.setIssueComment("The coupon link did not work.");
 
@@ -201,6 +240,7 @@ class LinkedinPortalApiTest {
 
     linkedinPortalApi.addCandidateToIssueReportList(request);
 
+    verify(authService).getLoggedInCandidateId();
     verify(linkedInService).addCandidateToIssueReportList(assignment, "The coupon link did not work.");
   }
 
@@ -214,6 +254,7 @@ class LinkedinPortalApiTest {
     Boolean result = linkedinPortalApi.isOnIssueReportList(CANDIDATE_ID);
 
     assertTrue(result);
+    verify(authService).getLoggedInCandidateId();
     verify(linkedInService).isOnIssueReportList(CANDIDATE_ID);
   }
 
@@ -225,6 +266,7 @@ class LinkedinPortalApiTest {
     Boolean result = linkedinPortalApi.isOnIssueReportList(CANDIDATE_ID);
 
     assertFalse(result);
+    verify(authService).getLoggedInCandidateId();
     verify(linkedInService).isOnIssueReportList(CANDIDATE_ID);
   }
 
@@ -238,6 +280,7 @@ class LinkedinPortalApiTest {
     Boolean result = linkedinPortalApi.isOnAssignmentFailureList(CANDIDATE_ID);
 
     assertTrue(result);
+    verify(authService).getLoggedInCandidateId();
     verify(linkedInService).isOnAssignmentFailureList(CANDIDATE_ID);
   }
 
@@ -249,6 +292,7 @@ class LinkedinPortalApiTest {
     Boolean result = linkedinPortalApi.isOnAssignmentFailureList(CANDIDATE_ID);
 
     assertFalse(result);
+    verify(authService).getLoggedInCandidateId();
     verify(linkedInService).isOnAssignmentFailureList(CANDIDATE_ID);
   }
 }

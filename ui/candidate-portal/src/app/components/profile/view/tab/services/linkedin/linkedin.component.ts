@@ -76,7 +76,7 @@ export class LinkedinComponent implements OnInit {
         status: ResourceStatus.REDEEMED
       }
 
-      this.linkedinService.updateCouponStatus(request).subscribe({
+      this.linkedinService.updateCouponStatus(this.candidate.id, request).subscribe({
         next: () => {
           // Reassigning the whole object here triggers change detection.
           this.assignment = {
