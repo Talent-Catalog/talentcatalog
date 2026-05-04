@@ -42,6 +42,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.tctalent.server.logging.LogBuilder;
+import org.tctalent.server.security.AuthProfile;
 import org.tctalent.server.security.LanguageFilter;
 import org.tctalent.server.security.OAuth2UserAuthenticationConverter;
 
@@ -84,11 +85,56 @@ public class SecurityConfiguration {
     @Autowired
     private OAuth2UserAuthenticationConverter oAuth2UserAuthenticationConverter;
 
+    // IMPORTANT NOTE: This should match the list of public URL patterns in the Angular client.
+    // See the Angular code: jwt.interceptor.ts
+    private final static String[] PUBLIC_ENDPOINTS = {
+        "/",  //Used for RootRequests
+        "/api/admin/branding",
+        "/api/portal/branding",
+        "/api/portal/language/system/**",
+        "/api/portal/language/translations/**",
+        "/api/admin/terms-info/**",
+        "/api/admin/user/check-token",
+        "/api/portal/user/check-token",
+        "/api/admin/user/reset-password",
+        "/api/portal/user/reset-password",
+        "/api/admin/user/reset-password-email",
+        "/api/portal/user/reset-password-email",
+        "/api/admin/user/verify-email/**",
+        "/app/**",
+        "/backend/jobseeker",
+        "/files/**",
+        "/published/**",
+        "/status**", "/status/**",
+        "/topic", "/topic/**",
+        "/websocket", "/websocket/**",
+    };
+
     /**
      * This filter chain is specifically designed for handling registration and login requests
-     * for the portal API.
+     * for the server API.
      * <p>
-     * In this chain no attempt is made to process the JWT token. The token itself
+     * This is needed because the Oauth provider is managing user log-ins and registrations.
+     * When a registration happens, the Oauth provider supplies a JWT token to the Angular client
+     * browser, and then the browser calls this server to record the new user on the database.
+     * The normal SecurityFilterChain (see below) validates JWT tokens by looking up the user
+     * based on information in the JWT token. But that will not work for registration because
+     * the user does not yet exist in the database. Therefore, we need this separate filter chain
+     * for handling registration requests.
+     * <p>
+     * We also need to handle login requests, even though the JWT token should normally correspond
+     * to an existing user already on the database. However, it is necessary for the special use
+     * case when we are converting non-Oauth users to Oauth users. In that case, the JWT token will
+     * not be able to locate the existing user in the database in the normal way - but looking
+     * it up using the Oauth issuer and subject. Instead, we need to identify the user from their
+     * email.
+     * See the code in {@link org.tctalent.server.service.db.UserService#login(AuthProfile)} which
+     * looks up the user from the data passed in the AuthProfile object - including the
+     * user's email which is used to identify the matching user in the database and update that
+     * user's record to indicate that they are now an Oauth user. The user's record is then updated
+     * with the Oauth issuer and subject information.
+     * <p>
+     * In this chain little attempt is made to process the JWT token. The token itself
      * becomes the security principal. It just has to be a validly signed token.
      * <p>
      * <code>
@@ -123,6 +169,42 @@ public class SecurityConfiguration {
     }
 
     /**
+     * This filter chain is for public endpoints that do not require authentication.
+     *  <p>
+     * It is new for Oauth. Before Oauth public endpoints would contain JWT tokens if the client
+     * user was logged in, even though they were not required for authentication.
+     * That was unnecessary, but it was not a problem. If the user was not logged in
+     * then the JWT token would be ignored and the request would be allowed (because public
+     * endpoints are configured as "permitAll"). And if the user was
+     * logged in then the JWT token would be validated and the request would be allowed.
+     * <p>
+     * However, this processing does not work in the period between when a user is registered on the
+     * Oauth provider and when the user's record is updated in the Postgres database.
+     * During that period, the user's record will not exist in the database, so the JWT token
+     * authentication fails.
+     * <p>
+     * The cleanest solution is to eliminate this unnecessary processing.
+     * That is what this filter chain does.
+     * It just passes the request on to the next filter in the chain without any JWT processing.
+     * For additional safety, there is also modified Angular code in the JwtInterceptor which
+     * does not add JWT's to requests to public endpoints.
+     */
+    @Bean
+    @Order(2)
+    SecurityFilterChain publicSecurityFilterChain(HttpSecurity http) throws Exception {
+        http
+            .securityMatcher(PUBLIC_ENDPOINTS)
+            .cors(withDefaults())
+            .csrf(CsrfConfigurer::disable)
+            .sessionManagement(session ->
+                session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .authorizeHttpRequests(auth -> auth
+                .anyRequest().permitAll());
+
+        return http.build();
+    }
+
+    /**
      * This is the normal filter chain.
      * <p>
      * If a user cannot be looked up from the JWT token, a 401 Unauthorized response is returned.
@@ -135,7 +217,7 @@ public class SecurityConfiguration {
      * </code>
      */
     @Bean
-    @Order(2)
+    @Order(3)
     protected SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
             //Default is to use a Bean called corsConfigurationSource - defined
@@ -145,32 +227,9 @@ public class SecurityConfiguration {
             .sessionManagement(session ->
                 session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(authorize -> authorize
-                .requestMatchers("/backend/jobseeker").permitAll()
-                .requestMatchers("/api/portal/auth").permitAll()
-                .requestMatchers("/api/portal/auth/**").permitAll()
-                .requestMatchers("/api/portal/branding").permitAll()
-                .requestMatchers("/api/portal/user/reset-password-email").permitAll()
-                .requestMatchers("/api/portal/user/check-token").permitAll()
-                .requestMatchers("/api/portal/user/reset-password").permitAll()
-                .requestMatchers("/api/portal/language/system/**").permitAll()
-                .requestMatchers("/api/portal/language/translations/**").permitAll()
-                .requestMatchers("/api/portal/**").hasAnyRole("USER")
-                .requestMatchers("/api/admin/auth").permitAll()
-                .requestMatchers("/api/admin/auth/**").permitAll()
-                .requestMatchers("/api/admin/branding").permitAll()
-                .requestMatchers("/api/admin/terms-info/**").permitAll()
-                .requestMatchers("/api/admin/user/reset-password-email").permitAll()
-                .requestMatchers("/api/admin/user/check-token").permitAll()
-                .requestMatchers("/api/admin/user/reset-password").permitAll()
-                .requestMatchers("/api/admin/user/verify-email/**").permitAll()
-                .requestMatchers("/").permitAll()
-                .requestMatchers("/files/**").permitAll()
-                .requestMatchers("/published/**").permitAll()
+                .requestMatchers(PUBLIC_ENDPOINTS).permitAll()
 
-                .requestMatchers("/websocket","/websocket/**").permitAll()
-                .requestMatchers("/app/**","/app/**").permitAll()
-                .requestMatchers("/topic", "/topic/**").permitAll()
-                .requestMatchers("/status**", "/status/**").permitAll()
+                .requestMatchers("/api/portal/**").hasAnyRole("USER")
 
 
                 // DELETE: DELETE SAVE SEARCHES
