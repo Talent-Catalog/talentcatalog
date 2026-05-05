@@ -1,7 +1,6 @@
 import {Component, forwardRef} from '@angular/core';
-import {ControlValueAccessor, FormsModule, NG_VALUE_ACCESSOR} from '@angular/forms';
+import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
 import {TextParts, TextPartsCodec} from "../../../util/text-parts/text-parts";
-import {NgxWigModule} from "ngx-wig";
 
 /**
  * This component is designed to be used as a form control.
@@ -30,7 +29,6 @@ import {NgxWigModule} from "ngx-wig";
 @Component({
   selector: 'app-text-parts-input',
   standalone: true,
-  imports: [FormsModule, NgxWigModule],
   templateUrl: './text-parts-input.component.html',
 
   //This makes the component a provider for NG_VALUE_ACCESSOR, allowing it to be used as a form
@@ -45,29 +43,16 @@ import {NgxWigModule} from "ngx-wig";
   ]
 })
 export class TextPartsInputComponent implements ControlValueAccessor {
-
-  parts: TextParts = {
-    original: '',
-    tidied: '',
-    keywords: []
-  };
-
+  parts: TextParts = { original: '', tidied: '', keywords: [] };
   disabled = false;
 
   private onChange: (value: string) => void = () => {};
   private onTouched: () => void = () => {};
 
-  // Angular → Component
   writeValue(value: string | null): void {
-    this.parts = {
-      original: '',
-      tidied: '',
-      keywords: [],
-      ...TextPartsCodec.read(value)
-    };
+    this.parts = { original: '', tidied: '', keywords: [], ...TextPartsCodec.read(value) };
   }
 
-  // Component → Angular
   registerOnChange(fn: (value: string) => void): void {
     this.onChange = fn;
   }
@@ -80,24 +65,21 @@ export class TextPartsInputComponent implements ControlValueAccessor {
     this.disabled = isDisabled;
   }
 
-  // ---- UI handlers ----
-
-  updateOriginal(value: string): void {
-    this.parts.original = value;
+  updateOriginal(event: Event): void {
+    this.parts.original = this.inputValue(event);
     this.emit();
   }
 
-  updateTidied(value: string): void {
-    this.parts.tidied = value;
+  updateTidied(event: Event): void {
+    this.parts.tidied = this.inputValue(event);
     this.emit();
   }
 
-  updateKeywords(value: string): void {
-    this.parts.keywords = value
+  updateKeywords(event: Event): void {
+    this.parts.keywords = this.inputValue(event)
     .split(',')
     .map(v => v.trim())
-    .filter(v => v.length > 0);
-
+    .filter(Boolean);
     this.emit();
   }
 
@@ -111,5 +93,9 @@ export class TextPartsInputComponent implements ControlValueAccessor {
 
   private emit(): void {
     this.onChange(TextPartsCodec.write(this.parts));
+  }
+
+  private inputValue(event: Event): string {
+    return (event.target as HTMLInputElement).value;
   }
 }

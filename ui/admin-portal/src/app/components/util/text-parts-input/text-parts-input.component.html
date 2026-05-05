@@ -1,12 +1,12 @@
 <div class="text-parts-input">
-
   <div>
     <label>Original</label>
     <input
+      class="form-control"
       type="text"
       [disabled]="disabled"
-      [ngModel]="parts.original"
-      (ngModelChange)="updateOriginal($event)"
+      [value]="parts.original"
+      (input)="updateOriginal($event)"
       (blur)="onBlur()"
     />
   </div>
@@ -14,10 +14,11 @@
   <div>
     <label>Tidied</label>
     <input
+      class="form-control"
       type="text"
       [disabled]="disabled"
-      [ngModel]="parts.tidied ?? ''"
-      (ngModelChange)="updateTidied($event)"
+      [value]="parts.tidied ?? ''"
+      (input)="updateTidied($event)"
       (blur)="onBlur()"
     />
   </div>
@@ -25,13 +26,13 @@
   <div>
     <label>Keywords</label>
     <input
+      class="form-control"
       type="text"
       [disabled]="disabled"
-      [ngModel]="keywordsText()"
-      (ngModelChange)="updateKeywords($event)"
+      [value]="keywordsText()"
+      (input)="updateKeywords($event)"
       (blur)="onBlur()"
       placeholder="comma separated"
     />
   </div>
-
 </div>
