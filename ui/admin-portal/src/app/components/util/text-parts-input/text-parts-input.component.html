@@ -1,0 +1,37 @@
+<div class="text-parts-input">
+
+  <div>
+    <label>Original</label>
+    <input
+      type="text"
+      [disabled]="disabled"
+      [ngModel]="parts.original"
+      (ngModelChange)="updateOriginal($event)"
+      (blur)="onBlur()"
+    />
+  </div>
+
+  <div>
+    <label>Tidied</label>
+    <input
+      type="text"
+      [disabled]="disabled"
+      [ngModel]="parts.tidied ?? ''"
+      (ngModelChange)="updateTidied($event)"
+      (blur)="onBlur()"
+    />
+  </div>
+
+  <div>
+    <label>Keywords</label>
+    <input
+      type="text"
+      [disabled]="disabled"
+      [ngModel]="keywordsText()"
+      (ngModelChange)="updateKeywords($event)"
+      (blur)="onBlur()"
+      placeholder="comma separated"
+    />
+  </div>
+
+</div>
