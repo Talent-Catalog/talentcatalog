@@ -194,7 +194,7 @@ public class SecurityConfiguration {
 
                 // ADMIN ONLY RESTRICTIONS
                     // All OTHER DELETE end points
-                .requestMatchers(HttpMethod.DELETE, "/api/admin/**/*").hasAnyRole("SYSTEMADMIN", "ADMIN")
+                .requestMatchers(HttpMethod.DELETE, "/api/admin/**").hasAnyRole("SYSTEMADMIN", "ADMIN")
                     // Migrate database
                 .requestMatchers("/api/admin/system/migrate").hasAnyRole("SYSTEMADMIN", "ADMIN")
 
@@ -282,16 +282,18 @@ public class SecurityConfiguration {
                  * SEARCH ENDPOINTS
                  */
                 // POST: ALL SEARCHES
-                .requestMatchers(HttpMethod.POST, "/api/admin/**/search").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
+                .requestMatchers(HttpMethod.POST, "/api/admin/*/search").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
+                .requestMatchers(HttpMethod.POST, "/api/admin/*/*/search").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
+
+                // POST: ALL PAGED SEARCHES
+                .requestMatchers(HttpMethod.POST, "/api/admin/*/search-paged").hasAnyRole("SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
+                .requestMatchers(HttpMethod.POST, "/api/admin/*/*/search-paged").hasAnyRole("SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
 
                 // POST: ADD TO WATCHER
                 .requestMatchers(HttpMethod.PUT, "/api/admin/saved-search/watcher-add/*").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
 
                 // POST: REMOVE FROM WATCHER
                 .requestMatchers(HttpMethod.PUT, "/api/admin/saved-search/watcher-remove/*").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
-
-                // POST: ALL PAGED SEARCHES
-                .requestMatchers(HttpMethod.POST, "/api/admin/**/search-paged").hasAnyRole("SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
 
                 // POST: SEARCH BY NUMBER/NAME
                 .requestMatchers(HttpMethod.POST, "/api/admin/candidate/findbynumberorname").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
