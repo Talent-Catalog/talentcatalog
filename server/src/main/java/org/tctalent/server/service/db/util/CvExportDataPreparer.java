@@ -18,6 +18,7 @@ package org.tctalent.server.service.db.util;
 
 import org.springframework.stereotype.Component;
 import org.tctalent.server.model.db.Candidate;
+import org.tctalent.server.util.html.HtmlSanitizer;
 import org.tctalent.server.util.html.StringSanitizer;
 
 /**
@@ -90,8 +91,11 @@ public class CvExportDataPreparer {
       }
 
       if (jobExperience.getDescription() != null) {
-        jobExperience.setDescription(
-            StringSanitizer.normalizeUnicodeText(jobExperience.getDescription()));
+        String description =
+            StringSanitizer.normalizeUnicodeText(jobExperience.getDescription());
+        String sanitizedDescription = HtmlSanitizer.sanitize(description);
+        sanitizedDescription = StringSanitizer.replaceLsepWithBr(sanitizedDescription);
+        jobExperience.setDescription(sanitizedDescription);
       }
     });
   }
