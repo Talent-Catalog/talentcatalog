@@ -13,13 +13,44 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
+
+/**
+ * Represents the parts of some other text, including the "original" text,
+ * a "tidied" up version of the text, and keywords related to the text.
+ */
 export interface TextParts {
+  /**
+   * The original "source" text.
+   * For example, this could be text entered by a candidate.
+   */
   original: string;
+
+  /**
+   * A tidied-up version of the original text.
+   * This could be used for constructing a CV.
+   */
   tidied?: string;
+
+  /**
+   * Keywords extracted from the original text.
+   */
   keywords?: string[];
 }
 
+/**
+ * Codec (Code/Decode) for TextParts.
+ * <p>
+ * Provides methods for encoding and decoding TextParts objects to/from stored text.
+ * <p>
+ * The stored text can be either JSON or plain text.
+ * </p>
+ */
 export class TextPartsCodec {
+
+  /**
+   * Reads the given text and returns a TextParts object.
+   * @param value
+   */
   static read(value: string | null | undefined): TextParts {
     if (!value?.trim()) {
       return { original: '' };
@@ -53,6 +84,24 @@ export class TextPartsCodec {
     return { original: value };
   }
 
+  /**
+   * Writes the given TextParts object to a JSON string.
+   * <p>
+   * Note that the TextParts object is written as a simple JSON object with a single
+   * "parts" property.
+   * <p>
+   * Example:
+   * <pre>
+   * {
+   *   "parts": {
+   *     "original": "Sample text",
+   *     "tidied": "sample text",
+   *     "keywords": ["sample", "text"]
+   *   }
+   * }
+   * </pre>
+   * @param parts Parts to be written as a JSON string.
+   */
   static write(parts: TextParts): string {
     return JSON.stringify({
       parts: {
