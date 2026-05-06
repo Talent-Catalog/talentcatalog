@@ -849,6 +849,7 @@ import {CsvPreviewComponent} from "./components/casi-management/csv-preview/csv-
 import {
   TextPartsInputComponent
 } from "./components/util/text-parts-input/text-parts-input.component";
+import {TextPartsViewComponent} from "./components/util/text-parts-view/text-parts-view.component";
 
 @NgModule({
   declarations: [
@@ -1217,6 +1218,7 @@ import {
       },
     }),
     TextPartsInputComponent,
+    TextPartsViewComponent,
   ],
   providers: [
     {provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true},
