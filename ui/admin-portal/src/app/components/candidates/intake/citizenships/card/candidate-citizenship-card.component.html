@@ -50,18 +50,20 @@
 
       <ng-container *ngIf="hasSelectedNationality">
         <div class="mb-3">
-          <label class="form-label" [for]="'hasPassport'+myRecordIndex">Passport?</label>
+          <label class="form-label" [for]="'hasPassport'+myRecordIndex">Passport or Travel Document?</label>
           <ng-select class="tc-select"  [id]="'hasPassport'+myRecordIndex" [formControlName]="'citizenHasPassport'" (clear)="setNoResponse('citizenHasPassport')"
                      [items]="hasPassportOptions" [clearOnBackspace]="false"
                      placeholder="Select" bindLabel="stringValue" bindValue="key"></ng-select>
         </div>
-        <div *ngIf="hasPassport === 'ValidPassport'">
+        <div *ngIf="hasPassport === 'ValidPassport' || hasPassport === 'ValidDocument'">
           <div class="mb-3">
-            <label class="form-label" [for]="'passportExp'+myRecordIndex">Passport Expiry Date?</label>
+            <label class="form-label" [for]="'passportExp'+myRecordIndex">
+              {{hasPassport === 'ValidPassport' ? 'Passport' : 'Document'}} Expiry Date?
+            </label>
             <tc-date-picker [id]="'passportExp'+myRecordIndex" [control]="form.controls.citizenPassportExp" [allowPast]="false"></tc-date-picker>
             <div *ngIf="dateDifference()"
                  class="alert alert-danger">
-              This passport has expired since entry.
+              This {{hasPassport === 'ValidPassport' ? 'passport' : 'document'}} has expired since entry.
             </div>
           </div>
         </div>

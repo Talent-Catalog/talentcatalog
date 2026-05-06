@@ -17,7 +17,6 @@
 import {SavedSearchJoin} from './saved-search';
 
 export interface SearchCandidateRequest {
-  useOldSearch?: boolean;
   simpleQueryString?: string;
   keyword?: string;
   gender?: string;

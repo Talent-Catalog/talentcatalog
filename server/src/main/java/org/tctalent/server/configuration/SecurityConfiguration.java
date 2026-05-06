@@ -120,13 +120,11 @@ public class SecurityConfiguration {
             //below.
             .cors(withDefaults())
             .csrf(CsrfConfigurer::disable)
-            .exceptionHandling()
-                .authenticationEntryPoint(unauthorizedHandler)
-                .and()
-            .sessionManagement()
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                .and()
-            .authorizeRequests()
+            .exceptionHandling(exception ->
+                exception.authenticationEntryPoint(unauthorizedHandler))
+            .sessionManagement(session ->
+                session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .authorizeHttpRequests(authorize -> authorize
                 .requestMatchers("/backend/jobseeker").permitAll()
                 .requestMatchers("/api/portal/auth").permitAll()
                 .requestMatchers("/api/portal/auth/**").permitAll()
@@ -427,9 +425,9 @@ public class SecurityConfiguration {
                 .requestMatchers(HttpMethod.PUT, "/api/admin/**").hasAnyRole("SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED")
 
                     // GET
-                .requestMatchers(HttpMethod.GET, "/api/admin/**").hasAnyRole("SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
-
-                .and()
+                .requestMatchers(HttpMethod.GET, "/api/admin/**")
+                .hasAnyRole("SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
+            );
 
         //Commented out below code because it was causing "Too many redirects" error as described below
         //https://stackoverflow.com/questions/42715718/aws-load-balancer-err-too-many-redirects/52598630#52598630
@@ -450,8 +448,6 @@ public class SecurityConfiguration {
 //when running locally.
 //See https://www.lenar.io/force-redirect-http-to-https-in-spring-boot/
 //        .requiresChannel().requestMatchers( r -> r.getHeader("X-Forwarded-Proto") != null).requiresSecure()
-
-        ;
 
         // Add the JWT security filter
         http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);

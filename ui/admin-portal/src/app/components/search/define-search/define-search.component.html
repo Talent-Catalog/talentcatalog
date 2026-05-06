@@ -904,10 +904,6 @@
                 <i class="fa-solid fa-magnifying-glass fa-sm" style="color: #ffffff;"></i> Search
               </tc-button>
             </div>
-            <div class="col text-center">
-              <input type="checkbox" [checked]="useOldSearch" [disabled]="!searchRequest"
-                     (change)="useOldSearch = !useOldSearch"> Use old way of searching
-            </div>
           </div>
         </div>
 
@@ -918,7 +914,6 @@
   </div>
 
   <app-show-candidates *ngIf="!error && !loading"
-                       [useOldSearch]="useOldSearch"
                        [isKeywordSearch]="!isEmptySearchTerms()"
                        [candidateSource]="savedSearch"
                        [pageNumber]="pageNumber"

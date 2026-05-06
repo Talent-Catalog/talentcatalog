@@ -24,6 +24,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.tctalent.server.configuration.properties.S3Properties;
@@ -52,6 +53,8 @@ public class S3TranslationStorageService {
     private final S3Client s3Client;
     private final S3Properties s3Properties;
     private final ObjectMapper objectMapper = new ObjectMapper();
+    @Value("${tc.instance-type}")
+    private String instanceType;
 
     /**
      * Retrieves the translation JSON file for the specified language from S3 and parses it into a Map.
@@ -153,7 +156,14 @@ public class S3TranslationStorageService {
     }
 
     private String getTranslationsBucket() {
-        return s3Properties.getTranslationsBucket();
+        String configuredTranslationsBucket = s3Properties.getTranslationsBucket();
+        if (StringUtils.hasText(configuredTranslationsBucket)) {
+            return configuredTranslationsBucket;
+        }
+        if ("GRN".equalsIgnoreCase(instanceType)) {
+            return s3Properties.getGrnTranslationsBucket();
+        }
+        return s3Properties.getTbbTranslationsBucket();
     }
 
     private String getTranslationsPrefix() {

@@ -75,4 +75,22 @@ class TcPasswordEncoderTest {
     assertEquals("rawPassword cannot be null", ex.getMessage());
     verify((BCryptPasswordEncoder) tcPasswordEncoder).matches(rawPassword, encodedPassword);
   }
+
+  @Test
+  void matches_withNullEncodedPassword_returnsFalse() {
+    String rawPassword = "anything";
+
+    boolean result = tcPasswordEncoder.matches(rawPassword, null);
+
+    assertFalse(result);
+  }
+
+  @Test
+  void matches_withNullEncodedPasswordAndPreviousDefaultPassword_returnsFalse() {
+    String rawPassword = "password";
+
+    boolean result = tcPasswordEncoder.matches(rawPassword, null);
+
+    assertFalse(result);
+  }
 }

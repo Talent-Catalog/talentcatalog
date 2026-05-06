@@ -43,6 +43,7 @@ import {SavedSearchType} from "../../../model/saved-search";
 import {of, throwError} from "rxjs";
 import {LocalStorageService} from "../../../services/local-storage.service";
 import {MockCandidate} from "../../../MockData/MockCandidate";
+import {MockSavedSearch} from "../../../MockData/MockSavedSearch";
 import {By} from "@angular/platform-browser";
 import {
   CandidateSourceCandidateService
@@ -53,6 +54,8 @@ import {Candidate} from "../../../model/candidate";
 import {SavedListService} from "../../../services/saved-list.service";
 import {CandidateFieldService} from "../../../services/candidate-field.service";
 import {PublishedDocColumnService} from "../../../services/published-doc-column.service";
+import {CasiAdminService} from "../../../services/casi-admin.service";
+import {ListAction, ServiceList} from "../../../model/service-list";
 
 describe('ShowCandidatesComponent', () => {
   let component: ShowCandidatesComponent;
@@ -80,6 +83,7 @@ describe('ShowCandidatesComponent', () => {
   const mockSavedListCandidateService = jasmine.createSpyObj('SavedListCandidateService', ['mergeFromFile', 'merge', 'remove', 'getSelectionListCandidates', 'saveSelection', 'create']);
   const mockCandidateFieldService = jasmine.createSpyObj('CandidateFieldService', ['getCandidateSourceFields', 'isCandidateNameViewable']);
   const mockPublishedDocColumnService = jasmine.createSpyObj('PublishedDocColumnService', ['getColumnConfigFromAllColumns', 'getColumnConfigFromExportColumns']);
+  const mockCasiAdminService = jasmine.createSpyObj('CasiAdminService', ['getServiceList', 'performServiceListAction']);
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
@@ -109,7 +113,8 @@ describe('ShowCandidatesComponent', () => {
         {provide: CandidateSourceCandidateService, useValue: mockCandidateSourceCandidateService},
         {provide: SavedListCandidateService, useValue: mockSavedListCandidateService},
         {provide: CandidateFieldService, useValue: mockCandidateFieldService},
-        {provide: PublishedDocColumnService, useValue: mockPublishedDocColumnService}
+        {provide: PublishedDocColumnService, useValue: mockPublishedDocColumnService},
+        {provide: CasiAdminService, useValue: mockCasiAdminService}
       ]
     }).compileComponents();
   });
@@ -140,6 +145,8 @@ describe('ShowCandidatesComponent', () => {
     mockAuthorizationService.canAccessSalesforce.and.returnValue(true);
     mockAuthorizationService.canAccessGoogleDrive.and.returnValue(true);
     mockAuthorizationService.isStarredByMe.and.returnValue(false);
+    mockCasiAdminService.getServiceList.and.returnValue(of(null));
+    mockCasiAdminService.performServiceListAction.and.returnValue(of(null));
 
     // Detect changes after a short delay to ensure template binding
     setTimeout(() => {
@@ -334,5 +341,111 @@ describe('ShowCandidatesComponent', () => {
 
     expect(component.importCandidates).toHaveBeenCalled();
   });
+
+  it('should load service list when candidate source changes to a saved list', fakeAsync(() => {
+    const mockServiceList: ServiceList = {
+      id: 99,
+      provider: 'LINKEDIN',
+      serviceCode: 'PREMIUM_MEMBERSHIP',
+      listRole: 'USER_ISSUE_REPORT',
+      permittedActions: [ListAction.REASSIGN]
+    };
+    mockCandidateSourceCandidateService.searchPaged.and.returnValue(
+      of({content: [], totalElements: 0, number: 0, size: 10})
+    );
+    mockCasiAdminService.getServiceList.and.returnValue(of(mockServiceList));
+
+    component.ngOnChanges({
+      candidateSource: {
+        currentValue: component.candidateSource,
+        previousValue: null,
+        firstChange: true,
+        isFirstChange: () => true
+      }
+    });
+    tick();
+
+    expect(mockCasiAdminService.getServiceList).toHaveBeenCalledWith(component.candidateSource.id);
+    expect(component.serviceList).toEqual(mockServiceList);
+  }));
+
+  it('should not call getServiceList and set serviceList to null when source is not a saved list', fakeAsync(() => {
+    mockCandidateSourceCandidateService.searchPaged.and.returnValue(
+      of({content: [], totalElements: 0, number: 0, size: 10})
+    );
+    mockCasiAdminService.getServiceList.calls.reset();
+    component.candidateSource = new MockSavedSearch();
+
+    component.ngOnChanges({
+      candidateSource: {
+        currentValue: component.candidateSource,
+        previousValue: null,
+        firstChange: true,
+        isFirstChange: () => true
+      }
+    });
+    tick();
+
+    expect(mockCasiAdminService.getServiceList).not.toHaveBeenCalled();
+    expect(component.serviceList).toBeNull();
+  }));
+
+  it('should set serviceList to null when service list fetch fails', fakeAsync(() => {
+    mockCandidateSourceCandidateService.searchPaged.and.returnValue(
+      of({content: [], totalElements: 0, number: 0, size: 10})
+    );
+    mockCasiAdminService.getServiceList.and.returnValue(throwError('Not found'));
+
+    component.ngOnChanges({
+      candidateSource: {
+        currentValue: component.candidateSource,
+        previousValue: null,
+        firstChange: true,
+        isFirstChange: () => true
+      }
+    });
+    tick();
+
+    expect(component.serviceList).toBeNull();
+  }));
+
+  it('should set actionSuccessMessage on successful service list action', fakeAsync(() => {
+    component.serviceList = {
+      id: 99,
+      provider: 'LINKEDIN',
+      serviceCode: 'PREMIUM_MEMBERSHIP',
+      listRole: 'USER_ISSUE_REPORT',
+      permittedActions: [ListAction.REASSIGN]
+    };
+    const mockCandidate = new MockCandidate();
+    component.selectedCandidates = [mockCandidate];
+    mockCasiAdminService.performServiceListAction.and.returnValue(of(null));
+
+    component.onServiceListAction(ListAction.REASSIGN);
+    tick();
+
+    expect(mockCasiAdminService.performServiceListAction).toHaveBeenCalledWith(
+      99, ListAction.REASSIGN, [mockCandidate.candidateNumber]
+    );
+    expect(component.actionSuccessMessage).not.toBeNull();
+  }));
+
+  it('should set error and leave actionSuccessMessage null on failed service list action', fakeAsync(() => {
+    component.serviceList = {
+      id: 99,
+      provider: 'LINKEDIN',
+      serviceCode: 'PREMIUM_MEMBERSHIP',
+      listRole: 'USER_ISSUE_REPORT',
+      permittedActions: [ListAction.REASSIGN]
+    };
+    component.selectedCandidates = [new MockCandidate()];
+    mockCasiAdminService.performServiceListAction.and.returnValue(throwError('Action failed'));
+
+    component.onServiceListAction(ListAction.REASSIGN);
+    tick();
+
+    expect(component.error).toBe('Action failed');
+    expect(component.actionSuccessMessage).toBeNull();
+  }));
 
 });

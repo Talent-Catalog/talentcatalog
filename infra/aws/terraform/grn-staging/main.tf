@@ -244,7 +244,7 @@ module "grn_staging" {
   translations_bucket                   = "translations.test.globalrefugee.net"
   translations_folder                   = "translations"
   s3_region                             = "eu-west-2"
-  environment                           = "grn-staging"
+  environment                           = "staging"
   email_default                         = "-"
   email_test_override                   = "-"
   email_user                            = "-"

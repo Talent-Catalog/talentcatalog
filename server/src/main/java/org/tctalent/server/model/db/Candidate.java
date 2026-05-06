@@ -58,7 +58,6 @@ import org.tctalent.server.api.admin.SavedSearchAdminApi;
 import org.tctalent.server.api.admin.SystemAdminApi;
 import org.tctalent.server.configuration.SystemAdminConfiguration;
 import org.tctalent.server.logging.LogBuilder;
-import org.tctalent.server.model.es.CandidateEs;
 import org.tctalent.server.service.db.BackgroundProcessingService;
 import org.tctalent.server.service.db.CandidateSavedListService;
 import org.tctalent.server.util.SalesforceHelper;
@@ -245,12 +244,6 @@ public class Candidate extends AbstractAuditableDomainObject<Long> implements Ha
      * Updated in {@link #updateText}
      */
     private String text;
-
-    /**
-     * ID of corresponding candidate record in Elasticsearch
-     * @see CandidateEs#getId()
-     */
-    private String textSearchId;
 
     /**
      * Even though we would prefer CascadeType.ALL with 'orphanRemoval' so that
@@ -1290,14 +1283,6 @@ public class Candidate extends AbstractAuditableDomainObject<Long> implements Ha
 
     public void setStatus(CandidateStatus status) {
         this.status = status;
-    }
-
-    public String getTextSearchId() {
-        return textSearchId;
-    }
-
-    public void setTextSearchId(String textSearchId) {
-        this.textSearchId = textSearchId;
     }
 
     public Country getCountry() {

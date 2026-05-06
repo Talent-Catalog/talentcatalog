@@ -41,6 +41,7 @@ import java.time.OffsetDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -52,16 +53,21 @@ import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
 import org.tctalent.server.api.admin.ApiTestBase;
+import org.tctalent.server.casi.api.request.ServiceListActionRequest;
 import org.tctalent.server.casi.api.request.UpdateServiceResourceStatusRequest;
 import org.tctalent.server.casi.core.services.CandidateAssistanceService;
 import org.tctalent.server.casi.core.services.CandidateServiceRegistry;
 import org.tctalent.server.casi.core.services.CandidateServicesQueryService;
 import org.tctalent.server.casi.domain.model.AssignmentStatus;
+import org.tctalent.server.casi.domain.model.ListAction;
+import org.tctalent.server.casi.domain.model.ListRole;
 import org.tctalent.server.casi.domain.model.ResourceStatus;
 import org.tctalent.server.casi.domain.model.ServiceAssignment;
 import org.tctalent.server.casi.domain.model.ServiceCode;
 import org.tctalent.server.casi.domain.model.ServiceProvider;
 import org.tctalent.server.casi.domain.model.ServiceResource;
+import org.tctalent.server.casi.domain.persistence.ServiceListEntity;
+import org.tctalent.server.casi.domain.persistence.ServiceListRepository;
 import org.tctalent.server.exception.EntityExistsException;
 import org.tctalent.server.exception.ImportFailedException;
 import org.tctalent.server.exception.NoSuchObjectException;
@@ -79,12 +85,16 @@ class ServicesAdminControllerTest extends ApiTestBase {
   private static final String SERVICE_CODE = "TEST_PROCTORED";
   private static final Long CANDIDATE_ID = 123L;
   private static final Long LIST_ID = 456L;
+  private static final Long SAVED_LIST_ID = 789L;
+  private static final Long SERVICE_LIST_ID = 99L;
   private static final String RESOURCE_CODE = "COUPON123";
+  private static final String CANDIDATE_NUMBER = "12345";
 
   @MockBean private AuthService authService;
   @MockBean private CandidateServiceRegistry candidateServiceRegistry;
   @MockBean private CandidateServicesQueryService queryService;
   @MockBean private CandidateAssistanceService candidateAssistanceService;
+  @MockBean private ServiceListRepository serviceListRepository;
 
   @Autowired private MockMvc mockMvc;
   @Autowired private ObjectMapper objectMapper;
@@ -94,7 +104,7 @@ class ServicesAdminControllerTest extends ApiTestBase {
   private ServiceResource testResource;
   private ServiceAssignment testAssignment;
 
-  @BeforeEach
+    @BeforeEach
   void setUp() {
     configureAuthentication();
     testUser = user;
@@ -119,9 +129,27 @@ class ServicesAdminControllerTest extends ApiTestBase {
         .assignedAt(OffsetDateTime.now())
         .build();
 
+    SavedList savedList = new SavedList();
+    savedList.setId(SAVED_LIST_ID);
+
+    ServiceListEntity testServiceList = new ServiceListEntity();
+    testServiceList.setId(SERVICE_LIST_ID);
+    testServiceList.setProvider(ServiceProvider.LINKEDIN);
+    testServiceList.setServiceCode(ServiceCode.PREMIUM_MEMBERSHIP);
+    testServiceList.setListRole(ListRole.USER_ISSUE_REPORT);
+    testServiceList.setPermittedActions(Set.of(ListAction.REASSIGN));
+    testServiceList.setSavedList(savedList);
+
     given(authService.getLoggedInUser()).willReturn(Optional.of(testUser));
     given(candidateServiceRegistry.forProviderAndServiceCode(PROVIDER, SERVICE_CODE))
         .willReturn(candidateAssistanceService);
+    given(candidateServiceRegistry.forProviderAndServiceCode(
+        ServiceProvider.LINKEDIN.name(), ServiceCode.PREMIUM_MEMBERSHIP.name()))
+        .willReturn(candidateAssistanceService);
+    given(serviceListRepository.findBySavedListId(SAVED_LIST_ID))
+        .willReturn(Optional.of(testServiceList));
+    given(serviceListRepository.findById(SERVICE_LIST_ID))
+        .willReturn(Optional.of(testServiceList));
   }
 
   @Test
@@ -817,6 +845,138 @@ class ServicesAdminControllerTest extends ApiTestBase {
         .andExpect(status().isNotFound())
         .andExpect(jsonPath("$.code", is("missing_object")))
         .andExpect(jsonPath("$.message", containsString("Unknown candidate service")));
+  }
+
+  @Test
+  @DisplayName("get service list returns DTO for known saved list")
+  void getServiceListSucceeds() throws Exception {
+    mockMvc.perform(get(BASE_PATH + "/list/" + SAVED_LIST_ID)
+            .header("Authorization", "Bearer " + "jwt-token")
+            .contentType(MediaType.APPLICATION_JSON))
+
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+        .andExpect(jsonPath("$.id", is(SERVICE_LIST_ID.intValue())))
+        .andExpect(jsonPath("$.provider", is("LINKEDIN")))
+        .andExpect(jsonPath("$.serviceCode", is("PREMIUM_MEMBERSHIP")))
+        .andExpect(jsonPath("$.listRole", is("USER_ISSUE_REPORT")))
+        .andExpect(jsonPath("$.permittedActions[0]", is("REASSIGN")));
+  }
+
+  @Test
+  @DisplayName("get service list returns 404 when saved list has no service list")
+  void getServiceListReturns404WhenNotFound() throws Exception {
+    given(serviceListRepository.findBySavedListId(SAVED_LIST_ID))
+        .willReturn(Optional.empty());
+
+    mockMvc.perform(get(BASE_PATH + "/list/" + SAVED_LIST_ID)
+            .header("Authorization", "Bearer " + "jwt-token")
+            .contentType(MediaType.APPLICATION_JSON))
+
+        .andDo(print())
+        .andExpect(status().isNotFound())
+        .andExpect(jsonPath("$.code", is("missing_object")));
+  }
+
+  @Test
+  @DisplayName("perform service list action succeeds for REASSIGN")
+  void performServiceListActionSucceeds() throws Exception {
+    ServiceListActionRequest request = new ServiceListActionRequest();
+    request.setAction(ListAction.REASSIGN);
+    request.setCandidateNumbers(List.of(CANDIDATE_NUMBER));
+
+    mockMvc.perform(post(BASE_PATH + "/list/" + SERVICE_LIST_ID + "/action")
+            .with(csrf())
+            .header("Authorization", "Bearer " + "jwt-token")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(request)))
+
+        .andDo(print())
+        .andExpect(status().isOk());
+
+    verify(candidateAssistanceService).reassignForCandidate(CANDIDATE_NUMBER, testUser);
+  }
+
+  @Test
+  @DisplayName("perform service list action returns 404 when service list not found")
+  void performServiceListActionReturns404WhenServiceListNotFound() throws Exception {
+    given(serviceListRepository.findById(SERVICE_LIST_ID))
+        .willReturn(Optional.empty());
+
+    ServiceListActionRequest request = new ServiceListActionRequest();
+    request.setAction(ListAction.REASSIGN);
+    request.setCandidateNumbers(List.of(CANDIDATE_NUMBER));
+
+    mockMvc.perform(post(BASE_PATH + "/list/" + SERVICE_LIST_ID + "/action")
+            .with(csrf())
+            .header("Authorization", "Bearer " + "jwt-token")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(request)))
+
+        .andDo(print())
+        .andExpect(status().isNotFound())
+        .andExpect(jsonPath("$.code", is("missing_object")));
+  }
+
+  @Test
+  @DisplayName("perform service list action returns 401 when not logged in")
+  void performServiceListActionFailsWhenNotLoggedIn() throws Exception {
+    given(authService.getLoggedInUser()).willReturn(Optional.empty());
+
+    ServiceListActionRequest request = new ServiceListActionRequest();
+    request.setAction(ListAction.REASSIGN);
+    request.setCandidateNumbers(List.of(CANDIDATE_NUMBER));
+
+    mockMvc.perform(post(BASE_PATH + "/list/" + SERVICE_LIST_ID + "/action")
+            .with(csrf())
+            .header("Authorization", "Bearer " + "jwt-token")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(request)))
+
+        .andDo(print())
+        .andExpect(status().isUnauthorized())
+        .andExpect(jsonPath("$.code", is("invalid_session")));
+
+    verify(candidateAssistanceService, never()).reassignForCandidate(any(), any());
+  }
+
+  @Test
+  @DisplayName("perform service list action returns 400 when candidate numbers are empty")
+  void performServiceListActionFailsWithEmptyCandidateNumbers() throws Exception {
+    ServiceListActionRequest request = new ServiceListActionRequest();
+    request.setAction(ListAction.REASSIGN);
+    request.setCandidateNumbers(List.of());
+
+    mockMvc.perform(post(BASE_PATH + "/list/" + SERVICE_LIST_ID + "/action")
+            .with(csrf())
+            .header("Authorization", "Bearer " + "jwt-token")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(request)))
+
+        .andDo(print())
+        .andExpect(status().isBadRequest());
+  }
+
+  @Test
+  @DisplayName("perform service list action calls reassign for each candidate number")
+  void performServiceListActionCallsReassignForEachCandidate() throws Exception {
+    ServiceListActionRequest request = new ServiceListActionRequest();
+    request.setAction(ListAction.REASSIGN);
+    request.setCandidateNumbers(List.of("11111", "22222", "33333"));
+
+    mockMvc.perform(post(BASE_PATH + "/list/" + SERVICE_LIST_ID + "/action")
+            .with(csrf())
+            .header("Authorization", "Bearer " + "jwt-token")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(request)))
+
+        .andDo(print())
+        .andExpect(status().isOk());
+
+    verify(candidateAssistanceService).reassignForCandidate("11111", testUser);
+    verify(candidateAssistanceService).reassignForCandidate("22222", testUser);
+    verify(candidateAssistanceService).reassignForCandidate("33333", testUser);
   }
 
   @Test

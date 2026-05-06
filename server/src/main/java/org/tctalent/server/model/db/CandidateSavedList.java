@@ -16,13 +16,19 @@
 
 package org.tctalent.server.model.db;
 
+import jakarta.persistence.EmbeddedId;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.MapsId;
+import jakarta.persistence.SequenceGenerator;
+import jakarta.persistence.Table;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import org.springframework.lang.Nullable;
-
-import jakarta.persistence.*;
 
 /**
  * A candidate can appear in multiple saved lists.
@@ -51,6 +57,7 @@ import jakarta.persistence.*;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Entity
 @Table(name = "candidate_saved_list")
+@SequenceGenerator(name = "seq_gen", sequenceName = "candidate_saved_list_id_seq", allocationSize = 1)
 public class CandidateSavedList {
 
     @EqualsAndHashCode.Include

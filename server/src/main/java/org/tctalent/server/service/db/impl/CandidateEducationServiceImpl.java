@@ -88,7 +88,7 @@ public class CandidateEducationServiceImpl implements CandidateEducationService 
         candidateEducation = candidateEducationRepository.save(candidateEducation);
 
         AuditHelper.setAuditFieldsFromUser(candidate, loggedInUser);
-        candidateService.save(candidate, true);
+        candidateService.save(candidate);
 
         return candidateEducation;
     }
@@ -126,7 +126,7 @@ public class CandidateEducationServiceImpl implements CandidateEducationService 
 
         Candidate candidate = candidateEducation.getCandidate();
         AuditHelper.setAuditFieldsFromUser(candidate, loggedInUser);
-        candidateService.save(candidate, true);
+        candidateService.save(candidate);
 
         return candidateEducation;
     }
@@ -143,7 +143,7 @@ public class CandidateEducationServiceImpl implements CandidateEducationService 
         if (authService.authoriseLoggedInUser(candidate)) {
             candidateEducationRepository.delete(candidateEducation);
             AuditHelper.setAuditFieldsFromUser(candidate, loggedInUser);
-            candidateService.save(candidate, true);
+            candidateService.save(candidate);
         } else {
             throw new UnauthorisedActionException("delete");
         }

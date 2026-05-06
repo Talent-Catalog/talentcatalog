@@ -15,6 +15,7 @@ select
     'UNHCR',
     'HELP_SITE_LINK',
     'https://help.unhcr.org/pakistan/',
+    'SHARED',
     'AVAILABLE',
     'PK',
     now()

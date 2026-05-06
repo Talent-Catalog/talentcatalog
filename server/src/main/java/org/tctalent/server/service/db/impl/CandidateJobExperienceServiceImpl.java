@@ -113,7 +113,7 @@ public class CandidateJobExperienceServiceImpl implements CandidateJobExperience
         candidate.setAuditFields(user);
 
         //Save the candidate
-        candidateService.save(candidate, true, true);
+        candidateService.save(candidate, true);
 
         return jobExperience;
     }
@@ -170,7 +170,7 @@ public class CandidateJobExperienceServiceImpl implements CandidateJobExperience
         candidate = candidateJobExperience.getCandidate();
         candidate.setAuditFields(user);
 
-        candidateService.save(candidate, true, true);
+        candidateService.save(candidate, true);
 
         return candidateJobExperience;
     }
@@ -201,7 +201,7 @@ public class CandidateJobExperienceServiceImpl implements CandidateJobExperience
         candidateJobExperienceRepository.delete(candidateJobExperience);
 
         candidate.setAuditFields(user);
-        candidateService.save(candidate, true, true);
+        candidateService.save(candidate, true);
     }
 
     // Load the country from the database - throw an exception if not found

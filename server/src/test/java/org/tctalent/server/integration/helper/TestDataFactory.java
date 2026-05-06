@@ -28,6 +28,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.lang.Nullable;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.tctalent.server.files.UploadType;
 import org.tctalent.server.model.db.AttachmentType;
 import org.tctalent.server.model.db.AuditLog;
@@ -126,6 +127,7 @@ import org.tctalent.server.service.db.audit.AuditType;
  * Utility class for creating and persisting test data entities for integration testing.
  */
 public class TestDataFactory {
+  private static final String TEST_PASSWORD_HASH = new BCryptPasswordEncoder().encode("password");
 
   /**
    * Creates a new TaskImpl instance with specified or default values.
@@ -412,6 +414,7 @@ public class TestDataFactory {
     user.setLastName("blogs");
     user.setRole(Role.user);
     user.setStatus(Status.active);
+    user.setPasswordEnc(TEST_PASSWORD_HASH);
     user.setUsingMfa(false);
     PartnerImpl partner = new PartnerImpl();
     partner.setId(1L); // TBB partner

@@ -110,7 +110,7 @@ public class CandidateOccupationServiceImpl implements CandidateOccupationServic
         candidateOccupation = candidateOccupationRepository.save(candidateOccupation);
 
         candidate.setAuditFields(user);
-        candidateService.save(candidate, true);
+        candidateService.save(candidate);
 
         return candidateOccupation;
     }
@@ -143,7 +143,7 @@ public class CandidateOccupationServiceImpl implements CandidateOccupationServic
         candidateOccupationRepository.delete(candidateOccupation);
 
         candidate.setAuditFields(user);
-        candidateService.save(candidate, true);
+        candidateService.save(candidate);
     }
 
     @Override
@@ -268,7 +268,7 @@ public class CandidateOccupationServiceImpl implements CandidateOccupationServic
         }
 
         candidate.setAuditFields(candidate.getUser());
-        candidateService.save(candidate, true);
+        candidateService.save(candidate);
 
         return candidateOccupations;
     }
@@ -293,7 +293,7 @@ public class CandidateOccupationServiceImpl implements CandidateOccupationServic
 
         candidateOccupation.setAuditFields(authService.getLoggedInUser().orElse(null));
 
-        candidateService.save(candidateOccupation.getCandidate(), true);
+        candidateService.save(candidateOccupation.getCandidate());
 
         return candidateOccupationRepository.save(candidateOccupation);
 

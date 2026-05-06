@@ -10,7 +10,8 @@ spring:
       - org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration
       - org.springframework.boot.autoconfigure.data.redis.RedisRepositoriesAutoConfiguration
 jwt:
-  secret: RX4bokONoSrrNLM6CMTij9iG9jHFG5VfsN1zIi9UqDGK3pQXASG7xMEga2VrAj3P1SNmywqnWRoTXnltuJ5l+A==
+  # test-only dummy Base64 key
+  secret: 6ss8CX6p45KwLbet7/2xTMHU3zha11vmIgKlh7H6EKf8e9Hge0ic+LPN7s8NupAMVj2CpaiVdU34/f9DC01EcA==
   # This equates to 24 hours in milliseconds
   expirationInMs: 86400000
 

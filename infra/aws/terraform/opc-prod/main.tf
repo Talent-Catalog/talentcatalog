@@ -249,7 +249,7 @@ module "tc-plus-prod" {
   translations_bucket                   = "translations.tctalent.org"
   translations_folder                   = "translations"
   s3_region                             = "eu-west-2"
-  environment                           = "opc-prod"
+  environment                           = "prod"
   email_default                         = "-" # todo: confirm if used/needed
   email_test_override                   = "-" # todo: set prod value
   email_user                            = "-" # todo: confirm if used/needed

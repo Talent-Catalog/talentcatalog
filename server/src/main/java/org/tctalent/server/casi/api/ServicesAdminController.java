@@ -20,8 +20,8 @@ import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.http.MediaType;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -34,13 +34,17 @@ import org.springframework.web.multipart.MultipartFile;
 import org.tctalent.server.casi.api.dto.CountResponseDto;
 import org.tctalent.server.casi.api.dto.ImportResponseDto;
 import org.tctalent.server.casi.api.dto.ServiceAssignmentDto;
+import org.tctalent.server.casi.api.dto.ServiceListDto;
 import org.tctalent.server.casi.api.dto.ServiceResourceDto;
+import org.tctalent.server.casi.api.request.ServiceListActionRequest;
 import org.tctalent.server.casi.api.request.UpdateServiceResourceStatusRequest;
 import org.tctalent.server.casi.core.services.CandidateAssistanceService;
 import org.tctalent.server.casi.core.services.CandidateServiceRegistry;
-import org.tctalent.server.casi.domain.mappers.ServiceAssignmentMapper;
 import org.tctalent.server.casi.core.services.CandidateServicesQueryService;
+import org.tctalent.server.casi.domain.mappers.ServiceAssignmentMapper;
 import org.tctalent.server.casi.domain.mappers.ServiceResourceMapper;
+import org.tctalent.server.casi.domain.persistence.ServiceListEntity;
+import org.tctalent.server.casi.domain.persistence.ServiceListRepository;
 import org.tctalent.server.exception.EntityExistsException;
 import org.tctalent.server.exception.InvalidSessionException;
 import org.tctalent.server.exception.NoSuchObjectException;
@@ -72,6 +76,7 @@ public class ServicesAdminController {
   private final AuthService authService;
   private final CandidateServiceRegistry services;
   private final CandidateServicesQueryService queryService; // consolidated view
+  private final ServiceListRepository serviceListRepository;
 
   // Endpoint to import service resources from a file -- e.g. coupons from CSV data
   @PreAuthorize(ADMIN_ONLY)
@@ -204,6 +209,53 @@ public class ServicesAdminController {
     return CountResponseDto.builder()
         .count(count)
         .build();
+  }
+
+  // Returns the service list associated with the given saved list, or 404 if none exists
+  @GetMapping("/list/{savedListId}")
+  public ServiceListDto getServiceList(@PathVariable Long savedListId) {
+    return serviceListRepository.findBySavedListId(savedListId)
+        .map(e -> ServiceListDto.builder()
+            .id(e.getId())
+            .provider(e.getProvider())
+            .serviceCode(e.getServiceCode())
+            .listRole(e.getListRole())
+            .permittedActions(e.getPermittedActions())
+            .build())
+        .orElseThrow(() -> new NoSuchObjectException(
+            "No service list for saved list id: " + savedListId));
+  }
+
+  // Perform a ListAction on a set of candidates within a service list.
+  //
+  // DEVELOPER NOTE: when adding a new ListAction enum value, you MUST add a corresponding case
+  // to the switch expression below. The compiler will flag any missing cases — do not add a
+  // default branch, as that would suppress this safety check.
+  @PreAuthorize(ADMIN_ONLY)
+  @PostMapping("/list/{serviceListId}/action")
+  public void performServiceListAction(
+      @PathVariable Long serviceListId,
+      @Valid @RequestBody ServiceListActionRequest request)
+      throws InvalidSessionException, NoSuchObjectException {
+
+    User actor = authService.getLoggedInUser()
+        .orElseThrow(() -> new InvalidSessionException("Not logged in"));
+
+    ServiceListEntity serviceList = serviceListRepository.findById(serviceListId)
+        .orElseThrow(() -> new NoSuchObjectException("No service list with id: " + serviceListId));
+
+    CandidateAssistanceService service =
+        serviceFor(serviceList.getProvider().name(), serviceList.getServiceCode().name());
+
+    // Exhaustive switch — compiler enforces a case for every ListAction value.
+    // Do NOT add a default branch: missing cases should be a compile error, not silently ignored.
+    switch (request.getAction()) {
+      case REASSIGN -> {
+        for (String candidateNumber : request.getCandidateNumbers()) {
+          service.reassignForCandidate(candidateNumber, actor);
+        }
+      }
+    }
   }
 
   private CandidateAssistanceService serviceFor(String provider, String serviceCode) {
