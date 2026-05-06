@@ -16,6 +16,7 @@
 
 package org.tctalent.server.repository.db;
 
+import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -25,4 +26,5 @@ public interface CandidateSkillRepository extends JpaRepository<CandidateSkill, 
 
 
     Page<CandidateSkill> findByCandidateId(Long candidateId, Pageable request);
+    List<CandidateSkill> findByCandidateId(Long candidateId);
 }
