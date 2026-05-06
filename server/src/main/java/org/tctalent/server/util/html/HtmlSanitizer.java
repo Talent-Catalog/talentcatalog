@@ -17,6 +17,7 @@
 package org.tctalent.server.util.html;
 
 import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
 import org.jsoup.safety.Safelist;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
@@ -39,7 +40,7 @@ public class HtmlSanitizer {
     @Nullable
     public static String sanitize(@Nullable String html) {
         return html == null ? null :
-            StringSanitizer.removeControlCharacters(Jsoup.clean(html, Safelist.relaxed()));
+            StringSanitizer.removeControlCharacters(JSoupCleanNotPretty(html, Safelist.relaxed()));
     }
 
     /**
@@ -55,8 +56,15 @@ public class HtmlSanitizer {
     public static String sanitizeWithLinksNewTab(@Nullable String html) {
         return html == null ? null :
             StringSanitizer.removeControlCharacters(
-                Jsoup.clean(html, Safelist.relaxed().addAttributes("a", "target", "rel"))
+                JSoupCleanNotPretty(html, Safelist.relaxed()
+                                          .addAttributes("a", "target", "rel"))
             );
+    }
+
+    private static String JSoupCleanNotPretty(String html, Safelist safelist) {
+        Document.OutputSettings outputSettings = new Document.OutputSettings();
+        outputSettings.prettyPrint(false);
+        return Jsoup.clean(html, "", safelist, outputSettings);
     }
 
 }
