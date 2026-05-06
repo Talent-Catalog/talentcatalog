@@ -1,0 +1,22 @@
+<div class="text-parts-view">
+  <div class="mb-3">
+    <label class="form-label">Original</label>
+    <div class="form-control-plaintext" [innerHTML]="parts.original"></div>
+  </div>
+
+  <div class="mb-3" *ngIf="hasTidied()">
+    <label class="form-label">Tidied</label>
+    <div class="form-control-plaintext" [innerHTML]="parts.tidied"></div>
+  </div>
+
+  <div class="mb-3" *ngIf="hasKeywords()">
+    <label class="form-label">Keywords</label>
+    <div>
+      <span
+        class="badge bg-secondary me-1"
+        *ngFor="let keyword of parts.keywords">
+        {{ keyword }}
+      </span>
+    </div>
+  </div>
+</div>
