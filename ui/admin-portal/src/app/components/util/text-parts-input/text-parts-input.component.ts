@@ -1,5 +1,12 @@
-import {Component, forwardRef} from '@angular/core';
-import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
+import {Component, DestroyRef, forwardRef, inject} from '@angular/core';
+import {
+  ControlValueAccessor,
+  FormControl,
+  NG_VALUE_ACCESSOR,
+  ReactiveFormsModule
+} from '@angular/forms';
+import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
+import {NgxWigModule} from 'ngx-wig';
 import {TextParts, TextPartsCodec} from "../../../util/text-parts/text-parts";
 
 /**
@@ -20,6 +27,12 @@ import {TextParts, TextPartsCodec} from "../../../util/text-parts/text-parts";
  *     <input id="description" class="form-control" formControlName="description">
  *  </pre>
  *
+ *  or...
+ *
+ *  <pre>
+ *      <ngx-wig id="description" formControlName="description"></ngx-wig>
+ *  </pre>
+ *
  *  you can use...
  *   <pre>
  *     <app-text-parts-input formControlName="description"></app-text-parts-input>
@@ -29,28 +42,59 @@ import {TextParts, TextPartsCodec} from "../../../util/text-parts/text-parts";
 @Component({
   selector: 'app-text-parts-input',
   standalone: true,
+  imports: [
+    ReactiveFormsModule,
+    NgxWigModule
+  ],
   templateUrl: './text-parts-input.component.html',
 
   //This makes the component a provider for NG_VALUE_ACCESSOR, allowing it to be used as a form
   //control.
   //See also that the component implements ControlValueAccessor.
-  providers: [
-    {
+  providers: [{
       provide: NG_VALUE_ACCESSOR,
       useExisting: forwardRef(() => TextPartsInputComponent),
       multi: true
-    }
-  ]
+  }]
 })
 export class TextPartsInputComponent implements ControlValueAccessor {
-  parts: TextParts = { original: '', tidied: '', keywords: [] };
-  disabled = false;
+  private readonly destroyRef = inject(DestroyRef);
+
+  readonly originalControl = new FormControl<string>('', { nonNullable: true });
+  readonly tidiedControl = new FormControl<string>('', { nonNullable: true });
+  readonly keywordsControl = new FormControl<string>('', { nonNullable: true });
 
   private onChange: (value: string) => void = () => {};
   private onTouched: () => void = () => {};
+  private writingValue = false;
+
+  constructor() {
+    this.originalControl.valueChanges
+    .pipe(takeUntilDestroyed(this.destroyRef))
+    .subscribe(() => this.emitChange());
+
+    this.tidiedControl.valueChanges
+    .pipe(takeUntilDestroyed(this.destroyRef))
+    .subscribe(() => this.emitChange());
+
+    this.keywordsControl.valueChanges
+    .pipe(takeUntilDestroyed(this.destroyRef))
+    .subscribe(() => this.emitChange());
+  }
 
   writeValue(value: string | null): void {
-    this.parts = { original: '', tidied: '', keywords: [], ...TextPartsCodec.read(value) };
+    console.log("Writing value: " + value);
+
+
+    const parts = TextPartsCodec.read(value);
+
+    this.writingValue = true;
+
+    this.originalControl.setValue(parts.original ?? '', { emitEvent: false });
+    this.tidiedControl.setValue(parts.tidied ?? '', { emitEvent: false });
+    this.keywordsControl.setValue(parts.keywords?.join(', ') ?? '', { emitEvent: false });
+
+    this.writingValue = false;
   }
 
   registerOnChange(fn: (value: string) => void): void {
@@ -62,40 +106,35 @@ export class TextPartsInputComponent implements ControlValueAccessor {
   }
 
   setDisabledState(isDisabled: boolean): void {
-    this.disabled = isDisabled;
+    if (isDisabled) {
+      this.originalControl.disable({ emitEvent: false });
+      this.tidiedControl.disable({ emitEvent: false });
+      this.keywordsControl.disable({ emitEvent: false });
+    } else {
+      this.originalControl.enable({ emitEvent: false });
+      this.tidiedControl.enable({ emitEvent: false });
+      this.keywordsControl.enable({ emitEvent: false });
+    }
   }
 
-  updateOriginal(event: Event): void {
-    this.parts.original = this.inputValue(event);
-    this.emit();
-  }
-
-  updateTidied(event: Event): void {
-    this.parts.tidied = this.inputValue(event);
-    this.emit();
-  }
-
-  updateKeywords(event: Event): void {
-    this.parts.keywords = this.inputValue(event)
-    .split(',')
-    .map(v => v.trim())
-    .filter(Boolean);
-    this.emit();
-  }
-
-  keywordsText(): string {
-    return this.parts.keywords?.join(', ') ?? '';
-  }
-
-  onBlur(): void {
+  markTouched(): void {
     this.onTouched();
   }
 
-  private emit(): void {
-    this.onChange(TextPartsCodec.write(this.parts));
-  }
+  private emitChange(): void {
+    if (this.writingValue) {
+      return;
+    }
 
-  private inputValue(event: Event): string {
-    return (event.target as HTMLInputElement).value;
+    const parts: TextParts = {
+      original: this.originalControl.value,
+      tidied: this.tidiedControl.value,
+      keywords: this.keywordsControl.value
+      .split(',')
+      .map(keyword => keyword.trim())
+      .filter(keyword => keyword.length > 0)
+    };
+
+    this.onChange(TextPartsCodec.write(parts));
   }
 }

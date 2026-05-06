@@ -45,8 +45,9 @@ export class TextPartsCodec {
             : undefined
         };
       }
-    } catch {
+    } catch (error)  {
       // Legacy plain text
+      console.warn('Legacy text detected, falling back to plain text. Error:' + error);
     }
 
     return { original: value };

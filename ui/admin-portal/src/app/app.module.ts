@@ -846,6 +846,9 @@ import {
 } from "./components/casi-management/import-reference-vouchers/import-reference-vouchers.component";
 import {CasiManagementComponent} from "./components/casi-management/casi-management.component";
 import {CsvPreviewComponent} from "./components/casi-management/csv-preview/csv-preview.component";
+import {
+  TextPartsInputComponent
+} from "./components/util/text-parts-input/text-parts-input.component";
 
 @NgModule({
   declarations: [
@@ -1213,6 +1216,7 @@ import {CsvPreviewComponent} from "./components/casi-management/csv-preview/csv-
         useClass: LanguageLoader
       },
     }),
+    TextPartsInputComponent,
   ],
   providers: [
     {provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true},

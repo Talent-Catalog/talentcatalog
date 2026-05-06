@@ -1,38 +1,28 @@
 <div class="text-parts-input">
-  <div>
-    <label>Original</label>
-    <input
-      class="form-control"
-      type="text"
-      [disabled]="disabled"
-      [value]="parts.original"
-      (input)="updateOriginal($event)"
-      (blur)="onBlur()"
-    />
+  <div class="mb-3">
+    <label class="form-label">Original</label>
+    <ngx-wig
+      [formControl]="originalControl"
+      (blur)="markTouched()">
+    </ngx-wig>
   </div>
 
-  <div>
-    <label>Tidied</label>
-    <input
-      class="form-control"
-      type="text"
-      [disabled]="disabled"
-      [value]="parts.tidied ?? ''"
-      (input)="updateTidied($event)"
-      (blur)="onBlur()"
-    />
+  <div class="mb-3">
+    <label class="form-label">Tidied</label>
+    <ngx-wig
+      [formControl]="tidiedControl"
+      (blur)="markTouched()">
+    </ngx-wig>
   </div>
 
-  <div>
-    <label>Keywords</label>
+  <div class="mb-3">
+    <label class="form-label">Keywords</label>
     <input
       class="form-control"
       type="text"
-      [disabled]="disabled"
-      [value]="keywordsText()"
-      (input)="updateKeywords($event)"
-      (blur)="onBlur()"
-      placeholder="comma separated"
+      [formControl]="keywordsControl"
+      (blur)="markTouched()"
+      placeholder="electrician, wiring, maintenance"
     />
   </div>
 </div>
