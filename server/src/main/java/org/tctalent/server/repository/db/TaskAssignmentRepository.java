@@ -16,14 +16,13 @@
 
 package org.tctalent.server.repository.db;
 
+import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.tctalent.server.model.db.Status;
 import org.tctalent.server.model.db.TaskAssignmentImpl;
-
-import java.util.List;
 
 public interface TaskAssignmentRepository extends JpaRepository<TaskAssignmentImpl, Long>, JpaSpecificationExecutor<TaskAssignmentImpl> {
     @Query("select ta from TaskAssignment ta "
@@ -34,5 +33,5 @@ public interface TaskAssignmentRepository extends JpaRepository<TaskAssignmentIm
     List<TaskAssignmentImpl> findByTaskAndList(@Param("taskId") Long taskId, @Param("savedListId") Long savedListId);
 
     List<TaskAssignmentImpl> findByTask_IdAndCandidate_IdAndStatus(Long taskId, Long candidateId, Status status);
-
+    List<TaskAssignmentImpl> findByCandidate_Id(Long candidateId);
 }
