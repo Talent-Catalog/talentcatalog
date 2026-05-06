@@ -28,4 +28,5 @@ public interface CandidateSavedListRepository extends
         JpaRepository<CandidateSavedList, CandidateSavedListKey> {
 
     List<CandidateSavedList> findBySavedList_Id(Long savedListId);
+    List<CandidateSavedList> findByCandidate_Id(Long candidateId);
 }
