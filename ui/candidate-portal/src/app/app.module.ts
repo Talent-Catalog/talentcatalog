@@ -236,8 +236,14 @@ import {
 import {
   LinkedinRedeemedComponent
 } from "./components/profile/view/tab/services/linkedin/linkedin-redeemed/linkedin-redeemed.component";
-import {ReferenceComponent} from './components/profile/view/tab/services/reference/reference.component';
+import {
+  ReferenceComponent
+} from './components/profile/view/tab/services/reference/reference.component';
 import {UnhcrComponent} from './components/profile/view/tab/services/unhcr/unhcr.component';
+import {
+  TextPartsInputComponent
+} from "./components/util/text-parts-input/text-parts-input.component";
+import {TextPartsViewComponent} from "./components/util/text-parts-view/text-parts-view.component";
 
 //This is not used now - but is left here to show how the standard translation loading works.
 //See https://github.com/ngx-translate/core#configuration
@@ -368,7 +374,9 @@ export function HttpLoaderFactory(http: HttpClient) {
     NgSelectModule,
     NgxWigModule,
     QuillModule.forRoot(),
-    PickerModule
+    PickerModule,
+    TextPartsInputComponent,
+    TextPartsViewComponent
   ],
   providers: [
     {provide: RedirectGuard},

@@ -114,7 +114,7 @@
         {{ 'FORM.JOBEXPERIENCE.LABEL.DESCRIPTION' | translate }} <sup>*</sup>
       </tc-label>
 
-      <ngx-wig id="description" formControlName="description"></ngx-wig>
+      <app-text-parts-input formControlName="description"></app-text-parts-input>
 
       <app-form-control-error [control]="form.controls.description"></app-form-control-error>
     </div>
