@@ -2646,6 +2646,10 @@ public class Candidate extends AbstractAuditableDomainObject<Long> implements Ha
         return text;
     }
 
+    public void setText(String text) {
+        this.text = text;
+    }
+
     public void updateText() {
         String combinedJobText = getCandidateJobExperiences().stream()
             .map(CandidateJobExperience::getDescription)
