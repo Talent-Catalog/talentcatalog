@@ -27,7 +27,7 @@ import org.springframework.lang.Nullable;
 import org.tctalent.server.api.dto.DtoType;
 
 /**
- * Request that may include paging and sorting fields.
+ * Request that may include paging and sorting fields
  */
 @Getter
 @Setter
