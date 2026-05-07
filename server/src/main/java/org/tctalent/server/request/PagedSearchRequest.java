@@ -16,6 +16,8 @@
 
 package org.tctalent.server.request;
 
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -36,11 +38,26 @@ import org.tctalent.server.api.dto.DtoType;
 public class PagedSearchRequest {
 
     /**
+     * Maximum allowed page size to protect against excessive memory usage and heavy DB queries.
+     */
+    public static final int MAX_PAGE_SIZE = 1000;
+
+    /**
+     * Default page size used when none is provided.
+     */
+    public static final int DEFAULT_PAGE_SIZE = 25;
+
+    /**
      * If non-null Specifies the type of DTO data to be returned for each search result.
      */
     @Nullable
     private DtoType dtoType;
+
+    @Min(1)
+    @Max(MAX_PAGE_SIZE)
     private Integer pageSize;
+
+    @Min(0)
     private Integer pageNumber;
     private Sort.Direction sortDirection;
 
@@ -55,17 +72,15 @@ public class PagedSearchRequest {
     }
 
     public PageRequest getPageRequest() {
-        return PageRequest.of(
-                pageNumber != null ? pageNumber : 0,
-                pageSize != null ? pageSize : 25,
-                getSort());
+        int number = pageNumber != null ? Math.max(pageNumber, 0) : 0;
+        int size = pageSize != null ? Math.min(Math.max(pageSize, 1), MAX_PAGE_SIZE) : DEFAULT_PAGE_SIZE;
+        return PageRequest.of(number, size, getSort());
     }
 
     public PageRequest getPageRequestWithoutSort() {
-        return PageRequest.of(
-                pageNumber != null ? pageNumber : 0,
-                pageSize != null ? pageSize : 25);
-
+        int number = pageNumber != null ? Math.max(pageNumber, 0) : 0;
+        int size = pageSize != null ? Math.min(Math.max(pageSize, 1), MAX_PAGE_SIZE) : DEFAULT_PAGE_SIZE;
+        return PageRequest.of(number, size);
     }
 
     public Sort getSort() {
