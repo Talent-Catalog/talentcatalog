@@ -9,11 +9,12 @@ import {
 import {By} from '@angular/platform-browser';
 import {TextPartsInputComponent} from './text-parts-input.component';
 import {NgxWigModule} from "ngx-wig";
+import {CommonModule} from "@angular/common";
 
 @Component({
   selector: 'ngx-wig',
   standalone: true,
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule,CommonModule],
   template: `
     <textarea
       [formControl]="innerControl"
@@ -61,6 +62,7 @@ class MockNgxWigComponent implements ControlValueAccessor {
   standalone: true,
   imports: [
     ReactiveFormsModule,
+    CommonModule,
     TextPartsInputComponent
   ],
   template: `
@@ -89,6 +91,7 @@ describe('TextPartsInputComponent', () => {
       add: {
         imports: [
           ReactiveFormsModule,
+          CommonModule,
           MockNgxWigComponent
         ]
       }
