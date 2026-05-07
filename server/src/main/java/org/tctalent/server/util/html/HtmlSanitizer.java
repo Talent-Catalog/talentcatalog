@@ -61,6 +61,11 @@ public class HtmlSanitizer {
             );
     }
 
+    /**
+     * Calls JSoup.clean() with prettyPrint=false.
+     * Pretty print=true is the default but it is not needed, and it has an undesirable side effect
+     * of inserting newlines (which breaks the syntax of any encoded JSON strings).
+     */
     private static String JSoupCleanNotPretty(String html, Safelist safelist) {
         Document.OutputSettings outputSettings = new Document.OutputSettings();
         outputSettings.prettyPrint(false);
