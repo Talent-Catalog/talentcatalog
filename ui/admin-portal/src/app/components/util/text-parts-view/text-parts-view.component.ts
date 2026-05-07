@@ -21,6 +21,9 @@ import {CommonModule} from "@angular/common";
   styleUrl: './text-parts-view.component.scss'
 })
 export class TextPartsViewComponent {
+  @Input() hideKeywords: boolean = false;
+  @Input() hideTidied: boolean = false;
+
   private value?: string | null;
 
   parts: TextParts = {

@@ -1,13 +1,13 @@
 <div class="text-parts-input">
   <div class="mb-3">
-    <label class="form-label">Original</label>
+    <label *ngIf="!(hideTidied && hideKeywords)" class="form-label">Original</label>
     <ngx-wig
       [formControl]="originalControl"
       (blur)="markTouched()">
     </ngx-wig>
   </div>
 
-  <div class="mb-3">
+  <div *ngIf="!hideTidied" class="mb-3">
     <label class="form-label">Tidied</label>
     <ngx-wig
       [formControl]="tidiedControl"
@@ -15,7 +15,7 @@
     </ngx-wig>
   </div>
 
-  <div class="mb-3">
+  <div *ngIf="!hideKeywords" class="mb-3">
     <label class="form-label">Keywords</label>
     <input
       class="form-control"

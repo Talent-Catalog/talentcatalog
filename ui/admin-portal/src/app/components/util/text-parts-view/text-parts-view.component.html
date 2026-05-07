@@ -1,15 +1,15 @@
 <div class="text-parts-view">
   <div class="mb-3">
-    <label class="form-label">Original</label>
+    <label *ngIf="!(hideTidied && hideKeywords)" class="form-label">Original</label>
     <div class="form-control-plaintext" [innerHTML]="parts.original"></div>
   </div>
 
-  <div class="mb-3" *ngIf="hasTidied()">
+  <div class="mb-3" *ngIf="!hideTidied && hasTidied()">
     <label class="form-label">Tidied</label>
     <div class="form-control-plaintext" [innerHTML]="parts.tidied"></div>
   </div>
 
-  <div class="mb-3" *ngIf="hasKeywords()">
+  <div class="mb-3" *ngIf="!hideKeywords && hasKeywords()">
     <label class="form-label">Keywords</label>
     <div>
       <span

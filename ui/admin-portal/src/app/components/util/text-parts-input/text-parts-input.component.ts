@@ -1,4 +1,4 @@
-import {Component, DestroyRef, forwardRef, inject} from '@angular/core';
+import {Component, DestroyRef, forwardRef, inject, Input} from '@angular/core';
 import {
   ControlValueAccessor,
   FormControl,
@@ -58,6 +58,9 @@ import {TextParts, TextPartsCodec} from "../../../util/text-parts/text-parts";
   }]
 })
 export class TextPartsInputComponent implements ControlValueAccessor {
+  @Input() hideKeywords: boolean = false;
+  @Input() hideTidied: boolean = false;
+
   private readonly destroyRef = inject(DestroyRef);
 
   readonly originalControl = new FormControl<string>('', { nonNullable: true });
