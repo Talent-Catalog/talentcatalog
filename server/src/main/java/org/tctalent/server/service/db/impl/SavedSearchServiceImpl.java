@@ -1725,7 +1725,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
 
         String sql = extractFetchSQL(request, user, excludedCandidates, true);
         String countSql = extractCountSQL(request, user, excludedCandidates);
-
+        // DTO fetch service runs the native SQL itself, so we pass simpleQueryString here so it can bind the ?1 text search parameter.
         return candidateDtoFetchService.fetchPage(
             sql, countSql, pageRequest, request.getSimpleQueryString());
     }

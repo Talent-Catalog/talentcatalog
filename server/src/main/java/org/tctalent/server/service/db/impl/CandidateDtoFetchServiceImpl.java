@@ -83,12 +83,14 @@ public class CandidateDtoFetchServiceImpl implements CandidateDtoFetchService {
         return fetchPage(fetchIdsSql, countSql, pageRequest, null);
     }
 
+    //Added textQuery because this method creates both the ids query and the count query.
     @Override
     public Page<CandidateReadDto> fetchPage(
         String fetchIdsSql, String countSql, @NonNull PageRequest pageRequest,
         @Nullable String textQuery) {
         //Create and execute the query to return the candidate ids
         Query query = entityManager.createNativeQuery(fetchIdsSql);
+        //The ids query can include text search ranking, so we bind the text value before getResultList.
         CandidateSearchUtils.bindTextSearchParameter(query, fetchIdsSql, textQuery);
         query.setFirstResult((int) pageRequest.getOffset());
         query.setMaxResults(pageRequest.getPageSize());
@@ -152,6 +154,7 @@ public class CandidateDtoFetchServiceImpl implements CandidateDtoFetchService {
         start = end;
         //Compute count
         Query countQuery = entityManager.createNativeQuery(countSql);
+        //The count query can also have the same text search placeholder, so it needs the same binding before getSingleResult.
         CandidateSearchUtils.bindTextSearchParameter(countQuery, countSql, textQuery);
         long total =  ((Number) countQuery.getSingleResult()).longValue();
 

@@ -52,6 +52,18 @@ public interface CandidateDtoFetchService {
     Page<CandidateReadDto> fetchPage(
         String fetchIdsSql, String countSql, @NonNull PageRequest pageRequest);
 
+    /**
+     * Added textQuery here because this service creates the native query itself,
+     * so it also needs the raw simpleQueryString to bind the text search parameter.
+     *
+     * Fetches a page of Candidate DTOs from the database by executing the given SQL queries.
+     * @param fetchIdsSql Sql which just returns the ids (and possible ranks) of the candidates
+     *                    to be fetched
+     * @param countSql Sql which returns the total number of candidates matching the query
+     * @param pageRequest Page request specifying the page number and page size and sort (if any).
+     * @param textQuery This is only used when the SQL has the text search ?1 placeholder.
+     * @return Page of Candidate DTOs
+     */
     Page<CandidateReadDto> fetchPage(
         String fetchIdsSql, String countSql, @NonNull PageRequest pageRequest,
         @Nullable String textQuery);

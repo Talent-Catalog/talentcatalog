@@ -436,16 +436,20 @@ public class CandidateServiceImpl implements CandidateService {
             return null;
         }
     }
-
+    // Kept this method for old/future callers. If there is no text search value, it uses null.
     @Override
-    public @NotNull Set<Long> searchCandidatesUsingSql(String sql) {
+    @NotNull
+    public Set<Long> searchCandidatesUsingSql(String sql) {
         return searchCandidatesUsingSql(sql, null);
     }
 
+    // Added this overload for SQL that includes the text search placeholder.
     @Override
-    public @NotNull Set<Long> searchCandidatesUsingSql(
+    @NotNull
+    public Set<Long> searchCandidatesUsingSql(
         String sql, @Nullable String textQuery) {
         Query query = entityManager.createNativeQuery(sql);
+        // The SQL is already created here, so this is the place where we bind simpleQueryString safely before running it.
         CandidateSearchUtils.bindTextSearchParameter(query, sql, textQuery);
 
         final List resultList = query.getResultList();
