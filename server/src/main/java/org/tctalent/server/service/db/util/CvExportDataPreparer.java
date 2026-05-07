@@ -43,9 +43,11 @@ public class CvExportDataPreparer {
    * @return the prepared candidate instance
    */
   public Candidate prepare(Candidate candidate, Boolean showContact) {
+    // Contact fields are only cleaned when they are going to be shown in the exported file.
     if (Boolean.TRUE.equals(showContact)) {
       cleanCandidateContactInfo(candidate);
     }
+    // Job descriptions are always cleaned because they are rendered in the CV content.
     cleanCandidateJobDescriptions(candidate);
     return candidate;
   }
@@ -75,11 +77,11 @@ public class CvExportDataPreparer {
    * @param candidate the candidate whose job experience text should be normalized
    */
   private void cleanCandidateJobDescriptions(Candidate candidate) {
-    // Nothing to normalize if the candidate has no job experience records.
+    // This avoids errors when the candidate has no job experience records.
     if (candidate.getCandidateJobExperiences() == null) {
       return;
     }
-
+    // Normalize these fields to avoid strange Unicode characters showing badly in generated documents.
     candidate.getCandidateJobExperiences().forEach(jobExperience -> {
       if (jobExperience.getRole() != null) {
         jobExperience.setRole(StringSanitizer.normalizeUnicodeText(jobExperience.getRole()));
@@ -93,7 +95,9 @@ public class CvExportDataPreparer {
       if (jobExperience.getDescription() != null) {
         String description =
             StringSanitizer.normalizeUnicodeText(jobExperience.getDescription());
+        // The description may contain HTML, so sanitizing it before it is used in export output.
         String sanitizedDescription = HtmlSanitizer.sanitize(description);
+        // Keeping line breaks readable after sanitizing the description.
         sanitizedDescription = StringSanitizer.replaceLsepWithBr(sanitizedDescription);
         jobExperience.setDescription(sanitizedDescription);
       }

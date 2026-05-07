@@ -53,6 +53,9 @@ public class PdfHelper {
 
     private final TemplateEngine pdfTemplateEngine;
     private final TcInstanceService tcInstanceService;
+    /**
+     * Added this shared preparer so PDF and DOCX exports clean candidate data in the same way before rendering.
+     */
     private final CvExportDataPreparer cvExportDataPreparer;
     /**
      * Note - we can't use Lombok RequiredArgsConstructor because currently Lombok doesn't copy
@@ -78,6 +81,7 @@ public class PdfHelper {
      */
     public Resource generatePdf(Candidate candidate, Boolean showName, Boolean showContact){
         try {
+            // Prepare the candidate before rendering the PDF, so contact fields and job descriptions are cleaned before they go into the template.
             candidate = cvExportDataPreparer.prepare(candidate, showContact);
 
             Context context = new Context();

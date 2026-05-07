@@ -71,6 +71,8 @@ public class DocxHelper {
     try (XWPFDocument document = new XWPFDocument();
         ByteArrayOutputStream out = new ByteArrayOutputStream()) {
 
+      // DOCX uses the same export preparation as PDF, so both formats clean candidate data consistently.
+      // Prepare the candidate first so all sections use cleaned data.
       candidate = cvExportDataPreparer.prepare(candidate, showContact);
 
       addTitle(document, candidate, showName);

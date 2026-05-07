@@ -25,6 +25,7 @@ import org.tctalent.server.model.db.CandidateEducation;
 import org.tctalent.server.model.db.CandidateJobExperience;
 
 /**
+ * Kept DOCX formatting in a separate class so DocxHelper can focus on writing the Word document structure.
  * Formats candidate CV data into display-ready text for DOCX export.
  *
  * <p>This component centralizes text formatting logic used when generating
@@ -119,7 +120,7 @@ public class CvDocxFormatter {
 
   /**
    * Builds a formatted company and country line for a job experience record.
-   *
+   * Added this small helper to avoid repeated null and blank checks in the formatter methods.
    * @param experience the job experience
    * @return a formatted company-country string
    */
@@ -132,7 +133,7 @@ public class CvDocxFormatter {
 
   /**
    * Converts HTML content into plain text for DOCX export.
-   *
+   * DOCX should receive plain text here, so I convert sanitized HTML descriptions before writing them.
    * @param html the HTML content
    * @return plain text extracted from the HTML, or an empty string if the input is null
    */
