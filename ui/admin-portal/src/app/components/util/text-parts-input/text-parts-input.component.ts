@@ -86,9 +86,6 @@ export class TextPartsInputComponent implements ControlValueAccessor {
   }
 
   writeValue(value: string | null): void {
-    console.log("Writing value: " + value);
-
-
     const parts = TextPartsCodec.read(value);
 
     this.writingValue = true;
