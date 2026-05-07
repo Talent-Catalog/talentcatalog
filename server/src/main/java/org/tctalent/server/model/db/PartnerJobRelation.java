@@ -21,6 +21,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.MapsId;
+import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -49,6 +50,7 @@ import lombok.ToString;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Entity
 @Table(name = "partner_job")
+@SequenceGenerator(name = "seq_gen", sequenceName = "partner_job_id_seq", allocationSize = 1)
 public class PartnerJobRelation {
 
     /**
