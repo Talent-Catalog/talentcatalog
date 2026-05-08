@@ -208,8 +208,8 @@ public class CandidateErasureServiceImpl implements CandidateErasureService {
   ) {
     String confirmation = request.getConfirmationCandidateNumber();
 
-    if (StringUtils.hasText(confirmation)
-        && !confirmation.trim().equals(candidate.getCandidateNumber())) {
+    if (!StringUtils.hasText(confirmation)
+        || !confirmation.trim().equals(candidate.getCandidateNumber())) {
       throw new InvalidRequestException(
           "Candidate number confirmation does not match the selected candidate.");
     }

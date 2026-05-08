@@ -293,8 +293,8 @@ class CandidateErasureServiceImplTest {
   }
 
   @Test
-  void eraseCandidate_shouldThrowInvalidRequestException_whenCandidateNumberDoesNotMatch() {
-    request.setConfirmationCandidateNumber("wrong-number");
+  void eraseCandidate_shouldThrowInvalidRequestException_whenCandidateNumberConfirmationIsBlank() {
+    request.setConfirmationCandidateNumber(" ");
 
     when(authService.getLoggedInUser()).thenReturn(Optional.of(actor));
     when(candidateRepository.findById(CANDIDATE_ID)).thenReturn(Optional.of(candidate));
