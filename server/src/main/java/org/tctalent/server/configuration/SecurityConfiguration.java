@@ -135,6 +135,7 @@ public class SecurityConfiguration {
                 .requestMatchers("/api/portal/language/system/**").permitAll()
                 .requestMatchers("/api/portal/language/translations/**").permitAll()
                 .requestMatchers("/api/portal/**").hasAnyRole("USER")
+                .requestMatchers("/api/chatbot/**").hasAnyRole("USER")
                 .requestMatchers("/api/admin/auth").permitAll()
                 .requestMatchers("/api/admin/auth/**").permitAll()
                 .requestMatchers("/api/admin/branding").permitAll()
