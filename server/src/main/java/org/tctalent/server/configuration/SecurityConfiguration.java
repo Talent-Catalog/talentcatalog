@@ -41,7 +41,7 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.security.AuthProfile;
-import org.tctalent.server.security.JwtAuthenticationEntryPoint;
+import org.tctalent.server.security.AuthenticationErrorEntryPoint;
 import org.tctalent.server.security.LanguageFilter;
 import org.tctalent.server.security.OAuth2UserAuthenticationConverter;
 
@@ -82,7 +82,7 @@ public class SecurityConfiguration {
     private Environment env;
 
     @Autowired
-    private JwtAuthenticationEntryPoint unauthorizedHandler;
+    private AuthenticationErrorEntryPoint unauthorizedHandler;
 
     @Autowired
     private OAuth2UserAuthenticationConverter oAuth2UserAuthenticationConverter;
@@ -571,11 +571,6 @@ public class SecurityConfiguration {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;
-    }
-
-    @Bean
-    public JwtAuthenticationFilter jwtAuthenticationFilter() {
-        return new JwtAuthenticationFilter();
     }
 
     @Bean
