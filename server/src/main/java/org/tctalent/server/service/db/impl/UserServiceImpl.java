@@ -491,6 +491,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User login(AuthProfile profile) {
+        //TODO JC Any Exception should log out the user on IDP
+
         Partner systemPartner = partnerService.getPartnerFromAbbreviation(SYSTEM_PARTNER_ABBREVIATION);
         if (systemPartner == null) {
             throw new IllegalStateException("System partner not found");

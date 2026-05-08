@@ -1102,6 +1102,10 @@ public class CandidateServiceImpl implements CandidateService {
     @Transactional
     @Override
     public Candidate register(OauthRegistrationRequest request, @NotNull HttpServletRequest httpRequest) {
+        //TODO JC Any Exception should log out the user on IDP. Logout can happen from Angular
+        //TODO JC Some exceptions may need to delete the user on IDP?
+
+
         AuthProfile profile = request.getProfile();
 
         validateEmail(null, profile.getEmail());
