@@ -363,7 +363,6 @@ public class CandidateErasureServiceImpl implements CandidateErasureService {
       opportunity.setNextStep(null);
       opportunity.setNextStepDueDate(null);
       opportunity.setName(null);
-      opportunity.setSfId(null);
     }
 
     candidateOpportunityRepository.saveAll(opportunities);
@@ -805,7 +804,6 @@ public class CandidateErasureServiceImpl implements CandidateErasureService {
     candidate.setFolderlinkMedical(null);
     candidate.setFolderlinkQualification(null);
     candidate.setFolderlinkRegistration(null);
-    candidate.setSflink(null);
     candidate.setVideolink(null);
     candidate.setExternalId(null);
     candidate.setExternalIdSource(null);

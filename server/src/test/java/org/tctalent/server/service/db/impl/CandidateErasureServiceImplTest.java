@@ -350,7 +350,7 @@ class CandidateErasureServiceImplTest {
     assertNull(candidate.getNationality());
     assertNull(candidate.getBirthCountry());
     assertNull(candidate.getFolderlink());
-    assertNull(candidate.getSflink());
+    assertEquals("salesforce", candidate.getSflink());
     assertNull(candidate.getVideolink());
     assertNull(candidate.getExternalId());
     assertNull(candidate.getExternalIdSource());
@@ -636,7 +636,7 @@ class CandidateErasureServiceImplTest {
     assertNull(opportunity.getNextStep());
     assertNull(opportunity.getNextStepDueDate());
     assertNull(opportunity.getName());
-    assertNull(opportunity.getSfId());
+    assertEquals("sf-id", opportunity.getSfId());
 
     assertNull(taskAssignment.getCandidateNotes());
     assertEquals(Status.deleted, taskAssignment.getStatus());
