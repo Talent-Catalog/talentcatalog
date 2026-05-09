@@ -1689,7 +1689,7 @@ public class CandidateServiceImpl implements CandidateService {
         candidate.setAuditFields(candidate.getUser());
         return save(candidate);
     }
-    
+
     @Override
     public Optional<Candidate> getLoggedInCandidateLoadCandidateOccupations() {
         Long candidateId = authService.getLoggedInCandidateId();
@@ -3338,24 +3338,5 @@ public class CandidateServiceImpl implements CandidateService {
                         currentRelocatedAddressFull + " to " + requestRelocatedAddressFull));
             }
         }
-    }
-
-    /**
-     * TBB eligibility allows candidates whose country of residence differs from nationality.
-     * Afghanistan and Ukraine are explicit exceptions where same country/nationality is allowed.
-     *
-     * This rule is TBB-specific and must not be used to reject GRN registrations.
-     */
-    private boolean isTbbCountryNationalityEligible(Candidate candidate) {
-        if (candidate.getCountry() == null || candidate.getNationality() == null) {
-            return true;
-        }
-
-        Long countryId = candidate.getCountry().getId();
-        Long nationalityId = candidate.getNationality().getId();
-
-        return !Objects.equals(countryId, nationalityId)
-            || Objects.equals(countryId, (long) afghanistanCountryId)
-            || Objects.equals(countryId, (long) ukraineCountryId);
     }
 }
