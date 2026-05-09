@@ -1652,7 +1652,7 @@ public class CandidateServiceImpl implements CandidateService {
     @Override
     public Candidate submitRegistration(SubmitRegistrationRequest request) {
         Candidate candidate = getLoggedInCandidate()
-                .orElseThrow(() -> new InvalidSessionException("Not logged in"));
+            .orElseThrow(() -> new InvalidSessionException("Not logged in"));
 
         final String acceptedPrivacyPolicyId = request.getAcceptedPrivacyPolicyId();
         updatePolicyId(acceptedPrivacyPolicyId, candidate);
@@ -1661,40 +1661,35 @@ public class CandidateServiceImpl implements CandidateService {
         // Don't update status to pending if status is already pending
         final CandidateStatus candidateStatus = candidate.getStatus();
         if (!candidateStatus.equals(CandidateStatus.pending)) {
-            UpdateCandidateStatusInfo info = new UpdateCandidateStatusInfo();
+            if (candidate.getNationality() != candidate.getCountry() ||
+                candidate.getCountry().getId() == afghanistanCountryId ||
+                candidate.getCountry().getId() == ukraineCountryId
+            ) {
+                UpdateCandidateStatusInfo info = new UpdateCandidateStatusInfo();
 
-            /*
-             * If the candidate is in an active status make them inactive if they are in a destination
-             * country. If they are already inactive, leave them alone.
-             * The country/nationality eligibility rule is TBB-specific.
-             *
-             * GRN accepts refugee registrations even if the candidate is already relocated
-             * or located in what TC/TBB considers a destination country. Therefore GRN should
-             * not mark candidates ineligible here.
-             */
-            if (!tcInstanceService.isTBB() || isTbbCountryNationalityEligible(candidate)) {
-
-                // Only set status to pending if current status is draft. This addresses the case
-                // where a candidate's status has been changed from draft by an admin while the
-                // candidate is still registering. In that case, don't override the admin's status.
+                //Only set status to pending if current status is draft. This addresses the case
+                //where a candidate's status has been changed from draft (the normal status during
+                //registration) by an admin while the candidate is still in the process of registering.
+                //In that case we don't want to override the admin's status with pending once
+                //the submission (at the end of registration) finally happens.
                 if (candidateStatus.equals(CandidateStatus.draft)) {
                     info.setStatus(CandidateStatus.pending);
                 } else {
                     info.setStatus(candidateStatus);
                 }
-
                 info.setComment("Candidate submitted");
+                candidate = updateCandidateStatus(candidate, info);
             } else {
+                UpdateCandidateStatusInfo info = new UpdateCandidateStatusInfo();
                 info.setStatus(CandidateStatus.ineligible);
                 info.setComment("TC criteria not met: Country located is same as country of nationality.");
+                candidate = updateCandidateStatus(candidate, info);
             }
-          candidate = updateCandidateStatus(candidate, info);
         }
-
         candidate.setAuditFields(candidate.getUser());
         return save(candidate);
     }
-
+    
     @Override
     public Optional<Candidate> getLoggedInCandidateLoadCandidateOccupations() {
         Long candidateId = authService.getLoggedInCandidateId();
@@ -3016,28 +3011,23 @@ public class CandidateServiceImpl implements CandidateService {
      */
     private CandidateStatus checkForAutomaticStatusChanges(
         long countryReqId, long nationalityReqId, Candidate candidate) {
+        // GRN should not automatically change status when country or nationality changes.
+        if (tcInstanceService.isGRN()) {
+            return null;
+        }
+
         CandidateStatus newStatus = null;
 
-        /*
-         * Destination-country relocation logic is TBB-specific.
-         *
-         * GRN accepts refugees even if they are already relocated or currently located
-         * in a destination country, so do not automatically mark GRN candidates as
-         * relocatedIndependently.
-         */
-        if (tcInstanceService.isTBB() && !candidate.getStatus().isInactive()) {
+        //If the candidate is in an active status make them inactive if they are in a destination
+        //country. If they are already inactive, leave them alone.
+        if (!candidate.getStatus().isInactive()) {
             if (countryService.isTCDestination(countryReqId)) {
                 newStatus = CandidateStatus.relocatedIndependently;
             }
         } else {
-            /* If candidate pending, but they are updating country & nationality as same. Change to ineligible.
-             * EXCEPTION: UNLESS AFGHAN IN AFGHANISTAN or Ukrainian in Ukraine
-             * Same country/nationality ineligibility is also TBB-specific.
-             *
-             * GRN candidates should not be marked ineligible
-             * just because their country and nationality are the same.
-             */
-            if (tcInstanceService.isTBB() && candidate.getStatus() == CandidateStatus.pending) {
+            // If candidate pending, but they are updating country & nationality as same. Change to ineligible.
+            // EXCEPTION: UNLESS AFGHAN IN AFGHANISTAN or Ukrainian in Ukraine
+            if (candidate.getStatus() == CandidateStatus.pending) {
                 if (countryReqId == nationalityReqId
                     && countryReqId != afghanistanCountryId && countryReqId != ukraineCountryId) {
                     newStatus = CandidateStatus.ineligible;
@@ -3055,11 +3045,6 @@ public class CandidateServiceImpl implements CandidateService {
                     } else if (countryReqId == afghanistanCountryId || countryReqId == ukraineCountryId) {
                         //or if country and nationality are the same, but either Afghanistan or Ukraine
                         //that can also be changed to pending.
-                        newStatus = CandidateStatus.pending;
-                    }
-                    else if (!tcInstanceService.isTBB()) {
-                        // GRN should not keep candidates ineligible due to the TBB-only
-                        // country/nationality rule.
                         newStatus = CandidateStatus.pending;
                     }
                 }
