@@ -519,7 +519,9 @@ export enum DependantRelations {
 export enum HasPassport {
   ValidPassport = "Has valid passport",
   InvalidPassport = "Has invalid passport",
-  NoPassport = "No passport"
+  ValidDocument = "Has valid travel document",
+  InvalidDocument = "Has invalid travel document",
+  NoPassport = "No passport or travel document"
 }
 
 export enum TBBEligibilityAssessment {

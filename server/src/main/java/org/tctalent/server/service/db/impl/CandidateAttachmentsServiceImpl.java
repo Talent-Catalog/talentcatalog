@@ -142,7 +142,7 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
         // Create a record of the attachment
         CandidateAttachment attachment = new CandidateAttachment();
         storedFileMapper.updateCandidateAttachment(attachment, request);
-
+        attachment.setFolder(request.getFolder());
         //Add extras
         attachment.setActive(true);
         attachment.setCandidate(candidate);
@@ -438,6 +438,7 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
         CreateCandidateAttachmentRequest attachmentRequest = new CreateCandidateAttachmentRequest();
         attachmentRequest.setType(AttachmentType.grnfile);
         attachmentRequest.setCandidateId(candidate.getId());
+        attachmentRequest.setFolder(subfolderName);
         storedFileMapper.updateCreateCandidateAttachmentRequest(attachmentRequest, storedFileInfo);
 
         return attachmentRequest;
@@ -521,6 +522,7 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
         req.setFileType(fileType);
         req.setUrl(uploadedFile.getUrl());
         req.setUploadType(uploadType);
+        req.setFolder(subfolderName);
         if(StringUtils.hasText(textExtract)) {
             req.setTextExtract(textExtract);
         }
