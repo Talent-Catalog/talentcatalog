@@ -64,6 +64,7 @@ export interface UpdateServiceResourceStatusRequest {
 }
 
 export interface IssueReportRequest {
+  candidateId: number;
   assignment: ServiceAssignment;
   issueComment: string;
 }

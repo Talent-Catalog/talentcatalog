@@ -209,10 +209,10 @@ describe('LinkedinComponent', () => {
 
       component.redeem();
 
-      expect(mockLinkedinService.updateCouponStatus).toHaveBeenCalledWith({
-        resourceCode: mockAssignment.resource.resourceCode,
-        status: ResourceStatus.REDEEMED,
-      });
+      expect(mockLinkedinService.updateCouponStatus).toHaveBeenCalledWith(
+        123,
+        {resourceCode: mockAssignment.resource.resourceCode, status: ResourceStatus.REDEEMED}
+      );
       expect(window.open).toHaveBeenCalledWith(mockAssignment.resource.resourceCode, '_blank');
       expect(component.assignment.resource.status).toBe(ResourceStatus.REDEEMED);
       expect(component.loading).toBeFalse();

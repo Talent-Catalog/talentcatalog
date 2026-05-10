@@ -84,9 +84,9 @@ describe('LinkedinService', () => {
       status: ResourceStatus.REDEEMED,
     };
 
-    service.updateCouponStatus(request).subscribe();
+    service.updateCouponStatus(CANDIDATE_ID, request).subscribe();
 
-    const req = httpMock.expectOne(`${BASE_URL}/update-coupon-status`);
+    const req = httpMock.expectOne(`${BASE_URL}/${CANDIDATE_ID}/update-coupon-status`);
     expect(req.request.method).toBe('PUT');
     expect(req.request.body).toEqual(request);
     req.flush(null);
@@ -94,6 +94,7 @@ describe('LinkedinService', () => {
 
   it('should call addCandidateToIssueReportList endpoint with POST and IssueReportRequest body', () => {
     const request: IssueReportRequest = {
+      candidateId: CANDIDATE_ID,
       assignment: mockAssignment,
       issueComment: 'The coupon link did not work.',
     };
