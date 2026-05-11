@@ -1,25 +1,36 @@
 package org.tctalent.server.api.portal;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.Map;
-import javax.security.auth.login.AccountLockedException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mock.web.MockHttpServletRequest;
 import org.tctalent.server.configuration.TranslationConfig;
-import org.tctalent.server.exception.*;
+import org.tctalent.server.exception.InvalidCredentialsException;
+import org.tctalent.server.model.db.Candidate;
+import org.tctalent.server.model.db.TcInstanceType;
+import org.tctalent.server.model.db.User;
 import org.tctalent.server.request.AuthenticateInContextTranslationRequest;
-import org.tctalent.server.request.LoginRequest;
-import org.tctalent.server.request.candidate.SelfRegistrationRequest;
-import org.tctalent.server.response.JwtAuthenticationResponse;
+import org.tctalent.server.request.candidate.OauthRegistrationRequest;
+import org.tctalent.server.response.AuthenticationResponse;
+import org.tctalent.server.security.AuthProfile;
 import org.tctalent.server.service.db.CandidateService;
 import org.tctalent.server.service.db.UserService;
+import org.tctalent.server.service.db.impl.TcInstanceService;
 
 class AuthPortalApiTest {
 
@@ -30,10 +41,10 @@ class AuthPortalApiTest {
   private CandidateService candidateService;
 
   @Mock
-  private TranslationConfig translationConfig;
+  private TcInstanceService tcInstanceService;
 
   @Mock
-  private HttpServletRequest httpRequest;
+  private TranslationConfig translationConfig;
 
   @InjectMocks
   private AuthPortalApi authPortalApi;
@@ -41,6 +52,9 @@ class AuthPortalApiTest {
   @BeforeEach
   void setUp() {
     MockitoAnnotations.openMocks(this);
+
+    //Assume that the instance type is GRN
+    when(tcInstanceService.getInstanceType()).thenReturn(TcInstanceType.GRN);
   }
 
   @Test
@@ -82,180 +96,97 @@ class AuthPortalApiTest {
   }
 
   @Test
-  void testLogin_Success() throws Exception {
-    LoginRequest request = new LoginRequest();
-    request.setUsername("user@example.com");
-    request.setPassword("password");
-    JwtAuthenticationResponse jwtResponse = createSampleJwtResponse();
-    when(userService.login(request)).thenReturn(jwtResponse);
+  void testLogin_Success() {
+    User user = createSampleUser();
+    AuthProfile authProfile = new AuthProfile();
+    when(userService.login(authProfile)).thenReturn(user);
+    AuthenticationResponse response = createSampleAuthenticationResponse(user);
+    when(userService.createAuthenticationResponse(user)).thenReturn(response);
 
-    Map<String, Object> result = authPortalApi.login(request);
+    Map<String, Object> result = authPortalApi.login(authProfile);
 
     assertNotNull(result);
-    assertEquals("access_token", result.get("accessToken"));
-    assertEquals("Bearer", result.get("tokenType"));
+    assertEquals(false, result.get("canViewChats"));
+    assertEquals(TcInstanceType.GRN, result.get("tcInstanceType"));
     Map<?, ?> userDto = (Map<?, ?>) result.get("user");
     assertEquals(1L, userDto.get("id"));
-    assertEquals("user@example.com", userDto.get("username"));
     assertEquals("user@example.com", userDto.get("email"));
-    verify(userService).login(request);
+    verify(userService).login(authProfile);
+    verify(userService).createAuthenticationResponse(user);
   }
 
+  //Test that any exception thrown by the user service is propagated to the login method
   @Test
-  void testLogin_AccountLockedException() throws Exception {
-    LoginRequest request = new LoginRequest();
-    when(userService.login(any(LoginRequest.class))).thenThrow(
-        new AccountLockedException("Account locked"));
+  void testLogin_Exception() {
+    AuthProfile authProfile = new AuthProfile();
+    when(userService.login(any(AuthProfile.class))).thenThrow(
+        new RuntimeException("Some exception"));
 
-    AccountLockedException exception = assertThrows(
-        AccountLockedException.class,
-        () -> authPortalApi.login(request)
+    RuntimeException exception = assertThrows(
+        RuntimeException.class,
+        () -> authPortalApi.login(authProfile)
     );
-    assertEquals("Account locked", exception.getMessage());
-    verify(userService).login(request);
-  }
-
-  @Test
-  void testLogin_PasswordExpiredException() throws Exception {
-    LoginRequest request = new LoginRequest();
-    when(userService.login(any(LoginRequest.class))).thenThrow(
-        new PasswordExpiredException("Password expired"));
-
-    PasswordExpiredException exception = assertThrows(
-        PasswordExpiredException.class,
-        () -> authPortalApi.login(request)
-    );
-    assertEquals("Password expired", exception.getMessage());
-    verify(userService).login(request);
-  }
-
-  @Test
-  void testLogin_InvalidCredentialsException() throws Exception {
-    LoginRequest request = new LoginRequest();
-    when(userService.login(any(LoginRequest.class))).thenThrow(
-        new InvalidCredentialsException("Invalid credentials"));
-
-    InvalidCredentialsException exception = assertThrows(
-        InvalidCredentialsException.class,
-        () -> authPortalApi.login(request)
-    );
-    assertEquals("Invalid credentials", exception.getMessage());
-    verify(userService).login(request);
-  }
-
-  @Test
-  void testLogin_InvalidPasswordFormatException() throws Exception {
-    LoginRequest request = new LoginRequest();
-    when(userService.login(any(LoginRequest.class))).thenThrow(
-        new InvalidPasswordFormatException("Invalid password format"));
-
-    InvalidPasswordFormatException exception = assertThrows(
-        InvalidPasswordFormatException.class,
-        () -> authPortalApi.login(request)
-    );
-    assertEquals("Invalid password format", exception.getMessage());
-    verify(userService).login(request);
-  }
-
-  @Test
-  void testLogin_UserDeactivatedException() throws Exception {
-    LoginRequest request = new LoginRequest();
-    when(userService.login(any(LoginRequest.class))).thenThrow(
-        new UserDeactivatedException("User deactivated"));
-
-    UserDeactivatedException exception = assertThrows(
-        UserDeactivatedException.class,
-        () -> authPortalApi.login(request)
-    );
-    assertEquals("User deactivated", exception.getMessage());
-    verify(userService).login(request);
-  }
-
-  @Test
-  void testLogin_ReCaptchaInvalidException() throws Exception {
-    LoginRequest request = new LoginRequest();
-    when(userService.login(any(LoginRequest.class))).thenThrow(
-        new ReCaptchaInvalidException("Invalid reCAPTCHA"));
-
-    ReCaptchaInvalidException exception = assertThrows(
-        ReCaptchaInvalidException.class,
-        () -> authPortalApi.login(request)
-    );
-    assertEquals("Invalid reCAPTCHA", exception.getMessage());
-    verify(userService).login(request);
+    assertEquals("Some exception", exception.getMessage());
+    verify(userService).login(authProfile);
   }
 
   @Test
   void testLogout_Success() {
     ResponseEntity<Void> response = authPortalApi.logout();
 
-    assertEquals(200, response.getStatusCodeValue());
+    assertEquals(HttpStatusCode.valueOf(200), response.getStatusCode());
     assertNull(response.getBody());
     verify(userService).logout();
   }
 
   @Test
-  void testRegister_Success() throws Exception {
-    SelfRegistrationRequest request = new SelfRegistrationRequest();
-    request.setEmail("user@example.com");
-    LoginRequest loginRequest = new LoginRequest();
-    loginRequest.setUsername("user@example.com");
-    JwtAuthenticationResponse jwtResponse = createSampleJwtResponse();
-    when(candidateService.register(request, httpRequest)).thenReturn(loginRequest);
-    when(userService.login(loginRequest)).thenReturn(jwtResponse);
+  void testRegister_Success() {
+    User user = createSampleUser();
+    Candidate candidate = createSampleCandidate(user);
+    OauthRegistrationRequest registrationRequest = new OauthRegistrationRequest();
+    HttpServletRequest httpRequest = new MockHttpServletRequest();
+    when(candidateService.register(registrationRequest, httpRequest)).thenReturn(candidate);
+    AuthenticationResponse response = createSampleAuthenticationResponse(user);
+    when(userService.createAuthenticationResponse(user)).thenReturn(response);
 
-    Map<String, Object> result = authPortalApi.register(httpRequest, request);
+    Map<String, Object> result = authPortalApi.register(registrationRequest, httpRequest);
 
     assertNotNull(result);
-    assertEquals("access_token", result.get("accessToken"));
-    assertEquals("Bearer", result.get("tokenType"));
+    assertEquals(false, result.get("canViewChats"));
+    assertEquals(TcInstanceType.GRN, result.get("tcInstanceType"));
     Map<?, ?> userDto = (Map<?, ?>) result.get("user");
     assertEquals(1L, userDto.get("id"));
-    assertEquals("user@example.com", userDto.get("username"));
     assertEquals("user@example.com", userDto.get("email"));
-    verify(candidateService).register(request, httpRequest);
-    verify(userService).login(loginRequest);
+    verify(candidateService).register(registrationRequest, httpRequest);
   }
 
   @Test
-  void testRegister_ReCaptchaInvalidException() throws Exception {
-    SelfRegistrationRequest request = new SelfRegistrationRequest();
-    when(candidateService.register(any(SelfRegistrationRequest.class),
+  void testRegister_Exception() {
+    OauthRegistrationRequest registrationRequest = new OauthRegistrationRequest();
+    HttpServletRequest httpRequest = new MockHttpServletRequest();
+    when(candidateService.register(any(OauthRegistrationRequest.class),
         any(HttpServletRequest.class)))
-        .thenThrow(new ReCaptchaInvalidException("Invalid reCAPTCHA"));
+        .thenThrow(new RuntimeException("Some Exception"));
 
-    ReCaptchaInvalidException exception = assertThrows(
-        ReCaptchaInvalidException.class,
-        () -> authPortalApi.register(httpRequest, request)
+    RuntimeException exception = assertThrows(
+        RuntimeException.class,
+        () -> authPortalApi.register(registrationRequest, httpRequest)
     );
-    assertEquals("Invalid reCAPTCHA", exception.getMessage());
-    verify(candidateService).register(request, httpRequest);
-    verify(userService, never()).login(any(LoginRequest.class));
+    assertEquals("Some Exception", exception.getMessage());
+    verify(candidateService).register(registrationRequest, httpRequest);
   }
 
-  @Test
-  void testRegister_AccountLockedException() throws Exception {
-    SelfRegistrationRequest request = new SelfRegistrationRequest();
-    LoginRequest loginRequest = new LoginRequest();
-    when(candidateService.register(any(SelfRegistrationRequest.class),
-        any(HttpServletRequest.class)))
-        .thenReturn(loginRequest);
-    when(userService.login(loginRequest)).thenThrow(new AccountLockedException("Account locked"));
-
-    AccountLockedException exception = assertThrows(
-        AccountLockedException.class,
-        () -> authPortalApi.register(httpRequest, request)
-    );
-    assertEquals("Account locked", exception.getMessage());
-    verify(candidateService).register(request, httpRequest);
-    verify(userService).login(loginRequest);
-  }
-
-  private JwtAuthenticationResponse createSampleJwtResponse() {
-    JwtAuthenticationResponse response = new JwtAuthenticationResponse("access_token",
-        createSampleUser());
-    response.setTokenType("Bearer");
+  private AuthenticationResponse createSampleAuthenticationResponse(User user) {
+    AuthenticationResponse response = new AuthenticationResponse(user);
+    response.setCanViewChats(false);
+    response.setTcInstanceType(TcInstanceType.GRN);
     return response;
+  }
+
+  private Candidate createSampleCandidate(User user) {
+    Candidate candidate = new Candidate();
+    candidate.setUser(user);
+    return candidate;
   }
 
   private org.tctalent.server.model.db.User createSampleUser() {
