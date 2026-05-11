@@ -16,28 +16,6 @@
 
 package org.tctalent.server.api.admin;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
-import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MockMvc;
-import org.tctalent.server.model.db.CandidateNote;
-import org.tctalent.server.request.note.CreateCandidateNoteRequest;
-import org.tctalent.server.request.note.SearchCandidateNotesRequest;
-import org.tctalent.server.request.note.UpdateCandidateNoteRequest;
-import org.tctalent.server.service.db.CandidateNoteService;
-
-import java.util.List;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
@@ -54,13 +32,34 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.tctalent.server.data.CandidateTestData.getCandidateNote;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.List;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.http.MediaType;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.web.servlet.MockMvc;
+import org.tctalent.server.model.db.CandidateNote;
+import org.tctalent.server.request.note.CreateCandidateNoteRequest;
+import org.tctalent.server.request.note.SearchCandidateNotesRequest;
+import org.tctalent.server.request.note.UpdateCandidateNoteRequest;
+import org.tctalent.server.service.db.CandidateNoteService;
+
 /**
  * Unit tests for Candidate Note Admin Api endpoints.
  *
  * @author sadatmalik
  */
 @WebMvcTest(CandidateNoteAdminApi.class)
-@AutoConfigureMockMvc
+@AutoConfigureMockMvc(addFilters = false)
 class CandidateNoteAdminApiTest extends ApiTestBase {
 
     private static final long CANDIDATE_ID = 99L;
@@ -76,7 +75,8 @@ class CandidateNoteAdminApiTest extends ApiTestBase {
                     1
             );
 
-    @MockBean CandidateNoteService candidateNoteService;
+    @MockitoBean
+    CandidateNoteService candidateNoteService;
 
     @Autowired MockMvc mockMvc;
     @Autowired ObjectMapper objectMapper;

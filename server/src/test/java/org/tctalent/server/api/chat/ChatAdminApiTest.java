@@ -42,8 +42,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.tctalent.server.api.admin.ApiTestBase;
 import org.tctalent.server.data.JobChatTestData;
@@ -68,7 +68,7 @@ import org.tctalent.server.service.db.impl.JobChatServiceImpl;
  * @author John Cameron
  */
 @WebMvcTest(ChatAdminApi.class)
-@AutoConfigureMockMvc
+@AutoConfigureMockMvc(addFilters = false)
 class ChatAdminApiTest extends ApiTestBase {
     private static final String BASE_PATH = "/api/admin/chat";
     private static final String GET_OR_CREATE_PATH = "/get-or-create";
@@ -90,19 +90,19 @@ class ChatAdminApiTest extends ApiTestBase {
     @Autowired
     ChatAdminApi chatAdminApi;
 
-    @MockBean
+    @MockitoBean
     JobChatServiceImpl chatService;
-    @MockBean
+    @MockitoBean
     JobChatUserService jobChatUserService;
-    @MockBean
+    @MockitoBean
     ChatPostService chatPostService;
-    @MockBean
+    @MockitoBean
     CandidateService candidateService;
-    @MockBean
+    @MockitoBean
     JobService jobService;
-    @MockBean
+    @MockitoBean
     PartnerService partnerService;
-    @MockBean
+    @MockitoBean
     UserService userService;
 
     @BeforeEach

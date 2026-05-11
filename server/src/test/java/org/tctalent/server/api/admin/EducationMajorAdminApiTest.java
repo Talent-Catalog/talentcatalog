@@ -47,13 +47,13 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.tctalent.server.model.db.EducationMajor;
 import org.tctalent.server.model.db.Status;
@@ -70,7 +70,7 @@ import org.tctalent.server.service.db.LanguageService;
  * @author sadatmalik
  */
 @WebMvcTest(EducationMajorAdminApi.class)
-@AutoConfigureMockMvc
+@AutoConfigureMockMvc(addFilters = false)
 class EducationMajorAdminApiTest extends ApiTestBase {
   private static final String LANG_CODE = "SPANISH_LANG_CODE";
   private static final long EDUCATION_MAJOR_ID = 786L;
@@ -90,8 +90,9 @@ class EducationMajorAdminApiTest extends ApiTestBase {
           1
       );
 
-  @MockBean EducationMajorService educationMajorService;
-  @MockBean LanguageService languageService;
+  @MockitoBean
+  EducationMajorService educationMajorService;
+  @MockitoBean LanguageService languageService;
 
   @Autowired MockMvc mockMvc;
 

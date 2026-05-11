@@ -41,12 +41,12 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.tctalent.server.model.db.TaskImpl;
 import org.tctalent.server.request.task.SearchTaskRequest;
@@ -57,7 +57,7 @@ import org.tctalent.server.service.db.TaskService;
  * @author John Cameron
  */
 @WebMvcTest(TaskAdminApi.class)
-@AutoConfigureMockMvc
+@AutoConfigureMockMvc(addFilters = false)
 class TaskAdminApiTest extends ApiTestBase {
     private static final String BASE_PATH = "/api/admin/task";
     private static final String SEARCH_PAGED_PATH = "/search-paged";
@@ -79,7 +79,7 @@ class TaskAdminApiTest extends ApiTestBase {
     @Autowired
     TaskAdminApi taskAdminApi;
 
-    @MockBean
+    @MockitoBean
     TaskService taskService;
 
     @BeforeEach

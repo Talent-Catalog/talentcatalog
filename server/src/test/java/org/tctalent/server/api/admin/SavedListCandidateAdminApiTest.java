@@ -53,7 +53,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -61,6 +60,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
 import org.tctalent.server.api.dto.CandidateBuilderSelector;
@@ -83,7 +83,7 @@ import org.tctalent.server.util.dto.DtoBuilder;
  * @author John Cameron
  */
 @WebMvcTest(SavedListCandidateAdminApi.class)
-@AutoConfigureMockMvc
+@AutoConfigureMockMvc(addFilters = false)
 class SavedListCandidateAdminApiTest extends ApiTestBase {
 
     private static final String BASE_PATH = "/api/admin/saved-list-candidate";
@@ -123,19 +123,19 @@ class SavedListCandidateAdminApiTest extends ApiTestBase {
     @Autowired
     SavedListCandidateAdminApi savedListCandidateAdminApi;
 
-    @MockBean
+    @MockitoBean
     SavedListService savedListService;
-    @MockBean
+    @MockitoBean
     SavedSearchService savedSearchService;
-    @MockBean
+    @MockitoBean
     CandidateSavedListService candidateSavedListService;
-    @MockBean
+    @MockitoBean
     CandidateService candidateService;
-    @MockBean
+    @MockitoBean
     CandidateDtoService candidateDtoService;
-    @MockBean
+    @MockitoBean
     CandidateBuilderSelector candidateBuilderSelector;
-    @MockBean
+    @MockitoBean
     SavedListBuilderSelector savedListBuilderSelector;
 
 

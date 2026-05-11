@@ -16,26 +16,6 @@
 
 package org.tctalent.server.api.admin;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
-import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MockMvc;
-import org.tctalent.server.model.db.CandidateSkill;
-import org.tctalent.server.request.skill.SearchCandidateSkillRequest;
-import org.tctalent.server.service.db.CandidateSkillService;
-
-import java.util.List;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
@@ -50,13 +30,32 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.tctalent.server.data.CandidateTestData.getCandidateSkill;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.List;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.http.MediaType;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.web.servlet.MockMvc;
+import org.tctalent.server.model.db.CandidateSkill;
+import org.tctalent.server.request.skill.SearchCandidateSkillRequest;
+import org.tctalent.server.service.db.CandidateSkillService;
+
 /**
  * Unit tests for Candidate Visa Job Check Admin Api endpoints.
  *
  * @author Caroline Cameron
  */
 @WebMvcTest(CandidateSkillAdminApi.class)
-@AutoConfigureMockMvc
+@AutoConfigureMockMvc(addFilters = false)
 public class CandidateSkillAdminApiTest extends ApiTestBase {
     private static final String BASE_PATH = "/api/admin/candidate-skill";
     private static final String SEARCH_PATH = "/search";
@@ -70,7 +69,7 @@ public class CandidateSkillAdminApiTest extends ApiTestBase {
                     1
             );
 
-    @MockBean
+    @MockitoBean
     CandidateSkillService candidateSkillService;
 
     @Autowired MockMvc mockMvc;

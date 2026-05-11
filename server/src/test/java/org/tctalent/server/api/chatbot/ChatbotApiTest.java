@@ -19,7 +19,6 @@ package org.tctalent.server.api.chatbot;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
@@ -40,16 +39,17 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
+import org.tctalent.server.api.admin.ApiTestBase;
 import org.tctalent.server.model.db.chatbot.ChatbotMessage;
 import org.tctalent.server.service.db.ChatbotService;
 import org.tctalent.server.service.db.email.EmailHelper;
 
 @WebMvcTest(ChatbotApi.class)
 @AutoConfigureMockMvc(addFilters = false)
-class ChatbotApiTest {
+class ChatbotApiTest extends ApiTestBase {
 
   private static final String BASE_PATH = "/api/chatbot";
   private static final String SESSION_ID = UUID.randomUUID().toString();
@@ -58,8 +58,8 @@ class ChatbotApiTest {
 
   @Autowired private ObjectMapper objectMapper;
 
-  @MockBean private ChatbotService chatbotService;
-  @MockBean private EmailHelper emailHelper;
+  @MockitoBean private ChatbotService chatbotService;
+  @MockitoBean private EmailHelper emailHelper;
 
   private ChatbotMessage chatbotMessage;
 

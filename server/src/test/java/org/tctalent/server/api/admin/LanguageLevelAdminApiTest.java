@@ -48,13 +48,13 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.tctalent.server.model.db.LanguageLevel;
 import org.tctalent.server.model.db.Status;
@@ -71,7 +71,7 @@ import org.tctalent.server.service.db.LanguageService;
  * @author sadatmalik
  */
 @WebMvcTest(LanguageLevelAdminApi.class)
-@AutoConfigureMockMvc
+@AutoConfigureMockMvc(addFilters = false)
 class LanguageLevelAdminApiTest extends ApiTestBase {
 
     private static final long LANGUAGE_LEVEL_ID = 99L;
@@ -91,8 +91,9 @@ class LanguageLevelAdminApiTest extends ApiTestBase {
                     1
             );
 
-    @MockBean LanguageLevelService languageLevelService;
-    @MockBean LanguageService languageService;
+    @MockitoBean
+    LanguageLevelService languageLevelService;
+    @MockitoBean LanguageService languageService;
 
     @Autowired MockMvc mockMvc;
     @Autowired ObjectMapper objectMapper;

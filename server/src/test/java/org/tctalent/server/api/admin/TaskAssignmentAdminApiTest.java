@@ -48,8 +48,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.SavedList;
@@ -71,7 +71,7 @@ import org.tctalent.server.service.db.TaskService;
  * @author Caroline Cameorn
  */
 @WebMvcTest(TaskAssignmentAdminApi.class)
-@AutoConfigureMockMvc
+@AutoConfigureMockMvc(addFilters = false)
 class TaskAssignmentAdminApiTest extends ApiTestBase {
 
   private static final long TASK_ASSIGNMENT_ID = 99L;
@@ -87,11 +87,12 @@ class TaskAssignmentAdminApiTest extends ApiTestBase {
   private static final TaskAssignmentImpl completedTaskAssignment = getCompletedTaskAssignment();
   private static final List<TaskAssignmentImpl> taskAssignments = getTaskAssignments();
 
-  @MockBean AuthService authService;
-  @MockBean CandidateService candidateService;
-  @MockBean SavedListService savedListService;
-  @MockBean TaskAssignmentService taskAssignmentService;
-  @MockBean TaskService taskService;
+  @MockitoBean
+  AuthService authService;
+  @MockitoBean CandidateService candidateService;
+  @MockitoBean SavedListService savedListService;
+  @MockitoBean TaskAssignmentService taskAssignmentService;
+  @MockitoBean TaskService taskService;
 
   @Autowired MockMvc mockMvc;
   @Autowired ObjectMapper objectMapper;

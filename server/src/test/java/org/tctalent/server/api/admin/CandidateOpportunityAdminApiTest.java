@@ -5,12 +5,12 @@
  * the terms of the GNU Affero General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or any later version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
  * for more details.
  *
- * You should have received a copy of the GNU Affero General Public License 
+ * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
@@ -41,12 +41,12 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.tctalent.server.model.db.CandidateOpportunity;
 import org.tctalent.server.request.candidate.dependant.UpdateRelocatingDependantIds;
@@ -62,7 +62,7 @@ import org.tctalent.server.service.db.SalesforceService;
  * @author sadatmalik
  */
 @WebMvcTest(CandidateOpportunityAdminApi.class)
-@AutoConfigureMockMvc
+@AutoConfigureMockMvc(addFilters = false)
 class CandidateOpportunityAdminApiTest extends ApiTestBase {
 
     private static final long CANDIDATE_ID = 99L;
@@ -80,9 +80,10 @@ class CandidateOpportunityAdminApiTest extends ApiTestBase {
                     1
             );
 
-    @MockBean CandidateOpportunityService candidateOpportunityService;
-    @MockBean CountryService countryService;
-    @MockBean SalesforceService salesforceService;
+    @MockitoBean
+    CandidateOpportunityService candidateOpportunityService;
+    @MockitoBean CountryService countryService;
+    @MockitoBean SalesforceService salesforceService;
 
     @Autowired MockMvc mockMvc;
     @Autowired ObjectMapper objectMapper;

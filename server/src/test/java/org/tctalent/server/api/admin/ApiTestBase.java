@@ -16,16 +16,20 @@
 
 package org.tctalent.server.api.admin;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
+import java.util.ArrayList;
+import java.util.List;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.tctalent.server.model.db.Role;
 import org.tctalent.server.model.db.User;
 import org.tctalent.server.repository.db.UserRepository;
 import org.tctalent.server.security.AuthenticationErrorEntryPoint;
-import org.tctalent.server.security.JwtTokenProvider;
+import org.tctalent.server.security.CurrentUserInfo;
 import org.tctalent.server.security.OAuth2UserService;
 import org.tctalent.server.service.db.email.EmailHelper;
 
@@ -49,18 +53,28 @@ public class ApiTestBase {
     @MockitoBean
     AuthenticationErrorEntryPoint AuthenticationErrorEntryPoint;
     @MockitoBean
-    JwtTokenProvider jwtTokenProvider;
-    @MockitoBean
     EmailHelper emailHelper;
-
     @MockitoBean
     OAuth2UserService oAuth2UserService;
 
     public void configureAuthentication() {
         user = new User(USER_NAME, FIRST_NAME, LAST_NAME, EMAIL, ROLE);
+        user.setId(1L);
 
-        when(jwtTokenProvider.validateToken(anyString())).thenReturn(true);
-        when(jwtTokenProvider.getUsernameFromJwt(anyString())).thenReturn(USER_NAME);
+        CurrentUserInfo currentUserInfo = CurrentUserInfo.builder()
+            .id(user.getId())
+            .name(user.getEmail())
+            .idpIssuer("Keycloak")
+            .idpSubject("1234567890")
+            .build();
+
+        List<SimpleGrantedAuthority> authorities = new ArrayList<>();
+        authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
+        currentUserInfo.setAuthorities(authorities);
+
+        currentUserInfo.setUser(user);
+
+        when(oAuth2UserService.loadUser(any(), any())).thenReturn(currentUserInfo);
 
         when(userRepository.findByUsernameIgnoreCase(anyString())).thenReturn(user);
     }

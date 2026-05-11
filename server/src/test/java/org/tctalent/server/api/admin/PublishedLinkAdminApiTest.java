@@ -31,8 +31,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.tctalent.server.model.db.SavedList;
 import org.tctalent.server.service.db.SavedListService;
@@ -43,7 +43,7 @@ import org.tctalent.server.service.db.SavedListService;
  * @author sadatmalik
  */
 @WebMvcTest(PublishedLinkAdminApi.class)
-@AutoConfigureMockMvc
+@AutoConfigureMockMvc(addFilters = false)
 class PublishedLinkAdminApiTest extends ApiTestBase {
   private static final String SHORT_NAME = "short-name";
 
@@ -51,7 +51,8 @@ class PublishedLinkAdminApiTest extends ApiTestBase {
 
   private final SavedList savedList = new SavedList();
 
-  @MockBean SavedListService savedListService;
+  @MockitoBean
+  SavedListService savedListService;
 
   @Autowired MockMvc mockMvc;
   @Autowired ObjectMapper objectMapper;

@@ -5,33 +5,16 @@
  * the terms of the GNU Affero General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or any later version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
  * for more details.
  *
- * You should have received a copy of the GNU Affero General Public License 
+ * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
 package org.tctalent.server.api.admin;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MockMvc;
-import org.tctalent.server.model.db.CandidateCertification;
-import org.tctalent.server.request.candidate.certification.CreateCandidateCertificationRequest;
-import org.tctalent.server.request.candidate.certification.UpdateCandidateCertificationRequest;
-import org.tctalent.server.service.db.CandidateCertificationService;
-
-import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.hasSize;
@@ -53,13 +36,29 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.tctalent.server.data.CandidateTestData.getCandidateCertification;
 import static org.tctalent.server.data.CandidateTestData.getListOfCandidateCertifications;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.List;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.http.MediaType;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.web.servlet.MockMvc;
+import org.tctalent.server.model.db.CandidateCertification;
+import org.tctalent.server.request.candidate.certification.CreateCandidateCertificationRequest;
+import org.tctalent.server.request.candidate.certification.UpdateCandidateCertificationRequest;
+import org.tctalent.server.service.db.CandidateCertificationService;
+
 /**
  * Unit tests for Candidate Certification Admin Api endpoints.
  *
  * @author sadatmalik
  */
 @WebMvcTest(CandidateCertificationAdminApi.class)
-@AutoConfigureMockMvc
+@AutoConfigureMockMvc(addFilters = false)
 class CandidateCertificationAdminApiTest extends ApiTestBase {
     private static final String BASE_PATH = "/api/admin/candidate-certification";
     private static final String GET_CERTIFICATION_LIST_BY_ID_PATH = "/{id}/list";
@@ -69,7 +68,8 @@ class CandidateCertificationAdminApiTest extends ApiTestBase {
     private final List<CandidateCertification> candidateCertificationList =
         getListOfCandidateCertifications();
 
-    @MockBean CandidateCertificationService candidateCertificationService;
+    @MockitoBean
+    CandidateCertificationService candidateCertificationService;
 
     @Autowired MockMvc mockMvc;
     @Autowired ObjectMapper objectMapper;
