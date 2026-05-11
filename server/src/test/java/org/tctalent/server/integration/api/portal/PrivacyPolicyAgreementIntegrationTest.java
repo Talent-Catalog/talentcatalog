@@ -30,15 +30,14 @@ import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 import org.tctalent.server.integration.helper.BaseDBIntegrationTest;
@@ -59,7 +58,7 @@ import org.tctalent.server.security.TcUserDetailsService;
 import org.tctalent.server.service.db.SavedSearchService;
 
 @SpringBootTest
-@AutoConfigureMockMvc
+@AutoConfigureMockMvc(addFilters = false)
 @Transactional
 public class PrivacyPolicyAgreementIntegrationTest extends BaseDBIntegrationTest {
 
@@ -71,9 +70,9 @@ public class PrivacyPolicyAgreementIntegrationTest extends BaseDBIntegrationTest
   @Autowired private TcUserDetailsService tcUserDetailsService;
   @Autowired private JwtTokenProvider jwtTokenProvider;
 
-  @MockBean
+  @MockitoBean
   private SavedSearchService savedSearchService;
-  @MockBean
+  @MockitoBean
   private CandidateRedisCache candidateRedisCache;
   private Candidate candidate;
   private SavedList pendingTermsList;
