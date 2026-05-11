@@ -17,6 +17,7 @@
 <ng-container *ngIf="canViewPrivateInfo">
   <app-view-candidate-additional-info *ngIf="canViewPrivateInfo"
                                       [candidate]="candidate"
+                                      [showAspirations]="showAspirations"
                                       [editable]="editable"
   ></app-view-candidate-additional-info>
 </ng-container>
