@@ -99,27 +99,17 @@ Download and install the latest of the following tools.
   ```
 
 - Node.js [https://nodejs.org/en/](https://nodejs.org/en/)
+
+[//]: # (    todo Update this section to reflect the new version of Node.js we are using.)
     - This project requires **Node.js 18** 
-    - We currently pin Node 18.20.7 (via .nvmrc), which satisfies Angular 17’s Node 18.13+ 
+    - We currently pin Node 18.20.7 (via .nvmrc file in the project root directory - talentcatalog), 
+  which satisfies Angular 17’s Node 18.13+ 
       requirement.
-        - See [Angular Compatibility Table](https://angular.io/guide/versions)
+        - See [Angular Compatibility Table](https://angular.dev/reference/versions)
         - See [Node.js Releases](https://nodejs.org/en/about/releases/)
 
     - **Install Node using nvm (recommended)**
-      - If you don’t already have nvm installed:
-        ```
-        brew install nvm
-        ```
-        Note the messages from brew at the end of the install.
-        You will have to manually set up the path.
-
-        Restart your terminal (or reload your shell), then from the project root:
-        ```
-        nvm install
-        nvm use
-        node -v 
-        # should output v18.20.7
-        ```
+      - See https://nodejs.org/en/download
       
     - **IntelliJ users**
       - When using Node 17+, `ng serve` may require `--host=127.0.0.1` to avoid debugger and sourcemap 
