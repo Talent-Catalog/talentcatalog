@@ -19,13 +19,14 @@ package org.tctalent.server.api.admin;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.tctalent.server.model.db.Role;
 import org.tctalent.server.model.db.User;
 import org.tctalent.server.repository.db.UserRepository;
 import org.tctalent.server.security.AuthenticationErrorEntryPoint;
 import org.tctalent.server.security.JwtTokenProvider;
+import org.tctalent.server.security.OAuth2UserService;
 import org.tctalent.server.service.db.email.EmailHelper;
 
 /**
@@ -43,14 +44,17 @@ public class ApiTestBase {
 
     protected User user;
 
-    @MockBean
+    @MockitoBean
     UserRepository userRepository;
-    @MockBean
+    @MockitoBean
     AuthenticationErrorEntryPoint AuthenticationErrorEntryPoint;
-    @MockBean
+    @MockitoBean
     JwtTokenProvider jwtTokenProvider;
-    @MockBean
+    @MockitoBean
     EmailHelper emailHelper;
+
+    @MockitoBean
+    OAuth2UserService oAuth2UserService;
 
     public void configureAuthentication() {
         user = new User(USER_NAME, FIRST_NAME, LAST_NAME, EMAIL, ROLE);
