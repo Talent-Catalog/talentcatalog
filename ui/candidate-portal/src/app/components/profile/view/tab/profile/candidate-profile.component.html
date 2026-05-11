@@ -455,7 +455,7 @@
             </tc-description-list>
           </div>
 
-          <div class="col-md-6" *ngIf="showAspirations()">
+          <div class="col-md-6" *ngIf="showAspirations">
             <tc-description-list direction="column" compact size="lg">
               <tc-description-item [label]="'REGISTRATION.SUBMIT.LABEL.ASPIRATIONS' | translate">
                 {{candidate?.aspirations || ''}}

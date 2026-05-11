@@ -65,6 +65,7 @@ export class CandidateProfileComponent implements OnInit {
   languageLevels: LanguageLevel[];
   surveyTypes: SurveyType[];
   @Input() candidate: Candidate;
+  @Input() showAspirations: boolean;
   usAfghan: boolean;
 
   constructor(private candidateService: CandidateService,
@@ -191,10 +192,6 @@ export class CandidateProfileComponent implements OnInit {
 
   getCountryName(country: Country) {
     return this.countries?.find(c => c.id === country?.id)?.name;
-  }
-
-  showAspirations(): boolean {
-    return this.authenticationService.isGrnInstance();
   }
 
   showRelocatedAddress(): boolean {

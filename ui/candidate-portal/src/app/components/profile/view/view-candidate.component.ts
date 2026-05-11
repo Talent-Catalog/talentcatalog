@@ -35,6 +35,7 @@ import {LinkedinService} from "../../../services/linkedin.service";
 import {AuthorizationService} from "../../../services/authorization.service";
 import {CasiPortalService} from "../../../services/casi-portal.service";
 import {environment} from "../../../../environments/environment";
+import {AuthenticationService} from "../../../services/authentication.service";
 
 @Component({
   selector: 'app-view-candidate',
@@ -60,6 +61,7 @@ export class ViewCandidateComponent implements OnInit {
 
   error: any;
   loading: boolean;
+  showAspirations: boolean;
   candidate: Candidate;
   usAfghan: boolean;
   activeDuolingoTask: TaskAssignment;
@@ -76,9 +78,12 @@ export class ViewCandidateComponent implements OnInit {
     private localStorageService: LocalStorageService,
     private location: Location,
     private route: ActivatedRoute,
+    private authenticationService: AuthenticationService,
   ) { }
 
   ngOnInit(): void {
+    this.showAspirations = this.authenticationService.isGrnInstance();
+
     this.fetchCandidate();
     this.route.queryParams.subscribe(params => {
       const tab = params['tab'];
