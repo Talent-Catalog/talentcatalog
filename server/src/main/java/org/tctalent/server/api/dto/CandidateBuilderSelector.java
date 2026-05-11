@@ -494,6 +494,7 @@ public class CandidateBuilderSelector {
             .add("cv")
             .add("createdDate")
             .add("uploadType")
+            .add("folder")
             ;
 
         if (!DtoType.PREVIEW.equals(type)) {
