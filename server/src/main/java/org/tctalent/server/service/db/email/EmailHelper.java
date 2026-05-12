@@ -383,6 +383,37 @@ public class EmailHelper {
         }
     }
 
+    public void sendTaskAssignedEmail(User user, String taskDisplayName) throws EmailSendFailedException {
+        String email = user.getEmail();
+        String displayName = user.getDisplayName();
+
+        String subject;
+        String bodyText;
+        String bodyHtml;
+        try {
+            final Context ctx = new Context();
+            ctx.setVariable("displayName", displayName);
+            ctx.setVariable("taskDisplayName", taskDisplayName);
+            ctx.setVariable("loginUrl", portalUrl + "/candidate-portal/");
+            ctx.setVariable("year", currentYear());
+
+            // todo - all email subjects should say Global Refugee Network for GRN instance type
+            // todo - create a separate ticket for this to pass through all code where this needs to be addressed
+            subject = "Talent Catalog - You have a new task";
+            bodyText = textTemplateEngine.process("task-assigned", ctx);
+            bodyHtml = htmlTemplateEngine.process("task-assigned", ctx);
+
+            emailSender.sendAsync(email, subject, bodyText, bodyHtml);
+        } catch (Exception e) {
+            LogBuilder.builder(log)
+                .action("TaskAssignedEmail")
+                .message("error sending task assigned email")
+                .logError(e);
+
+            throw new EmailSendFailedException(e);
+        }
+    }
+
     public void sendDuolingoCouponEmail(User user) throws EmailSendFailedException {
         String email = user.getEmail();
         String displayName = user.getDisplayName();

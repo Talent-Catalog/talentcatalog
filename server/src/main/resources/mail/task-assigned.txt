@@ -1,0 +1,10 @@
+This is a no-reply email. Please do not respond to this message.
+
+Dear [(${displayName})],
+
+A new task has been assigned to you in the Talent Catalog: [(${taskDisplayName})].
+
+Please log in to Talent Catalog at [(${loginUrl})] to view and complete your task.
+
+If you have any questions, please contact your local partner.
+

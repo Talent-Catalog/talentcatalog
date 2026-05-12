@@ -1,0 +1,27 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+  <title>New Task Assigned</title>
+</head>
+<body style="font-family: Arial, sans-serif; background-color: #f9f9f9;">
+<div style="max-width: 600px; margin: 40px auto; background-color: white; padding: 30px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1);">
+  <p>Dear <span th:text="${displayName}"></span>,</p>
+  <p style="font-size: 16px">
+    A new task has been assigned to you in the Talent Catalog:
+    <strong><span th:text="${taskDisplayName}"></span></strong>.
+  </p>
+  <p style="font-size: 16px">
+    Please log in to <a th:href="${loginUrl}" style="color: #1a73e8; text-decoration: none;">Talent Catalog</a>
+    to view and complete your task.
+  </p>
+  <p style="font-size: 16px">
+    If you have any questions, please contact your local partner.
+  </p>
+  <p style="color: #888888; font-size: 80%; margin-top: 20px;">
+    This is a no-reply email. Please do not respond to this message.
+  </p>
+</div>
+</body>
+</html>
