@@ -45,7 +45,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.tctalent.server.api.admin.ApiTestBase;
 import org.tctalent.server.model.db.chatbot.ChatbotMessage;
 import org.tctalent.server.service.db.ChatbotService;
-import org.tctalent.server.service.db.email.EmailHelper;
 
 @WebMvcTest(ChatbotApi.class)
 @AutoConfigureMockMvc(addFilters = false)
@@ -59,7 +58,6 @@ class ChatbotApiTest extends ApiTestBase {
   @Autowired private ObjectMapper objectMapper;
 
   @MockitoBean private ChatbotService chatbotService;
-  @MockitoBean private EmailHelper emailHelper;
 
   private ChatbotMessage chatbotMessage;
 
