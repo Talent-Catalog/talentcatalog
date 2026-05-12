@@ -23,6 +23,7 @@ import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Optional;
 import org.apache.commons.beanutils.PropertyUtils;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
@@ -43,6 +44,7 @@ import org.tctalent.server.model.db.TaskImpl;
 import org.tctalent.server.model.db.UploadTaskAssignmentImpl;
 import org.tctalent.server.model.db.User;
 import org.tctalent.server.model.db.task.QuestionTask;
+import org.tctalent.server.model.db.task.TaskAssignedEvent;
 import org.tctalent.server.model.db.task.QuestionTaskAssignment;
 import org.tctalent.server.model.db.task.Task;
 import org.tctalent.server.model.db.task.TaskAssignment;
@@ -68,18 +70,21 @@ public class TaskAssigmentServiceImpl implements TaskAssignmentService {
     private final TaskAssignmentRepository taskAssignmentRepository;
     private final TaskService taskService;
     private final AuthService authService;
+    private final ApplicationEventPublisher eventPublisher;
 
     public TaskAssigmentServiceImpl(
         CandidateAttachmentService candidateAttachmentService,
         CandidatePropertyService candidatePropertyService,
         TaskAssignmentRepository taskAssignmentRepository,
         AuthService authService,
-        TaskService taskService) {
+        TaskService taskService,
+        ApplicationEventPublisher eventPublisher) {
         this.candidateAttachmentService = candidateAttachmentService;
         this.candidatePropertyService = candidatePropertyService;
         this.taskAssignmentRepository = taskAssignmentRepository;
         this.authService = authService;
         this.taskService = taskService;
+        this.eventPublisher = eventPublisher;
     }
 
     @Override
@@ -115,7 +120,9 @@ public class TaskAssigmentServiceImpl implements TaskAssignmentService {
             dueDate = LocalDate.now().plusDays(task.getDaysToComplete());
         }
         taskAssignment.setDueDate(dueDate);
-        return taskAssignmentRepository.save(taskAssignment);
+        TaskAssignmentImpl savedTaskAssignment = taskAssignmentRepository.save(taskAssignment);
+        eventPublisher.publishEvent(new TaskAssignedEvent(savedTaskAssignment));
+        return savedTaskAssignment;
     }
 
     @NonNull
