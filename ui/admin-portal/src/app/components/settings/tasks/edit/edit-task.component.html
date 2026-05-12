@@ -49,6 +49,10 @@
           <tc-label for="optional">Optional?</tc-label>
           <tc-input type="checkbox" id="optional" formControlName="optional"></tc-input>
         </tc-field>
+        <tc-field [checkbox]="true">
+          <tc-label for="notifyOnAssignment">Send email notification on assignment?</tc-label>
+          <tc-input type="checkbox" id="notifyOnAssignment" formControlName="notifyOnAssignment"></tc-input>
+        </tc-field>
       </tc-fieldset>
     </form>
   </div>
