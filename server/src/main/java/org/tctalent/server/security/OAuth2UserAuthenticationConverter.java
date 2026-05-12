@@ -42,13 +42,13 @@ public class OAuth2UserAuthenticationConverter implements Converter<Jwt, Abstrac
         String issuer = jwt.getIssuer().toString();
         String subject = jwt.getSubject();
 
-        CurrentUserInfo user =
+        CurrentUserInfo currentUserInfo =
             oAuth2UserService.loadUser(issuer, subject);
 
         return new TcAuthenticationToken(
-            user,
+            currentUserInfo,
             jwt,
-            user.getAuthorities()
+            currentUserInfo.getAuthorities()
         );
     }
 }

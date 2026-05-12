@@ -34,7 +34,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -52,9 +51,9 @@ import org.tctalent.server.repository.db.CandidateSavedListRepository;
 import org.tctalent.server.repository.db.SavedListRepository;
 import org.tctalent.server.repository.db.UserRepository;
 import org.tctalent.server.repository.db.read.cache.CandidateRedisCache;
-import org.tctalent.server.security.JwtTokenProvider;
-import org.tctalent.server.security.TcUserDetails;
-import org.tctalent.server.security.TcUserDetailsService;
+import org.tctalent.server.security.CurrentUserInfo;
+import org.tctalent.server.security.OAuth2UserService;
+import org.tctalent.server.security.TcAuthenticationToken;
 import org.tctalent.server.service.db.SavedSearchService;
 
 @SpringBootTest
@@ -67,8 +66,7 @@ public class PrivacyPolicyAgreementIntegrationTest extends BaseDBIntegrationTest
   @Autowired private SavedListRepository savedListRepository;
   @Autowired private CandidateSavedListRepository candidateSavedListRepository;
   @Autowired private UserRepository userRepository;
-  @Autowired private TcUserDetailsService tcUserDetailsService;
-  @Autowired private JwtTokenProvider jwtTokenProvider;
+  @Autowired private OAuth2UserService oAuth2UserService;
 
   @MockitoBean
   private SavedSearchService savedSearchService;
@@ -76,7 +74,6 @@ public class PrivacyPolicyAgreementIntegrationTest extends BaseDBIntegrationTest
   private CandidateRedisCache candidateRedisCache;
   private Candidate candidate;
   private SavedList pendingTermsList;
-  private String jwtToken;
   private User user;
   private final String privacyPolicyId = "policy123";
 
@@ -123,10 +120,11 @@ public class PrivacyPolicyAgreementIntegrationTest extends BaseDBIntegrationTest
   }
 
   private void authenticateUser(User user) {
-    TcUserDetails userDetails = this.tcUserDetailsService.loadUserByUsername(user.getUsername());
-    Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+    CurrentUserInfo currentUserInfo = oAuth2UserService.constructUserInfo(
+        user, "testIssuer", "testSubject");
+    Authentication authentication =
+        new TcAuthenticationToken(currentUserInfo,null, currentUserInfo.getAuthorities());
     SecurityContextHolder.getContext().setAuthentication(authentication);
-    jwtToken = jwtTokenProvider.generateToken(authentication);
   }
 
   @Test
@@ -134,7 +132,7 @@ public class PrivacyPolicyAgreementIntegrationTest extends BaseDBIntegrationTest
     authenticateUser(user);
 
     mockMvc.perform(put("/api/portal/candidate/privacy/" + privacyPolicyId)
-            .header("Authorization", "Bearer " + jwtToken))
+            .header("Authorization", "Bearer " + "jwt-token"))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.id").exists());
 
@@ -165,7 +163,7 @@ public class PrivacyPolicyAgreementIntegrationTest extends BaseDBIntegrationTest
     authenticateUser(user);
 
     mockMvc.perform(put("/api/portal/candidate/privacy/null")
-            .header("Authorization", "Bearer " + jwtToken))
+            .header("Authorization", "Bearer " + "jwt-token"))
         .andExpect(status().isBadRequest());
 
     Candidate unchanged = candidateRepository.findById(candidate.getId()).orElseThrow();
@@ -182,7 +180,7 @@ public class PrivacyPolicyAgreementIntegrationTest extends BaseDBIntegrationTest
 
     // Accept first policy
     mockMvc.perform(put("/api/portal/candidate/privacy/" + firstPolicyId)
-            .header("Authorization", "Bearer " + jwtToken))
+            .header("Authorization", "Bearer " + "jwt-token"))
         .andExpect(status().isOk());
 
     Candidate afterFirst = candidateRepository.findById(candidate.getId()).orElseThrow();
@@ -192,7 +190,7 @@ public class PrivacyPolicyAgreementIntegrationTest extends BaseDBIntegrationTest
 
     // Accept second (different) policy
     mockMvc.perform(put("/api/portal/candidate/privacy/" + secondPolicyId)
-            .header("Authorization", "Bearer " + jwtToken))
+            .header("Authorization", "Bearer " + "jwt-token"))
         .andExpect(status().isOk());
 
     Candidate afterSecond = candidateRepository.findById(candidate.getId()).orElseThrow();
@@ -206,7 +204,7 @@ public class PrivacyPolicyAgreementIntegrationTest extends BaseDBIntegrationTest
   void testBlankPolicyIdReturnsBadRequest() throws Exception {
     authenticateUser(user);
     mockMvc.perform(put("/api/portal/candidate/privacy/")
-            .header("Authorization", "Bearer " + jwtToken))
+            .header("Authorization", "Bearer " + "jwt-token"))
         .andExpect(status().is4xxClientError());
   }
 }

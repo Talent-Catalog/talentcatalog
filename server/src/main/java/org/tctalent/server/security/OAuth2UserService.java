@@ -39,13 +39,8 @@ public class OAuth2UserService {
         this.userRepository = userRepository;
     }
 
-    public CurrentUserInfo loadUser(String idpIssuer, String idpSubject) {
-        User user = userRepository.findByIdpIssuerAndIdpSubject(idpIssuer, idpSubject)
-            .orElseThrow(() -> new UsernameNotFoundException(
-                "User not found for issuer=" + idpIssuer + ", sub=" + idpSubject
-            ));
-
-        CurrentUserInfo authUser = CurrentUserInfo.builder()
+    public CurrentUserInfo constructUserInfo(User user, String idpIssuer, String idpSubject) {
+        CurrentUserInfo currentUserInfo = CurrentUserInfo.builder()
             .id(user.getId())
 
             //Use email as a human-readable identifier.
@@ -57,12 +52,21 @@ public class OAuth2UserService {
             .idpSubject(idpSubject)
             .build();
 
-        authUser.setAuthorities(mapAuthorities(user));
+        currentUserInfo.setAuthorities(mapAuthorities(user));
 
         //TODO JC Temporarily expose the User
-        authUser.setUser(user);
+        currentUserInfo.setUser(user);
+        return currentUserInfo;
+    }
 
-        return authUser;
+    public CurrentUserInfo loadUser(String idpIssuer, String idpSubject) {
+        User user = userRepository.findByIdpIssuerAndIdpSubject(idpIssuer, idpSubject)
+            .orElseThrow(() -> new UsernameNotFoundException(
+                "User not found for issuer=" + idpIssuer + ", sub=" + idpSubject
+            ));
+
+        CurrentUserInfo currentUserInfo = constructUserInfo(user, idpIssuer, idpSubject);
+        return currentUserInfo;
     }
 
     /**
