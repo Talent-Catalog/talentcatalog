@@ -386,6 +386,7 @@ public class EmailHelper {
     public void sendTaskAssignedEmail(User user, String taskDisplayName) throws EmailSendFailedException {
         String email = user.getEmail();
         String displayName = user.getDisplayName();
+        String username = user.getUsername();
 
         String subject;
         String bodyText;
@@ -393,6 +394,7 @@ public class EmailHelper {
         try {
             final Context ctx = new Context();
             ctx.setVariable("displayName", displayName);
+            ctx.setVariable("username", username);
             ctx.setVariable("taskDisplayName", taskDisplayName);
             ctx.setVariable("loginUrl", portalUrl + "/candidate-portal/");
             ctx.setVariable("year", currentYear());

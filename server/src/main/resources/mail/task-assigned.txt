@@ -6,5 +6,8 @@ A new task has been assigned to you in the Talent Catalog: [(${taskDisplayName})
 
 Please log in to Talent Catalog at [(${loginUrl})] to view and complete your task.
 
-If you have any questions, please contact your local partner.
+Your Talent Catalog username is [(${username})].
 
+If you forget your password, click on "Forgot password" on the Talent Catalog login screen.
+
+If you have any questions, please contact your local partner.
