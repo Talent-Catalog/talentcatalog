@@ -56,6 +56,7 @@ class TaskAssignedEmailListenerTest {
         task.setId(100L);
         task.setName("testTask");
         task.setDisplayName("Complete your profile");
+        task.setNotifyOnAssignment(true);
 
         user = new User();
         user.setId(200L);

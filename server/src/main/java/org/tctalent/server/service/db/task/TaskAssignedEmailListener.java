@@ -46,6 +46,10 @@ public class TaskAssignedEmailListener {
         TaskAssignmentImpl taskAssignment = event.taskAssignment();
         String action = "TaskAssignedEmailListener:onAssigned: " + taskAssignment.getTask().getName();
 
+        if (!taskAssignment.getTask().isNotifyOnAssignment()) {
+            return;
+        }
+
         Candidate candidate = taskAssignment.getCandidate();
         if (candidate == null) {
             LogBuilder.builder(log)
