@@ -108,6 +108,7 @@ public class TaskServiceImpl implements TaskService {
             task.setDocLink(null);
         }
         task.setOptional(request.isOptional());
+        task.setNotifyOnAssignment(request.isNotifyOnAssignment());
         return taskRepository.save(task);
     }
 

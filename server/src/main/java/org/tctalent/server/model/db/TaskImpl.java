@@ -57,6 +57,7 @@ public class TaskImpl extends AbstractAuditableDomainObject<Long> implements Tas
     private String displayName;
     private String name;
     private boolean optional;
+    private boolean notifyOnAssignment;
 
     /*
       Note that this should not be necessary because the interface provides a default implementation
