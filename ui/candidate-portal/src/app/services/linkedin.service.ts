@@ -42,10 +42,13 @@ export class LinkedinService {
   }
 
   /** Updates status of a single coupon for the LinkedIn Premium membership upgrade offer. */
-  updateCouponStatus(updateServiceResourceStatusRequest: UpdateServiceResourceStatusRequest):
+  updateCouponStatus(
+    candidateId: number,
+    updateServiceResourceStatusRequest: UpdateServiceResourceStatusRequest
+  ):
     Observable<void> {
     return this.http.put<void>(
-      `${this.apiBaseUrl}/update-coupon-status`,
+      `${this.apiBaseUrl}/${candidateId}/update-coupon-status`,
       updateServiceResourceStatusRequest
     );
   }

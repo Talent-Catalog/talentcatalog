@@ -45,4 +45,5 @@ public class CandidateAttachmentReadDto {
     private String name;
     private AttachmentType type;
     private UploadType uploadType;
+    private String folder;
 }
