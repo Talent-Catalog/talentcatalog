@@ -27,6 +27,7 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import org.tctalent.server.exception.InvalidRequestException;
 import org.tctalent.server.exception.InvalidSessionException;
@@ -88,6 +89,7 @@ public class TaskAssigmentServiceImpl implements TaskAssignmentService {
     }
 
     @Override
+    @Transactional
     public TaskAssignmentImpl assignTaskToCandidate(
         User user, TaskImpl task, Candidate candidate, @Nullable SavedList savedList,
         @Nullable LocalDate dueDate) {
