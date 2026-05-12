@@ -27,6 +27,8 @@ import org.tctalent.server.casi.domain.model.ServiceAssignment;
 @Getter
 @Setter
 public class IssueReportRequest {
+  /** The ID of the candidate submitting the report. */
+  private Long candidateId;
 
   /** The assignment associated with the issue being reported. */
   private ServiceAssignment assignment;
