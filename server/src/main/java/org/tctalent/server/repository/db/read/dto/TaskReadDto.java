@@ -54,6 +54,7 @@ public class TaskReadDto {
     private Long id;
     private String name;
     private boolean optional;
+    private boolean notifyOnAssignment;
 
     private TaskType taskType;
 
