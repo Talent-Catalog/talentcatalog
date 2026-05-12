@@ -144,10 +144,6 @@ dependencies {
     implementation group: 'com.slack.api', name: 'slack-api-client', version: '1.48.1'
     implementation("org.jdom:jdom2")
 
-//  Artifact Relocated: mysql » mysql-connector-java → com.mysql » mysql-connector-j
-//  https://mvnrepository.com/artifact/com.mysql/mysql-connector-j
-    implementation group: 'com.mysql', name: 'mysql-connector-j', version: '9.7.0'
-
     //See https://github.com/samdjstevens/java-totp/tree/master/totp-spring-boot-starter
     implementation 'dev.samstevens.totp:totp-spring-boot-starter:1.7.1'
 
