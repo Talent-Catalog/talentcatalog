@@ -245,10 +245,18 @@ _To be agreed._
 
 ### Context
 
-Linear has three role levels: **Admin**, **Member**, and **Guest**. Roles must be assigned to everyone who needs access to the workspace. Two questions of principle need to be agreed:
+Linear has three role levels: **Admin**, **Member**, and **Guest**. All three are billed as paid seats; Linear bills per unsuspended user regardless of role.
+
+Plan-dependent availability is important:
+
+- **Guest role requires the Business plan ($16/user/month) or Enterprise.** It is not available on Free or Basic.
+- On Basic, everyone with access is a Member (or Admin) — there is no read-only / scoped option for stakeholders.
+
+Three questions of principle need to be agreed:
 
 1. How permissively or strictly to assign roles within the core team.
 2. Whether to invite external open-source contributors to Linear (e.g. as Guests).
+3. Whether the need for Guest access for non-technical stakeholders is significant enough to require the Business plan.
 
 ### Decision
 
@@ -258,7 +266,7 @@ Linear has three role levels: **Admin**, **Member**, and **Guest**. Roles must b
 |---|---|---|
 | Admin | Core maintainers (a small subset of the team) | Manage workspace settings, integrations, members, and teams. |
 | Member | All core developers with regular commit activity | Full ability to create and manage issues, participate in cycles, update states. |
-| Guest | Product or non-technical stakeholders requiring visibility but not full participation | Read + comment access on specific Projects or teams. |
+| Guest | Product or non-technical stakeholders requiring visibility but not full participation | Read + comment access on specific Projects or teams. **Requires Business plan.** |
 
 Named role assignments are operational and will be maintained outside this record.
 
