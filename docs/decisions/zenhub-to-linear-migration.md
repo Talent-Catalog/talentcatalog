@@ -55,3 +55,27 @@ Branches use the Linear-generated format (`{dev}/{linear-id}-description`, e.g. 
 ### Decision
 
 _To be agreed._
+
+---
+
+## Decision 3: Historical ZenHub Data
+
+**Status:** Decided
+
+### Context
+
+ZenHub stores sprint history, velocity data, and burndown charts. This data does not export cleanly to Linear and cannot be carried over.
+
+### Options
+
+**Option A — Export and archive**  
+Export ZenHub data as CSV before decommissioning and archive externally (e.g. in `docs/` or a shared drive). Accept that Linear's velocity tracking will start fresh.
+
+**Option B — Discard**  
+Make no effort to preserve historical data. ZenHub data is lost on decommissioning.
+
+### Decision
+
+**Option A — Export and archive.**
+
+ZenHub's sprint and velocity tracking has not been a strong feature of the tool in practice, so the loss of in-app history is minimal. Archiving preserves the record for completeness at negligible effort. Linear's velocity metrics will reset and stabilise over the first 3–4 cycles.
