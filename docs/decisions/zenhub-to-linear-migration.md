@@ -79,3 +79,27 @@ Make no effort to preserve historical data. ZenHub data is lost on decommissioni
 **Option A — Export and archive.**
 
 ZenHub's sprint and velocity tracking has not been a strong feature of the tool in practice, so the loss of in-app history is minimal. Archiving preserves the record for completeness at negligible effort. Linear's velocity metrics will reset and stabilise over the first 3–4 cycles.
+
+---
+
+## Decision 4: Workspace and Team Structure
+
+**Status:** Pending
+
+### Context
+
+Linear is organised as a workspace containing one or more teams. Each team has its own issue ID prefix (e.g. `TC-123`), workflow states, and cycles. The choice affects how product planning, roadmaps, and reporting are scoped.
+
+### Options
+
+**Option A — Single team**  
+One workspace, one team (`Talent Catalog`). All issues share a single prefix. Simpler day-to-day; product planning is scoped across the whole project.
+
+**Option B — Multiple teams**  
+One workspace, multiple teams (e.g. `Backend`, `Frontend`, `Platform`). Each team has its own prefix, cycles, and roadmap. Allows independent planning per stream at the cost of added structural complexity.
+
+### Decision
+
+_To be agreed._
+
+**Recommendation:** Start with Option A. Split into multiple teams later if product management identifies a clear need to plan streams independently.
