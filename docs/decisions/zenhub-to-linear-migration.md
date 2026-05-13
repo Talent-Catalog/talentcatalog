@@ -241,7 +241,7 @@ _To be agreed._
 
 ## Decision 9: Access Control and Role Assignment
 
-**Status:** Pending
+**Status:** Partially decided
 
 ### Context
 
@@ -252,11 +252,10 @@ Plan-dependent availability is important:
 - **Guest role requires the Business plan ($16/user/month) or Enterprise.** It is not available on Free or Basic.
 - On Basic, everyone with access is a Member (or Admin) — there is no read-only / scoped option for stakeholders.
 
-Three questions of principle need to be agreed:
+Two questions of principle need to be agreed:
 
 1. How permissively or strictly to assign roles within the core team.
-2. Whether to invite external open-source contributors to Linear (e.g. as Guests).
-3. Whether the need for Guest access for non-technical stakeholders is significant enough to require the Business plan.
+2. Whether the need for Guest access for non-technical stakeholders is significant enough to require the Business plan.
 
 ### Decision
 
