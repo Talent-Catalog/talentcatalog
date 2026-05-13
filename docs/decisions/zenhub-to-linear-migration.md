@@ -275,3 +275,26 @@ Named role assignments are operational and will be maintained outside this recor
 External contributors are **not** invited to Linear, even as Guests. They continue to interact exclusively through GitHub Issues and PRs. The GitHub ↔ Linear sync handles the bridge.
 
 Rationale: the contributor pool is open-ended (anyone on GitHub) and cannot be managed at scale through Linear's per-seat model. GitHub Issues remains the public-facing contributor interface (consistent with Decision 1).
+
+---
+
+## Decision 10: GitHub ↔ Linear Sync Direction
+
+**Status:** Decided
+
+### Context
+
+Linear offers two GitHub sync modes ([docs](https://linear.app/docs/github-to-linear#github-sync-options)):
+
+- **Unidirectional** — Issues flow only GitHub → Linear. Linear-only issues stay in Linear. Comments, status, and images sync both ways for issues that exist in both systems.
+- **Bidirectional** — Issues, comments, status, images, and deletions flow both ways regardless of where the issue originated.
+
+### Decision
+
+**Bidirectional sync.**
+
+### Rationale
+
+- **Transparency-by-default.** GitHub remains canonical (Decision 1) and publicly visible. The team wants every Linear-created issue to also appear in GitHub so external contributors see the full picture.
+- **No private layer.** A class of Linear-only issues invisible to external contributors would conflict with the project's open-source intent.
+- **Image sync for all issues.** Bidirectional ensures images sync in both directions for all issues — an improvement over ZenHub.
