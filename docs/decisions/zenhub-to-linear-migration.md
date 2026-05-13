@@ -117,20 +117,21 @@ Linear teams have a configurable set of workflow states that issues move through
 ### Options
 
 **Option A — Linear defaults**  
-Use Linear's out-of-the-box states: `Backlog`, `Todo`, `In Progress`, `In Review`, `Done`, `Cancelled`, `Duplicate`. Minimal setup; consistent with other Linear users joining the team.
+Use Linear's out-of-the-box states: `Backlog`, `Todo`, `In Progress`, `In Review`, `Done`, `Canceled`, `Duplicate`. Minimal setup; consistent with other Linear users joining the team.
 
 **Option B — Custom set aligned to current process**  
 Adopt a state set that mirrors the existing ZenHub pipeline and adds a `Triage` state for open-source intake:
 
-| State | Type | Equivalent |
-|---|---|---|
-| Triage | Triage | New GitHub issues needing maintainer review |
-| Backlog | Backlog | Approved, not yet scheduled |
-| Ready | Unstarted | Pulled into current cycle |
+| State       | Type | Equivalent |
+|-------------|---|---|
+| Triage      | Triage | New GitHub issues needing maintainer review |
+| Backlog     | Backlog | Approved, not yet scheduled |
+| Todo        | Unstarted | Pulled into current cycle |
 | In Progress | Started | Active development |
-| In Review | Started | PR open, awaiting review |
-| Done | Completed | Merged to staging |
-| Cancelled | Cancelled | Rejected or won't-do |
+| In Review   | Started | PR open, awaiting review |
+| Done        | Completed | Merged to staging |
+| Cancelled   | Cancelled | Rejected or won't-do |
+| Duplicate   | Cancelled | Already tracked by another issue |
 
 ### Decision
 
