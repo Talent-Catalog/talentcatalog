@@ -103,3 +103,37 @@ One workspace, multiple teams (e.g. `Backend`, `Frontend`, `Platform`). Each tea
 _To be agreed._
 
 **Recommendation:** Start with Option A. Split into multiple teams later if product management identifies a clear need to plan streams independently.
+
+---
+
+## Decision 5: Workflow States
+
+**Status:** Pending
+
+### Context
+
+Linear teams have a configurable set of workflow states that issues move through. Linear ships with a default set; the team can adopt those defaults or define a custom set tailored to the existing development process.
+
+### Options
+
+**Option A — Linear defaults**  
+Use Linear's out-of-the-box states: `Backlog`, `Todo`, `In Progress`, `In Review`, `Done`, `Cancelled`, `Duplicate`. Minimal setup; consistent with other Linear users joining the team.
+
+**Option B — Custom set aligned to current process**  
+Adopt a state set that mirrors the existing ZenHub pipeline and adds a `Triage` state for open-source intake:
+
+| State | Type | Equivalent |
+|---|---|---|
+| Triage | Triage | New GitHub issues needing maintainer review |
+| Backlog | Backlog | Approved, not yet scheduled |
+| Ready | Unstarted | Pulled into current cycle |
+| In Progress | Started | Active development |
+| In Review | Started | PR open, awaiting review |
+| Done | Completed | Merged to staging |
+| Cancelled | Cancelled | Rejected or won't-do |
+
+### Decision
+
+_To be agreed._
+
+**Recommendation:** Option B. The `Triage` state is particularly valuable for an open-source project — external GitHub issues land there before being reviewed by maintainers. The remaining states match the team's existing mental model of the pipeline.
