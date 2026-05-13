@@ -16,7 +16,7 @@
 
 import {ShowCandidatesComponent} from "./show-candidates.component";
 import {ComponentFixture, fakeAsync, TestBed, tick} from "@angular/core/testing";
-import {ReactiveFormsModule, UntypedFormBuilder} from "@angular/forms";
+import {FormsModule, ReactiveFormsModule, UntypedFormBuilder} from "@angular/forms";
 import {SortedByComponent} from "../../util/sort/sorted-by.component";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {RouterTestingModule} from "@angular/router/testing";
@@ -26,6 +26,7 @@ import {
   NgbPaginationModule,
   NgbTypeaheadModule
 } from "@ng-bootstrap/ng-bootstrap";
+import {NgSelectModule} from "@ng-select/ng-select";
 import {DatePipe, TitleCasePipe} from "@angular/common";
 import {CandidateService} from "../../../services/candidate.service";
 import {
@@ -93,7 +94,9 @@ describe('ShowCandidatesComponent', () => {
         RouterTestingModule,
         NgbTypeaheadModule,
         NgbPaginationModule,
-        ReactiveFormsModule
+        FormsModule,
+        ReactiveFormsModule,
+        NgSelectModule
       ],
       providers: [
         UntypedFormBuilder,
@@ -447,5 +450,80 @@ describe('ShowCandidatesComponent', () => {
     expect(component.error).toBe('Action failed');
     expect(component.actionSuccessMessage).toBeNull();
   }));
+
+  describe('page size preference', () => {
+    const triggerSourceChange = () => component.ngOnChanges({
+      candidateSource: {
+        currentValue: component.candidateSource,
+        previousValue: null,
+        firstChange: true,
+        isFirstChange: () => true
+      }
+    });
+
+    beforeEach(() => {
+      mockCandidateSourceCandidateService.searchPaged.and.returnValue(
+        of({content: [], totalElements: 0, number: 0, size: 20})
+      );
+    });
+
+    it('should fall back to 20 when no preference is stored and @Input is not set', fakeAsync(() => {
+      mockLocalStorageService.get.and.returnValue(null);
+      component.pageSize = undefined as any;
+
+      triggerSourceChange();
+      tick();
+
+      expect(component.pageSize).toBe(20);
+    }));
+
+    it('should fall back to 20 when stored value is not a valid option', fakeAsync(() => {
+      mockLocalStorageService.get.and.callFake((key: string) =>
+        key.endsWith('PageSize') ? '42' : null
+      );
+      component.pageSize = undefined as any;
+
+      triggerSourceChange();
+      tick();
+
+      expect(component.pageSize).toBe(20);
+    }));
+
+    it('should restore a valid stored preference', fakeAsync(() => {
+      mockLocalStorageService.get.and.callFake((key: string) =>
+        key.endsWith('PageSize') ? '50' : null
+      );
+
+      triggerSourceChange();
+      tick();
+
+      expect(component.pageSize).toBe(50);
+    }));
+
+    it('should keep a valid @Input value when no preference is stored', fakeAsync(() => {
+      mockLocalStorageService.get.and.returnValue(null);
+      component.pageSize = 50;
+
+      triggerSourceChange();
+      tick();
+
+      expect(component.pageSize).toBe(50);
+    }));
+
+    it('onPageSizeChange should update pageSize, reset pageNumber, persist preference and trigger search',
+      () => {
+      spyOn(component, 'doSearch');
+      mockLocalStorageService.set.calls.reset();
+
+      component.onPageSizeChange(50);
+
+      expect(component.pageSize).toBe(50);
+      expect(component.pageNumber).toBe(1);
+      expect(mockLocalStorageService.set).toHaveBeenCalledWith(
+        jasmine.stringContaining('PageSize'), '50'
+      );
+      expect(component.doSearch).toHaveBeenCalledWith(true);
+    });
+  });
 
 });
