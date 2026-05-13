@@ -137,3 +137,31 @@ Adopt a state set that mirrors the existing ZenHub pipeline and adds a `Triage` 
 _To be agreed._
 
 **Recommendation:** Option B. The `Triage` state is particularly valuable for an open-source project — external GitHub issues land there before being reviewed by maintainers. The remaining states match the team's existing mental model of the pipeline.
+
+---
+
+## Decision 6: Labels
+
+**Status:** Pending
+
+### Context
+
+Linear's GitHub Issues Sync syncs labels bidirectionally along with title, description, status, assignee, and comments. Once sync is enabled, the existing GitHub label set becomes the Linear label set automatically; labels applied in either system propagate to the other. There is effectively one shared label taxonomy across both systems.
+
+The current GitHub label set has accumulated over time. It contains structurally meaningful labels (e.g. `bug`, `enhancement`, `hotfix`, `tech debt`, `blocked`) alongside several that may be stale, overlapping, or inconsistently used.
+
+Priorities are not in scope here. Linear's built-in priority system (`Urgent` / `High` / `Medium` / `Low` / `No Priority`) is adopted as-is; there is no meaningful alternative.
+
+### Options
+
+**Option A — Adopt the existing labels as-is**  
+Enable sync without modification. The current GitHub label set becomes the Linear label set. No clean-up effort, but inherits existing label drift and duplication.
+
+**Option B — Tidy up before sync**  
+Audit and consolidate the existing GitHub labels before enabling Linear sync: retire stale labels, merge overlapping ones, rename inconsistent ones. The cleaner set then propagates into Linear.
+
+### Decision
+
+_To be agreed._
+
+**Recommendation:** Option B. The migration is a natural opportunity to clean up the label set with minimal disruption. Cleaning labels in GitHub first ensures the tidier taxonomy is what Linear inherits.
