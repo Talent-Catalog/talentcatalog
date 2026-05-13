@@ -165,3 +165,74 @@ Audit and consolidate the existing GitHub labels before enabling Linear sync: re
 _To be agreed._
 
 **Recommendation:** Option B. The migration is a natural opportunity to clean up the label set with minimal disruption. Cleaning labels in GitHub first ensures the tidier taxonomy is what Linear inherits.
+
+---
+
+## Decision 7: Cycle Cadence and Cool-down
+
+**Status:** Partially decided
+
+### Context
+
+Linear calls sprints "Cycles". Each cycle has two configurable dimensions, and crucially they are **separate periods**, not nested:
+
+- **Cycle** — the active development period during which issues are assigned and worked on.
+- **Cool-down** — an optional, unscheduled period **between** cycles. Issues cannot be assigned to a cool-down; it is dedicated time for retro, planning, tech debt, and smaller cross-cutting work.
+
+The cool-down concept does not exist in ZenHub sprints and is new for the team. Because cool-down is not part of the cycle, choosing to enable it lengthens the overall delivery cadence unless cycle length is reduced to compensate.
+
+The team currently runs 3-week sprints in ZenHub.
+
+### Options
+
+| Option | Cycle | Cool-down | Effective cadence | Notes |
+|---|---|---|---|---|
+| A | 3 weeks | 0 (disabled) | 3 weeks | Mirrors current ZenHub rhythm exactly. Simple and predictable, but loses the benefit of structured cool-down. |
+| B | 3 weeks | 1 week | 4 weeks | Adds breathing room, but ~25% fewer cycles per year than today. |
+| C | 2 weeks | 1 week | 3 weeks | Preserves the overall 3-week cadence but with shorter active work blocks. |
+
+### Decision
+
+_To be agreed._
+
+**Recommendation:** Option C is a reasonable compromise — it preserves the overall delivery cadence the team is used to while introducing structured cool-down time. Option A is the safest like-for-like if the team prefers to defer the cool-down experiment. Option B is only attractive if the team is comfortable with a slower overall cadence.
+
+Both dimensions can be revisited later; Linear supports changing cadence without losing historical cycle data.
+
+---
+
+## Decision 8: Projects and Initiatives
+
+**Status:** Pending
+
+### Context
+
+Linear provides two organisational layers above individual issues:
+
+- **Projects** — collections of related issues sharing a goal and target date. Direct equivalent to ZenHub epics.
+- **Initiatives** — higher-level strategic groupings of multiple projects.
+
+ZenHub epics are in active use today. ZenHub also offers an Initiatives feature, but its implementation is clunky compared to Linear's, and it has not been meaningfully adopted by the team. The migration is effectively a clean slate for using Initiatives in practice.
+
+Importantly, Initiatives are not just optional decoration — they are the strategic grouping layer that organises Linear's roadmap view. Without Initiatives, the roadmap is flat (a timeline of projects with no higher-level structure). With Initiatives, the roadmap shows projects grouped by strategic theme, which is the view most useful for product-level planning.
+
+(Note: Linear's separate **Releases** feature is unrelated to Initiatives. Releases track actual software deployments via CI/CD integration and answer "what is live in production?" — they are a deployment artefact, not a planning one.)
+
+### Options
+
+**Option A — Projects only (initially)**  
+Use Projects as a 1:1 replacement for ZenHub epics. Defer Initiatives until product management identifies a clear need and groupings for a higher-level layer.
+
+**Option B — Projects and Initiatives from the start**  
+Adopt both layers immediately. Use Initiatives to express longer-term strategic themes that span multiple projects and cycles, for example:
+
+- _Service partnership ecosystem_
+- _Global scale and resilience_
+- _Trust, privacy and consent_
+- _Candidate matching intelligence_
+
+### Decision
+
+_To be agreed._
+
+**Recommendation:** Option B. Improved roadmap capability is a primary driver for the migration, and Initiatives are the layer that gives Linear's roadmap its strategic structure. Deferring them would result in a flat roadmap that fails to deliver one of the main benefits of moving away from ZenHub. Starting with a small, well-chosen set of Initiatives gives product management a meaningful roadmap from day one.
