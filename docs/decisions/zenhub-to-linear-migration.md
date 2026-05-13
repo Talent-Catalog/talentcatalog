@@ -236,3 +236,34 @@ Adopt both layers immediately. Use Initiatives to express longer-term strategic 
 _To be agreed._
 
 **Recommendation:** Option B. Improved roadmap capability is a primary driver for the migration, and Initiatives are the layer that gives Linear's roadmap its strategic structure. Deferring them would result in a flat roadmap that fails to deliver one of the main benefits of moving away from ZenHub. Starting with a small, well-chosen set of Initiatives gives product management a meaningful roadmap from day one.
+
+---
+
+## Decision 9: Access Control and Role Assignment
+
+**Status:** Pending
+
+### Context
+
+Linear has three role levels: **Admin**, **Member**, and **Guest**. Roles must be assigned to everyone who needs access to the workspace. Two questions of principle need to be agreed:
+
+1. How permissively or strictly to assign roles within the core team.
+2. Whether to invite external open-source contributors to Linear (e.g. as Guests).
+
+### Decision
+
+**Role assignment principles**
+
+| Role | Assigned to | Rationale |
+|---|---|---|
+| Admin | Core maintainers (a small subset of the team) | Manage workspace settings, integrations, members, and teams. |
+| Member | All core developers with regular commit activity | Full ability to create and manage issues, participate in cycles, update states. |
+| Guest | Product or non-technical stakeholders requiring visibility but not full participation | Read + comment access on specific Projects or teams. |
+
+Named role assignments are operational and will be maintained outside this record.
+
+**External open-source contributors**
+
+External contributors are **not** invited to Linear, even as Guests. They continue to interact exclusively through GitHub Issues and PRs. The GitHub ↔ Linear sync handles the bridge.
+
+Rationale: the contributor pool is open-ended (anyone on GitHub) and cannot be managed at scale through Linear's per-seat model. GitHub Issues remains the public-facing contributor interface (consistent with Decision 1).
