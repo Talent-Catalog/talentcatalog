@@ -21,11 +21,16 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.data.rest.core.annotation.RestResource;
 import org.springframework.lang.NonNull;
+import org.tctalent.server.configuration.RestRepositoryConfig;
 import org.tctalent.server.model.db.CandidatePropertyDefinition;
 
 /**
  * Expose a Spring Data Rest API for CandidatePropertyDefinition.
- *
+ * <p>
+ * The API is exposed at /api/hal/candidate-property-definitions.
+ * <p>
+ * See {@link RestRepositoryConfig} for more details.
+ * <p>
  * @author John Cameron
  */
 @RepositoryRestResource(path="candidate-property-definitions")

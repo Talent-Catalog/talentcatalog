@@ -21,9 +21,18 @@ import org.springframework.data.rest.core.config.RepositoryRestConfiguration;
 import org.springframework.data.rest.core.mapping.RepositoryDetectionStrategy.RepositoryDetectionStrategies;
 import org.springframework.data.rest.webmvc.config.RepositoryRestConfigurer;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.tctalent.server.repository.db.CandidatePropertyDefinitionRepository;
 
 /**
- * Set up our use of Spring Data Rest repository-driven APIs.
+ * Set up our use of
+ * <a href="https://docs.spring.io/spring-data/rest/docs/current/reference/html/#_repository_rest_resources">
+ *     Spring Data Rest</a> repository-driven APIs.
+ * <p>
+ * The API is exposed at /api/hal.
+ * <p>
+ * Exposed repositories are determined by the presence of the @RepositoryRestResource annotation.
+ * <p>
+ * See for example {@link CandidatePropertyDefinitionRepository}.
  *
  * @author John Cameron
  */
