@@ -14,13 +14,12 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, OnInit} from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 import {UntypedFormBuilder, UntypedFormGroup} from '@angular/forms';
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {CandidateService} from "../../../../../services/candidate.service";
 import {Candidate} from "../../../../../model/candidate";
 import {CountryService} from "../../../../../services/country.service";
-import {AuthenticationService} from "../../../../../services/authentication.service";
 
 @Component({
   selector: 'app-edit-candidate-additional-info',
@@ -30,7 +29,7 @@ import {AuthenticationService} from "../../../../../services/authentication.serv
 export class EditCandidateAdditionalInfoComponent implements OnInit {
 
   candidateId: number;
-
+  @Input() showAspirations = false;
   candidateForm: UntypedFormGroup;
 
   error;
@@ -40,8 +39,7 @@ export class EditCandidateAdditionalInfoComponent implements OnInit {
   constructor(private activeModal: NgbActiveModal,
               private fb: UntypedFormBuilder,
               private candidateService: CandidateService,
-              private countryService: CountryService,
-              private authenticationService: AuthenticationService) {
+              private countryService: CountryService) {
   }
 
   ngOnInit() {
@@ -75,9 +73,5 @@ export class EditCandidateAdditionalInfoComponent implements OnInit {
 
   dismiss() {
     this.activeModal.dismiss(false);
-  }
-
-  showAspirations(): boolean {
-    return this.authenticationService.isGrnInstance();
   }
 }

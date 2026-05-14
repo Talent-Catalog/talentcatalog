@@ -46,6 +46,7 @@ export class ViewCandidateAdditionalInfoComponent implements OnInit {
     });
 
     editAdditionalInfoModal.componentInstance.candidateId = this.candidate.id;
+    editAdditionalInfoModal.componentInstance.showAspirations = this.showAspirations;
 
     editAdditionalInfoModal.result
       .then((candidate) => this.candidateService.updateCandidate())
