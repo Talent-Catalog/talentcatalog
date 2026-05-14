@@ -18,22 +18,19 @@ import {Injectable} from '@angular/core';
 import {HttpEvent, HttpHandler, HttpInterceptor, HttpRequest} from '@angular/common/http';
 import {Observable, throwError} from 'rxjs';
 import {catchError} from 'rxjs/operators';
+import {Router} from "@angular/router";
 import {AuthenticationService} from "./authentication.service";
 
 
 @Injectable()
 export class ErrorInterceptor implements HttpInterceptor {
-  constructor(private authenticationService: AuthenticationService) { }
+  constructor(private authenticationService: AuthenticationService,
+              private router: Router) { }
 
   intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     return next.handle(request).pipe(catchError(err => {
-      if (err.status === 401 || err.status === 403) {
-        // auto logout if Access Denied errors (eg 401) are returned from api
-        console.log("Automatic logout because of access denied error: " + err);
-        this.authenticationService.logout();
-      }
-
       console.log(err);
+      //Convert the incoming error to a simple string
       let error: string;
       if (err.error !== null) {
         error = err.error.message;
@@ -42,7 +39,15 @@ export class ErrorInterceptor implements HttpInterceptor {
       } else {
         error = err.status + " " + err.statusText;
       }
-      return throwError(error);
+
+      if (err.status === 401 || err.status === 403) {
+        // auto logout if Access Denied errors (eg 401) are returned from api
+        this.router.navigate(['/logout'],
+          { queryParams: { reason: error } });
+      } else {
+        //otherwise but throw an error for the code to handle
+        return throwError(error);
+      }
     }));
   }
 }
