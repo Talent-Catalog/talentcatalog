@@ -73,7 +73,8 @@ describe('TasksMonitorComponent', () => {
           uploadType: UploadType.cv,
           uploadSubfolderName: 'cvs',
           uploadableFileTypes: 'pdf,doc,docx',
-          candidateAnswerField: 'N/A'
+          candidateAnswerField: 'N/A',
+          notifyOnAssignment: false
         },
         answer: 'Sample Answer'
       }
@@ -124,7 +125,8 @@ describe('TasksMonitorComponent', () => {
           uploadType: UploadType.cv,
           uploadSubfolderName: 'cvs',
           uploadableFileTypes: 'pdf,doc,docx',
-          candidateAnswerField: 'N/A'
+          candidateAnswerField: 'N/A',
+          notifyOnAssignment: false
         },
         answer: 'Sample Answer'
       }

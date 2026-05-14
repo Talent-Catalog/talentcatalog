@@ -39,6 +39,7 @@ describe('Task Assignment Sort Function', () => {
     uploadSubfolderName: '',
     uploadableFileTypes: '',
     candidateAnswerField: '',
+    notifyOnAssignment: false,
   };
 
   const mockTask2: Task = {
@@ -54,6 +55,7 @@ describe('Task Assignment Sort Function', () => {
     uploadSubfolderName: '',
     uploadableFileTypes: '',
     candidateAnswerField: '',
+    notifyOnAssignment: false,
   };
 
   const mockTaskAssignment1: TaskAssignment = {
