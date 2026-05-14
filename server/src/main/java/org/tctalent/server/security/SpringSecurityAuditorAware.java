@@ -22,6 +22,7 @@ import org.jetbrains.annotations.NotNull;
 import org.springframework.data.domain.AuditorAware;
 import org.springframework.stereotype.Component;
 import org.tctalent.server.model.db.User;
+import org.tctalent.server.service.db.UserService;
 
 /**
  * Resolves the current auditor {@link User} for Spring Data JPA auditing.
@@ -33,7 +34,7 @@ import org.tctalent.server.model.db.User;
  * <p>
  * Strategy:
  * <ul>
- *   <li>Use the logged-in user from {@link AuthService} when available.</li>
+ *   <li>Use a live logged-in user entity from {@link UserService} when available.</li>
  *   <li>Otherwise use a startup-cached system admin id and return a lightweight user shell
  *   (id only), so auditing can write FK values without loading the full User graph.</li>
  * </ul>
@@ -44,7 +45,7 @@ import org.tctalent.server.model.db.User;
 @RequiredArgsConstructor
 public class SpringSecurityAuditorAware implements AuditorAware<User> {
 
-    private final AuthService authService;
+    private final UserService userService;
 
     /**
      * Cached once during startup and then read by request threads.
@@ -65,10 +66,9 @@ public class SpringSecurityAuditorAware implements AuditorAware<User> {
     @NotNull
     @Override
     public Optional<User> getCurrentAuditor() {
-        Optional<User> loggedInUser = authService.getLoggedInUser()
-            .filter(user -> user.getId() != null);
-        if (loggedInUser.isPresent()) {
-            return loggedInUser;
+        User loggedInUser = userService.getLoggedInUser();
+        if (loggedInUser != null) {
+            return Optional.of(loggedInUser);
         }
 
         if (systemAdminId != null) {
