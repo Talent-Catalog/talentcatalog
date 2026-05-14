@@ -28,8 +28,9 @@ describe('DownloadCvComponent', () => {
   let candidateServiceSpy: jasmine.SpyObj<CandidateService>;
   let activeModalSpy: jasmine.SpyObj<NgbActiveModal>;
   let windowOpenSpy: jasmine.Spy;
+
   beforeEach(async () => {
-    const candidateService = jasmine.createSpyObj('CandidateService', ['downloadCv']);
+    const candidateService = jasmine.createSpyObj('CandidateService', ['downloadCv', 'downloadCvDocx']);
     const activeModal = jasmine.createSpyObj('NgbActiveModal', ['close', 'dismiss']);
 
     await TestBed.configureTestingModule({
@@ -47,6 +48,7 @@ describe('DownloadCvComponent', () => {
     candidateServiceSpy = TestBed.inject(CandidateService) as jasmine.SpyObj<CandidateService>;
     activeModalSpy = TestBed.inject(NgbActiveModal) as jasmine.SpyObj<NgbActiveModal>;
     windowOpenSpy = spyOn(window, 'open').and.returnValue({ location: { href: '' } } as Window);
+
     fixture.detectChanges();
   });
 
@@ -56,31 +58,60 @@ describe('DownloadCvComponent', () => {
 
   it('should initialize form with default values', () => {
     expect(component.form).toBeDefined();
-    expect(component.form.value).toEqual({ name: false, contact: false });
+    expect(component.form.value).toEqual({
+      name: false,
+      contact: false,
+      format: 'pdf'
+    });
   });
 
-  it('should call downloadCv and close modal on success', () => {
+  it('should call downloadCv and close modal on success for pdf', () => {
     const request: DownloadCVRequest = {
       candidateId: component.candidateId,
       showName: false,
       showContact: false,
     };
-    const fakeBlob = new Blob();
 
+    const fakeBlob = new Blob();
     candidateServiceSpy.downloadCv.and.returnValue(of(fakeBlob));
+
+    component.form.patchValue({ format: 'pdf' });
     component.onSave();
 
     expect(candidateServiceSpy.downloadCv).toHaveBeenCalledWith(request);
+    expect(candidateServiceSpy.downloadCvDocx).not.toHaveBeenCalled();
     expect(activeModalSpy.close).toHaveBeenCalled();
-    expect(windowOpenSpy).toHaveBeenCalled(); // Ensure window.open was called
+    expect(windowOpenSpy).toHaveBeenCalled();
+  });
+
+  it('should call downloadCvDocx and close modal on success for docx', () => {
+    const request: DownloadCVRequest = {
+      candidateId: component.candidateId,
+      showName: false,
+      showContact: false,
+    };
+
+    const fakeBlob = new Blob();
+    candidateServiceSpy.downloadCvDocx.and.returnValue(of(fakeBlob));
+
+    component.form.patchValue({ format: 'docx' });
+    component.onSave();
+
+    expect(candidateServiceSpy.downloadCvDocx).toHaveBeenCalledWith(request);
+    expect(candidateServiceSpy.downloadCv).not.toHaveBeenCalled();
+    expect(activeModalSpy.close).toHaveBeenCalled();
+    expect(windowOpenSpy).toHaveBeenCalled();
   });
 
   it('should set error message on failure', () => {
     const errorResponse = 'Error downloading CV';
     candidateServiceSpy.downloadCv.and.returnValue(throwError(errorResponse));
+    component.form.patchValue({ format: 'pdf' });
+    
     component.onSave();
+
     expect(component.error).toBe(errorResponse);
-    expect(activeModalSpy.close).not.toHaveBeenCalled(); // Modal should not be closed on error
+    expect(activeModalSpy.close).not.toHaveBeenCalled();
   });
 
   it('should close the modal', () => {
@@ -93,21 +124,20 @@ describe('DownloadCvComponent', () => {
     expect(activeModalSpy.dismiss).toHaveBeenCalledWith(false);
   });
 
-  it('should disable save button if form is invalid or loading or saving', () => {
+  it('should disable save button if loading', () => {
     component.loading = true;
     fixture.detectChanges();
-    let saveButton = fixture.debugElement.nativeElement.querySelector('.modal-footer .btn-primary');
-    expect(saveButton.disabled).toBeTruthy();
 
+    const saveButton = fixture.debugElement.nativeElement.querySelector('.modal-footer .btn-primary');
+    expect(saveButton.disabled).toBeTruthy();
+  });
+
+  it('should disable save button if saving', () => {
     component.loading = false;
     component.saving = true;
     fixture.detectChanges();
-    saveButton = fixture.debugElement.nativeElement.querySelector('.modal-footer .btn-primary');
-    expect(saveButton.disabled).toBeTruthy();
 
-    component.form.get('name').setValue(null);
-    fixture.detectChanges();
-    saveButton = fixture.debugElement.nativeElement.querySelector('.modal-footer .btn-primary');
+    const saveButton = fixture.debugElement.nativeElement.querySelector('.modal-footer .btn-primary');
     expect(saveButton.disabled).toBeTruthy();
   });
 
@@ -122,17 +152,19 @@ describe('DownloadCvComponent', () => {
 
   it('should call onSave when save button is clicked', () => {
     spyOn(component, 'onSave');
-    component.form.setValue({ name: true, contact: true });
+
+    component.form.setValue({ name: true, contact: true, format: 'pdf' });
     component.loading = false;
     component.saving = false;
     fixture.detectChanges();
 
     const saveButton = fixture.debugElement.nativeElement.querySelector('.modal-footer .btn-primary');
     saveButton.click();
+
     expect(component.onSave).toHaveBeenCalled();
   });
 
-  it('should call dismiss when cancel button is clicked (wired in test)', () => {
+  it('should call dismiss when cancel button is clicked', () => {
     const dismissSpy = spyOn(component, 'dismiss');
     fixture.detectChanges();
 
@@ -141,12 +173,11 @@ describe('DownloadCvComponent', () => {
 
     const cancelBtn: HTMLButtonElement =
       fixture.debugElement.nativeElement.querySelector('.modal-footer .btn-secondary');
-    expect(cancelBtn).withContext('Cancel button not found').toBeTruthy();
+
+    expect(cancelBtn).toBeTruthy();
 
     cancelBtn.click();
 
     expect(dismissSpy).toHaveBeenCalled();
   });
-
-
 });

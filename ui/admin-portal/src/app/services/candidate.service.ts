@@ -42,6 +42,11 @@ export interface DownloadCVRequest {
   showContact: boolean
 }
 
+export interface GoogleFileSystemFile {
+  id: string,
+  name: string,
+  url: string
+}
 // If a completed date is provided, this intake is an external intake entered to the TC at a later date.
 export interface IntakeAuditRequest {
   completedDate: Date,
@@ -164,6 +169,30 @@ export class CandidateService implements IntakeService {
           return new Blob([res], { type: 'application/pdf', });
         })
       );
+  }
+
+  downloadCvDocx(request: DownloadCVRequest) {
+    return this.http.post(
+      `${this.apiUrl}/${request.candidateId}/cv.docx`,
+      request,
+      {responseType: 'blob'}
+    ).pipe(
+      map(res => {
+        return new Blob(
+          [res],
+          {
+            type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+          }
+        );
+      })
+    );
+  }
+  
+  createGoogleDoc(request: DownloadCVRequest): Observable<GoogleFileSystemFile> {
+    return this.http.post<GoogleFileSystemFile>(
+      `${this.apiUrl}/${request.candidateId}/cv.google-doc`,
+      request
+    );
   }
 
   createCandidateFolder(candidateId: number): Observable<Candidate> {

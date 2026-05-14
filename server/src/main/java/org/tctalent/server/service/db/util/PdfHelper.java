@@ -29,8 +29,6 @@ import org.tctalent.server.exception.PdfGenerationException;
 import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.service.db.impl.TcInstanceService;
-import org.tctalent.server.util.html.HtmlSanitizer;
-import org.tctalent.server.util.html.StringSanitizer;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 import org.w3c.tidy.Tidy;
@@ -55,7 +53,7 @@ public class PdfHelper {
 
     private final TemplateEngine pdfTemplateEngine;
     private final TcInstanceService tcInstanceService;
-
+    private final CvExportDataPreparer cvExportDataPreparer;
     /**
      * Note - we can't use Lombok RequiredArgsConstructor because currently Lombok doesn't copy
      * the @Qualifier annotation to the constructor.
@@ -64,9 +62,10 @@ public class PdfHelper {
      *     Intellij doc</a>
      */
     public PdfHelper(@Qualifier("pdfTemplateEngine") TemplateEngine pdfTemplateEngine,
-        TcInstanceService tcInstanceService) {
+        TcInstanceService tcInstanceService, CvExportDataPreparer cvExportDataPreparer) {
         this.pdfTemplateEngine = pdfTemplateEngine;
         this.tcInstanceService = tcInstanceService;
+        this.cvExportDataPreparer = cvExportDataPreparer;
     }
 
     /**
@@ -79,11 +78,7 @@ public class PdfHelper {
      */
     public Resource generatePdf(Candidate candidate, Boolean showName, Boolean showContact){
         try {
-
-            if (Boolean.TRUE.equals(showContact)) {
-                cleanCandidateContactInfo(candidate);
-            }
-            cleanCandidateJobDescriptions(candidate);
+            candidate = cvExportDataPreparer.prepare(candidate, showContact);
 
             Context context = new Context();
             context.setVariable("candidate", candidate);
@@ -99,41 +94,14 @@ public class PdfHelper {
 
             // And finally, we create the PDF:
             return createPdf(xHtml);
-
         } catch (Exception e) {
             LogBuilder.builder(log)
                 .action("generatePdf")
                 .message("Error generating PDF")
                 .logError(e);
-
            throw new PdfGenerationException(e.getMessage());
         }
-
     }
-    private static void cleanCandidateContactInfo(Candidate candidate) {
-        if (candidate.getPhone() != null) {
-            candidate.setPhone(StringSanitizer.sanitizeContactField(candidate.getPhone()));
-        }
-
-        if (candidate.getWhatsapp() != null) {
-            candidate.setWhatsapp(StringSanitizer.sanitizeContactField(candidate.getWhatsapp()));
-        }
-    }
-
-
-    private static void cleanCandidateJobDescriptions(Candidate candidate) {
-        candidate.getCandidateJobExperiences().forEach(jobExperience -> {
-            jobExperience.setRole(StringSanitizer.normalizeUnicodeText(jobExperience.getRole()));
-            jobExperience.setCompanyName(
-                StringSanitizer.normalizeUnicodeText(jobExperience.getCompanyName()));
-
-            String description = StringSanitizer.normalizeUnicodeText(jobExperience.getDescription());
-            String sanitizedDescription = HtmlSanitizer.sanitize(description);
-            sanitizedDescription = StringSanitizer.replaceLsepWithBr(sanitizedDescription);
-            jobExperience.setDescription(sanitizedDescription);
-        });
-    }
-
 
     private static String convertToXhtml(String html) {
         Tidy tidy = new Tidy();

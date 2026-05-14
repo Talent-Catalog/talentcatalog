@@ -15,36 +15,71 @@
   -->
 
 <tc-modal heading="Download Candidate CV"
-          actionText="Ok"
+          actionText="Download"
           (onAction)="onSave()"
           [disableAction]="form.invalid || loading || saving"
           [showCancel]="true"
           [showClose]="true">
 
   <tc-alert type="danger" *ngIf="error">
-    <div><strong>{{error}}</strong></div>
+    <div><strong>{{ error }}</strong></div>
+  </tc-alert>
+
+  <tc-alert type="info" *ngIf="loading && form?.value?.format === 'google-doc'">
+    <div><strong>Creating Google Doc...</strong></div>
   </tc-alert>
 
   <form [formGroup]="form">
-        <tc-field [checkbox]="true">
-          <tc-label for="name">
-            Include name?
-          </tc-label>
-          <tc-input [type]="'checkbox'"
-                    [formControlName]="'name'"
-                    id="name"
-          ></tc-input>
-        </tc-field>
-        <tc-field [checkbox]="true">
-          <tc-label for="contact">
-            Include contact details?
-          </tc-label>
-          <tc-input [type]="'checkbox'"
-                    [formControlName]="'contact'"
-                    id="contact"
-          ></tc-input>
-        </tc-field>
+    <div class="mb-3">
+      <tc-label>Format</tc-label>
+    </div>
+
+    <tc-field [checkbox]="true">
+      <tc-radio [id]="'pdf'"
+                name="format"
+                [value]="'pdf'"
+                [label]="'PDF'"
+                [formControlName]="'format'">
+      </tc-radio>
+    </tc-field>
+
+    <tc-field [checkbox]="true">
+      <tc-radio [id]="'docx'"
+                name="format"
+                [value]="'docx'"
+                [label]="'Word (.docx)'"
+                [formControlName]="'format'">
+      </tc-radio>
+    </tc-field>
+
+    <tc-field [checkbox]="true">
+      <tc-radio [id]="'google-doc'"
+                name="format"
+                [value]="'google-doc'"
+                [label]="'Google Doc'"
+                [formControlName]="'format'">
+      </tc-radio>
+    </tc-field>
+
+    <tc-field [checkbox]="true">
+      <tc-label for="name">
+        Include name?
+      </tc-label>
+      <tc-input [type]="'checkbox'"
+                [formControlName]="'name'"
+                id="name">
+      </tc-input>
+    </tc-field>
+
+    <tc-field [checkbox]="true">
+      <tc-label for="contact">
+        Include contact details?
+      </tc-label>
+      <tc-input [type]="'checkbox'"
+                [formControlName]="'contact'"
+                id="contact">
+      </tc-input>
+    </tc-field>
   </form>
 
 </tc-modal>
-
