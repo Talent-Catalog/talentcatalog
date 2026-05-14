@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Catalog.
+ * Copyright (c) 2026 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU General Public License as published by the Free
@@ -19,10 +19,9 @@ import {Observable} from 'rxjs';
 import {environment} from '../../environments/environment';
 import {HttpClient} from '@angular/common/http';
 import {SearchResults} from '../model/search-results';
-import {UpdateUserRequest, User} from '../model/user';
+import {SendVerifyEmailRequest, UpdateUserRequest, User} from '../model/user';
 import {SearchUserRequest} from "../model/base";
 import {SendResetPasswordEmailRequest} from "../model/candidate";
-import {SendVerifyEmailRequest} from "../model/user";
 
 @Injectable({providedIn: 'root'})
 export class UserService {

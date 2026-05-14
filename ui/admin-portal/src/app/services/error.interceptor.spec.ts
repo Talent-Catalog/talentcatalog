@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Catalog.
+ * Copyright (c) 2026 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU General Public License as published by the Free
@@ -16,7 +16,7 @@
 
 import {TestBed} from '@angular/core/testing';
 import {HttpClientTestingModule, HttpTestingController} from '@angular/common/http/testing';
-import {HttpHandler, HttpRequest, HttpErrorResponse} from '@angular/common/http';
+import {HttpErrorResponse, HttpHandler, HttpRequest} from '@angular/common/http';
 import {throwError} from 'rxjs';
 import {Router} from '@angular/router';
 import {AuthenticationService} from './authentication.service';

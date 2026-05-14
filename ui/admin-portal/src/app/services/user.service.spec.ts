@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Talent Catalog.
+ * Copyright (c) 2026 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU General Public License as published by the Free
@@ -18,7 +18,7 @@ import {TestBed} from '@angular/core/testing';
 import {HttpClientTestingModule, HttpTestingController} from '@angular/common/http/testing';
 import {UserService} from './user.service';
 import {environment} from '../../environments/environment';
-import {User, UpdateUserRequest} from '../model/user';
+import {UpdateUserRequest, User} from '../model/user';
 import {SearchUserRequest} from '../model/base';
 import {MockUser} from "../MockData/MockUser";
 
