@@ -328,8 +328,6 @@ class CandidateServiceImplTest {
     updateCandidatePersonalRequest.setCountryId(1L);
     updateCandidatePersonalRequest.setNationalityId(2L);
     updateCandidatePersonalRequest.setOtherNationalityIds(new Long[0]);
-    
-    given(tcInstanceService.isTBB()).willReturn(true);
 
     // Set current partner source country
     partner.setSourcePartner(true);
@@ -356,4 +354,45 @@ class CandidateServiceImplTest {
     doReturn(candidate).when(candidateService).save(any(Candidate.class));
   }
 
+
+  @Test
+  @DisplayName("GRN candidate status is not changed when country or nationality changes")
+  void updatePersonal_shouldNotChangeStatusForGrnCandidate() {
+    updateCandidatePersonalRequest.setCountryId(1L);
+    updateCandidatePersonalRequest.setNationalityId(2L);
+    updateCandidatePersonalRequest.setOtherNationalityIds(new Long[0]);
+
+    given(tcInstanceService.isGRN()).willReturn(true);
+
+    Country currentCountry = new Country();
+    currentCountry.setId(3L);
+
+    Country currentNationality = new Country();
+    currentNationality.setId(3L);
+
+    Country requestedCountry = new Country();
+    requestedCountry.setId(1L);
+
+    Country requestedNationality = new Country();
+    requestedNationality.setId(2L);
+
+    candidate.setStatus(CandidateStatus.ineligible);
+    candidate.setCountry(currentCountry);
+    candidate.setNationality(currentNationality);
+    candidate.setCandidateCitizenships(Collections.emptyList());
+
+    given(countryRepository.findById(1L)).willReturn(Optional.of(requestedCountry));
+    given(countryRepository.findById(2L)).willReturn(Optional.of(requestedNationality));
+
+    given(authService.getLoggedInUser()).willReturn(Optional.of(mockUser));
+    given(userRepository.save(mockUser)).willReturn(candidate.getUser());
+    given(candidateRepository.findByUserId(null)).willReturn(candidate);
+
+    doReturn(candidate).when(candidateService).save(any(Candidate.class));
+
+    candidateService.updatePersonal(updateCandidatePersonalRequest);
+
+    assertEquals(CandidateStatus.ineligible, candidate.getStatus());
+    verify(candidateService, never()).updateCandidateStatus(any(Candidate.class), any());
+  }
 }
