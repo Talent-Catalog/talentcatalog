@@ -429,6 +429,10 @@ public class SecurityConfiguration {
                     // GET
                 .requestMatchers(HttpMethod.GET, "/api/admin/**")
                 .hasAnyRole("SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
+
+                //SPRING REST - currently just CandidatePropertyDefinitions (see CandidatePropertyDefinitionRepository).
+                .requestMatchers(HttpMethod.GET, "/api/hal/**").authenticated()
+
             );
 
         //Commented out below code because it was causing "Too many redirects" error as described below
