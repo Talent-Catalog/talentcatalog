@@ -2,15 +2,15 @@
  * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
- * the terms of the GNU Affero General Public License as published by the Free
+ * the terms of the GNU General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or any later version.
  *
  * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
  * for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
+ * You should have received a copy of the GNU General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import {CandidatesListComponent} from "./candidates-list.component";
@@ -23,11 +23,13 @@ import {SavedList} from "../../../model/saved-list";
 import {MockSavedList} from "../../../MockData/MockSavedList";
 import {ShowCandidatesComponent} from "../show/show-candidates.component";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
-import {UntypedFormBuilder, FormsModule, ReactiveFormsModule} from "@angular/forms";
+import {FormsModule, ReactiveFormsModule, UntypedFormBuilder} from "@angular/forms";
 import {CommonModule, DatePipe, TitleCasePipe} from "@angular/common";
 import {SortedByComponent} from "../../util/sort/sorted-by.component";
 import {NgSelectModule} from "@ng-select/ng-select";
-import {CandidateSourceDescriptionComponent} from "../../util/candidate-source-description/candidate-source-description.component";
+import {
+  CandidateSourceDescriptionComponent
+} from "../../util/candidate-source-description/candidate-source-description.component";
 import {AutosaveStatusComponent} from "../../util/autosave-status/autosave-status.component";
 import {RouterLinkStubDirective} from "../../login/login.component.spec";
 

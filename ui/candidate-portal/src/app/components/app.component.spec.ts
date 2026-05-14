@@ -2,31 +2,31 @@
  * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
- * the terms of the GNU Affero General Public License as published by the Free
+ * the terms of the GNU General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or any later version.
  *
  * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
  * for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
+ * You should have received a copy of the GNU General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import { ComponentFixture, fakeAsync, TestBed, tick, waitForAsync } from '@angular/core/testing';
-import { ActivatedRoute, Router } from '@angular/router';
-import { BehaviorSubject } from 'rxjs';
-import { AppComponent } from './app.component';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import { AuthenticationService } from '../services/authentication.service';
-import { ChatService } from '../services/chat.service';
-import { LanguageService } from '../services/language.service';
-import { LanguageLoader } from '../services/language.loader';
-import { BrandingService } from '../services/branding.service';
-import { User } from '../model/user';
-import { TcInstanceType } from '../model/tc-instance-type';
-import { environment } from '../../environments/environment';
+import {ComponentFixture, fakeAsync, TestBed, tick, waitForAsync} from '@angular/core/testing';
+import {ActivatedRoute, Router} from '@angular/router';
+import {BehaviorSubject} from 'rxjs';
+import {AppComponent} from './app.component';
+import {TranslateModule, TranslateService} from '@ngx-translate/core';
+import {AuthenticationService} from '../services/authentication.service';
+import {ChatService} from '../services/chat.service';
+import {LanguageService} from '../services/language.service';
+import {LanguageLoader} from '../services/language.loader';
+import {BrandingService} from '../services/branding.service';
+import {User} from '../model/user';
+import {TcInstanceType} from '../model/tc-instance-type';
+import {environment} from '../../environments/environment';
 
 describe('AppComponent', () => {
   let component: AppComponent;
@@ -37,7 +37,7 @@ describe('AppComponent', () => {
   let languageServiceSpy: jasmine.SpyObj<LanguageService>;
   let languageLoaderSpy: jasmine.SpyObj<LanguageLoader>;
   let routerSpy: jasmine.SpyObj<Router>;
-  
+
   let loggedInUserSubject: BehaviorSubject<User | null>;
   let languageLoadingSubject: BehaviorSubject<boolean>;
   let languageChangedSubject: BehaviorSubject<void>;
@@ -63,7 +63,7 @@ describe('AppComponent', () => {
     const languageLoadSpy = jasmine.createSpyObj('LanguageLoader', ['load']);
     languageLoadSpy.languageLoading$ = languageLoadingSubject.asObservable();
     languageSpy.languageChanged$ = languageChangedSubject.asObservable();
-    
+
     const routSpy = jasmine.createSpyObj('Router', ['navigate']);
     routSpy.events = new BehaviorSubject<any>(null);
 
@@ -229,7 +229,7 @@ describe('AppComponent', () => {
   describe('Language Management', () => {
     it('should update RTL setting when language changes', fakeAsync(() => {
       languageServiceSpy.isSelectedLanguageRtl.and.returnValue(true);
-      
+
       fixture.detectChanges();
       tick();
 
@@ -241,7 +241,7 @@ describe('AppComponent', () => {
 
     it('should update loading state when language is loading', fakeAsync(() => {
       fixture.detectChanges();
-      
+
       languageLoadingSubject.next(true);
       tick();
 
