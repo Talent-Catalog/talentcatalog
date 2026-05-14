@@ -18,6 +18,7 @@ package org.tctalent.server.security;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
@@ -64,7 +65,8 @@ class SpringSecurityAuditorAwareTest {
     Optional<User> result = auditorAware.getCurrentAuditor();
 
     assertTrue(result.isPresent());
-    assertEquals(999L, result.get().getId());
+    User fallbackUser = result.get();
+    assertEquals(999L, fallbackUser.getId());
   }
 
   @Test
