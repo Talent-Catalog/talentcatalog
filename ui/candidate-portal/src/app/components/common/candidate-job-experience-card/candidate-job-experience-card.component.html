@@ -52,4 +52,5 @@
   </div>
 </div>
 
-<p class="text-muted" [ngClass]="isHtml(experience?.description)?'html':'text'" [innerHTML]="experience?.description"></p>
+<app-text-parts-view [hideKeywords]="true" [hideTidied]="true"
+                     [text]="experience?.description"></app-text-parts-view>

@@ -76,10 +76,9 @@
               [innerHtml]="experience.role"
               appHighlightSearch>
           </h6>
-          <p *ngIf="experience.description" [ngClass]="isHtml(experience?.description)?'html':'text'"
-             [innerHtml]="experience.description"
-             appHighlightSearch>
-          </p>
+          <div *ngIf="experience.description">
+            <app-text-parts-view  [text]="experience.description" appHighlightSearch></app-text-parts-view>
+          </div>
           <small class="text-muted">
             {{experience.startDate | date: 'customMonthYear' }} - {{experience.endDate | date: 'customMonthYear' }}
           </small>

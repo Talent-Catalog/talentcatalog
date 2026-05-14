@@ -29,6 +29,9 @@ import {NO_ERRORS_SCHEMA} from "@angular/core";
 import {of, throwError} from "rxjs";
 import {MockJob} from "../../../../../../MockData/MockJob";
 import {MockCandidate} from "../../../../../../MockData/MockCandidate";
+import {
+  TextPartsInputComponent
+} from "../../../../../util/text-parts-input/text-parts-input.component";
 
 describe('EditCandidateJobExperienceComponent', () => {
   let component: EditCandidateJobExperienceComponent;
@@ -45,7 +48,8 @@ describe('EditCandidateJobExperienceComponent', () => {
 
     await TestBed.configureTestingModule({
       declarations: [EditCandidateJobExperienceComponent],
-      imports: [HttpClientTestingModule,FormsModule,ReactiveFormsModule, NgSelectModule,NgxWigModule],
+      imports: [HttpClientTestingModule,FormsModule,ReactiveFormsModule, NgSelectModule,
+        NgxWigModule,TextPartsInputComponent],
       providers: [
         UntypedFormBuilder,
         { provide: CandidateJobExperienceService, useValue: candidateJobExperienceServiceSpy },
