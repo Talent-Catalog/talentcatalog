@@ -125,6 +125,8 @@ import {
   ServiceList
 } from "../../../model/service-list";
 
+export type CandidatePageSize = 20 | 50 | 100;
+
 interface CachedTargetList {
   sourceID: number;
   listID: number;
@@ -143,7 +145,9 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
   @Input() showBreadcrumb: boolean = true;
   @Input() isKeywordSearch: boolean = false;
   @Input() declare pageNumber: number;
-  @Input() declare pageSize: number;
+  @Input() declare pageSize: CandidatePageSize;
+
+  readonly pageSizeOptions: CandidatePageSize[] = [20, 50, 100];
   @Input() searchRequest: SearchCandidateRequestPaged;
   @Output() candidateSelection = new EventEmitter();
   @Output() editSource = new EventEmitter();
@@ -348,6 +352,48 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
   }
 
   /**
+   * Returns the localStorage key used to persist the page-size preference for the current source.
+   */
+  private pageSizeKey(): string {
+    return getCandidateSourceType(this.candidateSource) + this.candidateSource.id + 'PageSize';
+  }
+
+  /**
+   * Reads the persisted page-size preference for the current source and applies it to this.pageSize.
+   * Priority: localStorage > @Input pageSize (if valid) > 20.
+   */
+  private loadPageSizePreference(): void {
+    const stored = this.localStorageService.get(this.pageSizeKey());
+    const parsed = parseInt(String(stored), 10) as CandidatePageSize;
+    if (this.pageSizeOptions.includes(parsed)) {
+      this.pageSize = parsed;
+      return;
+    }
+    if (this.pageSizeOptions.includes(this.pageSize)) {
+      return;
+    }
+    this.pageSize = 20;
+  }
+
+  /**
+   * Persists the current page size preference for the current source.
+   */
+  private savePageSizePreference(): void {
+    this.localStorageService.set(this.pageSizeKey(), String(this.pageSize));
+  }
+
+  /**
+   * Called when the user changes the per-page size selector.
+   * Resets to page 1, persists the preference, and re-fetches.
+   */
+  onPageSizeChange(size: CandidatePageSize): void {
+    this.pageSize = size;
+    this.pageNumber = 1;
+    this.savePageSizePreference();
+    this.doSearch(true);
+  }
+
+  /**
    * Restores candidate profile search card to previous px distance from top if > 0.
    */
   public setSearchCardScrollTop() {
@@ -373,9 +419,9 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
           //Set the selected fields to be displayed.
           this.loadSelectedFields();
 
-          //Retrieve the list previously used for saving selections from this
-          // source (if any)
+          //Retrieve the list previously used for saving selections from this source (if any).
           this.restoreTargetListFromCache();
+          this.loadPageSizePreference();
           this.doSearch(true);
           // Set the selected candidates (List only) to null when changing candidate source.
           this.selectedCandidates = [];
