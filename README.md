@@ -591,6 +591,6 @@ See the Deployment and Monitoring pages on the
 
 ## License
 
-[GNU AGPLv3](https://choosealicense.com/licenses/agpl-3.0/)
+[GNU GPLv3 or later](https://choosealicense.com/licenses/gpl-3.0/)
 
 For copyright header format and conventions, see [CONTRIBUTING.md](CONTRIBUTING.md).
