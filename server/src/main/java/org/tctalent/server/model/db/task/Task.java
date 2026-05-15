@@ -94,6 +94,12 @@ public interface Task extends Auditable {
     boolean isOptional();
 
     /**
+     * True if assignment of this task should trigger a candidate email notification.
+     * @return True if email notification is enabled for this task.
+     */
+    boolean isNotifyOnAssignment();
+
+    /**
      * Type of task - this encodes the class type - so {@link TaskType#Simple} for a simple task,
      * {@link TaskType#Upload} for an UploadTask etc.
      * This allows the class type information of any task to be passed to Angular through JSON

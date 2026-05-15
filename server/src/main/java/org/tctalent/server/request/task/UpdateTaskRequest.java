@@ -39,6 +39,9 @@ public class UpdateTaskRequest {
     @NotNull
     private boolean optional;
 
+    @NotNull
+    private boolean notifyOnAssignment;
+
     public void setDescription(String description) {
         this.description = HtmlSanitizer.sanitize(description);
     }

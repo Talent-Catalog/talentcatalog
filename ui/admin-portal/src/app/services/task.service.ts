@@ -28,6 +28,7 @@ export interface UpdateTaskRequest {
   daysToComplete: number;
   docLink: string;
   optional: boolean;
+  notifyOnAssignment: boolean;
 
 }
 
