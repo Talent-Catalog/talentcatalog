@@ -36,7 +36,7 @@ Option B is not a compromise — it is the correct architecture. Linear addresse
 
 ## Decision 2: Branch Naming Convention
 
-**Status:** Pending
+**Status:** Decided
 
 ### Context
 
@@ -44,17 +44,23 @@ The team's branch naming convention (`{github-issue-number}-description`, e.g. `
 
 This decision applies only to the core team. External contributors work from forks and name branches as they choose; the convention is guidance, not enforcement.
 
+Under the hybrid model (Decision 1), every GitHub issue is mirrored in Linear, so a Linear issue always exists as the starting point for branch creation.
+
 ### Options
 
 **Option A — Keep GitHub issue numbers**  
-No change. Branches continue to use the GitHub issue number as the prefix. Linear traceability is handled via PR linking.
+Branches continue to use the GitHub-generated format (`{github-issue-number}-description`). No change to existing convention. Linear traceability requires a manual step — developers must include the Linear ID (e.g. `Fixes TC-123`) in the PR title or description; it is not automatic.
 
 **Option B — Adopt Linear IDs**  
-Branches use the Linear-generated format (`{dev}/{linear-id}-description`, e.g. `sadat/tc-123-fix-password-validation`). Linear's "copy branch name" button generates this automatically.
+Branches use the Linear-generated format (`{username}/{linear-id}-description`, e.g. `john/tc-123-fix-password-validation`). Linear's `Cmd/Ctrl Shift .` shortcut copies the branch name, moves the issue to In Progress, and self-assigns — in one step. The Linear ID in the branch name auto-links the PR to the Linear issue on creation, with no manual step required.
 
 ### Decision
 
-_To be agreed._
+**Option B — Linear-generated branch names.**
+
+Auto-linking from branch → PR → Linear issue is automatic and reliable. Option A requires developers to manually add `Fixes TC-123` to every PR — a discipline that tends to be inconsistently applied over time. The habit shift (starting from a Linear issue rather than a GitHub issue) is modest; every GitHub issue is mirrored in Linear so the starting point always exists.
+
+`CONTRIBUTING.md` will need updating to reflect the new convention. External contributors are unaffected — branch naming is guidance, not enforced.
 
 ---
 
