@@ -170,7 +170,7 @@ _To be agreed._
 
 ## Decision 7: Cycle Cadence and Cool-down
 
-**Status:** Partially decided
+**Status:** Decided
 
 ### Context
 
@@ -193,11 +193,9 @@ The team currently runs 3-week sprints in ZenHub.
 
 ### Decision
 
-_To be agreed._
+**Option C — 2-week cycle, 1-week cool-down.**
 
-**Recommendation:** Option C is a reasonable compromise — it preserves the overall delivery cadence the team is used to while introducing structured cool-down time. Option A is the safest like-for-like if the team prefers to defer the cool-down experiment. Option B is only attractive if the team is comfortable with a slower overall cadence.
-
-Both dimensions can be revisited later; Linear supports changing cadence without losing historical cycle data.
+Preserves the team's existing 3-week effective cadence while introducing structured cool-down time for retro, planning, and tech debt. Cycles start Monday, auto-creating 2 cycles ahead. Both dimensions can be revisited later without losing historical cycle data.
 
 ---
 
