@@ -52,6 +52,7 @@ export class LandingComponent implements OnInit, OnDestroy {
   authStatus: AuthStatus;
   private authStatusSub?: Subscription;
   private brandingInfo: BrandingInfo;
+  error: string;
   showUSAfghanInfo: boolean = false;
 
   constructor(private authenticationService: AuthenticationService,
@@ -73,7 +74,10 @@ export class LandingComponent implements OnInit, OnDestroy {
       this.authenticationService.clearAuthError();
       if (authAction === 'register') {
         let request: OauthRegistrationRequest = {
-
+          //todo These consents are being mocked for now. When new UI is designed
+          //the register button should be disabled until the user has consented to the terms.
+          contactConsentRegistration: true,
+          contactConsentPartners: true
         }
         this.completeRegister(request);
       } else if (authAction === 'login') {
@@ -139,23 +143,31 @@ export class LandingComponent implements OnInit, OnDestroy {
   }
 
   completeLogin() {
+    this.error = null;
     this.authenticationService.completeLogin().subscribe({
       next: (response) => {
         this.router.navigate(['/home']);
       },
       error: (error) => {
-        console.error('Error completing login:', error);
+        //Display error
+        this.error = error;
+        //Log out the user if the login did not complete successfully.
+        this.authenticationService.logout();
       }
     })
   }
 
   completeRegister(request: OauthRegistrationRequest) {
+    this.error = null;
     this.authenticationService.completeRegister(request).subscribe({
       next: (response) => {
         this.router.navigate(['/register']);
       },
       error: (error) => {
-        console.error('Error completing registration:', error);
+        //Display error
+        this.error = error;
+        //Log out the user if the registration did not complete successfully.
+        this.authenticationService.logout();
       }
     })
   }

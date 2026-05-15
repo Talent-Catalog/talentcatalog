@@ -121,8 +121,6 @@ export class AuthenticationService implements OnDestroy {
     return from(this.authProvider.getProfile()).pipe(
       switchMap(profile => {
           request.profile = profile;
-          request.contactConsentRegistration = true;
-          request.contactConsentPartners = true;
           return this.http.post(`${this.apiUrl}/register`, request).pipe(
             map((response: AuthenticationResponse) => {
               this.storeAuthenticationData(response);

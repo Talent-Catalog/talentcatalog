@@ -17,6 +17,7 @@
   [error]="authStatus?.error"
   (dismissed)="dismissAuthError()">
 </app-auth-error>
+<app-error [error]="error"></app-error>
 
 <div *ngIf="authStatus?.busy" class="alert alert-info">
   Connecting to authentication service...
