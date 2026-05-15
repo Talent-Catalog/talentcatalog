@@ -274,7 +274,7 @@ module "grn_staging" {
   tc_api_url                      = "https://test.api.globalrefugee.net"
   tc_cors_urls                    = "https://test.globalrefugee.net,https://www.test.globalrefugee.net"
   tc_db_copy_config               = "data.sharing/tcCopies.xml"
-  tc_destinations                 = "Australia,Canada,New Zealand,United Kingdom"
+  tc_destinations                 = "Australia,Belgium,Canada,France,Germany,Ireland,Italy,Slovakia,Spain,United Kingdom,United States"
   tc_skills_extraction_api_url    = "https://test.skills.globalrefugee.net"
   web_admin                       = "https://test.globalrefugee.net/admin-portal"
   web_portal                      = "https://test.globalrefugee.net/candidate-portal"

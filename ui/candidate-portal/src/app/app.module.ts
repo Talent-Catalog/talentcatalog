@@ -1,16 +1,16 @@
 /*
- * Copyright (c) 2024 Talent Catalog.
+ * Copyright (c) 2026 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
- * the terms of the GNU Affero General Public License as published by the Free
+ * the terms of the GNU General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or any later version.
  *
  * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
  * for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
+ * You should have received a copy of the GNU General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
@@ -247,6 +247,10 @@ import {environment} from "../environments/environment";
 import {AUTH_PROVIDER} from "./services/auth.tokens";
 import {KeycloakAngularModule} from "keycloak-angular";
 import {AuthErrorComponent} from "./components/util/auth-error/auth-error.component";
+import {
+  TextPartsInputComponent
+} from "./components/util/text-parts-input/text-parts-input.component";
+import {TextPartsViewComponent} from "./components/util/text-parts-view/text-parts-view.component";
 
 //This is not used now - but is left here to show how the standard translation loading works.
 //See https://github.com/ngx-translate/core#configuration
@@ -392,6 +396,9 @@ export function initializeAuth(authenticationService: AuthenticationService) {
     QuillModule.forRoot(),
     PickerModule,
     KeycloakAngularModule
+    PickerModule,
+    TextPartsInputComponent,
+    TextPartsViewComponent
   ],
   providers: [
     {provide: AUTH_PROVIDER, useFactory: authProviderFactory,
