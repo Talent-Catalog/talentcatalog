@@ -108,7 +108,7 @@ _To be agreed._
 
 ## Decision 5: Workflow States
 
-**Status:** Pending
+**Status:** Decided
 
 ### Context
 
@@ -122,22 +122,21 @@ Use Linear's out-of-the-box states: `Backlog`, `Todo`, `In Progress`, `In Review
 **Option B — Custom set aligned to current process**  
 Adopt a state set that mirrors the existing ZenHub pipeline and adds a `Triage` state for open-source intake:
 
-| State       | Type | Equivalent |
-|-------------|---|---|
-| Triage      | Triage | New GitHub issues needing maintainer review |
-| Backlog     | Backlog | Approved, not yet scheduled |
-| Todo        | Unstarted | Pulled into current cycle |
-| In Progress | Started | Active development |
-| In Review   | Started | PR open, awaiting review |
-| Done        | Completed | Merged to staging |
-| Cancelled   | Cancelled | Rejected or won't-do |
-| Duplicate   | Cancelled | Already tracked by another issue |
+| State       | Type      | Equivalent                                  |
+|-------------|-----------|---------------------------------------------|
+| Triage      | Triage    | New GitHub issues needing maintainer review |
+| Backlog     | Backlog   | Approved, not yet scheduled                 |
+| Todo        | Unstarted | Pulled into current cycle                   |
+| In Progress | Started   | Active development                          |
+| In Review   | Started   | PR open, awaiting review                    |
+| Done        | Completed | Merged to staging                           |
+| Closed      | Closed    | Closed, rejected, duplicate or won't-do     |
 
 ### Decision
 
-_To be agreed._
+**Option A — Linear defaults.**
 
-**Recommendation:** Option B. The `Triage` state is particularly valuable for an open-source project — external GitHub issues land there before being reviewed by maintainers. The remaining states match the team's existing mental model of the pipeline.
+Issue triage is handled ad-hoc; a dedicated `Triage` state would add process overhead without matching how the team actually works. The default set covers the workflow cleanly and requires no custom configuration.
 
 ---
 
