@@ -252,11 +252,11 @@ public class SavedSearchServiceImpl implements SavedSearchService {
                 watches = savedSearchRepository.findUserWatchedSearches(loggedInUser.getId());
             }
             savedSearches = new PageImpl<>(
-                new ArrayList<>(watches), request.getPageRequest(),
-                watches.size());
+                    new ArrayList<>(watches), request.getPageRequest(),
+                    watches.size());
         } else {
             savedSearches = savedSearchRepository.findAll(
-                SavedSearchSpecification.buildSearchQuery(request, loggedInUser),
+                    SavedSearchSpecification.buildSearchQuery(request, loggedInUser),
                 request.getPageRequest());
         }
         LogBuilder.builder(log)
@@ -515,7 +515,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
     @Override
     public SearchCandidateRequest loadSavedSearch(long id) {
         SavedSearch savedSearch = this.savedSearchRepository.findByIdLoadSearchJoins(id)
-            .orElseThrow(() -> new NoSuchObjectException(SavedSearch.class, id));
+                .orElseThrow(() -> new NoSuchObjectException(SavedSearch.class, id));
         savedSearch.parseType();
         return convertToSearchCandidateRequest(savedSearch);
     }
@@ -523,15 +523,15 @@ public class SavedSearchServiceImpl implements SavedSearchService {
     @Override
     public SavedSearch getSavedSearch(long id) {
         SavedSearch savedSearch = this.savedSearchRepository
-            .findByIdLoadUsers(id)
-            .orElseThrow(() -> new NoSuchObjectException(SavedSearch.class, id));
+                .findByIdLoadUsers(id)
+                .orElseThrow(() -> new NoSuchObjectException(SavedSearch.class, id));
 
         savedSearch.parseType();
 
         Map<Integer, String> languageLevelMap = languageLevelRepository.findAllActive().stream().collect(
-            Collectors.toMap(LanguageLevel::getLevel, LanguageLevel::getName, (l1, l2) ->  l1));
+                Collectors.toMap(LanguageLevel::getLevel, LanguageLevel::getName, (l1, l2) ->  l1));
         Map<Integer, String> educationLevelMap = educationLevelRepository.findAllActive().stream().collect(
-            Collectors.toMap(EducationLevel::getLevel, EducationLevel::getName, (l1, l2) ->  l1));
+                Collectors.toMap(EducationLevel::getLevel, EducationLevel::getName, (l1, l2) ->  l1));
 
         if (!ObjectUtils.isEmpty(savedSearch.getCountryIds())){
             savedSearch.setCountryNames(countryRepository.getNamesForIds(getIdsFromString(savedSearch.getCountryIds())));
@@ -572,7 +572,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
 
     @Override
     public void clearSelection(long id, Long userId)
-        throws InvalidRequestException, NoSuchObjectException {
+            throws InvalidRequestException, NoSuchObjectException {
         //Get the selection list for this user and saved search.
         SavedList selectionList = getSelectionList(id, userId);
 
@@ -582,8 +582,8 @@ public class SavedSearchServiceImpl implements SavedSearchService {
 
     @Override
     public SavedSearch createFromDefaultSavedSearch(
-        CreateFromDefaultSavedSearchRequest request)
-        throws NoSuchObjectException {
+            CreateFromDefaultSavedSearchRequest request)
+            throws NoSuchObjectException {
 
         final User loggedInUser = userService.getLoggedInUser();
         if (loggedInUser == null) {
@@ -604,8 +604,8 @@ public class SavedSearchServiceImpl implements SavedSearchService {
 
         //Delete any existing saved search with the given name.
         SavedSearch existing =
-            savedSearchRepository.findByNameIgnoreCase(
-                name, loggedInUser.getId());
+                savedSearchRepository.findByNameIgnoreCase(
+                    name, loggedInUser.getId());
         if (existing != null) {
             deleteSavedSearch(existing.getId());
         }
@@ -621,7 +621,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
 
         //Copy search params from default search
         createRequest.setSearchCandidateRequest(
-            convertToSearchCandidateRequest(defaultSavedSearch));
+                convertToSearchCandidateRequest(defaultSavedSearch));
 
         SavedSearch createdSearch = createSavedSearch(createRequest);
 
@@ -644,7 +644,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
     @Override
     @Transactional
     public SavedSearch createSavedSearch(UpdateSavedSearchRequest request)
-        throws EntityExistsException {
+            throws EntityExistsException {
         SavedSearch defaultSavedSearch = getDefaultSavedSearch();
         return createSavedSearchBase(request, defaultSavedSearch);
     }
@@ -827,13 +827,13 @@ public class SavedSearchServiceImpl implements SavedSearchService {
     @Transactional
     public SavedSearch addSharedUser(long id, UpdateSharingRequest request) {
         SavedSearch savedSearch = savedSearchRepository.findById(id)
-            .orElseThrow(() -> new NoSuchObjectException(SavedSearch.class, id));
+                .orElseThrow(() -> new NoSuchObjectException(SavedSearch.class, id));
 
         savedSearch.parseType();
 
         final Long userID = request.getUserId();
         User user = userRepository.findById(userID)
-            .orElseThrow(() -> new NoSuchObjectException(User.class, userID));
+                .orElseThrow(() -> new NoSuchObjectException(User.class, userID));
 
         savedSearch.addUser(user);
 
@@ -844,13 +844,13 @@ public class SavedSearchServiceImpl implements SavedSearchService {
     @Transactional
     public SavedSearch removeSharedUser(long id, UpdateSharingRequest request) {
         SavedSearch savedSearch = savedSearchRepository.findById(id)
-            .orElseThrow(() -> new NoSuchObjectException(SavedSearch.class, id));
+                .orElseThrow(() -> new NoSuchObjectException(SavedSearch.class, id));
 
         savedSearch.parseType();
 
         final Long userID = request.getUserId();
         User user = userRepository.findById(userID)
-            .orElseThrow(() -> new NoSuchObjectException(User.class, userID));
+                .orElseThrow(() -> new NoSuchObjectException(User.class, userID));
 
         savedSearch.removeUser(user);
 
@@ -860,7 +860,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
     @Override
     public SavedSearch addWatcher(long id, UpdateWatchingRequest request) {
         SavedSearch savedSearch = savedSearchRepository.findById(id)
-            .orElseThrow(() -> new NoSuchObjectException(SavedSearch.class, id));
+                .orElseThrow(() -> new NoSuchObjectException(SavedSearch.class, id));
 
         savedSearch.parseType();
 
@@ -878,7 +878,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
     @Override
     public SavedSearch removeWatcher(long id, UpdateWatchingRequest request) {
         SavedSearch savedSearch = savedSearchRepository.findById(id)
-            .orElseThrow(() -> new NoSuchObjectException(SavedSearch.class, id));
+                .orElseThrow(() -> new NoSuchObjectException(SavedSearch.class, id));
 
         savedSearch.parseType();
 
@@ -889,7 +889,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
 
     @Override
     public @NotNull SavedSearch getDefaultSavedSearch()
-        throws NoSuchObjectException {
+            throws NoSuchObjectException {
         //Check that we have a logged in user.
         final User loggedInUser = userService.getLoggedInUser();
         if (loggedInUser == null) {
@@ -897,7 +897,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         }
 
         SavedSearch savedSearch =
-            savedSearchRepository.findDefaultSavedSearch(loggedInUser.getId())
+                savedSearchRepository.findDefaultSavedSearch(loggedInUser.getId())
                 .orElse(null);
         if (savedSearch == null) {
             //Create a default saved search for logged in user
@@ -1006,8 +1006,8 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         final User loggedInUser = userService.getLoggedInUser();
         if (loggedInUser != null) {
             SavedList savedList = savedListRepository
-                .findSelectionList(id, loggedInUser.getId())
-                .orElse(null);
+                    .findSelectionList(id, loggedInUser.getId())
+                    .orElse(null);
             if (savedList != null) {
                 candidateSavedListService
                     .updateCandidateContextNote(savedList.getId(), request);
@@ -1026,10 +1026,10 @@ public class SavedSearchServiceImpl implements SavedSearchService {
 
     @Override
     public void updateDisplayedFieldPaths(
-        long id, UpdateDisplayedFieldPathsRequest request)
-        throws NoSuchObjectException {
+            long id, UpdateDisplayedFieldPathsRequest request)
+            throws NoSuchObjectException {
         SavedSearch savedSearch = savedSearchRepository.findById(id)
-            .orElseThrow(() -> new NoSuchObjectException(SavedSearch.class, id));
+                .orElseThrow(() -> new NoSuchObjectException(SavedSearch.class, id));
         if (request.getDisplayedFieldsLong() != null) {
             savedSearch.setDisplayedFieldsLong(request.getDisplayedFieldsLong());
         }
@@ -1070,9 +1070,9 @@ public class SavedSearchServiceImpl implements SavedSearchService {
     }
 
     private static String constructSelectionListName(
-        User user, SavedSearch savedSearch) {
+            User user, SavedSearch savedSearch) {
         return "_SelectionListUser" + user.getId() +
-            "Search" + savedSearch.getId();
+                "Search" + savedSearch.getId();
     }
 
     /**
@@ -1085,9 +1085,9 @@ public class SavedSearchServiceImpl implements SavedSearchService {
      * exists for this user
      */
     private void checkDuplicates(
-        @Nullable Long savedSearchId, String name, Long userId) {
+            @Nullable Long savedSearchId, String name, Long userId) {
         SavedSearch existing =
-            savedSearchRepository.findByNameIgnoreCase(name, userId);
+                savedSearchRepository.findByNameIgnoreCase(name, userId);
         if (existing != null && existing.getStatus() != Status.deleted) {
             if (!existing.getId().equals(savedSearchId)) {
                 throw new EntityExistsException("savedSearch");
@@ -1358,7 +1358,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
     }
 
     private void populateSearchAttributes(
-        SavedSearch savedSearch, SearchCandidateRequest request) {
+            SavedSearch savedSearch, SearchCandidateRequest request) {
         if (request != null) {
             savedSearch.setSimpleQueryString(request.getSimpleQueryString());
             savedSearch.setKeyword(request.getKeyword());
@@ -1383,17 +1383,17 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             savedSearch.setEnglishMinSpokenLevel(request.getEnglishMinSpokenLevel());
             savedSearch.setEnglishMinWrittenLevel(request.getEnglishMinWrittenLevel());
             Optional<Language> language =
-                request.getOtherLanguageId() != null ?
-                    languageRepository.findById(
-                        request.getOtherLanguageId()) : Optional.empty();
+                    request.getOtherLanguageId() != null ?
+                        languageRepository.findById(
+                            request.getOtherLanguageId()) : Optional.empty();
             if (language.isPresent()) {
                 savedSearch.setOtherLanguage(language.get());
             }
 
             Optional<SavedList> exclusionList =
-                request.getExclusionListId() != null ?
-                    savedListRepository.findById(
-                        request.getExclusionListId()) : Optional.empty();
+                    request.getExclusionListId() != null ?
+                        savedListRepository.findById(
+                            request.getExclusionListId()) : Optional.empty();
             if (exclusionList.isPresent()) {
                 savedSearch.setExclusionList(exclusionList.get());
             }
@@ -1408,7 +1408,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             savedSearch.setMaxAge(request.getMaxAge());
             savedSearch.setMinEducationLevel(request.getMinEducationLevel());
             savedSearch.setEducationMajorIds(
-                getListAsString(request.getEducationMajorIds()));
+                    getListAsString(request.getEducationMajorIds()));
             savedSearch.setIncludePendingTermsCandidates(request.getIncludePendingTermsCandidates());
             savedSearch.setMiniIntakeCompleted(request.getMiniIntakeCompleted());
             savedSearch.setFullIntakeCompleted(request.getFullIntakeCompleted());
@@ -1457,11 +1457,11 @@ public class SavedSearchServiceImpl implements SavedSearchService {
 
         // if a user has source country restrictions AND IF the request has countries selected
         if(user != null
-            && !user.getSourceCountries().isEmpty()
-            && search.getCountryIds() != null) {
+                && !user.getSourceCountries().isEmpty()
+                && search.getCountryIds() != null) {
             List<Long> sourceCountries = user.getSourceCountries().stream()
-                .map(Country::getId)
-                .collect(Collectors.toList());
+                    .map(Country::getId)
+                    .collect(Collectors.toList());
             //find the users source countries in the saved search countries
             requestCountries.retainAll(sourceCountries);
             //todo removed to fix default search showing source countries that no longer belong. Find an alternative solution.
@@ -1512,13 +1512,13 @@ public class SavedSearchServiceImpl implements SavedSearchService {
 
     String getStatusListAsString(List<CandidateStatus> statuses){
         return !CollectionUtils.isEmpty(statuses) ? statuses.stream().map(String::valueOf)
-            .collect(Collectors.joining(",")) : null;
+                .collect(Collectors.joining(",")) : null;
     }
 
     List<CandidateStatus> getStatusListFromString(String statusList){
         return statusList != null ? Stream.of(statusList.split(","))
-            .map(CandidateStatus::valueOf)
-            .collect(Collectors.toList()) : null;
+                .map(CandidateStatus::valueOf)
+                .collect(Collectors.toList()) : null;
     }
 
     String getUnhcrStatusListAsString(List<UnhcrStatus> unhcrStatuses){
@@ -2250,7 +2250,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
                 //partners - not just their own partner.
 
                 final boolean isDefaultPartner =
-                    partner.isDefaultSourcePartner() || partner.isDefaultJobCreator();
+                        partner.isDefaultSourcePartner() || partner.isDefaultJobCreator();
 
                 //A source partner defaults to just seeing their own candidates - unless they are the default partner
                 if (partner.isSourcePartner() && !isDefaultPartner) {
@@ -2259,7 +2259,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
                     //Every one else defaults to seeing candidates from all partners
                     List<PartnerImpl> sourcePartners = partnerService.listAllSourcePartners();
                     List<Long> partnerIds =
-                        sourcePartners.stream().map(PartnerImpl::getId).collect(Collectors.toList());
+                            sourcePartners.stream().map(PartnerImpl::getId).collect(Collectors.toList());
                     request.setPartnerIds(partnerIds);
                 }
             }

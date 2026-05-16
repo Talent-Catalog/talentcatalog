@@ -317,10 +317,10 @@ class SavedSearchServiceImplExtractSqlTest {
         request.setIncludePendingTermsCandidates(false);
         String sql = savedSearchService.extractFetchSQL(request);
         assertEquals(UNORDERED_SELECT
-                + " where "
-                + EXCLUDE_PENDING_TERMS_CLAUSE
-                + SystemAdminConfiguration.PENDING_TERMS_ACCEPTANCE_LIST_ID + ")"
-                + " and exists ("
+            + " where "
+            + EXCLUDE_PENDING_TERMS_CLAUSE
+            + SystemAdminConfiguration.PENDING_TERMS_ACCEPTANCE_LIST_ID + ")"
+            + " and exists ("
                 + "select 1 from candidate_language "
                 + "join language_level on language_level.id = spoken_level_id "
                 + "where candidate_language.candidate_id = candidate.id and "
@@ -331,9 +331,9 @@ class SavedSearchServiceImplExtractSqlTest {
         request.setEnglishMinWrittenLevel(20);
         sql = savedSearchService.extractFetchSQL(request);
         assertEquals(UNORDERED_SELECT
-                + " where "
-                + EXCLUDE_PENDING_TERMS_CLAUSE
-                + SystemAdminConfiguration.PENDING_TERMS_ACCEPTANCE_LIST_ID + ")"
+            + " where "
+            + EXCLUDE_PENDING_TERMS_CLAUSE
+            + SystemAdminConfiguration.PENDING_TERMS_ACCEPTANCE_LIST_ID + ")"
                 + " and exists ("
                 + "select 1 from candidate_language "
                 + "join language_level on language_level.id = spoken_level_id "
@@ -352,9 +352,9 @@ class SavedSearchServiceImplExtractSqlTest {
         request.setOtherMinSpokenLevel(30);
         sql = savedSearchService.extractFetchSQL(request);
         assertEquals(UNORDERED_SELECT
-                + " where "
-                + EXCLUDE_PENDING_TERMS_CLAUSE
-                + SystemAdminConfiguration.PENDING_TERMS_ACCEPTANCE_LIST_ID + ")"
+            + " where "
+            + EXCLUDE_PENDING_TERMS_CLAUSE
+            + SystemAdminConfiguration.PENDING_TERMS_ACCEPTANCE_LIST_ID + ")"
                 + " and exists ("
                 + "select 1 from candidate_language "
                 + "join language_level on language_level.id = spoken_level_id "
