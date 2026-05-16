@@ -34,6 +34,7 @@ export class LinkedinRedeemedComponent implements OnInit {
     this.error = null;
 
     const request: IssueReportRequest = {
+      candidateId: this.candidate.id,
       assignment: this.assignment,
       issueComment: this.issueComment,
     };
