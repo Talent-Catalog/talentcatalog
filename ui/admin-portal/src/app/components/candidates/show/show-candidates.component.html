@@ -1,16 +1,16 @@
 <!--
-  ~ Copyright (c) 2024 Talent Catalog.
+  ~ Copyright (c) 2026 Talent Catalog.
   ~
   ~ This program is free software: you can redistribute it and/or modify it under
-  ~ the terms of the GNU Affero General Public License as published by the Free
+  ~ the terms of the GNU General Public License as published by the Free
   ~ Software Foundation, either version 3 of the License, or any later version.
   ~
   ~ This program is distributed in the hope that it will be useful, but WITHOUT
   ~ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-  ~ FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+  ~ FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
   ~ for more details.
   ~
-  ~ You should have received a copy of the GNU Affero General Public License
+  ~ You should have received a copy of the GNU General Public License
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
@@ -276,7 +276,7 @@
       </ng-select>
     </tc-field>
 
-    <!-- Results summary for searches -->
+    <!-- Results count (searches only) -->
     <div *ngIf="!isSavedList()"
          class="d-flex text-muted small align-items-baseline flex-wrap-reverse justify-content-sm-start pb-3">
       <div class="d-flex flex-grow-1 justify-content-end">
@@ -483,6 +483,18 @@
     >
       {{actionSuccessMessage}}
     </tc-alert>
+
+    <!-- Page-size selector -->
+    <div class="d-flex align-items-center gap-2 text-muted small mt-3 pb-1">
+      <label class="mb-0">Per page:</label>
+      <ng-select class="tc-select page-size-select"
+                 [items]="pageSizeOptions"
+                 [searchable]="false"
+                 [clearable]="false"
+                 [ngModel]="pageSize"
+                 (ngModelChange)="onPageSizeChange($event)">
+      </ng-select>
+    </div>
 
     <!-- Table of list contents - plus candidate details of selected candidate -->
     <div class="py-2">

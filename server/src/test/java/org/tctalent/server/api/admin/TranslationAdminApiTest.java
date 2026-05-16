@@ -1,22 +1,52 @@
 /*
- * Copyright (c) 2024 Talent Catalog.
+ * Copyright (c) 2026 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
- * the terms of the GNU Affero General Public License as published by the Free
+ * the terms of the GNU General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or any later version.
  *
  * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
  * for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
+ * You should have received a copy of the GNU General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
 package org.tctalent.server.api.admin;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyMap;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.verify;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.tctalent.server.data.CandidateTestData.getEducationLevels;
+import static org.tctalent.server.data.CandidateTestData.getEducationMajors;
+import static org.tctalent.server.data.CandidateTestData.getListOfOccupations;
+import static org.tctalent.server.data.CandidateTestData.getSurveyTypes;
+import static org.tctalent.server.data.CountryTestData.getSourceCountryList;
+import static org.tctalent.server.data.LanguageTestData.getLanguageLevelList;
+import static org.tctalent.server.data.LanguageTestData.getLanguageList;
+import static org.tctalent.server.data.LanguageTestData.getTranslation;
+import static org.tctalent.server.data.LanguageTestData.getTranslationFile;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -30,7 +60,15 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.tctalent.server.model.db.*;
+import org.tctalent.server.model.db.Country;
+import org.tctalent.server.model.db.EducationLevel;
+import org.tctalent.server.model.db.EducationMajor;
+import org.tctalent.server.model.db.Language;
+import org.tctalent.server.model.db.LanguageLevel;
+import org.tctalent.server.model.db.Occupation;
+import org.tctalent.server.model.db.SurveyType;
+import org.tctalent.server.model.db.Translation;
+import org.tctalent.server.model.db.User;
 import org.tctalent.server.request.country.SearchCountryRequest;
 import org.tctalent.server.request.education.level.SearchEducationLevelRequest;
 import org.tctalent.server.request.education.major.SearchEducationMajorRequest;
@@ -41,31 +79,14 @@ import org.tctalent.server.request.survey.SearchSurveyTypeRequest;
 import org.tctalent.server.request.translation.CreateTranslationRequest;
 import org.tctalent.server.request.translation.UpdateTranslationRequest;
 import org.tctalent.server.security.AuthService;
-import org.tctalent.server.service.db.*;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.verify;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-import static org.tctalent.server.data.CandidateTestData.getEducationLevels;
-import static org.tctalent.server.data.CandidateTestData.getEducationMajors;
-import static org.tctalent.server.data.CandidateTestData.getSurveyTypes;
-import static org.tctalent.server.data.LanguageTestData.getTranslation;
-import static org.tctalent.server.data.LanguageTestData.getTranslationFile;
-import static org.tctalent.server.data.CandidateTestData.getListOfOccupations;
-import static org.tctalent.server.data.CountryTestData.getSourceCountryList;
-import static org.tctalent.server.data.LanguageTestData.getLanguageLevelList;
-import static org.tctalent.server.data.LanguageTestData.getLanguageList;
+import org.tctalent.server.service.db.CountryService;
+import org.tctalent.server.service.db.EducationLevelService;
+import org.tctalent.server.service.db.EducationMajorService;
+import org.tctalent.server.service.db.LanguageLevelService;
+import org.tctalent.server.service.db.LanguageService;
+import org.tctalent.server.service.db.OccupationService;
+import org.tctalent.server.service.db.SurveyTypeService;
+import org.tctalent.server.service.db.TranslationService;
 
 /**
  * Unit tests for Translation Admin Api endpoints.

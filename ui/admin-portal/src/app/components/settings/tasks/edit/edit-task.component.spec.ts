@@ -1,16 +1,16 @@
 /*
- * Copyright (c) 2024 Talent Catalog.
+ * Copyright (c) 2026 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
- * the terms of the GNU Affero General Public License as published by the Free
+ * the terms of the GNU General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or any later version.
  *
  * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
  * for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
+ * You should have received a copy of the GNU General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import {EditTaskComponent} from "./edit-task.component";
@@ -36,6 +36,7 @@ describe('EditTaskComponent', () => {
     description: 'Description of Task 1',
     daysToComplete: 3,
     optional: false,
+    notifyOnAssignment: false,
     docLink: 'https://example.com'
   };
   //@ts-expect-error
@@ -45,6 +46,7 @@ describe('EditTaskComponent', () => {
     description: 'Updated description',
     daysToComplete: 5,
     optional: true,
+    notifyOnAssignment: true,
     docLink: 'https://updated-link.com'
   };
 
@@ -88,6 +90,7 @@ describe('EditTaskComponent', () => {
       description: 'Description of Task 1',
       daysToComplete: 3,
       optional: false,
+      notifyOnAssignment: false,
       docLink: 'https://example.com'
     });
     expect(component.loading).toBeFalse();
@@ -99,6 +102,7 @@ describe('EditTaskComponent', () => {
       description: 'Updated description',
       daysToComplete: 5,
       optional: true,
+      notifyOnAssignment: true,
       docLink: 'https://updated-link.com'
     });
 
@@ -110,6 +114,7 @@ describe('EditTaskComponent', () => {
       description: 'Updated description',
       daysToComplete: 5,
       optional: true,
+      notifyOnAssignment: true,
       docLink: 'https://updated-link.com'
     };
     expect(taskServiceSpy.update).toHaveBeenCalledWith(1, expectedRequest);

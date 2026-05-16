@@ -1,22 +1,23 @@
 /*
- * Copyright (c) 2024 Talent Catalog.
+ * Copyright (c) 2026 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
- * the terms of the GNU Affero General Public License as published by the Free
+ * the terms of the GNU General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or any later version.
  *
  * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
  * for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
+ * You should have received a copy of the GNU General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
 package org.tctalent.server.util.html;
 
 import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
 import org.jsoup.safety.Safelist;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
@@ -39,7 +40,7 @@ public class HtmlSanitizer {
     @Nullable
     public static String sanitize(@Nullable String html) {
         return html == null ? null :
-            StringSanitizer.removeControlCharacters(Jsoup.clean(html, Safelist.relaxed()));
+            StringSanitizer.removeControlCharacters(JSoupCleanNotPretty(html, Safelist.relaxed()));
     }
 
     /**
@@ -55,8 +56,20 @@ public class HtmlSanitizer {
     public static String sanitizeWithLinksNewTab(@Nullable String html) {
         return html == null ? null :
             StringSanitizer.removeControlCharacters(
-                Jsoup.clean(html, Safelist.relaxed().addAttributes("a", "target", "rel"))
+                JSoupCleanNotPretty(html, Safelist.relaxed()
+                                          .addAttributes("a", "target", "rel"))
             );
+    }
+
+    /**
+     * Calls JSoup.clean() with prettyPrint=false.
+     * Pretty print=true is the default but it is not needed, and it has an undesirable side effect
+     * of inserting newlines (which breaks the syntax of any encoded JSON strings).
+     */
+    private static String JSoupCleanNotPretty(String html, Safelist safelist) {
+        Document.OutputSettings outputSettings = new Document.OutputSettings();
+        outputSettings.prettyPrint(false);
+        return Jsoup.clean(html, "", safelist, outputSettings);
     }
 
 }

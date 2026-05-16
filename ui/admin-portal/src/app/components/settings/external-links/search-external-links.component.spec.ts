@@ -1,16 +1,16 @@
 /*
- * Copyright (c) 2024 Talent Catalog.
+ * Copyright (c) 2026 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
- * the terms of the GNU Affero General Public License as published by the Free
+ * the terms of the GNU General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or any later version.
  *
  * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
  * for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
+ * You should have received a copy of the GNU General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import {SearchExternalLinksComponent} from "./search-external-links.component";
@@ -18,7 +18,7 @@ import {ComponentFixture, fakeAsync, TestBed, tick} from "@angular/core/testing"
 import {SavedListService} from "../../../services/saved-list.service";
 import {NgbModal, NgbModule} from "@ng-bootstrap/ng-bootstrap";
 import {AuthorizationService} from "../../../services/authorization.service";
-import {UntypedFormBuilder, FormsModule, ReactiveFormsModule} from "@angular/forms";
+import {FormsModule, ReactiveFormsModule, UntypedFormBuilder} from "@angular/forms";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {of} from "rxjs";
 import {MockSavedList} from "../../../MockData/MockSavedList";
