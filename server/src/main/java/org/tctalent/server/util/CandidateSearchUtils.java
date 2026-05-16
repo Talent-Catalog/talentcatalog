@@ -1,22 +1,21 @@
 /*
- * Copyright (c) 2025 Talent Catalog.
+ * Copyright (c) 2026 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
- * the terms of the GNU Affero General Public License as published by the Free
+ * the terms of the GNU General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or any later version.
  *
  * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
  * for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
+ * You should have received a copy of the GNU General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
 package org.tctalent.server.util;
 
-import jakarta.persistence.Query;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -71,14 +70,6 @@ public abstract class CandidateSearchUtils {
     }
 
     public static final String CANDIDATE_TS_TEXT_FIELD = "candidate.ts_text";
-    /**
-     * Used one fixed parameter position because this utility only creates one text search parameter for the tsquery.
-     */
-    public static final int TS_QUERY_PARAM_POSITION = 1;
-    /**
-     * This keeps the placeholder in one place, so the SQL generation and binding code use the same token.
-     */
-    private static final String TS_QUERY_PARAM_TOKEN = "?" + TS_QUERY_PARAM_POSITION;
 
     /**
      * Generates ORDER BY clause given a Sort.
@@ -177,41 +168,15 @@ public abstract class CandidateSearchUtils {
     }
 
     /**
-     * Before we were putting the search text inside the SQL string. Now the SQL only has a placeholder.
      * Builds the Postgres to_tsquery function suitable for inserting into Postgres text matching
      * SQL.
      * @param esQuery  Elasticsearch simple query. If null, it will return an empty string.
      * @return to_tsquery function call suitable for inserting into Postgres SQL
      */
     public static @NonNull String buildToTsQueryFunction(@Nullable String esQuery) {
-        // Kept the empty-search case separate so we do not create a parameter when there is no text to bind.
-        if (!StringUtils.hasText(esQuery)) {
-            return "plainto_tsquery('english', '')";
-        }
-        // Changed this to use plainto_tsquery with a bound parameter, so user text is handled as a value, not as SQL/tsquery syntax.
-        return "plainto_tsquery('english', " + TS_QUERY_PARAM_TOKEN + ")";
+        return "to_tsquery('english','" + buildTsQuerySQL(esQuery) + "')";
     }
 
-    /**
-     * Binds the text search parameter used by {@link #buildToTsQueryFunction(String)}.
-     * <p>
-     * This method binds the real simpleQueryString value after the native query is created.
-     * Only binds when the generated SQL contains the text search positional parameter.
-     * This keeps callers that do not include text ranking/search unaffected.
-     * </p>
-     *
-     * @param query Native query to bind
-     * @param sql SQL used to create the native query
-     * @param textQuery Raw user search text
-     */
-    public static void bindTextSearchParameter(
-        @NonNull Query query, @Nullable String sql, @Nullable String textQuery) {
-        // Checking the SQL first because some queries do not include text search, and those should not try to bind parameter 1.
-        if (StringUtils.hasText(textQuery) && sql != null && sql.contains(TS_QUERY_PARAM_TOKEN)) {
-        // This is where the search text is safely passed to the query instead of being joined into the SQL string.
-            query.setParameter(TS_QUERY_PARAM_POSITION, textQuery);
-        }
-    }
     /**
      * Builds a Postgres tsQuery string which corresponds to the given Elasticsearch Simple Query.
      * <p>

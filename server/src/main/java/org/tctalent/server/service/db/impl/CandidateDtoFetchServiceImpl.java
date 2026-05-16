@@ -1,16 +1,16 @@
 /*
- * Copyright (c) 2025 Talent Catalog.
+ * Copyright (c) 2026 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
- * the terms of the GNU Affero General Public License as published by the Free
+ * the terms of the GNU General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or any later version.
  *
  * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
  * for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
+ * You should have received a copy of the GNU General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
@@ -32,7 +32,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.lang.NonNull;
-import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.logging.LogBuilder;
@@ -80,18 +79,8 @@ public class CandidateDtoFetchServiceImpl implements CandidateDtoFetchService {
     @Override
     public Page<CandidateReadDto> fetchPage(
         String fetchIdsSql, String countSql, @NonNull PageRequest pageRequest) {
-        return fetchPage(fetchIdsSql, countSql, pageRequest, null);
-    }
-
-    //Added textQuery because this method creates both the ids query and the count query.
-    @Override
-    public Page<CandidateReadDto> fetchPage(
-        String fetchIdsSql, String countSql, @NonNull PageRequest pageRequest,
-        @Nullable String textQuery) {
         //Create and execute the query to return the candidate ids
         Query query = entityManager.createNativeQuery(fetchIdsSql);
-        //The ids query can include text search ranking, so we bind the text value before getResultList.
-        CandidateSearchUtils.bindTextSearchParameter(query, fetchIdsSql, textQuery);
         query.setFirstResult((int) pageRequest.getOffset());
         query.setMaxResults(pageRequest.getPageSize());
 
@@ -153,10 +142,7 @@ public class CandidateDtoFetchServiceImpl implements CandidateDtoFetchService {
             .message("Query: " + countSql).logInfo();
         start = end;
         //Compute count
-        Query countQuery = entityManager.createNativeQuery(countSql);
-        //The count query can also have the same text search placeholder, so it needs the same binding before getSingleResult.
-        CandidateSearchUtils.bindTextSearchParameter(countQuery, countSql, textQuery);
-        long total =  ((Number) countQuery.getSingleResult()).longValue();
+        long total =  ((Number) entityManager.createNativeQuery(countSql).getSingleResult()).longValue();
 
         end = System.currentTimeMillis();
         long countTime = end - start;

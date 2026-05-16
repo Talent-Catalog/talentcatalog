@@ -1,16 +1,16 @@
 /*
- * Copyright (c) 2025 Talent Catalog.
+ * Copyright (c) 2026 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
- * the terms of the GNU Affero General Public License as published by the Free
+ * the terms of the GNU General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or any later version.
  *
  * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
  * for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
+ * You should have received a copy of the GNU General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
@@ -78,25 +78,10 @@ class CandidateSearchUtilsTest {
         String textQuery = "accountant + (excel powerpoint)";
         s = CandidateSearchUtils.buildNonIdFieldList(
             Sort.by("text_match"), textQuery);
+        String tsQuerySql = CandidateSearchUtils.buildTsQuerySQL(textQuery);
         Assertions.assertEquals("ts_rank("
             + CandidateSearchUtils.CANDIDATE_TS_TEXT_FIELD
-            + ",plainto_tsquery('english', ?1)) as rank", s);
-    }
-
-    @Test
-    void buildToTsQueryFunctionUsesParameterForUserInput() {
-        String textQuery = "foo') | !bar & baz:*";
-        String s = CandidateSearchUtils.buildToTsQueryFunction(textQuery);
-
-        Assertions.assertEquals("plainto_tsquery('english', ?1)", s);
-        Assertions.assertFalse(s.contains(textQuery));
-    }
-
-    @Test
-    void buildToTsQueryFunctionDoesNotNeedParameterForBlankInput() {
-        String s = CandidateSearchUtils.buildToTsQueryFunction("   ");
-
-        Assertions.assertEquals("plainto_tsquery('english', '')", s);
+            +",to_tsquery('english','" + tsQuerySql + "')) as rank", s);
     }
 
     @Test

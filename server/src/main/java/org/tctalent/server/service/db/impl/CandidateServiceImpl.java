@@ -180,7 +180,6 @@ import org.tctalent.server.service.db.UserService;
 import org.tctalent.server.service.db.email.EmailHelper;
 import org.tctalent.server.service.db.util.PdfHelper;
 import org.tctalent.server.util.BeanHelper;
-import org.tctalent.server.util.CandidateSearchUtils;
 import org.tctalent.server.util.PersistenceContextHelper;
 import org.tctalent.server.util.filesystem.GoogleFileSystemDrive;
 import org.tctalent.server.util.filesystem.GoogleFileSystemFolder;
@@ -436,22 +435,11 @@ public class CandidateServiceImpl implements CandidateService {
             return null;
         }
     }
-    // Kept this method for old/future callers. If there is no text search value, it uses null.
+
     @Override
     @NotNull
     public Set<Long> searchCandidatesUsingSql(String sql) {
-        return searchCandidatesUsingSql(sql, null);
-    }
-
-    // Added this overload for SQL that includes the text search placeholder.
-    @Override
-    @NotNull
-    public Set<Long> searchCandidatesUsingSql(
-        String sql, @Nullable String textQuery) {
         Query query = entityManager.createNativeQuery(sql);
-        // The SQL is already created here, so this is the place where we bind simpleQueryString safely before running it.
-        CandidateSearchUtils.bindTextSearchParameter(query, sql, textQuery);
-
         final List resultList = query.getResultList();
         Set<Long> result = new HashSet<>();
         for (Object obj : resultList) {
