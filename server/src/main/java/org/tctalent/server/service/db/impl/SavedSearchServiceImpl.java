@@ -605,7 +605,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         //Delete any existing saved search with the given name.
         SavedSearch existing =
                 savedSearchRepository.findByNameIgnoreCase(
-                    name, loggedInUser.getId());
+                        name, loggedInUser.getId());
         if (existing != null) {
             deleteSavedSearch(existing.getId());
         }
@@ -711,7 +711,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
     @Override
     @Transactional
     public SavedSearch updateSavedSearch(long id, UpdateSavedSearchRequest request)
-        throws EntityExistsException {
+            throws EntityExistsException {
         final User loggedInUser = userService.getLoggedInUser();
         if (loggedInUser == null) {
             throw new InvalidSessionException("Not logged in");
@@ -1010,7 +1010,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
                     .orElse(null);
             if (savedList != null) {
                 candidateSavedListService
-                    .updateCandidateContextNote(savedList.getId(), request);
+                        .updateCandidateContextNote(savedList.getId(), request);
             }
         }
     }
@@ -1384,16 +1384,16 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             savedSearch.setEnglishMinWrittenLevel(request.getEnglishMinWrittenLevel());
             Optional<Language> language =
                     request.getOtherLanguageId() != null ?
-                        languageRepository.findById(
-                            request.getOtherLanguageId()) : Optional.empty();
+                            languageRepository.findById(
+                                request.getOtherLanguageId()) : Optional.empty();
             if (language.isPresent()) {
                 savedSearch.setOtherLanguage(language.get());
             }
 
             Optional<SavedList> exclusionList =
                     request.getExclusionListId() != null ?
-                        savedListRepository.findById(
-                            request.getExclusionListId()) : Optional.empty();
+                            savedListRepository.findById(
+                                request.getExclusionListId()) : Optional.empty();
             if (exclusionList.isPresent()) {
                 savedSearch.setExclusionList(exclusionList.get());
             }
