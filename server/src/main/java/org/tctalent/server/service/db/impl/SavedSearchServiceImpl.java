@@ -1385,7 +1385,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             Optional<Language> language =
                     request.getOtherLanguageId() != null ?
                             languageRepository.findById(
-                                request.getOtherLanguageId()) : Optional.empty();
+                                    request.getOtherLanguageId()) : Optional.empty();
             if (language.isPresent()) {
                 savedSearch.setOtherLanguage(language.get());
             }
@@ -1393,7 +1393,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             Optional<SavedList> exclusionList =
                     request.getExclusionListId() != null ?
                             savedListRepository.findById(
-                                request.getExclusionListId()) : Optional.empty();
+                                    request.getExclusionListId()) : Optional.empty();
             if (exclusionList.isPresent()) {
                 savedSearch.setExclusionList(exclusionList.get());
             }
