@@ -1,16 +1,16 @@
 /*
- * Copyright (c) 2024 Talent Catalog.
+ * Copyright (c) 2026 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
- * the terms of the GNU Affero General Public License as published by the Free
+ * the terms of the GNU General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or any later version.
  *
  * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
  * for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
+ * You should have received a copy of the GNU General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
@@ -377,6 +377,39 @@ public class EmailHelper {
             LogBuilder.builder(log)
                 .action("WatcherEmail")
                 .message("error sending watcher email")
+                .logError(e);
+
+            throw new EmailSendFailedException(e);
+        }
+    }
+
+    public void sendTaskAssignedEmail(User user, String taskDisplayName) throws EmailSendFailedException {
+        String email = user.getEmail();
+        String displayName = user.getDisplayName();
+        String username = user.getUsername();
+
+        String subject;
+        String bodyText;
+        String bodyHtml;
+        try {
+            final Context ctx = new Context();
+            ctx.setVariable("displayName", displayName);
+            ctx.setVariable("username", username);
+            ctx.setVariable("taskDisplayName", taskDisplayName);
+            ctx.setVariable("loginUrl", portalUrl + "/candidate-portal/");
+            ctx.setVariable("year", currentYear());
+
+            // todo - all email subjects should say Global Refugee Network for GRN instance type
+            // todo - create a separate ticket for this to pass through all code where this needs to be addressed
+            subject = "Talent Catalog - You have a new task";
+            bodyText = textTemplateEngine.process("task-assigned", ctx);
+            bodyHtml = htmlTemplateEngine.process("task-assigned", ctx);
+
+            emailSender.sendAsync(email, subject, bodyText, bodyHtml);
+        } catch (Exception e) {
+            LogBuilder.builder(log)
+                .action("TaskAssignedEmail")
+                .message("error sending task assigned email")
                 .logError(e);
 
             throw new EmailSendFailedException(e);

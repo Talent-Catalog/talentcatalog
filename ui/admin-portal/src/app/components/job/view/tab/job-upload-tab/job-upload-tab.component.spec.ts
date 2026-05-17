@@ -1,24 +1,22 @@
 /*
- * Copyright (c) 2024 Talent Catalog.
+ * Copyright (c) 2026 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
- * the terms of the GNU Affero General Public License as published by the Free
+ * the terms of the GNU General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or any later version.
  *
  * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
  * for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
+ * You should have received a copy of the GNU General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { EventEmitter } from '@angular/core';
-import { JobUploadTabComponent } from './job-upload-tab.component';
-import { Job } from '../../../../../model/job';
-import { JobPrepItem } from '../../../../../model/job-prep-item';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {JobUploadTabComponent} from './job-upload-tab.component';
+import {Job} from '../../../../../model/job';
 import {MockJob} from "../../../../../MockData/MockJob";
 import {ViewJobUploadsComponent} from "../../uploads/view-job-uploads/view-job-uploads.component";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
