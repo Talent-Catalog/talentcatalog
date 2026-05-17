@@ -1,16 +1,16 @@
 /*
- * Copyright (c) 2024 Talent Catalog.
+ * Copyright (c) 2026 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
- * the terms of the GNU Affero General Public License as published by the Free
+ * the terms of the GNU General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or any later version.
  *
  * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
  * for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
+ * You should have received a copy of the GNU General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
@@ -46,6 +46,7 @@ export class EditTaskComponent implements OnInit {
         description: [task.description, Validators.required],
         daysToComplete: [task.daysToComplete, Validators.required],
         optional: [task.optional, Validators.required],
+        notifyOnAssignment: [task.notifyOnAssignment, Validators.required],
         docLink: [task.docLink],
       });
       this.loading = false;
@@ -59,6 +60,7 @@ export class EditTaskComponent implements OnInit {
       description: this.taskForm.value.description,
       daysToComplete: this.taskForm.value.daysToComplete,
       optional: this.taskForm.value.optional,
+      notifyOnAssignment: this.taskForm.value.notifyOnAssignment,
       docLink: this.taskForm.value.docLink,
     }
     this.taskService.update(this.taskId, request).subscribe(

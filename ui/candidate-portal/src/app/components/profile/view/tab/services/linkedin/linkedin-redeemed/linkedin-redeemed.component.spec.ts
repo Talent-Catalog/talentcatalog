@@ -96,7 +96,7 @@ describe('LinkedinRedeemedComponent', () => {
   describe('reportIssue', () => {
     it('should call addCandidateToIssueReportList with IssueReportRequest and re-check list status on success', () => {
       const comment = 'The coupon link did not work.';
-      const expectedRequest: IssueReportRequest = {assignment: mockAssignment, issueComment: comment};
+      const expectedRequest: IssueReportRequest = {candidateId: 123, assignment: mockAssignment, issueComment: comment};
       mockLinkedinService.addCandidateToIssueReportList.and.returnValue(of(undefined));
       mockLinkedinService.isOnIssueReportList.and.returnValue(of(true));
       component.issueComment = comment;

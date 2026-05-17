@@ -1,16 +1,16 @@
 /*
- * Copyright (c) 2024 Talent Catalog.
+ * Copyright (c) 2026 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
- * the terms of the GNU Affero General Public License as published by the Free
+ * the terms of the GNU General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or any later version.
  *
  * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
  * for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
+ * You should have received a copy of the GNU General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
@@ -30,6 +30,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
+import org.tctalent.server.exception.ExpiredEmailTokenException;
 import org.tctalent.server.exception.ExpiredTokenException;
 import org.tctalent.server.exception.InvalidPasswordFormatException;
 import org.tctalent.server.exception.InvalidPasswordTokenException;
@@ -45,14 +46,12 @@ import org.tctalent.server.request.user.SearchUserRequest;
 import org.tctalent.server.request.user.SendResetPasswordEmailRequest;
 import org.tctalent.server.request.user.UpdateUserPasswordRequest;
 import org.tctalent.server.request.user.UpdateUserRequest;
+import org.tctalent.server.request.user.emailverify.SendVerifyEmailRequest;
+import org.tctalent.server.request.user.emailverify.VerifyEmailRequest;
 import org.tctalent.server.security.AuthService;
 import org.tctalent.server.service.db.CountryService;
 import org.tctalent.server.service.db.UserService;
 import org.tctalent.server.util.dto.DtoBuilder;
-import org.tctalent.server.request.user.emailverify.SendVerifyEmailRequest;
-import org.tctalent.server.request.user.emailverify.VerifyEmailRequest;
-import org.tctalent.server.exception.InvalidEmailVerificationTokenException;
-import org.tctalent.server.exception.ExpiredEmailTokenException;
 
 @RestController
 @RequestMapping("/api/admin/user")

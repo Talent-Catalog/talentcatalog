@@ -2,15 +2,15 @@
  * Copyright (c) 2026 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
- * the terms of the GNU Affero General Public License as published by the Free
+ * the terms of the GNU General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or any later version.
  *
  * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
  * for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
+ * You should have received a copy of the GNU General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
@@ -29,8 +29,11 @@ import org.tctalent.server.casi.api.request.IssueReportRequest;
 import org.tctalent.server.casi.api.request.UpdateServiceResourceStatusRequest;
 import org.tctalent.server.casi.application.providers.linkedin.LinkedInService;
 import org.tctalent.server.casi.domain.model.ServiceAssignment;
+import org.tctalent.server.exception.InvalidSessionException;
+import org.tctalent.server.exception.UnauthorisedActionException;
 import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.model.db.User;
+import org.tctalent.server.security.AuthService;
 import org.tctalent.server.service.db.UserService;
 
 @Slf4j
@@ -41,6 +44,7 @@ public class LinkedinPortalApi {
 
   private final LinkedInService linkedinService;
   private final UserService userService;
+  private final AuthService authService;
 
   /**
    * Checks if a candidate is eligible for the LinkedIn Premium membership upgrade offer.
@@ -50,6 +54,7 @@ public class LinkedinPortalApi {
    */
   @GetMapping("{candidateId}/eligibility")
   public Boolean isEligible(@PathVariable Long candidateId) {
+    checkAuthorisation(candidateId);
     return linkedinService.isEligible(candidateId);
   }
 
@@ -63,6 +68,7 @@ public class LinkedinPortalApi {
   @GetMapping("{candidateId}/find-assignment")
   public ServiceAssignment findAssignmentWithReservedOrRedeemedResource(
       @PathVariable Long candidateId) {
+    checkAuthorisation(candidateId);
     return linkedinService.findAssignmentWithReservedOrRedeemedResource(candidateId);
   }
 
@@ -78,6 +84,8 @@ public class LinkedinPortalApi {
    */
   @PostMapping("{candidateId}/assign")
   public ServiceAssignment assign(@PathVariable Long candidateId) {
+    checkAuthorisation(candidateId);
+
     try {
       User user = userService.getSystemAdminUser();
       return linkedinService.assignToCandidate(candidateId, user);
@@ -99,8 +107,12 @@ public class LinkedinPortalApi {
    *
    * @param request - {@link UpdateServiceResourceStatusRequest}
    */
-  @PutMapping("update-coupon-status")
-  public void updateCouponStatus(@RequestBody UpdateServiceResourceStatusRequest request) {
+  @PutMapping("{candidateId}/update-coupon-status")
+  public void updateCouponStatus(
+      @PathVariable Long candidateId,
+      @RequestBody UpdateServiceResourceStatusRequest request
+  ) {
+    checkAuthorisation(candidateId);
     linkedinService.updateResourceStatus(request.getResourceCode(), request.getStatus());
   }
 
@@ -113,6 +125,7 @@ public class LinkedinPortalApi {
    */
   @PostMapping("issue-report")
   public void addCandidateToIssueReportList(@RequestBody IssueReportRequest request) {
+    checkAuthorisation(request.getCandidateId());
     linkedinService.addCandidateToIssueReportList(request.getAssignment(), request.getIssueComment());
   }
 
@@ -124,6 +137,7 @@ public class LinkedinPortalApi {
    */
   @GetMapping("{candidateId}/issue-report")
   public Boolean isOnIssueReportList(@PathVariable Long candidateId) {
+    checkAuthorisation(candidateId);
     return linkedinService.isOnIssueReportList(candidateId);
   }
 
@@ -135,7 +149,23 @@ public class LinkedinPortalApi {
    */
   @GetMapping("{candidateId}/assignment-failure")
   public Boolean isOnAssignmentFailureList(@PathVariable Long candidateId) {
+    checkAuthorisation(candidateId);
     return linkedinService.isOnAssignmentFailureList(candidateId);
+  }
+
+  /** Checks for logged-in candidate with ID matching request. */
+  private void checkAuthorisation(Long candidateId)
+      throws InvalidSessionException, UnauthorisedActionException {
+    // Check that given candidateId matches logged-in candidate
+    Long loggedInCandidateId = authService.getLoggedInCandidateId();
+
+    if (loggedInCandidateId == null) {
+      throw new InvalidSessionException("Not logged in");
+    }
+
+    if (!candidateId.equals(loggedInCandidateId)) {
+      throw new UnauthorisedActionException("LinkedIn Premium offer");
+    }
   }
 
 }
