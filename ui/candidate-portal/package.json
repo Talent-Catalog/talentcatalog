@@ -1,6 +1,7 @@
 {
   "name": "candidate-portal",
   "version": "0.0.0",
+  "license": "GPL-3.0-or-later",
   "scripts": {
     "ng": "ng",
     "start": "ng serve --host=127.0.0.1",

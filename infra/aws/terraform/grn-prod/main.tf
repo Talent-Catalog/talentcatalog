@@ -281,7 +281,7 @@ module "grn_prod" {
   tc_db_copy_config               = "data.sharing/tcCopies.xml"
 
   # todo: this list can be expanded -- see backlog ticket
-  tc_destinations                 = "Australia,Canada,New Zealand,United Kingdom"
+  tc_destinations                 = "Australia,Belgium,Canada,France,Germany,Ireland,Italy,Slovakia,Spain,United Kingdom,United States"
 
   tc_skills_extraction_api_url    = "https://skills.globalrefugee.net"
   web_admin                       = "https://globalrefugee.net/admin-portal"
