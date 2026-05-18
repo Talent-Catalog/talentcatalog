@@ -24,8 +24,8 @@ import {AuthProfile} from "./auth-profile";
 export interface AuthProvider {
   init(): Promise<boolean>;
   isAuthenticated(): boolean;
-  login(): Promise<void>;
-  register(): Promise<void>;
+  login(lang: string): Promise<void>;
+  register(lang: string): Promise<void>;
   logout(): Promise<void>;
   getProfile(): Promise<AuthProfile>;
   getToken(): string | undefined;

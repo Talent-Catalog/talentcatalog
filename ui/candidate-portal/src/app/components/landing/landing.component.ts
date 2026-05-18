@@ -135,11 +135,11 @@ export class LandingComponent implements OnInit, OnDestroy {
   }
 
   onLogin() {
-    this.authenticationService.login();
+    this.authenticationService.login(this.languageService.getSelectedLanguage());
   }
 
   onRegister() {
-    this.authenticationService.register();
+    this.authenticationService.register(this.languageService.getSelectedLanguage());
   }
 
   completeLogin() {

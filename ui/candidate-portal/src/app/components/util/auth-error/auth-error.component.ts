@@ -10,7 +10,7 @@ export class AuthErrorComponent {
   @Input() error: string | null = null;
   @Output() dismissed = new EventEmitter<void>();
 
-  dismiss(): void {
+  clear(): void {
     this.dismissed.emit();
   }
 }
