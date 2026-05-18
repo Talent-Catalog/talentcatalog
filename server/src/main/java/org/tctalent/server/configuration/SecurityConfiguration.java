@@ -127,7 +127,7 @@ public class SecurityConfiguration {
      * We also need to handle login requests, even though the JWT token should normally correspond
      * to an existing user already on the database. However, it is necessary for the special use
      * case when we are converting non-Oauth users to Oauth users. In that case, the JWT token will
-     * not be able to locate the existing user in the database in the normal way - but looking
+     * not be able to locate the existing user in the database in the normal way - by looking
      * it up using the Oauth issuer and subject. Instead, we need to identify the user from their
      * email.
      * See the code in {@link org.tctalent.server.service.db.UserService#login(AuthProfile)} which
