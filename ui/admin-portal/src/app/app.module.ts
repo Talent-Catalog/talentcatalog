@@ -847,9 +847,12 @@ import {
 import {CasiManagementComponent} from "./components/casi-management/casi-management.component";
 import {CsvPreviewComponent} from "./components/casi-management/csv-preview/csv-preview.component";
 import {
+  EraseCandidateDataComponent
+} from "./components/candidates/view/erase/erase-candidate-data.component";
+import {TextPartsViewComponent} from "./components/util/text-parts-view/text-parts-view.component";
+import {
   TextPartsInputComponent
 } from "./components/util/text-parts-input/text-parts-input.component";
-import {TextPartsViewComponent} from "./components/util/text-parts-view/text-parts-view.component";
 
 @NgModule({
   declarations: [
@@ -1192,7 +1195,8 @@ import {TextPartsViewComponent} from "./components/util/text-parts-view/text-par
     CasiManagementComponent,
     CsvPreviewComponent,
     ImportLinkedinPremiumCouponsComponent,
-    ImportReferenceVouchersComponent
+    ImportReferenceVouchersComponent,
+    EraseCandidateDataComponent
   ],
   imports: [
     BrowserModule,
