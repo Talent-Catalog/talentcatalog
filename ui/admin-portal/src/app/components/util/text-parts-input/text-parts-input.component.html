@@ -1,0 +1,28 @@
+<div class="text-parts-input">
+  <div class="mb-3">
+    <label *ngIf="!(hideTidied && hideKeywords)" class="form-label">Original</label>
+    <ngx-wig
+      [formControl]="originalControl"
+      (blur)="markTouched()">
+    </ngx-wig>
+  </div>
+
+  <div *ngIf="!hideTidied" class="mb-3">
+    <label class="form-label">Tidied</label>
+    <ngx-wig
+      [formControl]="tidiedControl"
+      (blur)="markTouched()">
+    </ngx-wig>
+  </div>
+
+  <div *ngIf="!hideKeywords" class="mb-3">
+    <label class="form-label">Keywords</label>
+    <input
+      class="form-control"
+      type="text"
+      [formControl]="keywordsControl"
+      (blur)="markTouched()"
+      placeholder="electrician, wiring, maintenance"
+    />
+  </div>
+</div>

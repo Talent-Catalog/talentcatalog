@@ -1,16 +1,16 @@
 /*
- * Copyright (c) 2024 Talent Catalog.
+ * Copyright (c) 2026 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
- * the terms of the GNU Affero General Public License as published by the Free
+ * the terms of the GNU General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or any later version.
  *
  * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
  * for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
+ * You should have received a copy of the GNU General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
@@ -31,6 +31,7 @@ import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.service.db.impl.TcInstanceService;
 import org.tctalent.server.util.html.HtmlSanitizer;
 import org.tctalent.server.util.html.StringSanitizer;
+import org.tctalent.server.util.text.CandidateTidiedTextViewFactory;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 import org.w3c.tidy.Tidy;
@@ -55,6 +56,7 @@ public class PdfHelper {
 
     private final TemplateEngine pdfTemplateEngine;
     private final TcInstanceService tcInstanceService;
+    private final CandidateTidiedTextViewFactory candidateTidiedTextViewFactory;
 
     /**
      * Note - we can't use Lombok RequiredArgsConstructor because currently Lombok doesn't copy
@@ -64,9 +66,11 @@ public class PdfHelper {
      *     Intellij doc</a>
      */
     public PdfHelper(@Qualifier("pdfTemplateEngine") TemplateEngine pdfTemplateEngine,
-        TcInstanceService tcInstanceService) {
+        TcInstanceService tcInstanceService,
+        CandidateTidiedTextViewFactory candidateTidiedTextViewFactory) {
         this.pdfTemplateEngine = pdfTemplateEngine;
         this.tcInstanceService = tcInstanceService;
+        this.candidateTidiedTextViewFactory = candidateTidiedTextViewFactory;
     }
 
     /**
@@ -86,7 +90,7 @@ public class PdfHelper {
             cleanCandidateJobDescriptions(candidate);
 
             Context context = new Context();
-            context.setVariable("candidate", candidate);
+            context.setVariable("candidate", candidateTidiedTextViewFactory.create(candidate));
             context.setVariable("showName", showName);
             context.setVariable("showContact", showContact);
             context.setVariable("logoFile", tcInstanceService.getLogoFile());

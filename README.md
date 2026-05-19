@@ -335,8 +335,10 @@ use it to populate your empty database:
   depending on whether you are running bash or zsh.
 
 - Create a new Run Profile for `org.tctalent.server.TcTalentApplication`.
-  In the Environment Variables section of Intellij, check the
-  "Include system environment variables" checkbox.
+- Click 'Modify Options' and check Environment Variables, here you'll need to add a password for your
+  System Admin user that is created on startup. This variable isn't included in the 
+  tc_secrets file (which Spring Boot inherits automatically) and must be added manually by entering `TC_BOOT_ADMIN_PASSWORD=` and a password 
+  of your choice (e.g. password). This will be used to access the admin portal once it is running.
 - Run the new profile, you should see something similar to this in the logs:
 
 ```
@@ -460,7 +462,8 @@ into the server and serve through Apache Tomcat._
 ### Log In To The Admin Portal ###
 
 - On startup, the server automatically creates a default user with username `SystemAdmin`
-  and password `password` that can be used to log in to the admin portal in development.
+  and the password that you added to your environment variables. These credentials can be used to 
+  log in to the admin portal in development.
 - Details about this user can be found in
   `org/talentcatalog/server/configuration/SystemAdminConfiguration.java`
 
@@ -588,6 +591,6 @@ See the Deployment and Monitoring pages on the
 
 ## License
 
-[GNU AGPLv3](https://choosealicense.com/licenses/agpl-3.0/)
+[GNU GPLv3 or later](https://www.gnu.org/licenses/gpl-3.0.txt)
 
 For copyright header format and conventions, see [CONTRIBUTING.md](CONTRIBUTING.md).
