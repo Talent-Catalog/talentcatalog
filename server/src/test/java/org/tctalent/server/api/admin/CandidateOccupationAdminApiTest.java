@@ -45,8 +45,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.tctalent.server.model.db.CandidateOccupation;
 import org.tctalent.server.model.db.Occupation;
@@ -75,8 +75,9 @@ class CandidateOccupationAdminApiTest extends ApiTestBase {
     private static final CandidateOccupation candidateOccupation = getCandidateOccupation();
     private static final List<CandidateOccupation> candidateOccupationsList = getListOfCandidateOccupations();
 
-    @MockBean OccupationService occupationService;
-    @MockBean CandidateOccupationService candidateOccupationService;
+    @MockitoBean OccupationService occupationService;
+    @MockitoBean
+    CandidateOccupationService candidateOccupationService;
 
     @Autowired MockMvc mockMvc;
     @Autowired ObjectMapper objectMapper;

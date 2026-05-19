@@ -48,9 +48,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.tctalent.server.api.admin.ApiTestBase;
 import org.tctalent.server.casi.api.request.ServiceListActionRequest;
@@ -90,11 +90,11 @@ class ServicesAdminControllerTest extends ApiTestBase {
   private static final String RESOURCE_CODE = "COUPON123";
   private static final String CANDIDATE_NUMBER = "12345";
 
-  @MockBean private AuthService authService;
-  @MockBean private CandidateServiceRegistry candidateServiceRegistry;
-  @MockBean private CandidateServicesQueryService queryService;
-  @MockBean private CandidateAssistanceService candidateAssistanceService;
-  @MockBean private ServiceListRepository serviceListRepository;
+  @MockitoBean private AuthService authService;
+  @MockitoBean private CandidateServiceRegistry candidateServiceRegistry;
+  @MockitoBean private CandidateServicesQueryService queryService;
+  @MockitoBean private CandidateAssistanceService candidateAssistanceService;
+  @MockitoBean private ServiceListRepository serviceListRepository;
 
   @Autowired private MockMvc mockMvc;
   @Autowired private ObjectMapper objectMapper;

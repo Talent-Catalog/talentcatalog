@@ -45,13 +45,13 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.tctalent.server.api.dto.ExportColumnsBuilderSelector;
 import org.tctalent.server.api.dto.SavedListBuilderSelector;
@@ -102,13 +102,13 @@ class SavedListAdminApiTest extends ApiTestBase {
             1
         );
 
-    @MockBean
+    @MockitoBean
     SavedListService savedListService;
-    @MockBean
+    @MockitoBean
     CandidateService candidateService;
-    @MockBean
+    @MockitoBean
     CandidateSavedListService candidateSavedListService;
-    @MockBean
+    @MockitoBean
     SalesforceService salesforceService;
 
     @Autowired

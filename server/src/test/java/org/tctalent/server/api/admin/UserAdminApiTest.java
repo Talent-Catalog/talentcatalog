@@ -46,12 +46,12 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.tctalent.server.model.db.Role;
 import org.tctalent.server.model.db.User;
@@ -97,9 +97,9 @@ class UserAdminApiTest extends ApiTestBase {
       "notadmin@gmailcom",
       Role.limited);
 
-  @MockBean AuthService authService;
-  @MockBean CountryService countryService;
-  @MockBean UserService userService;
+  @MockitoBean AuthService authService;
+  @MockitoBean CountryService countryService;
+  @MockitoBean UserService userService;
 
   @Autowired MockMvc mockMvc;
   @Autowired ObjectMapper objectMapper;

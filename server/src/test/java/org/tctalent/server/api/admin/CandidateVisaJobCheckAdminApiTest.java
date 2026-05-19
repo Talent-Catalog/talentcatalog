@@ -40,8 +40,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.tctalent.server.model.db.CandidateVisaJobCheck;
 import org.tctalent.server.request.candidate.visa.job.CreateCandidateVisaJobCheckRequest;
@@ -62,12 +62,12 @@ public class CandidateVisaJobCheckAdminApiTest extends ApiTestBase {
     private static final CandidateVisaJobCheck candidateVisaJobCheck = getCandidateVisaJobCheck(false);
     private static final CandidateVisaJobCheck candidateVisaJobCheckComplete = getCandidateVisaJobCheck(true);
 
-    @MockBean
+    @MockitoBean
     CandidateVisaJobCheckService candidateVisaJobCheckService;
-    @MockBean
+    @MockitoBean
     OccupationService occupationService;
 
-    @MockBean
+    @MockitoBean
     SalesforceService salesforceService;
 
     @Autowired MockMvc mockMvc;

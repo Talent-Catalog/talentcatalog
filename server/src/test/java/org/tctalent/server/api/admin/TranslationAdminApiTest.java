@@ -53,12 +53,12 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.tctalent.server.model.db.Country;
 import org.tctalent.server.model.db.EducationLevel;
@@ -129,23 +129,23 @@ class TranslationAdminApiTest extends ApiTestBase {
   private final Page<SurveyType> surveyTypePage = new PageImpl<>(
       getSurveyTypes(), PageRequest.of(0, 10, Sort.unsorted()), 1);
 
-  @MockBean
+  @MockitoBean
   TranslationService translationService;
-  @MockBean
+  @MockitoBean
   AuthService authService;
-  @MockBean
+  @MockitoBean
   CountryService countryService;
-  @MockBean
+  @MockitoBean
   LanguageService languageService;
-  @MockBean
+  @MockitoBean
   LanguageLevelService languageLevelService;
-  @MockBean
+  @MockitoBean
   OccupationService occupationService;
-  @MockBean
+  @MockitoBean
   EducationLevelService educationLevelService;
-  @MockBean
+  @MockitoBean
   EducationMajorService educationMajorService;
-  @MockBean
+  @MockitoBean
   SurveyTypeService surveyTypeService;
 
   @Autowired

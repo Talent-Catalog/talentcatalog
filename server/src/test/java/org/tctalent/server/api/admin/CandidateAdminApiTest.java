@@ -50,7 +50,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
@@ -58,6 +57,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.tctalent.server.api.dto.CandidateBuilderSelector;
@@ -149,21 +149,21 @@ class CandidateAdminApiTest extends ApiTestBase {
 
     private final Candidate candidate = getCandidate();
 
-    @MockBean
+    @MockitoBean
     CandidateService candidateService;
-    @MockBean
+    @MockitoBean
     CandidateOpportunityService candidateOpportunityService;
-    @MockBean
+    @MockitoBean
     CandidateSavedListService candidateSavedListService;
-    @MockBean
+    @MockitoBean
     SavedListService savedListService;
-    @MockBean
+    @MockitoBean
     SavedSearchService savedSearchService;
-    @MockBean
+    @MockitoBean
     CandidateTokenProvider candidateTokenProvider;
-    @MockBean
+    @MockitoBean
     CandidateBuilderSelector candidateBuilderSelector;
-    @MockBean
+    @MockitoBean
     CandidateIntakeDataBuilderSelector candidateIntakeDataBuilderSelector;
 
     @Autowired MockMvc mockMvc;
