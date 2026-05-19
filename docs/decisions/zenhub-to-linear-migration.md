@@ -301,3 +301,29 @@ Linear offers two GitHub sync modes ([docs](https://linear.app/docs/github-to-li
 - **Transparency-by-default.** GitHub remains canonical (Decision 1) and publicly visible. The team wants every Linear-created issue to also appear in GitHub so external contributors see the full picture.
 - **No private layer.** A class of Linear-only issues invisible to external contributors would conflict with the project's open-source intent.
 - **Image sync for all issues.** Bidirectional ensures images sync in both directions for all issues — an improvement over ZenHub.
+
+---
+
+## Decision 11: GitHub Repository Sync Configuration
+
+**Status:** Decided
+
+### Context
+
+Linear's bidirectional GitHub Issues Sync is limited to one repository per Linear team. However, Linear also supports unidirectional sync (GitHub → Linear only) for additional repositories. The organisation has four active repositories:
+
+- `Talent-Catalog/talentcatalog` — main monorepo, primary issue home
+- `Talent-Catalog/tc-api`
+- `Talent-Catalog/tc-api-spec`
+- `Talent-Catalog/tc-skills-extraction-service`
+
+### Decision
+
+**Bidirectional sync for `talentcatalog`; unidirectional (GitHub → Linear) for the remaining three repos.**
+
+This configuration means:
+- Issues filed in any of the four repos on GitHub automatically appear in Linear.
+- Linear-created issues sync to `talentcatalog` on GitHub (consistent with Decision 10).
+- No manual bridging or issue consolidation is required.
+
+The only asymmetry is that Linear-created issues appear in `talentcatalog` rather than a service-specific repo. This is acceptable given that `talentcatalog` is the primary and canonical issue home for the project.
