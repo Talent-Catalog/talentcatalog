@@ -21,10 +21,10 @@ import lombok.Setter;
 import org.springframework.lang.Nullable;
 
 /**
- * Request to fully erase a candidate's personally identifiable data.
+ * Request to fully delete all data held for a candidate.
  *
  * <p>This request does not support multiple erasure modes. The backend performs one full erasure
- * action only: the candidate is marked as deleted and personal data is removed or scrubbed.</p>
+ * action only: the candidate is marked as deleted and candidate data is removed or scrubbed.</p>
  *
  * <p>The candidate row itself is intentionally not physically deleted because it may be referenced
  * by saved lists, opportunities, task assignments, attachments, audit records, or other database

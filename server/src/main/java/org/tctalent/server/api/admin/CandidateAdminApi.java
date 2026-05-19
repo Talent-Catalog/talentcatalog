@@ -498,13 +498,13 @@ public class CandidateAdminApi {
     }
 
     /**
-     * Erases a candidate's personally identifiable data.
+     * Fully deletes all data held for a candidate.
      *
      * <p>This endpoint is intentionally separate from the normal DELETE endpoint. The normal delete
      * behaviour marks a candidate deleted, while this endpoint performs data erasure:
-     * it removes personal fields, documents, notes, candidate-submitted free text, user login data,
-     * attachment metadata, and search text while preserving a dummy candidate placeholder row for
-     * database integrity.</p>
+     * it removes candidate profile fields, documents, notes, candidate-submitted free text, user
+     * login data, attachment metadata, and search text while preserving a dummy candidate
+     * placeholder row for database integrity.</p>
      *
      * @param id ID of the candidate to erase.
      * @param request erasure options and confirmation data.

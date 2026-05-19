@@ -20,10 +20,11 @@ import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.request.candidate.EraseCandidateRequest;
 
 /**
- * Service for erasing candidate personal data while preserving database integrity.
+ * Service for fully deleting all data held for a candidate while preserving database integrity.
  *
  * <p>This service implements the "right to erasure" behaviour for candidates. It should
- * be used when a candidate has requested that their data be removed from the Talent Catalog.</p>
+ * be used when a candidate has requested that all data held for them be removed from the Talent
+ * Catalog.</p>
  *
  * <p>The implementation intentionally keeps a placeholder candidate row instead of physically
  * deleting the candidate because candidates are referenced by saved lists, candidate opportunities,
@@ -33,7 +34,7 @@ import org.tctalent.server.request.candidate.EraseCandidateRequest;
 public interface CandidateErasureService {
 
   /**
-   * Erases the personally identifiable data associated with a candidate.
+   * Fully deletes all data held for a candidate.
    *
    * @param candidateId ID of the candidate to erase.
    * @param request erasure options and confirmation data.

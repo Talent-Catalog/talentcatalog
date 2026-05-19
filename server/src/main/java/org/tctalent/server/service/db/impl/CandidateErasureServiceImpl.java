@@ -87,7 +87,7 @@ import org.tctalent.server.util.filesystem.GoogleFileSystemFile;
  * reporting, anonymised, or mid-level erasure option.</p>
  *
  * <p>The candidate row and related rows are intentionally kept where possible so that database
- * relationships do not break. Instead of deleting rows, this service scrubs personal data,
+ * relationships do not break. Instead of deleting rows, this service scrubs candidate data,
  * candidate-submitted free text, documents, CV text, search text, external IDs, and login data.</p>
  *
  * <p>Where a field can be set to {@code null}, it is set to {@code null}. Where the database may
@@ -131,7 +131,7 @@ public class CandidateErasureServiceImpl implements CandidateErasureService {
   private final StorageService storageService;
 
   /**
-   * Fully erases the personally identifiable data for the given candidate.
+   * Fully deletes all data held for the given candidate.
    *
    * <p>This method performs one full erasure flow only. It does not support reporting or partial
    * erasure.</p>
