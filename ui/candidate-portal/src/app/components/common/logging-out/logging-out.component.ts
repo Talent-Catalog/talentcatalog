@@ -4,12 +4,13 @@ import {Subject, timer} from 'rxjs';
 import {map, takeUntil, takeWhile, tap} from 'rxjs/operators';
 import {AuthenticationService} from "../../../services/authentication.service";
 import {ActivatedRoute, Router} from "@angular/router";
+import {TranslateModule} from "@ngx-translate/core";
 
 @Component({
   selector: 'app-logging-out',
   standalone: true,
   imports: [
-    NgIf
+    NgIf, TranslateModule,
   ],
   templateUrl: './logging-out.component.html',
   styleUrl: './logging-out.component.scss'
