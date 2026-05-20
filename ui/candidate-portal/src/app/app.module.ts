@@ -396,6 +396,7 @@ export function initializeAuth(authenticationService: AuthenticationService) {
     QuillModule.forRoot(),
     PickerModule,
     KeycloakAngularModule,
+    PickerModule,
     TextPartsInputComponent,
     TextPartsViewComponent
   ],

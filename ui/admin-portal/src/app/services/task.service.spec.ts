@@ -31,7 +31,7 @@ describe('TaskService', () => {
   // Sample data
   const mockTasks: Task[] = MockJob.submissionList.tasks;
 
-  const mockTask: Task = { id: 1, displayName: 'Task 1', description: 'Description 1', daysToComplete: 5, docLink: 'http://example.com', optional: false } as Task;
+  const mockTask: Task = { id: 1, displayName: 'Task 1', description: 'Description 1', daysToComplete: 5, docLink: 'http://example.com', optional: false, notifyOnAssignment: false } as Task;
 
   const mockSearchResults: SearchResults<Task> = {
     content: mockTasks,
@@ -44,6 +44,7 @@ describe('TaskService', () => {
     daysToComplete: 10,
     docLink: 'http://example.com/help',
     optional: true,
+    notifyOnAssignment: false,
   };
 
   beforeEach(() => {

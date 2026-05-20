@@ -24,6 +24,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
@@ -41,6 +42,7 @@ import static org.tctalent.server.data.CandidateTestData.getListOfCandidates;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.PrintWriter;
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import org.hamcrest.Matchers;
@@ -58,14 +60,17 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.tctalent.server.api.dto.CandidateBuilderSelector;
 import org.tctalent.server.api.dto.CandidateIntakeDataBuilderSelector;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.CandidateDestination;
+import org.tctalent.server.model.db.CandidateStatus;
 import org.tctalent.server.model.db.CandidateVisaCheck;
 import org.tctalent.server.model.db.Country;
+import org.tctalent.server.model.db.Role;
 import org.tctalent.server.model.db.Status;
 import org.tctalent.server.repository.db.read.dto.CandidateReadDto;
 import org.tctalent.server.request.candidate.CandidateEmailPhoneOrWhatsappSearchRequest;
@@ -74,6 +79,7 @@ import org.tctalent.server.request.candidate.CandidateExternalIdSearchRequest;
 import org.tctalent.server.request.candidate.CandidateIntakeDataUpdate;
 import org.tctalent.server.request.candidate.CandidateNumberOrNameSearchRequest;
 import org.tctalent.server.request.candidate.DownloadCvRequest;
+import org.tctalent.server.request.candidate.EraseCandidateRequest;
 import org.tctalent.server.request.candidate.ResolveTaskAssignmentsRequest;
 import org.tctalent.server.request.candidate.SearchCandidateRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateAdditionalInfoRequest;
@@ -90,6 +96,7 @@ import org.tctalent.server.request.candidate.UpdateCandidateSurveyRequest;
 import org.tctalent.server.request.candidate.opportunity.CandidateOpportunityParams;
 import org.tctalent.server.security.CandidateTokenProvider;
 import org.tctalent.server.security.CvClaims;
+import org.tctalent.server.service.db.CandidateErasureService;
 import org.tctalent.server.service.db.CandidateOpportunityService;
 import org.tctalent.server.service.db.CandidateSavedListService;
 import org.tctalent.server.service.db.CandidateService;
@@ -132,6 +139,7 @@ class CandidateAdminApiTest extends ApiTestBase {
     private static final String UPDATE_INTAKE_DATA_BY_ID_PATH = "/{id}/intake";
     private static final String RESOLVE_TASKS_PATH = "/resolve-tasks";
     private static final String GENERATE_TOKEN_PATH = "/token/{cn}";
+    private static final String ERASE_CANDIDATE_BY_ID_PATH = "/{id}/erase";
 
     private final Page<Candidate> candidates =
             new PageImpl<>(
@@ -165,6 +173,8 @@ class CandidateAdminApiTest extends ApiTestBase {
     CandidateBuilderSelector candidateBuilderSelector;
     @MockitoBean
     CandidateIntakeDataBuilderSelector candidateIntakeDataBuilderSelector;
+    @MockitoBean
+    CandidateErasureService candidateErasureService;
 
     @Autowired MockMvc mockMvc;
     @Autowired ObjectMapper objectMapper;
@@ -512,6 +522,43 @@ class CandidateAdminApiTest extends ApiTestBase {
                 .andExpect(jsonPath("$", is(false)));
 
         verify(candidateService).deleteCandidate(anyLong());
+    }
+
+    @Test
+    @DisplayName("erase candidate by id succeeds")
+    @WithMockUser(authorities = "ROLE_SYSTEMADMIN")
+    void eraseCandidateByIdSucceeds() throws Exception {
+        long id = 99L;
+
+        user.setRole(Role.systemadmin);
+
+        candidate.setStatus(CandidateStatus.deleted);
+        candidate.setDeletedDate(OffsetDateTime.parse("2026-01-01T10:15:30+00:00"));
+        candidate.setDeletedBy(user);
+
+        EraseCandidateRequest request = new EraseCandidateRequest();
+        request.setConfirmationCandidateNumber(candidate.getCandidateNumber());
+
+        given(candidateErasureService
+            .eraseCandidate(eq(id), any(EraseCandidateRequest.class)))
+            .willReturn(candidate);
+
+        mockMvc.perform(post(BASE_PATH + ERASE_CANDIDATE_BY_ID_PATH.replace("{id}", Long.toString(id)))
+                .with(csrf())
+                .header("Authorization", "Bearer " + "jwt-token")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request))
+                .accept(MediaType.APPLICATION_JSON))
+
+            .andDo(print())
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+            .andExpect(jsonPath("$.id", is(99)))
+            .andExpect(jsonPath("$.candidateNumber", is(candidate.getCandidateNumber())))
+            .andExpect(jsonPath("$.status", is("deleted")))
+            .andExpect(jsonPath("$.erased", is(true)));
+
+        verify(candidateErasureService).eraseCandidate(eq(id), any(EraseCandidateRequest.class));
     }
 
     @Test

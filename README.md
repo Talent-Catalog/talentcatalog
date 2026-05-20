@@ -285,6 +285,10 @@ in `application.yml` to define a password for that user.
 Alternately, ask TC developers for a `pg_dump` of the database. The advantage of the the dump
 is that you will get a database populated with a lot of test data and users. 
 
+> **Important:** Apply the DB dump before attempting to run the Spring build. Otherwise, an initial
+> schema will be created that conflicts with the dump, requiring you to reset Docker containers and
+> volumes before trying again.
+
 Note that the dump does not have to be recent. 
 The software will automatically apply any required updates to the database definition, driven by 
 Flyway files stored in GitHub. 

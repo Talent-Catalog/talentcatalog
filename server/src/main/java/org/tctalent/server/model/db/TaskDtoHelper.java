@@ -89,6 +89,7 @@ public class TaskDtoHelper {
             .add("description")
             .add("displayName")
             .add("optional")
+            .add("notifyOnAssignment")
             .add("docLink")
             .add("taskType")
             .add("uploadType")
