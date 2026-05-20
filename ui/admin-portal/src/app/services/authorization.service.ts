@@ -346,6 +346,10 @@ export class AuthorizationService {
     return [Role.systemadmin, Role.admin].includes(this.getLoggedInRole());
   }
 
+  canEraseCandidateData(): boolean {
+    return this.isSystemAdminOnly && !this.isReadOnly();
+  }
+
   isPartnerAdminOrGreater(): boolean {
     return [Role.systemadmin, Role.admin, Role.partneradmin].includes(this.getLoggedInRole());
   }

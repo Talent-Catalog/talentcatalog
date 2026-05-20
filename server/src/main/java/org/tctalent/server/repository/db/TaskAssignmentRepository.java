@@ -33,5 +33,5 @@ public interface TaskAssignmentRepository extends JpaRepository<TaskAssignmentIm
     List<TaskAssignmentImpl> findByTaskAndList(@Param("taskId") Long taskId, @Param("savedListId") Long savedListId);
 
     List<TaskAssignmentImpl> findByTask_IdAndCandidate_IdAndStatus(Long taskId, Long candidateId, Status status);
-
+    List<TaskAssignmentImpl> findByCandidate_Id(Long candidateId);
 }

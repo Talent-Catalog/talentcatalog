@@ -31,6 +31,7 @@ describe('Task Interface', () => {
     uploadableFileTypes: 'pdf,jpg',
     candidateAnswerField: 'answerField',
     createdDate: new Date(),
+    notifyOnAssignment: false,
   };
 
   it('should have the correct id property', () => {

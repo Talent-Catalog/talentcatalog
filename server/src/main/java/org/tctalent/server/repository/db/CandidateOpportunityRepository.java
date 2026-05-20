@@ -96,4 +96,6 @@ public interface CandidateOpportunityRepository extends JpaRepository<CandidateO
     )
     List<String> findAllNonNullSfIdsByClosedFalse();
 
+    List<CandidateOpportunity> findByCandidate_Id(Long candidateId);
+
 }

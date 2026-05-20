@@ -16,6 +16,7 @@
 
 package org.tctalent.server.repository.db;
 
+import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -24,4 +25,5 @@ import org.tctalent.server.model.db.CandidateNote;
 public interface CandidateNoteRepository extends JpaRepository<CandidateNote, Long> {
 
     Page<CandidateNote> findByCandidateId(Long candidateId, Pageable request);
+    List<CandidateNote> findByCandidateId(Long candidateId);
 }

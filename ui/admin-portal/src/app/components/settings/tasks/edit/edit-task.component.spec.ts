@@ -36,6 +36,7 @@ describe('EditTaskComponent', () => {
     description: 'Description of Task 1',
     daysToComplete: 3,
     optional: false,
+    notifyOnAssignment: false,
     docLink: 'https://example.com'
   };
   //@ts-expect-error
@@ -45,6 +46,7 @@ describe('EditTaskComponent', () => {
     description: 'Updated description',
     daysToComplete: 5,
     optional: true,
+    notifyOnAssignment: true,
     docLink: 'https://updated-link.com'
   };
 
@@ -88,6 +90,7 @@ describe('EditTaskComponent', () => {
       description: 'Description of Task 1',
       daysToComplete: 3,
       optional: false,
+      notifyOnAssignment: false,
       docLink: 'https://example.com'
     });
     expect(component.loading).toBeFalse();
@@ -99,6 +102,7 @@ describe('EditTaskComponent', () => {
       description: 'Updated description',
       daysToComplete: 5,
       optional: true,
+      notifyOnAssignment: true,
       docLink: 'https://updated-link.com'
     });
 
@@ -110,6 +114,7 @@ describe('EditTaskComponent', () => {
       description: 'Updated description',
       daysToComplete: 5,
       optional: true,
+      notifyOnAssignment: true,
       docLink: 'https://updated-link.com'
     };
     expect(taskServiceSpy.update).toHaveBeenCalledWith(1, expectedRequest);

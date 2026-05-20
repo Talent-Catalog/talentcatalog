@@ -46,6 +46,7 @@ export class EditTaskComponent implements OnInit {
         description: [task.description, Validators.required],
         daysToComplete: [task.daysToComplete, Validators.required],
         optional: [task.optional, Validators.required],
+        notifyOnAssignment: [task.notifyOnAssignment, Validators.required],
         docLink: [task.docLink],
       });
       this.loading = false;
@@ -59,6 +60,7 @@ export class EditTaskComponent implements OnInit {
       description: this.taskForm.value.description,
       daysToComplete: this.taskForm.value.daysToComplete,
       optional: this.taskForm.value.optional,
+      notifyOnAssignment: this.taskForm.value.notifyOnAssignment,
       docLink: this.taskForm.value.docLink,
     }
     this.taskService.update(this.taskId, request).subscribe(

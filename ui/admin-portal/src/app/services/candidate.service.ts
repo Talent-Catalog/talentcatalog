@@ -19,6 +19,8 @@ import {
   Candidate,
   CandidateIntakeData,
   CandidateOpportunityParams,
+  EraseCandidateRequest,
+  EraseCandidateResponse,
   UpdateCandidateListOppsRequest,
   UpdateCandidateMutedRequest,
   UpdateCandidateNotificationPreferenceRequest,
@@ -150,6 +152,10 @@ export class CandidateService implements IntakeService {
 
   delete(id: number): Observable<boolean>  {
     return this.http.delete<boolean>(`${this.apiUrl}/${id}`);
+  }
+
+  eraseCandidate(id: number, request: EraseCandidateRequest): Observable<EraseCandidateResponse> {
+    return this.http.post<EraseCandidateResponse>(`${this.apiUrl}/${id}/erase`, request);
   }
 
   export(request) {

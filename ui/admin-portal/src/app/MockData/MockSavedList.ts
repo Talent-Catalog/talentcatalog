@@ -47,6 +47,7 @@ export const MockSavedList: SavedList = {
     description: 'Task description',
     displayName: 'Task 1',
     optional: false,
+    notifyOnAssignment: false,
     docLink: 'example.com/help',
     taskType: TaskType.Question,
     uploadType: UploadType.degree,

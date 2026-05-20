@@ -165,12 +165,14 @@ public interface CandidateRepository extends CacheEvictingRepository<Candidate, 
 
     @Query(" select distinct c from Candidate c "
             + " where lower(c.candidateNumber) like lower(:number)"
+            + excludeDeleted
             + sourceCountryRestriction)
     Optional<Candidate> findByCandidateNumberRestricted(@Param("number") String number,
                                               @Param("userSourceCountries") Set<Country> userSourceCountries);
 
     @Query(" select distinct c from Candidate c left join c.user u "
             + " where lower(u.email) like lower(:candidateEmail) "
+            + excludeDeleted
             + sourceCountryRestriction)
     Page<Candidate> searchCandidateEmail(@Param("candidateEmail") String candidateEmail,
                                          @Param("userSourceCountries") Set<Country> userSourceCountries,
@@ -221,6 +223,7 @@ public interface CandidateRepository extends CacheEvictingRepository<Candidate, 
 
     @Query(" select distinct c from Candidate c "
         + " where lower(c.externalId) like lower(:externalId) "
+        + excludeDeleted
         + sourceCountryRestriction)
     Page<Candidate> searchCandidateExternalId(@Param("externalId") String externalId,
         @Param("userSourceCountries") Set<Country> userSourceCountries,
@@ -228,6 +231,7 @@ public interface CandidateRepository extends CacheEvictingRepository<Candidate, 
 
     @Query(" select distinct c from Candidate c "
         + " where lower(c.publicId) like lower(:publicId) "
+        + excludeDeleted
         + sourceCountryRestriction)
     Page<Candidate> searchCandidatePublicId(@Param("publicId") String publicId,
         @Param("userSourceCountries") Set<Country> userSourceCountries,
