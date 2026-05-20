@@ -1,16 +1,16 @@
 /*
- * Copyright (c) 2024 Talent Catalog.
+ * Copyright (c) 2026 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
- * the terms of the GNU Affero General Public License as published by the Free
+ * the terms of the GNU General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or any later version.
  *
  * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
  * for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
+ * You should have received a copy of the GNU General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
@@ -63,6 +63,7 @@ import org.tctalent.server.request.candidate.CandidateIntakeDataUpdate;
 import org.tctalent.server.request.candidate.CandidateNumberOrNameSearchRequest;
 import org.tctalent.server.request.candidate.CandidatePublicIdSearchRequest;
 import org.tctalent.server.request.candidate.DownloadCvRequest;
+import org.tctalent.server.request.candidate.EraseCandidateRequest;
 import org.tctalent.server.request.candidate.ResolveTaskAssignmentsRequest;
 import org.tctalent.server.request.candidate.SearchCandidateRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateAdditionalInfoRequest;
@@ -80,8 +81,10 @@ import org.tctalent.server.request.candidate.UpdateCandidateShareableNotesReques
 import org.tctalent.server.request.candidate.UpdateCandidateStatusRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateSurveyRequest;
 import org.tctalent.server.request.chat.FetchCandidatesWithChatRequest;
+import org.tctalent.server.response.EraseCandidateResponse;
 import org.tctalent.server.security.CandidateTokenProvider;
 import org.tctalent.server.security.CvClaims;
+import org.tctalent.server.service.db.CandidateErasureService;
 import org.tctalent.server.service.db.CandidateOpportunityService;
 import org.tctalent.server.service.db.CandidateSavedListService;
 import org.tctalent.server.service.db.CandidateService;
@@ -103,6 +106,7 @@ public class CandidateAdminApi {
     private final SavedSearchService savedSearchService;
     private final CandidateIntakeDataBuilderSelector intakeDataBuilderSelector;
     private final CandidateTokenProvider candidateTokenProvider;
+    private final CandidateErasureService candidateErasureService;
 
     @PostMapping("search")
     public Map<String, Object> search(@RequestBody SearchCandidateRequest request) {
@@ -493,4 +497,26 @@ public class CandidateAdminApi {
         return builder.buildList(candidateList);
     }
 
+    /**
+     * Erases a candidate's personally identifiable data.
+     *
+     * <p>This endpoint is intentionally separate from the normal DELETE endpoint. The normal delete
+     * behaviour marks a candidate deleted, while this endpoint performs data erasure:
+     * it removes personal fields, documents, notes, candidate-submitted free text, user login data,
+     * attachment metadata, and search text while preserving a dummy candidate placeholder row for
+     * database integrity.</p>
+     *
+     * @param id ID of the candidate to erase.
+     * @param request erasure options and confirmation data.
+     * @return minimal details of the erased placeholder candidate.
+     */
+    @PreAuthorize("hasAnyAuthority('ROLE_SYSTEMADMIN')")
+    @PostMapping("{id}/erase")
+    public EraseCandidateResponse eraseCandidate(
+        @PathVariable("id") long id,
+        @RequestBody EraseCandidateRequest request
+    ) {
+        Candidate candidate = candidateErasureService.eraseCandidate(id, request);
+        return EraseCandidateResponse.fromCandidate(candidate);
+    }
 }

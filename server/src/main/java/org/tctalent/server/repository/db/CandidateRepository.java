@@ -1,16 +1,16 @@
 /*
- * Copyright (c) 2024 Talent Catalog.
+ * Copyright (c) 2026 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
- * the terms of the GNU Affero General Public License as published by the Free
+ * the terms of the GNU General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or any later version.
  *
  * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
  * for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
+ * You should have received a copy of the GNU General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
@@ -165,12 +165,14 @@ public interface CandidateRepository extends CacheEvictingRepository<Candidate, 
 
     @Query(" select distinct c from Candidate c "
             + " where lower(c.candidateNumber) like lower(:number)"
+            + excludeDeleted
             + sourceCountryRestriction)
     Optional<Candidate> findByCandidateNumberRestricted(@Param("number") String number,
                                               @Param("userSourceCountries") Set<Country> userSourceCountries);
 
     @Query(" select distinct c from Candidate c left join c.user u "
             + " where lower(u.email) like lower(:candidateEmail) "
+            + excludeDeleted
             + sourceCountryRestriction)
     Page<Candidate> searchCandidateEmail(@Param("candidateEmail") String candidateEmail,
                                          @Param("userSourceCountries") Set<Country> userSourceCountries,
@@ -221,6 +223,7 @@ public interface CandidateRepository extends CacheEvictingRepository<Candidate, 
 
     @Query(" select distinct c from Candidate c "
         + " where lower(c.externalId) like lower(:externalId) "
+        + excludeDeleted
         + sourceCountryRestriction)
     Page<Candidate> searchCandidateExternalId(@Param("externalId") String externalId,
         @Param("userSourceCountries") Set<Country> userSourceCountries,
@@ -228,6 +231,7 @@ public interface CandidateRepository extends CacheEvictingRepository<Candidate, 
 
     @Query(" select distinct c from Candidate c "
         + " where lower(c.publicId) like lower(:publicId) "
+        + excludeDeleted
         + sourceCountryRestriction)
     Page<Candidate> searchCandidatePublicId(@Param("publicId") String publicId,
         @Param("userSourceCountries") Set<Country> userSourceCountries,

@@ -1,16 +1,16 @@
 /*
- * Copyright (c) 2024 Talent Catalog.
+ * Copyright (c) 2026 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
- * the terms of the GNU Affero General Public License as published by the Free
+ * the terms of the GNU General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or any later version.
  *
  * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
  * for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
+ * You should have received a copy of the GNU General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
@@ -846,6 +846,13 @@ import {
 } from "./components/casi-management/import-reference-vouchers/import-reference-vouchers.component";
 import {CasiManagementComponent} from "./components/casi-management/casi-management.component";
 import {CsvPreviewComponent} from "./components/casi-management/csv-preview/csv-preview.component";
+import {
+  EraseCandidateDataComponent
+} from "./components/candidates/view/erase/erase-candidate-data.component";
+import {TextPartsViewComponent} from "./components/util/text-parts-view/text-parts-view.component";
+import {
+  TextPartsInputComponent
+} from "./components/util/text-parts-input/text-parts-input.component";
 
 @NgModule({
   declarations: [
@@ -1188,7 +1195,8 @@ import {CsvPreviewComponent} from "./components/casi-management/csv-preview/csv-
     CasiManagementComponent,
     CsvPreviewComponent,
     ImportLinkedinPremiumCouponsComponent,
-    ImportReferenceVouchersComponent
+    ImportReferenceVouchersComponent,
+    EraseCandidateDataComponent
   ],
   imports: [
     BrowserModule,
@@ -1213,6 +1221,8 @@ import {CsvPreviewComponent} from "./components/casi-management/csv-preview/csv-
         useClass: LanguageLoader
       },
     }),
+    TextPartsInputComponent,
+    TextPartsViewComponent,
   ],
   providers: [
     {provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true},

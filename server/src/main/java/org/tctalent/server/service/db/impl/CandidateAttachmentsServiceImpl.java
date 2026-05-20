@@ -1,16 +1,16 @@
 /*
- * Copyright (c) 2024 Talent Catalog.
+ * Copyright (c) 2026 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
- * the terms of the GNU Affero General Public License as published by the Free
+ * the terms of the GNU General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or any later version.
  *
  * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
  * for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
+ * You should have received a copy of the GNU General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
@@ -142,7 +142,7 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
         // Create a record of the attachment
         CandidateAttachment attachment = new CandidateAttachment();
         storedFileMapper.updateCandidateAttachment(attachment, request);
-
+        attachment.setFolder(request.getFolder());
         //Add extras
         attachment.setActive(true);
         attachment.setCandidate(candidate);
@@ -431,6 +431,7 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
         CreateCandidateAttachmentRequest attachmentRequest = new CreateCandidateAttachmentRequest();
         attachmentRequest.setType(AttachmentType.grnfile);
         attachmentRequest.setCandidateId(candidate.getId());
+        attachmentRequest.setFolder(subfolderName);
         storedFileMapper.updateCreateCandidateAttachmentRequest(attachmentRequest, storedFileInfo);
 
         return attachmentRequest;
@@ -514,6 +515,7 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
         req.setFileType(fileType);
         req.setUrl(uploadedFile.getUrl());
         req.setUploadType(uploadType);
+        req.setFolder(subfolderName);
         if(StringUtils.hasText(textExtract)) {
             req.setTextExtract(textExtract);
         }
