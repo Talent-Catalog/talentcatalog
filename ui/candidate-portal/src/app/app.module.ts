@@ -395,7 +395,7 @@ export function initializeAuth(authenticationService: AuthenticationService) {
     NgxWigModule,
     QuillModule.forRoot(),
     PickerModule,
-    KeycloakAngularModule
+    KeycloakAngularModule,
     PickerModule,
     TextPartsInputComponent,
     TextPartsViewComponent
