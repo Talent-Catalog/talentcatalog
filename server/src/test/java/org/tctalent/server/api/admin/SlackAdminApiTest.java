@@ -36,8 +36,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.tctalent.server.request.job.JobInfoForSlackPost;
 import org.tctalent.server.request.opportunity.PostJobToSlackRequest;
@@ -48,7 +48,7 @@ import org.tctalent.server.service.db.SlackService;
  * @author John Cameron
  */
 @WebMvcTest(SlackAdminApi.class)
-@AutoConfigureMockMvc
+@AutoConfigureMockMvc(addFilters = false)
 class SlackAdminApiTest extends ApiTestBase {
     private static final String BASE_PATH = "/api/admin/slack";
     private static final String POST_JOB_PATH = "/post-job";
@@ -62,9 +62,9 @@ class SlackAdminApiTest extends ApiTestBase {
     @Autowired
     SlackAdminApi slackAdminApi;
 
-    @MockBean
+    @MockitoBean
     SlackService slackService;
-    @MockBean
+    @MockitoBean
     JobService jobService;
 
     @BeforeEach

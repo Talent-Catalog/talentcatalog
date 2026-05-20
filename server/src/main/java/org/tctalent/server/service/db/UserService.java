@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Set;
 import javax.security.auth.login.AccountLockedException;
 import org.springframework.data.domain.Page;
+import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.tctalent.server.exception.InvalidCredentialsException;
 import org.tctalent.server.exception.NoSuchObjectException;
@@ -37,7 +38,9 @@ import org.tctalent.server.request.user.UpdateUserPasswordRequest;
 import org.tctalent.server.request.user.UpdateUserRequest;
 import org.tctalent.server.request.user.emailverify.SendVerifyEmailRequest;
 import org.tctalent.server.request.user.emailverify.VerifyEmailRequest;
+import org.tctalent.server.response.AuthenticationResponse;
 import org.tctalent.server.response.JwtAuthenticationResponse;
+import org.tctalent.server.security.AuthProfile;
 import org.tctalent.server.security.AuthService;
 import org.tctalent.server.util.qr.EncodedQrImage;
 
@@ -50,6 +53,16 @@ public interface UserService {
      */
     boolean isCandidate(@Nullable User user);
 
+    /**
+     * Log in a user based on the given OAuth2 profile.
+     * @param profile Profile data managed by the IDP.
+     * @return User logged in.
+     */
+    User login(AuthProfile profile);
+
+    /**
+     * Old, pre OAuth2, login
+     */
     JwtAuthenticationResponse login(LoginRequest request) throws AccountLockedException;
 
     void logout();
@@ -80,9 +93,18 @@ public interface UserService {
 
     User getSystemAdminUser();
 
+    /**
+     * Creates an AuthenticationResponse object for the given user.
+     * This is the response returned on successful login or registration
+     * @param user User associated with the authentication response
+     * @return AuthenticationResponse returned on successful login or registration
+     */
+    AuthenticationResponse createAuthenticationResponse(User user);
+
     void resetPassword(ResetPasswordRequest request);
     void checkResetToken(CheckPasswordResetTokenRequest request);
     void generateResetPasswordToken(SendResetPasswordEmailRequest request);
+
     void updatePassword(UpdateUserPasswordRequest request);
     void updateUserPassword(long id, UpdateUserPasswordRequest request);
 
@@ -109,6 +131,45 @@ public interface UserService {
      * Get a user’s source countries, defaulting to all countries if empty
      */
     Set<Country> getDefaultSourceCountries(User user);
+
+    /**
+     * Should be called when an Oauth managed user logs in or registers.
+     * <p>
+     * It creates or updates a user based on the given OAuth profile for the user.
+     * <p>
+     * This is used to auto-create a minimal user record from the data held by the OAuth IDP,
+     * or update an existing user record if it already exists with the data that is managed by the
+     * IDP.
+     * <p>
+     * It looks up the user by issuer and subject if it can. If that is not successful, it will
+     * fall back to looking up the user by email. If that also is not successful, it will create
+     * a new user record with the provided profile data. If it does find a user, it will update
+     * the user record with the new profile data.
+     * <p>
+     * This method should do all it can to create or update a user.
+     * It should only throw an exception if there is a system error - such as not being able to
+     * connect to the database.
+     * <p>
+     * <strong>Use cases:</strong>
+     * <p>
+     * Registration happens on IDP but completion does not succeed (eg because the server is down),
+     * so there is no record on DB.
+     * An exception will have been processed in Angular, so they will be recorded as logged out.
+     * So the next interaction will be a log in request on the idp. The login completion request
+     * to the server will use a token that matches nothing on the database, but the user can
+     * be created using the passed in AuthProfile.
+     * <p>
+     * User migration. Cognito login hook is in place which checks whether a user email matches
+     * a user on the database and, if so, whether the idp entered password matches the hash on the
+     * db. If so, the login succeeds but the generated token will have an idp subject which does not
+     * match any idp subject in the db. When the complete login is called, we will have to look up
+     * the user by email and update the idp subject in the db.
+     * @param profile User profile data managed by the IDP. It overwrites any data on the user
+     *                record on our database.
+     * @param partner Partner assigned to the user
+     * @return User created or updated.
+     */
+    User syncOauthUserAtLoginOrRegister(AuthProfile profile, @NonNull Partner partner);
 
     User createUser(
         UpdateUserRequest request, @Nullable User creatingUser) throws UsernameTakenException;

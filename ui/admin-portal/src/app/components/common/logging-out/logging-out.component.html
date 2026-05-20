@@ -1,0 +1,15 @@
+<div *ngIf="reason" class="alert alert-danger">
+  <h1>
+    {{ 'LOGGING_OUT.MESSAGE' | translate }}
+  </h1>
+  <h2>{{ 'REASON' | translate }}</h2>
+  {{ reason }}
+  <div>
+    {{ 'LOGGING_OUT.COUNTDOWN' | translate }} {{ secondsRemaining }}
+  </div>
+  <div>
+    <button type="button" class="btn btn-sm btn-outline-danger ms-3" (click)="logout()">
+      {{ 'LOGGING_OUT.LOGOUT_NOW' | translate }}
+    </button>
+  </div>
+</div>

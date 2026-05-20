@@ -31,20 +31,20 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.DuolingoCoupon;
 import org.tctalent.server.model.db.DuolingoCouponStatus;
 import org.tctalent.server.model.db.TaskAssignmentImpl;
 import org.tctalent.server.model.db.TaskImpl;
+import org.tctalent.server.request.duolingo.UpdateDuolingoCouponStatusRequest;
 import org.tctalent.server.response.DuolingoCouponResponse;
 import org.tctalent.server.security.AuthService;
 import org.tctalent.server.service.db.CandidateService;
 import org.tctalent.server.service.db.DuolingoCouponService;
-import org.tctalent.server.request.duolingo.UpdateDuolingoCouponStatusRequest;
 import org.tctalent.server.service.db.SavedListService;
 import org.tctalent.server.service.db.TaskAssignmentService;
 import org.tctalent.server.service.db.TaskService;
@@ -55,7 +55,7 @@ import org.tctalent.server.service.db.TaskService;
  * @author Ehsan Ehrari
  */
 @WebMvcTest(DuolingoCouponAdminApi.class)
-@AutoConfigureMockMvc
+@AutoConfigureMockMvc(addFilters = false)
 class DuolingoCouponAdminApiTest extends ApiTestBase {
 
   private static final long CANDIDATE_ID = 99L;
@@ -72,17 +72,17 @@ class DuolingoCouponAdminApiTest extends ApiTestBase {
   private static final TaskImpl task = getTask();
   private static final TaskAssignmentImpl taskAssignment = getTaskAssignment();
 
-  @MockBean
+  @MockitoBean
   AuthService authService;
-  @MockBean
+  @MockitoBean
   DuolingoCouponService couponService;
-  @MockBean
+  @MockitoBean
   SavedListService savedListService;
-  @MockBean
+  @MockitoBean
   TaskAssignmentService taskAssignmentService;
-  @MockBean
+  @MockitoBean
   TaskService taskService;
-  @MockBean
+  @MockitoBean
   CandidateService candidateService;
 
 

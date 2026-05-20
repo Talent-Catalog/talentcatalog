@@ -26,30 +26,24 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpMethod;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.BeanIds;
-import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.CsrfConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.server.resource.web.authentication.BearerTokenAuthenticationFilter;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.tctalent.server.logging.LogBuilder;
-import org.tctalent.server.security.JwtAuthenticationEntryPoint;
-import org.tctalent.server.security.JwtAuthenticationFilter;
-import org.tctalent.server.security.JwtTokenProvider;
+import org.tctalent.server.security.AuthProfile;
+import org.tctalent.server.security.AuthenticationErrorEntryPoint;
 import org.tctalent.server.security.LanguageFilter;
-import org.tctalent.server.security.TcAuthenticationProvider;
-import org.tctalent.server.security.TcPasswordEncoder;
-import org.tctalent.server.security.TcUserDetailsService;
+import org.tctalent.server.security.OAuth2UserAuthenticationConverter;
 
 /**
  * Talent Catalog security configuration.
@@ -62,34 +56,16 @@ import org.tctalent.server.security.TcUserDetailsService;
  *
  * <ul>
  *     <li>
- *         We manage our own users and passwords, stored in the users table of the database
- *     </li>
- *     <li>
- *         At login we issue JSON Web Tokens (JWTs) which appear on each HTTP request in the
+ *         We authenticate users using an Oauth2 server (eg Keycloak or Cognito).
+ *         That server supplies JSON Web Tokens (JWTs) which appear on each HTTP request in the
  *         Authorization header as a Bearer token.
  *         See https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Authorization
  *         and https://developer.mozilla.org/en-US/docs/Web/HTTP/Authentication#authentication_schemes.
- *         This is OAUTH 2.0 with us acting as the Authorization server -
- *         see https://www.marcobehler.com/guides/spring-security-oauth2
- *     </li>
- * </ul>
- * The following classes support the above:
- * <ul>
- *     <li>
- *         {@link JwtTokenProvider} generates JWT tokens
  *     </li>
  *     <li>
- *         {@link JwtAuthenticationFilter} is a filter which checks incoming JWT tokens, validating
- *         them.
- *     </li>
- *     <li>
- *         {@link TcUserDetailsService} implements UserDetailsService providing access to the user
- *         table in our database
- *     </li>
- *     <li>
- *         {@link TcAuthenticationProvider} implements AuthenticationProvider passing in our
- *         wired in instance of the above TcUserDetailsService, and the PasswordEncoder defined
- *         below in {@link #passwordEncoder()}.
+ *         We manage users' details, including their roles, stored in the user's table of the
+ *         database. User details are retrieved from the user table by
+ *         {@link OAuth2UserAuthenticationConverter}.
  *     </li>
  * </ul>
  */
@@ -106,12 +82,144 @@ public class SecurityConfiguration {
     private Environment env;
 
     @Autowired
-    private TcUserDetailsService userDetailsService;
+    private AuthenticationErrorEntryPoint unauthorizedHandler;
 
     @Autowired
-    private JwtAuthenticationEntryPoint unauthorizedHandler;
+    private OAuth2UserAuthenticationConverter oAuth2UserAuthenticationConverter;
 
+    // IMPORTANT NOTE: This should match the list of public URL patterns in the Angular client.
+    // See the Angular code: jwt.interceptor.ts
+    private final static String[] PUBLIC_ENDPOINTS = {
+        "/",  //Used for RootRequests
+        "/api/admin/branding",
+        "/api/portal/branding",
+        "/api/portal/language/system/**",
+        "/api/portal/language/translations/**",
+        "/api/admin/terms-info/**",
+        "/api/admin/user/check-token",
+        "/api/portal/user/check-token",
+        "/api/admin/user/reset-password",
+        "/api/portal/user/reset-password",
+        "/api/admin/user/reset-password-email",
+        "/api/portal/user/reset-password-email",
+        "/api/admin/user/verify-email/**",
+        "/app/**",
+        "/backend/jobseeker",
+        "/files/**",
+        "/published/**",
+        "/status**", "/status/**",
+        "/topic", "/topic/**",
+        "/websocket", "/websocket/**",
+    };
+
+    /**
+     * This filter chain is specifically designed for handling registration and login requests
+     * for the server API.
+     * <p>
+     * This is needed because the Oauth provider is managing user log-ins and registrations.
+     * When a registration happens, the Oauth provider supplies a JWT token to the Angular client
+     * browser, and then the browser calls this server to record the new user on the database.
+     * The normal SecurityFilterChain (see below) validates JWT tokens by looking up the user
+     * based on information in the JWT token. But that will not work for registration because
+     * the user does not yet exist in the database. Therefore, we need this separate filter chain
+     * for handling registration requests.
+     * <p>
+     * We also need to handle login requests, even though the JWT token should normally correspond
+     * to an existing user already on the database. However, it is necessary for the special use
+     * case when we are converting non-Oauth users to Oauth users. In that case, the JWT token will
+     * not be able to locate the existing user in the database in the normal way - by looking
+     * it up using the Oauth issuer and subject. Instead, we need to identify the user from their
+     * email.
+     * See the code in {@link org.tctalent.server.service.db.UserService#login(AuthProfile)} which
+     * looks up the user from the data passed in the AuthProfile object - including the
+     * user's email which is used to identify the matching user in the database and update that
+     * user's record to indicate that they are now an Oauth user. The user's record is then updated
+     * with the Oauth issuer and subject information.
+     * <p>
+     * In this chain little attempt is made to process the JWT token. The token itself
+     * becomes the security principal. It just has to be a validly signed token.
+     * <p>
+     * <code>
+     * .oauth2ResourceServer(oauth2 -> oauth2.jwt(withDefaults()));
+     * </code>
+     * <p>
+     * withDefaults() just passes the input jwt unchanged and unprocessed to the next step in the
+     * chain.
+     * <p>
+     *     It is up to the login and registration controllers to handle the JWT token and extract
+     *     user information from it. Given that the Oauth provider is managing user log-ins
+     *     and registrations, the job of those controllers is just to keep the Postgres database
+     *     in sync with the user info in the Oauth provider.
+     * <p>
+     * See {@link #filterChain(HttpSecurity)} below for the normal filter chain configuration.
+     */
     @Bean
+    @Order(1)
+    SecurityFilterChain registrationSecurityFilterChain(HttpSecurity http) throws Exception {
+        http
+            .securityMatcher("/api/portal/auth/register", "/api/portal/auth/login")
+            .cors(withDefaults())
+            .csrf(CsrfConfigurer::disable)
+            .sessionManagement(session ->
+                session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .authorizeHttpRequests(auth -> auth
+                .anyRequest().authenticated())
+            .oauth2ResourceServer(
+                oauth2 -> oauth2.jwt(withDefaults()));
+
+        return http.build();
+    }
+
+    /**
+     * This filter chain is for public endpoints that do not require authentication.
+     *  <p>
+     * It is new for Oauth. Before Oauth public endpoints would contain JWT tokens if the client
+     * user was logged in, even though they were not required for authentication.
+     * That was unnecessary, but it was not a problem. If the user was not logged in
+     * then the JWT token would be ignored and the request would be allowed (because public
+     * endpoints are configured as "permitAll"). And if the user was
+     * logged in then the JWT token would be validated and the request would be allowed.
+     * <p>
+     * However, this processing does not work in the period between when a user is registered on the
+     * Oauth provider and when the user's record is updated in the Postgres database.
+     * During that period, the user's record will not exist in the database, so the JWT token
+     * authentication fails.
+     * <p>
+     * The cleanest solution is to eliminate this unnecessary processing.
+     * That is what this filter chain does.
+     * It just passes the request on to the next filter in the chain without any JWT processing.
+     * For additional safety, there is also modified Angular code in the JwtInterceptor which
+     * does not add JWT's to requests to public endpoints.
+     */
+    @Bean
+    @Order(2)
+    SecurityFilterChain publicSecurityFilterChain(HttpSecurity http) throws Exception {
+        http
+            .securityMatcher(PUBLIC_ENDPOINTS)
+            .cors(withDefaults())
+            .csrf(CsrfConfigurer::disable)
+            .sessionManagement(session ->
+                session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .authorizeHttpRequests(auth -> auth
+                .anyRequest().permitAll());
+
+        return http.build();
+    }
+
+    /**
+     * This is the normal filter chain.
+     * <p>
+     * If a user cannot be looked up from the JWT token, a 401 Unauthorized response is returned.
+     * <p>
+     * That logic is handled by {@link OAuth2UserAuthenticationConverter}
+     * <p>
+     * <code>
+     * .oauth2ResourceServer(oauth2 -> oauth2.jwt(
+     * jwt -> jwt.jwtAuthenticationConverter(oAuth2UserAuthenticationConverter)));
+     * </code>
+     */
+    @Bean
+    @Order(3)
     protected SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
             //Default is to use a Bean called corsConfigurationSource - defined
@@ -123,35 +231,9 @@ public class SecurityConfiguration {
             .sessionManagement(session ->
                 session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(authorize -> authorize
-                .requestMatchers("/backend/jobseeker").permitAll()
-                .requestMatchers("/api/portal/auth").permitAll()
-                .requestMatchers("/api/portal/auth/**").permitAll()
-                .requestMatchers("/api/portal/branding").permitAll()
-                .requestMatchers("/api/portal/user/reset-password-email").permitAll()
-                .requestMatchers("/api/portal/user/check-token").permitAll()
-                .requestMatchers("/api/portal/user/reset-password").permitAll()
-                .requestMatchers("/api/portal/language/system/**").permitAll()
-                .requestMatchers("/api/portal/language/translations/**").permitAll()
-                .requestMatchers("/api/portal/**").hasAnyRole("USER")
-                .requestMatchers("/api/chatbot/**").hasAnyRole("USER")
-                .requestMatchers("/api/admin/auth").permitAll()
-                .requestMatchers("/api/admin/auth/**").permitAll()
-                .requestMatchers("/api/admin/branding").permitAll()
-                .requestMatchers("/api/admin/terms-info/**").permitAll()
-                .requestMatchers("/api/admin/user/reset-password-email").permitAll()
-                .requestMatchers("/api/admin/user/check-token").permitAll()
-                .requestMatchers("/api/admin/user/reset-password").permitAll()
-                .requestMatchers("/api/admin/user/verify-email/**").permitAll()
-                .requestMatchers("/").permitAll()
-                .requestMatchers("/files/**").permitAll()
-                .requestMatchers("/published/**").permitAll()
+                .requestMatchers(PUBLIC_ENDPOINTS).permitAll()
 
-                .requestMatchers("/websocket","/websocket/**").permitAll()
-                .requestMatchers("/app/**","/app/**").permitAll()
-                .requestMatchers("/topic", "/topic/**").permitAll()
-                .requestMatchers("/error", "/error/**").permitAll()
-                .requestMatchers("/jobchat", "/jobchat/**").permitAll()
-                .requestMatchers("/status**", "/status/**").permitAll()
+                .requestMatchers("/api/portal/**").hasAnyRole("USER")
 
 
                 // DELETE: DELETE SAVE SEARCHES
@@ -434,7 +516,11 @@ public class SecurityConfiguration {
                 //SPRING REST - currently just CandidatePropertyDefinitions (see CandidatePropertyDefinitionRepository).
                 .requestMatchers(HttpMethod.GET, "/api/hal/**").authenticated()
 
-            );
+                .anyRequest().authenticated()
+            )
+            .oauth2ResourceServer(oauth2 -> oauth2
+
+                .jwt(jwt -> jwt.jwtAuthenticationConverter(oAuth2UserAuthenticationConverter)));
 
         //Commented out below code because it was causing "Too many redirects" error as described below
         //https://stackoverflow.com/questions/42715718/aws-load-balancer-err-too-many-redirects/52598630#52598630
@@ -456,10 +542,8 @@ public class SecurityConfiguration {
 //See https://www.lenar.io/force-redirect-http-to-https-in-spring-boot/
 //        .requiresChannel().requestMatchers( r -> r.getHeader("X-Forwarded-Proto") != null).requiresSecure()
 
-        // Add the JWT security filter
-        http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
-        http.addFilterAfter(languageFilter(), UsernamePasswordAuthenticationFilter.class);
-
+        // Add the language filter
+        http.addFilterAfter(languageFilter(), BearerTokenAuthenticationFilter.class);
         return http.build();
         // See https://docs.spring.io/spring-security/site/docs/5.2.0.RELEASE/reference/html/default-security-headers-2.html#webflux-headers-csp
         // And about allowing Google see https://developers.google.com/web/fundamentals/security/csp/
@@ -493,29 +577,7 @@ public class SecurityConfiguration {
     }
 
     @Bean
-    public JwtAuthenticationFilter jwtAuthenticationFilter() {
-        return new JwtAuthenticationFilter();
-    }
-
-    @Bean
     public LanguageFilter languageFilter() {
         return new LanguageFilter();
-    }
-
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new TcPasswordEncoder();
-    }
-
-    @Bean(name = BeanIds.AUTHENTICATION_MANAGER)
-    public AuthenticationManager authenticationManager(
-        AuthenticationConfiguration authenticationConfiguration) throws Exception {
-        return authenticationConfiguration.getAuthenticationManager();
-    }
-
-    private TcAuthenticationProvider userAuthenticationProvider() {
-        TcAuthenticationProvider tcAuthenticationProvider = new TcAuthenticationProvider(userDetailsService);
-        tcAuthenticationProvider.setPasswordEncoder(passwordEncoder());
-        return tcAuthenticationProvider;
     }
 }

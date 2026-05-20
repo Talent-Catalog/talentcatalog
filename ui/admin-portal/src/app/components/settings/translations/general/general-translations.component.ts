@@ -252,6 +252,7 @@ const ALL_FIELDS = {
        "CANDIDATE_UNSURE_INTEREST": null
      },
     "LOADING": null,
+    "REASON": null,
     "LOGIN": {
       "TITLE": null,
       "LABEL": {
@@ -294,6 +295,11 @@ const ALL_FIELDS = {
         "HEADING1": null,
         "HEADING2": null
       }
+    },
+    "LOGGING_OUT": {
+       "MESSAGE": null,
+       "LOGOUT_NOW": null,
+       "COUNTDOWN": null
     },
     "HOME": {
       "TITLE": null,

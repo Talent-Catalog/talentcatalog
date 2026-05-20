@@ -18,12 +18,11 @@ import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators} from "@angular/forms";
 import {ActivatedRoute} from "@angular/router";
 import {BrandingService} from "../../../services/branding.service";
-import {CandidateService, UpdateCandidateSurvey} from "../../../services/candidate.service";
+import {CandidateService} from "../../../services/candidate.service";
 import {AuthenticationService} from "../../../services/authentication.service";
 import {RegistrationService} from "../../../services/registration.service";
 import {LanguageService} from "../../../services/language.service";
 import {RegisterCandidateRequest} from "../../../model/candidate";
-import {US_AFGHAN_SURVEY_TYPE} from "../../../model/survey-type";
 import {EMAIL_REGEX} from "../../../model/base";
 
 @Component({
@@ -65,9 +64,9 @@ export class RegistrationCreateAccountComponent implements OnInit {
     this.loading = true;
 
     this.registrationForm = this.builder.group({
-      username: ['', Validators.required],
-      password: ['', Validators.required],
-      passwordConfirmation: ['', Validators.required]
+      username: [''],
+      password: [''],
+      passwordConfirmation: ['']
     });
 
     if (this.authenticationService.isAuthenticated()) {
@@ -112,11 +111,11 @@ export class RegistrationCreateAccountComponent implements OnInit {
   }
 
   register() {
-    this.saving = true;
-    this.error = null;
 
-    // The user has not yet registered - create an account for them
-    this.getParamsAndRegister();
+    //todo Is this still needed?
+
+    this.registrationService.next();
+
   }
 
   private getParamsAndRegister() {
@@ -158,29 +157,29 @@ export class RegistrationCreateAccountComponent implements OnInit {
     req.contactConsentRegistration = this.registrationForm.value.contactConsentRegistration;
     req.contactConsentPartners = this.registrationForm.value.contactConsentPartners;
 
-    this.authenticationService.register(req).subscribe(
-      (response) => {
-        // If successfully registered, check if US-Afghan and if so update the survey.
-        if (this.usAfghan) {
-          // Set special value of candidate survey type indicating US Afghan
-          const request: UpdateCandidateSurvey = {
-            surveyTypeId: US_AFGHAN_SURVEY_TYPE,
-          }
-          this.candidateService.updateCandidateSurvey(request).subscribe(
-            (res) => {
-              this.saving = false;
-            }, (error) => {
-              this.error = error;
-              this.saving = false;
-            }
-          )
-        }
-        this.registrationService.next();
-      },
-      (error) => {
-        this.error = error;
-        this.saving = false;
-      }
-    );
+    // this.authenticationService.register(req).subscribe(
+    //   (response) => {
+    //     // If successfully registered, check if US-Afghan and if so update the survey.
+    //     if (this.usAfghan) {
+    //       // Set special value of candidate survey type indicating US Afghan
+    //       const request: UpdateCandidateSurvey = {
+    //         surveyTypeId: US_AFGHAN_SURVEY_TYPE,
+    //       }
+    //       this.candidateService.updateCandidateSurvey(request).subscribe(
+    //         (res) => {
+    //           this.saving = false;
+    //         }, (error) => {
+    //           this.error = error;
+    //           this.saving = false;
+    //         }
+    //       )
+    //     }
+    //     this.registrationService.next();
+    //   },
+    //   (error) => {
+    //     this.error = error;
+    //     this.saving = false;
+    //   }
+    // );
   }
 }

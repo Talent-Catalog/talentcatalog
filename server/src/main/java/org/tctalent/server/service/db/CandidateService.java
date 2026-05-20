@@ -57,6 +57,7 @@ import org.tctalent.server.request.candidate.CandidateIntakeAuditRequest;
 import org.tctalent.server.request.candidate.CandidateIntakeDataUpdate;
 import org.tctalent.server.request.candidate.CandidateNumberOrNameSearchRequest;
 import org.tctalent.server.request.candidate.CandidatePublicIdSearchRequest;
+import org.tctalent.server.request.candidate.OauthRegistrationRequest;
 import org.tctalent.server.request.candidate.ResolveTaskAssignmentsRequest;
 import org.tctalent.server.request.candidate.SavedListGetRequest;
 import org.tctalent.server.request.candidate.SelfRegistrationRequest;
@@ -134,6 +135,14 @@ public interface CandidateService {
     Candidate updateCandidate(long id, UpdateCandidateRequest request);
 
     boolean deleteCandidate(long id);
+
+    /**
+     * Register a candidate based on the given OAuth registration request.
+     * @param request Data for the registration, including the profile data managed by the IDP.
+     * @param httpRequest HTTP request for registration
+     * @return Candidate registered.
+     */
+    Candidate register(OauthRegistrationRequest request, @NonNull HttpServletRequest httpRequest);
 
     /**
      * Registers a new candidate by creating a new candidate and user.
@@ -568,20 +577,45 @@ public interface CandidateService {
      */
     Candidate getTestCandidate();
 
-    // TODO: 12/2/22 Doc
+    /**
+     * Retrieve a candidate by ID, loading saved lists.
+     * @param candidateId ID of the candidate to retrieve
+     * @return Candidate with saved lists loaded
+     */
     Candidate findByIdLoadSavedLists(long candidateId);
 
-    //TODO JC Doc
-    void saveIt(Candidate candidate);
-
-    //todo doc
+    /**
+     * Retrieve a candidate by ID, loading user details as long as candidate is resident in one of
+     * the given countries.
+     * @param id ID of the candidate to retrieve
+     * @param sourceCountries Countries that candidate is resident in
+     * @return Candidate with user details loaded or null if candidate is not resident in any of the
+     * given countries.
+     */
     Candidate findByIdLoadUser(long id, Set<Country> sourceCountries);
 
-    //todo doc
+    /**
+     * Returns standard data of the given candidate expressed as an array of strings.
+     * <p>
+     * This is used to populate an exported CSV file.
+     * @param candidate Candidate whose data is being fetched.
+     * @return Candidate data as an array of strings
+     */
     String[] getExportCandidateStrings(Candidate candidate);
 
-    //todo doc
+    /**
+     * Returns standard data names of the given candidate expressed as an array of strings.
+     * This forms the header row of the exported CSV file.
+     * @see #getExportCandidateStrings(Candidate)
+     * @return Candidate data names as an array of strings
+     */
     String[] getExportTitles();
+
+    /**
+     * Update audit fields and use repository to save the Candidate
+     * @param candidate Entity to save
+     */
+    void saveIt(Candidate candidate);
 
     /**
      * Stores the given answer supplied for the given question task assignment.

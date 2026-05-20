@@ -5,12 +5,12 @@
  * the terms of the GNU General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or any later version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
  * for more details.
  *
- * You should have received a copy of the GNU General Public License 
+ * You should have received a copy of the GNU General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
@@ -45,13 +45,13 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.multipart.MultipartFile;
 import org.tctalent.server.files.UploadType;
@@ -71,7 +71,7 @@ import org.tctalent.server.service.db.CandidateAttachmentService;
  * @author sadatmalik
  */
 @WebMvcTest(CandidateAttachmentAdminApi.class)
-@AutoConfigureMockMvc
+@AutoConfigureMockMvc(addFilters = false)
 class CandidateAttachmentAdminApiTest extends ApiTestBase {
     private static final long CANDIDATE_ID = 99L;
     private static final String BASE_PATH = "/api/admin/candidate-attachment";
@@ -91,8 +91,9 @@ class CandidateAttachmentAdminApiTest extends ApiTestBase {
                     2
             );
 
-    @MockBean CandidateAttachmentService candidateAttachmentService;
-    @MockBean
+    @MockitoBean
+    CandidateAttachmentService candidateAttachmentService;
+    @MockitoBean
     AuthService authService;
 
     @Autowired MockMvc mockMvc;

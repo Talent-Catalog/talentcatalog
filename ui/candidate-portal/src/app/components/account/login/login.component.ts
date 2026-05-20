@@ -19,7 +19,6 @@ import {UntypedFormBuilder, UntypedFormGroup, Validators} from "@angular/forms";
 import {ActivatedRoute, Router} from "@angular/router";
 import {CandidateService} from "../../../services/candidate.service";
 import {AuthenticationService} from "../../../services/authentication.service";
-import {LoginRequest} from "../../../model/base";
 import {ChangePasswordComponent} from '../change-password/change-password.component';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {Candidate, CandidateStatus} from "../../../model/candidate";
@@ -68,41 +67,21 @@ export class LoginComponent implements OnInit {
   }
 
   login() {
+    this.authenticationService.login();
+
     this.error = null;
-    if (this.loginForm.invalid) {
-      return;
-    }
-    if (this.loading) { return; }
-    this.loading = true;
+    this.loading = false;
 
-    this.loginWithToken(null);
-  }
-
-  private loginWithToken(token: string) {
-    const req: LoginRequest = new LoginRequest();
-    req.username = this.username;
-    req.password = this.password;
-    req.reCaptchaV3Token = token;
-
-    this.authenticationService.login(req)
-      .subscribe(() => {
-        this.loading = false;
-
-        //Fetch the current candidate privacy policy and candidate info
-        forkJoin({
-          'currentPolicy': this.termsInfoService.getCurrentCandidatePolicy(),
-          'candidate': this.candidateService.getCandidatePersonal()
-        }).subscribe(
-          results => {
-            this.configure(results.candidate, results.currentPolicy)
-          },
-          err => this.error = err
-        )
-      }, error => {
-        console.log(error);
-        this.error = error;
-        this.loading = false;
-      });
+    //Fetch the current candidate privacy policy and candidate info
+    forkJoin({
+      'currentPolicy': this.termsInfoService.getCurrentCandidatePolicy(),
+      'candidate': this.candidateService.getCandidatePersonal()
+    }).subscribe(
+      results => {
+        this.configure(results.candidate, results.currentPolicy)
+      },
+      err => this.error = err
+    )
   }
 
   private configure(candidate: Candidate, currentPolicy: TermsInfoDto) {

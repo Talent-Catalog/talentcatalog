@@ -21,34 +21,34 @@
 
     <app-error [error]="error"></app-error>
 
-    <!-- USERNAME (EMAIL) -->
-    <tc-field>
-      <tc-label class="form-label" for="username">{{'REGISTRATION.CONTACT.LABEL.USERNAME' | translate }} <sup>*</sup></tc-label>
-      <tc-input type="email" id="username" placeholder="" [formControlName]="'username'"
-                pattern="{{emailRegex}}"></tc-input>
-      <div *ngIf="registrationForm.get('username').touched || registrationForm.get('username').dirty">
-        <tc-error-message *ngIf="registrationForm.get('username').errors?.['pattern']">
-          {{ 'FORM.ERROR.EMAIL' | translate }}
-        </tc-error-message>
-      </div>
-    </tc-field>
+<!--    &lt;!&ndash; USERNAME (EMAIL) &ndash;&gt;-->
+<!--    <tc-field>-->
+<!--      <tc-label class="form-label" for="username">{{'REGISTRATION.CONTACT.LABEL.USERNAME' | translate }} <sup>*</sup></tc-label>-->
+<!--      <tc-input type="email" id="username" placeholder="" [formControlName]="'username'"-->
+<!--                pattern="{{emailRegex}}"></tc-input>-->
+<!--      <div *ngIf="registrationForm.get('username').touched || registrationForm.get('username').dirty">-->
+<!--        <tc-error-message *ngIf="registrationForm.get('username').errors?.['pattern']">-->
+<!--          {{ 'FORM.ERROR.EMAIL' | translate }}-->
+<!--        </tc-error-message>-->
+<!--      </div>-->
+<!--    </tc-field>-->
 
-    <!-- PASSWORD -->
-    <tc-field>
-      <tc-label  class="form-label" for="password">{{ 'REGISTRATION.CONTACT.LABEL.PASSWORD' | translate }} <sup>*</sup></tc-label>
-      <tc-input type="password" id="password" placeholder=""
-             [formControlName]="'password'"></tc-input>
-      <app-form-control-error [control]="registrationForm.controls.password"></app-form-control-error>
-    </tc-field>
+<!--    &lt;!&ndash; PASSWORD &ndash;&gt;-->
+<!--    <tc-field>-->
+<!--      <tc-label  class="form-label" for="password">{{ 'REGISTRATION.CONTACT.LABEL.PASSWORD' | translate }} <sup>*</sup></tc-label>-->
+<!--      <tc-input type="password" id="password" placeholder=""-->
+<!--             [formControlName]="'password'"></tc-input>-->
+<!--      <app-form-control-error [control]="registrationForm.controls.password"></app-form-control-error>-->
+<!--    </tc-field>-->
 
-    <!-- PASSWORD CONFIRMATION -->
-    <tc-field class="mb-3">
-      <tc-label class="form-label" for="passwordConfirmation">{{ 'REGISTRATION.CONTACT.LABEL.PASSWORDCONFIRMATION' | translate }}
-        <sup>*</sup></tc-label>
-      <tc-input type="password" id="passwordConfirmation" placeholder=""
-             [formControlName]="'passwordConfirmation'"></tc-input>
-      <app-form-control-error [control]="registrationForm.controls.passwordConfirmation"></app-form-control-error>
-    </tc-field>
+<!--    &lt;!&ndash; PASSWORD CONFIRMATION &ndash;&gt;-->
+<!--    <tc-field class="mb-3">-->
+<!--      <tc-label class="form-label" for="passwordConfirmation">{{ 'REGISTRATION.CONTACT.LABEL.PASSWORDCONFIRMATION' | translate }}-->
+<!--        <sup>*</sup></tc-label>-->
+<!--      <tc-input type="password" id="passwordConfirmation" placeholder=""-->
+<!--             [formControlName]="'passwordConfirmation'"></tc-input>-->
+<!--      <app-form-control-error [control]="registrationForm.controls.passwordConfirmation"></app-form-control-error>-->
+<!--    </tc-field>-->
 
     <hr class="my-4"/>
 

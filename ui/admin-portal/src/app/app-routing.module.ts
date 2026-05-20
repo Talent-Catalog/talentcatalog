@@ -49,6 +49,7 @@ import {IntelligenceComponent} from "./components/intelligence/intelligence.comp
 import {DpaGuard} from "./services/dpa.guard";
 import {PartnerDpaComponent} from "./components/util/partner-dpa/partner-dpa.component";
 import {CasiManagementComponent} from "./components/casi-management/casi-management.component";
+import {LoggingOutComponent} from "./components/common/logging-out/logging-out.component";
 
 const routes: Routes = [
   {
@@ -258,6 +259,11 @@ const routes: Routes = [
       hideHeader: true,
       title: 'TC Login'
     }
+  },
+  {
+    path: 'logout',
+    component: LoggingOutComponent,
+    title: 'Logout'
   },
   {
     path: 'reset-password',

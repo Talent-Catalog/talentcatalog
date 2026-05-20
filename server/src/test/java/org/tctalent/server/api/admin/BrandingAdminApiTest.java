@@ -31,8 +31,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.tctalent.server.model.db.BrandingInfo;
 import org.tctalent.server.service.db.BrandingService;
@@ -41,7 +41,7 @@ import org.tctalent.server.service.db.BrandingService;
  * @author sadatmalik
  */
 @WebMvcTest(BrandingAdminApi.class)
-@AutoConfigureMockMvc
+@AutoConfigureMockMvc(addFilters = false)
 class BrandingAdminApiTest extends ApiTestBase {
     private static final String BASE_PATH = "/api/admin/branding";
     private static final String LOGO = "https://images.squarespace-cdn.com/content/v1/my-logo";
@@ -60,7 +60,8 @@ class BrandingAdminApiTest extends ApiTestBase {
     @Autowired MockMvc mockMvc;
     @Autowired ObjectMapper objectMapper;
 
-    @MockBean BrandingService brandingService;
+    @MockitoBean
+    BrandingService brandingService;
 
     @Test
     public void testWebOnlyContextLoads() {

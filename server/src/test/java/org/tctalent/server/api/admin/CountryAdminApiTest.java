@@ -43,12 +43,12 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.tctalent.server.model.db.Country;
 import org.tctalent.server.model.db.Status;
@@ -63,7 +63,7 @@ import org.tctalent.server.util.dto.DtoBuilder;
  * @author sadatmalik
  */
 @WebMvcTest(CountryAdminApi.class)
-@AutoConfigureMockMvc
+@AutoConfigureMockMvc(addFilters = false)
 class CountryAdminApiTest extends ApiTestBase {
 
   private static final long COUNTRY_ID = 465L;
@@ -82,7 +82,8 @@ class CountryAdminApiTest extends ApiTestBase {
           1
       );
 
-  @MockBean CountryService countryService;
+  @MockitoBean
+  CountryService countryService;
 
   @Autowired MockMvc mockMvc;
   @Autowired ObjectMapper objectMapper;

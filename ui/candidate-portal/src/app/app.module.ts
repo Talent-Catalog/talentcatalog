@@ -15,7 +15,7 @@
  */
 
 import {BrowserModule} from '@angular/platform-browser';
-import {NgModule} from '@angular/core';
+import {APP_INITIALIZER, NgModule} from '@angular/core';
 import {AppRoutingModule} from './app-routing.module';
 import {SharedModule} from './shared/shared.module';
 import {AppComponent} from './components/app.component';
@@ -240,16 +240,35 @@ import {
   ReferenceComponent
 } from './components/profile/view/tab/services/reference/reference.component';
 import {UnhcrComponent} from './components/profile/view/tab/services/unhcr/unhcr.component';
+import {AuthenticationService} from "./services/authentication.service";
+import {KeycloakAuthProviderService} from "./services/keycloak-auth-provider.service";
+import {CognitoAuthProviderService} from "./services/cognito-auth-provider.service";
+import {environment} from "../environments/environment";
+import {AUTH_PROVIDER} from "./services/auth.tokens";
+import {KeycloakAngularModule} from "keycloak-angular";
 import {
   TextPartsInputComponent
 } from "./components/util/text-parts-input/text-parts-input.component";
 import {TextPartsViewComponent} from "./components/util/text-parts-view/text-parts-view.component";
+import {AuthErrorComponent} from "./components/util/auth-error/auth-error.component";
 
 //This is not used now - but is left here to show how the standard translation loading works.
 //See https://github.com/ngx-translate/core#configuration
 //See doc for LanguageLoader for the reasons why we do what we do.
 export function HttpLoaderFactory(http: HttpClient) {
   return new TranslateHttpLoader(http);
+}
+
+export function authProviderFactory(
+  keycloakAuth: KeycloakAuthProviderService,
+  cognitoAuth: CognitoAuthProviderService
+) {
+
+  return environment.authProvider === 'cognito' ? cognitoAuth : keycloakAuth;
+}
+
+export function initializeAuth(authenticationService: AuthenticationService) {
+  return () => authenticationService.init();
 }
 
 @NgModule({
@@ -342,9 +361,10 @@ export function HttpLoaderFactory(http: HttpClient) {
     LinkedinComponent,
     LinkedinRedeemedComponent,
     ReferenceComponent,
-    UnhcrComponent
+    UnhcrComponent,
   ],
   imports: [
+    AuthErrorComponent,
     BrowserModule,
     AppRoutingModule,
     ReactiveFormsModule,
@@ -375,10 +395,18 @@ export function HttpLoaderFactory(http: HttpClient) {
     NgxWigModule,
     QuillModule.forRoot(),
     PickerModule,
+    KeycloakAngularModule,
+    PickerModule,
     TextPartsInputComponent,
     TextPartsViewComponent
   ],
   providers: [
+    {provide: AUTH_PROVIDER, useFactory: authProviderFactory,
+      deps: [KeycloakAuthProviderService, CognitoAuthProviderService]},
+    KeycloakAuthProviderService,
+    CognitoAuthProviderService,
+    {provide: APP_INITIALIZER,
+      useFactory: initializeAuth, deps: [AuthenticationService], multi: true},
     {provide: RedirectGuard},
     {provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true},
     {provide: HTTP_INTERCEPTORS, useClass: LanguageInterceptor, multi: true},

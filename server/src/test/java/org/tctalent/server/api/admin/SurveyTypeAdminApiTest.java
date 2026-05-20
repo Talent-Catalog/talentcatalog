@@ -37,8 +37,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.tctalent.server.model.db.SurveyType;
 import org.tctalent.server.service.db.SurveyTypeService;
@@ -49,14 +49,14 @@ import org.tctalent.server.service.db.SurveyTypeService;
  * @author Caroline Cameron
  */
 @WebMvcTest(SurveyTypeAdminApi.class)
-@AutoConfigureMockMvc
+@AutoConfigureMockMvc(addFilters = false)
 class SurveyTypeAdminApiTest extends ApiTestBase {
 
   private static final String BASE_PATH = "/api/admin/survey-type";
 
   private final List<SurveyType> surveyTypes = getSurveyTypes();
 
-  @MockBean
+  @MockitoBean
   SurveyTypeService surveyTypeService;
 
   @Autowired MockMvc mockMvc;

@@ -39,8 +39,8 @@ import org.mockito.ArgumentMatchers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.tctalent.server.api.admin.ApiTestBase;
 import org.tctalent.server.casi.api.request.UpdateServiceResourceStatusRequest;
@@ -58,7 +58,7 @@ import org.tctalent.server.security.AuthService;
 import org.tctalent.server.service.db.UserService;
 
 @WebMvcTest(ServicesPortalController.class)
-@AutoConfigureMockMvc
+@AutoConfigureMockMvc(addFilters = false)
 class ServicesPortalControllerTest extends ApiTestBase {
 
   private static final String BASE_PATH = "/api/portal/services";
@@ -67,11 +67,12 @@ class ServicesPortalControllerTest extends ApiTestBase {
   private static final Long CANDIDATE_ID = 123L;
   private static final String RESOURCE_CODE = "CODE-123";
 
-  @MockBean private AuthService authService;
-  @MockBean private UserService userService;
-  @MockBean private CandidateServiceRegistry candidateServiceRegistry;
-  @MockBean private EligibilityPolicyRegistry eligibilityPolicyRegistry;
-  @MockBean private CandidateAssistanceService candidateAssistanceService;
+  @MockitoBean
+  private AuthService authService;
+  @MockitoBean private UserService userService;
+  @MockitoBean private CandidateServiceRegistry candidateServiceRegistry;
+  @MockitoBean private EligibilityPolicyRegistry eligibilityPolicyRegistry;
+  @MockitoBean private CandidateAssistanceService candidateAssistanceService;
 
   @Autowired private MockMvc mockMvc;
   @Autowired private ObjectMapper objectMapper;

@@ -29,7 +29,7 @@ import org.tctalent.server.logging.LogBuilder;
 
 @Component
 @Slf4j
-public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
+public class AuthenticationErrorEntryPoint implements AuthenticationEntryPoint {
 
     @Override
     public void commence(HttpServletRequest httpServletRequest,
