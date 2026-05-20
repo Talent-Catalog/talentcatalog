@@ -250,6 +250,7 @@ import {
   TextPartsInputComponent
 } from "./components/util/text-parts-input/text-parts-input.component";
 import {TextPartsViewComponent} from "./components/util/text-parts-view/text-parts-view.component";
+import {AuthErrorComponent} from "./components/util/auth-error/auth-error.component";
 
 //This is not used now - but is left here to show how the standard translation loading works.
 //See https://github.com/ngx-translate/core#configuration
@@ -363,6 +364,7 @@ export function initializeAuth(authenticationService: AuthenticationService) {
     UnhcrComponent,
   ],
   imports: [
+    AuthErrorComponent,
     BrowserModule,
     AppRoutingModule,
     ReactiveFormsModule,
