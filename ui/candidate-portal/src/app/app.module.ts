@@ -241,12 +241,11 @@ import {
 } from './components/profile/view/tab/services/reference/reference.component';
 import {UnhcrComponent} from './components/profile/view/tab/services/unhcr/unhcr.component';
 import {AuthenticationService} from "./services/authentication.service";
-import {KeycloakAuthenticationService} from "./services/keycloak-authentication.service";
-import {CognitoAuthenticationService} from "./services/cognito-authentication.service";
+import {KeycloakAuthProviderService} from "./services/keycloak-auth-provider.service";
+import {CognitoAuthProviderService} from "./services/cognito-auth-provider.service";
 import {environment} from "../environments/environment";
 import {AUTH_PROVIDER} from "./services/auth.tokens";
 import {KeycloakAngularModule} from "keycloak-angular";
-import {AuthErrorComponent} from "./components/util/auth-error/auth-error.component";
 import {
   TextPartsInputComponent
 } from "./components/util/text-parts-input/text-parts-input.component";
@@ -260,8 +259,8 @@ export function HttpLoaderFactory(http: HttpClient) {
 }
 
 export function authProviderFactory(
-  keycloakAuth: KeycloakAuthenticationService,
-  cognitoAuth: CognitoAuthenticationService
+  keycloakAuth: KeycloakAuthProviderService,
+  cognitoAuth: CognitoAuthProviderService
 ) {
 
   return environment.authProvider === 'cognito' ? cognitoAuth : keycloakAuth;
@@ -362,7 +361,6 @@ export function initializeAuth(authenticationService: AuthenticationService) {
     LinkedinRedeemedComponent,
     ReferenceComponent,
     UnhcrComponent,
-    AuthErrorComponent
   ],
   imports: [
     BrowserModule,
@@ -402,9 +400,9 @@ export function initializeAuth(authenticationService: AuthenticationService) {
   ],
   providers: [
     {provide: AUTH_PROVIDER, useFactory: authProviderFactory,
-      deps: [KeycloakAuthenticationService, CognitoAuthenticationService]},
-    KeycloakAuthenticationService,
-    CognitoAuthenticationService,
+      deps: [KeycloakAuthProviderService, CognitoAuthProviderService]},
+    KeycloakAuthProviderService,
+    CognitoAuthProviderService,
     {provide: APP_INITIALIZER,
       useFactory: initializeAuth, deps: [AuthenticationService], multi: true},
     {provide: RedirectGuard},

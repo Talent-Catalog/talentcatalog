@@ -7,7 +7,7 @@ import {reportAuthError} from './auth-error.util';
 import {AuthProfile} from "./auth-profile";
 
 /**
- * Keycloak authentication service.
+ * Keycloak authentication provider service.
  * See https://www.npmjs.com/package/keycloak-angular?activeTab=readme for installing Keycloak
  * plus the Keycloak angular library. Note also the table of version compatability with
  * Angular versions.
@@ -18,7 +18,7 @@ import {AuthProfile} from "./auth-profile";
  * which is compatible with Angular 17.
  */
 @Injectable()
-export class KeycloakAuthenticationService implements AuthProvider {
+export class KeycloakAuthProviderService implements AuthProvider {
 
   private readonly status$ = new BehaviorSubject<AuthStatus>({
     initialized: false,
