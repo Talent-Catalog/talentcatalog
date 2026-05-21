@@ -62,6 +62,7 @@ import org.tctalent.server.request.candidate.SavedListGetRequest;
 import org.tctalent.server.request.candidate.SelfRegistrationRequest;
 import org.tctalent.server.request.candidate.SubmitRegistrationRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateAdditionalInfoRequest;
+import org.tctalent.server.request.candidate.UpdateCandidateAspirationsRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateContactRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateEducationRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateLinksRequest;
@@ -110,6 +111,8 @@ public interface CandidateService {
     Candidate getCandidate(long id) throws NoSuchObjectException;
 
     Candidate updateCandidateAdditionalInfo(long id, UpdateCandidateAdditionalInfoRequest request);
+
+    Candidate updateCandidateAspirations(long id, UpdateCandidateAspirationsRequest request);
 
     Candidate updateShareableNotes(long id, UpdateCandidateShareableNotesRequest request);
 
