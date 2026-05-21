@@ -31,7 +31,6 @@ export class ViewCandidateAdditionalInfoComponent implements OnInit {
 
   @Input() candidate: Candidate;
   @Input() editable: boolean;
-  @Input() showAspirations: boolean;
 
   constructor(private modalService: NgbModal,
               private candidateService: CandidateService) { }
@@ -46,7 +45,6 @@ export class ViewCandidateAdditionalInfoComponent implements OnInit {
     });
 
     editAdditionalInfoModal.componentInstance.candidateId = this.candidate.id;
-    editAdditionalInfoModal.componentInstance.showAspirations = this.showAspirations;
 
     editAdditionalInfoModal.result
       .then((candidate) => this.candidateService.updateCandidate())

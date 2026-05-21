@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {UntypedFormBuilder, UntypedFormGroup} from '@angular/forms';
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {CandidateService} from "../../../../../services/candidate.service";
@@ -29,7 +29,6 @@ import {CountryService} from "../../../../../services/country.service";
 export class EditCandidateAdditionalInfoComponent implements OnInit {
 
   candidateId: number;
-  @Input() showAspirations = false;
   candidateForm: UntypedFormGroup;
 
   error;
@@ -47,8 +46,7 @@ export class EditCandidateAdditionalInfoComponent implements OnInit {
 
     this.candidateService.get(this.candidateId).subscribe(candidate => {
       this.candidateForm = this.fb.group({
-        additionalInfo: [candidate.additionalInfo],
-        aspirations: [candidate.aspirations]
+        additionalInfo: [candidate.additionalInfo]
       });
       this.loading = false;
     });

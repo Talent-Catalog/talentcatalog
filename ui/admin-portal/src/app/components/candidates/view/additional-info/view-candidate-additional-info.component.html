@@ -31,12 +31,4 @@
   <tc-description-item [innerHtml]="candidate?.additionalInfo"
                        appHighlightSearch
   ></tc-description-item>
-
-  <ng-container *ngIf="showAspirations">
-    <hr>
-    <h6 class="font-weight-bold">Aspirations</h6>
-    <tc-description-item [innerHtml]="candidate?.aspirations"
-                         appHighlightSearch
-    ></tc-description-item>
-  </ng-container>
 </tc-card>
