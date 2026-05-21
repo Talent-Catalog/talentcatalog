@@ -16,6 +16,10 @@
 
 package org.tctalent.server.model.db;
 
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -24,10 +28,6 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Getter
 @Setter
@@ -35,8 +35,7 @@ import lombok.Setter;
 @Table(name = "candidate_education")
 @SequenceGenerator(name = "seq_gen", sequenceName = "candidate_education_id_seq", allocationSize = 1)
 @NoArgsConstructor
-@AllArgsConstructor
-public class CandidateEducation extends AbstractDomainObject<Long> {
+public class CandidateEducation extends AbstractCandidateDataDomainObject<Long> {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "candidate_id")
@@ -61,4 +60,18 @@ public class CandidateEducation extends AbstractDomainObject<Long> {
 
     private Boolean incomplete;
 
+    public CandidateEducation(Candidate candidate, EducationType educationType, Country country,
+                              EducationMajor educationMajor, Integer lengthOfCourseYears,
+                              String institution, String courseName, Integer yearCompleted,
+                              Boolean incomplete) {
+        this.candidate = candidate;
+        this.educationType = educationType;
+        this.country = country;
+        this.educationMajor = educationMajor;
+        this.lengthOfCourseYears = lengthOfCourseYears;
+        this.institution = institution;
+        this.courseName = courseName;
+        this.yearCompleted = yearCompleted;
+        this.incomplete = incomplete;
+    }
 }

@@ -34,7 +34,7 @@ import org.tctalent.server.files.UploadType;
 @Entity
 @Table(name = "candidate_attachment")
 @SequenceGenerator(name = "seq_gen", sequenceName = "candidate_attachment_id_seq", allocationSize = 1)
-public class CandidateAttachment extends AbstractAuditableDomainObject<Long> implements ICandidateAttachment {
+public class CandidateAttachment extends AbstractCandidateDataDomainObject<Long> implements ICandidateAttachment {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "candidate_id")
