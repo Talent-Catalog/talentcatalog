@@ -63,6 +63,9 @@ class LanguageFilterTest {
   @Mock
   private User user;
 
+  @Mock
+  private CurrentUserInfo userInfo;
+
 
   @Mock
   private LogBuilder logBuilder;
@@ -88,7 +91,7 @@ class LanguageFilterTest {
 
     languageFilter.doFilterInternal(request, response, filterChain);
 
-    verify(user).setSelectedLanguage(language);
+    verify(userInfo).setSelectedLanguage(language);
     verify(filterChain).doFilter(request, response);
     verifyNoInteractions(logBuilder);
   }
@@ -102,7 +105,7 @@ class LanguageFilterTest {
 
     languageFilter.doFilterInternal(request, response, filterChain);
 
-    verify(user).setSelectedLanguage("en");
+    verify(userInfo).setSelectedLanguage("en");
     verify(filterChain).doFilter(request, response);
     verifyNoInteractions(logBuilder);
   }
@@ -116,7 +119,7 @@ class LanguageFilterTest {
 
     languageFilter.doFilterInternal(request, response, filterChain);
 
-    verify(user).setSelectedLanguage("en");
+    verify(userInfo).setSelectedLanguage("en");
     verify(filterChain).doFilter(request, response);
     verifyNoInteractions(logBuilder);
   }

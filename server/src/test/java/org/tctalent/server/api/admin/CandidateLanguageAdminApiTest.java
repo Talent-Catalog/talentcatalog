@@ -44,8 +44,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.tctalent.server.model.db.CandidateLanguage;
 import org.tctalent.server.request.candidate.language.CreateCandidateLanguageRequest;
@@ -58,7 +58,7 @@ import org.tctalent.server.service.db.CandidateLanguageService;
  * @author sadatmalik
  */
 @WebMvcTest(CandidateLanguageAdminApi.class)
-@AutoConfigureMockMvc
+@AutoConfigureMockMvc(addFilters = false)
 class CandidateLanguageAdminApiTest extends ApiTestBase {
 
     private static final long CANDIDATE_ID = 99L;
@@ -69,7 +69,8 @@ class CandidateLanguageAdminApiTest extends ApiTestBase {
 
     private static final List<CandidateLanguage> candidateLanguageList = getListOfCandidateLanguages();
 
-    @MockBean CandidateLanguageService candidateLanguageService;
+    @MockitoBean
+    CandidateLanguageService candidateLanguageService;
 
     @Autowired MockMvc mockMvc;
     @Autowired ObjectMapper objectMapper;

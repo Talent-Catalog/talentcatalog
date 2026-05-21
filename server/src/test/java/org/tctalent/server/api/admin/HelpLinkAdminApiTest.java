@@ -43,10 +43,10 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.tctalent.server.exception.EntityExistsException;
 import org.tctalent.server.exception.EntityReferencedException;
@@ -64,16 +64,16 @@ import org.tctalent.server.service.db.HelpLinkService;
  * @author John Cameron
  */
 @WebMvcTest(HelpLinkAdminApi.class)
-@AutoConfigureMockMvc
+@AutoConfigureMockMvc(addFilters = false)
 class HelpLinkAdminApiTest extends ApiTestBase {
     private static final String BASE_PATH = "/api/admin/help-link";
 
     private static final HelpLink helpLink = getHelpLink();
 
-    @MockBean
+    @MockitoBean
     CountryService countryService;
 
-    @MockBean
+    @MockitoBean
     HelpLinkService helpLinkService;
 
     @Autowired

@@ -16,6 +16,8 @@
 
 package org.tctalent.server.service.db.impl;
 
+import static org.tctalent.server.configuration.SystemAdminConfiguration.SYSTEM_PARTNER_ABBREVIATION;
+
 import com.opencsv.CSVWriter;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
@@ -135,6 +137,7 @@ import org.tctalent.server.request.candidate.CandidateIntakeDataUpdate;
 import org.tctalent.server.request.candidate.CandidateNumberOrNameSearchRequest;
 import org.tctalent.server.request.candidate.CandidatePublicIdSearchRequest;
 import org.tctalent.server.request.candidate.CreateCandidateRequest;
+import org.tctalent.server.request.candidate.OauthRegistrationRequest;
 import org.tctalent.server.request.candidate.ResolveTaskAssignmentsRequest;
 import org.tctalent.server.request.candidate.SavedListGetRequest;
 import org.tctalent.server.request.candidate.SelfRegistrationRequest;
@@ -158,6 +161,7 @@ import org.tctalent.server.request.candidate.UpdateCandidateSurveyRequest;
 import org.tctalent.server.request.candidate.citizenship.CreateCandidateCitizenshipRequest;
 import org.tctalent.server.request.chat.FetchCandidatesWithChatRequest;
 import org.tctalent.server.request.note.CreateCandidateNoteRequest;
+import org.tctalent.server.security.AuthProfile;
 import org.tctalent.server.security.AuthService;
 import org.tctalent.server.security.PasswordHelper;
 import org.tctalent.server.service.db.CandidateCitizenshipService;
@@ -266,6 +270,7 @@ public class CandidateServiceImpl implements CandidateService {
     private final EntityManager entityManager;
     private final PersistenceContextHelper persistenceContextHelper;
     private final SystemNotificationService systemNotificationService;
+    private final TcInstanceService tcInstanceService;
 
     @Override
     public Page<Candidate> getSavedListCandidates(SavedList savedList, SavedListGetRequest request) {
@@ -299,10 +304,6 @@ public class CandidateServiceImpl implements CandidateService {
         return candidates;
     }
 
-    /**
-     * Update audit fields and use repository to save the Candidate
-     * @param candidate Entity to save
-     */
     public void saveIt(Candidate candidate) {
         candidate.setAuditFields(authService.getLoggedInUser().orElse(null));
         save(candidate);
@@ -585,7 +586,8 @@ public class CandidateServiceImpl implements CandidateService {
             .orElseThrow(() -> new NoSuchObjectException(Candidate.class, id));
     }
 
-    private Candidate createCandidate(CreateCandidateRequest request, Partner partner, String ipAddress,
+    private Candidate createCandidate(CreateCandidateRequest request, Partner partner,
+        HttpServletRequest httpRequest,
         HasTcQueryParameters queryParameters, String passwordEncrypted)
         throws UsernameTakenException {
         User user = new User(
@@ -610,6 +612,24 @@ public class CandidateServiceImpl implements CandidateService {
         user = userRepository.save(user);
 
         Candidate candidate = new Candidate(user, request.getPhone(), request.getWhatsapp(), user);
+        candidate.setContactConsentRegistration(request.getContactConsentRegistration());
+
+        populateCandidate(candidate, queryParameters, httpRequest);
+
+        candidate = saveNewCandidate(partner, candidate);
+
+        return candidate;
+    }
+
+    /**
+     * Populate some created candidate fields based on an HTTP request and query parameters.
+     * @param candidate Candidate to populate
+     * @param queryParameters Optional query parameters
+     * @param httpRequest HTTP request
+     */
+    private void populateCandidate(
+        Candidate candidate,
+        @Nullable HasTcQueryParameters queryParameters, @Nullable HttpServletRequest httpRequest) {
 
         candidate.setPublicId(publicIDService.generatePublicID());
 
@@ -618,10 +638,9 @@ public class CandidateServiceImpl implements CandidateService {
         //For now generate a random candidate number so that it is not null.
         candidate.setCandidateNumber("TEMP%04d" + RandomStringUtils.random(6));
 
-        /* Set the email consent fields */
-        candidate.setContactConsentRegistration(request.getContactConsentRegistration());
-
-        candidate.setRegoIp(ipAddress);
+        if (httpRequest != null) {
+            candidate.setRegoIp(httpRequest.getRemoteAddr());
+        }
         if (queryParameters != null) {
             candidate.setRegoPartnerParam(queryParameters.getPartnerAbbreviation());
             candidate.setRegoReferrerParam(queryParameters.getReferrerParam());
@@ -632,16 +651,12 @@ public class CandidateServiceImpl implements CandidateService {
             candidate.setRegoUtmTerm(queryParameters.getUtmTerm());
         }
 
-        //set some fields to unknown on create as required for search
+        //set some fields to unknown on creation as required for search
         //see CandidateSpecification. It works better if these attributes are not null, but instead
         //point to an "Unknown" value.
         candidate.setCountry(countryRepository.getReferenceById(0L));
         candidate.setNationality(countryRepository.getReferenceById(0L));
         candidate.setMaxEducationLevel(educationLevelRepository.getReferenceById(0L));
-
-        candidate = saveNewCandidate(partner, candidate);
-
-        return candidate;
     }
 
     private Candidate saveNewCandidate(Partner partner, Candidate candidate) {
@@ -974,33 +989,12 @@ public class CandidateServiceImpl implements CandidateService {
         }
     }
 
-    @Override
-    @Transactional(rollbackFor = Exception.class)
-    public LoginRequest register(SelfRegistrationRequest request, HttpServletRequest httpRequest) {
-        if (!request.getPassword().equals(request.getPasswordConfirmation())) {
-            throw new PasswordMatchException();
-        }
-
-        // Check update request for a duplicate email or phone number
-        validateContactRequest(null, request);
-
-        /* Check for existing account with the username fields */
-        if (StringUtils.isNotBlank(request.getUsername())) {
-            User exists = userRepository.findByUsernameAndRole(request.getUsername(), Role.user);
-            if (exists != null) {
-                throw new UsernameTakenException("username");
-            }
-        }
-
-        if (StringUtils.isBlank(request.getEmail())
-                && StringUtils.isBlank(request.getPhone())
-                && StringUtils.isBlank(request.getWhatsapp())) {
-            throw new InvalidRequestException("Must specify at least one method of contact");
-        }
-
-        /* Validate the password before account creation */
-        String passwordEncrypted = passwordHelper.validateAndEncodePassword(request.getPassword());
-
+    /**
+     * Look up if we have recorded a previous request for a candidate coming from the given IP address.
+     * @param httpRequest HTTP request from a candidate
+     * @return Previous request from same IP, or null if none found
+     */
+    private @Nullable RootRequest computeRootRequest(@NonNull HttpServletRequest httpRequest) {
         //Fetch any recent Root Request by this candidate from their ip address.
         //Candidate may have been referred to our website by a partner with query parameters
         //identifying the partner as well as how the candidate was referred (in UTM parameters).
@@ -1011,24 +1005,57 @@ public class CandidateServiceImpl implements CandidateService {
         //adding session id as well to RootRequest and the database).
         String ipAddress = httpRequest.getRemoteAddr();
         //Ignore anything that is fairly old (eg 36 hours old) - ip addresses change over time.
-        RootRequest rootRequest = rootRequestService.getMostRecentRootRequest(ipAddress, 36);
+        return rootRequestService.getMostRecentRootRequest(ipAddress, 36);
+    }
 
-        //Compute and assign partner.
-        //A non null partner abbreviation can define partner
-        String partnerAbbreviation = request.getPartnerAbbreviation();
-        if (partnerAbbreviation == null) {
-            //See if partner info is available on RootRequest.
-            if (rootRequest != null) {
-                partnerAbbreviation = rootRequest.getPartnerAbbreviation();
-            }
-        }
-
+    /**
+     * Pick up query parameters from the first request if there are any, otherwise check for
+     * query parameters in the given root request.
+     * @param request Request with query parameters
+     * @param rootRequest Root request with query parameters
+     * @return Query parameters retrieved from request or root request
+     */
+    private @Nullable HasTcQueryParameters computeQueryParameters(
+        @NonNull HasTcQueryParameters request, @Nullable RootRequest rootRequest) {
         //Pick up query parameters from request if they are passed in
         HasTcQueryParameters queryParameters;
         if (areQueryParametersPresent(request)) {
             queryParameters = request;
         } else {
             queryParameters = rootRequest;
+        }
+        return queryParameters;
+    }
+
+    /**
+     * Compute candidate partner based on the TC instance, provided partner abbreviation,
+     * root request, and query parameters.
+     * @param partnerAbbreviation Abbreviation of the partner
+     * @param rootRequest Root request with partner information
+     * @param queryParameters Query parameters for partner retrieval
+     * @return Partner object based on the provided information
+     */
+    private @NonNull Partner computePartner(
+        @Nullable String partnerAbbreviation, @Nullable RootRequest rootRequest,
+        @Nullable HasTcQueryParameters queryParameters) {
+
+        //The GRN instance does not have source partners.
+        //All candidates are associated with the system partner.
+        if (tcInstanceService.isGRN()) {
+            Partner systemPartner = partnerService.getPartnerFromAbbreviation(SYSTEM_PARTNER_ABBREVIATION);
+            if (systemPartner == null) {
+                throw new IllegalStateException("System partner not found");
+            }
+            return systemPartner;
+        }
+
+        //Compute and assign partner.
+        //A non-null partner abbreviation can define partner
+        if (partnerAbbreviation == null) {
+            //See if partner info is available on RootRequest.
+            if (rootRequest != null) {
+                partnerAbbreviation = rootRequest.getPartnerAbbreviation();
+            }
         }
 
         //Assign partner based on the partner abbreviation, if any
@@ -1076,16 +1103,86 @@ public class CandidateServiceImpl implements CandidateService {
             }
         }
 
-        LogBuilder.builder(log)
-            .user(authService.getLoggedInUser())
-            .action("Register Candidate")
-            .message("Registration with partner: " + sourcePartner.getName())
-            .logInfo();
+        return sourcePartner;
+    }
+
+    @Transactional
+    @Override
+    public Candidate register(OauthRegistrationRequest request, @NotNull HttpServletRequest httpRequest) {
+        //TODO JC Any Exception should log out the user on IDP. Logout can happen from Angular
+        //TODO JC Some exceptions may need to delete the user on IDP?
+
+
+        AuthProfile profile = request.getProfile();
+
+        validateEmail(null, profile.getEmail());
+
+        /* Validate that the candidate has marked email consent partners as true in order to continue registration */
+        if (!request.isContactConsentRegistration()) {
+            throw new InvalidRequestException("Consent required to register.");
+        }
+
+        //RootRequest, if any, can be used to retrieve query parameters
+        RootRequest rootRequest = computeRootRequest(httpRequest);
+
+        HasTcQueryParameters queryParameters = computeQueryParameters(request, rootRequest);
+
+        Partner partner = computePartner(
+            request.getPartnerAbbreviation(), rootRequest, queryParameters);
+
+        //Create or update the user.
+        User user = userService.syncOauthUserAtLoginOrRegister(profile, partner);
+
+        Candidate candidate = new Candidate();
+        candidate.setUser(user);
+        candidate.setAuditFields(user);
+        candidate.setContactConsentRegistration(true);
+        candidate.setStatus(CandidateStatus.draft);
+
+        populateCandidate(candidate, queryParameters, httpRequest);
+
+        return saveNewCandidate(partner, candidate);
+    }
+
+    @Override
+    @Transactional
+    public LoginRequest register(
+        SelfRegistrationRequest request, @NonNull HttpServletRequest httpRequest) {
+        if (!request.getPassword().equals(request.getPasswordConfirmation())) {
+            throw new PasswordMatchException();
+        }
+
+        // Check update request for a duplicate email or phone number
+        validateContactRequest(null, request);
 
         /* Validate that the candidate has marked email consent partners as true in order to continue registration */
         if (!request.getContactConsentRegistration()) {
             throw new InvalidRequestException("Consent required to register.");
         }
+
+        /* Check for existing account with the username fields */
+        if (StringUtils.isNotBlank(request.getUsername())) {
+            User exists = userRepository.findByUsernameAndRole(request.getUsername(), Role.user);
+            if (exists != null) {
+                throw new UsernameTakenException("username");
+            }
+        }
+
+        if (StringUtils.isBlank(request.getEmail())
+                && StringUtils.isBlank(request.getPhone())
+                && StringUtils.isBlank(request.getWhatsapp())) {
+            throw new InvalidRequestException("Must specify at least one method of contact");
+        }
+
+        /* Validate the password before account creation */
+        String passwordEncrypted = passwordHelper.validateAndEncodePassword(request.getPassword());
+
+        RootRequest rootRequest = computeRootRequest(httpRequest);
+
+        HasTcQueryParameters queryParameters = computeQueryParameters(request, rootRequest);
+
+        Partner sourcePartner = computePartner(
+            request.getPartnerAbbreviation(), rootRequest, queryParameters);
 
         /* Create the candidate */
         CreateCandidateRequest createCandidateRequest = new CreateCandidateRequest();
@@ -1095,7 +1192,7 @@ public class CandidateServiceImpl implements CandidateService {
         createCandidateRequest.setWhatsapp(request.getWhatsapp());
         createCandidateRequest.setContactConsentRegistration(true);
 
-        Candidate candidate = createCandidate(createCandidateRequest, sourcePartner, ipAddress,
+        Candidate candidate = createCandidate(createCandidateRequest, sourcePartner, httpRequest,
             queryParameters, passwordEncrypted);
 
         /* Log the candidate in */
@@ -1814,11 +1911,16 @@ public class CandidateServiceImpl implements CandidateService {
 
     @Transactional(readOnly = true)
     public void validateContactRequest(User user, BaseCandidateContactRequest request) {
-        // Check email not already taken
-        if (!StringUtils.isBlank(request.getEmail())) {
+        validateEmail(user, request.getEmail());
+    }
+
+    public void validateEmail(User user, String email) {
+        // Check the email is not already taken
+        if (!StringUtils.isBlank(email)) {
             try {
-                User exists = userRepository.findByEmailIgnoreCase(request.getEmail());
-                if (user == null && exists != null || exists != null && !exists.getId().equals(user.getId())) {
+                User exists = userRepository.findByEmailIgnoreCase(email);
+                if (user == null && exists != null || exists != null
+                    && !exists.getId().equals(user.getId())) {
                     throw new UsernameTakenException("email");
                 }
             } catch (IncorrectResultSizeDataAccessException e) {

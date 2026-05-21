@@ -38,12 +38,12 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.tctalent.server.model.db.OfferToAssist;
 import org.tctalent.server.request.KeywordPagedSearchRequest;
@@ -56,7 +56,7 @@ import org.tctalent.server.service.db.OfferToAssistService;
  * @author John Cameron
  */
 @WebMvcTest(OfferToAssistAdminApi.class)
-@AutoConfigureMockMvc
+@AutoConfigureMockMvc(addFilters = false)
 class OfferToAssistAdminApiTest extends ApiTestBase {
     private static final String BASE_PATH = "/api/admin/ota";
     private static final String SEARCH_PATH = "/search";
@@ -69,7 +69,7 @@ class OfferToAssistAdminApiTest extends ApiTestBase {
                     1
             );
 
-    @MockBean
+    @MockitoBean
     OfferToAssistService offerToAssistService;
 
     @Autowired

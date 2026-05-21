@@ -39,8 +39,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.tctalent.server.model.db.CandidateExam;
 import org.tctalent.server.request.candidate.exam.CreateCandidateExamRequest;
@@ -53,15 +53,16 @@ import org.tctalent.server.service.db.CandidateService;
  * @author sadatmalik
  */
 @WebMvcTest(CandidateExamAdminApi.class)
-@AutoConfigureMockMvc
+@AutoConfigureMockMvc(addFilters = false)
 class CandidateExamAdminApiTest extends ApiTestBase {
     private static final String BASE_PATH = "/api/admin/candidate-exam";
     private static final long CANDIDATE_ID = 99L;
 
     private final CandidateExam candidateExam = getCandidateExam();
 
-    @MockBean CandidateExamService candidateExamService;
-    @MockBean CandidateService candidateService;
+    @MockitoBean CandidateExamService candidateExamService;
+    @MockitoBean
+    CandidateService candidateService;
 
     @Autowired MockMvc mockMvc;
     @Autowired ObjectMapper objectMapper;

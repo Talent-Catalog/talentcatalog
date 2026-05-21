@@ -41,12 +41,12 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.tctalent.server.api.dto.CandidateBuilderSelector;
 import org.tctalent.server.data.SavedListTestData;
@@ -65,7 +65,7 @@ import org.tctalent.server.util.dto.DtoBuilder;
  */
 
 @WebMvcTest(SavedSearchCandidateAdminApi.class)
-@AutoConfigureMockMvc
+@AutoConfigureMockMvc(addFilters = false)
 class SavedSearchCandidateAdminApiTest extends ApiTestBase {
   private static final String BASE_PATH = "/api/admin/saved-search-candidate";
   private static final String IS_EMPTY_PATH = "/{id}/is-empty";
@@ -87,13 +87,13 @@ class SavedSearchCandidateAdminApiTest extends ApiTestBase {
           1
       );
 
-  @MockBean
+  @MockitoBean
   SavedSearchService savedSearchService;
-  @MockBean
+  @MockitoBean
   CandidateService candidateService;
-  @MockBean
+  @MockitoBean
   CandidateDtoService candidateDtoService;
-  @MockBean
+  @MockitoBean
   CandidateBuilderSelector candidateBuilderSelector;
 
   @Autowired

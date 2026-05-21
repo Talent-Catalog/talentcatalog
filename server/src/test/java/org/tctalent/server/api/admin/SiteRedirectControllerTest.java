@@ -35,7 +35,7 @@ import org.springframework.test.web.servlet.MockMvc;
  * @author John Cameron
  */
 @WebMvcTest(SiteRedirectController.class)
-@AutoConfigureMockMvc
+@AutoConfigureMockMvc(addFilters = false)
 class SiteRedirectControllerTest extends ApiTestBase {
 
     private static final String BASE_PATH = "/backend/jobseeker";
