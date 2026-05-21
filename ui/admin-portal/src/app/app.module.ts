@@ -847,15 +847,19 @@ import {
 import {CasiManagementComponent} from "./components/casi-management/casi-management.component";
 import {CsvPreviewComponent} from "./components/casi-management/csv-preview/csv-preview.component";
 import {
+  EraseCandidateDataComponent
+} from "./components/candidates/view/erase/erase-candidate-data.component";
+import {TextPartsViewComponent} from "./components/util/text-parts-view/text-parts-view.component";
+import {
   TextPartsInputComponent
 } from "./components/util/text-parts-input/text-parts-input.component";
-import {TextPartsViewComponent} from "./components/util/text-parts-view/text-parts-view.component";
 import {
   ViewCandidateAspirationsComponent
 } from "./components/candidates/view/aspirations/view-candidate-aspirations.component";
 import {
   EditCandidateAspirationsComponent
 } from "./components/candidates/view/aspirations/edit/edit-candidate-aspirations.component";
+
 
 @NgModule({
   declarations: [
@@ -1200,7 +1204,8 @@ import {
     ImportLinkedinPremiumCouponsComponent,
     ImportReferenceVouchersComponent,
     ViewCandidateAspirationsComponent,
-    EditCandidateAspirationsComponent
+    EditCandidateAspirationsComponent,
+    EraseCandidateDataComponent
   ],
   imports: [
     BrowserModule,
@@ -1227,7 +1232,6 @@ import {
     }),
     TextPartsInputComponent,
     TextPartsViewComponent,
-    ViewCandidateAspirationsComponent,
   ],
   providers: [
     {provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true},

@@ -495,6 +495,17 @@ export interface UpdateCandidateMutedRequest {
   muted: boolean;
 }
 
+export interface EraseCandidateRequest {
+  confirmationCandidateNumber?: string;
+}
+
+export interface EraseCandidateResponse {
+  id: number;
+  candidateNumber: string;
+  status: string;
+  erased: boolean;
+}
+
 export enum FamilyRelations {
   NoRelation = "No relatives",
   Child = "Daughter/Son",

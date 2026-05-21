@@ -16,6 +16,7 @@
 
 package org.tctalent.server.repository.db;
 
+import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -47,5 +48,7 @@ public interface CandidateJobExperienceRepository extends JpaRepository<Candidat
             + " left join w.candidate c "
             + " where c.id = :candidateId")
     Page<CandidateJobExperience> findByCandidateId(@Param("candidateId") Long candidateId, Pageable request);
+
+    List<CandidateJobExperience> findByCandidateId(Long candidateId);
 
 }

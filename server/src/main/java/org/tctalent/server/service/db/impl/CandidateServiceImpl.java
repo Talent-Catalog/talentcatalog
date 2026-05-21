@@ -704,6 +704,13 @@ public class CandidateServiceImpl implements CandidateService {
         CandidateStatus originalStatus = candidate.getStatus();
         candidate.setStatus(info.getStatus());
         candidate.setCandidateMessage(info.getCandidateMessage());
+        if (CandidateStatus.deleted.equals(info.getStatus())) {
+            User loggedInUser = authService.getLoggedInUser()
+                .orElseThrow(() -> new InvalidSessionException("Not logged in"));
+            candidate.setDeletedFields(loggedInUser);
+        } else {
+            candidate.clearDeletedFields();
+        }
         candidate = save(candidate);
         if (!info.getStatus().equals(originalStatus)) {
             candidateNoteService.createCandidateNote(new CreateCandidateNoteRequest(candidate.getId(),

@@ -141,6 +141,19 @@
               </tc-icon>
               View tailored CV
             </tc-dropdown-item>
+
+            <tc-dropdown-item *ngIf="canEraseCandidateData()"
+                              (itemSelect)="eraseCandidateData()"
+                              [style.line-height]="'1rem'"
+            >
+              <tc-icon [color]="'error'"
+                       [size]="'md'"
+                       title="Erase candidate data"
+              >
+                <i class="fas fa-user-slash"></i>
+              </tc-icon>
+              Erase candidate data
+            </tc-dropdown-item>
           </tc-dropdown-menu>
         </tc-dropdown>
       </div>

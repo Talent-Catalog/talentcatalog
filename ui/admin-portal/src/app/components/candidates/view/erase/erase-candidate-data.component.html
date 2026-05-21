@@ -1,0 +1,119 @@
+<tc-modal
+  [heading]="'Erase candidate data'"
+  [icon]="'fas fa-triangle-exclamation'"
+  [isError]="true"
+  [showClose]="!erasing"
+  [showCancel]="!erasing && step === 1"
+  [cancelText]="'Cancel'"
+  [actionText]="modalActionText()"
+  [disableAction]="modalActionDisabled()"
+  (onAction)="onModalAction()"
+>
+
+  <tc-alert type="danger" *ngIf="error">
+    <div><strong>{{ error }}</strong></div>
+  </tc-alert>
+
+  <tc-loading [loading]="erasing"></tc-loading>
+
+  <!-- STEP 1: WARNING -->
+  <div *ngIf="step === 1 && !erasing">
+    <div class="erase-warning-icon">
+      <tc-icon size="xl" color="error" ariaLabel="Warning">
+        <i class="fas fa-triangle-exclamation"></i>
+      </tc-icon>
+    </div>
+
+    <h5 class="mb-3">This is a permanent erasure action</h5>
+
+    <p>
+      You are about to erase personal data for
+      <strong>{{ candidateName() }}</strong>,
+      candidate
+      <strong>#{{ candidate?.candidateNumber }}</strong>.
+    </p>
+
+    <p>
+      After this action, the candidate should no longer be searchable, contactable,
+      visible in normal candidate lists, or able to log in.
+    </p>
+
+    <tc-alert type="danger">
+      <div>
+        <strong>This cannot be undone.</strong>
+        Personal data, notes, documents, CV text, contact data, search text, external IDs,
+        login data, and candidate-submitted free text will be removed.
+      </div>
+    </tc-alert>
+  </div>
+
+  <!-- STEP 2: FINAL CONFIRMATION -->
+  <div *ngIf="step === 2 && !erasing">
+    <h5 class="mb-3">Final confirmation</h5>
+
+    <dl class="row">
+      <dt class="col-sm-4">Candidate number</dt>
+      <dd class="col-sm-8">#{{ candidate?.candidateNumber }}</dd>
+
+      <dt class="col-sm-4">Candidate name</dt>
+      <dd class="col-sm-8">{{ candidateName() }}</dd>
+
+      <dt class="col-sm-4">Candidate email</dt>
+      <dd class="col-sm-8">{{ candidate?.user?.email || 'No email' }}</dd>
+    </dl>
+
+    <div class="mb-3">
+      <tc-field>
+        <tc-label [for]="'confirmationCandidateNumber'">
+          Type candidate number
+          <strong>{{ candidate?.candidateNumber }}</strong>
+          to confirm
+        </tc-label>
+
+        <tc-input
+          [id]="'confirmationCandidateNumber'"
+          [name]="'confirmationCandidateNumber'"
+          [type]="'text'"
+          [placeholder]="'Type candidate number'"
+          [disabled]="erasing"
+          [(ngModel)]="confirmationCandidateNumber"
+        ></tc-input>
+      </tc-field>
+    </div>
+
+    <div class="mb-3">
+      <tc-field [checkbox]="true">
+        <tc-input
+          [id]="'irreversibleConfirmed'"
+          [name]="'irreversibleConfirmed'"
+          [type]="'checkbox'"
+          [disabled]="erasing"
+          [(ngModel)]="irreversibleConfirmed"
+        ></tc-input>
+
+        <tc-label [for]="'irreversibleConfirmed'">
+          I understand this action is permanent and cannot be undone.
+        </tc-label>
+      </tc-field>
+    </div>
+
+    <div class="mt-4">
+      <tc-button
+        type="outline"
+        color="gray"
+        [disabled]="erasing"
+        (onClick)="back()"
+      >
+        Back
+      </tc-button>
+    </div>
+  </div>
+
+  <div *ngIf="erasing" class="d-flex align-items-center gap-2">
+    <tc-icon size="md" color="primary" ariaLabel="Erasing">
+      <i class="fas fa-spinner fa-spin"></i>
+    </tc-icon>
+    <span>Erasing candidate data...</span>
+  </div>
+
+</tc-modal>
