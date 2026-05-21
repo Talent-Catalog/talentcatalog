@@ -128,6 +128,10 @@ export class CandidateService implements IntakeService {
     return this.http.put<Candidate>(`${this.apiUrl}/${id}/info`, details);
   }
 
+  updateAspirations(id: number, details): Observable<Candidate>  {
+    return this.http.put<Candidate>(`${this.apiUrl}/${id}/aspirations`, details);
+  }
+
   updateSurvey(id: number, details): Observable<Candidate>  {
     return this.http.put<Candidate>(`${this.apiUrl}/${id}/survey`, details);
   }
