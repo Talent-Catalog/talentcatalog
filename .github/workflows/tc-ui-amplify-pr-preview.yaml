@@ -32,17 +32,19 @@ jobs:
             );
             if (amplifyComments.length === 0) {
               core.warning("No Amplify preview URLs found in comments.");
+              core.setOutput("urls", "[]");
               return;
             }
             const urls = amplifyComments.map(comment => {
-              const urlMatch = comment.body.match(/https?:\/\/[^\s]+/);
+              const urlMatch = comment.body.match(/Access this pull request here:\s*(https?:\/\/[^\s<]+)/);
               return {
-                url: urlMatch ? urlMatch[0] : null,
+                url: urlMatch ? urlMatch[1] : null,
                 id: comment.id
               };
             }).filter(item => item.url); // Remove null URLs
             if (urls.length === 0) {
               core.warning("No valid Amplify preview URLs found in comments.");
+              core.setOutput("urls", "[]");
               return;
             }
             core.setOutput("urls", JSON.stringify(urls));
@@ -51,6 +53,11 @@ jobs:
         run: |
           urls='${{ steps.get-preview-urls.outputs.urls }}'
           broken_urls=()
+          if [ -z "$urls" ] || [ "$urls" = "[]" ]; then
+            echo "No preview links to check."
+            echo "broken_ids=" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
           echo "Checking each preview link for status..."
           for item in $(echo "$urls" | jq -c '.[]'); do
             url=$(echo "$item" | jq -r '.url')
@@ -61,7 +68,7 @@ jobs:
               broken_urls+=("$comment_id")
             fi
           done
-          echo "::set-output name=broken_ids::${broken_urls[@]}"
+          echo "broken_ids=${broken_urls[*]}" >> "$GITHUB_OUTPUT"
       - name: Delete or notify if any preview link is broken
         uses: actions/github-script@v6
         if: steps.check-links.outputs.broken_ids != ''
