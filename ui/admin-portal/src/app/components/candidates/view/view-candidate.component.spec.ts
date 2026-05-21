@@ -83,7 +83,8 @@ describe('ViewCandidateComponent', () => {
       'canViewChats',
       'canSeeJobDetails',
       'isAnAdmin',
-      'isReadOnly'
+      'isReadOnly',
+      'canEraseCandidateData'
     ]);
 
     TestBed.configureTestingModule({
