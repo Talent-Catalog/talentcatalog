@@ -850,6 +850,12 @@ import {
   TextPartsInputComponent
 } from "./components/util/text-parts-input/text-parts-input.component";
 import {TextPartsViewComponent} from "./components/util/text-parts-view/text-parts-view.component";
+import {
+  ViewCandidateAspirationsComponent
+} from "./components/candidates/view/aspirations/view-candidate-aspirations.component";
+import {
+  EditCandidateAspirationsComponent
+} from "./components/candidates/view/aspirations/edit/edit-candidate-aspirations.component";
 
 @NgModule({
   declarations: [
@@ -1192,7 +1198,9 @@ import {TextPartsViewComponent} from "./components/util/text-parts-view/text-par
     CasiManagementComponent,
     CsvPreviewComponent,
     ImportLinkedinPremiumCouponsComponent,
-    ImportReferenceVouchersComponent
+    ImportReferenceVouchersComponent,
+    ViewCandidateAspirationsComponent,
+    EditCandidateAspirationsComponent
   ],
   imports: [
     BrowserModule,
@@ -1219,6 +1227,7 @@ import {TextPartsViewComponent} from "./components/util/text-parts-view/text-par
     }),
     TextPartsInputComponent,
     TextPartsViewComponent,
+    ViewCandidateAspirationsComponent,
   ],
   providers: [
     {provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true},
