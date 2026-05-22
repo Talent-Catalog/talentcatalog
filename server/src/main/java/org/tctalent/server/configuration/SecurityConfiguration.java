@@ -145,6 +145,11 @@ public class SecurityConfiguration {
                 .requestMatchers("/").permitAll()
                 .requestMatchers("/files/**").permitAll()
                 .requestMatchers("/published/**").permitAll()
+                .requestMatchers("/admin-portal", "/admin-portal/**").permitAll()
+                .requestMatchers("/candidate-portal", "/candidate-portal/**").permitAll()
+                .requestMatchers("/public-portal", "/public-portal/**").permitAll()
+                .requestMatchers("/favicon.ico").permitAll()
+                .requestMatchers("/actuator/health").permitAll()
 
                 .requestMatchers("/websocket","/websocket/**").permitAll()
                 .requestMatchers("/app/**","/app/**").permitAll()
