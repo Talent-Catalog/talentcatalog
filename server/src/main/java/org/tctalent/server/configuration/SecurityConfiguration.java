@@ -150,6 +150,7 @@ public class SecurityConfiguration {
                 .requestMatchers("/public-portal", "/public-portal/**").permitAll()
                 .requestMatchers("/favicon.ico").permitAll()
                 .requestMatchers("/actuator/health").permitAll()
+                .requestMatchers("/api/public/**").permitAll()
 
                 .requestMatchers("/websocket","/websocket/**").permitAll()
                 .requestMatchers("/app/**","/app/**").permitAll()
