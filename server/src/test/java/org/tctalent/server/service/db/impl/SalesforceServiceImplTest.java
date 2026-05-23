@@ -18,6 +18,8 @@ package org.tctalent.server.service.db.impl;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -312,6 +314,77 @@ class SalesforceServiceImplTest {
         () -> assertEquals("https://drive.example/jd", result.Job_Description_Folder__c),
         () -> assertEquals("https://tc.example/list", result.Talent_Catalog_List__c),
         () -> assertEquals(123L, result.TCid__c)
+    );
+  }
+
+  @Test
+  void candidateOpportunityRecordCompositeIncludesCreateOnlyFieldsWhenCreating() {
+    Candidate candidate = mock(Candidate.class);
+    User user = new User();
+    user.setFirstName("John");
+
+    SalesforceJobOpp job = mock(SalesforceJobOpp.class);
+
+    when(candidate.getUser()).thenReturn(user);
+    when(candidate.getCandidateNumber()).thenReturn("99");
+    when(candidate.getSfId()).thenReturn("003Uu00000IGDAEIA5");
+    when(job.getSfId()).thenReturn("sales-force-job-opp-id");
+    when(job.getName()).thenReturn("Test Job");
+    when(job.getAccountId()).thenReturn("123456");
+    when(job.getOwnerId()).thenReturn("005Uu00000IGDAEIA5");
+
+    SalesforceServiceImpl.CandidateOpportunityRecordComposite request =
+        service.new CandidateOpportunityRecordComposite(
+            "Candidate recruitment", candidate, job, true);
+
+    SalesforceServiceImpl.RecordTypeField recordType =
+        (SalesforceServiceImpl.RecordTypeField) request.get("RecordType");
+    SalesforceServiceImpl.CompositeAttributes attributes =
+        (SalesforceServiceImpl.CompositeAttributes) request.get("attributes");
+
+    assertAll(
+        () -> assertNotNull(attributes),
+        () -> assertEquals("Opportunity", attributes.getType()),
+        () -> assertEquals("Candidate recruitment", recordType.Name),
+        () -> assertEquals(
+            candidate.getCandidateNumber() + "-" + job.getSfId(),
+            request.get("TBBCandidateExternalId__c")),
+        () -> assertEquals(
+            candidate.getUser().getFirstName()
+                + "(" + candidate.getCandidateNumber() + ")-" + job.getName(),
+            request.get("Name")),
+        () -> assertEquals(job.getAccountId(), request.get("AccountId")),
+        () -> assertEquals(candidate.getSfId(), request.get("Candidate_Contact__c")),
+        () -> assertEquals(job.getSfId(), request.get("Parent_Opportunity__c")),
+        () -> assertEquals(job.getOwnerId(), request.get("OwnerId")),
+        () -> assertNotNull(LocalDate.parse((String) request.get("CloseDate")))
+    );
+  }
+
+  @Test
+  void candidateOpportunityRecordCompositeOmitsCreateOnlyFieldsWhenUpdating() {
+    Candidate candidate = mock(Candidate.class);
+    User user = new User();
+    SalesforceJobOpp job = mock(SalesforceJobOpp.class);
+
+    when(candidate.getUser()).thenReturn(user);
+    when(candidate.getCandidateNumber()).thenReturn("99");
+    when(job.getSfId()).thenReturn("sales-force-job-opp-id");
+
+    SalesforceServiceImpl.CandidateOpportunityRecordComposite request =
+        service.new CandidateOpportunityRecordComposite(
+            "Candidate recruitment", candidate, job, false);
+
+    assertAll(
+        () -> assertEquals(
+            candidate.getCandidateNumber() + "-" + job.getSfId(),
+            request.get("TBBCandidateExternalId__c")),
+        () -> assertFalse(request.containsKey("Name")),
+        () -> assertFalse(request.containsKey("AccountId")),
+        () -> assertFalse(request.containsKey("Candidate_Contact__c")),
+        () -> assertFalse(request.containsKey("Parent_Opportunity__c")),
+        () -> assertFalse(request.containsKey("OwnerId")),
+        () -> assertFalse(request.containsKey("CloseDate"))
     );
   }
 
