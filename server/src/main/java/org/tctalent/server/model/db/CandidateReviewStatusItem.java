@@ -45,7 +45,7 @@ import lombok.Setter;
 @Table(name = "candidate_review_item")
 @SequenceGenerator(name = "seq_gen", sequenceName = "candidate_review_item_id_seq", allocationSize = 1)
 @NoArgsConstructor
-public class CandidateReviewStatusItem extends AbstractAuditableDomainObject<Long>  {
+public class CandidateReviewStatusItem extends AbstractCandidateDataDomainObject<Long>  {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "candidate_id")

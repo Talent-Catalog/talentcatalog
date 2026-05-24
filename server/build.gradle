@@ -131,41 +131,39 @@ dependencies {
     // Source: https://mvnrepository.com/artifact/software.amazon.awssdk/cloudfront
     implementation("software.amazon.awssdk:cloudfront")
 
-    implementation platform('com.google.cloud:libraries-bom:22.0.0')
+    implementation platform(group: 'com.google.cloud', name: 'libraries-bom', version: '26.49.0')
     implementation 'com.google.cloud:google-cloud-storage'
     implementation 'com.google.apis:google-api-services-sheets:v4-rev20210629-1.32.1'
 
-    implementation group: 'org.apache.pdfbox', name: 'pdfbox', version: '2.0.1'
-    implementation group: 'org.apache.poi', name: 'poi', version: '4.1.2'
-    implementation group: 'org.apache.poi', name: 'poi-ooxml', version: '4.1.2'
-    implementation group: 'org.apache.poi', name: 'poi-scratchpad', version: '4.1.2'
-    implementation group: 'org.bouncycastle', name: 'bcprov-jdk16', version: '1.45'
-// https://mvnrepository.com/artifact/com.slack.api/slack-api-client
-    implementation group: 'com.slack.api', name: 'slack-api-client', version: '1.9.0'
+    implementation group: 'org.apache.pdfbox', name: 'pdfbox', version: '2.0.35'
+    implementation group: 'org.apache.poi', name: 'poi', version: '5.5.1'
+    implementation group: 'org.apache.poi', name: 'poi-ooxml', version: '5.5.1'
+    implementation group: 'org.apache.poi', name: 'poi-scratchpad', version: '5.5.1'
+    // Bouncy Castle jdk18on means JDK 1.8+, not Java 18+.
+    // See https://www.bouncycastle.org/download/bouncy-castle-java/
+    implementation group: 'org.bouncycastle', name: 'bcprov-jdk18on', version: '1.84'
+    // https://mvnrepository.com/artifact/com.slack.api/slack-api-client
+    implementation group: 'com.slack.api', name: 'slack-api-client', version: '1.48.1'
     implementation("org.jdom:jdom2")
-// https://mvnrepository.com/artifact/mysql/mysql-connector-java
-    implementation group: 'mysql', name: 'mysql-connector-java', version: '5.1.47'
 
     //See https://github.com/samdjstevens/java-totp/tree/master/totp-spring-boot-starter
     implementation 'dev.samstevens.totp:totp-spring-boot-starter:1.7.1'
 
     // https://mvnrepository.com/artifact/com.opencsv/opencsv
-    implementation group: 'com.opencsv', name: 'opencsv', version: '5.4'
+    implementation("com.opencsv:opencsv:5.8")
 
     // https://github.com/lukas-krecan/ShedLock
     implementation "net.javacrumbs.shedlock:shedlock-spring:5.10.0"
     implementation "net.javacrumbs.shedlock:shedlock-provider-jdbc-template:5.10.0"
 
-    implementation 'com.google.guava:guava:31.1-jre'
     implementation("io.jsonwebtoken:jjwt-api:0.11.2")
     implementation 'com.google.api-client:google-api-client:1.32.1'
     implementation 'com.google.oauth-client:google-oauth-client-jetty:1.32.1'
     implementation 'com.google.apis:google-api-services-drive:v3-rev20210725-1.32.1'
 
     implementation("org.apache.commons:commons-lang3")
-    implementation('com.opencsv:opencsv:5.0')
-    implementation('commons-beanutils:commons-beanutils:1.9.4')
-    implementation('org.xhtmlrenderer:flying-saucer-pdf-itext5:9.1.22')
+    implementation('commons-beanutils:commons-beanutils:1.11.0')
+    implementation("org.xhtmlrenderer:flying-saucer-pdf-itext5:9.7.2")
     implementation('net.sf.jtidy:jtidy:r938')
     implementation('org.jsoup:jsoup:1.15.4')
 
