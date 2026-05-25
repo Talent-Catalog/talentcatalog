@@ -39,12 +39,15 @@ jobs:
           mkdir -p server/src/test/resources
           aws s3 cp s3://tctalent-integration-db-dumps/dump.sql server/src/test/resources/dump.sql
 
-      - name: Build and Run tests
-        run: ./gradlew clean :server:test :server:build --stacktrace --rerun-tasks
+      - name: Build
+        run: ./gradlew server:build
         env:
           GOOGLE_DRIVE_PRIVATEKEY: ${{ secrets.GOOGLE_DRIVE_PRIVATEKEY }}
           GOOGLE_DRIVE_PRIVATEKEYID: ${{ secrets.GOOGLE_DRIVE_PRIVATEKEYID }}
           SF_PRIVATE_KEY: ${{ secrets.SF_PRIVATE_KEY }}
+
+      - name: Run tests
+        run: ./gradlew clean :server:test --stacktrace --rerun-tasks
 
       - name: Upload test report on failure
         if: failure()
