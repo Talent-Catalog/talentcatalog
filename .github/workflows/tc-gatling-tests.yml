@@ -60,44 +60,30 @@ jobs:
             gradle-${{ runner.os }}-
 
       - name: Write users.csv
-        id: write-users-csv
         shell: bash
         env:
           USERS_CSV: ${{ secrets.USERS_CSV }}
-          EVENT_NAME: ${{ github.event_name }}
-          HEAD_REPO: ${{ github.event.pull_request.head.repo.full_name }}
-          BASE_REPO: ${{ github.repository }}
         run: |
           if [[ -z "${USERS_CSV:-}" ]]; then
-            if [[ "$EVENT_NAME" == "pull_request" && "$HEAD_REPO" != "$BASE_REPO" ]]; then
-              echo "USERS_CSV is not available to fork pull requests; skipping Gatling simulations."
-              echo "has_users_csv=false" >> "$GITHUB_OUTPUT"
-              exit 0
-            fi
-
-            echo "::error::USERS_CSV not provided."
-            exit 1
+            echo "USERS_CSV not provided; skipping users.csv"
+            exit 0
           fi
 
           f="performance-tests/src/gatling/resources/users.csv"
           mkdir -p "$(dirname "$f")"
           printf "%s" "$USERS_CSV" > "$f"
-          echo "has_users_csv=true" >> "$GITHUB_OUTPUT"
           echo "users.csv written to $f"
 
       - name: Build perf Docker runner
-        if: steps.write-users-csv.outputs.has_users_csv == 'true'
         run: |
           docker build \
             -f performance-tests/Dockerfile \
             -t tc-perf:${{ github.sha }} .
 
       - name: Prepare output dirs
-        if: steps.write-users-csv.outputs.has_users_csv == 'true'
         run: mkdir -p perf-reports perf-summary perf-raw
 
       - name: Run simulations
-        if: steps.write-users-csv.outputs.has_users_csv == 'true'
         env:
           SHARD_INDEX: ${{ inputs.shard_index }}
           SHARD_TOTAL: ${{ inputs.shard_total }}
@@ -118,7 +104,7 @@ jobs:
               -Dperf.maxFailedPct=${{ inputs.max_failed_pct }} \
               -Dperf.maxLatencyMs=${{ inputs.max_latency_ms }}"
       - name: Performance Threshold Check
-        if: ${{ inputs.run_performance_threshold_check && steps.write-users-csv.outputs.has_users_csv == 'true' }}
+        if: ${{ inputs.run_performance_threshold_check }}
         run: |
           python3 performance-tests/ci/performance_threshold_check.py \
             --summary-json-dir perf-summary \
@@ -148,3 +134,4 @@ jobs:
           name: perf-raw-${{ inputs.tier }}-shard-${{ inputs.shard_index }}
           path: perf-raw
           if-no-files-found: warn
+
