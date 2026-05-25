@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tctalent.server.service.idp;
+package org.tctalent.server.idp;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -33,12 +33,6 @@ import org.keycloak.admin.client.resource.RealmResource;
 import org.keycloak.admin.client.resource.UserResource;
 import org.keycloak.admin.client.resource.UsersResource;
 import org.keycloak.representations.idm.UserRepresentation;
-import org.tctalent.server.idp.IdpAdminException;
-import org.tctalent.server.idp.IdpUserProfile;
-import org.tctalent.server.idp.IdpUserRef;
-import org.tctalent.server.idp.KeycloakAuthProperties;
-import org.tctalent.server.idp.KeycloakIdpAdminService;
-import org.tctalent.server.idp.RegisterUserRequest;
 
 class KeycloakIdpAdminServiceTest {
 
