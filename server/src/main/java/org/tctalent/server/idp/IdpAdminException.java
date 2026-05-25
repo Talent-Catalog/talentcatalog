@@ -14,10 +14,18 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tctalent.server.service.idp;
+package org.tctalent.server.idp;
 
-public interface IdpAdminService {
-    IdpUserProfile getIdpUserProfile(IdpUserRef userRef);
-    IdpUserRef registerUser(RegisterUserRequest request);
+/**
+ * Runtime exception used by IdP admin operations.
+ */
+public class IdpAdminException extends RuntimeException {
+    public IdpAdminException(String message) {
+        super(message);
+    }
+
+    public IdpAdminException(String message, Throwable cause) {
+        super(message, cause);
+    }
 }
 

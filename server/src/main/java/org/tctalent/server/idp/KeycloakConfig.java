@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tctalent.server.service.idp;
+package org.tctalent.server.idp;
 
 import org.keycloak.OAuth2Constants;
 import org.keycloak.admin.client.Keycloak;
