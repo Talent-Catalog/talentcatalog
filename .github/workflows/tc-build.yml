@@ -13,7 +13,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -40,50 +40,14 @@ jobs:
           aws s3 cp s3://tctalent-integration-db-dumps/dump.sql server/src/test/resources/dump.sql
 
       - name: Build and Run tests
-        timeout-minutes: 15
-        run: ./gradlew clean :server:build --stacktrace --rerun-tasks
+        run: ./gradlew server:build
         env:
           GOOGLE_DRIVE_PRIVATEKEY: ${{ secrets.GOOGLE_DRIVE_PRIVATEKEY }}
           GOOGLE_DRIVE_PRIVATEKEYID: ${{ secrets.GOOGLE_DRIVE_PRIVATEKEYID }}
           SF_PRIVATE_KEY: ${{ secrets.SF_PRIVATE_KEY }}
 
-      - name: Debug missing tests
-        if: always()
-        run: |
-          echo "Commit:"
-          git rev-parse HEAD
-          
-          echo "Source files:"
-          find server/src/test/java/org/tctalent/server/service/db/impl -name '*Candidate*ServiceImplTest.java' -o -name 'CandidateDataAuditingIntegrationTest.java' | sort || true
-          
-          echo "Compiled classes:"
-          find server/build/classes/java/test/org/tctalent/server/service/db/impl -name '*Candidate*ServiceImplTest.class' -o -name 'CandidateDataAuditingIntegrationTest.class' | sort || true
-          
-          echo "Result XML:"
-          find server/build/test-results/test -name '*Candidate*ServiceImplTest*.xml' -o -name '*CandidateDataAuditingIntegrationTest*.xml' | sort || true
-
-      - name: Force run one failing test class
-        run: ./gradlew :server:test --tests 'org.tctalent.server.service.db.impl.CandidateAttachmentsServiceImplTest' --info --stacktrace --rerun-tasks
-
-      - name: Show server test result XML files
-        if: always()
-        run: |
-          echo "Test XML files:"
-          find server/build/test-results/test -name "TEST-*.xml" | sort
-          
-          echo "Looking for failing local classes:"
-          find server/build/test-results/test -name "*CandidateAttachmentsServiceImplTest*.xml" -print -exec cat {} \;
-          find server/build/test-results/test -name "*CandidateDataAuditingIntegrationTest*.xml" -print -exec cat {} \;
-
-      - name: Upload test report always
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: server-test-report
-          path: |
-            server/build/reports/tests/test
-            server/build/test-results/test
-
+      - name: Build and Run tests
+        run: ./gradlew clean :server:test --stacktrace --rerun-tasks
       - name: Upload test report on failure
         if: failure()
         uses: actions/upload-artifact@v4
