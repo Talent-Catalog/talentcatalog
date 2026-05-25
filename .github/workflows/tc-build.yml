@@ -45,6 +45,24 @@ jobs:
           GOOGLE_DRIVE_PRIVATEKEY: ${{ secrets.GOOGLE_DRIVE_PRIVATEKEY }}
           GOOGLE_DRIVE_PRIVATEKEYID: ${{ secrets.GOOGLE_DRIVE_PRIVATEKEYID }}
           SF_PRIVATE_KEY: ${{ secrets.SF_PRIVATE_KEY }}
+      - name: Show server test result XML files
+        if: always()
+        run: |
+          echo "Test XML files:"
+          find server/build/test-results/test -name "TEST-*.xml" | sort
+          
+          echo "Looking for failing local classes:"
+          find server/build/test-results/test -name "*CandidateAttachmentsServiceImplTest*.xml" -print -exec cat {} \;
+          find server/build/test-results/test -name "*CandidateDataAuditingIntegrationTest*.xml" -print -exec cat {} \;
+
+      - name: Upload test report always
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: server-test-report
+          path: |
+            server/build/reports/tests/test
+            server/build/test-results/test
 
       - name: Upload test report on failure
         if: failure()
