@@ -259,12 +259,12 @@ export function HttpLoaderFactory(http: HttpClient) {
   return new TranslateHttpLoader(http);
 }
 
-export function authProviderFactory(
-  keycloakAuth: KeycloakProviderService,
-  cognitoAuth: CognitoProviderService
+export function idpProviderFactory(
+  keycloakIdp: KeycloakProviderService,
+  cognitoIdp: CognitoProviderService
 ) {
 
-  return environment.authProvider === 'cognito' ? cognitoAuth : keycloakAuth;
+  return environment.idpProvider === 'cognito' ? cognitoIdp : keycloakIdp;
 }
 
 export function initializeAuth(authenticationService: AuthenticationService) {
@@ -401,7 +401,7 @@ export function initializeAuth(authenticationService: AuthenticationService) {
     TextPartsViewComponent
   ],
   providers: [
-    {provide: IDP_PROVIDER, useFactory: authProviderFactory,
+    {provide: IDP_PROVIDER, useFactory: idpProviderFactory,
       deps: [KeycloakProviderService, CognitoProviderService]},
     KeycloakProviderService,
     CognitoProviderService,

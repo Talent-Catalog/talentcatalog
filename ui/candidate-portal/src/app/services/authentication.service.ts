@@ -59,7 +59,7 @@ export class AuthenticationService implements OnDestroy {
    */
   loggedInUser$ = new Subject<User>();
 
-  constructor(@Inject(IDP_PROVIDER) private authProvider: IdpProvider,
+  constructor(@Inject(IDP_PROVIDER) private idpProvider: IdpProvider,
               private http: HttpClient,
               private localStorageService: LocalStorageService
   ) {}
@@ -71,19 +71,19 @@ export class AuthenticationService implements OnDestroy {
   }
 
   init(): Promise<boolean> {
-    return this.authProvider.init();
+    return this.idpProvider.init();
   }
 
   isAuthenticated(): boolean {
-    return this.authProvider.isAuthenticated();
+    return this.idpProvider.isAuthenticated();
   }
 
   login(lang: string = 'en'): Promise<void> {
-     return this.authProvider.login(lang);
+     return this.idpProvider.login(lang);
    }
 
   register(lang: string = 'en'): Promise<void> {
-     return this.authProvider.register(lang);
+     return this.idpProvider.register(lang);
    }
 
   logout(): Promise<void> {
@@ -93,13 +93,13 @@ export class AuthenticationService implements OnDestroy {
     this.setLoggedInUser(null);
     this.setCandidateStatus(null);
 
-    return this.authProvider.logout();
+    return this.idpProvider.logout();
    }
 
   completeLogin(): Observable<void> {
     //Retrieve current profile from provider and send to server so that it can be stored in the
     //database.
-    return from(this.authProvider.getProfile()).pipe(
+    return from(this.idpProvider.getProfile()).pipe(
       switchMap(profile =>
         this.http.post(`${this.apiUrl}/login`, profile).pipe(
           map((response: AuthenticationResponse) => {
@@ -118,7 +118,7 @@ export class AuthenticationService implements OnDestroy {
   completeRegister(request: OauthRegistrationRequest): Observable<void> {
     //Retrieve current profile from provider and send to server so that it can be stored in the
     //database.
-    return from(this.authProvider.getProfile()).pipe(
+    return from(this.idpProvider.getProfile()).pipe(
       switchMap(profile => {
           request.profile = profile;
           return this.http.post(`${this.apiUrl}/register`, request).pipe(
@@ -137,28 +137,28 @@ export class AuthenticationService implements OnDestroy {
   }
 
   getToken(): string | undefined {
-    if (this.authProvider.isAuthenticated()) {
-      return this.authProvider.getToken();
+    if (this.idpProvider.isAuthenticated()) {
+      return this.idpProvider.getToken();
     } else {
       console.log("Not authenticated");
     }
-     return this.authProvider.getToken();
+     return this.idpProvider.getToken();
   }
 
   refreshToken(minValiditySeconds = 30): Promise<void> {
-    return this.authProvider.refreshToken(minValiditySeconds);
+    return this.idpProvider.refreshToken(minValiditySeconds);
   }
 
   getAuthStatus(): Observable<IdpStatus> {
-    return this.authProvider.getStatus();
+    return this.idpProvider.getStatus();
   }
 
   getCurrentAuthStatus(): IdpStatus {
-    return this.authProvider.getCurrentStatus();
+    return this.idpProvider.getCurrentStatus();
   }
 
   clearAuthError(): void {
-    this.authProvider.clearError();
+    this.idpProvider.clearError();
   }
 
   authenticateInContextTranslation(password: string): Observable<void> {

@@ -13,10 +13,13 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-// auth-status.ts
-export interface AuthStatus {
-  initialized: boolean;
-  authenticated: boolean;
-  busy: boolean;
-  error: string | null;
+/**
+ * This is the data managed by the OAuth2 IDP provider.
+ */
+export interface IdpProfile {
+  idpIssuer?: string;
+  idpSubject?: string;
+  email?: string;
+  firstName?: string;
+  lastName?: string;
 }

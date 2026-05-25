@@ -14,11 +14,9 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Injectable, OnDestroy} from '@angular/core';
-import {LoginRequest} from "../model/base";
-import {catchError, map} from "rxjs/operators";
+import {Inject, Injectable, OnDestroy} from '@angular/core';
 import {JwtAuthenticationResponse} from "../model/jwt-authentication-response";
-import {Observable, Subject, throwError} from "rxjs";
+import {Observable, Subject} from "rxjs";
 import {HttpClient} from "@angular/common/http";
 import {environment} from "../../environments/environment";
 import {User} from "../model/user";
@@ -26,6 +24,8 @@ import {EncodedQrImage} from "../util/qr";
 import {LocalStorageService} from "./local-storage.service";
 import {TcInstanceType} from "../model/tc-instance-type";
 import {TermsType} from "../model/terms-info-dto";
+import {IDP_PROVIDER} from "./idp.tokens";
+import {IdpProvider} from "./idp-provider";
 
 /**
  * Manages authentication - ie login/logout.
@@ -52,7 +52,7 @@ export class AuthenticationService implements OnDestroy {
    */
   loggedInUser$ = new Subject<User>();
 
-  constructor(
+  constructor(@Inject(IDP_PROVIDER) private idpProvider: IdpProvider,
     private http: HttpClient,
     private localStorageService: LocalStorageService
   ) {}
@@ -125,17 +125,8 @@ export class AuthenticationService implements OnDestroy {
     }
   }
 
-  login(credentials: LoginRequest) {
-    return this.http.post(`${this.apiUrl}/login`, credentials).pipe(
-      map((response: JwtAuthenticationResponse) => {
-        this.storeCredentials(response);
-      }),
-      catchError(e => {
-          console.log('error', e);
-          return throwError(e);
-        }
-      )
-    );
+  login(lang: string = 'en'): Promise<void> {
+    return this.idpProvider.login(lang);
   }
 
   logout() {

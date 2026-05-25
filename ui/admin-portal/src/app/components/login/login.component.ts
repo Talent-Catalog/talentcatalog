@@ -17,7 +17,6 @@
 import {Component, OnInit} from '@angular/core';
 import {UntypedFormBuilder, UntypedFormGroup, Validators} from "@angular/forms";
 import {ActivatedRoute, Router} from "@angular/router";
-import {LoginRequest} from "../../model/base";
 import {User} from "../../model/user";
 import {EncodedQrImage} from "../../util/qr";
 import {ShowQrCodeComponent} from "../util/qr/show-qr-code/show-qr-code.component";
@@ -78,43 +77,6 @@ export class LoginComponent implements OnInit {
     return this.loginForm.value.totpToken;
   }
 
-  login() {
-    this.error = null;
-    if (this.loginForm.invalid) {
-      return;
-    }
-    if (this.loading) { return; }
-    this.loading = true;
-
-    // const action = 'login';
-    // this.reCaptchaV3Service.execute(action).subscribe(
-    //   (token) => this.loginWithToken(token),
-    //   (error) => {
-    //     console.log(error);
-    //   }
-    // );
-    this.loginWithToken(null);
-  }
-
-  private loginWithToken(token: string) {
-    const req: LoginRequest = new LoginRequest();
-    req.username = this.username;
-    req.password = this.password;
-    req.totpToken = this.totpToken;
-    req.reCaptchaV3Token = token;
-
-    this.authenticationService.login(req)
-    .subscribe(() => {
-      this.loading = false;
-      this.checkMfaAndDpa();
-    }, error => {
-      // console.log(error);
-      this.error = error;
-      this.loading = false;
-    });
-
-  }
-
   private checkMfaSetup() {
     const user: User = this.authenticationService.getLoggedInUser();
     if (!user.usingMfa || user.mfaConfigured) {
@@ -164,7 +126,7 @@ export class LoginComponent implements OnInit {
     });
   }
 
-  onLogin() {
+  login() {
     this.authenticationService.login();
   }
 

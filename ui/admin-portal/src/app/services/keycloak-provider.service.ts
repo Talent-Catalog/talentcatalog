@@ -1,10 +1,10 @@
 import {Injectable} from '@angular/core';
 import {BehaviorSubject, Observable} from 'rxjs';
 import {KeycloakService} from 'keycloak-angular';
-import {AuthProvider} from './auth-provider';
-import {AuthStatus} from './auth-status';
+import {IdpProvider} from './idp-provider';
+import {IdpStatus} from './idp-status';
 import {reportAuthError} from './auth-error.util';
-import {AuthProfile} from "./auth-profile";
+import {IdpProfile} from "./idp-profile";
 
 /**
  * Keycloak authentication provider service.
@@ -18,9 +18,9 @@ import {AuthProfile} from "./auth-profile";
  * which is compatible with Angular 17.
  */
 @Injectable()
-export class KeycloakAuthProviderService implements AuthProvider {
+export class KeycloakProviderService implements IdpProvider {
 
-  private readonly status$ = new BehaviorSubject<AuthStatus>({
+  private readonly status$ = new BehaviorSubject<IdpStatus>({
     initialized: false,
     authenticated: false,
     busy: false,
@@ -29,11 +29,11 @@ export class KeycloakAuthProviderService implements AuthProvider {
 
   constructor(private keycloakService: KeycloakService) {}
 
-  getStatus(): Observable<AuthStatus> {
+  getStatus(): Observable<IdpStatus> {
     return this.status$.asObservable();
   }
 
-  getCurrentStatus(): AuthStatus {
+  getCurrentStatus(): IdpStatus {
     return this.status$.value;
   }
 
@@ -151,7 +151,7 @@ export class KeycloakAuthProviderService implements AuthProvider {
     }
   }
 
-  async getProfile(): Promise<AuthProfile> {
+  async getProfile(): Promise<IdpProfile> {
     const profile = await this.keycloakService.loadUserProfile(true);
     const keycloak = this.keycloakService.getKeycloakInstance();
 
@@ -192,7 +192,7 @@ export class KeycloakAuthProviderService implements AuthProvider {
     }
   }
 
-  private patchStatus(patch: Partial<AuthStatus>): void {
+  private patchStatus(patch: Partial<IdpStatus>): void {
     this.status$.next({
       ...this.status$.value,
       ...patch

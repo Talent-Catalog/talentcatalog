@@ -4,7 +4,7 @@ import {KeycloakService} from 'keycloak-angular';
 import {IdpProvider} from './idp-provider';
 import {IdpStatus} from './idp-status';
 import {reportAuthError} from './auth-error.util';
-import {AuthProfile} from "./auth-profile";
+import {IdpProfile} from "./idp-profile";
 
 /**
  * Keycloak authentication provider service.
@@ -151,7 +151,7 @@ export class KeycloakProviderService implements IdpProvider {
     }
   }
 
-  async getProfile(): Promise<AuthProfile> {
+  async getProfile(): Promise<IdpProfile> {
     const profile = await this.keycloakService.loadUserProfile(true);
     const keycloak = this.keycloakService.getKeycloakInstance();
 

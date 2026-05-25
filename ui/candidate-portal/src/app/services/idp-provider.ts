@@ -16,7 +16,7 @@
 // auth-provider.ts
 import {Observable} from 'rxjs';
 import {IdpStatus} from './idp-status';
-import {AuthProfile} from "./auth-profile";
+import {IdpProfile} from "./idp-profile";
 
 /**
  * Interface for an OAuth2 IDP authentication provider - eg Keycloak or Cognito.
@@ -27,7 +27,7 @@ export interface IdpProvider {
   login(lang: string): Promise<void>;
   register(lang: string): Promise<void>;
   logout(): Promise<void>;
-  getProfile(): Promise<AuthProfile>;
+  getProfile(): Promise<IdpProfile>;
   getToken(): string | undefined;
   refreshToken(minValiditySeconds?: number): Promise<void>;
 

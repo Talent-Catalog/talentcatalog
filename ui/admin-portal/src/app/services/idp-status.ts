@@ -13,13 +13,9 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-/**
- * This is the data managed by the OAuth2 authentication provider.
- */
-export interface AuthProfile {
-  idpIssuer?: string;
-  idpSubject?: string;
-  email?: string;
-  firstName?: string;
-  lastName?: string;
+export interface IdpStatus {
+  initialized: boolean;
+  authenticated: boolean;
+  busy: boolean;
+  error: string | null;
 }

@@ -2,7 +2,7 @@ import {Injectable} from '@angular/core';
 import {BehaviorSubject, Observable} from 'rxjs';
 import {IdpProvider} from './idp-provider';
 import {IdpStatus} from './idp-status';
-import {AuthProfile} from "./auth-profile";
+import {IdpProfile} from "./idp-profile";
 
 /**
  * Implementation of AuthProvider for Cognito authentication.
@@ -54,7 +54,7 @@ export class CognitoProviderService implements IdpProvider {
     return undefined;
   }
 
-  async getProfile(): Promise<AuthProfile> {
+  async getProfile(): Promise<IdpProfile> {
     this.patchStatus({ error: 'Cognito getProfile is not implemented yet.' });
     throw new Error('Cognito getProfile is not implemented yet.');
   }

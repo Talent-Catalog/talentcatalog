@@ -853,17 +853,17 @@ import {TextPartsViewComponent} from "./components/util/text-parts-view/text-par
 import {
   TextPartsInputComponent
 } from "./components/util/text-parts-input/text-parts-input.component";
-import {KeycloakAuthProviderService} from "./services/keycloak-auth-provider.service";
-import {CognitoAuthProviderService} from "./services/cognito-auth-provider.service";
-import {AUTH_PROVIDER} from "./services/auth.tokens";
+import {KeycloakProviderService} from "./services/keycloak-provider.service";
+import {CognitoProviderService} from "./services/cognito-provider.service";
+import {IDP_PROVIDER} from "./services/idp.tokens";
 import {environment} from "../environments/environment";
 
-export function authProviderFactory(
-  keycloakAuth: KeycloakAuthProviderService,
-  cognitoAuth: CognitoAuthProviderService
+export function idpProviderFactory(
+  keycloakIdp: KeycloakProviderService,
+  cognitoIdp: CognitoProviderService
 ) {
 
-  return environment.authProvider === 'cognito' ? cognitoAuth : keycloakAuth;
+  return environment.idpProvider === 'cognito' ? cognitoIdp : keycloakIdp;
 }
 
 @NgModule({
@@ -1237,10 +1237,10 @@ export function authProviderFactory(
     TextPartsViewComponent,
   ],
   providers: [
-    {provide: AUTH_PROVIDER, useFactory: authProviderFactory,
-      deps: [KeycloakAuthProviderService, CognitoAuthProviderService]},
-    KeycloakAuthProviderService,
-    CognitoAuthProviderService,
+    {provide: IDP_PROVIDER, useFactory: idpProviderFactory,
+      deps: [KeycloakProviderService, CognitoProviderService]},
+    KeycloakProviderService,
+    CognitoProviderService,
     {provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true},
     {provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true},
     {provide: HTTP_INTERCEPTORS, useClass: AuthExpiryInterceptor, multi: true},

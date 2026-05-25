@@ -13,8 +13,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-// auth.tokens.ts
 import {InjectionToken} from '@angular/core';
-import {AuthProvider} from './auth-provider';
+import {IdpProvider} from './idp-provider';
 
-export const AUTH_PROVIDER = new InjectionToken<AuthProvider>('AUTH_PROVIDER');
+export const IDP_PROVIDER = new InjectionToken<IdpProvider>('IDP_PROVIDER');
