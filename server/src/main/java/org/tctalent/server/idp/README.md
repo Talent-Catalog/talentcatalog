@@ -78,6 +78,12 @@ We use IDP to manage logins and registrations of all users.
 
 In the Amazon AWS cloud we use Amazon's IDP provider, Cognito, for user authentication.
 
+Each Talent Catalog instance, the TBB and GRN instances, has its own Cognito IDP.
+
+Potentially, in future, a TBB user may log in to a GRN instance, and vice versa.
+The globally unique public id of each user is stored in the IDP. This can be used to identify
+that the same user is in fact logged on to both instances.
+
 On developers' local machines we use Keycloak to replicate the Cognito IDP on a user's
 local machine for convenient development and testing.
 
@@ -86,10 +92,32 @@ The IDP provider contains the minimal information needed to authenticate users a
 Those tokens contain enough data to allow the application to link an authenticated user to their 
 full profile in our database, including their role(s) and permissions.
                                                                           
+### IDP Configuration
+                                                                         
+TBB and GRN instances of the Talent Catalog have separate IDP providers. 
+
+Each IDP instance is configured as follows:
+- a single "user pool" (or "realm" in Keycloak) called "talentcatalog" (same for both instances).
+- a client called "candidate" for candidate-portal users (refugees)
+- a client called "admin" for admin-portal users.
+- clients for each service provider connecting through the API.
+
+### Client assignment
+tbc - based on url
+
 ### Data held in IDP
 
-tbc
-Realms, groups, Terminology (Keycloak vs Cognito), etc.
+Each user on the IDP stores the following data:
+- username (email)
+- password
+- first name
+- last name
+- TC assigned globally unique public id
+- issuer - identifies the IDP instance (e.g. "tbb" or "grn")
+- sub (subject) - IDP assigned unique identifier for the user
+- email_verified - true if the user has verified their email address
+- client (see above)
+
 
 ### Data passed in tokens
 
