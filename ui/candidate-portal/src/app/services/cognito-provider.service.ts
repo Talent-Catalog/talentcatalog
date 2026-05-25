@@ -1,26 +1,26 @@
 import {Injectable} from '@angular/core';
 import {BehaviorSubject, Observable} from 'rxjs';
-import {AuthProvider} from './auth-provider';
-import {AuthStatus} from './auth-status';
+import {IdpProvider} from './idp-provider';
+import {IdpStatus} from './idp-status';
 import {AuthProfile} from "./auth-profile";
 
 /**
  * Implementation of AuthProvider for Cognito authentication.
  */
 @Injectable()
-export class CognitoAuthProviderService implements AuthProvider {
-  private readonly status$ = new BehaviorSubject<AuthStatus>({
+export class CognitoProviderService implements IdpProvider {
+  private readonly status$ = new BehaviorSubject<IdpStatus>({
     initialized: true,
     authenticated: false,
     busy: false,
     error: null
   });
 
-  getStatus(): Observable<AuthStatus> {
+  getStatus(): Observable<IdpStatus> {
     return this.status$.asObservable();
   }
 
-  getCurrentStatus(): AuthStatus {
+  getCurrentStatus(): IdpStatus {
     return this.status$.value;
   }
 
@@ -63,7 +63,7 @@ export class CognitoAuthProviderService implements AuthProvider {
     // no-op
   }
 
-  private patchStatus(patch: Partial<AuthStatus>): void {
+  private patchStatus(patch: Partial<IdpStatus>): void {
     this.status$.next({
       ...this.status$.value,
       ...patch

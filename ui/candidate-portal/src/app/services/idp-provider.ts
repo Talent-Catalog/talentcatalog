@@ -13,8 +13,25 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-// auth.tokens.ts
-import {InjectionToken} from '@angular/core';
-import {AuthProvider} from './auth-provider';
+// auth-provider.ts
+import {Observable} from 'rxjs';
+import {IdpStatus} from './idp-status';
+import {AuthProfile} from "./auth-profile";
 
-export const AUTH_PROVIDER = new InjectionToken<AuthProvider>('AUTH_PROVIDER');
+/**
+ * Interface for an OAuth2 IDP authentication provider - eg Keycloak or Cognito.
+ */
+export interface IdpProvider {
+  init(): Promise<boolean>;
+  isAuthenticated(): boolean;
+  login(lang: string): Promise<void>;
+  register(lang: string): Promise<void>;
+  logout(): Promise<void>;
+  getProfile(): Promise<AuthProfile>;
+  getToken(): string | undefined;
+  refreshToken(minValiditySeconds?: number): Promise<void>;
+
+  getStatus(): Observable<IdpStatus>;
+  getCurrentStatus(): IdpStatus;
+  clearError(): void;
+}

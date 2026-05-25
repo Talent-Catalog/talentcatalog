@@ -21,7 +21,7 @@ import {initializePhraseAppEditor} from "ngx-translate-phraseapp";
 import {BrandingInfo, BrandingService} from "../../services/branding.service";
 import {AuthenticationService} from "../../services/authentication.service";
 import {Subscription} from "rxjs";
-import {AuthStatus} from "../../services/auth-status";
+import {IdpStatus} from "../../services/idp-status";
 import {OauthRegistrationRequest} from "../../model/oauth-registration-request";
 
 @Component({
@@ -49,7 +49,7 @@ import {OauthRegistrationRequest} from "../../model/oauth-registration-request";
  * </p>
  */
 export class LandingComponent implements OnInit, OnDestroy {
-  authStatus: AuthStatus;
+  authStatus: IdpStatus;
   private authStatusSub?: Subscription;
   private brandingInfo: BrandingInfo;
   error: string;

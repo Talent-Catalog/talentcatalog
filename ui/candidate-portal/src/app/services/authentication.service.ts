@@ -23,9 +23,9 @@ import {LocalStorageService} from "./local-storage.service";
 import {CandidateStatus} from "../model/candidate";
 import {TcInstanceType} from "../model/tc-instance-type";
 import {TermsType} from "../model/terms-info-dto";
-import {AuthProvider} from "./auth-provider";
-import {AUTH_PROVIDER} from "./auth.tokens";
-import {AuthStatus} from "./auth-status";
+import {IdpProvider} from "./idp-provider";
+import {IDP_PROVIDER} from "./idp.tokens";
+import {IdpStatus} from "./idp-status";
 import {catchError, map, switchMap} from "rxjs/operators";
 import {AuthenticationResponse} from "../model/authentication-response";
 import {OauthRegistrationRequest} from "../model/oauth-registration-request";
@@ -59,7 +59,7 @@ export class AuthenticationService implements OnDestroy {
    */
   loggedInUser$ = new Subject<User>();
 
-  constructor(@Inject(AUTH_PROVIDER) private authProvider: AuthProvider,
+  constructor(@Inject(IDP_PROVIDER) private authProvider: IdpProvider,
               private http: HttpClient,
               private localStorageService: LocalStorageService
   ) {}
@@ -149,11 +149,11 @@ export class AuthenticationService implements OnDestroy {
     return this.authProvider.refreshToken(minValiditySeconds);
   }
 
-  getAuthStatus(): Observable<AuthStatus> {
+  getAuthStatus(): Observable<IdpStatus> {
     return this.authProvider.getStatus();
   }
 
-  getCurrentAuthStatus(): AuthStatus {
+  getCurrentAuthStatus(): IdpStatus {
     return this.authProvider.getCurrentStatus();
   }
 

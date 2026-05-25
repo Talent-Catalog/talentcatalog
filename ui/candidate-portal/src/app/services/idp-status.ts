@@ -13,8 +13,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-// auth-status.ts
-export interface AuthStatus {
+export interface IdpStatus {
   initialized: boolean;
   authenticated: boolean;
   busy: boolean;

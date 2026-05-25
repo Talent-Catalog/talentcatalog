@@ -241,10 +241,10 @@ import {
 } from './components/profile/view/tab/services/reference/reference.component';
 import {UnhcrComponent} from './components/profile/view/tab/services/unhcr/unhcr.component';
 import {AuthenticationService} from "./services/authentication.service";
-import {KeycloakAuthProviderService} from "./services/keycloak-auth-provider.service";
-import {CognitoAuthProviderService} from "./services/cognito-auth-provider.service";
+import {KeycloakProviderService} from "./services/keycloak-provider.service";
+import {CognitoProviderService} from "./services/cognito-provider.service";
 import {environment} from "../environments/environment";
-import {AUTH_PROVIDER} from "./services/auth.tokens";
+import {IDP_PROVIDER} from "./services/idp.tokens";
 import {KeycloakAngularModule} from "keycloak-angular";
 import {
   TextPartsInputComponent
@@ -260,8 +260,8 @@ export function HttpLoaderFactory(http: HttpClient) {
 }
 
 export function authProviderFactory(
-  keycloakAuth: KeycloakAuthProviderService,
-  cognitoAuth: CognitoAuthProviderService
+  keycloakAuth: KeycloakProviderService,
+  cognitoAuth: CognitoProviderService
 ) {
 
   return environment.authProvider === 'cognito' ? cognitoAuth : keycloakAuth;
@@ -401,10 +401,10 @@ export function initializeAuth(authenticationService: AuthenticationService) {
     TextPartsViewComponent
   ],
   providers: [
-    {provide: AUTH_PROVIDER, useFactory: authProviderFactory,
-      deps: [KeycloakAuthProviderService, CognitoAuthProviderService]},
-    KeycloakAuthProviderService,
-    CognitoAuthProviderService,
+    {provide: IDP_PROVIDER, useFactory: authProviderFactory,
+      deps: [KeycloakProviderService, CognitoProviderService]},
+    KeycloakProviderService,
+    CognitoProviderService,
     {provide: APP_INITIALIZER,
       useFactory: initializeAuth, deps: [AuthenticationService], multi: true},
     {provide: RedirectGuard},
