@@ -40,7 +40,7 @@ jobs:
           aws s3 cp s3://tctalent-integration-db-dumps/dump.sql server/src/test/resources/dump.sql
 
       - name: Build and Run tests
-        run: ./gradlew server:build
+        run: ./gradlew clean :server:test :server:build --stacktrace --rerun-tasks
         env:
           GOOGLE_DRIVE_PRIVATEKEY: ${{ secrets.GOOGLE_DRIVE_PRIVATEKEY }}
           GOOGLE_DRIVE_PRIVATEKEYID: ${{ secrets.GOOGLE_DRIVE_PRIVATEKEYID }}
