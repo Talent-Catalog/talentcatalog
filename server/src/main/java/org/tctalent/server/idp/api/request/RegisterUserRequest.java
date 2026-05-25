@@ -14,10 +14,21 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tctalent.server.idp;
+package org.tctalent.server.idp.api.request;
 
-public interface IdpAdminService {
-    IdpUserProfile getIdpUserProfile(IdpUserRef userRef);
-    IdpUserRef registerUser(RegisterUserRequest request);
+import lombok.Builder;
+import lombok.Data;
+
+/**
+ * Data required to register a user at the IdP.
+ */
+@Data
+@Builder
+public class RegisterUserRequest {
+    private String email;
+    private String firstName;
+    private String lastName;
+    private String tcUserId;
+    private String temporaryPassword; // optional
 }
 

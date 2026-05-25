@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tctalent.server.idp;
+package org.tctalent.server.idp.domain.model;
 
 /**
  * Runtime exception used by IdP admin operations.

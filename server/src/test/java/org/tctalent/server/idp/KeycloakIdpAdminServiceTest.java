@@ -33,6 +33,12 @@ import org.keycloak.admin.client.resource.RealmResource;
 import org.keycloak.admin.client.resource.UserResource;
 import org.keycloak.admin.client.resource.UsersResource;
 import org.keycloak.representations.idm.UserRepresentation;
+import org.tctalent.server.idp.api.request.RegisterUserRequest;
+import org.tctalent.server.idp.application.providers.keycloak.KeycloakAuthProperties;
+import org.tctalent.server.idp.application.providers.keycloak.KeycloakIdpAdminService;
+import org.tctalent.server.idp.domain.model.IdpAdminException;
+import org.tctalent.server.idp.domain.model.IdpUserProfile;
+import org.tctalent.server.idp.domain.model.IdpUserRef;
 
 class KeycloakIdpAdminServiceTest {
 

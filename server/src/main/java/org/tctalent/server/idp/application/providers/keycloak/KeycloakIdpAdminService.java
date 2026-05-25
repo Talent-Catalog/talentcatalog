@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tctalent.server.idp;
+package org.tctalent.server.idp.application.providers.keycloak;
 
 import jakarta.ws.rs.core.Response;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +24,11 @@ import org.keycloak.admin.client.resource.RealmResource;
 import org.keycloak.representations.idm.CredentialRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.stereotype.Service;
+import org.tctalent.server.idp.api.request.RegisterUserRequest;
+import org.tctalent.server.idp.domain.model.IdpAdminException;
+import org.tctalent.server.idp.domain.model.IdpAdminService;
+import org.tctalent.server.idp.domain.model.IdpUserProfile;
+import org.tctalent.server.idp.domain.model.IdpUserRef;
 
 /**
  * Adapter for Keycloak Admin Client implementing the provider-neutral {@link IdpAdminService}.

@@ -14,23 +14,25 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tctalent.server.idp;
+package org.tctalent.server.idp.application.providers.keycloak;
 
-import lombok.Builder;
 import lombok.Data;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.stereotype.Component;
 
+/**
+ * Minimal properties holder for Keycloak connection details used by the IdP adapter.
+ */
 @Data
-@Builder
-public class IdpUserProfile {
-    private String issuer;
-    private String subject;
+@Component
+@ConfigurationProperties(prefix = "keycloak")
+public class KeycloakAuthProperties {
+    private String serverUrl;
+    private String realm;
+    private String clientId;
+    private String clientSecret;
     private String username;
-    private String email;
-    private Boolean emailVerified;
-    private String firstName;
-    private String lastName;
-    private Boolean enabled;
-    private String status;
-    private String tcUserId;
+    private String password;
+    private String issuer;
 }
 

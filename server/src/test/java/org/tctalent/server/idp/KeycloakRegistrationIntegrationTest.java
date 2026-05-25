@@ -25,6 +25,11 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.tctalent.server.idp.api.request.RegisterUserRequest;
+import org.tctalent.server.idp.application.providers.keycloak.KeycloakAuthProperties;
+import org.tctalent.server.idp.domain.model.IdpAdminService;
+import org.tctalent.server.idp.domain.model.IdpUserProfile;
+import org.tctalent.server.idp.domain.model.IdpUserRef;
 
 /**
  * Integration test for Keycloak user registration.
