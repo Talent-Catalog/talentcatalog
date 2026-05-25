@@ -163,5 +163,10 @@ export class LoginComponent implements OnInit {
       }
     });
   }
+
+  onLogin() {
+    this.authenticationService.login();
+  }
+
 }
 

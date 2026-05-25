@@ -19,6 +19,13 @@
 <tc-loading [loading]="loading"></tc-loading>
 <tc-alert *ngIf="error" type="danger">{{error}}</tc-alert>
 
+<tc-button
+  color="primary"
+  type="outline"
+  (onClick)="onLogin()">
+  Login
+</tc-button>
+
 <form *ngIf="!loading" [formGroup]="loginForm" (submit)="login()" class="mt-3">
   <tc-fieldset>
     <tc-field>
