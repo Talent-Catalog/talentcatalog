@@ -5,6 +5,7 @@ import {IdpProvider} from './idp-provider';
 import {IdpStatus} from './idp-status';
 import {reportAuthError} from './auth-error.util';
 import {IdpProfile} from "./idp-profile";
+import {environment} from "../../environments/environment";
 
 /**
  * Keycloak authentication provider service.
@@ -49,7 +50,7 @@ export class KeycloakProviderService implements IdpProvider {
         config: {
           url: 'http://localhost:8082',
           realm: 'talentcatalog',
-          clientId: 'grn-candidate'
+          clientId: environment.idpClientId
         },
         initOptions: {
           onLoad: 'check-sso',
