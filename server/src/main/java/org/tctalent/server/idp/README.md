@@ -121,7 +121,9 @@ Each user on the IDP stores the following data:
 
 ### Data passed in tokens
 
-tbc
+- iss – the IDP instance issuing the token (e.g. "tbb" or "grn").
+- sub – the IDP assigned unique identifier for the user.
+- clientId – in Keycloak this appears in the token as "azp". In Cognito this is "client_id".
 
 ### Manual Login flow
 tbc
