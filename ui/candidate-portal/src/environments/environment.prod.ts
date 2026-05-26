@@ -32,4 +32,5 @@ export const environment = {
   clarityProjectId: 'vfddfqcyk0',
   environmentName: 'prod',
   idpProvider: 'cognito',
+  idpClientId: 'candidate',
 };

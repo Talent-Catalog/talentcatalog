@@ -32,6 +32,7 @@ export const environment = {
   clarityProjectId: 'vfd53zhv7l', // for testing,
   environmentName: 'local',
   idpProvider: 'keycloak',
+  idpClientId: 'candidate',
 };
 
 /*

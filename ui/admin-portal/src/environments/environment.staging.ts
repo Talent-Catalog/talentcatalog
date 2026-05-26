@@ -34,5 +34,6 @@ export const environment = {
   googleAnalyticsId: 'G-K9ML1Y40B4', // for testing,
   clarityProjectId: 'pquy45i1um', // for testing,
   idpProvider: 'cognito',
+  idpClientId: 'admin',
 
 };
