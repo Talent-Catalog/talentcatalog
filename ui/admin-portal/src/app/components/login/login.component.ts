@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {UntypedFormBuilder, UntypedFormGroup, Validators} from "@angular/forms";
 import {ActivatedRoute, Router} from "@angular/router";
 import {User} from "../../model/user";
@@ -25,13 +25,17 @@ import {AuthenticationService} from "../../services/authentication.service";
 import {environment} from "../../../environments/environment";
 import {PartnerService} from "../../services/partner.service";
 import {AuthorizationService} from "../../services/authorization.service";
+import {IdpStatus} from "../../services/idp-status";
+import {Subscription} from "rxjs";
 
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss']
 })
-export class LoginComponent implements OnInit {
+export class LoginComponent implements OnInit, OnDestroy {
+  authStatus: IdpStatus;
+  private authStatusSub?: Subscription;
 
   loginForm: UntypedFormGroup;
   loading: boolean;
@@ -63,6 +67,32 @@ export class LoginComponent implements OnInit {
       password: ['', Validators.required],
       totpToken: ['']
     })
+
+    this.authStatusSub = this.authenticationService.getAuthStatus().subscribe(
+      status => this.authStatus = status);
+
+    const authAction = this.route.snapshot.queryParamMap.get('authAction');
+
+    if (this.authenticationService.isAuthenticated()) {
+      this.authenticationService.clearAuthError();
+      if (authAction === 'register') {
+        console.log("Shouldn't happen to register");
+        // let request: OauthRegistrationRequest = {
+        //   //todo These consents are being mocked for now. When new UI is designed
+        //   //the register button should be disabled until the user has consented to the terms.
+        //   contactConsentRegistration: true,
+        //   contactConsentPartners: true
+        // }
+        // this.completeRegister(request);
+      } else if (authAction === 'login') {
+        this.completeLogin();
+      }
+    }
+
+  }
+
+  ngOnDestroy(): any {
+    this.authStatusSub?.unsubscribe();
   }
 
   get username(): string {
@@ -128,6 +158,21 @@ export class LoginComponent implements OnInit {
 
   login() {
     this.authenticationService.login();
+  }
+
+  completeLogin() {
+    this.error = null;
+    this.authenticationService.completeLogin().subscribe({
+      next: (response) => {
+        this.router.navigate(['/home']);
+      },
+      error: (error) => {
+        //Display error
+        this.error = error;
+        //Log out the user if the login did not complete successfully.
+        this.authenticationService.logout();
+      }
+    })
   }
 
 }

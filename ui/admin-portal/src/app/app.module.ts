@@ -856,7 +856,9 @@ import {
 import {KeycloakProviderService} from "./services/keycloak-provider.service";
 import {CognitoProviderService} from "./services/cognito-provider.service";
 import {IDP_PROVIDER} from "./services/idp.tokens";
+import {KeycloakAngularModule} from "keycloak-angular";
 import {environment} from "../environments/environment";
+import {AuthenticationService} from "./services/authentication.service";
 
 export function idpProviderFactory(
   keycloakIdp: KeycloakProviderService,
@@ -864,6 +866,10 @@ export function idpProviderFactory(
 ) {
 
   return environment.idpProvider === 'cognito' ? cognitoIdp : keycloakIdp;
+}
+
+export function initializeAuth(authenticationService: AuthenticationService) {
+  return () => authenticationService.init();
 }
 
 @NgModule({
@@ -1226,6 +1232,7 @@ export function idpProviderFactory(
     DragulaModule.forRoot(),
     QuillModule.forRoot(),
     PickerModule,
+    KeycloakAngularModule,
     TranslateModule.forRoot({
       defaultLanguage: 'en',
       loader: {
@@ -1252,6 +1259,8 @@ export function idpProviderFactory(
       deps: [EnvService],
       multi: true
     },
+    {provide: APP_INITIALIZER,
+      useFactory: initializeAuth, deps: [AuthenticationService], multi: true},
     {provide: RxStompService},
     AuthorizationService,
     RoleGuardService,

@@ -16,7 +16,7 @@
 
 import {Inject, Injectable, OnDestroy} from '@angular/core';
 import {JwtAuthenticationResponse} from "../model/jwt-authentication-response";
-import {Observable, Subject} from "rxjs";
+import {from, Observable, Subject, throwError} from "rxjs";
 import {HttpClient} from "@angular/common/http";
 import {environment} from "../../environments/environment";
 import {User} from "../model/user";
@@ -26,6 +26,9 @@ import {TcInstanceType} from "../model/tc-instance-type";
 import {TermsType} from "../model/terms-info-dto";
 import {IDP_PROVIDER} from "./idp.tokens";
 import {IdpProvider} from "./idp-provider";
+import {IdpStatus} from "./idp-status";
+import {catchError, map, switchMap} from "rxjs/operators";
+import {AuthenticationResponse} from "../model/authentication-response";
 
 /**
  * Manages authentication - ie login/logout.
@@ -125,19 +128,65 @@ export class AuthenticationService implements OnDestroy {
     }
   }
 
+  clearAuthError(): void {
+    this.idpProvider.clearError();
+  }
+
+  init(): Promise<boolean> {
+    return this.idpProvider.init();
+  }
+
+  getAuthStatus(): Observable<IdpStatus> {
+    return this.idpProvider.getStatus();
+  }
+
+  isAuthenticated(): boolean {
+    return this.idpProvider.isAuthenticated();
+  }
+
   login(lang: string = 'en'): Promise<void> {
     return this.idpProvider.login(lang);
   }
 
-  logout() {
-    this.http.post(`${this.apiUrl}/logout`, null).subscribe({
-      next: () => {}
-    })
+  completeLogin(): Observable<void> {
+    //Retrieve current profile from provider and send to server so that it can be stored in the
+    //database.
+    return from(this.idpProvider.getProfile()).pipe(
+      switchMap(profile =>
+        this.http.post(`${this.apiUrl}/login`, profile).pipe(
+          map((response: AuthenticationResponse) => {
+            this.storeAuthenticationData(response);
+          }),
+          catchError(e => {
+              console.log('error', e);
+              return throwError(e);
+            }
+          )
+        )
+      )
+    )
+  }
+
+  logout(): Promise<void> {
     this.localStorageService.remove('user');
-    this.localStorageService.remove('access-token');
     localStorage.clear();
 
-    this.setLoggedInUser(null)
+    this.setLoggedInUser(null);
+
+    return this.idpProvider.logout();
+  }
+
+  private storeAuthenticationData(response: AuthenticationResponse) {
+    //Remove any old data from storage
+    this.localStorageService.remove('user');
+    this.localStorageService.remove('can_view_chats');
+    this.localStorageService.remove('tc_instance_type');
+
+    //Update new data in storage
+    this.localStorageService.set('can_view_chats', response.canViewChats);
+    this.localStorageService.set('tc_instance_type', response.tcInstanceType);
+
+    this.setLoggedInUser(response.user);
   }
 
   mfaSetup(): Observable<EncodedQrImage> {
