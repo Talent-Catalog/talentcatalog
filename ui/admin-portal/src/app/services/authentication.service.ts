@@ -15,7 +15,6 @@
  */
 
 import {Inject, Injectable, OnDestroy} from '@angular/core';
-import {JwtAuthenticationResponse} from "../model/jwt-authentication-response";
 import {from, Observable, Subject, throwError} from "rxjs";
 import {HttpClient} from "@angular/common/http";
 import {environment} from "../../environments/environment";
@@ -85,10 +84,6 @@ export class AuthenticationService implements OnDestroy {
     return this.loggedInUser;
   }
 
-  getToken(): string {
-    return this.localStorageService.get('access-token');
-  }
-
   canViewChats(): boolean {
     return this.localStorageService.get('can_view_chats');
   }
@@ -138,6 +133,19 @@ export class AuthenticationService implements OnDestroy {
 
   getAuthStatus(): Observable<IdpStatus> {
     return this.idpProvider.getStatus();
+  }
+
+  getToken(): string | undefined {
+    if (this.idpProvider.isAuthenticated()) {
+      return this.idpProvider.getToken();
+    } else {
+      console.log("Not authenticated");
+    }
+    return this.idpProvider.getToken();
+  }
+
+  refreshToken(minValiditySeconds = 30): Promise<void> {
+    return this.idpProvider.refreshToken(minValiditySeconds);
   }
 
   isAuthenticated(): boolean {
@@ -197,21 +205,6 @@ export class AuthenticationService implements OnDestroy {
     this.loggedInUser = loggedInUser;
     this.localStorageService.set('user', this.loggedInUser);
     this.loggedInUser$.next(this.loggedInUser);
-  }
-
-  private storeCredentials(response: JwtAuthenticationResponse) {
-    //Remove any old credentials from storage
-    this.localStorageService.remove('access-token');
-    this.localStorageService.remove('user');
-    this.localStorageService.remove('can_view_chats');
-    this.localStorageService.remove('tc_instance_type');
-
-    //Update new credentials in storage
-    this.localStorageService.set('access-token', response.accessToken);
-    this.localStorageService.set('can_view_chats', response.canViewChats);
-    this.localStorageService.set('tc_instance_type', response.tcInstanceType);
-
-    this.setLoggedInUser(response.user);
   }
 
 }
