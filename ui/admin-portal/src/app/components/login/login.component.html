@@ -25,30 +25,3 @@
   (onClick)="login()">
   Login
 </tc-button>
-
-<form *ngIf="!loading" [formGroup]="loginForm" (submit)="login()" class="mt-3">
-  <tc-fieldset>
-    <tc-field>
-      <tc-input type="text" formControlName="username"
-                placeholder="Username"></tc-input>
-    </tc-field>
-    <tc-field>
-      <tc-input type="password" formControlName="password"
-                placeholder="Password"></tc-input>
-    </tc-field>
-    <tc-field>
-      <tc-input type="text" formControlName="totpToken"
-                placeholder="Code shown on your phone's authenticator app"></tc-input>
-    </tc-field>
-    <tc-button [disabled]="loading || !loginForm.valid" size="xl" class="align-self-center">
-      Login
-    </tc-button>
-  </tc-fieldset>
-
-
-  <div class="text-center mt-3 text-color-caption">
-    <a [routerLink]="'/reset-password'">Forgot Password?</a>
-  </div>
-
-</form>
-
