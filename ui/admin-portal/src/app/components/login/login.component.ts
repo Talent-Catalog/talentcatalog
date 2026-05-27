@@ -172,7 +172,7 @@ export class LoginComponent implements OnInit, OnDestroy {
     this.error = null;
     this.authenticationService.completeLogin().subscribe({
       next: (response) => {
-        this.router.navigate(['/home']);
+        this.router.navigateByUrl(this.returnUrl);
       },
       error: (error) => {
         //Display error
