@@ -44,8 +44,7 @@ const REGISTER_ACTION = "register";
  *  in AppRoutingModule).
  * </p>
  * <p>
- *  If not authenticated then processing stays in this component, which displays the
- *  LoginComponent (app-login) and a Registration button.
+ *  If not authenticated then processing stays in this component.
  * </p>
  * <p>
  *   If the Registration button is clicked the user is redirected to '/register', serviced by the

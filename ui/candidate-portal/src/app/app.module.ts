@@ -62,7 +62,6 @@ import {
 } from './components/register/additional-info/registration-additional-info.component';
 import {JwtInterceptor} from './services/jwt.interceptor';
 import {LanguageInterceptor} from './services/language.interceptor';
-import {LoginComponent} from './components/account/login/login.component';
 import {HomeComponent} from './components/home/home.component';
 import {ErrorInterceptor} from './services/error.interceptor';
 import {ResetPasswordComponent} from './components/account/reset-password/reset-password.component';
@@ -285,7 +284,6 @@ export function initializeAuth(authenticationService: AuthenticationService) {
     RegistrationLanguageComponent,
     RegistrationCertificationsComponent,
     RegistrationAdditionalInfoComponent,
-    LoginComponent,
     HomeComponent,
     ResetPasswordComponent,
     ChangePasswordComponent,
