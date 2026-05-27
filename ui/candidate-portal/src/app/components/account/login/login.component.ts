@@ -22,7 +22,6 @@ import {AuthenticationService} from "../../../services/authentication.service";
 import {ChangePasswordComponent} from '../change-password/change-password.component';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {Candidate, CandidateStatus} from "../../../model/candidate";
-import {forkJoin} from "rxjs";
 import {TermsInfoDto} from "../../../model/terms-info-dto";
 import {TermsInfoService} from "../../../services/terms-info.service";
 
@@ -67,21 +66,22 @@ export class LoginComponent implements OnInit {
   }
 
   login() {
-    this.authenticationService.login();
-
-    this.error = null;
-    this.loading = false;
-
-    //Fetch the current candidate privacy policy and candidate info
-    forkJoin({
-      'currentPolicy': this.termsInfoService.getCurrentCandidatePolicy(),
-      'candidate': this.candidateService.getCandidatePersonal()
-    }).subscribe(
-      results => {
-        this.configure(results.candidate, results.currentPolicy)
-      },
-      err => this.error = err
-    )
+    //todo eventually delete this. This whole component may no longer be needed
+    // this.authenticationService.login();
+    //
+    // this.error = null;
+    // this.loading = false;
+    //
+    // //Fetch the current candidate privacy policy and candidate info
+    // forkJoin({
+    //   'currentPolicy': this.termsInfoService.getCurrentCandidatePolicy(),
+    //   'candidate': this.candidateService.getCandidatePersonal()
+    // }).subscribe(
+    //   results => {
+    //     this.configure(results.candidate, results.currentPolicy)
+    //   },
+    //   err => this.error = err
+    // )
   }
 
   private configure(candidate: Candidate, currentPolicy: TermsInfoDto) {

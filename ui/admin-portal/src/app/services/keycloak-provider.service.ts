@@ -85,12 +85,12 @@ export class KeycloakProviderService implements IdpProvider {
     return this.keycloakService.isLoggedIn();
   }
 
-  async login(locale: string = 'en'): Promise<void> {
+  async login(redirectUri: string, locale: string = 'en'): Promise<void> {
     this.patchStatus({ busy: true, error: null });
 
     try {
       await this.keycloakService.login({
-        redirectUri: window.location.origin + '/?authAction=login',
+        redirectUri: window.location.origin + redirectUri,
         locale: locale
       });
 
@@ -107,12 +107,12 @@ export class KeycloakProviderService implements IdpProvider {
     }
   }
 
-  async register(locale: string = 'en'): Promise<void> {
+  async register(redirectUri: string, locale: string = 'en'): Promise<void> {
     this.patchStatus({ busy: true, error: null });
 
     try {
       await this.keycloakService.register({
-        redirectUri: window.location.origin + '/?authAction=register',
+        redirectUri: window.location.origin + redirectUri,
         locale: locale
       });
 

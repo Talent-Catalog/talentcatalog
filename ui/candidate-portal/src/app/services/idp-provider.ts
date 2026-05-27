@@ -24,8 +24,8 @@ import {IdpProfile} from "./idp-profile";
 export interface IdpProvider {
   init(): Promise<boolean>;
   isAuthenticated(): boolean;
-  login(lang: string): Promise<void>;
-  register(lang: string): Promise<void>;
+  login(redirectUri: string, lang: string): Promise<void>;
+  register(redirectUri: string, lang: string): Promise<void>;
   logout(): Promise<void>;
   getProfile(): Promise<IdpProfile>;
   getToken(): string | undefined;

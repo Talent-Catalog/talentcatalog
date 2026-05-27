@@ -144,8 +144,8 @@ export class AuthenticationService implements OnDestroy {
     return this.idpProvider.isAuthenticated();
   }
 
-  login(lang: string = 'en'): Promise<void> {
-    return this.idpProvider.login(lang);
+  login(redirectUri: string, lang: string = 'en'): Promise<void> {
+    return this.idpProvider.login(redirectUri, lang);
   }
 
   completeLogin(): Observable<void> {

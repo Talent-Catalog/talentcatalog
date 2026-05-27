@@ -16,7 +16,7 @@
 
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {UntypedFormBuilder, UntypedFormGroup, Validators} from "@angular/forms";
-import {ActivatedRoute, Router} from "@angular/router";
+import {ActivatedRoute, Router, UrlTree} from "@angular/router";
 import {User} from "../../model/user";
 import {EncodedQrImage} from "../../util/qr";
 import {ShowQrCodeComponent} from "../util/qr/show-qr-code/show-qr-code.component";
@@ -28,6 +28,10 @@ import {AuthorizationService} from "../../services/authorization.service";
 import {IdpStatus} from "../../services/idp-status";
 import {Subscription} from "rxjs";
 
+const CALLBACK_ACTION_PARAM_NAME = 'authAction';
+const LOGIN_ACTION = "login";
+const REGISTER_ACTION = "register";
+
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
@@ -37,6 +41,7 @@ export class LoginComponent implements OnInit, OnDestroy {
   authStatus: IdpStatus;
   private authStatusSub?: Subscription;
 
+  currentUrlAsTree: UrlTree;
   loginForm: UntypedFormGroup;
   loading: boolean;
   returnUrl: string;
@@ -58,9 +63,8 @@ export class LoginComponent implements OnInit, OnDestroy {
     this.backgroundImage = `url(${environment.assetBaseUrl}/assets/images/login-splash-v2.2.1.png)`;
     this.loginImage = `${environment.assetBaseUrl}/assets/images/tcHorizontalLogo.png`;
 
-    this.route.queryParams.subscribe(params => {
-      this.returnUrl = params['returnUrl'] || '';
-    });
+    this.currentUrlAsTree = this.router.parseUrl(this.router.url);
+    this.returnUrl = this.currentUrlAsTree.queryParams.returnUrl || '';
 
     this.loginForm = this.builder.group({
       username: ['', Validators.required],
@@ -71,12 +75,10 @@ export class LoginComponent implements OnInit, OnDestroy {
     this.authStatusSub = this.authenticationService.getAuthStatus().subscribe(
       status => this.authStatus = status);
 
-    const authAction = this.route.snapshot.queryParamMap.get('authAction');
-
     if (this.authenticationService.isAuthenticated()) {
+      const authAction = this.route.snapshot.queryParamMap.get(CALLBACK_ACTION_PARAM_NAME);
       this.authenticationService.clearAuthError();
-      if (authAction === 'register') {
-        console.log("Shouldn't happen to register");
+      if (authAction === REGISTER_ACTION) {       console.log("Shouldn't happen to register");
         // let request: OauthRegistrationRequest = {
         //   //todo These consents are being mocked for now. When new UI is designed
         //   //the register button should be disabled until the user has consented to the terms.
@@ -84,7 +86,7 @@ export class LoginComponent implements OnInit, OnDestroy {
         //   contactConsentPartners: true
         // }
         // this.completeRegister(request);
-      } else if (authAction === 'login') {
+      } else if (authAction === LOGIN_ACTION) {
         this.completeLogin();
       }
     }
@@ -157,7 +159,13 @@ export class LoginComponent implements OnInit, OnDestroy {
   }
 
   login() {
-    this.authenticationService.login();
+    this.authenticationService.login(this.computeRedirectUri(LOGIN_ACTION));
+  }
+
+  private computeRedirectUri(LOGIN_ACTION: string) {
+    const urlTree = this.currentUrlAsTree;
+    urlTree.queryParams[CALLBACK_ACTION_PARAM_NAME] = LOGIN_ACTION;
+    return urlTree.toString();
   }
 
   completeLogin() {

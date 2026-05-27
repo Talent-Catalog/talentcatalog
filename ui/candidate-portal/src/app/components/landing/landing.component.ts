@@ -15,7 +15,7 @@
  */
 
 import {Component, OnDestroy, OnInit} from '@angular/core';
-import {ActivatedRoute, Router} from '@angular/router';
+import {ActivatedRoute, Router, UrlTree} from '@angular/router';
 import {LanguageService} from '../../services/language.service';
 import {initializePhraseAppEditor} from "ngx-translate-phraseapp";
 import {BrandingInfo, BrandingService} from "../../services/branding.service";
@@ -23,6 +23,10 @@ import {AuthenticationService} from "../../services/authentication.service";
 import {Subscription} from "rxjs";
 import {IdpStatus} from "../../services/idp-status";
 import {OauthRegistrationRequest} from "../../model/oauth-registration-request";
+
+const CALLBACK_ACTION_PARAM_NAME = 'authAction';
+const LOGIN_ACTION = "login";
+const REGISTER_ACTION = "register";
 
 @Component({
   selector: 'app-landing',
@@ -52,6 +56,7 @@ export class LandingComponent implements OnInit, OnDestroy {
   authStatus: IdpStatus;
   private authStatusSub?: Subscription;
   private brandingInfo: BrandingInfo;
+  currentUrlAsTree: UrlTree;
   error: string;
   showUSAfghanInfo: boolean = false;
 
@@ -68,11 +73,12 @@ export class LandingComponent implements OnInit, OnDestroy {
     this.authStatusSub = this.authenticationService.getAuthStatus().subscribe(
       status => this.authStatus = status);
 
-    const authAction = this.route.snapshot.queryParamMap.get('authAction');
+    this.currentUrlAsTree = this.router.parseUrl(this.router.url);
 
     if (this.authenticationService.isAuthenticated()) {
+      const authAction = this.route.snapshot.queryParamMap.get(CALLBACK_ACTION_PARAM_NAME);
       this.authenticationService.clearAuthError();
-      if (authAction === 'register') {
+      if (authAction === REGISTER_ACTION) {
         let request: OauthRegistrationRequest = {
           //todo These consents are being mocked for now. When new UI is designed
           //the register button should be disabled until the user has consented to the terms.
@@ -80,7 +86,7 @@ export class LandingComponent implements OnInit, OnDestroy {
           contactConsentPartners: true
         }
         this.completeRegister(request);
-      } else if (authAction === 'login') {
+      } else if (authAction === LOGIN_ACTION) {
         this.completeLogin();
       }
     }
@@ -135,11 +141,19 @@ export class LandingComponent implements OnInit, OnDestroy {
   }
 
   onLogin() {
-    this.authenticationService.login(this.languageService.getSelectedLanguage());
+    this.authenticationService.login(
+      this.computeRedirectUri(LOGIN_ACTION), this.languageService.getSelectedLanguage());
   }
 
   onRegister() {
-    this.authenticationService.register(this.languageService.getSelectedLanguage());
+    this.authenticationService.register(
+      this.computeRedirectUri(REGISTER_ACTION), this.languageService.getSelectedLanguage());
+  }
+
+  private computeRedirectUri(LOGIN_ACTION: string) {
+    const urlTree = this.currentUrlAsTree;
+    urlTree.queryParams[CALLBACK_ACTION_PARAM_NAME] = LOGIN_ACTION;
+    return urlTree.toString();
   }
 
   completeLogin() {
