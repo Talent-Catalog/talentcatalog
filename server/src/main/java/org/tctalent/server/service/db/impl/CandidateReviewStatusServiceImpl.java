@@ -28,7 +28,6 @@ import org.tctalent.server.repository.db.CandidateReviewStatusRepository;
 import org.tctalent.server.repository.db.SavedSearchRepository;
 import org.tctalent.server.request.reviewstatus.CreateCandidateReviewStatusRequest;
 import org.tctalent.server.request.reviewstatus.UpdateCandidateReviewStatusRequest;
-import org.tctalent.server.security.AuthService;
 import org.tctalent.server.service.db.CandidateReviewStatusService;
 
 @Service
@@ -37,14 +36,12 @@ public class CandidateReviewStatusServiceImpl implements CandidateReviewStatusSe
     private final CandidateRepository candidateRepository;
     private final CandidateReviewStatusRepository candidateReviewStatusRepository;
     private final SavedSearchRepository savedSearchRepository;
-    private final AuthService authService;
 
     @Autowired
-    public CandidateReviewStatusServiceImpl(CandidateRepository candidateRepository, CandidateReviewStatusRepository candidateReviewStatusRepository, SavedSearchRepository savedSearchRepository, AuthService authService) {
+    public CandidateReviewStatusServiceImpl(CandidateRepository candidateRepository, CandidateReviewStatusRepository candidateReviewStatusRepository, SavedSearchRepository savedSearchRepository) {
         this.candidateRepository = candidateRepository;
         this.candidateReviewStatusRepository = candidateReviewStatusRepository;
         this.savedSearchRepository = savedSearchRepository;
-        this.authService = authService;
     }
 
     @Override
@@ -66,7 +63,6 @@ public class CandidateReviewStatusServiceImpl implements CandidateReviewStatusSe
         candidateReviewStatusItem.setSavedSearch(savedSearch);
         candidateReviewStatusItem.setComment(request.getComment());
         candidateReviewStatusItem.setReviewStatus(request.getReviewStatus());
-        candidateReviewStatusItem.setAuditFields(authService.getLoggedInUser().orElse(null));
         return candidateReviewStatusRepository.save(candidateReviewStatusItem);
     }
 
@@ -77,7 +73,6 @@ public class CandidateReviewStatusServiceImpl implements CandidateReviewStatusSe
 
         candidateReviewStatusItem.setReviewStatus(request.getReviewStatus());
         candidateReviewStatusItem.setComment(request.getComment());
-        candidateReviewStatusItem.setAuditFields(authService.getLoggedInUser().orElse(null));
 
         return candidateReviewStatusRepository.save(candidateReviewStatusItem);
 

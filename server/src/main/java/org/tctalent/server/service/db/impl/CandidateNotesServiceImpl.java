@@ -75,7 +75,6 @@ public class CandidateNotesServiceImpl implements CandidateNoteService {
         candidateNote.setTitle(request.getTitle());
         candidateNote.setComment(request.getComment());
         candidateNote.setNoteType(user.getId().equals(candidate.getUser().getId()) ? NoteType.candidate : NoteType.admin);
-        candidateNote.setAuditFields(user);
         // Save the candidateOccupation
         return candidateNoteRepository.save(candidateNote);
     }
@@ -85,13 +84,12 @@ public class CandidateNotesServiceImpl implements CandidateNoteService {
         CandidateNote candidateNote = this.candidateNoteRepository.findById(id)
                 .orElseThrow(() -> new NoSuchObjectException(CandidateEducation.class, id));
 
-        User user = authService.getLoggedInUser()
-                .orElseThrow(() -> new InvalidSessionException("Not logged in"));
+        authService.getLoggedInUser()
+            .orElseThrow(() -> new InvalidSessionException("Not logged in"));
 
         // Update education object to insert into the database
         candidateNote.setTitle(request.getTitle());
         candidateNote.setComment(request.getComment());
-        candidateNote.setAuditFields(user);
 
         // Save the candidateOccupation
         return candidateNoteRepository.save(candidateNote);
