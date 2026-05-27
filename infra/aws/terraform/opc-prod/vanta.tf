@@ -5,6 +5,23 @@ resource "aws_iam_policy" "VantaAdditionalPermissions" {
     "Version" : "2012-10-17",
     "Statement" : [
       {
+        "Effect" : "Allow",
+        "Action" : [
+          "identitystore:DescribeGroup",
+          "identitystore:DescribeGroupMembership",
+          "identitystore:DescribeUser",
+          "identitystore:GetGroupId",
+          "identitystore:GetGroupMembershipId",
+          "identitystore:GetUserId",
+          "identitystore:IsMemberInGroups",
+          "identitystore:ListGroupMemberships",
+          "identitystore:ListGroups",
+          "identitystore:ListUsers",
+          "identitystore:ListGroupMembershipsForMember"
+        ],
+        "Resource" : "*"
+      },
+      {
         "Effect" : "Deny",
         "Action" : [
           "datapipeline:EvaluateExpression",
