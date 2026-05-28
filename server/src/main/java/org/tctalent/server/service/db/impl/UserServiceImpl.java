@@ -56,6 +56,8 @@ import org.tctalent.server.exception.InvalidSessionException;
 import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.exception.ServiceException;
 import org.tctalent.server.exception.UsernameTakenException;
+import org.tctalent.server.idp.api.request.RegisterUserRequest;
+import org.tctalent.server.idp.domain.model.IdpAdminService;
 import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.model.db.Country;
 import org.tctalent.server.model.db.PartnerImpl;
@@ -63,7 +65,6 @@ import org.tctalent.server.model.db.Role;
 import org.tctalent.server.model.db.Status;
 import org.tctalent.server.model.db.User;
 import org.tctalent.server.model.db.partner.Partner;
-import org.tctalent.server.repository.db.CandidateRepository;
 import org.tctalent.server.repository.db.CountryRepository;
 import org.tctalent.server.repository.db.UserRepository;
 import org.tctalent.server.repository.db.UserSpecification;
@@ -80,11 +81,9 @@ import org.tctalent.server.response.AuthenticationResponse;
 import org.tctalent.server.response.JwtAuthenticationResponse;
 import org.tctalent.server.security.AuthProfile;
 import org.tctalent.server.security.AuthService;
-import org.tctalent.server.security.JwtTokenProvider;
 import org.tctalent.server.service.db.PartnerService;
 import org.tctalent.server.service.db.UserService;
 import org.tctalent.server.service.db.email.EmailHelper;
-import org.tctalent.server.service.policy.ChatPolicy;
 import org.tctalent.server.util.qr.EncodedQrImage;
 
 @Service
@@ -92,14 +91,10 @@ import org.tctalent.server.util.qr.EncodedQrImage;
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
-    private final CandidateRepository candidateRepository;
-    private final ChatPolicy chatPolicy;
     private final CountryRepository countryRepository;
-//    private final PasswordHelper passwordHelper;
-//    private final AuthenticationManager authenticationManager;
-    private final JwtTokenProvider tokenProvider;
     private final AuthService authService;
     private final EmailHelper emailHelper;
+    private final IdpAdminService idpAdminService;
     private final PartnerService partnerService;
     private final TcInstanceService tcInstanceService;
 
@@ -239,11 +234,20 @@ public class UserServiceImpl implements UserService {
         User user = new User();
 
         populateUserFields(user, request, creatingUser);
-        //TODO JC Remove
-        //        /* Validate the password before account creation */
-//        String passwordEncrypted = passwordHelper.validateAndEncodePassword(request.getPassword());
-//        user.setPasswordEnc(passwordEncrypted);
-        return userRepository.save(user);
+
+        final User savedUser = userRepository.save(user);
+
+        //Register user on IDP
+        RegisterUserRequest idpRequest = RegisterUserRequest.builder()
+            .email(savedUser.getEmail())
+            .firstName(savedUser.getFirstName())
+            .lastName(savedUser.getLastName())
+            .password(request.getPassword())
+            .tcUserId(null) //This should be publicId
+            .build();
+        idpAdminService.registerUser(idpRequest);
+
+        return savedUser;
     }
 
     private void populateUserFields(User user, UpdateUserRequest request, @Nullable User creatingUser) {
@@ -279,6 +283,10 @@ public class UserServiceImpl implements UserService {
         user.setUsingMfa(request.getUsingMfa());
         user.setPurpose(request.getPurpose());
         user.setJobCreator(request.getJobCreator());
+
+        //Need to make password end non-null even though OAuth2 now managed passwords
+        //Eventually this field will be removed.
+        user.setPasswordEnc("N/A OAuth");
 
         if (creatingUser == null) {
             user.setRole(request.getRole());

@@ -18,8 +18,24 @@ package org.tctalent.server.idp.domain.model;
 
 import org.tctalent.server.idp.api.request.RegisterUserRequest;
 
+/**
+ * Our common interface for interacting with IDP providers such as Cognito and Keycloak.
+ */
 public interface IdpAdminService {
+
+    /**
+     * Get the user profile from the IDP.
+     * @param userRef Identifies the user in the IDP.
+     * @return User profile.
+     */
     IdpUserProfile getIdpUserProfile(IdpUserRef userRef);
+
+
+    /**
+     * Register a user on the IDP.
+     * @param request Data required to register the user.
+     * @return User profile.
+     */
     IdpUserRef registerUser(RegisterUserRequest request);
 }
 

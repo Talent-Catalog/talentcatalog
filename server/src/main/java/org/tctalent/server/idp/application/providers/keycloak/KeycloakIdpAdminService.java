@@ -21,6 +21,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.admin.client.resource.RealmResource;
+import org.keycloak.admin.client.resource.UserResource;
 import org.keycloak.representations.idm.CredentialRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.stereotype.Service;
@@ -52,33 +53,36 @@ public class KeycloakIdpAdminService implements IdpAdminService {
             user.setEmail(request.getEmail());
             user.setFirstName(request.getFirstName());
             user.setLastName(request.getLastName());
+            user.setEnabled(true);
             if (request.getTcUserId() != null) {
                 user.setAttributes(java.util.Map.of("tc_user_id", java.util.List.of(request.getTcUserId())));
             }
 
-            if (request.getTemporaryPassword() != null) {
-                CredentialRepresentation cred = new CredentialRepresentation();
-                cred.setType("password");
-                cred.setValue(request.getTemporaryPassword());
-                cred.setTemporary(Boolean.TRUE);
-                user.setCredentials(java.util.List.of(cred));
-            }
+            CredentialRepresentation cred = new CredentialRepresentation();
+            cred.setType("password");
+            cred.setValue(request.getPassword());
+            user.setCredentials(java.util.List.of(cred));
 
             RealmResource realm = keycloak.realm(properties.getRealm());
-            Response resp = realm.users().create(user);
-            int status = resp.getStatus();
-            if (status != 201) {
-                throw new IdpAdminException("Failed to create user in Keycloak: status=" + status);
+
+            // Response holds HTTP resources, so close it after reading status/headers.
+            try (Response resp = realm.users().create(user)) {
+                int status = resp.getStatus();
+                if (status != 201) {
+                    throw new IdpAdminException(
+                        "Failed to create user in Keycloak: status=" + status);
+                }
+
+                String location = resp.getHeaderString("Location");
+                if (location == null || location.isBlank()) {
+                    throw new IdpAdminException(
+                        "Keycloak did not return Location header after user creation");
+                }
+
+                String createdId = extractIdFromLocation(location);
+
+                return new IdpUserRef(properties.getIssuer(), createdId, request.getEmail());
             }
-
-            String location = resp.getHeaderString("Location");
-            if (location == null || location.isBlank()) {
-                throw new IdpAdminException("Keycloak did not return Location header after user creation");
-            }
-
-            String createdId = extractIdFromLocation(location);
-
-            return new IdpUserRef(properties.getIssuer(), createdId, request.getEmail());
         } catch (IdpAdminException e) {
             throw e;
         } catch (Exception e) {
@@ -89,7 +93,7 @@ public class KeycloakIdpAdminService implements IdpAdminService {
     @Override
     public IdpUserProfile getIdpUserProfile(IdpUserRef userRef) {
         RealmResource realm = keycloak.realm(properties.getRealm());
-        var userResource = realm.users().get(userRef.getSubject());
+        UserResource userResource = realm.users().get(userRef.getSubject());
         UserRepresentation u = userResource.toRepresentation();
 
         String tcUserId = null;

@@ -18,6 +18,8 @@ package org.tctalent.server.idp.api.request;
 
 import lombok.Builder;
 import lombok.Data;
+import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 
 /**
  * Data required to register a user at the IdP.
@@ -28,7 +30,11 @@ public class RegisterUserRequest {
     private String email;
     private String firstName;
     private String lastName;
+
+    @Nullable
     private String tcUserId;
-    private String temporaryPassword; // optional
+
+    @NonNull
+    private String password;
 }
 
