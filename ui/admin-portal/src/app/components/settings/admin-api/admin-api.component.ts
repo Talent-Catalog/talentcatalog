@@ -79,6 +79,7 @@ export class AdminApiComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
+    // The default API call is a POST when a call is entered without clicking on a listed admin command
     this.form = this.fb.group({
       apicall: [],
       method: ['POST'],
