@@ -27,8 +27,13 @@ export class AdminService {
 
   constructor(private http: HttpClient) { }
 
-  call(apicall: string): Observable<string> {
-    return this.http.get(`${this.apiUrl}/${apicall}`, {responseType: 'text'});
+  // Currently only make GET or POST calls on the System Admin API
+  call(apicall: string, method: string): Observable<string> {
+    if (method == 'GET') {
+      return this.http.get(`${this.apiUrl}/${apicall}`, {responseType: 'text'});
+    } else {
+      return this.http.post(`${this.apiUrl}/${apicall}`, {}, {responseType: 'text'});
+    }
   }
 
 }
