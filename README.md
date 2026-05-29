@@ -341,7 +341,8 @@ use it to populate your empty database:
 - Create a new Run Profile for `org.tctalent.server.TcTalentApplication`.
 - Click 'Modify Options' and check Environment Variables, here you'll need to add a password for your
   System Admin user that is created on startup. This variable isn't included in the 
-  tc_secrets file (which Spring Boot inherits automatically) and must be added manually by entering `TC_BOOT_ADMIN_PASSWORD=` and a password 
+  tc_secrets file (which Spring Boot inherits automatically) and must be added manually by 
+  entering `TC_BOOT_ADMIN_PASSWORD=` and a password 
   of your choice (e.g. password). This will be used to access the admin portal once it is running.
 - Run the new profile, you should see something similar to this in the logs:
 
