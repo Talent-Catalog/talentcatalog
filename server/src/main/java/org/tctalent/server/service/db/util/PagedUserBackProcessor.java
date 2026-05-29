@@ -20,43 +20,42 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.tctalent.server.logging.LogBuilder;
-import org.tctalent.server.model.db.Candidate;
-import org.tctalent.server.request.candidate.SearchCandidateRequest;
-import org.tctalent.server.service.db.CandidateService;
-import org.tctalent.server.service.db.SavedSearchService;
+import org.tctalent.server.model.db.User;
+import org.tctalent.server.request.user.SearchUserRequest;
+import org.tctalent.server.service.db.UserService;
 import org.tctalent.server.util.background.BackProcessor;
 import org.tctalent.server.util.background.PageContext;
 
 /**
- * Processes candidates a page at a time
+ * Processes users a page at a time
  *
  * @author John Cameron
  */
 @Slf4j
 @RequiredArgsConstructor
-public abstract class PagedCandidateBackProcessor implements BackProcessor<PageContext> {
+public abstract class PagedUserBackProcessor implements BackProcessor<PageContext> {
     private final String action;
-    private final SearchCandidateRequest searchCandidateRequest;
-    private final CandidateService candidateService;
-    private final SavedSearchService savedSearchService;
+    private final SearchUserRequest searchUserRequest;
+    private final UserService userService;
 
     @Override
     public boolean process(PageContext ctx) {
         int page = ctx.getLastProcessedPage() == null ? 0 : ctx.getLastProcessedPage() + 1;
 
-        searchCandidateRequest.setPageNumber(page);
-        Page<Candidate> pageOfCandidates = null;
+        searchUserRequest.setPageNumber(page);
+        Page<User> pageOfUsers = null;
 
         try {
-            pageOfCandidates = savedSearchService.searchCandidates(searchCandidateRequest);
+            pageOfUsers = userService.searchPaged(searchUserRequest);
 
-            final List<Candidate> content = pageOfCandidates.getContent();
-            processCandidates(candidateService, content);
+            final List<User> content = pageOfUsers.getContent();
+            processUsers(userService, content);
 
             // Log completed page
             LogBuilder.builder(log)
                 .action(action)
-                .message("Processed " + content.size() + " items in page " + page + " of " + (pageOfCandidates.getTotalPages()-1))
+                .message("Processed " + content.size() + " items in page " + page + " of " +
+                    (pageOfUsers.getTotalPages()-1))
                 .logInfo();
         } catch (Exception e) {
             LogBuilder.builder(log)
@@ -67,9 +66,9 @@ public abstract class PagedCandidateBackProcessor implements BackProcessor<PageC
 
         ctx.setLastProcessedPage(page);
 
-        return pageOfCandidates == null || !pageOfCandidates.hasNext();
+        return pageOfUsers == null || !pageOfUsers.hasNext();
     }
 
-    abstract protected void processCandidates(
-        CandidateService candidateService, List<Candidate> candidates);
+    abstract protected void processUsers(
+        UserService userService, List<User> users);
 }

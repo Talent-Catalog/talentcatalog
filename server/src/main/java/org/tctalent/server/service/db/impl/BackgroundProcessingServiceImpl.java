@@ -28,25 +28,32 @@ import org.springframework.data.domain.Sort;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+import org.tctalent.server.idp.application.providers.keycloak.KeycloakAuthProperties;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.CandidateStatus;
 import org.tctalent.server.model.db.PartnerImpl;
+import org.tctalent.server.model.db.Role;
 import org.tctalent.server.model.db.SavedList;
 import org.tctalent.server.model.db.SavedSearch;
+import org.tctalent.server.model.db.User;
 import org.tctalent.server.repository.db.CandidateRepository;
 import org.tctalent.server.request.candidate.SearchCandidateRequest;
 import org.tctalent.server.request.list.SearchSavedListRequest;
 import org.tctalent.server.request.partner.SearchPartnerRequest;
 import org.tctalent.server.request.search.SearchSavedSearchRequest;
+import org.tctalent.server.request.user.SearchUserRequest;
 import org.tctalent.server.service.db.BackgroundProcessingService;
 import org.tctalent.server.service.db.CandidateService;
 import org.tctalent.server.service.db.PartnerService;
 import org.tctalent.server.service.db.SavedListService;
 import org.tctalent.server.service.db.SavedSearchService;
+import org.tctalent.server.service.db.UserService;
 import org.tctalent.server.service.db.util.PagedCandidateBackProcessor;
 import org.tctalent.server.service.db.util.PagedPartnerBackProcessor;
 import org.tctalent.server.service.db.util.PagedSavedListBackProcessor;
 import org.tctalent.server.service.db.util.PagedSavedSearchBackProcessor;
+import org.tctalent.server.service.db.util.PagedUserBackProcessor;
 import org.tctalent.server.util.background.BackProcessor;
 import org.tctalent.server.util.background.BackRunner;
 import org.tctalent.server.util.background.PageContext;
@@ -62,11 +69,13 @@ import org.tctalent.server.util.listener.BatchListeningLogger;
 public class BackgroundProcessingServiceImpl implements BackgroundProcessingService {
   private final CandidateService candidateService;
   private final CandidateRepository candidateRepository;
+  private final KeycloakAuthProperties keycloakAuthProperties;
   private final PartnerService partnerService;
   private final SavedListService savedListService;
   private final SavedSearchService savedSearchService;
   private final TaskScheduler taskScheduler;
   private final BatchListeningLogger batchListeningLogger;
+  private final UserService userService;
 
   public BackProcessor<PageContext> createPotentialDuplicatesBackProcessor(
       List<Long> candidateIds
@@ -127,6 +136,39 @@ public class BackgroundProcessingServiceImpl implements BackgroundProcessingServ
         20,
         "Potential duplicate candidate processing"
     );
+  }
+
+  @Override
+  public void registerUsersWithKeycloak(String password) {
+    //Check for local Keycloak instance
+    String serverUrl = keycloakAuthProperties.getServerUrl();
+    if (!StringUtils.hasText(serverUrl) || !serverUrl.contains("localhost")) {
+      throw new RuntimeException("No localhost Keycloak found.");
+    }
+
+    //Process all users
+    SearchUserRequest searchUserRequest = new SearchUserRequest();
+    //all roles (default is non candidates - ie Role != Role.user)
+    searchUserRequest.setRole(List.of(Role.values()));
+
+    //Set page size
+    searchUserRequest.setPageSize(100);
+
+    //Create the processor, passing in the request and services it needs
+    PagedUserBackProcessor backProcessor =
+        new PagedUserBackProcessor( "registerUsersWithKeycloak",
+            searchUserRequest, userService) {
+          @Override
+          protected void processUsers(
+              UserService userService, List<User> users) {
+            //The actual processing of the users happens in the user service.
+            userService.registerUsersOnKeycloak(users, password);
+          }
+        };
+
+    //Start the processing
+    PageContextBackRunner runner = new PageContextBackRunner();
+    runner.start(taskScheduler, backProcessor, 100, "register users with Keycloak");
   }
 
   @Override

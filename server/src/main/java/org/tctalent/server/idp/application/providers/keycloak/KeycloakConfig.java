@@ -32,7 +32,9 @@ public class KeycloakConfig {
     public Keycloak keycloak(KeycloakAuthProperties properties) {
         KeycloakBuilder builder = KeycloakBuilder.builder()
             .serverUrl(properties.getServerUrl())
-            //todo Need to make users go into talentcatalog realm instead of master, but for now we can just use master to avoid having to set up a separate realm and client for the admin operations
+            //todo Need to make users go into talentcatalog realm instead of master,
+            // but for now we can just use master to avoid having to set up a separate realm and
+            // client for the admin operations
             .realm("master")
             .clientId("admin-cli")
             .username("admin")

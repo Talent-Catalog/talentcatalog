@@ -3112,6 +3112,29 @@ public class SystemAdminApi {
         }
     }
 
+    @GetMapping("register_users_with_keycloak/{password}")
+    ResponseEntity<?> registerUsersWithKeycloak(@PathVariable String password) {
+        try {
+            this.backgroundProcessingService.registerUsersWithKeycloak(password);
+
+            LogBuilder.builder(log)
+                .action("Register users with Keycloak")
+                .message("Manually triggered")
+                .logInfo();
+
+            return ResponseEntity.ok().build(); // Return 200 OK - front-end will display 'Done'
+
+        } catch(Exception e) {
+            LogBuilder.builder(log)
+                .action("Register users with Keycloak")
+                .message("Manual triggered operation failed")
+                .logError(e);
+
+            // Return 500 Internal Server Error including error in body for display on frontend
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e);
+        }
+    }
+
     /**
      * Cancels the candidate's previous coupon assignment and makes a new one.
      */

@@ -48,6 +48,21 @@ public interface BackgroundProcessingService {
   void initiateDuplicateProcessing();
 
   /**
+   * Registers all users with a local Keycloak using the provided password.
+   * <p>
+   *     This is only intended for user on a developer local system connecting to a
+   *     Keycloak instance. It will fail in a staging or production environment because no
+   *     localhost Keycloak instance will be available.
+   * </p>
+   * <p>
+   *     Normally, this will only need to be run once on each developer's machine to register
+   *     users in their local database with their local Keycloak.
+   * </p>
+   * @param password All users will be registered with this password.
+   */
+  void registerUsersWithKeycloak(String password);
+
+  /**
    * Adds publicID to any candidate that doesn't have one
    */
   void setCandidatePublicIds();

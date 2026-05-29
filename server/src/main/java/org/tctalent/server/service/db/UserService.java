@@ -204,6 +204,13 @@ public interface UserService {
     void mfaVerify(String mfaCode) throws InvalidCredentialsException;
 
     /**
+     * Registers the given users on Keycloak all with the same password.
+     * @param users Users to register
+     * @param password Password to set for the users
+     */
+    void registerUsersOnKeycloak(List<User> users, String password);
+
+    /**
      * Returns all staff users (ie not candidates) who are not using multi factor authentication.
      * @return Users not using mfa.
      */

@@ -202,13 +202,8 @@ public class UserServiceImpl implements UserService {
             //We found a user on the database, so update any changed fields.
             user = userOptional.get();
             //Found, update any changed fields.
-            //Idp fields can be null in the case of migrating pre OAuth2 users.
-            if (user.getIdpIssuer() == null) {
-                user.setIdpIssuer(idpIssuer);
-            }
-            if (user.getIdpSubject() == null) {
-                user.setIdpSubject(idpSubject);
-            }
+            user.setIdpIssuer(idpIssuer);
+            user.setIdpSubject(idpSubject);
             user.setFirstName(profile.getFirstName());
             user.setLastName(profile.getLastName());
             user.setEmail(profile.getEmail());
@@ -233,20 +228,11 @@ public class UserServiceImpl implements UserService {
         throws UsernameTakenException {
 
         User user = new User();
-
         populateUserFields(user, request, creatingUser);
-
         final User savedUser = userRepository.save(user);
 
         //Register user on IDP
-        RegisterUserRequest idpRequest = RegisterUserRequest.builder()
-            .email(savedUser.getEmail())
-            .firstName(savedUser.getFirstName())
-            .lastName(savedUser.getLastName())
-            .password(request.getPassword())
-            .publicId(null) //This should be publicId
-            .build();
-        idpAdminService.registerUser(idpRequest);
+        registerUserOnKeycloak(savedUser, request.getPassword());
 
         return savedUser;
     }
@@ -875,6 +861,35 @@ public class UserServiceImpl implements UserService {
             }
             if (!totpVerifier.isValidCode(user.getMfaSecret(), mfaCode)) {
                 throw new InvalidCredentialsException("Incorrect authentication code - try again. Or contact a Talent Catalog administrator.");
+            }
+        }
+    }
+
+    private void registerUserOnKeycloak(User user, String password) {
+        //Register user on IDP
+        RegisterUserRequest idpRequest = RegisterUserRequest.builder()
+            .email(user.getEmail())
+            .firstName(user.getFirstName())
+            .lastName(user.getLastName())
+            .password(password)
+            .publicId(null) //This should be publicId
+            .build();
+        idpAdminService.registerUser(idpRequest);
+    }
+
+    @Override
+    public void registerUsersOnKeycloak(List<User> users, String password) {
+        for (User user : users) {
+            //Can only register users who have an email
+            if (user.getEmail() != null) {
+                try {
+                    registerUserOnKeycloak(user, password);
+                } catch (Exception e) {
+                    LogBuilder.builder(log)
+                        .action("RegisterUserOnKeycloak")
+                        .message("Error registering user " + user.getEmail() + " on Keycloak")
+                        .logError(e);
+                }
             }
         }
     }

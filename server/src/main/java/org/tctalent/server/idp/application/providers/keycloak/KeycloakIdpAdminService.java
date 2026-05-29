@@ -71,7 +71,7 @@ public class KeycloakIdpAdminService implements IdpAdminService {
                 int status = resp.getStatus();
                 if (status != 201) {
                     throw new IdpAdminException(
-                        "Failed to create user in Keycloak: status=" + status);
+                        "Failed to create user " + user.getEmail() + " in Keycloak: status=" + status);
                 }
 
                 String location = resp.getHeaderString("Location");
