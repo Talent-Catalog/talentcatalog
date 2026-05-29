@@ -97,6 +97,7 @@ full profile in our database, including their role(s) and permissions.
 TBB and GRN instances of the Talent Catalog have separate IDP providers. 
 
 Each IDP instance is configured as follows:
+- username and email are always the same. email IS the username.
 - a single "user pool" (or "realm" in Keycloak) called "talentcatalog" (same for both instances).
 - a client called "candidate" for candidate-portal users (refugees)
 - a client called "admin" for admin-portal users.
