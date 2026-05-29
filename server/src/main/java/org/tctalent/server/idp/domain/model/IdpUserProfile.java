@@ -31,6 +31,6 @@ public class IdpUserProfile {
     private String lastName;
     private Boolean enabled;
     private String status;
-    private String tcUserId;
+    private String publicId;
 }
 

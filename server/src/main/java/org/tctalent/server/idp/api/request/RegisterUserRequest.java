@@ -32,7 +32,7 @@ public class RegisterUserRequest {
     private String lastName;
 
     @Nullable
-    private String tcUserId;
+    private String publicId;
 
     @NonNull
     private String password;

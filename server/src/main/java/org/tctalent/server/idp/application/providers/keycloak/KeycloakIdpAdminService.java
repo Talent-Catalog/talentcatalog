@@ -55,8 +55,8 @@ public class KeycloakIdpAdminService implements IdpAdminService {
             user.setFirstName(request.getFirstName());
             user.setLastName(request.getLastName());
             user.setEnabled(true);
-            if (request.getTcUserId() != null) {
-                user.setAttributes(java.util.Map.of("tc_user_id", List.of(request.getTcUserId())));
+            if (request.getPublicId() != null) {
+                user.setAttributes(java.util.Map.of("public_id", List.of(request.getPublicId())));
             }
 
             CredentialRepresentation cred = new CredentialRepresentation();
@@ -97,10 +97,10 @@ public class KeycloakIdpAdminService implements IdpAdminService {
         UserResource userResource = realm.users().get(userRef.getSubject());
         UserRepresentation u = userResource.toRepresentation();
 
-        String tcUserId = null;
-        if (u.getAttributes() != null && u.getAttributes().get("tc_user_id") != null
-            && !u.getAttributes().get("tc_user_id").isEmpty()) {
-            tcUserId = u.getAttributes().get("tc_user_id").get(0);
+        String publicId = null;
+        if (u.getAttributes() != null && u.getAttributes().get("public_id") != null
+            && !u.getAttributes().get("public_id").isEmpty()) {
+            publicId = u.getAttributes().get("public_id").get(0);
         }
 
         return IdpUserProfile.builder()
@@ -111,7 +111,7 @@ public class KeycloakIdpAdminService implements IdpAdminService {
             .firstName(u.getFirstName())
             .lastName(u.getLastName())
             .status("ENABLED")
-            .tcUserId(tcUserId)
+            .publicId(publicId)
             .build();
     }
 

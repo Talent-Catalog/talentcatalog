@@ -74,7 +74,7 @@ class KeycloakIdpAdminServiceTest {
             .email("bob@example.com")
             .firstName("Bob")
             .lastName("Builder")
-            .tcUserId("tc-123")
+            .publicId("tc-123")
             .password("abcd")
             .build();
 
@@ -111,7 +111,7 @@ class KeycloakIdpAdminServiceTest {
     }
 
     @Test
-    void getIdpUserProfile_success_and_tcUserId_present() {
+    void getIdpUserProfile_success_and_publicId_present() {
         UserResource ur = mock(UserResource.class);
         UserRepresentation u = new UserRepresentation();
         u.setId("uid-1");
@@ -121,7 +121,7 @@ class KeycloakIdpAdminServiceTest {
         u.setFirstName("Alice");
         u.setLastName("Doe");
         u.setEnabled(Boolean.TRUE);
-        u.setAttributes(Map.of("tc_user_id", List.of("tc-555")));
+        u.setAttributes(Map.of("public_id", List.of("tc-555")));
 
         when(users.get("uid-1")).thenReturn(ur);
         when(ur.toRepresentation()).thenReturn(u);
@@ -131,12 +131,12 @@ class KeycloakIdpAdminServiceTest {
 
         assertEquals("uid-1", p.getSubject());
         assertEquals("alice", p.getUsername());
-        assertEquals("tc-555", p.getTcUserId());
+        assertEquals("tc-555", p.getPublicId());
         assertEquals("ENABLED", p.getStatus());
     }
 
     @Test
-    void getIdpUserProfile_missingTcUserId_mapsNull() {
+    void getIdpUserProfile_missingPublicId_mapsNull() {
         UserResource ur = mock(UserResource.class);
         UserRepresentation u = new UserRepresentation();
         u.setId("uid-2");
@@ -150,7 +150,7 @@ class KeycloakIdpAdminServiceTest {
         IdpUserRef ref = new IdpUserRef(props.getIssuer(), "uid-2", "joe");
         IdpUserProfile p = svc.getIdpUserProfile(ref);
 
-        assertNull(p.getTcUserId());
+        assertNull(p.getPublicId());
     }
 }
 

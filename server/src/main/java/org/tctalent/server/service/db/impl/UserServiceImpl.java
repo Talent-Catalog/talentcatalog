@@ -244,7 +244,7 @@ public class UserServiceImpl implements UserService {
             .firstName(savedUser.getFirstName())
             .lastName(savedUser.getLastName())
             .password(request.getPassword())
-            .tcUserId(null) //This should be publicId
+            .publicId(null) //This should be publicId
             .build();
         idpAdminService.registerUser(idpRequest);
 
