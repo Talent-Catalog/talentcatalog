@@ -3112,6 +3112,21 @@ public class SystemAdminApi {
         }
     }
 
+    /**
+     * Note that Keycloak will not accept some of our old user data. Exceptions will be logged,
+     * but the process will keep going.
+     * <p>
+     *     In particular Keycloak will reject:
+     *     <ul>
+     *         <li>Duplicate emails: On the db emails were not always required to be unique.</li>
+     *         <li>Invalid email addresses: Manually entered emails often included spaces and other
+     *         characters or did not look like emails at all. </li>
+     *         <li>Invalid characters in the first or last name. For example, brackets.</li>
+     *     </ul>
+     * </p>
+     * @param password All users use this password.
+     * @return status
+     */
     @GetMapping("register_users_with_keycloak/{password}")
     ResponseEntity<?> registerUsersWithKeycloak(@PathVariable String password) {
         try {
