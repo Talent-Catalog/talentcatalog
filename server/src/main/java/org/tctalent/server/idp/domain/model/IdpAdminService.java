@@ -30,12 +30,26 @@ public interface IdpAdminService {
      */
     IdpUserProfile getIdpUserProfile(IdpUserRef userRef);
 
-
     /**
      * Register a user on the IDP.
      * @param request Data required to register the user.
      * @return User profile.
      */
     IdpUserRef registerUser(RegisterUserRequest request);
+
+    /**
+     * Update the user's email address in the IDP.
+     * <p>
+     * Implementations should force the new email address to be verified again.
+     * For example:
+     * <ul>
+     *     <li>Keycloak should set {@code emailVerified=false} and send a verification email.</li>
+     *     <li>Cognito should mark the email as unverified and trigger verification where supported.</li>
+     * </ul>
+     *
+     * @param userRef Identifies the user in the IDP.
+     * @param newEmail New email address.
+     */
+    void updateEmail(IdpUserRef userRef, String newEmail);
 }
 

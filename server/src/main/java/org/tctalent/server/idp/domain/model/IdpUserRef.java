@@ -27,6 +27,6 @@ import lombok.Data;
 public class IdpUserRef {
     private String issuer;
     private String subject;
-    private String username;
+    private String email;
 }
 

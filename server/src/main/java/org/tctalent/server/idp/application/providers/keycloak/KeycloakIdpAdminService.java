@@ -17,6 +17,7 @@
 package org.tctalent.server.idp.application.providers.keycloak;
 
 import jakarta.ws.rs.core.Response;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.keycloak.admin.client.Keycloak;
@@ -55,7 +56,7 @@ public class KeycloakIdpAdminService implements IdpAdminService {
             user.setLastName(request.getLastName());
             user.setEnabled(true);
             if (request.getTcUserId() != null) {
-                user.setAttributes(java.util.Map.of("tc_user_id", java.util.List.of(request.getTcUserId())));
+                user.setAttributes(java.util.Map.of("tc_user_id", List.of(request.getTcUserId())));
             }
 
             CredentialRepresentation cred = new CredentialRepresentation();
@@ -125,6 +126,24 @@ public class KeycloakIdpAdminService implements IdpAdminService {
         }
         return location.substring(idx + 1);
     }
+
+    @Override
+    public void updateEmail(IdpUserRef userRef, String newEmail) {
+        RealmResource realm = keycloak.realm(properties.getRealm());
+        UserResource userResource = realm.users().get(userRef.getSubject());
+        UserRepresentation u = userResource.toRepresentation();
+        u.setEmail(newEmail);
+        u.setUsername(newEmail); // if username is email
+
+        userResource.update(u);
+
+        // We don't support email verification of on Keycloak (which is just used for local
+        // testing). But if we did, this is how we would force Keycloak to send verification email.
+        // If you execute the following line without setting Keycloak up for email verification,
+        // it will fail with an HTTP 500 Internal Server Error.
+//        userResource.executeActionsEmail(List.of("VERIFY_EMAIL"));
+    }
+
 }
 
 

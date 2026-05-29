@@ -75,14 +75,14 @@ class KeycloakIdpAdminServiceTest {
             .firstName("Bob")
             .lastName("Builder")
             .tcUserId("tc-123")
-            .temporaryPassword("tempPass")
+            .password("abcd")
             .build();
 
         IdpUserRef ref = svc.registerUser(req);
 
         assertEquals(props.getIssuer(), ref.getIssuer());
         assertEquals("created-id", ref.getSubject());
-        assertEquals("bob@example.com", ref.getUsername());
+        assertEquals("bob@example.com", ref.getEmail());
     }
 
     @Test
@@ -91,7 +91,8 @@ class KeycloakIdpAdminServiceTest {
         when(resp.getStatus()).thenReturn(400);
         when(users.create(any())).thenReturn(resp);
 
-        RegisterUserRequest req = RegisterUserRequest.builder().email("x@x").build();
+        RegisterUserRequest req = RegisterUserRequest.builder().email("x@x")
+            .password("password").build();
 
         assertThrows(IdpAdminException.class, () -> svc.registerUser(req));
     }
@@ -103,7 +104,8 @@ class KeycloakIdpAdminServiceTest {
         when(resp.getHeaderString("Location")).thenReturn(null);
         when(users.create(any())).thenReturn(resp);
 
-        RegisterUserRequest req = RegisterUserRequest.builder().email("x@x").build();
+        RegisterUserRequest req = RegisterUserRequest.builder().email("x@x")
+            .password("password").build();
 
         assertThrows(IdpAdminException.class, () -> svc.registerUser(req));
     }

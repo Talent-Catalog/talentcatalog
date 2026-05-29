@@ -58,6 +58,7 @@ import org.tctalent.server.exception.ServiceException;
 import org.tctalent.server.exception.UsernameTakenException;
 import org.tctalent.server.idp.api.request.RegisterUserRequest;
 import org.tctalent.server.idp.domain.model.IdpAdminService;
+import org.tctalent.server.idp.domain.model.IdpUserRef;
 import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.model.db.Country;
 import org.tctalent.server.model.db.PartnerImpl;
@@ -265,14 +266,7 @@ public class UserServiceImpl implements UserService {
         }
         user.setUsername(requestedUsername);
 
-        String currentEmail = user.getEmail();
-        if (currentEmail == null || !currentEmail.equals(requestedEmail)) {
-            User existing = userRepository.findByEmailIgnoreCase(requestedEmail);
-            if (existing != null) {
-                throw new UsernameTakenException("email");
-            }
-        }
-        user.setEmail(requestedEmail);
+        updateUserEmail(user, requestedEmail);
 
         reassignPartnerIfNeeded(user, request, creatingUser);
         updateApproverIfNeeded(user, request, creatingUser);
@@ -298,6 +292,23 @@ public class UserServiceImpl implements UserService {
         }
         user.setAuditFields(creatingUser == null ? user : creatingUser);
     }
+
+    private void updateUserEmail(@NonNull User user, @Nullable String requestedEmail) {
+        String currentEmail = user.getEmail();
+        if (currentEmail == null || !currentEmail.equals(requestedEmail)) {
+            //Email has changed
+            User existing = userRepository.findByEmailIgnoreCase(requestedEmail);
+            if (existing != null) {
+                throw new UsernameTakenException("email");
+            }
+            user.setEmail(requestedEmail);
+
+            IdpUserRef userRef = new IdpUserRef(
+                user.getIdpIssuer(), user.getIdpSubject(), requestedEmail);
+            idpAdminService.updateEmail(userRef, requestedEmail);
+        }
+    }
+
 
     @Override
     @Transactional
