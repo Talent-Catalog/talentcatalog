@@ -455,6 +455,15 @@
             </tc-description-list>
           </div>
 
+          <div class="col-md-6" *ngIf="showAspirations">
+            <tc-description-list direction="column" compact size="lg">
+              <tc-description-item [label]="'REGISTRATION.SUBMIT.LABEL.ASPIRATIONS' | translate">
+                {{candidate?.aspirations || ''}}
+              </tc-description-item>
+            </tc-description-list>
+          </div>
+
+
           <div class="col-md-6">
             <tc-description-list direction="column" compact size="lg">
               <tc-description-item [label]="'PROFILE.OTHER.LINKEDIN' | translate">

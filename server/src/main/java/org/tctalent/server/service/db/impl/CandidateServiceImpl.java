@@ -140,6 +140,7 @@ import org.tctalent.server.request.candidate.SavedListGetRequest;
 import org.tctalent.server.request.candidate.SelfRegistrationRequest;
 import org.tctalent.server.request.candidate.SubmitRegistrationRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateAdditionalInfoRequest;
+import org.tctalent.server.request.candidate.UpdateCandidateAspirationsRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateContactRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateEducationRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateLinksRequest;
@@ -884,6 +885,19 @@ public class CandidateServiceImpl implements CandidateService {
                 .orElseThrow(() -> new NoSuchObjectException(Candidate.class, id));
 
         candidate.setAdditionalInfo(request.getAdditionalInfo());
+        return save(candidate);
+    }
+
+    @Override
+    public Candidate updateCandidateAspirations(long id, UpdateCandidateAspirationsRequest request) {
+        User loggedInUser = authService.getLoggedInUser()
+            .orElseThrow(() -> new InvalidSessionException("Not logged in"));
+
+        Set<Country> sourceCountries = userService.getDefaultSourceCountries(loggedInUser);
+        Candidate candidate = this.candidateRepository.findByIdLoadUser(id, sourceCountries)
+            .orElseThrow(() -> new NoSuchObjectException(Candidate.class, id));
+
+        candidate.setAspirations(request.getAspirations());
         return save(candidate);
     }
 
