@@ -266,6 +266,7 @@ public class CandidateServiceImpl implements CandidateService {
     private final EntityManager entityManager;
     private final PersistenceContextHelper persistenceContextHelper;
     private final SystemNotificationService systemNotificationService;
+    private final TcInstanceService tcInstanceService;
 
     @Override
     public Page<Candidate> getSavedListCandidates(SavedList savedList, SavedListGetRequest request) {
@@ -1639,7 +1640,7 @@ public class CandidateServiceImpl implements CandidateService {
     @Override
     public Candidate submitRegistration(SubmitRegistrationRequest request) {
         Candidate candidate = getLoggedInCandidate()
-                .orElseThrow(() -> new InvalidSessionException("Not logged in"));
+            .orElseThrow(() -> new InvalidSessionException("Not logged in"));
 
         final String acceptedPrivacyPolicyId = request.getAcceptedPrivacyPolicyId();
         updatePolicyId(acceptedPrivacyPolicyId, candidate);
@@ -1649,8 +1650,8 @@ public class CandidateServiceImpl implements CandidateService {
         final CandidateStatus candidateStatus = candidate.getStatus();
         if (!candidateStatus.equals(CandidateStatus.pending)) {
             if (candidate.getNationality() != candidate.getCountry() ||
-                    candidate.getCountry().getId() == afghanistanCountryId ||
-                    candidate.getCountry().getId() == ukraineCountryId
+                candidate.getCountry().getId() == afghanistanCountryId ||
+                candidate.getCountry().getId() == ukraineCountryId
             ) {
                 UpdateCandidateStatusInfo info = new UpdateCandidateStatusInfo();
 
@@ -2997,6 +2998,11 @@ public class CandidateServiceImpl implements CandidateService {
      */
     private CandidateStatus checkForAutomaticStatusChanges(
         long countryReqId, long nationalityReqId, Candidate candidate) {
+        // GRN should not automatically change status when country or nationality changes.
+        if (tcInstanceService.isGRN()) {
+            return null;
+        }
+
         CandidateStatus newStatus = null;
 
         //If the candidate is in an active status make them inactive if they are in a destination
