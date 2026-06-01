@@ -59,10 +59,6 @@ export class CandidateHistoryTabComponent implements OnInit, OnChanges {
     }
   }
 
-  onAddNote($event) {
-    // TODO
-  }
-
   resize(){
     this.onResize.emit();
   }

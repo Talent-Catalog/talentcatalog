@@ -80,7 +80,7 @@ public class CandidateReadDto {
     private List<CandidateJobExperienceReadDto> candidateJobExperiences;
     @JsonOneToMany(joinColumn = "candidate_id")
     private List<CandidateLanguageReadDto> candidateLanguages;
-    @JsonOneToMany(joinColumn = "candidate_id")
+    @JsonOneToMany(joinColumn = "candidate_id", orderBy = "updated_date DESC")
     private List<CandidateNoteReadDto> candidateNotes;
     @JsonOneToMany(joinColumn = "candidate_id")
     private List<CandidateOccupationReadDto> candidateOccupations;
