@@ -143,7 +143,7 @@ public class BackgroundProcessingServiceImpl implements BackgroundProcessingServ
     //Check for local Keycloak instance
     String serverUrl = keycloakAuthProperties.getServerUrl();
     if (!StringUtils.hasText(serverUrl) || !serverUrl.contains("localhost")) {
-      throw new RuntimeException("No localhost Keycloak found.");
+      throw new RuntimeException("Only localhost Keycloak instances can be used for this operation.");
     }
 
     //Process all users

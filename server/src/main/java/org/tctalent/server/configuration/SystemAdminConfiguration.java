@@ -35,6 +35,7 @@ import org.tctalent.server.request.list.UpdateSavedListInfoRequest;
 import org.tctalent.server.request.partner.UpdatePartnerRequest;
 import org.tctalent.server.request.user.UpdateUserRequest;
 import org.tctalent.server.security.SpringSecurityAuditorAware;
+import org.tctalent.server.service.db.BackgroundProcessingService;
 import org.tctalent.server.service.db.PartnerService;
 import org.tctalent.server.service.db.SavedListService;
 import org.tctalent.server.service.db.ShutdownService;
@@ -68,12 +69,27 @@ public class SystemAdminConfiguration {
         PENDING_TERMS_ACCEPTANCE_LIST_NAME
     };
 
+    private final BackgroundProcessingService backgroundProcessingService;
     private final PartnerService partnerService;
     private final SavedListService savedListService;
     private final ShutdownService shutdownService;
     private final TcInstanceService tcInstanceService;
     private final UserService userService;
     private final SpringSecurityAuditorAware auditorAware;
+
+    /**
+     * If this exists in the environment, it indicates that the server should add all known
+     * users to Keycloak. The value is the password for all added users.
+     * <p>
+     * This is only intended to be used in developers' own local dev environments connecting to
+     * the local Keycloak instance running on the same machine in Docker.
+     * <p>
+     * Typically, this environment variable is temporarily added to the developer's
+     * TcTalentApplication run configuration in Intellij to trigger the process of adding users to
+     * Keycloak. It only needs to be done once per developer machine and can be removed after that.
+     */
+    @Value("${ADD_USERS_TO_KEYCLOAK:}")
+    private String addUsersToKeycloak;
 
     @Value("${tc.init.boot-admin-password}")
     private String systemAdminPassword;
@@ -192,6 +208,17 @@ public class SystemAdminConfiguration {
             if (listName.equals(PENDING_TERMS_ACCEPTANCE_LIST_NAME)) {
                 PENDING_TERMS_ACCEPTANCE_LIST_ID = savedList.getId();
             }
+        }
+
+        //Add users to Keycloak if requested
+        if (addUsersToKeycloak != null && !addUsersToKeycloak.isEmpty()) {
+            backgroundProcessingService.registerUsersWithKeycloak(addUsersToKeycloak);
+
+            LogBuilder.builder(log)
+                .action("Registering users with Keycloak.")
+                .message("Existing users with the same email will log an error but not be affected. "
+                    + "In particular their password will not be changed.")
+                .logInfo();
         }
     }
 

@@ -50,14 +50,30 @@ public interface BackgroundProcessingService {
   /**
    * Registers all users with a local Keycloak using the provided password.
    * <p>
-   *     This is only intended for user on a developer local system connecting to a
-   *     Keycloak instance. It will fail in a staging or production environment because no
-   *     localhost Keycloak instance will be available.
+   * This is only intended for user on a developer local system connecting to a Keycloak instance.
+   * It will fail in a staging or production environment because no localhost Keycloak instance
+   * will be available.
    * </p>
    * <p>
-   *     Normally, this will only need to be run once on each developer's machine to register
-   *     users in their local database with their local Keycloak.
+   * Normally, this will only need to be run once on each developer's machine to register users in
+   * their local database with their local Keycloak.
    * </p>
+   * <p>
+   * Note that Keycloak will not accept some of our old user data. Exceptions will be logged, but
+   * the process will keep going.
+   * <p>
+   * In particular Keycloak will reject:
+   *     <ul>
+   *         <li>Duplicate emails: On the db emails were not always required to be unique.
+   *         If Keycloak already has a user with an email, the existing user, including their
+   *         password on Keycloak, is unchanged.</li>
+   *         <li>Invalid email addresses: Manually entered emails often included spaces and other
+   *         characters or did not look like emails at all. </li>
+   *         <li>Invalid characters in the first or last name. For example, brackets.</li>
+   *     </ul>
+   * </p>
+   * </p>
+   *
    * @param password All users will be registered with this password.
    */
   void registerUsersWithKeycloak(String password);
