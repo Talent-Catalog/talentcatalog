@@ -16,6 +16,7 @@
 
 package org.tctalent.server.idp.application.providers.keycloak;
 
+import jakarta.ws.rs.NotFoundException;
 import jakarta.ws.rs.core.Response;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -88,6 +89,22 @@ public class KeycloakIdpAdminService implements IdpAdminService {
             throw e;
         } catch (Exception e) {
             throw new IdpAdminException("Error creating user in Keycloak", e);
+        }
+    }
+
+    @Override
+    public void deleteUser(IdpUserRef userRef) {
+        try {
+            keycloak.realm(properties.getRealm())
+                .users()
+                .get(userRef.getSubject())
+                .remove();
+        } catch (NotFoundException e) {
+            // Deleting a missing user is safe during rollback/cleanup.
+            return;
+        } catch (Exception e) {
+            throw new IdpAdminException(
+                "Failed to delete Keycloak user: subject=" + userRef.getSubject(), e);
         }
     }
 

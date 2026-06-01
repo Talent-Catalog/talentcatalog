@@ -326,7 +326,7 @@ export class AuthorizationService {
   }
 
   isAuthenticated(): boolean {
-    return this.authenticationService.getLoggedInUser() != null;
+    return this.authenticationService.isAuthenticated();
   }
 
   /**

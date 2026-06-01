@@ -28,6 +28,7 @@ import org.tctalent.server.model.db.PartnerDtoHelper;
 import org.tctalent.server.model.db.User;
 import org.tctalent.server.response.AuthenticationResponse;
 import org.tctalent.server.security.AuthProfile;
+import org.tctalent.server.security.OAuth2UserService;
 import org.tctalent.server.service.db.UserService;
 import org.tctalent.server.util.dto.DtoBuilder;
 import org.tctalent.server.util.qr.EncodedQrImage;
@@ -47,11 +48,13 @@ import org.tctalent.server.util.qr.EncodedQrImage;
 public class AuthAdminApi {
 
     private final UserService userService;
+    private final OAuth2UserService oAuth2UserService;
 
 
     @PostMapping("login")
     public Map<String, Object> login(@RequestBody AuthProfile profile) {
         User user = userService.login(profile);
+        oAuth2UserService.checkUserClientId(user, OAuth2UserService.OAUTH_TC_ADMIN_CLIENT_ID);
         AuthenticationResponse response = userService.createAuthenticationResponse(user);
         return authenticationDto().build(response);
     }

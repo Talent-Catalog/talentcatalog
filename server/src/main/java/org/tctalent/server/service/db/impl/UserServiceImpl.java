@@ -237,7 +237,8 @@ public class UserServiceImpl implements UserService {
         return savedUser;
     }
 
-    private void populateUserFields(User user, UpdateUserRequest request, @Nullable User creatingUser) {
+    private void populateUserFields(
+        User user, UpdateUserRequest request, @Nullable User creatingUser) {
         //Check for changes to something existing which must be unique
 
         final String requestedUsername = request.getUsername();
@@ -289,9 +290,13 @@ public class UserServiceImpl implements UserService {
             }
             user.setEmail(requestedEmail);
 
-            IdpUserRef userRef = new IdpUserRef(
-                user.getIdpIssuer(), user.getIdpSubject(), requestedEmail);
-            idpAdminService.updateEmail(userRef, requestedEmail);
+            //If current email was null the user can't be on Idp - which requires email.
+            //So only update IDP when the current email is not null.
+            if (currentEmail != null) {
+                IdpUserRef userRef = new IdpUserRef(
+                    user.getIdpIssuer(), user.getIdpSubject(), requestedEmail);
+                idpAdminService.updateEmail(userRef, requestedEmail);
+            }
         }
     }
 
@@ -489,6 +494,11 @@ public class UserServiceImpl implements UserService {
             user.setStatus(Status.deleted);
             user.setAuditFields(loggedInUser);
             userRepository.save(user);
+
+            IdpUserRef userRef = new IdpUserRef(
+                user.getIdpIssuer(), user.getIdpSubject(), user.getEmail());
+            idpAdminService.deleteUser(userRef);
+
         } else {
             throw new InvalidRequestException("You don't have permission to delete this user.");
         }
@@ -874,7 +884,10 @@ public class UserServiceImpl implements UserService {
             .password(password)
             .publicId(null) //This should be publicId
             .build();
-        idpAdminService.registerUser(idpRequest);
+        IdpUserRef idpUserRef = idpAdminService.registerUser(idpRequest);
+        user.setIdpIssuer(idpUserRef.getIssuer());
+        user.setIdpSubject(idpUserRef.getSubject());
+        userRepository.save(user);
     }
 
     @Override

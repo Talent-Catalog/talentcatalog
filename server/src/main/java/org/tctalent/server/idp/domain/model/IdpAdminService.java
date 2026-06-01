@@ -31,6 +31,12 @@ public interface IdpAdminService {
     IdpUserProfile getIdpUserProfile(IdpUserRef userRef);
 
     /**
+     * Delete a user from the IDP.
+     * @param userRef Identifies the user in the IDP.
+     */
+    void deleteUser(IdpUserRef userRef);
+
+    /**
      * Register a user on the IDP.
      * @param request Data required to register the user.
      * @return User profile.
