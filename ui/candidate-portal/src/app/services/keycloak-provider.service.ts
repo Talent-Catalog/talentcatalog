@@ -133,7 +133,7 @@ export class KeycloakProviderService implements IdpProvider {
     this.patchStatus({ busy: true, error: null });
 
     try {
-      await this.keycloakService.logout(window.location.origin);
+      await this.keycloakService.logout();
 
       this.patchStatus({
         busy: false,
