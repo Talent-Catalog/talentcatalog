@@ -17,6 +17,7 @@ import {TranslateModule} from "@ngx-translate/core";
 })
 export class LoggingOutComponent implements OnInit, OnDestroy {
   reason: string;
+  returnUrl: string;
   secondsRemaining = 10;
 
   private readonly destroy$ = new Subject<void>();
@@ -27,6 +28,7 @@ export class LoggingOutComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.reason = this.route.snapshot.queryParamMap.get('reason');
+    this.returnUrl = this.route.snapshot.queryParamMap.get('returnUrl');
 
     const countdownSeconds = 180;
     //Automatically logout after countdown seconds
@@ -48,9 +50,13 @@ export class LoggingOutComponent implements OnInit, OnDestroy {
     this.destroy$.next();
 
     //Force a logout
-    this.authenticationService.logout();
+    void this.authenticationService.logout();
 
-    this.router.navigate(['']);
+    //Don't get into a loop if the returnUrl is "/login"
+    if (!this.returnUrl.startsWith('/login')) {
+      void this.router.navigate(['/login'], {queryParams: {returnUrl: this.returnUrl}});
+    }
+
   }
 
   ngOnDestroy() {

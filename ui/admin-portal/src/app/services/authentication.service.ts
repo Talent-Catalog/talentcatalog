@@ -136,10 +136,8 @@ export class AuthenticationService implements OnDestroy {
   }
 
   getToken(): string | undefined {
-    if (this.idpProvider.isAuthenticated()) {
-      return this.idpProvider.getToken();
-    } else {
-      console.log("Not authenticated");
+    if (!this.idpProvider.isAuthenticated()) {
+      return undefined;
     }
     return this.idpProvider.getToken();
   }

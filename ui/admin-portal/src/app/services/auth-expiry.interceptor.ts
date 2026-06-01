@@ -19,13 +19,9 @@ export class AuthExpiryInterceptor implements HttpInterceptor {
     return next.handle(request).pipe(
       catchError((err: unknown) => {
         if (err instanceof HttpErrorResponse && err.status === 401) {
-          const currentUrl = this.router.url || '/';
-          this.router.navigate(['/logout'],
-            { queryParams: { reason: err } });
-          // Avoid infinite loop by checking if we're already on the login page
-          if (!currentUrl.startsWith('/login')) {
-            this.router.navigate(['/login'], { queryParams: { returnUrl: currentUrl } });
-          }
+          const returnUrl = this.router.url || '/';
+          void this.router.navigate(['/logout'],
+            { queryParams: { reason: err, returnUrl: returnUrl } });
         }
         return throwError(err);
       })
