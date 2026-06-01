@@ -86,23 +86,7 @@ public class PdfHelper {
      */
     public Resource generatePdf(Candidate candidate, Boolean showName, Boolean showContact){
         try {
-            // Prepare the candidate before rendering the PDF, so contact fields and job descriptions are cleaned before they go into the template.
-            candidate = cvExportDataPreparer.prepare(candidate, showContact);
-
-            Context context = new Context();
-            context.setVariable("candidate", candidateTidiedTextViewFactory.create(candidate));
-            context.setVariable("showName", showName);
-            context.setVariable("showContact", showContact);
-            context.setVariable("logoFile", tcInstanceService.getLogoFile());
-
-            String renderedHtmlContent = pdfTemplateEngine.process("template", context);
-            String xHtml = convertToXhtml(renderedHtmlContent);
-
-            // Remove any null bytes to avoid an invalid XML character (Unicode: 0x0) error
-            xHtml = NULL_BYTE_PATTERN.matcher(xHtml).replaceAll("");
-
-            // And finally, we create the PDF:
-            return createPdf(xHtml);
+            return createPdf(renderCvXhtml(candidate, showName, showContact));
         } catch (Exception e) {
             LogBuilder.builder(log)
                 .action("generatePdf")
@@ -110,6 +94,23 @@ public class PdfHelper {
                 .logError(e);
            throw new PdfGenerationException(e.getMessage());
         }
+    }
+
+    public String renderCvXhtml(Candidate candidate, Boolean showName, Boolean showContact) {
+        // Prepare the candidate before rendering the PDF, so contact fields and job descriptions are cleaned before they go into the template.
+        candidate = cvExportDataPreparer.prepare(candidate, showContact);
+
+        Context context = new Context();
+        context.setVariable("candidate", candidateTidiedTextViewFactory.create(candidate));
+        context.setVariable("showName", showName);
+        context.setVariable("showContact", showContact);
+        context.setVariable("logoFile", tcInstanceService.getLogoFile());
+
+        String renderedHtmlContent = pdfTemplateEngine.process("template", context);
+        String xhtml = convertToXhtml(renderedHtmlContent);
+
+        // Remove null bytes to avoid invalid XML character errors in PDF/DOCX converters.
+        return NULL_BYTE_PATTERN.matcher(xhtml).replaceAll("");
     }
 
     private static String convertToXhtml(String html) {
