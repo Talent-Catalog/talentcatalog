@@ -3113,44 +3113,6 @@ public class SystemAdminApi {
     }
 
     /**
-     * Note that Keycloak will not accept some of our old user data. Exceptions will be logged,
-     * but the process will keep going.
-     * <p>
-     *     In particular Keycloak will reject:
-     *     <ul>
-     *         <li>Duplicate emails: On the db emails were not always required to be unique.</li>
-     *         <li>Invalid email addresses: Manually entered emails often included spaces and other
-     *         characters or did not look like emails at all. </li>
-     *         <li>Invalid characters in the first or last name. For example, brackets.</li>
-     *     </ul>
-     * </p>
-     * @param password All users use this password.
-     * @return status
-     */
-    @GetMapping("register_users_with_keycloak/{password}")
-    ResponseEntity<?> registerUsersWithKeycloak(@PathVariable String password) {
-        try {
-            this.backgroundProcessingService.registerUsersWithKeycloak(password);
-
-            LogBuilder.builder(log)
-                .action("Register users with Keycloak")
-                .message("Manually triggered")
-                .logInfo();
-
-            return ResponseEntity.ok().build(); // Return 200 OK - front-end will display 'Done'
-
-        } catch(Exception e) {
-            LogBuilder.builder(log)
-                .action("Register users with Keycloak")
-                .message("Manual triggered operation failed")
-                .logError(e);
-
-            // Return 500 Internal Server Error including error in body for display on frontend
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e);
-        }
-    }
-
-    /**
      * Cancels the candidate's previous coupon assignment and makes a new one.
      */
     @GetMapping("{candidateNumber}/reassign-linkedin-coupon")
