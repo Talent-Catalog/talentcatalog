@@ -134,3 +134,9 @@ tbc
 tbc           
 ### API flow
 tbc
+### Using IDP Admin Console Manually
+#### Keycloak
+Login to the local Keycloak admin console at https://localhost:8082 using the username and password
+set in the tcsecrets file.
+
+In the admin console you can manually add users. Select the talencatalog realm and click on Users.
