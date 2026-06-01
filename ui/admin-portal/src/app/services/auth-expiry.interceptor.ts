@@ -19,9 +19,18 @@ export class AuthExpiryInterceptor implements HttpInterceptor {
     return next.handle(request).pipe(
       catchError((err: unknown) => {
         if (err instanceof HttpErrorResponse && err.status === 401) {
+          //Convert the incoming error to a simple string
+          let error: string;
+          if (err.error !== null) {
+            error = err.error.message;
+          } else if (err.message !== null) {
+            error = err.message;
+          } else {
+            error = err.status + " " + err.statusText;
+          }
           const returnUrl = this.router.url || '/';
           void this.router.navigate(['/logout'],
-            { queryParams: { reason: err, returnUrl: returnUrl } });
+            { queryParams: { reason: error, returnUrl: returnUrl } });
         }
         return throwError(err);
       })
