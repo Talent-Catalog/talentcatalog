@@ -212,9 +212,9 @@ The following services will all run from the Docker container:
 
 - **PostgreSQL** (listening on port 5432)
 - **Redis** (6379)
-- **Elasticsearch** (9200)
 - **Kibana** (5601)
 - **Keycloak** (8082)
+- **Keycloak-db** (5434)
 
 Verify with the following terminal command: 
 ```shell
@@ -324,6 +324,7 @@ use it to populate your empty database:
 Lastly, if you want to be able to log in with the users (candidates and admins) that were added from
 the dump, you will need to register those users in Keycloak. You can do that by 
 manually adding the users you want to log in with to the Keycloak admin console.
+
 Or if you want to add *all* users, run the server with an environment variable 
 `ADD_USERS_TO_KEYCLOAK` set to a password to be used for all added users. 
 You only need to do this once. Typically, do it by temporarily adding the environment 

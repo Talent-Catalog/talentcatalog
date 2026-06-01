@@ -136,7 +136,7 @@ public class SystemAdminConfiguration {
             systemPartner = partnerService.create(req);
         }
 
-        //Auto create system admin user
+        //Auto-create system admin user
         User systemAdmin = userService.findByUsernameAndRole(SYSTEM_ADMIN_NAME, Role.systemadmin);
         if (systemAdmin == null) {
             if (!StringUtils.hasText(systemAdminPassword)) {

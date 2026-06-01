@@ -350,15 +350,11 @@ dpa:
 
 # Keycloak Configuration
 # See https://www.keycloak.org/docs/latest/securing_apps/index.html
-# Keycloak is only used in local dev environments as a test OAuth2 provider.
+# Note that these values are hardcoded to local. That is intentional. Keycloak is only used in
+# local dev environments as a test OAuth2 provider.
 # When running under AWS ECS, we will use Cognito as our OAuth2 provider instead.
 keycloak:
-  server-url: ${KEYCLOAK_SERVER_URL:http://localhost:8082}
-  realm: ${KEYCLOAK_REALM:talentcatalog}
-  issuer: ${OAUTH2_ISSUER_URI:http://localhost:8082/realms/talentcatalog}
-  admin:
-    realm: master
-    client-id: admin-cli
-    username: admin
-    password: ${KEYCLOAK_ADMIN_PASSWORD:admin}
+  server-url: http://localhost:8082
+  realm: talentcatalog
+  issuer: http://localhost:8082/realms/talentcatalog
 

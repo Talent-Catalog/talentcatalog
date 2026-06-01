@@ -19,6 +19,7 @@ package org.tctalent.server.idp.application.providers.keycloak;
 import org.keycloak.OAuth2Constants;
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.admin.client.KeycloakBuilder;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -27,33 +28,22 @@ import org.springframework.context.annotation.Configuration;
  */
 @Configuration
 public class KeycloakConfig {
+    @Value("${KEYCLOAK_ADMIN_PASSWORD:}")
+    private String keycloakAdminPassword;
+
 
     @Bean
     public Keycloak keycloak(KeycloakAuthProperties properties) {
         KeycloakBuilder builder = KeycloakBuilder.builder()
             .serverUrl(properties.getServerUrl())
-            //todo Need to make users go into talentcatalog realm instead of master,
-            // but for now we can just use master to avoid having to set up a separate realm and
-            // client for the admin operations
+            //We log in with master realm, but users are added to the realm specified in
+            //properties.getRealm() (e.g. talentcatalog).
+            //See KeycloakIdpAdminService.registerUser() for details.
             .realm("master")
             .clientId("admin-cli")
             .username("admin")
-            .password("admin")
+            .password(keycloakAdminPassword)
             .grantType(OAuth2Constants.PASSWORD);
-//            .realm(properties.getRealm())
-//            .clientId(properties.getClientId());
-//
-//        if (properties.getClientSecret() != null && !properties.getClientSecret().isBlank()) {
-//            builder.clientSecret(properties.getClientSecret());
-//        }
-//
-//        if (properties.getUsername() != null && !properties.getUsername().isBlank()) {
-//            builder.username(properties.getUsername())
-//                   .password(properties.getPassword())
-//                   .grantType("password");
-//        } else {
-//            builder.grantType("client_credentials");
-//        }
 
         return builder.build();
     }
