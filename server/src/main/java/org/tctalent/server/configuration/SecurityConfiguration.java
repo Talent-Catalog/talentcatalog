@@ -47,7 +47,6 @@ import org.tctalent.server.security.JwtAuthenticationEntryPoint;
 import org.tctalent.server.security.JwtAuthenticationFilter;
 import org.tctalent.server.security.JwtTokenProvider;
 import org.tctalent.server.security.LanguageFilter;
-import org.tctalent.server.security.TcAuthenticationProvider;
 import org.tctalent.server.security.TcPasswordEncoder;
 import org.tctalent.server.security.TcUserDetailsService;
 
@@ -85,11 +84,6 @@ import org.tctalent.server.security.TcUserDetailsService;
  *     <li>
  *         {@link TcUserDetailsService} implements UserDetailsService providing access to the user
  *         table in our database
- *     </li>
- *     <li>
- *         {@link TcAuthenticationProvider} implements AuthenticationProvider passing in our
- *         wired in instance of the above TcUserDetailsService, and the PasswordEncoder defined
- *         below in {@link #passwordEncoder()}.
  *     </li>
  * </ul>
  */
@@ -519,9 +513,4 @@ public class SecurityConfiguration {
         return authenticationConfiguration.getAuthenticationManager();
     }
 
-    private TcAuthenticationProvider userAuthenticationProvider() {
-        TcAuthenticationProvider tcAuthenticationProvider = new TcAuthenticationProvider(userDetailsService);
-        tcAuthenticationProvider.setPasswordEncoder(passwordEncoder());
-        return tcAuthenticationProvider;
-    }
 }
