@@ -327,3 +327,56 @@ This configuration means:
 - No manual bridging or issue consolidation is required.
 
 The only asymmetry is that Linear-created issues appear in `talentcatalog` rather than a service-specific repo. This is acceptable given that `talentcatalog` is the primary and canonical issue home for the project.
+
+---
+
+## Decision 12: PR Merge Automation
+
+**Status:** Decided
+
+### Context
+
+Linear can automatically move issues to `Done` when a linked PR or commit is merged.
+
+### Decision
+
+Set **On PR or commit merge, move to...** to **No action**.
+
+### Rationale
+
+A merged PR is necessary but not sufficient for an issue to be complete. Engineers must complete issue sign-off criteria before moving the issue to `Done`, including release notes, release planning, user notification, and documentation updates.
+
+---
+
+## Decision 13: Issue Templates
+
+**Status:** Decided
+
+### Context
+
+Without templates, issue quality and completeness vary. Sign-off expectations can be missed if they are not present at issue creation.
+
+### Decision
+
+Adopt four templates for all new issues:
+
+- Feature
+- Bug
+- Security
+- Tech Debt
+
+Maintain these templates in both places:
+
+- GitHub templates in `.github/ISSUE_TEMPLATE/` (source of truth, version-controlled)
+- Matching templates in Linear team settings
+
+Source-of-truth template files:
+
+- `.github/ISSUE_TEMPLATE/feature.md`
+- `.github/ISSUE_TEMPLATE/bug.md`
+- `.github/ISSUE_TEMPLATE/security.md`
+- `.github/ISSUE_TEMPLATE/tech_debt.md`
+
+### Rationale
+
+GitHub templates guide external contributors creating issues directly in GitHub. Linear templates guide core team members creating issues in Linear. Keeping content aligned enforces consistent issue quality regardless of entry point.
