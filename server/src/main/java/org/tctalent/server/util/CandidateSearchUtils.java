@@ -168,9 +168,21 @@ public abstract class CandidateSearchUtils {
     }
 
     /**
-     * Builds the Postgres to_tsquery function suitable for inserting into Postgres text matching
-     * SQL.
-     * @param esQuery  Elasticsearch simple query. If null, it will return an empty string.
+     * Builds the PostgreSQL to_tsquery function used for candidate text search.
+     *
+     * DeepScan DS-002 context:
+     * This method does not allow SQL injection through tsquery operators. User input is placed
+     * inside a quoted SQL string literal after single quotes are escaped by buildTsQuerySQL().
+     * Characters such as &, |, !, <->, parentheses, and :* are PostgreSQL tsquery syntax
+     * characters. They may affect the tsquery expression, or cause a tsquery syntax error if
+     * the search text is invalid, but they do not break out of the quoted SQL string into the
+     * surrounding SQL statement.
+     *
+     * We intentionally use to_tsquery() rather than plainto_tsquery() because candidate search
+     * supports boolean / Elasticsearch-style search syntax. Replacing this with plainto_tsquery()
+     * would change existing search behavior by treating those operators as plain text.
+     *
+     * @param esQuery Elasticsearch simple query. If null, it will return an empty string.
      * @return to_tsquery function call suitable for inserting into Postgres SQL
      */
     public static @NonNull String buildToTsQueryFunction(@Nullable String esQuery) {

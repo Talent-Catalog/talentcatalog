@@ -63,9 +63,11 @@ import org.tctalent.server.request.candidate.CandidateIntakeDataUpdate;
 import org.tctalent.server.request.candidate.CandidateNumberOrNameSearchRequest;
 import org.tctalent.server.request.candidate.CandidatePublicIdSearchRequest;
 import org.tctalent.server.request.candidate.DownloadCvRequest;
+import org.tctalent.server.request.candidate.EraseCandidateRequest;
 import org.tctalent.server.request.candidate.ResolveTaskAssignmentsRequest;
 import org.tctalent.server.request.candidate.SearchCandidateRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateAdditionalInfoRequest;
+import org.tctalent.server.request.candidate.UpdateCandidateAspirationsRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateLinksRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateListOppsRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateMaxEducationLevelRequest;
@@ -80,8 +82,10 @@ import org.tctalent.server.request.candidate.UpdateCandidateShareableNotesReques
 import org.tctalent.server.request.candidate.UpdateCandidateStatusRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateSurveyRequest;
 import org.tctalent.server.request.chat.FetchCandidatesWithChatRequest;
+import org.tctalent.server.response.EraseCandidateResponse;
 import org.tctalent.server.security.CandidateTokenProvider;
 import org.tctalent.server.security.CvClaims;
+import org.tctalent.server.service.db.CandidateErasureService;
 import org.tctalent.server.service.db.CandidateOpportunityService;
 import org.tctalent.server.service.db.CandidateSavedListService;
 import org.tctalent.server.service.db.CandidateService;
@@ -103,6 +107,7 @@ public class CandidateAdminApi {
     private final SavedSearchService savedSearchService;
     private final CandidateIntakeDataBuilderSelector intakeDataBuilderSelector;
     private final CandidateTokenProvider candidateTokenProvider;
+    private final CandidateErasureService candidateErasureService;
 
     @PostMapping("search")
     public Map<String, Object> search(@RequestBody SearchCandidateRequest request) {
@@ -264,6 +269,14 @@ public class CandidateAdminApi {
     public Map<String, Object> updateAdditionalInfo(@PathVariable("id") long id,
                                                     @RequestBody UpdateCandidateAdditionalInfoRequest request) {
         Candidate candidate = candidateService.updateCandidateAdditionalInfo(id, request);
+        DtoBuilder builder = builderSelector.selectBuilder();
+        return builder.build(candidate);
+    }
+
+    @PutMapping("{id}/aspirations")
+    public Map<String, Object> updateAspirations(@PathVariable("id") long id,
+        @RequestBody UpdateCandidateAspirationsRequest request) {
+        Candidate candidate = candidateService.updateCandidateAspirations(id, request);
         DtoBuilder builder = builderSelector.selectBuilder();
         return builder.build(candidate);
     }
@@ -524,4 +537,26 @@ public class CandidateAdminApi {
         return builder.buildList(candidateList);
     }
 
+    /**
+     * Erases a candidate's personally identifiable data.
+     *
+     * <p>This endpoint is intentionally separate from the normal DELETE endpoint. The normal delete
+     * behaviour marks a candidate deleted, while this endpoint performs data erasure:
+     * it removes personal fields, documents, notes, candidate-submitted free text, user login data,
+     * attachment metadata, and search text while preserving a dummy candidate placeholder row for
+     * database integrity.</p>
+     *
+     * @param id ID of the candidate to erase.
+     * @param request erasure options and confirmation data.
+     * @return minimal details of the erased placeholder candidate.
+     */
+    @PreAuthorize("hasAnyAuthority('ROLE_SYSTEMADMIN')")
+    @PostMapping("{id}/erase")
+    public EraseCandidateResponse eraseCandidate(
+        @PathVariable("id") long id,
+        @RequestBody EraseCandidateRequest request
+    ) {
+        Candidate candidate = candidateErasureService.eraseCandidate(id, request);
+        return EraseCandidateResponse.fromCandidate(candidate);
+    }
 }

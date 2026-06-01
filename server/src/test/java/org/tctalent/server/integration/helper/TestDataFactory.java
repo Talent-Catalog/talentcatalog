@@ -193,6 +193,8 @@ public class TestDataFactory {
     Candidate candidate = createCandidate();
     candidate.setUser(user);
     candidate.setCreatedBy(user);
+    candidate = saveEntity(repository, candidate);
+    candidate.setCreatedBy(user);
     return saveEntity(repository, candidate);
   }
 

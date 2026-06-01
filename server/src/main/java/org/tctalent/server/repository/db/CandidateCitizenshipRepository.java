@@ -16,10 +16,11 @@
 
 package org.tctalent.server.repository.db;
 
+import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.tctalent.server.model.db.CandidateCitizenship;
 
 public interface CandidateCitizenshipRepository
         extends JpaRepository<CandidateCitizenship, Long> {
-
+  List<CandidateCitizenship> findByCandidate_Id(Long candidateId);
 }

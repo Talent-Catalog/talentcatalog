@@ -55,6 +55,7 @@ import {
   tap
 } from "rxjs/operators";
 import {UploadType} from "../../../model/task";
+import {EraseCandidateDataComponent} from "./erase/erase-candidate-data.component";
 
 @Component({
   selector: 'app-view-candidate',
@@ -83,6 +84,7 @@ export class ViewCandidateComponent extends MainSidePanelBase implements OnInit,
   listsInput$ = new Subject<string>();
   listsLoading = false;
   token: string;
+  showAspirations: boolean;
 
   private destroy$ = new Subject<void>();
 
@@ -102,6 +104,7 @@ export class ViewCandidateComponent extends MainSidePanelBase implements OnInit,
   }
 
   ngOnInit() {
+    this.showAspirations = this.authenticationService.isGrnInstance();
     this.refreshCandidateProfile();
     this.loggedInUser = this.authenticationService.getLoggedInUser();
     this.selectDefaultTab();
@@ -228,6 +231,24 @@ export class ViewCandidateComponent extends MainSidePanelBase implements OnInit,
     modal.componentInstance.candidate = this.candidate;
     modal.result.then(result => {
       this.router.navigate(['/']);
+    });
+  }
+
+  eraseCandidateData() {
+    const modal = this.modalService.open(EraseCandidateDataComponent, {
+      centered: true,
+      backdrop: 'static',
+      size: 'lg'
+    });
+
+    modal.componentInstance.candidate = this.candidate;
+
+    modal.result
+    .then(() => {
+      this.router.navigate(['/']);
+    })
+    .catch(() => {
+      // Modal dismissed.
     });
   }
 
@@ -497,6 +518,11 @@ export class ViewCandidateComponent extends MainSidePanelBase implements OnInit,
 
   isEditable(): boolean {
     return this.authorizationService.isEditableCandidate(this.candidate);
+  }
+
+  canEraseCandidateData(): boolean {
+    return this.authorizationService.canEraseCandidateData()
+      && this.candidate?.status !== 'deleted';
   }
 
   canViewPrivateInfo() {

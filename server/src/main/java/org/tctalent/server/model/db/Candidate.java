@@ -66,7 +66,7 @@ import org.tctalent.server.util.SalesforceHelper;
 @Table(name = "candidate")
 @SequenceGenerator(name = "seq_gen", sequenceName = "candidate_id_seq", allocationSize = 1)
 @Slf4j
-public class Candidate extends AbstractAuditableDomainObject<Long> implements HasPublicId {
+public class Candidate extends AbstractCandidateDataDomainObject<Long> implements HasPublicId {
 
     private String candidateNumber;
     private String publicId;
@@ -237,6 +237,27 @@ public class Candidate extends AbstractAuditableDomainObject<Long> implements Ha
 
     @Enumerated(EnumType.STRING)
     private CandidateStatus status;
+
+    /**
+     * Date and time when this candidate was marked as deleted or fully erased.
+     *
+     * <p>This is separate from {@code updatedDate}. The updated date can change for many reasons, but
+     * this field specifically records when the candidate deletion/erasure happened.</p>
+     */
+    @Column(name = "deleted_date")
+    @Nullable
+    private OffsetDateTime deletedDate;
+
+    /**
+     * User who marked this candidate as deleted or performed full erasure.
+     *
+     * <p>This is separate from {@code updatedBy}. The updated user can change for many reasons, but
+     * this field specifically records who performed the deletion/erasure action.</p>
+     */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "deleted_by")
+    @Nullable
+    private User deletedBy;
 
     /**
      * Computed field of all searchable text associated with the candidate.
@@ -1283,6 +1304,36 @@ public class Candidate extends AbstractAuditableDomainObject<Long> implements Ha
 
     public void setStatus(CandidateStatus status) {
         this.status = status;
+    }
+
+    @Nullable
+    public OffsetDateTime getDeletedDate() {
+        return deletedDate;
+    }
+
+    public void setDeletedDate(@Nullable OffsetDateTime deletedDate) {
+        this.deletedDate = deletedDate;
+    }
+
+    @Nullable
+    public User getDeletedBy() {
+        return deletedBy;
+    }
+
+    public void setDeletedBy(@Nullable User deletedBy) {
+        this.deletedBy = deletedBy;
+    }
+
+
+    public void setDeletedFields(User deletedBy) {
+        this.deletedDate = OffsetDateTime.now();
+        this.deletedBy = deletedBy;
+    }
+
+
+    public void clearDeletedFields() {
+        this.deletedDate = null;
+        this.deletedBy = null;
     }
 
     public Country getCountry() {
@@ -2593,6 +2644,10 @@ public class Candidate extends AbstractAuditableDomainObject<Long> implements Ha
 
     public String getText() {
         return text;
+    }
+
+    public void setText(String text) {
+        this.text = text;
     }
 
     public void updateText() {

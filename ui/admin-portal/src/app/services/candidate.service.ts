@@ -19,6 +19,8 @@ import {
   Candidate,
   CandidateIntakeData,
   CandidateOpportunityParams,
+  EraseCandidateRequest,
+  EraseCandidateResponse,
   UpdateCandidateListOppsRequest,
   UpdateCandidateMutedRequest,
   UpdateCandidateNotificationPreferenceRequest,
@@ -128,6 +130,10 @@ export class CandidateService implements IntakeService {
     return this.http.put<Candidate>(`${this.apiUrl}/${id}/info`, details);
   }
 
+  updateAspirations(id: number, details): Observable<Candidate>  {
+    return this.http.put<Candidate>(`${this.apiUrl}/${id}/aspirations`, details);
+  }
+
   updateSurvey(id: number, details): Observable<Candidate>  {
     return this.http.put<Candidate>(`${this.apiUrl}/${id}/survey`, details);
   }
@@ -150,6 +156,10 @@ export class CandidateService implements IntakeService {
 
   delete(id: number): Observable<boolean>  {
     return this.http.delete<boolean>(`${this.apiUrl}/${id}`);
+  }
+
+  eraseCandidate(id: number, request: EraseCandidateRequest): Observable<EraseCandidateResponse> {
+    return this.http.post<EraseCandidateResponse>(`${this.apiUrl}/${id}/erase`, request);
   }
 
   export(request) {

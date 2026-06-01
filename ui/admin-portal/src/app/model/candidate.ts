@@ -76,6 +76,7 @@ export interface Candidate extends HasId {
   candidateReviewStatusItems: CandidateReviewStatusItem[];
   migrationEducationMajor: EducationMajor;
   additionalInfo: string;
+  aspirations?: string;
   linkedInLink: string;
   muted: boolean;
   candidateMessage: string;
@@ -492,6 +493,17 @@ export interface UpdateCandidateStatusRequest {
 
 export interface UpdateCandidateMutedRequest {
   muted: boolean;
+}
+
+export interface EraseCandidateRequest {
+  confirmationCandidateNumber?: string;
+}
+
+export interface EraseCandidateResponse {
+  id: number;
+  candidateNumber: string;
+  status: string;
+  erased: boolean;
 }
 
 export enum FamilyRelations {
