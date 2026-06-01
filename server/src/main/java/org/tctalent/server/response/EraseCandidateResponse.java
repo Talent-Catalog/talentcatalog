@@ -22,10 +22,10 @@ import lombok.Setter;
 import org.tctalent.server.model.db.Candidate;
 
 /**
- * Response returned after a candidate's personal data has been fully erased.
+ * Response returned after all data held for a candidate has been fully erased.
  *
- * <p>This response intentionally returns only safe, minimal data. It does not return personal
- * candidate information such as name, email, phone, documents, notes, or search text.</p>
+ * <p>This response intentionally returns only safe, minimal data. It does not return candidate
+ * details such as name, email, phone, documents, notes, or search text.</p>
  */
 @Getter
 @Setter
