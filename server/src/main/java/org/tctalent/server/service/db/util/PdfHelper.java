@@ -29,8 +29,6 @@ import org.tctalent.server.exception.PdfGenerationException;
 import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.service.db.impl.TcInstanceService;
-import org.tctalent.server.util.html.HtmlSanitizer;
-import org.tctalent.server.util.html.StringSanitizer;
 import org.tctalent.server.util.text.CandidateTidiedTextViewFactory;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
@@ -56,6 +54,10 @@ public class PdfHelper {
 
     private final TemplateEngine pdfTemplateEngine;
     private final TcInstanceService tcInstanceService;
+    /**
+     * Added this shared preparer so PDF and DOCX exports clean candidate data in the same way before rendering.
+     */
+    private final CvExportDataPreparer cvExportDataPreparer;
     private final CandidateTidiedTextViewFactory candidateTidiedTextViewFactory;
 
     /**
@@ -67,10 +69,11 @@ public class PdfHelper {
      */
     public PdfHelper(@Qualifier("pdfTemplateEngine") TemplateEngine pdfTemplateEngine,
         TcInstanceService tcInstanceService,
-        CandidateTidiedTextViewFactory candidateTidiedTextViewFactory) {
+        CandidateTidiedTextViewFactory candidateTidiedTextViewFactory,CvExportDataPreparer cvExportDataPreparer) {
         this.pdfTemplateEngine = pdfTemplateEngine;
         this.tcInstanceService = tcInstanceService;
         this.candidateTidiedTextViewFactory = candidateTidiedTextViewFactory;
+        this.cvExportDataPreparer = cvExportDataPreparer;
     }
 
     /**
@@ -83,61 +86,32 @@ public class PdfHelper {
      */
     public Resource generatePdf(Candidate candidate, Boolean showName, Boolean showContact){
         try {
-
-            if (Boolean.TRUE.equals(showContact)) {
-                cleanCandidateContactInfo(candidate);
-            }
-            cleanCandidateJobDescriptions(candidate);
-
-            Context context = new Context();
-            context.setVariable("candidate", candidateTidiedTextViewFactory.create(candidate));
-            context.setVariable("showName", showName);
-            context.setVariable("showContact", showContact);
-            context.setVariable("logoFile", tcInstanceService.getLogoFile());
-
-            String renderedHtmlContent = pdfTemplateEngine.process("template", context);
-            String xHtml = convertToXhtml(renderedHtmlContent);
-
-            // Remove any null bytes to avoid an invalid XML character (Unicode: 0x0) error
-            xHtml = NULL_BYTE_PATTERN.matcher(xHtml).replaceAll("");
-
-            // And finally, we create the PDF:
-            return createPdf(xHtml);
-
+            return createPdf(renderCvXhtml(candidate, showName, showContact));
         } catch (Exception e) {
             LogBuilder.builder(log)
                 .action("generatePdf")
                 .message("Error generating PDF")
                 .logError(e);
-
            throw new PdfGenerationException(e.getMessage());
         }
-
-    }
-    private static void cleanCandidateContactInfo(Candidate candidate) {
-        if (candidate.getPhone() != null) {
-            candidate.setPhone(StringSanitizer.sanitizeContactField(candidate.getPhone()));
-        }
-
-        if (candidate.getWhatsapp() != null) {
-            candidate.setWhatsapp(StringSanitizer.sanitizeContactField(candidate.getWhatsapp()));
-        }
     }
 
+    public String renderCvXhtml(Candidate candidate, Boolean showName, Boolean showContact) {
+        // Prepare the candidate before rendering the PDF, so contact fields and job descriptions are cleaned before they go into the template.
+        candidate = cvExportDataPreparer.prepare(candidate, showContact);
 
-    private static void cleanCandidateJobDescriptions(Candidate candidate) {
-        candidate.getCandidateJobExperiences().forEach(jobExperience -> {
-            jobExperience.setRole(StringSanitizer.normalizeUnicodeText(jobExperience.getRole()));
-            jobExperience.setCompanyName(
-                StringSanitizer.normalizeUnicodeText(jobExperience.getCompanyName()));
+        Context context = new Context();
+        context.setVariable("candidate", candidateTidiedTextViewFactory.create(candidate));
+        context.setVariable("showName", showName);
+        context.setVariable("showContact", showContact);
+        context.setVariable("logoFile", tcInstanceService.getLogoFile());
 
-            String description = StringSanitizer.normalizeUnicodeText(jobExperience.getDescription());
-            String sanitizedDescription = HtmlSanitizer.sanitize(description);
-            sanitizedDescription = StringSanitizer.replaceLsepWithBr(sanitizedDescription);
-            jobExperience.setDescription(sanitizedDescription);
-        });
+        String renderedHtmlContent = pdfTemplateEngine.process("template", context);
+        String xhtml = convertToXhtml(renderedHtmlContent);
+
+        // Remove null bytes to avoid invalid XML character errors in PDF/DOCX converters.
+        return NULL_BYTE_PATTERN.matcher(xhtml).replaceAll("");
     }
-
 
     private static String convertToXhtml(String html) {
         Tidy tidy = new Tidy();

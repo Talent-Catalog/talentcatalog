@@ -15,7 +15,7 @@
   -->
 
 <tc-modal heading="Download Candidate CV"
-          actionText="Ok"
+          actionText="Download"
           (onAction)="onSave()"
           [disableAction]="form.invalid || loading || saving"
           [showCancel]="true"
@@ -26,25 +26,56 @@
   </tc-alert>
 
   <form [formGroup]="form">
-        <tc-field [checkbox]="true">
-          <tc-label for="name">
-            Include name?
-          </tc-label>
-          <tc-input [type]="'checkbox'"
-                    [formControlName]="'name'"
-                    id="name"
-          ></tc-input>
-        </tc-field>
-        <tc-field [checkbox]="true">
-          <tc-label for="contact">
-            Include contact details?
-          </tc-label>
-          <tc-input [type]="'checkbox'"
-                    [formControlName]="'contact'"
-                    id="contact"
-          ></tc-input>
-        </tc-field>
+
+    <div class="mb-3">
+      <tc-label>Format</tc-label>
+    </div>
+
+    <tc-field [checkbox]="true">
+      <tc-radio [id]="'pdf'"
+                name="format"
+                [value]="'pdf'"
+                [label]="'PDF'"
+                [formControlName]="'format'"
+      >
+      </tc-radio>
+    </tc-field>
+
+    <tc-field [checkbox]="true">
+      <tc-radio [id]="'docx'"
+                name="format"
+                [value]="'docx'"
+                [label]="'Word (.docx)'"
+                [formControlName]="'format'">
+      </tc-radio>
+    </tc-field>
+
+    <tc-field [checkbox]="true">
+      <tc-label for="name">
+        Include name?
+      </tc-label>
+      <tc-input [type]="'checkbox'"
+                [formControlName]="'name'"
+                id="name">
+      </tc-input>
+    </tc-field>
+
+    <tc-field [checkbox]="true">
+      <tc-label for="contact">
+        Include contact details?
+      </tc-label>
+      <tc-input [type]="'checkbox'"
+                [formControlName]="'contact'"
+                id="contact">
+      </tc-input>
+    </tc-field>
+
+    <div class="mt-3 d-flex gap-2" *ngIf="loading || saving">
+      <tc-button [disabled]="true">
+        Downloading...
+      </tc-button>
+    </div>
+
   </form>
 
 </tc-modal>
-
