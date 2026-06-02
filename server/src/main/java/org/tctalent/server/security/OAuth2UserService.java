@@ -54,21 +54,27 @@ public class OAuth2UserService {
         (@NonNull User user, @Nullable String clientId) throws UsernameNotFoundException {
         final String idpIssuer = user.getIdpIssuer();
         final String idpSubject = user.getIdpSubject();
-
-
+        
         if (!StringUtils.hasText(clientId)) {
             throw new UsernameNotFoundException("No client id provided");
         }
+
+        boolean shouldBeCandidate = switch (clientId) {
+            case OAUTH_TC_ADMIN_CLIENT_ID, OAUTH_TC_CANDIDATE_CLIENT_ID ->
+                clientId.equals(OAUTH_TC_CANDIDATE_CLIENT_ID);
+            default -> throw new UsernameNotFoundException("Unrecognized client id: " + clientId);
+        };
+
 
         //We have matched the user by issuer and subject - but the clientId also has to match the
         //user role.
         //We use one clientId, "admin", for admin-portal users, and "candidate" for
         //candidate-portal users.
-        if (OAUTH_TC_CANDIDATE_CLIENT_ID.equals(clientId) && !user.getRole().equals(Role.user)) {
+        if (shouldBeCandidate && !user.getRole().equals(Role.user)) {
             throw new UsernameNotFoundException(
                 "Candidate user mismatch for issuer=" + idpIssuer + ", sub=" + idpSubject);
         }
-        if (OAUTH_TC_ADMIN_CLIENT_ID.equals(clientId) && user.getRole().equals(Role.user)) {
+        if (!shouldBeCandidate && user.getRole().equals(Role.user)) {
             throw new UsernameNotFoundException(
                 "Admin user mismatch for issuer=" + idpIssuer + ", sub=" + idpSubject);
         }

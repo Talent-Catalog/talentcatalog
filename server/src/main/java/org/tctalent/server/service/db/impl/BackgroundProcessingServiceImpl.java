@@ -36,6 +36,7 @@ import org.tctalent.server.model.db.PartnerImpl;
 import org.tctalent.server.model.db.Role;
 import org.tctalent.server.model.db.SavedList;
 import org.tctalent.server.model.db.SavedSearch;
+import org.tctalent.server.model.db.Status;
 import org.tctalent.server.model.db.User;
 import org.tctalent.server.repository.db.CandidateRepository;
 import org.tctalent.server.request.candidate.SearchCandidateRequest;
@@ -150,6 +151,8 @@ public class BackgroundProcessingServiceImpl implements BackgroundProcessingServ
     SearchUserRequest searchUserRequest = new SearchUserRequest();
     //all roles (default is non candidates - ie Role != Role.user)
     searchUserRequest.setRole(List.of(Role.values()));
+    //Only process active users
+    searchUserRequest.setStatus(Status.active);
 
     //Set page size
     searchUserRequest.setPageSize(100);
