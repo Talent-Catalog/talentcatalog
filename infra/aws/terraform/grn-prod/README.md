@@ -117,16 +117,26 @@ The application references two distinct sets of AWS credentials for S3 access:
 | Environment variable | Source | Used by |
 |---------------------|--------|---------|
 | `AWS_CREDENTIALS_ACCESSKEY` / `AWS_CREDENTIALS_SECRETKEY` | SSM (from `secrets.auto.tfvars`) | Legacy `AwsConfiguration` / `S3ResourceHelper` |
-| `AWS_CREDENTIALS_APP_ACCESSKEY` / `AWS_CREDENTIALS_APP_SECRETKEY` | **Not set** (empty) | `S3Config` (candidate files, translations) |
+| `AWS_CREDENTIALS_APP_ACCESSKEY` / `AWS_CREDENTIALS_APP_SECRETKEY` | **Not set** (empty) in ECS — task role is used instead. | `S3Config` (candidate files, translations) |
 
 `AWS_CREDENTIALS_APP_ACCESSKEY` and `AWS_CREDENTIALS_APP_SECRETKEY` are **not managed by Terraform**
-and have no corresponding SSM parameters. They resolve to empty strings at runtime. When blank,
-`S3Config` falls back to the AWS default credential provider chain, which in ECS resolves to the
-**task role** (`<app>-<env>-fargate-task-role`). The task role has an S3 policy granting access to
-the configured buckets (`s3_bucket`, `translations_bucket`, and `candidate_files_bucket`).
+and have no corresponding SSM parameters. They resolve to empty strings at runtime in ECS.
+When blank, `S3Config` falls back to the AWS default credential provider chain, which in ECS
+resolves to the **task role** (`<app>-<env>-fargate-task-role`). The task role has an S3 policy
+granting access to the configured buckets (`s3_bucket`, `translations_bucket`, and
+`candidate_files_bucket`).
 
 This is intentional — using the task role avoids long-lived static IAM user credentials for S3
 operations performed by the newer code paths.
+
+### Local developer access — out of scope for production
+
+The shared developer IAM user used to support local-dev S3 access (`tc-dev-s3-access`, documented in
+the [grn-staging README](../grn-staging/README.md#local-developer-access--tc-dev-s3-access-iam-user))
+lives in the OPC staging account and is **explicitly scoped to staging buckets only**. Production
+GRN S3 buckets — including `candidate-files.globalrefugee.net` and `translations.globalrefugee.net`
+— are **not** accessible from any developer workstation. Production reads and writes are performed
+exclusively by the ECS task role described above.
 
 ## State and coexistence with opc-prod
 

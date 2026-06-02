@@ -16,7 +16,7 @@
 
 <tc-modal [heading]="'Edit Additional Info'"
           [showClose]="true"
-          [disableAction]="candidateForm.invalid || loading || saving"
+          [disableAction]="!candidateForm || candidateForm.invalid || loading || saving"
           [showCancel]="true"
           actionText="Save"
           (onAction)="onSave()"
@@ -39,7 +39,6 @@
                      [formControlName]="'additionalInfo'"
         ></tc-textarea>
       </div>
-
     </form>
 
   </div>

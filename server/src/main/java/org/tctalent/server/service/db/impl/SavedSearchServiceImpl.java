@@ -1881,6 +1881,31 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         return sql;
     }
 
+    /**
+     * Builds the dynamic join and where clauses for candidate saved-search SQL.
+     *
+     * DeepScan DS-001 context:
+     * This method constructs native SQL because saved-search filtering is highly dynamic:
+     * different filters require different joins, nested saved-search clauses, list membership
+     * clauses, ranking/order clauses, and user-specific country restrictions.
+     *
+     * Most values added here are not arbitrary SQL text. They are server-side typed values such as:
+     * - enum names, for example CandidateStatus, UnhcrStatus, Gender, and SearchType
+     * - numeric IDs parsed/stored as Long values
+     * - booleans
+     * - dates/timestamps generated from LocalDate/OffsetDateTime
+     *
+     * Those values are used only as SQL literal values or numeric IDs, not as SQL identifiers,
+     * operators, or raw SQL fragments.
+     *
+     * Free-text filters such as referrer and UTM values should remain constrained to string
+     * comparisons only. They must not be used to build SQL structure. If these fields become
+     * externally editable without validation/escaping, they should be converted to query
+     * parameters or passed through a shared SQL string-literal escaping helper.
+     *
+     * This comment is intended to document the current risk model for DeepScan DS-001; it is not
+     * a reason to add new unescaped free-text SQL concatenation in this method.
+     */
     private String extractJoinAndWhereSQL(SearchCandidateRequest request,
         @Nullable User user, @Nullable Collection<Candidate> excludedCandidates, boolean ordered,
         @NonNull Set<Long> excludedSavedSearchIds) {

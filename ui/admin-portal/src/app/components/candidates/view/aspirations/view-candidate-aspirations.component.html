@@ -1,0 +1,18 @@
+<tc-card>
+
+  <tc-card-header>
+    Tell us about your aspirations. What career would you like to have?
+    <div class="d-flex justify-content-end" *ngIf="editable">
+      <tc-button (onClick)="editAspirations()"
+                 [size]="'sm'"
+                 [color]="'primary'"
+                 [type]="'solid'"
+      >
+        <i class="fas fa-edit"></i></tc-button>
+    </div>
+  </tc-card-header>
+
+  <tc-description-item [innerHtml]="candidate?.aspirations"
+                       appHighlightSearch
+  ></tc-description-item>
+</tc-card>
