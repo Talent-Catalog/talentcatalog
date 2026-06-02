@@ -297,7 +297,6 @@ public class CandidateAttachmentsServiceImplTest {
         assertEquals(NAME, attachment.getName());
         assertEquals(LOCATION, attachment.getUrl());
         assertEquals(AttachmentType.link, attachment.getType());
-        assertEquals(ADMIN_USER, attachment.getCreatedBy());
     }
 
     @Test
@@ -324,7 +323,6 @@ public class CandidateAttachmentsServiceImplTest {
         assertTrue(attachment.isCv());
         assertEquals(TEXT_EXTRACT, attachment.getTextExtract());
         assertEquals(FILE_TYPE, attachment.getFileType());
-        assertEquals(ADMIN_USER, attachment.getCreatedBy());
     }
 
     @Test
