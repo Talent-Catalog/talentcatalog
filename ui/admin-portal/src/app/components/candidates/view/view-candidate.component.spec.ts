@@ -72,7 +72,7 @@ describe('ViewCandidateComponent', () => {
     mockCandidateSavedListService.replace.and.returnValue(of(null));
     mockModalService = jasmine.createSpyObj('NgbModal', ['open']);
     mockLocalStorageService = jasmine.createSpyObj('LocalStorageService', ['get', 'set']);
-    mockAuthenticationService = jasmine.createSpyObj('AuthenticationService', ['getLoggedInUser'], { loggedInUser$: new Subject<any>() });
+    mockAuthenticationService = jasmine.createSpyObj('AuthenticationService', ['getLoggedInUser','isGrnInstance'], { loggedInUser$: new Subject<any>() });
     const authorizationSpy = jasmine.createSpyObj('AuthorizationService', [
       'isEditableCandidate',
       'canViewPrivateCandidateInfo',
