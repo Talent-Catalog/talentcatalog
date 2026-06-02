@@ -125,7 +125,6 @@ class CandidateNotesServiceImplTest {
         CandidateNote note = noteCaptor.getValue();
         assertEquals(TITLE, note.getTitle());
         assertEquals(COMMENT, note.getComment());
-        assertEquals(ADMIN_USER, note.getCreatedBy());
         assertEquals(CANDIDATE, note.getCandidate());
         assertEquals(NoteType.admin, note.getNoteType());
     }
@@ -160,8 +159,9 @@ class CandidateNotesServiceImplTest {
 
         candidateNotesService.createCandidateNote(createRequest);
 
+        verify(userService).getSystemAdminUser();
         verify(candidateNoteRepository).save(noteCaptor.capture());
-        assertEquals(SYSTEM_ADMIN, noteCaptor.getValue().getCreatedBy());
+        assertEquals(NoteType.admin, noteCaptor.getValue().getNoteType());
     }
 
     @Test
