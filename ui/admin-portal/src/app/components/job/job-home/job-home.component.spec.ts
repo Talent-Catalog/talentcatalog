@@ -56,7 +56,8 @@ describe('JobHomeComponent', () => {
         { provide: CandidateService, useValue: candidateServiceSpy },
         { provide: UntypedFormBuilder, useClass: UntypedFormBuilder },
         { provide: ActivatedRoute, useValue: { queryParams: of({}) } },
-        { provide: Router, useValue: { navigateByUrl: jasmine.createSpy('navigateByUrl') }}
+        { provide: Router, useValue: { navigateByUrl: jasmine.createSpy('navigateByUrl') }},
+        // provideMockAuthenticationService(),
       ]
     })
     .compileComponents();

@@ -19,6 +19,7 @@ import {ComponentFixture, TestBed} from "@angular/core/testing";
 import {NgbActiveModal, NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {FileUploadComponent} from "../file-upload/file-upload.component";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {CandidateAttachmentService} from "../../../services/candidate-attachment.service";
 
 describe('FileSelectorComponent', () => {
   let component: FileSelectorComponent;
@@ -35,7 +36,8 @@ describe('FileSelectorComponent', () => {
       declarations: [FileSelectorComponent,FileUploadComponent],
       providers: [
         { provide: NgbActiveModal, useValue: modalMock },
-        { provide: NgbModal, useValue: modalSpy }
+        { provide: NgbModal, useValue: modalSpy },
+        { provide: CandidateAttachmentService, useValue: {}}
       ]
     })
     .compileComponents();

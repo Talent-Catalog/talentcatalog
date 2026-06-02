@@ -22,6 +22,9 @@ import {
   mockCandidateIntakeData
 } from "../../candidate-intake-tab/candidate-intake-tab.component.spec";
 import {By} from '@angular/platform-browser';
+import {
+  provideMockAuthenticationService
+} from "../../../../../../util/testing/test-authentication.providers.spec";
 
 describe('VisaCheckNzComponent', () => {
   let component: VisaCheckNzComponent;
@@ -32,6 +35,9 @@ describe('VisaCheckNzComponent', () => {
       declarations: [VisaCheckNzComponent],
       imports: [HttpClientTestingModule],
       schemas: [NO_ERRORS_SCHEMA],
+      providers: [
+        provideMockAuthenticationService()
+      ]
     }).compileComponents();
   });
 

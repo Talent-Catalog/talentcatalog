@@ -21,6 +21,9 @@ import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {NgbPopoverModule} from "@ng-bootstrap/ng-bootstrap";
+import {
+  provideMockAuthenticationService
+} from "../../../../../util/testing/test-authentication.providers.spec";
 
 describe('CandidateTaskTabComponent', () => {
   let component: CandidateTaskTabComponent;
@@ -32,6 +35,9 @@ describe('CandidateTaskTabComponent', () => {
       declarations: [
         CandidateTaskTabComponent,
         ViewCandidateTasksComponent
+      ],
+      providers: [
+        provideMockAuthenticationService()
       ]
     })
     .compileComponents();

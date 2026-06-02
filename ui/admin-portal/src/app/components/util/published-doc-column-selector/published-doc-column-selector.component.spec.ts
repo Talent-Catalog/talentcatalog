@@ -29,6 +29,7 @@ import {NgSelectModule} from "@ng-select/ng-select";
 import {DragulaModule, DragulaService} from "ng2-dragula";
 import {PublishedDocColumnService} from "../../../services/published-doc-column.service";
 import {CandidateSourceService} from "../../../services/candidate-source.service";
+import {AuthenticationService} from "../../../services/authentication.service";
 
 describe('PublishedDocColumnSelectorComponent', () => {
   let component: PublishedDocColumnSelectorComponent;
@@ -55,7 +56,11 @@ describe('PublishedDocColumnSelectorComponent', () => {
         CandidateSourceService,
         { provide: NgbActiveModal, useValue: activeModal },
         NgbDropdownConfig,
-        DragulaService
+        DragulaService,
+
+        //AuthenticationService is not actually used, but it stills to be here. It gets
+        //pulled in indirectly somehow.
+        { provide: AuthenticationService, useValue: {} }
       ]
     })
     .compileComponents();

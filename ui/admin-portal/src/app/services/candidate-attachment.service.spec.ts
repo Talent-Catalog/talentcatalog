@@ -25,6 +25,7 @@ import {
 import {environment} from '../../environments/environment';
 import {CandidateAttachment, CandidateAttachmentRequest} from '../model/candidate-attachment';
 import {UploadType} from "../model/task";
+import {provideMockAuthenticationService} from "../util/testing/test-authentication.providers.spec";
 
 describe('CandidateAttachmentService', () => {
   let service: CandidateAttachmentService;
@@ -34,7 +35,9 @@ describe('CandidateAttachmentService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule],
-      providers: [CandidateAttachmentService]
+      providers: [CandidateAttachmentService,
+        provideMockAuthenticationService()
+      ]
     });
     service = TestBed.inject(CandidateAttachmentService);
     httpMock = TestBed.inject(HttpTestingController);

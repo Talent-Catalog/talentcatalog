@@ -22,6 +22,9 @@ import {MockCandidate} from "../../../../../MockData/MockCandidate";
 import {
   CandidateOppsComponent
 } from "../../../../candidate-opp/candidate-opps/candidate-opps.component";
+import {
+  provideMockAuthenticationService
+} from "../../../../../util/testing/test-authentication.providers.spec";
 
 describe('ViewCandidateJobsComponent', () => {
   let component: ViewCandidateJobsComponent;
@@ -31,7 +34,10 @@ describe('ViewCandidateJobsComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [HttpClientTestingModule,FormsModule,ReactiveFormsModule],
-      declarations: [ ViewCandidateJobsComponent, CandidateOppsComponent ]
+      declarations: [ ViewCandidateJobsComponent, CandidateOppsComponent ],
+      providers: [
+        provideMockAuthenticationService()
+      ]
     })
     .compileComponents();
   });

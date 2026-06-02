@@ -24,6 +24,9 @@ import {of} from "rxjs";
 
 import {Directive, Input} from '@angular/core';
 import {config_test} from "../../../config-test";
+import {
+  provideMockAuthenticationService
+} from "../../util/testing/test-authentication.providers.spec";
 
 @Directive({
   selector: "[routerLink]", // Stub directive for routerLink
@@ -51,7 +54,9 @@ describe('LoginComponent', () => {
         AuthenticationService,
         UntypedFormBuilder,
         { provide: ActivatedRoute, useValue: { queryParams: of({}) } },
-        { provide: Router, useValue: { navigateByUrl: jasmine.createSpy('navigateByUrl') } },
+        { provide: Router, useValue: { navigateByUrl: jasmine.createSpy('navigateByUrl'),
+          parseUrl: jasmine.createSpy('parseUrl').and.returnValue({ queryParams: of({}) })} },
+        provideMockAuthenticationService()
       ]
     }).compileComponents();
   });

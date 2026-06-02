@@ -24,6 +24,9 @@ import {Candidate} from "../../../../model/candidate";
 import {CandidateSource} from "../../../../model/base";
 import {CandidateAttachment} from "../../../../model/candidate-attachment";
 import {of} from "rxjs";
+import {
+  provideMockAuthenticationService
+} from "../../../../util/testing/test-authentication.providers.spec";
 
 describe('ShareableDocsComponent', () => {
   let component: ShareableDocsComponent;
@@ -38,7 +41,9 @@ describe('ShareableDocsComponent', () => {
       imports: [ReactiveFormsModule, NgbTooltipModule, HttpClientTestingModule],
       providers: [
         UntypedFormBuilder,
-        { provide: CandidateService, useValue: mockCandidateService }
+        { provide: CandidateService, useValue: mockCandidateService },
+        provideMockAuthenticationService()
+        
       ]
     }).compileComponents();
   });

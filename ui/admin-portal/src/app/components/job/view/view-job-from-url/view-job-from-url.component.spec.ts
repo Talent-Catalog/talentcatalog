@@ -31,6 +31,9 @@ import {ChatReadStatusComponent} from "../../../chat/chat-read-status/chat-read-
 import {ViewJobSummaryComponent} from "../summary/view-job-summary/view-job-summary.component";
 import {RouterLinkStubDirective} from "../../../login/login.component.spec";
 import {AutosaveStatusComponent} from "../../../util/autosave-status/autosave-status.component";
+import {
+  provideMockAuthenticationService
+} from "../../../../util/testing/test-authentication.providers.spec";
 
 describe('ViewJobFromUrlComponent', () => {
   let component: ViewJobFromUrlComponent;
@@ -51,7 +54,8 @@ describe('ViewJobFromUrlComponent', () => {
       providers: [
         { provide: Router, useClass: class { navigate = jasmine.createSpy('navigate'); events = of(); } }, // Mock Router
         { provide: JobService, useValue: mockJobService },
-        { provide: ActivatedRoute, useValue: mockActivatedRoute }
+        { provide: ActivatedRoute, useValue: mockActivatedRoute },
+        provideMockAuthenticationService()
       ]
     }).compileComponents();
   }));

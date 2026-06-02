@@ -37,6 +37,9 @@ import {
 } from "../../../candidate-intake-tab/candidate-intake-tab.component.spec";
 import {MockCandidateVisaJobCheck} from "../../../../../../../MockData/MockCandidateVisaCheck";
 import {mockCandidateOpportunity} from "../../../../../../../MockData/MockCandidateOpportunity";
+import {
+  provideMockAuthenticationService
+} from "../../../../../../../util/testing/test-authentication.providers.spec";
 
 describe('VisaJobCheckUkComponent', () => {
   let component: VisaJobCheckUkComponent;
@@ -50,6 +53,9 @@ describe('VisaJobCheckUkComponent', () => {
       declarations: [ VisaJobCheckUkComponent, RelocatingDependantsComponent, DependantsComponent,
         TcAccordionComponent,
         TcAccordionItemComponent
+      ],
+      providers: [
+        provideMockAuthenticationService()
       ]
     })
     .compileComponents();
