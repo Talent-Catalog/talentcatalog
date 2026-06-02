@@ -44,13 +44,15 @@ jobs:
           mkdir -p server/src/test/resources
           aws s3 cp s3://tctalent-integration-db-dumps/dump.sql server/src/test/resources/dump.sql
 
-      - name: Build and test with Gradle
-        run: ./gradlew server:build -Ptest-tc-system
+      - name: Build
+        run: ./gradlew server:build -x test -Ptest-tc-system
         env:
           GOOGLE_DRIVE_PRIVATEKEY: ${{ secrets.GOOGLE_DRIVE_PRIVATEKEY }}
           GOOGLE_DRIVE_PRIVATEKEYID: ${{ secrets.GOOGLE_DRIVE_PRIVATEKEYID }}
           SF_PRIVATE_KEY: ${{ secrets.SF_PRIVATE_KEY }}
 
+      - name: Run tests
+        run: ./gradlew clean :server:test --stacktrace --rerun-tasks
       # --- Deploy to TBB Staging (us-east-1) ---
 
       - name: Configure AWS credentials for TBB
