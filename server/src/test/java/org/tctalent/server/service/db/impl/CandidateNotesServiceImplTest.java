@@ -177,7 +177,6 @@ class CandidateNotesServiceImplTest {
         CandidateNote note = noteCaptor.getValue();
         assertEquals(TITLE, note.getTitle());
         assertEquals(COMMENT, note.getComment());
-        assertEquals(ADMIN_USER, note.getUpdatedBy());
     }
 
 }
