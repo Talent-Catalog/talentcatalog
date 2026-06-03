@@ -89,6 +89,7 @@ import org.tctalent.server.model.db.CandidateProperty;
 import org.tctalent.server.model.db.CandidateStatus;
 import org.tctalent.server.model.db.CandidateSubfolderType;
 import org.tctalent.server.model.db.Country;
+import org.tctalent.server.model.db.CvFormat;
 import org.tctalent.server.model.db.DataRow;
 import org.tctalent.server.model.db.DependantRelations;
 import org.tctalent.server.model.db.EducationLevel;
@@ -2131,13 +2132,14 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     @Override
-    public Resource generateCv(Candidate candidate, Boolean showName, Boolean showContact) {
-       return pdfHelper.generatePdf(candidate, showName, showContact);
-    }
+    public Resource generateCv(
+        Candidate candidate, Boolean showName, Boolean showContact, CvFormat format) {
+        CvFormat requestedFormat = format == null ? CvFormat.PDF : format;
 
-    @Override
-    public Resource generateCvDocx(Candidate candidate, Boolean showName, Boolean showContact) {
-        return docxHelper.generateDocx(candidate, showName, showContact);
+        return switch (requestedFormat) {
+            case PDF -> pdfHelper.generatePdf(candidate, showName, showContact);
+            case DOCX -> docxHelper.generateDocx(candidate, showName, showContact);
+        };
     }
 
     // List export
