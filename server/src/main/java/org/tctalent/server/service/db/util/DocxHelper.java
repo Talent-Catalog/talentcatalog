@@ -25,7 +25,7 @@ import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
-import org.tctalent.server.exception.DocxGenerationException;
+import org.tctalent.server.exception.CvGenerationException;
 import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.model.db.Candidate;
 
@@ -46,7 +46,7 @@ public class DocxHelper {
 
   private static final String PDF_RESOURCE_BASE_PATH = "/pdf/";
 
-  private final PdfHelper pdfHelper;
+  private final CvTemplateHelper cvTemplateHelper;
 
   /**
    * Generates a DOCX CV for the given candidate.
@@ -55,11 +55,11 @@ public class DocxHelper {
    * @param showName whether the candidate name should be included in the CV
    * @param showContact whether contact details should be included in the CV
    * @return generated DOCX as a Spring {@link Resource}
-   * @throws DocxGenerationException if the CV cannot be rendered or converted to DOCX
+   * @throws CvGenerationException if the CV cannot be rendered or converted to DOCX
    */
   public Resource generateDocx(Candidate candidate, Boolean showName, Boolean showContact) {
     try {
-      String xhtml = pdfHelper.renderCvXhtml(candidate, showName, showContact);
+      String xhtml = cvTemplateHelper.renderCvXhtml(candidate, showName, showContact);
 
       WordprocessingMLPackage wordPackage = WordprocessingMLPackage.createPackage();
       XHTMLImporterImpl importer = new XHTMLImporterImpl(wordPackage);
@@ -78,14 +78,14 @@ public class DocxHelper {
           .message("Error generating DOCX")
           .logError(e);
 
-      throw new DocxGenerationException("Error generating DOCX", e);
+      throw new CvGenerationException(e.getMessage());
     }
   }
 
   /**
    * Returns the base URL used by docx4j to resolve relative resources in the rendered CV XHTML.
    *
-   * <p>The existing PDF templates use resources under {@code classpath:pdf/}. docx4j needs a real
+   * <p>The existing CV template uses resources under {@code classpath:pdf/}. docx4j needs a real
    * URL string instead of Spring's {@code classpath:} prefix, so this method resolves the classpath
    * location to a URL.</p>
    *
