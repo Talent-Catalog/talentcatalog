@@ -84,7 +84,10 @@ class TaskAssignmentServiceImplTest {
     User user = new User();
     Candidate candidate = candidate(1L, "CAND-001");
     SavedList savedList = new SavedList();
-    TaskImpl task = task(TaskType.Question, "questionTask", 5);
+
+    TaskImpl task = mock(TaskImpl.class);
+    when(task.getTaskType()).thenReturn(TaskType.Question);
+    when(task.getDaysToComplete()).thenReturn(5);
 
     when(taskAssignmentRepository.save(any(TaskAssignmentImpl.class)))
         .thenAnswer(invocation -> invocation.getArgument(0));
@@ -113,7 +116,9 @@ class TaskAssignmentServiceImplTest {
     User user = new User();
     Candidate candidate = candidate(1L, "CAND-001");
     LocalDate dueDate = LocalDate.of(2030, 1, 2);
-    TaskImpl task = task(TaskType.Upload, "uploadTask", 5);
+
+    TaskImpl task = mock(TaskImpl.class);
+    when(task.getTaskType()).thenReturn(TaskType.Upload);
 
     when(taskAssignmentRepository.save(any(TaskAssignmentImpl.class)))
         .thenAnswer(invocation -> invocation.getArgument(0));
@@ -122,16 +127,22 @@ class TaskAssignmentServiceImplTest {
         service.assignTaskToCandidate(user, task, candidate, null, dueDate);
 
     assertInstanceOf(UploadTaskAssignmentImpl.class, result);
+    assertSame(task, result.getTask());
+    assertSame(user, result.getActivatedBy());
+    assertNotNull(result.getActivatedDate());
+    assertSame(candidate, result.getCandidate());
+    assertEquals(Status.active, result.getStatus());
     assertEquals(dueDate, result.getDueDate());
     assertNull(result.getRelatedList());
+
+    verify(taskAssignmentRepository).save(result);
     verify(eventPublisher).publishEvent(any(Object.class));
   }
-
   @Test
   void assignTaskToCandidateCreatesBaseAssignmentForDefaultTaskTypeAndLeavesDueDateNull() {
     User user = new User();
     Candidate candidate = candidate(1L, "CAND-001");
-    TaskImpl task = task(defaultTaskType(), "standardTask", null);
+    TaskImpl task = task( "standardTask", null);
 
     when(taskAssignmentRepository.save(any(TaskAssignmentImpl.class)))
         .thenAnswer(invocation -> invocation.getArgument(0));
@@ -162,7 +173,7 @@ class TaskAssignmentServiceImplTest {
 
   @Test
   void updateUploadTaskAssignmentDelegatesToUpdateWithoutChangingCompletion() {
-    TaskImpl task = task(defaultTaskType(), "upload", null);
+    TaskImpl task = task("upload", null);
     TaskAssignmentImpl taskAssignment = assignment(task, candidate(1L, "CAND-001"));
     LocalDate dueDate = LocalDate.of(2030, 2, 3);
 
@@ -181,7 +192,7 @@ class TaskAssignmentServiceImplTest {
 
   @Test
   void updateSetsCompletedDateWhenCompletedTrueAndCompletedDateMissing() {
-    TaskImpl task = task(defaultTaskType(), "normalTask", null);
+    TaskImpl task = task("normalTask", null);
     TaskAssignmentImpl taskAssignment = assignment(task, candidate(1L, "CAND-001"));
 
     when(taskAssignmentRepository.save(taskAssignment)).thenReturn(taskAssignment);
@@ -196,7 +207,7 @@ class TaskAssignmentServiceImplTest {
 
   @Test
   void updateKeepsExistingCompletedDateWhenCompletedTrue() {
-    TaskImpl task = task(defaultTaskType(), "normalTask", null);
+    TaskImpl task = task( "normalTask", null);
     TaskAssignmentImpl taskAssignment = assignment(task, candidate(1L, "CAND-001"));
     OffsetDateTime completedDate = OffsetDateTime.parse("2025-01-01T10:15:30+00:00");
     taskAssignment.setCompletedDate(completedDate);
@@ -210,7 +221,7 @@ class TaskAssignmentServiceImplTest {
 
   @Test
   void updateClearsCompletedDateWhenCompletedFalse() {
-    TaskImpl task = task(defaultTaskType(), "normalTask", null);
+    TaskImpl task = task("normalTask", null);
     TaskAssignmentImpl taskAssignment = assignment(task, candidate(1L, "CAND-001"));
     taskAssignment.setCompletedDate(OffsetDateTime.now());
 
@@ -226,8 +237,8 @@ class TaskAssignmentServiceImplTest {
     User user = new User();
     Candidate candidate = candidate(1L, "CAND-001");
 
-    TaskImpl claimCouponTask = task(defaultTaskType(), "claimCouponButton", null);
-    TaskImpl duolingoTask = task(defaultTaskType(), "duolingoTest", 10);
+    TaskImpl claimCouponTask = task( "claimCouponButton", null);
+    TaskImpl duolingoTask = task( "duolingoTest", 10);
 
     TaskAssignmentImpl taskAssignment = assignment(claimCouponTask, candidate);
 
@@ -252,8 +263,8 @@ class TaskAssignmentServiceImplTest {
   @Test
   void updateThrowsWhenClaimCouponButtonCompletedAndNoLoggedInUser() {
     Candidate candidate = candidate(1L, "CAND-001");
-    TaskImpl claimCouponTask = task(defaultTaskType(), "claimCouponButton", null);
-    TaskImpl duolingoTask = task(defaultTaskType(), "duolingoTest", 10);
+    TaskImpl claimCouponTask = task("claimCouponButton", null);
+    TaskImpl duolingoTask = task( "duolingoTest", 10);
     TaskAssignmentImpl taskAssignment = assignment(claimCouponTask, candidate);
 
     when(taskService.getByName("duolingoTest")).thenReturn(duolingoTask);
@@ -267,7 +278,7 @@ class TaskAssignmentServiceImplTest {
 
   @Test
   void updateSetsAbandonedDateWhenAbandonedAndMissing() {
-    TaskImpl task = task(defaultTaskType(), "normalTask", null);
+    TaskImpl task = task( "normalTask", null);
     TaskAssignmentImpl taskAssignment = assignment(task, candidate(1L, "CAND-001"));
 
     when(taskAssignmentRepository.save(taskAssignment)).thenReturn(taskAssignment);
@@ -279,7 +290,7 @@ class TaskAssignmentServiceImplTest {
 
   @Test
   void updateKeepsExistingAbandonedDateWhenAbandoned() {
-    TaskImpl task = task(defaultTaskType(), "normalTask", null);
+    TaskImpl task = task( "normalTask", null);
     TaskAssignmentImpl taskAssignment = assignment(task, candidate(1L, "CAND-001"));
     OffsetDateTime abandonedDate = OffsetDateTime.parse("2025-01-01T10:15:30+00:00");
     taskAssignment.setAbandonedDate(abandonedDate);
@@ -293,7 +304,7 @@ class TaskAssignmentServiceImplTest {
 
   @Test
   void updateClearsAbandonedDateWhenNotAbandoned() {
-    TaskImpl task = task(defaultTaskType(), "normalTask", null);
+    TaskImpl task = task("normalTask", null);
     TaskAssignmentImpl taskAssignment = assignment(task, candidate(1L, "CAND-001"));
     taskAssignment.setAbandonedDate(OffsetDateTime.now());
 
@@ -390,7 +401,7 @@ class TaskAssignmentServiceImplTest {
   @Test
   void completeUploadTaskAssignmentThrowsClassCastExceptionForNonUploadTask() {
     TaskAssignmentImpl taskAssignment = assignment(
-        task(defaultTaskType(), "notUpload", null),
+        task("notUpload", null),
         candidate(1L, "CAND-001")
     );
 
@@ -425,7 +436,7 @@ class TaskAssignmentServiceImplTest {
 
   @Test
   void populateTransientTaskAssignmentFieldsPopulatesTaskOnlyWhenNotCompleted() {
-    TaskImpl task = task(defaultTaskType(), "normalTask", null);
+    TaskImpl task = task("normalTask", null);
     TaskAssignmentImpl taskAssignment = assignment(task, candidate(1L, "CAND-001"));
 
     service.populateTransientTaskAssignmentFields(List.of(taskAssignment));
@@ -555,7 +566,7 @@ class TaskAssignmentServiceImplTest {
   @Test
   void populateTransientTaskAssignmentFieldsThrowsWhenQuestionAssignmentTaskIsNotQuestionTask() {
     Candidate candidate = candidate(1L, "CAND-001");
-    TaskImpl nonQuestionTask = task(defaultTaskType(), "notAQuestion", null);
+    TaskImpl nonQuestionTask = task("notAQuestion", null);
     QuestionTaskAssignmentImpl taskAssignment =
         completedQuestionAssignment(nonQuestionTask, candidate);
 
@@ -586,9 +597,8 @@ class TaskAssignmentServiceImplTest {
     return candidate;
   }
 
-  private static TaskImpl task(TaskType taskType, String name, Integer daysToComplete) {
+  private static TaskImpl task(String name, Integer daysToComplete) {
     TaskImpl task = new TaskImpl();
-    task.setTaskType(taskType);
     task.setName(name);
     task.setDaysToComplete(daysToComplete);
     return task;
