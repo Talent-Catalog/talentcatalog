@@ -75,6 +75,22 @@ jobs:
       - name: Deploy to OPC with Jib
         run: ./gradlew jib -Popc-staging -x test
 
+      - name: Force new ECS deployment (OPC staging)
+        run: |
+          aws ecs update-service \
+            --cluster tc-server-opc-staging \
+            --service tc-server-opc-staging \
+            --force-new-deployment \
+            --region eu-west-2
+
       # --- Deploy to GRN Staging (same OPC staging account, eu-west-2) ---
       - name: Deploy to GRN Staging with Jib
         run: ./gradlew jib -Pgrn-staging -x test
+
+      - name: Force new ECS deployment (GRN staging)
+        run: |
+          aws ecs update-service \
+            --cluster grn-staging \
+            --service grn-staging \
+            --force-new-deployment \
+            --region eu-west-2
