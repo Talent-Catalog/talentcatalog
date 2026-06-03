@@ -38,10 +38,13 @@ import {CandidateSource, FetchCandidatesWithChatRequest} from "../model/base";
 import {IntakeService} from "../components/util/intake/IntakeService";
 import {JobChatUserInfo} from "../model/chat";
 
+export type CvFormat = 'PDF' | 'DOCX';
+
 export interface DownloadCVRequest {
   candidateId: number,
   showName: boolean,
   showContact: boolean
+  format?: CvFormat
 }
 
 // If a completed date is provided, this intake is an external intake entered to the TC at a later date.
@@ -165,30 +168,24 @@ export class CandidateService implements IntakeService {
   export(request) {
     return this.http.post(`${this.apiUrl}/export/csv`, request, {responseType: 'blob'});
   }
-
+  
   downloadCv(request: DownloadCVRequest) {
-    return this.http.post(
-      `${this.apiUrl}/${request.candidateId}/cv.pdf`, request, {responseType: 'blob'})
-      .pipe(
-        map(res => {
-          return new Blob([res], { type: 'application/pdf', });
-        })
-      );
-  }
+    const format = request.format ?? 'PDF';
 
-  downloadCvDocx(request: DownloadCVRequest) {
     return this.http.post(
-      `${this.apiUrl}/${request.candidateId}/cv.docx`,
-      request,
+      `${this.apiUrl}/${request.candidateId}/cv`,
+      {
+        ...request,
+        format
+      },
       {responseType: 'blob'}
     ).pipe(
       map(res => {
-        return new Blob(
-          [res],
-          {
-            type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-          }
-        );
+        const contentType = format === 'DOCX'
+          ? 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+          : 'application/pdf';
+
+        return new Blob([res], {type: contentType});
       })
     );
   }
