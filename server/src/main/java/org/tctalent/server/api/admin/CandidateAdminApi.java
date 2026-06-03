@@ -346,21 +346,18 @@ public class CandidateAdminApi {
     }
 
     @PostMapping(value = {"{id}/cv"})
-    public void downloadCandidateCV(
-        @PathVariable("id") long id,
-        @RequestBody DownloadCvRequest request,
-        HttpServletResponse response
+    public void downloadCandidateCV(@PathVariable("id") long candidateId, @RequestBody DownloadCvRequest request, HttpServletResponse response
     ) throws IOException {
 
         CvFormat format = request.getFormat();
 
         LogBuilder.builder(log)
-            .candidateId(id)
+            .candidateId(candidateId)
             .action("downloadCandidateCV")
             .message("Downloading CV for candidate")
             .logInfo();
 
-        Candidate candidate = candidateService.getCandidate(id);
+        Candidate candidate = candidateService.getCandidate(candidateId);
         String name = candidate.getUser().getDisplayName() + "-CV";
 
         response.setContentType(format.getMediaType());
