@@ -16,10 +16,10 @@
 
 package org.tctalent.server.exception;
 
-public class DocxGenerationException extends RuntimeException {
+public class CvGenerationException extends ServiceException {
 
-  public DocxGenerationException(String message, Throwable cause) {
-    super(message, cause);
-  }
+    public CvGenerationException (String message) {
+        super("cv_generation", message);
 
+    }
 }
