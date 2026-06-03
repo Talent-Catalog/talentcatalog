@@ -28,9 +28,10 @@ describe('DownloadCvComponent', () => {
   let candidateServiceSpy: jasmine.SpyObj<CandidateService>;
   let activeModalSpy: jasmine.SpyObj<NgbActiveModal>;
   let windowOpenSpy: jasmine.Spy;
+  let createObjectUrlSpy: jasmine.Spy;
 
   beforeEach(async () => {
-    const candidateService = jasmine.createSpyObj('CandidateService', ['downloadCv', 'downloadCvDocx']);
+    const candidateService = jasmine.createSpyObj('CandidateService', ['downloadCv']);
     const activeModal = jasmine.createSpyObj('NgbActiveModal', ['close', 'dismiss']);
 
     await TestBed.configureTestingModule({
@@ -45,9 +46,16 @@ describe('DownloadCvComponent', () => {
 
     fixture = TestBed.createComponent(DownloadCvComponent);
     component = fixture.componentInstance;
+    component.candidateId = 99;
+
     candidateServiceSpy = TestBed.inject(CandidateService) as jasmine.SpyObj<CandidateService>;
     activeModalSpy = TestBed.inject(NgbActiveModal) as jasmine.SpyObj<NgbActiveModal>;
-    windowOpenSpy = spyOn(window, 'open').and.returnValue({ location: { href: '' } } as Window);
+
+    windowOpenSpy = spyOn(window, 'open')
+    .and.returnValue({location: {href: ''}} as Window);
+
+    createObjectUrlSpy = spyOn(URL, 'createObjectURL')
+    .and.returnValue('blob:mock-cv-url');
 
     fixture.detectChanges();
   });
@@ -61,53 +69,77 @@ describe('DownloadCvComponent', () => {
     expect(component.form.value).toEqual({
       name: false,
       contact: false,
-      format: 'pdf'
+      format: 'PDF'
     });
   });
 
-  it('should call downloadCv and close modal on success for pdf', () => {
+  it('should call downloadCv and close modal on success for PDF', () => {
     const request: DownloadCVRequest = {
-      candidateId: component.candidateId,
+      candidateId: 99,
       showName: false,
       showContact: false,
+      format: 'PDF'
     };
 
-    const fakeBlob = new Blob();
+    const fakeBlob = new Blob(['pdf']);
     candidateServiceSpy.downloadCv.and.returnValue(of(fakeBlob));
 
-    component.form.patchValue({ format: 'pdf' });
+    component.form.patchValue({format: 'PDF'});
     component.onSave();
 
     expect(candidateServiceSpy.downloadCv).toHaveBeenCalledWith(request);
-    expect(candidateServiceSpy.downloadCvDocx).not.toHaveBeenCalled();
-    expect(activeModalSpy.close).toHaveBeenCalled();
     expect(windowOpenSpy).toHaveBeenCalled();
+    expect(createObjectUrlSpy).toHaveBeenCalledWith(fakeBlob);
+    expect(activeModalSpy.close).toHaveBeenCalled();
   });
 
-  it('should call downloadCvDocx and close modal on success for docx', () => {
+  it('should call downloadCv and close modal on success for DOCX', () => {
     const request: DownloadCVRequest = {
-      candidateId: component.candidateId,
+      candidateId: 99,
       showName: false,
       showContact: false,
+      format: 'DOCX'
     };
 
-    const fakeBlob = new Blob();
-    candidateServiceSpy.downloadCvDocx.and.returnValue(of(fakeBlob));
+    const fakeBlob = new Blob(['docx']);
+    candidateServiceSpy.downloadCv.and.returnValue(of(fakeBlob));
 
-    component.form.patchValue({ format: 'docx' });
+    component.form.patchValue({format: 'DOCX'});
     component.onSave();
 
-    expect(candidateServiceSpy.downloadCvDocx).toHaveBeenCalledWith(request);
-    expect(candidateServiceSpy.downloadCv).not.toHaveBeenCalled();
-    expect(activeModalSpy.close).toHaveBeenCalled();
+    expect(candidateServiceSpy.downloadCv).toHaveBeenCalledWith(request);
     expect(windowOpenSpy).toHaveBeenCalled();
+    expect(createObjectUrlSpy).toHaveBeenCalledWith(fakeBlob);
+    expect(activeModalSpy.close).toHaveBeenCalled();
+  });
+
+  it('should pass name and contact values to downloadCv request', () => {
+    const request: DownloadCVRequest = {
+      candidateId: 99,
+      showName: true,
+      showContact: true,
+      format: 'PDF'
+    };
+
+    const fakeBlob = new Blob(['pdf']);
+    candidateServiceSpy.downloadCv.and.returnValue(of(fakeBlob));
+
+    component.form.patchValue({
+      name: true,
+      contact: true,
+      format: 'PDF'
+    });
+
+    component.onSave();
+
+    expect(candidateServiceSpy.downloadCv).toHaveBeenCalledWith(request);
+    expect(activeModalSpy.close).toHaveBeenCalled();
   });
 
   it('should set error message on failure', () => {
     const errorResponse = 'Error downloading CV';
     candidateServiceSpy.downloadCv.and.returnValue(throwError(errorResponse));
-    component.form.patchValue({ format: 'pdf' });
-    
+    component.form.patchValue({format: 'PDF'});
     component.onSave();
 
     expect(component.error).toBe(errorResponse);
@@ -116,11 +148,13 @@ describe('DownloadCvComponent', () => {
 
   it('should close the modal', () => {
     component.closeModal();
+
     expect(activeModalSpy.close).toHaveBeenCalled();
   });
 
   it('should dismiss the modal', () => {
     component.dismiss();
+
     expect(activeModalSpy.dismiss).toHaveBeenCalledWith(false);
   });
 
@@ -128,7 +162,10 @@ describe('DownloadCvComponent', () => {
     component.loading = true;
     fixture.detectChanges();
 
-    const saveButton = fixture.debugElement.nativeElement.querySelector('.modal-footer .btn-primary');
+    const saveButton = fixture.debugElement.nativeElement.querySelector(
+      '.modal-footer .btn-primary'
+    );
+
     expect(saveButton.disabled).toBeTruthy();
   });
 
@@ -137,7 +174,10 @@ describe('DownloadCvComponent', () => {
     component.saving = true;
     fixture.detectChanges();
 
-    const saveButton = fixture.debugElement.nativeElement.querySelector('.modal-footer .btn-primary');
+    const saveButton = fixture.debugElement.nativeElement.querySelector(
+      '.modal-footer .btn-primary'
+    );
+
     expect(saveButton.disabled).toBeTruthy();
   });
 
@@ -146,6 +186,7 @@ describe('DownloadCvComponent', () => {
     fixture.detectChanges();
 
     const errorMessage = fixture.debugElement.nativeElement.querySelector('tc-alert');
+
     expect(errorMessage).toBeTruthy();
     expect(errorMessage.textContent).toContain('Test error message');
   });
@@ -153,12 +194,19 @@ describe('DownloadCvComponent', () => {
   it('should call onSave when save button is clicked', () => {
     spyOn(component, 'onSave');
 
-    component.form.setValue({ name: true, contact: true, format: 'pdf' });
+    component.form.setValue({
+      name: true,
+      contact: true,
+      format: 'PDF'
+    });
     component.loading = false;
     component.saving = false;
     fixture.detectChanges();
 
-    const saveButton = fixture.debugElement.nativeElement.querySelector('.modal-footer .btn-primary');
+    const saveButton = fixture.debugElement.nativeElement.querySelector(
+      '.modal-footer .btn-primary'
+    );
+
     saveButton.click();
 
     expect(component.onSave).toHaveBeenCalled();
