@@ -52,6 +52,7 @@ import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.exception.SalesforceException;
 import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.model.db.Candidate;
+import org.tctalent.server.model.db.CvFormat;
 import org.tctalent.server.model.db.JobChatUserInfo;
 import org.tctalent.server.repository.db.read.dto.CandidateReadDto;
 import org.tctalent.server.request.RegisterCandidateByPartnerRequest;
@@ -344,51 +345,35 @@ public class CandidateAdminApi {
         savedSearchService.exportToCsv(request, response.getWriter());
     }
 
-    @PostMapping(value = "{id}/cv.pdf")
-    public void downloadCandidateCVPdf(@RequestBody DownloadCvRequest request, HttpServletResponse response)
-            throws IOException {
+    @PostMapping(value = {"{id}/cv"})
+    public void downloadCandidateCV(
+        @PathVariable("id") long id,
+        @RequestBody DownloadCvRequest request,
+        HttpServletResponse response
+    ) throws IOException {
+
+        CvFormat format = request.getFormat();
 
         LogBuilder.builder(log)
-            .candidateId(request.getCandidateId())
-            .action("downloadCandidateCVPdf")
+            .candidateId(id)
+            .action("downloadCandidateCV")
             .message("Downloading CV for candidate")
             .logInfo();
 
-        Candidate candidate = candidateService.getCandidate(request.getCandidateId());
-        String name = candidate.getUser().getDisplayName()+"-"+ "CV";
-        response.setContentType("application/pdf");
-        response.setHeader("Content-Disposition", "attachment; filename=" + name + ".pdf");
+        Candidate candidate = candidateService.getCandidate(id);
+        String name = candidate.getUser().getDisplayName() + "-CV";
 
-        Resource report = candidateService.generateCv(candidate, request.getShowName(), request.getShowContact());
-        try (InputStream reportStream = report.getInputStream()) {
-            IOUtils.copy(reportStream, response.getOutputStream());
-            response.flushBuffer();
-        }
-    }
+        response.setContentType(format.getMediaType());
+        response.setHeader(
+            "Content-Disposition",
+            "attachment; filename=\"" + name + "." + format.getFileExtension() + "\""
+        );
 
-    @PostMapping(value = "{id}/cv.docx")
-    public void downloadCandidateCVDocx(@RequestBody DownloadCvRequest request,
-        HttpServletResponse response) throws IOException {
-
-        LogBuilder.builder(log)
-            .candidateId(request.getCandidateId())
-            .action("downloadCandidateCVDocx")
-            .message("Downloading DOCX CV for candidate")
-            .logInfo();
-
-        Candidate candidate = candidateService.getCandidate(request.getCandidateId());
-
-        String name = candidate.getUser().getDisplayName() + "-" + "CV";
-
-        response.setContentType(
-            "application/vnd.openxmlformats-officedocument.wordprocessingml.document");
-        response.setHeader("Content-Disposition",
-            "attachment; filename=" + name + ".docx");
-
-        Resource report = candidateService.generateCvDocx(
+        Resource report = candidateService.generateCv(
             candidate,
             request.getShowName(),
-            request.getShowContact()
+            request.getShowContact(),
+            format
         );
 
         try (InputStream reportStream = report.getInputStream()) {
