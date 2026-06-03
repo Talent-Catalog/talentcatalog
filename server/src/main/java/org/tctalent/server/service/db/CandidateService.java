@@ -446,6 +446,7 @@ public interface CandidateService {
      * @param candidate the candidate whose CV will be generated
      * @param showName whether the candidate's name should be included in the generated CV
      * @param showContact whether the candidate's contact details should be included in the generated CV
+     * @param format the requested CV output format, for example PDF or DOCX
      * @throws CvGenerationException if the CV cannot be generated
      * @return a {@link Resource} containing the generated CV as a DOCX document
      */
