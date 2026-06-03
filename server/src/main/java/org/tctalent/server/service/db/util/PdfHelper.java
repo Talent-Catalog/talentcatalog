@@ -16,23 +16,15 @@
 
 package org.tctalent.server.service.db.util;
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.nio.charset.StandardCharsets;
-import java.util.regex.Pattern;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
-import org.tctalent.server.exception.PdfGenerationException;
+import org.tctalent.server.exception.CvGenerationException;
 import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.model.db.Candidate;
-import org.tctalent.server.service.db.impl.TcInstanceService;
-import org.tctalent.server.util.text.CandidateTidiedTextViewFactory;
-import org.thymeleaf.TemplateEngine;
-import org.thymeleaf.context.Context;
-import org.w3c.tidy.Tidy;
 import org.xhtmlrenderer.pdf.ITextRenderer;
 
 /**
@@ -47,105 +39,37 @@ import org.xhtmlrenderer.pdf.ITextRenderer;
  * /test.pdf
  */
 @Service
+@RequiredArgsConstructor
 @Slf4j
 public class PdfHelper {
-    private static final String UTF_8 = "UTF-8";
-    private static final Pattern NULL_BYTE_PATTERN = Pattern.compile("\\x00");
-
-    private final TemplateEngine pdfTemplateEngine;
-    private final TcInstanceService tcInstanceService;
+    private static final String PDF_RESOURCE_BASE_URL = "classpath:pdf/";
+    private final CvTemplateHelper cvTemplateHelper;
     /**
-     * Added this shared preparer so PDF and DOCX exports clean candidate data in the same way before rendering.
-     */
-    private final CvExportDataPreparer cvExportDataPreparer;
-    private final CandidateTidiedTextViewFactory candidateTidiedTextViewFactory;
-
-    /**
-     * Note - we can't use Lombok RequiredArgsConstructor because currently Lombok doesn't copy
-     * the @Qualifier annotation to the constructor.
-     * <p/>
-     * See <a href="https://www.jetbrains.com.cn/en-us/help/inspectopedia/SpringQualifierCopyableLombok.html">
-     *     Intellij doc</a>
-     */
-    public PdfHelper(@Qualifier("pdfTemplateEngine") TemplateEngine pdfTemplateEngine,
-        TcInstanceService tcInstanceService,
-        CandidateTidiedTextViewFactory candidateTidiedTextViewFactory,CvExportDataPreparer cvExportDataPreparer) {
-        this.pdfTemplateEngine = pdfTemplateEngine;
-        this.tcInstanceService = tcInstanceService;
-        this.candidateTidiedTextViewFactory = candidateTidiedTextViewFactory;
-        this.cvExportDataPreparer = cvExportDataPreparer;
-    }
-
-    /**
-     * Generates a PDF for a candidate.
+     * Generates a PDF CV for the given candidate.
      *
-     * @param candidate the candidate data
-     * @param showName whether to show the candidate's name
-     * @param showContact whether to show the candidate's contact information
-     * @return the generated PDF as a Resource
+     * @param candidate candidate whose CV should be generated
+     * @param showName whether the candidate name should be included in the CV
+     * @param showContact whether contact details should be included in the CV
+     * @return generated PDF as a Spring {@link Resource}
+     * @throws CvGenerationException if the CV cannot be rendered or converted to PDF
      */
-    public Resource generatePdf(Candidate candidate, Boolean showName, Boolean showContact){
+    public Resource generatePdf(Candidate candidate, Boolean showName, Boolean showContact) {
         try {
-            return createPdf(renderCvXhtml(candidate, showName, showContact));
+            String xhtml = cvTemplateHelper.renderCvXhtml(candidate, showName, showContact);
+            return createPdf(xhtml);
         } catch (Exception e) {
             LogBuilder.builder(log)
                 .action("generatePdf")
                 .message("Error generating PDF")
                 .logError(e);
-           throw new PdfGenerationException(e.getMessage());
+
+            throw new CvGenerationException(e.getMessage());
         }
     }
 
-    public String renderCvXhtml(Candidate candidate, Boolean showName, Boolean showContact) {
-        // Prepare the candidate before rendering the PDF, so contact fields and job descriptions are cleaned before they go into the template.
-        candidate = cvExportDataPreparer.prepare(candidate, showContact);
-
-        Context context = new Context();
-        context.setVariable("candidate", candidateTidiedTextViewFactory.create(candidate));
-        context.setVariable("showName", showName);
-        context.setVariable("showContact", showContact);
-        context.setVariable("logoFile", tcInstanceService.getLogoFile());
-
-        String renderedHtmlContent = pdfTemplateEngine.process("template", context);
-        String xhtml = convertToXhtml(renderedHtmlContent);
-
-        // Remove null bytes to avoid invalid XML character errors in PDF/DOCX converters.
-        return NULL_BYTE_PATTERN.matcher(xhtml).replaceAll("");
-    }
-
-    private static String convertToXhtml(String html) {
-        Tidy tidy = new Tidy();
-        tidy.setInputEncoding(UTF_8);
-        tidy.setOutputEncoding(UTF_8);
-        tidy.setXHTML(true);
-
-        try (ByteArrayInputStream inputStream = new ByteArrayInputStream(html.getBytes(StandardCharsets.UTF_8));
-            ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
-
-            tidy.parseDOM(inputStream, outputStream);
-
-            String xhtml = outputStream.toString(StandardCharsets.UTF_8);
-
-            LogBuilder.builder(log)
-                .action("convertToXhtml")
-                .message("Converted HTML to XHTML")
-                .logInfo();
-
-            return xhtml;
-
-        } catch (Exception e) {
-            LogBuilder.builder(log)
-                .action("convertToXhtml")
-                .message("Error converting HTML to XHTML")
-                .logError(e);
-
-            throw new RuntimeException("Error converting HTML to XHTML", e);
-        }
-    }
-
-    private Resource createPdf(String xHtml) throws Exception {
+    private Resource createPdf(String xhtml) throws Exception {
         ITextRenderer renderer = new ITextRenderer();
-        renderer.setDocumentFromString(xHtml, "classpath:pdf/");
+        renderer.setDocumentFromString(xhtml, PDF_RESOURCE_BASE_URL);
         renderer.layout();
 
         try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
