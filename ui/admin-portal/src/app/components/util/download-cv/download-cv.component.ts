@@ -49,13 +49,13 @@ export class DownloadCvComponent implements OnInit {
   }
 
   onSave() {
-    const format = this.form.value.format;
+    const format: CvFormat = this.form.value.format;
 
     const request: DownloadCVRequest = {
       candidateId: this.candidateId,
       showName: this.form.value.name,
       showContact: this.form.value.contact,
-      format: this.form.value.format as CvFormat
+      format: format
     };
 
     const tab = window.open();
