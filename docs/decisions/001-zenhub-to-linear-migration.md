@@ -203,7 +203,7 @@ Preserves the team's existing 3-week effective cadence while introducing structu
 
 ## Decision 8: Projects and Initiatives
 
-**Status:** Pending
+**Status:** Decided
 
 ### Context
 
@@ -233,9 +233,9 @@ Adopt both layers immediately. Use Initiatives to express longer-term strategic 
 
 ### Decision
 
-_To be agreed._
+**Option B — Projects and Initiatives from the start**
 
-**Recommendation:** Option B. Improved roadmap capability is a primary driver for the migration, and Initiatives are the layer that gives Linear's roadmap its strategic structure. Deferring them would result in a flat roadmap that fails to deliver one of the main benefits of moving away from ZenHub. Starting with a small, well-chosen set of Initiatives gives product management a meaningful roadmap from day one.
+Improved roadmap capability is a primary driver for the migration, and Initiatives are the layer that gives Linear's roadmap its strategic structure. Deferring them would result in a flat roadmap that fails to deliver one of the main benefits of moving away from ZenHub. Starting with a small, well-chosen set of Initiatives gives product management a meaningful roadmap from day one.
 
 ---
 
