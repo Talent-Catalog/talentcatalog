@@ -90,7 +90,7 @@ ZenHub's sprint and velocity tracking has not been a strong feature of the tool 
 
 ## Decision 4: Workspace and Team Structure
 
-**Status:** Pending
+**Status:** Decided
 
 ### Context
 
@@ -106,9 +106,7 @@ One workspace, multiple teams (e.g. `Backend`, `Frontend`, `Platform`). Each tea
 
 ### Decision
 
-_To be agreed._
-
-**Recommendation:** Start with Option A. Split into multiple teams later if product management identifies a clear need to plan streams independently.
+Start with Option A. Split into multiple teams later if product management identifies a clear need to plan streams independently.
 
 ---
 
