@@ -241,21 +241,13 @@ Improved roadmap capability is a primary driver for the migration, and Initiativ
 
 ## Decision 9: Access Control and Role Assignment
 
-**Status:** Partially decided
+**Status:** Decided
 
 ### Context
 
-Linear has three role levels: **Admin**, **Member**, and **Guest**. All three are billed as paid seats; Linear bills per unsuspended user regardless of role.
+Linear has three role levels: **Admin**, **Member**, and **Guest**. All roles are billed as paid seats. The Guest role is only available on Business plan and above.
 
-Plan-dependent availability is important:
-
-- **Guest role requires the Business plan ($16/user/month) or Enterprise.** It is not available on Free or Basic.
-- On Basic, everyone with access is a Member (or Admin) — there is no read-only / scoped option for stakeholders.
-
-Two questions of principle need to be agreed:
-
-1. How permissively or strictly to assign roles within the core team.
-2. Whether the need for Guest access for non-technical stakeholders is significant enough to require the Business plan.
+The team has agreed to proceed on the **Business plan** under a favourable nonprofit licensing arrangement negotiated with Linear.
 
 ### Decision
 
@@ -263,9 +255,9 @@ Two questions of principle need to be agreed:
 
 | Role | Assigned to | Rationale |
 |---|---|---|
-| Admin | Core maintainers (a small subset of the team) | Manage workspace settings, integrations, members, and teams. |
-| Member | All core developers with regular commit activity | Full ability to create and manage issues, participate in cycles, update states. |
-| Guest | Product or non-technical stakeholders requiring visibility but not full participation | Read + comment access on specific Projects or teams. **Requires Business plan.** |
+| Admin | A small subset of core maintainers | Manage workspace settings, integrations, members, and teams. |
+| Member | All core contributors with regular commit activity | Full ability to create and manage issues, participate in cycles, and update states. |
+| Guest | Key external stakeholders requiring visibility (e.g. TBB, UNHCR) | Read + comment access on specific Projects or teams. |
 
 Named role assignments are operational and will be maintained outside this record.
 
