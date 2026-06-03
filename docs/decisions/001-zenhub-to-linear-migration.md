@@ -146,7 +146,7 @@ Issue triage is handled ad-hoc; a dedicated `Triage` state would add process ove
 
 ## Decision 6: Labels
 
-**Status:** Pending
+**Status:** Decided
 
 ### Context
 
@@ -166,9 +166,7 @@ Audit and consolidate the existing GitHub labels before enabling Linear sync: re
 
 ### Decision
 
-_To be agreed._
-
-**Recommendation:** Option B. The migration is a natural opportunity to clean up the label set with minimal disruption. Cleaning labels in GitHub first ensures the tidier taxonomy is what Linear inherits.
+Option A. The existing label set is serviceable. A clean-up effort would require manual review of all labels, decisions on which to keep/merge/retire. We have imported the full labels set, noting a ticket to tidy up later if it becomes a pain point.
 
 ---
 
