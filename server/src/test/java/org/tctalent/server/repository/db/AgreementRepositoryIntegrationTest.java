@@ -1,0 +1,149 @@
+/*
+ * Copyright (c) 2026 Talent Catalog.
+ *
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
+ * for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see https://www.gnu.org/licenses/.
+ */
+
+package org.tctalent.server.repository.db;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.tctalent.server.integration.helper.TestDataFactory.createAndSaveCandidate;
+import static org.tctalent.server.integration.helper.TestDataFactory.createAndSaveUser;
+
+import java.time.OffsetDateTime;
+import java.util.List;
+import java.util.Optional;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.tctalent.server.casi.domain.model.ServiceProvider;
+import org.tctalent.server.integration.helper.BaseJpaIntegrationTest;
+import org.tctalent.server.model.db.Agreement;
+import org.tctalent.server.model.db.Candidate;
+import org.tctalent.server.model.db.Counterparty;
+import org.tctalent.server.model.db.CounterpartyType;
+
+class AgreementRepositoryIntegrationTest extends BaseJpaIntegrationTest {
+
+    @Autowired
+    private AgreementRepository agreementRepository;
+
+    @Autowired
+    private CounterpartyRepository counterpartyRepository;
+
+    @Autowired
+    private CandidateRepository candidateRepository;
+
+    @Autowired
+    private UserRepository userRepository;
+
+    private Candidate candidate;
+    private Counterparty databaseProvider;
+    private Counterparty serviceProvider;
+
+    @BeforeEach
+    void setUp() {
+        candidate = createAndSaveCandidate(candidateRepository, createAndSaveUser(userRepository));
+
+        databaseProvider = new Counterparty();
+        databaseProvider.setType(CounterpartyType.DATABASE_PROVIDER);
+        databaseProvider.setName("OPC");
+        databaseProvider = counterpartyRepository.saveAndFlush(databaseProvider);
+
+        serviceProvider = new Counterparty();
+        serviceProvider.setType(CounterpartyType.SERVICE_PROVIDER);
+        serviceProvider.setServiceProvider(ServiceProvider.LINKEDIN);
+        serviceProvider.setName("LinkedIn");
+        serviceProvider = counterpartyRepository.saveAndFlush(serviceProvider);
+    }
+
+    @Test
+    @DisplayName("findByTypeAndNameIgnoreCase finds counterparty by name case-insensitively")
+    void findByTypeAndNameIgnoreCase_findsCounterparty() {
+        Optional<Counterparty> result = counterpartyRepository.findByTypeAndNameIgnoreCase(
+            CounterpartyType.DATABASE_PROVIDER, "opc");
+
+        assertThat(result).isPresent();
+        assertThat(result.get().getId()).isEqualTo(databaseProvider.getId());
+    }
+
+    @Test
+    @DisplayName("findByTypeAndServiceProvider finds service provider counterparty")
+    void findByTypeAndServiceProvider_findsCounterparty() {
+        Optional<Counterparty> result = counterpartyRepository.findByTypeAndServiceProvider(
+            CounterpartyType.SERVICE_PROVIDER, ServiceProvider.LINKEDIN);
+
+        assertThat(result).isPresent();
+        assertThat(result.get().getId()).isEqualTo(serviceProvider.getId());
+    }
+
+    @Test
+    @DisplayName("findByCandidateIdOrderByStartDesc returns newest first")
+    void findByCandidateIdOrderByStartDesc_returnsNewestFirst() {
+        Agreement older = saveAgreement(
+            candidate,
+            databaseProvider,
+            "OpcDataProcessingAgreementV1",
+            OffsetDateTime.now().minusDays(7),
+            OffsetDateTime.now().minusDays(2));
+        Agreement newer = saveAgreement(
+            candidate, databaseProvider, "OpcDataProcessingAgreementV2", OffsetDateTime.now().minusDays(1), null);
+
+        List<Agreement> agreements = agreementRepository.findByCandidateIdOrderByStartDesc(candidate.getId());
+
+        assertThat(agreements).hasSize(2);
+        assertThat(agreements.get(0).getId()).isEqualTo(newer.getId());
+        assertThat(agreements.get(1).getId()).isEqualTo(older.getId());
+    }
+
+    @Test
+    @DisplayName("findFirstByCandidateIdAndCounterpartyTypeAndEndIsNullOrderByStartDesc returns active record")
+    void findFirstByCandidateIdAndCounterpartyTypeAndEndIsNullOrderByStartDesc_returnsActive() {
+        saveAgreement(
+            candidate,
+            databaseProvider,
+            "OpcDataProcessingAgreementV1",
+            OffsetDateTime.now().minusDays(10),
+            OffsetDateTime.now().minusDays(5));
+        Agreement active = saveAgreement(
+            candidate,
+            databaseProvider,
+            "OpcDataProcessingAgreementV2",
+            OffsetDateTime.now().minusDays(3),
+            null);
+
+        Optional<Agreement> current = agreementRepository
+            .findFirstByCandidateIdAndCounterpartyTypeAndEndIsNullOrderByStartDesc(
+                candidate.getId(), CounterpartyType.DATABASE_PROVIDER);
+
+        assertThat(current).isPresent();
+        assertThat(current.get().getId()).isEqualTo(active.getId());
+        assertThat(current.get().getEnd()).isNull();
+    }
+
+    private Agreement saveAgreement(
+        Candidate agreementCandidate,
+        Counterparty counterparty,
+        String termsInfoId,
+        OffsetDateTime start,
+        OffsetDateTime end) {
+        Agreement agreement = new Agreement();
+        agreement.setCandidate(agreementCandidate);
+        agreement.setCounterparty(counterparty);
+        agreement.setTermsInfoId(termsInfoId);
+        agreement.setStart(start);
+        agreement.setEnd(end);
+        return agreementRepository.saveAndFlush(agreement);
+    }
+}
