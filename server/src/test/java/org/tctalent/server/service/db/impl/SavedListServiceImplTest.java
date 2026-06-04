@@ -821,7 +821,6 @@ class SavedListServiceImplTest {
   @Test
   @DisplayName("updateSavedList throws duplicate when another active list has requested name")
   void updateSavedListThrowsDuplicate() {
-    SavedList list = savedList(1L, "Old", user);
     SavedList duplicate = savedList(2L, "New", user);
     UpdateSavedListInfoRequest request = savedListInfoRequest("New", false, null, null);
 
