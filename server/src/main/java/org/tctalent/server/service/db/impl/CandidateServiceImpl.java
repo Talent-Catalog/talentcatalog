@@ -140,6 +140,7 @@ import org.tctalent.server.request.candidate.SavedListGetRequest;
 import org.tctalent.server.request.candidate.SelfRegistrationRequest;
 import org.tctalent.server.request.candidate.SubmitRegistrationRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateAdditionalInfoRequest;
+import org.tctalent.server.request.candidate.UpdateCandidateAspirationsRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateContactRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateEducationRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateLinksRequest;
@@ -266,6 +267,7 @@ public class CandidateServiceImpl implements CandidateService {
     private final EntityManager entityManager;
     private final PersistenceContextHelper persistenceContextHelper;
     private final SystemNotificationService systemNotificationService;
+    private final TcInstanceService tcInstanceService;
 
     @Override
     public Page<Candidate> getSavedListCandidates(SavedList savedList, SavedListGetRequest request) {
@@ -297,15 +299,6 @@ public class CandidateServiceImpl implements CandidateService {
             .logInfo();
 
         return candidates;
-    }
-
-    /**
-     * Update audit fields and use repository to save the Candidate
-     * @param candidate Entity to save
-     */
-    public void saveIt(Candidate candidate) {
-        candidate.setAuditFields(authService.getLoggedInUser().orElse(null));
-        save(candidate);
     }
 
     @Override
@@ -866,7 +859,7 @@ public class CandidateServiceImpl implements CandidateService {
 
     @Override
     public Candidate updateCandidateMaxEducationLevel(long id, UpdateCandidateMaxEducationLevelRequest request) {
-        User loggedInUser = authService.getLoggedInUser()
+        authService.getLoggedInUser()
             .orElseThrow(() -> new InvalidSessionException("Not logged in"));
 
         Candidate candidate = this.candidateRepository.findById(id)
@@ -879,7 +872,6 @@ public class CandidateServiceImpl implements CandidateService {
                 .orElseThrow(() -> new NoSuchObjectException(EducationLevel.class, request.getMaxEducationLevel()));
         }
         candidate.setMaxEducationLevel(educationLevel);
-        candidate.setAuditFields(loggedInUser);
         return save(candidate);
     }
 
@@ -893,6 +885,19 @@ public class CandidateServiceImpl implements CandidateService {
                 .orElseThrow(() -> new NoSuchObjectException(Candidate.class, id));
 
         candidate.setAdditionalInfo(request.getAdditionalInfo());
+        return save(candidate);
+    }
+
+    @Override
+    public Candidate updateCandidateAspirations(long id, UpdateCandidateAspirationsRequest request) {
+        User loggedInUser = authService.getLoggedInUser()
+            .orElseThrow(() -> new InvalidSessionException("Not logged in"));
+
+        Set<Country> sourceCountries = userService.getDefaultSourceCountries(loggedInUser);
+        Candidate candidate = this.candidateRepository.findByIdLoadUser(id, sourceCountries)
+            .orElseThrow(() -> new NoSuchObjectException(Candidate.class, id));
+
+        candidate.setAspirations(request.getAspirations());
         return save(candidate);
     }
 
@@ -1170,8 +1175,6 @@ public class CandidateServiceImpl implements CandidateService {
             CandidateStatus.pending : CandidateStatus.incomplete;
         candidate.setStatus(candidateStatus);
 
-        candidate.setAuditFields(userService.getSystemAdminUser());
-
         //Save the candidate to the DB
         candidate = saveNewCandidate(sourcePartner, candidate);
 
@@ -1264,8 +1267,6 @@ public class CandidateServiceImpl implements CandidateService {
         candidate.setRelocatedCity(request.getRelocatedCity());
         candidate.setRelocatedState(request.getRelocatedState());
         candidate.setRelocatedCountry(relocatedCountry);
-
-        candidate.setAuditFields(user);
         candidate.setUser(user);
         candidate = save(candidate);
         return candidate;
@@ -1323,8 +1324,6 @@ public class CandidateServiceImpl implements CandidateService {
         candidate.setUnhcrRegistered(request.getUnhcrRegistered());
         candidate.setUnhcrNumber(request.getUnhcrNumber());
         candidate.setUnhcrConsent(request.getUnhcrConsent());
-
-        candidate.setAuditFields(user);
 
         updateCitizenships(candidate, nationalities);
 
@@ -1469,7 +1468,6 @@ public class CandidateServiceImpl implements CandidateService {
         }
 
         candidate.setMaxEducationLevel(educationLevel);
-        candidate.setAuditFields(candidate.getUser());
         return save(candidate);
     }
 
@@ -1490,7 +1488,6 @@ public class CandidateServiceImpl implements CandidateService {
         candidate.setSurveyType(surveyType);
         candidate.setSurveyComment(request.getSurveyComment());
 
-        candidate.setAuditFields(candidate.getUser());
         return save(candidate);
     }
 
@@ -1517,7 +1514,6 @@ public class CandidateServiceImpl implements CandidateService {
         } else {
             candidate.setLinkedInLink(null);
         }
-        candidate.setAuditFields(candidate.getUser());
         return save(candidate);
     }
 
@@ -1658,7 +1654,7 @@ public class CandidateServiceImpl implements CandidateService {
     @Override
     public Candidate submitRegistration(SubmitRegistrationRequest request) {
         Candidate candidate = getLoggedInCandidate()
-                .orElseThrow(() -> new InvalidSessionException("Not logged in"));
+            .orElseThrow(() -> new InvalidSessionException("Not logged in"));
 
         final String acceptedPrivacyPolicyId = request.getAcceptedPrivacyPolicyId();
         updatePolicyId(acceptedPrivacyPolicyId, candidate);
@@ -1668,8 +1664,8 @@ public class CandidateServiceImpl implements CandidateService {
         final CandidateStatus candidateStatus = candidate.getStatus();
         if (!candidateStatus.equals(CandidateStatus.pending)) {
             if (candidate.getNationality() != candidate.getCountry() ||
-                    candidate.getCountry().getId() == afghanistanCountryId ||
-                    candidate.getCountry().getId() == ukraineCountryId
+                candidate.getCountry().getId() == afghanistanCountryId ||
+                candidate.getCountry().getId() == ukraineCountryId
             ) {
                 UpdateCandidateStatusInfo info = new UpdateCandidateStatusInfo();
 
@@ -1692,7 +1688,6 @@ public class CandidateServiceImpl implements CandidateService {
                 candidate = updateCandidateStatus(candidate, info);
             }
         }
-        candidate.setAuditFields(candidate.getUser());
         return save(candidate);
     }
 
@@ -3017,6 +3012,11 @@ public class CandidateServiceImpl implements CandidateService {
      */
     private CandidateStatus checkForAutomaticStatusChanges(
         long countryReqId, long nationalityReqId, Candidate candidate) {
+        // GRN should not automatically change status when country or nationality changes.
+        if (tcInstanceService.isGRN()) {
+            return null;
+        }
+
         CandidateStatus newStatus = null;
 
         //If the candidate is in an active status make them inactive if they are in a destination

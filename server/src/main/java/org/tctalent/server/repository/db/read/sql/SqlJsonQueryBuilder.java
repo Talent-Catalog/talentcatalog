@@ -292,7 +292,8 @@ public class SqlJsonQueryBuilder {
                     childTable,
                     childAlias,
                     oneToMany.joinColumn(),
-                    tableAlias
+                    tableAlias,
+                    oneToMany.orderBy()
                 );
 
                 pairs.add(new Pair(field.getName(), valueExpr));
@@ -457,19 +458,25 @@ public class SqlJsonQueryBuilder {
         SqlTable childTable,
         String childAlias,
         String joinColumnOnChild,
-        String parentAlias
+        String parentAlias,
+        String orderBy
     ) {
         BuildContext nestedCtx = new BuildContext();
         String elementJson = buildJsonExpression(elementType, childAlias, nestedCtx);
 
+        String orderByClause = (orderBy == null || orderBy.isBlank())
+            ? ""
+            : " ORDER BY " + orderBy;
+
         return ("""
             (
-              select coalesce(jsonb_agg(%s), '[]'::jsonb)
+              select coalesce(jsonb_agg(%s%s), '[]'::jsonb)
               from %s %s
               where %s.%s = %s.id
             )
             """).formatted(
             elementJson,
+            orderByClause,
             childTable.name(),
             childAlias,
             childAlias,

@@ -116,16 +116,36 @@ The application references two distinct sets of AWS credentials for S3 access:
 | Environment variable | Source | Used by |
 |---------------------|--------|---------|
 | `AWS_CREDENTIALS_ACCESSKEY` / `AWS_CREDENTIALS_SECRETKEY` | SSM (from `secrets.auto.tfvars`) | Legacy `AwsConfiguration` / `S3ResourceHelper` |
-| `AWS_CREDENTIALS_APP_ACCESSKEY` / `AWS_CREDENTIALS_APP_SECRETKEY` | **Not set** (empty) | `S3Config` (candidate files, translations) |
+| `AWS_CREDENTIALS_APP_ACCESSKEY` / `AWS_CREDENTIALS_APP_SECRETKEY` | **In ECS:** not set (empty) — task role is used instead. **Local dev:** populated from tc-secrets with the `tc-dev-s3-access` IAM user's keys. | `S3Config` (candidate files, translations) |
 
 `AWS_CREDENTIALS_APP_ACCESSKEY` and `AWS_CREDENTIALS_APP_SECRETKEY` are **not managed by Terraform**
-and have no corresponding SSM parameters. They resolve to empty strings at runtime. When blank,
-`S3Config` falls back to the AWS default credential provider chain, which in ECS resolves to the
-**task role** (`<app>-<env>-fargate-task-role`). The task role has an S3 policy granting access to
-the configured buckets (`s3_bucket`, `translations_bucket`, and `candidate_files_bucket`).
+and have no corresponding SSM parameters. They resolve to empty strings at runtime in ECS.
+When blank, `S3Config` falls back to the AWS default credential provider chain, which in ECS
+resolves to the **task role** (`<app>-<env>-fargate-task-role`). The task role has an S3 policy
+granting access to the configured buckets (`s3_bucket`, `translations_bucket`, and
+`candidate_files_bucket`).
 
 This is intentional — using the task role avoids long-lived static IAM user credentials for S3
 operations performed by the newer code paths.
+
+### Local developer access — `tc-dev-s3-access` IAM user
+
+For local development, `S3Config` cannot resolve credentials via the ECS task role, so a dedicated
+IAM user — `tc-dev-s3-access` — exists in the OPC staging AWS account (`164804461258`). Its access
+key / secret key pair is distributed to developers via tc-secrets as `AWS_CREDENTIALS_APP_ACCESSKEY`
+/ `AWS_CREDENTIALS_APP_SECRETKEY`.
+
+The user is **manually managed in the AWS console** (not in Terraform). Its policy is least-privilege
+and scoped to the three staging buckets it needs to reach:
+
+| Bucket | Purpose |
+|--------|---------|
+| `translations.test.globalrefugee.net` | GRN staging translations (used when local `TC_INSTANCE_TYPE=GRN`) |
+| `translations.test.tctalent.org` | TBB staging translations (used when local `TC_INSTANCE_TYPE=TBB`) |
+| `candidate-files.test.globalrefugee.net` | GRN staging candidate file attachments (uploaded via `S3StorageService`; TBB candidate files continue to use Google Drive and do not touch S3) |
+
+The user has no access to any production bucket. Production candidate-files / translation reads and
+writes are performed exclusively by the ECS task role.
 
 ## State and coexistence with opc-staging
 

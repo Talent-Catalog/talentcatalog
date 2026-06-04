@@ -162,7 +162,6 @@ class CandidateExamServiceImplTest {
         verifyExam(result);
 
         verify(candidateService).save(candidate);
-        assertEquals(ADMIN_USER, candidate.getUpdatedBy());
     }
 
     private static void verifyExam(CandidateExam exam) {

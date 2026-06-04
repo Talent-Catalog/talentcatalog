@@ -189,7 +189,6 @@ class CandidateEducationServiceImplTest {
         verifyEducation(result);
 
         verify(candidateService).save(candidate);
-        assertEquals(ADMIN_USER, candidate.getUpdatedBy());
     }
 
     @Test
@@ -272,7 +271,6 @@ class CandidateEducationServiceImplTest {
         verifyEducation(result);
 
         verify(candidateService).save(candidate);
-        assertEquals(ADMIN_USER, candidate.getUpdatedBy());
     }
 
     private static void verifyEducation(CandidateEducation education) {
@@ -329,7 +327,6 @@ class CandidateEducationServiceImplTest {
         verify(candidateEducationRepository).delete(education);
 
         verify(candidateService).save(candidate);
-        assertEquals(ADMIN_USER, candidate.getUpdatedBy());
     }
 
 }
