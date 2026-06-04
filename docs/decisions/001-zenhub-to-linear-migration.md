@@ -90,7 +90,7 @@ ZenHub's sprint and velocity tracking has not been a strong feature of the tool 
 
 ## Decision 4: Workspace and Team Structure
 
-**Status:** Pending
+**Status:** Decided
 
 ### Context
 
@@ -106,9 +106,7 @@ One workspace, multiple teams (e.g. `Backend`, `Frontend`, `Platform`). Each tea
 
 ### Decision
 
-_To be agreed._
-
-**Recommendation:** Start with Option A. Split into multiple teams later if product management identifies a clear need to plan streams independently.
+Start with Option A. Split into multiple teams later if product management identifies a clear need to plan streams independently.
 
 ---
 
@@ -148,7 +146,7 @@ Issue triage is handled ad-hoc; a dedicated `Triage` state would add process ove
 
 ## Decision 6: Labels
 
-**Status:** Pending
+**Status:** Decided
 
 ### Context
 
@@ -168,9 +166,7 @@ Audit and consolidate the existing GitHub labels before enabling Linear sync: re
 
 ### Decision
 
-_To be agreed._
-
-**Recommendation:** Option B. The migration is a natural opportunity to clean up the label set with minimal disruption. Cleaning labels in GitHub first ensures the tidier taxonomy is what Linear inherits.
+Option A. The existing label set is serviceable. A clean-up effort would require manual review of all labels, decisions on which to keep/merge/retire. We have imported the full labels set, noting a ticket to tidy up later if it becomes a pain point.
 
 ---
 
@@ -207,7 +203,7 @@ Preserves the team's existing 3-week effective cadence while introducing structu
 
 ## Decision 8: Projects and Initiatives
 
-**Status:** Pending
+**Status:** Decided
 
 ### Context
 
@@ -237,29 +233,21 @@ Adopt both layers immediately. Use Initiatives to express longer-term strategic 
 
 ### Decision
 
-_To be agreed._
+**Option B — Projects and Initiatives from the start**
 
-**Recommendation:** Option B. Improved roadmap capability is a primary driver for the migration, and Initiatives are the layer that gives Linear's roadmap its strategic structure. Deferring them would result in a flat roadmap that fails to deliver one of the main benefits of moving away from ZenHub. Starting with a small, well-chosen set of Initiatives gives product management a meaningful roadmap from day one.
+Improved roadmap capability is a primary driver for the migration, and Initiatives are the layer that gives Linear's roadmap its strategic structure. Deferring them would result in a flat roadmap that fails to deliver one of the main benefits of moving away from ZenHub. Starting with a small, well-chosen set of Initiatives gives product management a meaningful roadmap from day one.
 
 ---
 
 ## Decision 9: Access Control and Role Assignment
 
-**Status:** Partially decided
+**Status:** Decided
 
 ### Context
 
-Linear has three role levels: **Admin**, **Member**, and **Guest**. All three are billed as paid seats; Linear bills per unsuspended user regardless of role.
+Linear has three role levels: **Admin**, **Member**, and **Guest**. All roles are billed as paid seats. The Guest role is only available on Business plan and above.
 
-Plan-dependent availability is important:
-
-- **Guest role requires the Business plan ($16/user/month) or Enterprise.** It is not available on Free or Basic.
-- On Basic, everyone with access is a Member (or Admin) — there is no read-only / scoped option for stakeholders.
-
-Two questions of principle need to be agreed:
-
-1. How permissively or strictly to assign roles within the core team.
-2. Whether the need for Guest access for non-technical stakeholders is significant enough to require the Business plan.
+The team has agreed to proceed on the **Business plan** under a favourable nonprofit licensing arrangement negotiated with Linear.
 
 ### Decision
 
@@ -267,9 +255,9 @@ Two questions of principle need to be agreed:
 
 | Role | Assigned to | Rationale |
 |---|---|---|
-| Admin | Core maintainers (a small subset of the team) | Manage workspace settings, integrations, members, and teams. |
-| Member | All core developers with regular commit activity | Full ability to create and manage issues, participate in cycles, update states. |
-| Guest | Product or non-technical stakeholders requiring visibility but not full participation | Read + comment access on specific Projects or teams. **Requires Business plan.** |
+| Admin | A small subset of core maintainers | Manage workspace settings, integrations, members, and teams. |
+| Member | All core contributors with regular commit activity | Full ability to create and manage issues, participate in cycles, and update states. |
+| Guest | Key external stakeholders requiring visibility (e.g. TBB, UNHCR) | Read + comment access on specific Projects or teams. |
 
 Named role assignments are operational and will be maintained outside this record.
 
@@ -327,3 +315,56 @@ This configuration means:
 - No manual bridging or issue consolidation is required.
 
 The only asymmetry is that Linear-created issues appear in `talentcatalog` rather than a service-specific repo. This is acceptable given that `talentcatalog` is the primary and canonical issue home for the project.
+
+---
+
+## Decision 12: PR Merge Automation
+
+**Status:** Decided
+
+### Context
+
+Linear can automatically move issues to `Done` when a linked PR or commit is merged.
+
+### Decision
+
+Set **On PR or commit merge, move to...** to **No action**.
+
+### Rationale
+
+A merged PR is necessary but not sufficient for an issue to be complete. Engineers must complete issue sign-off criteria before moving the issue to `Done`, including release notes, release planning, user notification, and documentation updates.
+
+---
+
+## Decision 13: Issue Templates
+
+**Status:** Decided
+
+### Context
+
+Without templates, issue quality and completeness vary. Sign-off expectations can be missed if they are not present at issue creation.
+
+### Decision
+
+Adopt four templates for all new issues:
+
+- Feature
+- Bug
+- Security
+- Tech Debt
+
+Maintain these templates in both places:
+
+- GitHub templates in `.github/ISSUE_TEMPLATE/` (source of truth, version-controlled)
+- Matching templates in Linear team settings
+
+Source-of-truth template files:
+
+- `.github/ISSUE_TEMPLATE/feature.md`
+- `.github/ISSUE_TEMPLATE/bug.md`
+- `.github/ISSUE_TEMPLATE/security.md`
+- `.github/ISSUE_TEMPLATE/tech_debt.md`
+
+### Rationale
+
+GitHub templates guide external contributors creating issues directly in GitHub. Linear templates guide core team members creating issues in Linear. Keeping content aligned enforces consistent issue quality regardless of entry point.
