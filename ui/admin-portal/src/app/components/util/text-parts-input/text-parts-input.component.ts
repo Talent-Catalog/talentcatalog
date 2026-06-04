@@ -8,6 +8,7 @@ import {
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {NgxWigModule} from 'ngx-wig';
 import {TextParts, TextPartsCodec} from "../../../util/text-parts/text-parts";
+import {NgIf} from "@angular/common";
 
 /**
  * This component is designed to be used as a form control.
@@ -44,7 +45,8 @@ import {TextParts, TextPartsCodec} from "../../../util/text-parts/text-parts";
   standalone: true,
   imports: [
     ReactiveFormsModule,
-    NgxWigModule
+    NgxWigModule,
+    NgIf
   ],
   templateUrl: './text-parts-input.component.html',
 
