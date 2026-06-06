@@ -19,12 +19,23 @@ package org.tctalent.server.repository.db;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.tctalent.server.model.db.Agreement;
 import org.tctalent.server.model.db.CounterpartyType;
 
+/**
+ * Repository for managing Agreement entities.
+ *
+ * @author sadatmalik
+ */
 public interface AgreementRepository extends JpaRepository<Agreement, Long> {
 
     List<Agreement> findByCandidateIdOrderByStartDesc(Long candidateId);
+
+    @Query("SELECT a FROM Agreement a JOIN FETCH a.counterparty "
+        + "WHERE a.candidate.id = :candidateId ORDER BY a.start DESC")
+    List<Agreement> findWithCounterpartyByCandidateIdOrderByStartDesc(@Param("candidateId") Long candidateId);
 
     List<Agreement> findByCandidateIdAndCounterpartyTypeOrderByStartDesc(
         Long candidateId, CounterpartyType counterpartyType);
