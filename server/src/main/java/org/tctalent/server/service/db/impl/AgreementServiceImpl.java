@@ -17,6 +17,7 @@
 package org.tctalent.server.service.db.impl;
 
 import java.time.OffsetDateTime;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +30,7 @@ import org.tctalent.server.model.db.Counterparty;
 import org.tctalent.server.model.db.TermsInfo;
 import org.tctalent.server.model.db.TermsType;
 import org.tctalent.server.repository.db.AgreementRepository;
+import org.tctalent.server.security.AuthService;
 import org.tctalent.server.service.db.AgreementService;
 import org.tctalent.server.service.db.TermsInfoService;
 
@@ -42,6 +44,7 @@ import org.tctalent.server.service.db.TermsInfoService;
 public class AgreementServiceImpl implements AgreementService {
 
     private final AgreementRepository agreementRepository;
+    private final AuthService authService;
     private final TermsInfoService termsInfoService;
 
     @Override
@@ -71,6 +74,14 @@ public class AgreementServiceImpl implements AgreementService {
         agreement.setTermsInfoId(termsInfoId);
         agreement.setStart(OffsetDateTime.now());
         return agreementRepository.save(agreement);
+    }
+
+    @Override
+    @NonNull
+    @Transactional(readOnly = true)
+    public List<Agreement> listMyAgreements() {
+        Long candidateId = authService.getLoggedInCandidateId();
+        return agreementRepository.findWithCounterpartyByCandidateIdOrderByStartDesc(candidateId);
     }
 
     @Override

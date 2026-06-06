@@ -16,6 +16,7 @@
 
 package org.tctalent.server.service.db;
 
+import java.util.List;
 import org.springframework.lang.NonNull;
 import org.tctalent.server.model.db.Agreement;
 import org.tctalent.server.model.db.Candidate;
@@ -45,6 +46,14 @@ public interface AgreementService {
     Agreement recordAgreement(@NonNull Candidate candidate,
                               @NonNull Counterparty counterparty,
                               @NonNull String termsInfoId);
+
+    /**
+     * Returns all agreements for the currently logged-in candidate, newest first.
+     *
+     * @return Agreements ordered by descending start date
+     */
+    @NonNull
+    List<Agreement> listMyAgreements();
 
     /**
      * Returns true if candidate must accept current terms for the given counterparty before
