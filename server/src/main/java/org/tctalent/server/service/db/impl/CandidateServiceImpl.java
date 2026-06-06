@@ -88,6 +88,8 @@ import org.tctalent.server.model.db.CandidateOccupation;
 import org.tctalent.server.model.db.CandidateProperty;
 import org.tctalent.server.model.db.CandidateStatus;
 import org.tctalent.server.model.db.CandidateSubfolderType;
+import org.tctalent.server.model.db.Counterparty;
+import org.tctalent.server.model.db.CounterpartyType;
 import org.tctalent.server.model.db.Country;
 import org.tctalent.server.model.db.DataRow;
 import org.tctalent.server.model.db.DependantRelations;
@@ -169,6 +171,7 @@ import org.tctalent.server.service.db.CandidatePropertyService;
 import org.tctalent.server.service.db.CandidateSavedListService;
 import org.tctalent.server.service.db.CandidateService;
 import org.tctalent.server.service.db.CountryService;
+import org.tctalent.server.service.db.CounterpartyService;
 import org.tctalent.server.service.db.FileSystemService;
 import org.tctalent.server.service.db.PartnerService;
 import org.tctalent.server.service.db.PublicIDService;
@@ -178,6 +181,7 @@ import org.tctalent.server.service.db.SavedListService;
 import org.tctalent.server.service.db.SavedSearchService;
 import org.tctalent.server.service.db.SystemNotificationService;
 import org.tctalent.server.service.db.UserService;
+import org.tctalent.server.service.db.AgreementService;
 import org.tctalent.server.service.db.email.EmailHelper;
 import org.tctalent.server.service.db.util.PdfHelper;
 import org.tctalent.server.util.BeanHelper;
@@ -268,6 +272,8 @@ public class CandidateServiceImpl implements CandidateService {
     private final PersistenceContextHelper persistenceContextHelper;
     private final SystemNotificationService systemNotificationService;
     private final TcInstanceService tcInstanceService;
+    private final AgreementService agreementService;
+    private final CounterpartyService counterpartyService;
 
     @Override
     public Page<Candidate> getSavedListCandidates(SavedList savedList, SavedListGetRequest request) {
@@ -1230,13 +1236,28 @@ public class CandidateServiceImpl implements CandidateService {
     /**
      * Factored out some common code
      */
-    private static void updatePolicyId(String acceptedPrivacyPolicyId, Candidate candidate) {
+    private void updatePolicyId(String acceptedPrivacyPolicyId, Candidate candidate) {
         if (acceptedPrivacyPolicyId == null || "null".equalsIgnoreCase(acceptedPrivacyPolicyId)) {
             throw new InvalidRequestException("Privacy policy has not been accepted");
         }
         candidate.setAcceptedPrivacyPolicyId(acceptedPrivacyPolicyId);
         candidate.setAcceptedPrivacyPolicyDate(OffsetDateTime.now());
         candidate.setAcceptedPrivacyPolicyPartner(candidate.getUser().getPartner());
+
+        recordDatabaseProviderAgreement(candidate, acceptedPrivacyPolicyId);
+    }
+
+    private void recordDatabaseProviderAgreement(Candidate candidate, String termsInfoId) {
+        // Phase-1 scope: only GRN candidates create a DATABASE_PROVIDER agreement row.
+        // TBB and dual-instance behavior (DB provider + managing source partner from one acceptance)
+        // are intentionally deferred.
+        if (!tcInstanceService.isGRN()) {
+            return;
+        }
+
+        Counterparty databaseProvider = counterpartyService.findOrCreateByTypeAndName(
+            CounterpartyType.DATABASE_PROVIDER, "OPC");
+        agreementService.recordAgreement(candidate, databaseProvider, termsInfoId);
     }
 
     @Override
