@@ -27,6 +27,7 @@ import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -57,6 +58,7 @@ class AgreementPortalApiTest {
 
     @SuppressWarnings("unchecked")
     @Test
+    @DisplayName("listMyAgreements returns agreement DTOs with counterparty and terms info")
     void listMyAgreements_returnsAgreementDtosWithCounterpartyAndTermsInfo() {
         Counterparty counterparty = new Counterparty();
         counterparty.setId(10L);
