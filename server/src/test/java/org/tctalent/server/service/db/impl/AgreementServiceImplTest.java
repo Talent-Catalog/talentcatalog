@@ -43,6 +43,7 @@ import org.tctalent.server.model.db.CounterpartyType;
 import org.tctalent.server.model.db.TermsInfo;
 import org.tctalent.server.model.db.TermsType;
 import org.tctalent.server.repository.db.AgreementRepository;
+import org.tctalent.server.security.AuthService;
 import org.tctalent.server.service.db.TermsInfoService;
 
 @ExtendWith(MockitoExtension.class)
@@ -53,6 +54,9 @@ class AgreementServiceImplTest {
 
     @Mock
     private TermsInfoService termsInfoService;
+
+    @Mock
+    private AuthService authService;
 
     @InjectMocks
     private AgreementServiceImpl agreementService;
@@ -150,5 +154,26 @@ class AgreementServiceImplTest {
 
         assertTrue(agreementService.needsAcceptance(
             candidate, databaseProvider, TermsType.OPC_STANDARD_DATA_PROCESSING_AGREEMENT));
+    }
+
+    @Test
+    @DisplayName("listMyAgreements returns agreements for logged-in candidate")
+    void listMyAgreements_returnsAgreementsForLoggedInCandidate() {
+        Agreement activeAgreement = new Agreement();
+        activeAgreement.setId(101L);
+        activeAgreement.setCandidate(candidate);
+        activeAgreement.setCounterparty(databaseProvider);
+        activeAgreement.setTermsInfoId("OpcDataProcessingAgreementV1");
+        activeAgreement.setStart(OffsetDateTime.now().minusDays(2));
+
+        given(authService.getLoggedInCandidateId()).willReturn(candidate.getId());
+        given(agreementRepository.findWithCounterpartyByCandidateIdOrderByStartDesc(candidate.getId()))
+            .willReturn(List.of(activeAgreement));
+
+        List<Agreement> result = agreementService.listMyAgreements();
+
+        assertTrue(result.size() == 1);
+        assertTrue(result.get(0).getId().equals(101L));
+        verify(agreementRepository).findWithCounterpartyByCandidateIdOrderByStartDesc(candidate.getId());
     }
 }
