@@ -54,7 +54,7 @@ describe('CandidateAgreementsComponent', () => {
     expect(component.agreements.length).toBe(0);
   });
 
-  it('should return true for active agreement', () => {
+  it('should return true for active agreement with null end', () => {
     expect(component.isActive({
       id: 1,
       start: '2026-01-01T00:00:00Z',
@@ -63,6 +63,28 @@ describe('CandidateAgreementsComponent', () => {
       counterparty: {id: 1, type: 'DATABASE_PROVIDER', displayName: 'OPC'},
       termsInfo: {id: 'TestTermsV1', type: 'GRN_CANDIDATE_PRIVACY_POLICY', pathToContent: '', createdDate: '2026-01-01', content: ''}
     })).toBeTrue();
+  });
+
+  it('should return true for active agreement with undefined end (DtoBuilder omits null fields)', () => {
+    const agreementWithoutEnd: any = {
+      id: 2,
+      start: '2026-01-01T00:00:00Z',
+      termsInfoId: 'TestTermsV1',
+      counterparty: {id: 1, type: 'DATABASE_PROVIDER', displayName: 'OPC'},
+      termsInfo: {id: 'TestTermsV1', type: 'GRN_CANDIDATE_PRIVACY_POLICY', pathToContent: '', createdDate: '2026-01-01', content: ''}
+    };
+    expect(component.isActive(agreementWithoutEnd)).toBeTrue();
+  });
+
+  it('should return false for superseded agreement with end date set', () => {
+    expect(component.isActive({
+      id: 3,
+      start: '2026-01-01T00:00:00Z',
+      end: '2026-06-01T00:00:00Z',
+      termsInfoId: 'TestTermsV1',
+      counterparty: {id: 1, type: 'DATABASE_PROVIDER', displayName: 'OPC'},
+      termsInfo: {id: 'TestTermsV1', type: 'GRN_CANDIDATE_PRIVACY_POLICY', pathToContent: '', createdDate: '2026-01-01', content: ''}
+    })).toBeFalse();
   });
 
   it('should navigate to privacy page with agreement state', () => {

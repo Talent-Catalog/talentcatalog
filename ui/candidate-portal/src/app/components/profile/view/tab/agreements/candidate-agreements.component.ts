@@ -53,7 +53,8 @@ export class CandidateAgreementsComponent implements OnInit {
   }
 
   isActive(agreement: Agreement): boolean {
-    return agreement.end === null;
+    // Use loose equality to treat both null and undefined as active.
+    return agreement.end == null;
   }
 
   viewAgreement(agreement: Agreement): void {
