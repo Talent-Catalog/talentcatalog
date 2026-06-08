@@ -44,6 +44,7 @@ import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.tctalent.server.configuration.SystemAdminConfiguration;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.CandidateStatus;
 import org.tctalent.server.model.db.Counterparty;
@@ -408,13 +409,18 @@ class CandidateServiceImplTest {
   @DisplayName("updateAcceptedPrivacyPolicy records DATABASE_PROVIDER agreement on GRN")
   void updateAcceptedPrivacyPolicy_recordsDatabaseProviderAgreementOnGrn() {
     String termsInfoId = "GrnCandidatePrivacyPolicyV2";
+    PartnerImpl opcPartner = new PartnerImpl();
+    opcPartner.setId(99L);
     Counterparty databaseProvider = new Counterparty();
     databaseProvider.setId(10L);
     databaseProvider.setType(CounterpartyType.DATABASE_PROVIDER);
+    databaseProvider.setPartner(opcPartner);
 
     given(authService.getLoggedInUser()).willReturn(Optional.of(user));
     given(tcInstanceService.isGRN()).willReturn(true);
-    given(counterpartyService.findOrCreateByTypeAndName(CounterpartyType.DATABASE_PROVIDER, "OPC"))
+    given(partnerService.getPartnerFromAbbreviation(SystemAdminConfiguration.SYSTEM_PARTNER_ABBREVIATION))
+        .willReturn(opcPartner);
+    given(counterpartyService.findOrCreateByTypeAndPartner(CounterpartyType.DATABASE_PROVIDER, opcPartner))
         .willReturn(databaseProvider);
     doReturn(candidate).when(candidateService).save(any(Candidate.class));
 
@@ -434,7 +440,7 @@ class CandidateServiceImplTest {
 
     candidateService.updateAcceptedPrivacyPolicy(termsInfoId);
 
-    verify(counterpartyService, never()).findOrCreateByTypeAndName(any(), any());
+    verify(counterpartyService, never()).findOrCreateByTypeAndPartner(any(), any());
     verify(agreementService, never()).recordAgreement(any(), any(), any());
   }
 
@@ -445,15 +451,20 @@ class CandidateServiceImplTest {
     SubmitRegistrationRequest request = new SubmitRegistrationRequest();
     request.setAcceptedPrivacyPolicyId(termsInfoId);
 
+    PartnerImpl opcPartner = new PartnerImpl();
+    opcPartner.setId(99L);
     Counterparty databaseProvider = new Counterparty();
     databaseProvider.setId(20L);
     databaseProvider.setType(CounterpartyType.DATABASE_PROVIDER);
+    databaseProvider.setPartner(opcPartner);
 
     candidate.setStatus(CandidateStatus.pending);
 
     doReturn(Optional.of(candidate)).when(candidateService).getLoggedInCandidate();
     given(tcInstanceService.isGRN()).willReturn(true);
-    given(counterpartyService.findOrCreateByTypeAndName(CounterpartyType.DATABASE_PROVIDER, "OPC"))
+    given(partnerService.getPartnerFromAbbreviation(SystemAdminConfiguration.SYSTEM_PARTNER_ABBREVIATION))
+        .willReturn(opcPartner);
+    given(counterpartyService.findOrCreateByTypeAndPartner(CounterpartyType.DATABASE_PROVIDER, opcPartner))
         .willReturn(databaseProvider);
     doReturn(candidate).when(candidateService).save(any(Candidate.class));
 
