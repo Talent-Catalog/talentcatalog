@@ -17,7 +17,7 @@
 import {Component, OnInit} from '@angular/core';
 import {UntypedFormBuilder, UntypedFormGroup} from "@angular/forms";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
-import {CandidateService, DownloadCVRequest} from "../../../services/candidate.service";
+import {CandidateService, CvFormat, DownloadCVRequest} from "../../../services/candidate.service";
 
 /**
  * Modal component fills request to open/DL CV generated from given candidates profile.
@@ -44,20 +44,26 @@ export class DownloadCvComponent implements OnInit {
     this.form = this.fb.group({
       name: [false],
       contact: [false],
+      format: ['PDF'],
     });
   }
 
   onSave() {
+    const format: CvFormat = this.form.value.format;
+
     const request: DownloadCVRequest = {
       candidateId: this.candidateId,
       showName: this.form.value.name,
-      showContact: this.form.value.contact
-    }
+      showContact: this.form.value.contact,
+      format: format
+    };
+
     const tab = window.open();
+
     this.candidateService.downloadCv(request).subscribe(
       result => {
         tab.location.href = URL.createObjectURL(result);
-        this.closeModal()
+        this.closeModal();
       },
       error => {
         this.error = error;
@@ -72,5 +78,4 @@ export class DownloadCvComponent implements OnInit {
   dismiss() {
     this.activeModal.dismiss(false);
   }
-
 }
