@@ -141,6 +141,12 @@ dependencies {
     implementation group: 'org.apache.poi', name: 'poi', version: '5.5.1'
     implementation group: 'org.apache.poi', name: 'poi-ooxml', version: '5.5.1'
     implementation group: 'org.apache.poi', name: 'poi-scratchpad', version: '5.5.1'
+
+    // DOCX generation from rendered CV XHTML.
+    implementation 'org.docx4j:docx4j-ImportXHTML:8.3.15'
+    implementation 'org.docx4j:docx4j-JAXB-ReferenceImpl:8.3.15'
+    implementation 'javax.xml.bind:jaxb-api:2.3.1'
+    implementation 'org.glassfish.jaxb:jaxb-runtime:2.3.8'
     // Bouncy Castle jdk18on means JDK 1.8+, not Java 18+.
     // See https://www.bouncycastle.org/download/bouncy-castle-java/
     implementation group: 'org.bouncycastle', name: 'bcprov-jdk18on', version: '1.84'

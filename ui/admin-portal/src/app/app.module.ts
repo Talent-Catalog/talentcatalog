@@ -853,6 +853,13 @@ import {TextPartsViewComponent} from "./components/util/text-parts-view/text-par
 import {
   TextPartsInputComponent
 } from "./components/util/text-parts-input/text-parts-input.component";
+import {
+  ViewCandidateAspirationsComponent
+} from "./components/candidates/view/aspirations/view-candidate-aspirations.component";
+import {
+  EditCandidateAspirationsComponent
+} from "./components/candidates/view/aspirations/edit/edit-candidate-aspirations.component";
+
 import {KeycloakProviderService} from "./services/keycloak-provider.service";
 import {CognitoProviderService} from "./services/cognito-provider.service";
 import {IDP_PROVIDER} from "./services/idp.tokens";
@@ -1214,6 +1221,8 @@ export function initializeAuth(authenticationService: AuthenticationService) {
     CsvPreviewComponent,
     ImportLinkedinPremiumCouponsComponent,
     ImportReferenceVouchersComponent,
+    ViewCandidateAspirationsComponent,
+    EditCandidateAspirationsComponent,
     EraseCandidateDataComponent
   ],
   imports: [

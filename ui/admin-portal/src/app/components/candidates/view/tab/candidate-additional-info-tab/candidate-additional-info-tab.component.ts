@@ -29,6 +29,7 @@ export class CandidateAdditionalInfoTabComponent implements OnInit {
   @Input() canViewPrivateInfo: boolean = false;
   /** Passed to tc-description-list instances to define column spacing */
   @Input() compact: boolean = false;
+  @Input() showAspirations: boolean;
 
   @Output() candidateChanged = new EventEmitter();
 

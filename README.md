@@ -21,6 +21,17 @@ make up the TC system. In particular, it contains:
   This is written in Angular and connects to the REST API endpoints under
   `/api/public` provided by the server.
 
+## Open Source ##
+
+Talent Catalog is open-source software, licensed under
+[GNU GPLv3 or later](https://www.gnu.org/licenses/gpl-3.0.txt).
+
+The full source code, commit history, and pull requests are publicly visible on GitHub.
+**Never commit secrets, credentials, or sensitive data to this repository.**
+This includes AWS access keys, database passwords, private keys, API tokens, and `.env` files.
+Secrets must be distributed out-of-band (for example, via tc-secrets) and kept out of version 
+control.
+
 ## Contributing ##
 
 Contributions are very welcome. Please see
@@ -258,6 +269,10 @@ In order to populate "secret" configuration values that Terraform needs to set u
 environment variables for the TC software, you need to copy a special file `terraform.tfvars`
 to that directory before running terraform. Contact support@talentcatalog.net for a copy of that
 file.
+
+> **Security note:** `terraform.tfvars`, `secrets.auto.tfvars`, and any file containing
+> credentials are git-ignored and must never be committed. If you accidentally commit a
+> secret, treat it as compromised immediately and rotate it.
 
 Then you can run `init` (only need to do this once), and then `plan` or `apply`, as needed.
 
