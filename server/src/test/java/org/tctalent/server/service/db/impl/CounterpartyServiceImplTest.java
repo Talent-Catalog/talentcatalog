@@ -32,6 +32,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.tctalent.server.model.db.Counterparty;
 import org.tctalent.server.model.db.CounterpartyType;
+import org.tctalent.server.model.db.PartnerImpl;
 import org.tctalent.server.repository.db.CounterpartyRepository;
 
 @ExtendWith(MockitoExtension.class)
@@ -83,5 +84,54 @@ class CounterpartyServiceImplTest {
         Counterparty created = counterpartyCaptor.getValue();
         assertThat(created.getType()).isEqualTo(CounterpartyType.DATABASE_PROVIDER);
         assertThat(created.getName()).isEqualTo("OPC");
+    }
+
+    @Test
+    @DisplayName("findOrCreateByTypeAndPartner returns existing counterparty when present")
+    void findOrCreateByTypeAndPartner_returnsExistingCounterparty() {
+        PartnerImpl opcPartner = new PartnerImpl();
+        opcPartner.setId(5L);
+
+        Counterparty existing = new Counterparty();
+        existing.setId(20L);
+        existing.setType(CounterpartyType.DATABASE_PROVIDER);
+        existing.setPartner(opcPartner);
+
+        given(counterpartyRepository.findByTypeAndPartnerId(CounterpartyType.DATABASE_PROVIDER, 5L))
+            .willReturn(Optional.of(existing));
+
+        Counterparty result = counterpartyService.findOrCreateByTypeAndPartner(
+            CounterpartyType.DATABASE_PROVIDER, opcPartner);
+
+        assertThat(result).isSameAs(existing);
+        verify(counterpartyRepository, never()).save(any(Counterparty.class));
+    }
+
+    @Test
+    @DisplayName("findOrCreateByTypeAndPartner creates and saves counterparty when missing")
+    void findOrCreateByTypeAndPartner_createsCounterpartyWhenMissing() {
+        PartnerImpl opcPartner = new PartnerImpl();
+        opcPartner.setId(5L);
+
+        Counterparty saved = new Counterparty();
+        saved.setId(21L);
+        saved.setType(CounterpartyType.DATABASE_PROVIDER);
+        saved.setPartner(opcPartner);
+
+        given(counterpartyRepository.findByTypeAndPartnerId(CounterpartyType.DATABASE_PROVIDER, 5L))
+            .willReturn(Optional.empty());
+        given(counterpartyRepository.save(any(Counterparty.class))).willReturn(saved);
+
+        Counterparty result = counterpartyService.findOrCreateByTypeAndPartner(
+            CounterpartyType.DATABASE_PROVIDER, opcPartner);
+
+        assertThat(result).isSameAs(saved);
+
+        ArgumentCaptor<Counterparty> captor = ArgumentCaptor.forClass(Counterparty.class);
+        verify(counterpartyRepository).save(captor.capture());
+        Counterparty created = captor.getValue();
+        assertThat(created.getType()).isEqualTo(CounterpartyType.DATABASE_PROVIDER);
+        assertThat(created.getPartner()).isSameAs(opcPartner);
+        assertThat(created.getName()).isNull();
     }
 }
