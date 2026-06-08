@@ -93,7 +93,7 @@ class AgreementPortalApiTest {
         Map<String, Object> counterpartyDto = (Map<String, Object>) agreementDto.get("counterparty");
         assertEquals(10L, counterpartyDto.get("id"));
         assertEquals(CounterpartyType.DATABASE_PROVIDER, counterpartyDto.get("type"));
-        assertEquals("OPC", counterpartyDto.get("name"));
+        assertEquals("OPC", counterpartyDto.get("displayName"));
 
         Map<String, Object> termsInfoDto = (Map<String, Object>) agreementDto.get("termsInfo");
         assertEquals("OpcDataProcessingAgreementV1", termsInfoDto.get("id"));

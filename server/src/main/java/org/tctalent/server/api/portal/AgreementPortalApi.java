@@ -65,7 +65,7 @@ public class AgreementPortalApi {
         return new DtoBuilder()
             .add("id")
             .add("type")
-            .add("name")
+            .add("displayName")
             ;
     }
 

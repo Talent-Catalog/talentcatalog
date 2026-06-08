@@ -94,4 +94,29 @@ public class Counterparty extends AbstractAuditableDomainObject<Long> {
      */
     @Nullable
     private String name;
+
+    /**
+     * Returns the best available display name for this counterparty.
+     * Resolution order: explicit name, then linked entity name (partner, employer, service
+     * provider).
+     * <p>
+     * TODO: replace with Org.getName() when Counterparty is refactored onto Org. --SM
+     * </p>
+     */
+    @Nullable
+    public String getDisplayName() {
+        if (name != null) {
+            return name;
+        }
+        if (partner != null) {
+            return partner.getName();
+        }
+        if (employer != null) {
+            return employer.getName();
+        }
+        if (serviceProvider != null) {
+            return serviceProvider.name();
+        }
+        return null;
+    }
 }
