@@ -18,7 +18,7 @@ import {TranslateModule} from "@ngx-translate/core";
 export class LoggingOutComponent implements OnInit, OnDestroy {
   reason: string;
   returnUrl: string;
-  secondsRemaining = 10;
+  secondsRemaining = 180;
 
   private readonly destroy$ = new Subject<void>();
 
