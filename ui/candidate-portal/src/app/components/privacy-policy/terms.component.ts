@@ -29,6 +29,9 @@ export class TermsComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    // When opened from the Agreements tab, the clicked agreement is passed via router state.
+    // Direct navigation to /privacy has no state, so we fall back to loading the current policy.
+    // TODO: Remove this fallback when /privacy is only reached via agreement click-through.
     const agreement: Agreement = history.state?.agreement;
     if (agreement) {
       // Historical read-only view from Agreements tab.
