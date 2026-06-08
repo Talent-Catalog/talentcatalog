@@ -17,6 +17,8 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {NO_ERRORS_SCHEMA} from '@angular/core';
 import {of} from 'rxjs';
+import {Router} from '@angular/router';
+import {RouterTestingModule} from '@angular/router/testing';
 import {AgreementService} from '../../../../../services/agreement.service';
 import {CandidateAgreementsComponent} from './candidate-agreements.component';
 
@@ -24,12 +26,14 @@ describe('CandidateAgreementsComponent', () => {
   let component: CandidateAgreementsComponent;
   let fixture: ComponentFixture<CandidateAgreementsComponent>;
   let agreementServiceSpy: jasmine.SpyObj<AgreementService>;
+  let router: Router;
 
   beforeEach(() => {
     agreementServiceSpy = jasmine.createSpyObj('AgreementService', ['listMyAgreements']);
     agreementServiceSpy.listMyAgreements.and.returnValue(of([]));
 
     TestBed.configureTestingModule({
+      imports: [RouterTestingModule],
       declarations: [CandidateAgreementsComponent],
       providers: [{provide: AgreementService, useValue: agreementServiceSpy}],
       schemas: [NO_ERRORS_SCHEMA]
@@ -37,6 +41,7 @@ describe('CandidateAgreementsComponent', () => {
 
     fixture = TestBed.createComponent(CandidateAgreementsComponent);
     component = fixture.componentInstance;
+    router = TestBed.inject(Router);
     fixture.detectChanges();
   });
 
@@ -55,8 +60,24 @@ describe('CandidateAgreementsComponent', () => {
       start: '2026-01-01T00:00:00Z',
       end: null,
       termsInfoId: 'TestTermsV1',
-      counterparty: {id: 1, type: 'DATABASE_PROVIDER', name: 'OPC'},
+      counterparty: {id: 1, type: 'DATABASE_PROVIDER', displayName: 'OPC'},
       termsInfo: {id: 'TestTermsV1', type: 'GRN_CANDIDATE_PRIVACY_POLICY', pathToContent: '', createdDate: '2026-01-01', content: ''}
     })).toBeTrue();
+  });
+
+  it('should navigate to privacy page with agreement state', () => {
+    const navigateSpy = spyOn(router, 'navigate');
+    const agreement = {
+      id: 1,
+      start: '2026-01-01T00:00:00Z',
+      end: null,
+      termsInfoId: 'TestTermsV1',
+      counterparty: {id: 1, type: 'DATABASE_PROVIDER', displayName: 'OPC'},
+      termsInfo: {id: 'TestTermsV1', type: 'GRN_CANDIDATE_PRIVACY_POLICY', pathToContent: '', createdDate: '2026-01-01', content: ''}
+    };
+
+    component.viewAgreement(agreement);
+
+    expect(navigateSpy).toHaveBeenCalledWith(['/privacy'], {state: {agreement}});
   });
 });

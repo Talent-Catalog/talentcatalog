@@ -27,10 +27,13 @@
       {{ 'AGREEMENTS.NONE' | translate }}
     </div>
 
-    <div *ngFor="let agreement of agreements" class="card mb-3">
+    <div *ngFor="let agreement of agreements"
+         class="card mb-3"
+         style="cursor: pointer"
+         (click)="viewAgreement(agreement)">
       <div class="card-body">
         <div class="d-flex justify-content-between align-items-center">
-          <span class="fw-bold">{{ agreement.counterparty?.name }}</span>
+          <span class="fw-bold">{{ agreement.counterparty?.displayName }}</span>
           <span class="badge" [ngClass]="isActive(agreement) ? 'bg-success' : 'bg-secondary'">
             {{ isActive(agreement) ? ('AGREEMENTS.ACTIVE' | translate) : ('AGREEMENTS.SUPERSEDED' | translate) }}
           </span>

@@ -15,6 +15,7 @@
  */
 
 import {Component, Input, OnInit} from '@angular/core';
+import {Router} from '@angular/router';
 import {Candidate} from '../../../../../model/candidate';
 import {Agreement} from '../../../../../model/agreement';
 import {AgreementService} from '../../../../../services/agreement.service';
@@ -31,7 +32,10 @@ export class CandidateAgreementsComponent implements OnInit {
   loading: boolean;
   error: any;
 
-  constructor(private agreementService: AgreementService) {
+  constructor(
+    private agreementService: AgreementService,
+    private router: Router
+  ) {
   }
 
   ngOnInit(): void {
@@ -50,5 +54,9 @@ export class CandidateAgreementsComponent implements OnInit {
 
   isActive(agreement: Agreement): boolean {
     return agreement.end === null;
+  }
+
+  viewAgreement(agreement: Agreement): void {
+    this.router.navigate(['/privacy'], {state: {agreement}});
   }
 }

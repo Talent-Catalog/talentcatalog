@@ -26,7 +26,7 @@ export interface Agreement {
 export interface AgreementCounterparty {
   id: number;
   type: string;
-  name: string;
+  displayName: string;
 }
 
 export interface AgreementTermsInfo {
