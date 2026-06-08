@@ -178,7 +178,7 @@ export class KeycloakProviderService implements IdpProvider {
 
   async refreshToken(minValiditySeconds = 30): Promise<void> {
     try {
-      const loggedIn = await this.keycloakService.isLoggedIn();
+      const loggedIn = this.keycloakService.isLoggedIn();
       if (loggedIn) {
         await this.keycloakService.updateToken(minValiditySeconds);
       }
