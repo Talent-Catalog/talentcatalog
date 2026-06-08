@@ -108,6 +108,7 @@ The release introduces important improvements to how candidate information is ma
 * Updated README to fix bug where a new user setting up will require a password environment variable
 
 ## Test Coverage
+* Add tests for candidate-related service classes
 
 ## Code Refactoring
 
