@@ -1,68 +1,168 @@
-/*
- * Copyright (c) 2026 Talent Catalog.
- *
- * This program is free software: you can redistribute it and/or modify it under
- * the terms of the GNU General Public License as published by the Free
- * Software Foundation, either version 3 of the License, or any later version.
- *
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
- * for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program. If not, see https://www.gnu.org/licenses/.
- */
+import {HttpHandler, HttpRequest} from '@angular/common/http';
+import {Router} from '@angular/router';
+import {of} from 'rxjs';
 
-import {TestBed} from '@angular/core/testing';
-import {HttpClientTestingModule, HttpTestingController} from '@angular/common/http/testing';
-import {HTTP_INTERCEPTORS, HttpClient} from '@angular/common/http';
 import {JwtInterceptor} from './jwt.interceptor';
 import {AuthenticationService} from './authentication.service';
 
 describe('JwtInterceptor', () => {
-  let httpMock: HttpTestingController;
-  let httpClient: HttpClient;
-  let authServiceSpy: jasmine.SpyObj<AuthenticationService>;
+  let interceptor: JwtInterceptor;
+  let authenticationService: jasmine.SpyObj<AuthenticationService>;
+  let router: jasmine.SpyObj<Router>;
 
   beforeEach(() => {
-    const spy = jasmine.createSpyObj('AuthenticationService', ['getToken']);
+    authenticationService = jasmine.createSpyObj<AuthenticationService>(
+      'AuthenticationService',
+      ['refreshToken', 'getToken', 'logout']
+    );
 
-    TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
-      providers: [
-        { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },
-        { provide: AuthenticationService, useValue: spy }
-      ]
+    router = jasmine.createSpyObj<Router>(
+      'Router',
+      ['navigate'],
+      {
+        url: '/current-page'
+      }
+    );
+
+    interceptor = new JwtInterceptor(authenticationService, router);
+  });
+
+  function handlerExpectingAuthorization(expectedToken: string): HttpHandler {
+    return {
+      handle: request => {
+        expect(request.headers.get('Authorization')).toBe(`Bearer ${expectedToken}`);
+        return of({} as any);
+      }
+    };
+  }
+
+  function handlerExpectingNoAuthorization(): HttpHandler {
+    return {
+      handle: request => {
+        expect(request.headers.has('Authorization')).toBeFalse();
+        return of({} as any);
+      }
+    };
+  }
+
+  it('should not add Authorization header for public requests', (done) => {
+    const request = new HttpRequest('GET', '/api/portal/branding');
+
+    interceptor.intercept(request, handlerExpectingNoAuthorization()).subscribe({
+      complete: () => {
+        expect(authenticationService.refreshToken).not.toHaveBeenCalled();
+        expect(authenticationService.getToken).not.toHaveBeenCalled();
+        done();
+      }
+    });
+  });
+
+  it('should refresh token and add Authorization header for private requests', (done) => {
+    const request = new HttpRequest('GET', '/api/admin/private-data');
+
+    authenticationService.refreshToken.and.returnValue(Promise.resolve());
+    authenticationService.getToken.and.returnValue('abc123');
+
+    interceptor.intercept(request, handlerExpectingAuthorization('abc123')).subscribe({
+      complete: () => {
+        expect(authenticationService.refreshToken).toHaveBeenCalled();
+        expect(authenticationService.getToken).toHaveBeenCalled();
+        expect(authenticationService.logout).not.toHaveBeenCalled();
+        expect(router.navigate).not.toHaveBeenCalled();
+        done();
+      }
+    });
+  });
+
+  it('should logout and navigate to login when refreshToken fails', (done) => {
+    const request = new HttpRequest('GET', '/api/admin/private-data');
+
+    authenticationService.refreshToken.and.returnValue(Promise.reject('refresh failed'));
+
+    interceptor.intercept(request, handlerExpectingNoAuthorization()).subscribe({
+      complete: () => {
+        expect(authenticationService.logout).toHaveBeenCalled();
+
+        expect(router.navigate).toHaveBeenCalledWith(
+          ['/login'],
+          {
+            queryParams: {
+              returnUrl: '/current-page'
+            }
+          }
+        );
+
+        done();
+      }
+    });
+  });
+
+  it('should logout and navigate to login when token is missing after refresh', (done) => {
+    const request = new HttpRequest('GET', '/api/admin/private-data');
+
+    authenticationService.refreshToken.and.returnValue(Promise.resolve());
+    authenticationService.getToken.and.returnValue(null);
+
+    interceptor.intercept(request, handlerExpectingNoAuthorization()).subscribe({
+      complete: () => {
+        expect(authenticationService.logout).toHaveBeenCalled();
+
+        expect(router.navigate).toHaveBeenCalledWith(
+          ['/login'],
+          {
+            queryParams: {
+              returnUrl: '/current-page'
+            }
+          }
+        );
+
+        done();
+      }
+    });
+  });
+
+  it('should not navigate to login when already on login page', (done) => {
+    Object.defineProperty(router, 'url', {
+      get: () => '/login'
     });
 
-    httpMock = TestBed.inject(HttpTestingController);
-    httpClient = TestBed.inject(HttpClient);
-    authServiceSpy = TestBed.inject(AuthenticationService) as jasmine.SpyObj<AuthenticationService>;
+    const request = new HttpRequest('GET', '/api/admin/private-data');
+
+    authenticationService.refreshToken.and.returnValue(Promise.reject('refresh failed'));
+
+    interceptor.intercept(request, handlerExpectingNoAuthorization()).subscribe({
+      complete: () => {
+        expect(authenticationService.logout).toHaveBeenCalled();
+        expect(router.navigate).not.toHaveBeenCalled();
+        done();
+      }
+    });
   });
 
-  afterEach(() => {
-    httpMock.verify();
-  });
+  it('should use / as returnUrl when router url is empty', (done) => {
+    Object.defineProperty(router, 'url', {
+      get: () => ''
+    });
 
-  it('should add an Authorization header', () => {
-    authServiceSpy.getToken.and.returnValue('fake-jwt-token');
+    const request = new HttpRequest('GET', '/api/admin/private-data');
 
-    httpClient.get('/test').subscribe(response => expect(response).toBeTruthy());
+    authenticationService.refreshToken.and.returnValue(Promise.reject('refresh failed'));
 
-    const httpRequest = httpMock.expectOne('/test');
+    interceptor.intercept(request, handlerExpectingNoAuthorization()).subscribe({
+      complete: () => {
+        expect(authenticationService.logout).toHaveBeenCalled();
 
-    expect(httpRequest.request.headers.has('Authorization')).toEqual(true);
-    expect(httpRequest.request.headers.get('Authorization')).toBe('Bearer fake-jwt-token');
-  });
+        expect(router.navigate).toHaveBeenCalledWith(
+          ['/login'],
+          {
+            queryParams: {
+              returnUrl: '/'
+            }
+          }
+        );
 
-  it('should not add an Authorization header when no token is available', () => {
-    authServiceSpy.getToken.and.returnValue(null);
-
-    httpClient.get('/test').subscribe(response => expect(response).toBeTruthy());
-
-    const httpRequest = httpMock.expectOne('/test');
-
-    expect(httpRequest.request.headers.has('Authorization')).toEqual(false);
+        done();
+      }
+    });
   });
 });

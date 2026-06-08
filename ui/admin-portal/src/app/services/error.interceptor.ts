@@ -16,7 +16,7 @@
 
 import {Injectable} from '@angular/core';
 import {HttpEvent, HttpHandler, HttpInterceptor, HttpRequest} from '@angular/common/http';
-import {Observable, throwError} from 'rxjs';
+import {EMPTY, Observable, throwError} from 'rxjs';
 import {catchError} from 'rxjs/operators';
 import {Router} from "@angular/router";
 
@@ -43,6 +43,7 @@ export class ErrorInterceptor implements HttpInterceptor {
         const returnUrl = this.router.url || '/';
         void this.router.navigate(['/logout'],
           { queryParams: { reason: error, returnUrl: returnUrl } });
+        return EMPTY;
       } else {
         //otherwise throw an error for the code to handle
         return throwError(error);

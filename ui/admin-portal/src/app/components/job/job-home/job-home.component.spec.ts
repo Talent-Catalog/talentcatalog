@@ -29,6 +29,9 @@ import {NgSelectModule} from "@ng-select/ng-select";
 import {SortedByComponent} from "../../util/sort/sorted-by.component";
 import {ChatReadStatusComponent} from "../../chat/chat-read-status/chat-read-status.component";
 import {CandidateService} from "../../../services/candidate.service";
+import {
+  provideMockAuthenticationService
+} from "../../../util/testing/test-authentication.providers.spec";
 
 describe('JobHomeComponent', () => {
   let component: JobHomeComponent;
@@ -57,7 +60,7 @@ describe('JobHomeComponent', () => {
         { provide: UntypedFormBuilder, useClass: UntypedFormBuilder },
         { provide: ActivatedRoute, useValue: { queryParams: of({}) } },
         { provide: Router, useValue: { navigateByUrl: jasmine.createSpy('navigateByUrl') }},
-        // provideMockAuthenticationService(),
+        provideMockAuthenticationService(),
       ]
     })
     .compileComponents();

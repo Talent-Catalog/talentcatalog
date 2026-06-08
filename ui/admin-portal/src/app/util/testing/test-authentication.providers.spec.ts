@@ -16,14 +16,20 @@
 
 import {AuthenticationService} from "../../services/authentication.service";
 import {of} from "rxjs";
+import {IdpStatus} from "../../services/idp-status";
 
 export function createMockAuthenticationService() {
   return {
     canViewChats: jasmine.createSpy('canViewChats'),
+    clearAuthError: jasmine.createSpy('clearAuthError'),
     completeLogin: jasmine.createSpy('completeLogin'),
-    getAuthStatus: jasmine.createSpy('getAuthStatus'),
+    getAuthStatus: jasmine.createSpy('getAuthStatus').and.returnValue(of({
+      initialized: true,
+      authenticated: true,
+    } as IdpStatus)),
     getLoggedInUser: jasmine.createSpy('getLoggedInUser'),
     getToken: jasmine.createSpy('getToken'),
+    isAuthenticated: jasmine.createSpy('isAuthenticated').and.returnValue(true),
     loggedInUser$: of(null),
     login: jasmine.createSpy('login'),
     logout: jasmine.createSpy('logout'),
