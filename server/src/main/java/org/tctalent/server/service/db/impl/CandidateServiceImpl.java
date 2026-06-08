@@ -67,6 +67,7 @@ import org.springframework.web.reactive.function.client.WebClientException;
 import org.tctalent.anonymization.model.CandidateRegistration;
 import org.tctalent.server.configuration.GoogleDriveConfig;
 import org.tctalent.server.configuration.SalesforceConfig;
+import org.tctalent.server.configuration.SystemAdminConfiguration;
 import org.tctalent.server.exception.CountryRestrictionException;
 import org.tctalent.server.exception.EntityExistsException;
 import org.tctalent.server.exception.EntityReferencedException;
@@ -1255,8 +1256,13 @@ public class CandidateServiceImpl implements CandidateService {
             return;
         }
 
-        Counterparty databaseProvider = counterpartyService.findOrCreateByTypeAndName(
-            CounterpartyType.DATABASE_PROVIDER, "OPC");
+        // The OPC system partner is guaranteed to exist — it is seeded at startup by
+        // SystemAdminConfiguration. Use partner_id as the counterparty identity anchor,
+        // so the counterparty row carries a proper FK to the partner table.
+        PartnerImpl opcPartner = (PartnerImpl) partnerService.getPartnerFromAbbreviation(
+            SystemAdminConfiguration.SYSTEM_PARTNER_ABBREVIATION);
+        Counterparty databaseProvider = counterpartyService.findOrCreateByTypeAndPartner(
+            CounterpartyType.DATABASE_PROVIDER, opcPartner);
         agreementService.recordAgreement(candidate, databaseProvider, termsInfoId);
     }
 
