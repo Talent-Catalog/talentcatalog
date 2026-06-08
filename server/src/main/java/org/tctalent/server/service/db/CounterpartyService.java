@@ -19,6 +19,7 @@ package org.tctalent.server.service.db;
 import org.springframework.lang.NonNull;
 import org.tctalent.server.model.db.Counterparty;
 import org.tctalent.server.model.db.CounterpartyType;
+import org.tctalent.server.model.db.PartnerImpl;
 
 /**
  * Service responsible for creating/finding agreement counterparties.
@@ -36,4 +37,20 @@ public interface CounterpartyService {
      */
     @NonNull
     Counterparty findOrCreateByTypeAndName(@NonNull CounterpartyType type, @NonNull String name);
+
+    /**
+     * Finds an existing partner-backed counterparty, or creates one if none exists.
+     * <p>
+     * Prefer this over {@link #findOrCreateByTypeAndName} when the counterparty maps to a known
+     * {@link PartnerImpl} record (for example, the OPC system partner). Using the partner FK
+     * provides a proper relational link and exercises the {@code cp_type_partner_uq_idx} unique
+     * index rather than relying on a name string.
+     * </p>
+     *
+     * @param type    Counterparty type
+     * @param partner Backing partner entity
+     * @return Existing or newly created counterparty
+     */
+    @NonNull
+    Counterparty findOrCreateByTypeAndPartner(@NonNull CounterpartyType type, @NonNull PartnerImpl partner);
 }

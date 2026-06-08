@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tctalent.server.model.db.Counterparty;
 import org.tctalent.server.model.db.CounterpartyType;
+import org.tctalent.server.model.db.PartnerImpl;
 import org.tctalent.server.repository.db.CounterpartyRepository;
 import org.tctalent.server.service.db.CounterpartyService;
 
@@ -45,6 +46,19 @@ public class CounterpartyServiceImpl implements CounterpartyService {
                 Counterparty counterparty = new Counterparty();
                 counterparty.setType(type);
                 counterparty.setName(name);
+                return counterpartyRepository.save(counterparty);
+            });
+    }
+
+    @Override
+    @NonNull
+    @Transactional
+    public Counterparty findOrCreateByTypeAndPartner(@NonNull CounterpartyType type, @NonNull PartnerImpl partner) {
+        return counterpartyRepository.findByTypeAndPartnerId(type, partner.getId())
+            .orElseGet(() -> {
+                Counterparty counterparty = new Counterparty();
+                counterparty.setType(type);
+                counterparty.setPartner(partner);
                 return counterpartyRepository.save(counterparty);
             });
     }
