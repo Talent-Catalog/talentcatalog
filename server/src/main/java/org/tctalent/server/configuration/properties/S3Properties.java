@@ -57,7 +57,13 @@ public class S3Properties {
     private String region;
 
     /**
-     * S3 bucket for candidate files storage.
+     * S3 bucket for candidate files storage. Used by the GRN instance only.
+     * <p>
+     * TBB candidate files are stored on Google Drive (the legacy file-system path) and do not
+     * use this property. When the planned TBB-to-S3 migration is agreed and actioned, this
+     * field will likely be split into per-instance-type buckets mirroring the translations
+     * bucket configuration (see {@link #tbbTranslationsBucket} / {@link #grnTranslationsBucket}).
+     * <p>
      * Example: candidate-files.globalrefugee.net
      */
     private String candidateFilesBucket;

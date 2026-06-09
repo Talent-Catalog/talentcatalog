@@ -110,6 +110,12 @@ public class SecurityConfiguration {
         "/status**", "/status/**",
         "/topic", "/topic/**",
         "/websocket", "/websocket/**",
+        "/admin-portal", "/admin-portal/**",
+        "/candidate-portal", "/candidate-portal/**",
+        "/public-portal", "/public-portal/**",
+        "/favicon.ico",
+        "/actuator/health",
+        "/api/public/**",
     };
 
     /**

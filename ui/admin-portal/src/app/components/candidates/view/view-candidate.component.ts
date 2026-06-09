@@ -84,6 +84,7 @@ export class ViewCandidateComponent extends MainSidePanelBase implements OnInit,
   listsInput$ = new Subject<string>();
   listsLoading = false;
   token: string;
+  showAspirations: boolean;
 
   private destroy$ = new Subject<void>();
 
@@ -103,6 +104,7 @@ export class ViewCandidateComponent extends MainSidePanelBase implements OnInit,
   }
 
   ngOnInit() {
+    this.showAspirations = this.authenticationService.isGrnInstance();
     this.refreshCandidateProfile();
     this.loggedInUser = this.authenticationService.getLoggedInUser();
     this.selectDefaultTab();

@@ -47,15 +47,31 @@ describe('AdminService', () => {
 
   it('should make a GET request to the correct URL', () => {
     const apicall = 'test-call';
+    const method = 'GET'
     const apiUrl = `${environment.apiUrl}/system/${apicall}`;
 
     // Mocking the return value of the HttpClient's get method
     const getSpy = spyOn(httpClient, 'get').and.returnValue(of(void 0));
 
-    service.call(apicall).subscribe(response => {
+    service.call(apicall, method).subscribe(response => {
       expect(response).toBeUndefined();
     });
 
     expect(getSpy).toHaveBeenCalledWith(apiUrl, { responseType: 'text' as any });
+  });
+
+  it('should make a POST request to the correct URL', () => {
+    const apicall = 'test-call';
+    const method = 'POST'
+    const apiUrl = `${environment.apiUrl}/system/${apicall}`;
+
+    // Mocking the return value of the HttpClient's get method
+    const getSpy = spyOn(httpClient, 'post').and.returnValue(of(void 0));
+
+    service.call(apicall, method).subscribe(response => {
+      expect(response).toBeUndefined();
+    });
+
+    expect(getSpy).toHaveBeenCalledWith(apiUrl, {}, { responseType: 'text' as any });
   });
 });

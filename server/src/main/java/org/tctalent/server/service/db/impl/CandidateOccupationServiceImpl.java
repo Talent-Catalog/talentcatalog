@@ -88,7 +88,6 @@ public class CandidateOccupationServiceImpl implements CandidateOccupationServic
         if (authService.hasAdminPrivileges(user.getRole())) {
             candidate = candidateRepository.findById(request.getCandidateId())
                     .orElseThrow(() -> new NoSuchObjectException(Candidate.class, request.getCandidateId()));
-            candidateOccupation.setAuditFields(user);
         } else {
             candidate = authService.getLoggedInCandidate();
             if (candidate == null) {
@@ -109,7 +108,6 @@ public class CandidateOccupationServiceImpl implements CandidateOccupationServic
         // Save the candidateOccupation
         candidateOccupation = candidateOccupationRepository.save(candidateOccupation);
 
-        candidate.setAuditFields(user);
         candidateService.save(candidate);
 
         return candidateOccupation;
@@ -142,7 +140,6 @@ public class CandidateOccupationServiceImpl implements CandidateOccupationServic
 
         candidateOccupationRepository.delete(candidateOccupation);
 
-        candidate.setAuditFields(user);
         candidateService.save(candidate);
     }
 
@@ -267,7 +264,6 @@ public class CandidateOccupationServiceImpl implements CandidateOccupationServic
             }
         }
 
-        candidate.setAuditFields(candidate.getUser());
         candidateService.save(candidate);
 
         return candidateOccupations;
@@ -290,8 +286,6 @@ public class CandidateOccupationServiceImpl implements CandidateOccupationServic
 
         candidateOccupation.setOccupation(occupationToBeUpdated);
         candidateOccupation.setYearsExperience(request.getYearsExperience());
-
-        candidateOccupation.setAuditFields(authService.getLoggedInUser().orElse(null));
 
         candidateService.save(candidateOccupation.getCandidate());
 

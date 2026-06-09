@@ -308,15 +308,27 @@ class CandidateErasureServiceImplTest {
   }
 
   @Test
-  void eraseCandidate_shouldAllowBlankCandidateNumberConfirmation() {
+  void eraseCandidate_shouldRejectBlankCandidateNumberConfirmation() {
     request.setConfirmationCandidateNumber(" ");
 
-    stubSuccessfulRepositoryCalls();
+    User actor = new User();
+    actor.setRole(Role.systemadmin);
+    actor.setReadOnly(false);
 
-    Candidate result = candidateErasureService.eraseCandidate(CANDIDATE_ID, request);
+    when(authService.getLoggedInUser()).thenReturn(Optional.of(actor));
+    when(candidateRepository.findById(CANDIDATE_ID)).thenReturn(Optional.of(candidate));
 
-    assertSame(candidate, result);
-    verify(candidateRepository, times(2)).saveAndFlush(candidate);
+    InvalidRequestException exception = assertThrows(
+        InvalidRequestException.class,
+        () -> candidateErasureService.eraseCandidate(CANDIDATE_ID, request)
+    );
+
+    assertEquals(
+        "Candidate number confirmation does not match the selected candidate.",
+        exception.getMessage()
+    );
+
+    verify(candidateRepository, never()).saveAndFlush(candidate);
   }
 
   @Test

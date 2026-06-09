@@ -237,7 +237,6 @@ class CandidateJobExperienceServiceImplTest {
             .willReturn(Optional.of(COUNTRY));
         given(occupationRepository.findById(createRequest.getCandidateOccupationId()))
             .willReturn(Optional.of(OCCUPATION));
-        given(authService.getLoggedInUser()).willReturn(Optional.of(candidateUser));
 
         jobExperienceService.createCandidateJobExperience(createRequest);
 
@@ -247,7 +246,6 @@ class CandidateJobExperienceServiceImplTest {
         verifyExperience(result, OCCUPATION);
 
         verify(candidateService).save(candidate, true);
-        assertEquals(candidateUser, candidate.getUpdatedBy());
     }
 
     @Test
@@ -322,7 +320,6 @@ class CandidateJobExperienceServiceImplTest {
             .willReturn(Optional.of(COUNTRY));
         given(occupationRepository.findById(updateRequest.getCandidateOccupationId()))
             .willReturn(Optional.of(ALT_OCCUPATION));
-        given(authService.getLoggedInUser()).willReturn(Optional.of(candidateUser));
         given(jobExperienceRepository.save(experience)).willReturn(experience);
 
         jobExperienceService.updateCandidateJobExperience(updateRequest);
@@ -331,7 +328,6 @@ class CandidateJobExperienceServiceImplTest {
         verifyExperience(experience, ALT_OCCUPATION);
 
         verify(candidateService).save(candidate, true);
-        assertEquals(candidateUser, candidate.getUpdatedBy());
     }
 
     private static void verifyExperience(
@@ -415,7 +411,6 @@ class CandidateJobExperienceServiceImplTest {
         jobExperienceService.deleteCandidateJobExperience(EXPERIENCE_ID);
 
         verify(jobExperienceRepository).delete(experience);
-        assertEquals(ADMIN_USER, candidate.getUpdatedBy());
         verify(candidateService).save(candidate, true);
     }
 
@@ -431,7 +426,6 @@ class CandidateJobExperienceServiceImplTest {
         jobExperienceService.deleteCandidateJobExperience(EXPERIENCE_ID);
 
         verify(jobExperienceRepository).delete(experience);
-        assertEquals(candidateUser, candidate.getUpdatedBy());
         verify(candidateService).save(candidate, true);
     }
 

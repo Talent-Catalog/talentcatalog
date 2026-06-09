@@ -1,0 +1,28 @@
+<tc-modal [heading]="'Edit Aspirations'"
+          [showClose]="true"
+          [disableAction]="!candidateForm || candidateForm.invalid || loading || saving"
+          [showCancel]="true"
+          actionText="Save"
+          (onAction)="onSave()"
+>
+
+  <tc-loading [loading]="loading"></tc-loading>
+
+  <div *ngIf="!loading">
+
+    <tc-alert type="danger" *ngIf="error">
+      <div><strong>{{error}}</strong></div>
+    </tc-alert>
+
+    <form [formGroup]="candidateForm">
+      <div class="mb-3">
+        <tc-label for="'aspirations'">
+          Aspirations
+        </tc-label>
+        <tc-textarea id="aspirations"
+                     [formControlName]="'aspirations'"
+        ></tc-textarea>
+      </div>
+    </form>
+  </div>
+</tc-modal>

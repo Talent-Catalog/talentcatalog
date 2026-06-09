@@ -30,7 +30,6 @@ import org.tctalent.server.model.db.CandidateLanguage;
 import org.tctalent.server.model.db.Language;
 import org.tctalent.server.model.db.LanguageLevel;
 import org.tctalent.server.model.db.Status;
-import org.tctalent.server.model.db.User;
 import org.tctalent.server.repository.db.CandidateLanguageRepository;
 import org.tctalent.server.repository.db.CandidateRepository;
 import org.tctalent.server.repository.db.LanguageLevelRepository;
@@ -41,7 +40,6 @@ import org.tctalent.server.request.candidate.language.UpdateCandidateLanguagesRe
 import org.tctalent.server.security.AuthService;
 import org.tctalent.server.service.db.CandidateLanguageService;
 import org.tctalent.server.service.db.CandidateService;
-import org.tctalent.server.util.audit.AuditHelper;
 
 @Service
 public class CandidateLanguageServiceImpl implements CandidateLanguageService {
@@ -75,8 +73,8 @@ public class CandidateLanguageServiceImpl implements CandidateLanguageService {
      */
     @Override
     public CandidateLanguage createCandidateLanguage(CreateCandidateLanguageRequest request) {
-        User loggedInUser = authService.getLoggedInUser()
-                .orElseThrow(() -> new InvalidSessionException("Not logged in"));
+        authService.getLoggedInUser()
+            .orElseThrow(() -> new InvalidSessionException("Not logged in"));
 
         Candidate candidate = candidateService.getCandidateFromRequest(request.getCandidateId());
 
@@ -100,7 +98,6 @@ public class CandidateLanguageServiceImpl implements CandidateLanguageService {
 
         // Save the candidateLanguage
         candidateLanguage = candidateLanguageRepository.save(candidateLanguage);
-        AuditHelper.setAuditFieldsFromUser(candidate, loggedInUser);
         candidateService.save(candidate);
         return candidateLanguage;
     }
@@ -112,8 +109,8 @@ public class CandidateLanguageServiceImpl implements CandidateLanguageService {
      */
     @Override
     public CandidateLanguage updateCandidateLanguage(UpdateCandidateLanguageRequest request) {
-        User loggedInUser = authService.getLoggedInUser()
-                .orElseThrow(() -> new InvalidSessionException("Not logged in"));
+        authService.getLoggedInUser()
+            .orElseThrow(() -> new InvalidSessionException("Not logged in"));
 
         CandidateLanguage candidateLanguage = candidateLanguageRepository.findById(request.getId())
                 .orElseThrow(() -> new NoSuchObjectException(CandidateLanguage.class, request.getId()));
@@ -137,7 +134,6 @@ public class CandidateLanguageServiceImpl implements CandidateLanguageService {
         candidateLanguage = candidateLanguageRepository.save(candidateLanguage);
 
         Candidate candidate = candidateLanguage.getCandidate();
-        AuditHelper.setAuditFieldsFromUser(candidate, loggedInUser);
         candidateService.save(candidate);
 
         return candidateLanguage;
@@ -149,15 +145,14 @@ public class CandidateLanguageServiceImpl implements CandidateLanguageService {
      */
     @Override
     public void deleteCandidateLanguage(Long id) {
-        User loggedInUser = authService.getLoggedInUser()
-                .orElseThrow(() -> new InvalidSessionException("Not logged in"));
+        authService.getLoggedInUser()
+            .orElseThrow(() -> new InvalidSessionException("Not logged in"));
 
         CandidateLanguage candidateLanguage = candidateLanguageRepository.findByIdLoadCandidate(id)
                 .orElseThrow(() -> new NoSuchObjectException(CandidateLanguage.class, id));
 
         Candidate candidate = candidateLanguage.getCandidate();
         candidateLanguageRepository.delete(candidateLanguage);
-        AuditHelper.setAuditFieldsFromUser(candidate, loggedInUser);
         candidateService.save(candidate);
     }
 
@@ -222,7 +217,6 @@ public class CandidateLanguageServiceImpl implements CandidateLanguageService {
             }
         }
 
-        candidate.setAuditFields(candidate.getUser());
         candidateService.save(candidate);
 
         return candidateLanguages;

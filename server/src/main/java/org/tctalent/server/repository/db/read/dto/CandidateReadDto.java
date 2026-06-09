@@ -57,6 +57,7 @@ public class CandidateReadDto {
     @JsonOneToOne(joinColumn = "accepted_privacy_policy_partner_id")
     private PartnerReadDto acceptedPrivacyPolicyPartner;
     private String additionalInfo;
+    private String aspirations;
     private String address1;
     private boolean allNotifications;
     private String candidateMessage;
@@ -79,7 +80,7 @@ public class CandidateReadDto {
     private List<CandidateJobExperienceReadDto> candidateJobExperiences;
     @JsonOneToMany(joinColumn = "candidate_id")
     private List<CandidateLanguageReadDto> candidateLanguages;
-    @JsonOneToMany(joinColumn = "candidate_id")
+    @JsonOneToMany(joinColumn = "candidate_id", orderBy = "updated_date DESC")
     private List<CandidateNoteReadDto> candidateNotes;
     @JsonOneToMany(joinColumn = "candidate_id")
     private List<CandidateOccupationReadDto> candidateOccupations;
