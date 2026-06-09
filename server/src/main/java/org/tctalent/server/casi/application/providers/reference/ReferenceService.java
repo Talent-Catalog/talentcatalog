@@ -16,6 +16,7 @@
 
 package org.tctalent.server.casi.application.providers.reference;
 
+import java.util.Optional;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.tctalent.server.casi.core.allocators.ResourceAllocator;
@@ -26,6 +27,7 @@ import org.tctalent.server.casi.domain.model.ServiceCode;
 import org.tctalent.server.casi.domain.model.ServiceProvider;
 import org.tctalent.server.casi.domain.persistence.ServiceAssignmentRepository;
 import org.tctalent.server.casi.domain.persistence.ServiceResourceRepository;
+import org.tctalent.server.model.db.TermsType;
 import org.tctalent.server.service.db.SavedListService;
 
 /**
@@ -58,6 +60,11 @@ public class ReferenceService extends AbstractCandidateAssistanceService {
   @Override
   public ServiceCode serviceCode() {
     return ServiceCode.VOUCHER;
+  }
+
+  @Override
+  public Optional<TermsType> agreementTermsType() {
+    return Optional.of(TermsType.REFERENCE_SERVICE_TERMS);
   }
 
   @Override
