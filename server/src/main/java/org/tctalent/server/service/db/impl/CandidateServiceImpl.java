@@ -668,7 +668,7 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     private Candidate saveNewCandidate(Partner partner, Candidate candidate) {
-        //Save candidate to get id (but don't update Elasticsearch yet)
+        //Save candidate to get id
         candidate = save(candidate);
 
         final String candidateNumber = candidateNumberGenerator.generateCandidateNumber(candidate);

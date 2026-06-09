@@ -45,6 +45,16 @@ public class AuthService {
             return null;
         }
 
+        /*
+         * This can happen in the SecurityConfiguration registrationSecurityFilterChain
+         *  which is where logins and registrations are handled.
+         *  During those flows, the user is not yet authenticated and the principal is just
+         *  the JWT.
+         */
+        if (!(authentication.getPrincipal() instanceof CurrentUserInfo)) {
+            return null;
+        }
+
         return (CurrentUserInfo) authentication.getPrincipal();
     }
 

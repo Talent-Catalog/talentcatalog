@@ -28,22 +28,30 @@
 
     <div class="col-sm-12 col-lg-6">
 
-      <tc-card [header]="false">
-        <tc-button
-          color="primary"
-          type="outline"
-          (onClick)="onLogin()"
-          [queryParamsHandling]="'merge'">
-          {{ 'LANDING.LOGIN' | translate }}
-        </tc-button>
-        <tc-button
-          color="primary"
-          type="outline"
-          (onClick)="onRegister()"
-          [queryParamsHandling]="'merge'">
-          {{ 'LANDING.REGISTER' | translate }}
-        </tc-button>
-      </tc-card>
+      @if (!authAction) {
+        <tc-card [header]="false">
+          <div class="text-center my-3 w-75 mx-auto">
+            <tc-button
+              color="primary"
+              type="outline"
+              (onClick)="onLogin()"
+              [queryParamsHandling]="'merge'">
+              {{ 'LANDING.LOGIN' | translate }}
+            </tc-button>
+          </div>
+        </tc-card>
+        <tc-card [header]="false">
+          <div class="text-center my-3 w-75 mx-auto">
+            <tc-button
+              color="primary"
+              type="outline"
+              (onClick)="onRegister()"
+              [queryParamsHandling]="'merge'">
+              {{ 'LANDING.REGISTER' | translate }}
+            </tc-button>
+          </div>
+        </tc-card>
+      }
     </div>
   </div>
 </div>

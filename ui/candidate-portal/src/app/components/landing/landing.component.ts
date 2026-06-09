@@ -20,9 +20,10 @@ import {LanguageService} from '../../services/language.service';
 import {initializePhraseAppEditor} from "ngx-translate-phraseapp";
 import {BrandingInfo, BrandingService} from "../../services/branding.service";
 import {AuthenticationService} from "../../services/authentication.service";
-import {Subscription} from "rxjs";
+import {Subscription, timer} from "rxjs";
 import {IdpStatus} from "../../services/idp-status";
 import {OauthRegistrationRequest} from "../../model/oauth-registration-request";
+import {finalize} from "rxjs/internal/operators";
 
 const CALLBACK_ACTION_PARAM_NAME = 'authAction';
 const LOGIN_ACTION = "login";
@@ -52,6 +53,18 @@ const REGISTER_ACTION = "register";
  * </p>
  */
 export class LandingComponent implements OnInit, OnDestroy {
+
+  /**
+   * This corresponds to the query parameter 'authAction' which is set by the IdpService
+   *  and indicates whether the user is logging in or registering.
+   *  <p/>
+   *  It is used to direct the user to the correct component (RegisterComponent or HomeComponent)
+   *  depending on whether it is a login or register action.
+   *  <p/>
+   *  When this component is entered with a non-null authAction, the login and register buttons
+   *  are hidden and the component completes the action by calling down to the server.
+   */
+  authAction: string | null;
   authStatus: IdpStatus;
   private authStatusSub?: Subscription;
   private brandingInfo: BrandingInfo;
@@ -66,8 +79,6 @@ export class LandingComponent implements OnInit, OnDestroy {
               private languageService: LanguageService) {
   }
 
-  // todo Login and Register should now just be buttons in this page?
-
   ngOnInit() {
     this.authStatusSub = this.authenticationService.getAuthStatus().subscribe(
       status => this.authStatus = status);
@@ -75,9 +86,9 @@ export class LandingComponent implements OnInit, OnDestroy {
     this.currentUrlAsTree = this.router.parseUrl(this.router.url);
 
     if (this.authenticationService.isAuthenticated()) {
-      const authAction = this.route.snapshot.queryParamMap.get(CALLBACK_ACTION_PARAM_NAME);
+      this.authAction = this.route.snapshot.queryParamMap.get(CALLBACK_ACTION_PARAM_NAME);
       this.authenticationService.clearAuthError();
-      if (authAction === REGISTER_ACTION) {
+      if (this.authAction === REGISTER_ACTION) {
         let request: OauthRegistrationRequest = {
           //todo These consents are being mocked for now. When new UI is designed
           //the register button should be disabled until the user has consented to the terms.
@@ -85,9 +96,11 @@ export class LandingComponent implements OnInit, OnDestroy {
           contactConsentPartners: true
         }
         this.completeRegister(request);
-      } else if (authAction === LOGIN_ACTION) {
+      } else if (this.authAction === LOGIN_ACTION) {
         this.completeLogin();
       }
+    } else {
+      this.authAction = null;
     }
 
     //todo All this query param handling needs to happen after we are authenticated
@@ -157,32 +170,43 @@ export class LandingComponent implements OnInit, OnDestroy {
 
   completeLogin() {
     this.error = null;
-    this.authenticationService.completeLogin().subscribe({
+    this.authenticationService.completeLogin()
+    .pipe(finalize(() => this.authAction = null))
+    .subscribe({
       next: (response) => {
         this.router.navigate(['/home']);
       },
       error: (error) => {
         //Display error
         this.error = error;
-        //Log out the user if the login did not complete successfully.
-        this.authenticationService.logout();
+        this.pauseThenLogout();
       }
     })
   }
 
   completeRegister(request: OauthRegistrationRequest) {
     this.error = null;
-    this.authenticationService.completeRegister(request).subscribe({
+    this.authenticationService.completeRegister(request)
+    .pipe(finalize(() => this.authAction = null))
+    .subscribe({
       next: (response) => {
         this.router.navigate(['/register']);
       },
       error: (error) => {
         //Display error
         this.error = error;
-        //Log out the user if the registration did not complete successfully.
-        this.authenticationService.logout();
+        this.pauseThenLogout();
       }
     })
+  }
+
+  private pauseThenLogout() {
+    //Log out the user if the login did not complete successfully.
+    //Pause so user can see the error before logging out and being redirected to the landing page.
+    timer(10000).subscribe(() => {
+      //Log out the user if the registration did not complete successfully.
+      this.authenticationService.logout();
+    });
   }
 
   dismissAuthError(): void {
