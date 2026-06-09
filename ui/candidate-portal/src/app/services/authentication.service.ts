@@ -93,8 +93,12 @@ export class AuthenticationService implements OnDestroy {
     this.setLoggedInUser(null);
     this.setCandidateStatus(null);
 
-    return this.idpProvider.logout();
+    return this.logoutIdp();
    }
+
+  logoutIdp(): Promise<void> {
+    return this.idpProvider.logout();
+  }
 
   completeLogin(): Observable<void> {
     //Retrieve current profile from provider and send to server so that it can be stored in the

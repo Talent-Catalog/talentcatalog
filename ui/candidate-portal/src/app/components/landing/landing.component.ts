@@ -158,6 +158,8 @@ export class LandingComponent implements OnInit, OnDestroy {
   }
 
   onRegister() {
+    //Logout Idp if it thinks we are still logged in. Can happen.
+    this.authenticationService.logoutIdp();
     this.authenticationService.register(
       this.computeRedirectUri(REGISTER_ACTION), this.languageService.getSelectedLanguage());
   }
