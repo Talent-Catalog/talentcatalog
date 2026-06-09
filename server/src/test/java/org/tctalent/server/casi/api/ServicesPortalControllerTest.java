@@ -77,6 +77,7 @@ class ServicesPortalControllerTest extends ApiTestBase {
   private static final Long CANDIDATE_ID = 123L;
   private static final String RESOURCE_CODE = "CODE-123";
   private static final String TERMS_ID = "ReferenceServiceTermsV1";
+  private static final String OPC_DPA_TERMS_ID = "OpcDataProcessingAgreementV1";
 
   @MockBean private AuthService authService;
   @MockBean private UserService userService;
@@ -93,6 +94,7 @@ class ServicesPortalControllerTest extends ApiTestBase {
   private Candidate candidate;
   private Counterparty counterparty;
   private TermsInfo termsInfo;
+  private TermsInfo opcDpaTermsInfo;
 
   @BeforeEach
   void setUp() {
@@ -106,12 +108,16 @@ class ServicesPortalControllerTest extends ApiTestBase {
     termsInfo = new TermsInfo(TERMS_ID, "/terms/ReferenceServiceTermsV1.html",
         TermsType.REFERENCE_SERVICE_TERMS, null);
     termsInfo.setContent("<p>Terms</p>");
+    opcDpaTermsInfo = new TermsInfo(OPC_DPA_TERMS_ID, "/terms/OpcDataProcessingAgreement-20250831.html",
+        TermsType.OPC_STANDARD_DATA_PROCESSING_AGREEMENT, null);
+    opcDpaTermsInfo.setContent("<p>OPC DPA</p>");
 
     given(authService.getLoggedInCandidateId()).willReturn(CANDIDATE_ID);
     given(candidateService.getLoggedInCandidate()).willReturn(Optional.of(candidate));
     given(candidateServiceRegistry.forProviderAndServiceCode(PROVIDER, SERVICE_CODE))
         .willReturn(candidateAssistanceService);
     given(candidateAssistanceService.agreementTermsType()).willReturn(Optional.empty());
+    given(candidateAssistanceService.opcDpaAcceptedTermsInfoId()).willReturn(Optional.empty());
   }
 
   @Test
@@ -246,6 +252,71 @@ class ServicesPortalControllerTest extends ApiTestBase {
   }
 
   @Test
+  @DisplayName("get OPC DPA terms returns no content when service has no OPC DPA configured")
+  void getOpcDpaTermsReturnsNoContentWhenNoOpcDpaConfigured() throws Exception {
+    given(candidateAssistanceService.opcDpaAcceptedTermsInfoId()).willReturn(Optional.empty());
+
+    mockMvc.perform(get(BASE_PATH + "/" + PROVIDER + "/" + SERVICE_CODE + "/agreement/opc-dpa/terms")
+            .header("Authorization", "Bearer jwt-token"))
+        .andExpect(status().isNoContent());
+  }
+
+  @Test
+  @DisplayName("get OPC DPA terms returns configured terms")
+  void getOpcDpaTermsReturnsConfiguredTerms() throws Exception {
+    given(candidateAssistanceService.opcDpaAcceptedTermsInfoId()).willReturn(Optional.of(OPC_DPA_TERMS_ID));
+    given(termsInfoService.get(OPC_DPA_TERMS_ID)).willReturn(opcDpaTermsInfo);
+
+    mockMvc.perform(get(BASE_PATH + "/" + PROVIDER + "/" + SERVICE_CODE + "/agreement/opc-dpa/terms")
+            .header("Authorization", "Bearer jwt-token"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.id", is(OPC_DPA_TERMS_ID)))
+        .andExpect(jsonPath("$.content", is("<p>OPC DPA</p>")));
+  }
+
+  @Test
+  @DisplayName("needs OPC DPA acceptance returns false when no OPC DPA configured")
+  void needsOpcDpaReturnsFalseWhenNotConfigured() throws Exception {
+    given(candidateAssistanceService.opcDpaAcceptedTermsInfoId()).willReturn(Optional.empty());
+
+    mockMvc.perform(get(BASE_PATH + "/" + PROVIDER + "/" + SERVICE_CODE + "/agreement/opc-dpa/needs-acceptance")
+            .header("Authorization", "Bearer jwt-token"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$", is(false)));
+  }
+
+  @Test
+  @DisplayName("needs OPC DPA acceptance delegates to agreement service when configured")
+  void needsOpcDpaDelegatesToAgreementServiceWhenConfigured() throws Exception {
+    given(candidateAssistanceService.opcDpaAcceptedTermsInfoId()).willReturn(Optional.of(OPC_DPA_TERMS_ID));
+    given(counterpartyService.findOrCreateByTypeAndServiceProvider(
+        CounterpartyType.SERVICE_PROVIDER, ServiceProvider.LINKEDIN)).willReturn(counterparty);
+    given(agreementService.needsAcceptance(candidate, counterparty,
+        TermsType.OPC_STANDARD_DATA_PROCESSING_AGREEMENT)).willReturn(true);
+
+    mockMvc.perform(get(BASE_PATH + "/" + PROVIDER + "/" + SERVICE_CODE + "/agreement/opc-dpa/needs-acceptance")
+            .header("Authorization", "Bearer jwt-token"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$", is(true)));
+  }
+
+  @Test
+  @DisplayName("accept OPC DPA records agreement for configured terms")
+  void acceptOpcDpaRecordsAgreementForConfiguredTerms() throws Exception {
+    given(candidateAssistanceService.opcDpaAcceptedTermsInfoId()).willReturn(Optional.of(OPC_DPA_TERMS_ID));
+    given(counterpartyService.findOrCreateByTypeAndServiceProvider(
+        CounterpartyType.SERVICE_PROVIDER, ServiceProvider.LINKEDIN)).willReturn(counterparty);
+
+    mockMvc.perform(post(BASE_PATH + "/" + PROVIDER + "/" + SERVICE_CODE + "/agreement/opc-dpa/accept")
+            .with(csrf())
+            .header("Authorization", "Bearer jwt-token")
+            .contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk());
+
+    verify(agreementService).recordAgreement(candidate, counterparty, OPC_DPA_TERMS_ID);
+  }
+
+  @Test
   @DisplayName("get agreement terms returns current terms when configured")
   void getAgreementTermsReturnsCurrentTermsWhenConfigured() throws Exception {
     given(candidateAssistanceService.agreementTermsType())
@@ -323,6 +394,30 @@ class ServicesPortalControllerTest extends ApiTestBase {
         .andExpect(status().isBadRequest())
         .andExpect(jsonPath("$.code", is("agreement_required")));
 
+    verify(candidateAssistanceService, never()).assignToCandidate(anyLong(), ArgumentMatchers.any());
+  }
+
+  @Test
+  @DisplayName("assign endpoint fails when OPC DPA acknowledgment is required before provider terms")
+  void assignFailsWhenOpcDpaAcknowledgmentIsRequired() throws Exception {
+    given(eligibilityPolicyRegistry.isEligible(ServiceProvider.LINKEDIN, CANDIDATE_ID))
+        .willReturn(true);
+    given(candidateAssistanceService.opcDpaAcceptedTermsInfoId()).willReturn(Optional.of(OPC_DPA_TERMS_ID));
+    given(candidateAssistanceService.agreementTermsType())
+        .willReturn(Optional.of(TermsType.REFERENCE_SERVICE_TERMS));
+    given(counterpartyService.findOrCreateByTypeAndServiceProvider(
+        CounterpartyType.SERVICE_PROVIDER, ServiceProvider.LINKEDIN)).willReturn(counterparty);
+    given(agreementService.needsAcceptance(candidate, counterparty,
+        TermsType.OPC_STANDARD_DATA_PROCESSING_AGREEMENT)).willReturn(true);
+
+    mockMvc.perform(post(BASE_PATH + "/" + PROVIDER + "/" + SERVICE_CODE + "/assign")
+            .with(csrf())
+            .header("Authorization", "Bearer jwt-token")
+            .contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isBadRequest())
+        .andExpect(jsonPath("$.code", is("opc_dpa_acknowledgment_required")));
+
+    verify(agreementService, never()).needsAcceptance(candidate, counterparty, TermsType.REFERENCE_SERVICE_TERMS);
     verify(candidateAssistanceService, never()).assignToCandidate(anyLong(), ArgumentMatchers.any());
   }
 

@@ -99,6 +99,7 @@ public class ServicesPortalController {
           "Candidate is not eligible for this service.");
     }
 
+    enforceOpcDpaAcknowledgmentIfRequired(service, providerEnum);
     enforceAgreementAcceptanceIfRequired(service, providerEnum);
 
     var assignment = service.assignToCandidate(candidateId, userService.getSystemAdminUser());
@@ -143,6 +144,43 @@ public class ServicesPortalController {
     agreementService.recordAgreement(candidate, counterparty, currentTerms.getId());
   }
 
+  @GetMapping("/{provider}/{serviceCode}/agreement/opc-dpa/terms")
+  public ResponseEntity<ServiceProviderTermsDto> getOpcDpaTerms(@PathVariable String provider,
+      @PathVariable String serviceCode) {
+    CandidateAssistanceService service = serviceFor(provider, serviceCode);
+    Optional<String> termsInfoId = service.opcDpaAcceptedTermsInfoId();
+    if (termsInfoId.isEmpty()) {
+      return ResponseEntity.noContent().build();
+    }
+
+    TermsInfo termsInfo = termsInfoService.get(termsInfoId.get());
+    return ResponseEntity.ok(new ServiceProviderTermsDto(termsInfo.getId(), termsInfo.getContent()));
+  }
+
+  @GetMapping("/{provider}/{serviceCode}/agreement/opc-dpa/needs-acceptance")
+  public boolean opcDpaNeedsAcceptance(@PathVariable String provider, @PathVariable String serviceCode) {
+    CandidateAssistanceService service = serviceFor(provider, serviceCode);
+    if (service.opcDpaAcceptedTermsInfoId().isEmpty()) {
+      return false;
+    }
+
+    Counterparty counterparty = getServiceProviderCounterparty(providerFor(provider, serviceCode));
+    Candidate candidate = candidateFromSession();
+    return agreementService.needsAcceptance(candidate, counterparty,
+        TermsType.OPC_STANDARD_DATA_PROCESSING_AGREEMENT);
+  }
+
+  @PostMapping("/{provider}/{serviceCode}/agreement/opc-dpa/accept")
+  public void acceptOpcDpa(@PathVariable String provider, @PathVariable String serviceCode) {
+    CandidateAssistanceService service = serviceFor(provider, serviceCode);
+    String termsInfoId = service.opcDpaAcceptedTermsInfoId().orElseThrow(() ->
+        new InvalidRequestException("No OPC DPA acceptance is configured for this service."));
+
+    Counterparty counterparty = getServiceProviderCounterparty(providerFor(provider, serviceCode));
+    Candidate candidate = candidateFromSession();
+    agreementService.recordAgreement(candidate, counterparty, termsInfoId);
+  }
+
   @PutMapping("/{provider}/{serviceCode}/resources/status")
   public void updateResourceStatus(@PathVariable String provider,
       @PathVariable String serviceCode,
@@ -173,6 +211,19 @@ public class ServicesPortalController {
       if (agreementService.needsAcceptance(candidate, counterparty, termsType)) {
         throw new ServiceException("agreement_required",
             "Candidate must accept service provider terms before assignment.");
+      }
+    });
+  }
+
+  private void enforceOpcDpaAcknowledgmentIfRequired(CandidateAssistanceService service,
+      ServiceProvider providerEnum) {
+    service.opcDpaAcceptedTermsInfoId().ifPresent(termsInfoId -> {
+      Counterparty counterparty = getServiceProviderCounterparty(providerEnum);
+      Candidate candidate = candidateFromSession();
+      if (agreementService.needsAcceptance(candidate, counterparty,
+          TermsType.OPC_STANDARD_DATA_PROCESSING_AGREEMENT)) {
+        throw new ServiceException("opc_dpa_acknowledgment_required",
+            "Candidate must acknowledge the OPC Data Processing Agreement before assignment.");
       }
     });
   }
