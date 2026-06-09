@@ -32,6 +32,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.OffsetDateTime;
 import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -54,7 +55,16 @@ import org.tctalent.server.casi.domain.model.ServiceCode;
 import org.tctalent.server.casi.domain.model.ServiceProvider;
 import org.tctalent.server.casi.domain.model.ServiceResource;
 import org.tctalent.server.exception.NoSuchObjectException;
+import org.tctalent.server.model.db.Candidate;
+import org.tctalent.server.model.db.Counterparty;
+import org.tctalent.server.model.db.CounterpartyType;
+import org.tctalent.server.model.db.TermsInfo;
+import org.tctalent.server.model.db.TermsType;
 import org.tctalent.server.security.AuthService;
+import org.tctalent.server.service.db.AgreementService;
+import org.tctalent.server.service.db.CandidateService;
+import org.tctalent.server.service.db.CounterpartyService;
+import org.tctalent.server.service.db.TermsInfoService;
 import org.tctalent.server.service.db.UserService;
 
 @WebMvcTest(ServicesPortalController.class)
@@ -66,22 +76,42 @@ class ServicesPortalControllerTest extends ApiTestBase {
   private static final String SERVICE_CODE = "PREMIUM_MEMBERSHIP";
   private static final Long CANDIDATE_ID = 123L;
   private static final String RESOURCE_CODE = "CODE-123";
+  private static final String TERMS_ID = "ReferenceServiceTermsV1";
 
   @MockBean private AuthService authService;
   @MockBean private UserService userService;
   @MockBean private CandidateServiceRegistry candidateServiceRegistry;
   @MockBean private EligibilityPolicyRegistry eligibilityPolicyRegistry;
   @MockBean private CandidateAssistanceService candidateAssistanceService;
+  @MockBean private AgreementService agreementService;
+  @MockBean private CounterpartyService counterpartyService;
+  @MockBean private CandidateService candidateService;
+  @MockBean private TermsInfoService termsInfoService;
 
   @Autowired private MockMvc mockMvc;
   @Autowired private ObjectMapper objectMapper;
+  private Candidate candidate;
+  private Counterparty counterparty;
+  private TermsInfo termsInfo;
 
   @BeforeEach
   void setUp() {
     configureAuthentication();
+    candidate = new Candidate();
+    candidate.setId(CANDIDATE_ID);
+    counterparty = new Counterparty();
+    counterparty.setId(99L);
+    counterparty.setType(CounterpartyType.SERVICE_PROVIDER);
+    counterparty.setServiceProvider(ServiceProvider.LINKEDIN);
+    termsInfo = new TermsInfo(TERMS_ID, "/terms/ReferenceServiceTermsV1.html",
+        TermsType.REFERENCE_SERVICE_TERMS, null);
+    termsInfo.setContent("<p>Terms</p>");
+
     given(authService.getLoggedInCandidateId()).willReturn(CANDIDATE_ID);
+    given(candidateService.getLoggedInCandidate()).willReturn(Optional.of(candidate));
     given(candidateServiceRegistry.forProviderAndServiceCode(PROVIDER, SERVICE_CODE))
         .willReturn(candidateAssistanceService);
+    given(candidateAssistanceService.agreementTermsType()).willReturn(Optional.empty());
   }
 
   @Test
@@ -201,6 +231,140 @@ class ServicesPortalControllerTest extends ApiTestBase {
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.id", is(44)))
         .andExpect(jsonPath("$.candidateId", is(CANDIDATE_ID.intValue())));
+
+    verify(candidateAssistanceService).assignToCandidate(CANDIDATE_ID, user);
+  }
+
+  @Test
+  @DisplayName("get agreement terms returns no content when service has no terms")
+  void getAgreementTermsReturnsNoContentWhenNoTerms() throws Exception {
+    given(candidateAssistanceService.agreementTermsType()).willReturn(Optional.empty());
+
+    mockMvc.perform(get(BASE_PATH + "/" + PROVIDER + "/" + SERVICE_CODE + "/agreement/terms")
+            .header("Authorization", "Bearer jwt-token"))
+        .andExpect(status().isNoContent());
+  }
+
+  @Test
+  @DisplayName("get agreement terms returns current terms when configured")
+  void getAgreementTermsReturnsCurrentTermsWhenConfigured() throws Exception {
+    given(candidateAssistanceService.agreementTermsType())
+        .willReturn(Optional.of(TermsType.REFERENCE_SERVICE_TERMS));
+    given(termsInfoService.getCurrentByType(TermsType.REFERENCE_SERVICE_TERMS)).willReturn(termsInfo);
+
+    mockMvc.perform(get(BASE_PATH + "/" + PROVIDER + "/" + SERVICE_CODE + "/agreement/terms")
+            .header("Authorization", "Bearer jwt-token"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.id", is(TERMS_ID)))
+        .andExpect(jsonPath("$.content", is("<p>Terms</p>")));
+  }
+
+  @Test
+  @DisplayName("needs acceptance returns false when service has no terms")
+  void needsAcceptanceReturnsFalseWhenNoTerms() throws Exception {
+    given(candidateAssistanceService.agreementTermsType()).willReturn(Optional.empty());
+
+    mockMvc.perform(get(BASE_PATH + "/" + PROVIDER + "/" + SERVICE_CODE + "/agreement/needs-acceptance")
+            .header("Authorization", "Bearer jwt-token"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$", is(false)));
+  }
+
+  @Test
+  @DisplayName("needs acceptance delegates to agreement service when service has terms")
+  void needsAcceptanceDelegatesToAgreementServiceWhenServiceHasTerms() throws Exception {
+    given(candidateAssistanceService.agreementTermsType())
+        .willReturn(Optional.of(TermsType.REFERENCE_SERVICE_TERMS));
+    given(counterpartyService.findOrCreateByTypeAndServiceProvider(
+        CounterpartyType.SERVICE_PROVIDER, ServiceProvider.LINKEDIN)).willReturn(counterparty);
+    given(agreementService.needsAcceptance(candidate, counterparty, TermsType.REFERENCE_SERVICE_TERMS))
+        .willReturn(true);
+
+    mockMvc.perform(get(BASE_PATH + "/" + PROVIDER + "/" + SERVICE_CODE + "/agreement/needs-acceptance")
+            .header("Authorization", "Bearer jwt-token"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$", is(true)));
+  }
+
+  @Test
+  @DisplayName("accept agreement records agreement for current terms")
+  void acceptAgreementRecordsAgreementForCurrentTerms() throws Exception {
+    given(candidateAssistanceService.agreementTermsType())
+        .willReturn(Optional.of(TermsType.REFERENCE_SERVICE_TERMS));
+    given(termsInfoService.getCurrentByType(TermsType.REFERENCE_SERVICE_TERMS)).willReturn(termsInfo);
+    given(counterpartyService.findOrCreateByTypeAndServiceProvider(
+        CounterpartyType.SERVICE_PROVIDER, ServiceProvider.LINKEDIN)).willReturn(counterparty);
+
+    mockMvc.perform(post(BASE_PATH + "/" + PROVIDER + "/" + SERVICE_CODE + "/agreement/accept")
+            .with(csrf())
+            .header("Authorization", "Bearer jwt-token")
+            .contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk());
+
+    verify(agreementService).recordAgreement(candidate, counterparty, TERMS_ID);
+  }
+
+  @Test
+  @DisplayName("assign endpoint fails when agreement acceptance is required")
+  void assignFailsWhenAgreementAcceptanceIsRequired() throws Exception {
+    given(eligibilityPolicyRegistry.isEligible(ServiceProvider.LINKEDIN, CANDIDATE_ID))
+        .willReturn(true);
+    given(candidateAssistanceService.agreementTermsType())
+        .willReturn(Optional.of(TermsType.REFERENCE_SERVICE_TERMS));
+    given(counterpartyService.findOrCreateByTypeAndServiceProvider(
+        CounterpartyType.SERVICE_PROVIDER, ServiceProvider.LINKEDIN)).willReturn(counterparty);
+    given(agreementService.needsAcceptance(candidate, counterparty, TermsType.REFERENCE_SERVICE_TERMS))
+        .willReturn(true);
+
+    mockMvc.perform(post(BASE_PATH + "/" + PROVIDER + "/" + SERVICE_CODE + "/assign")
+            .with(csrf())
+            .header("Authorization", "Bearer jwt-token")
+            .contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isBadRequest())
+        .andExpect(jsonPath("$.code", is("agreement_required")));
+
+    verify(candidateAssistanceService, never()).assignToCandidate(anyLong(), ArgumentMatchers.any());
+  }
+
+  @Test
+  @DisplayName("assign endpoint succeeds when agreement is already accepted")
+  void assignSucceedsWhenAgreementAlreadyAccepted() throws Exception {
+    given(eligibilityPolicyRegistry.isEligible(ServiceProvider.LINKEDIN, CANDIDATE_ID))
+        .willReturn(true);
+    given(userService.getSystemAdminUser()).willReturn(user);
+    given(candidateAssistanceService.agreementTermsType())
+        .willReturn(Optional.of(TermsType.REFERENCE_SERVICE_TERMS));
+    given(counterpartyService.findOrCreateByTypeAndServiceProvider(
+        CounterpartyType.SERVICE_PROVIDER, ServiceProvider.LINKEDIN)).willReturn(counterparty);
+    given(agreementService.needsAcceptance(candidate, counterparty, TermsType.REFERENCE_SERVICE_TERMS))
+        .willReturn(false);
+
+    ServiceResource resource = ServiceResource.builder()
+        .id(2L)
+        .provider(ServiceProvider.LINKEDIN)
+        .serviceCode(ServiceCode.PREMIUM_MEMBERSHIP)
+        .resourceCode(RESOURCE_CODE)
+        .status(ResourceStatus.RESERVED)
+        .expiresAt(OffsetDateTime.now().plusDays(30))
+        .build();
+
+    ServiceAssignment assignment = ServiceAssignment.builder()
+        .id(45L)
+        .provider(ServiceProvider.LINKEDIN)
+        .serviceCode(ServiceCode.PREMIUM_MEMBERSHIP)
+        .resource(resource)
+        .candidateId(CANDIDATE_ID)
+        .status(AssignmentStatus.ASSIGNED)
+        .assignedAt(OffsetDateTime.now())
+        .build();
+    given(candidateAssistanceService.assignToCandidate(CANDIDATE_ID, user)).willReturn(assignment);
+
+    mockMvc.perform(post(BASE_PATH + "/" + PROVIDER + "/" + SERVICE_CODE + "/assign")
+            .with(csrf())
+            .header("Authorization", "Bearer jwt-token")
+            .contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.id", is(45)));
 
     verify(candidateAssistanceService).assignToCandidate(CANDIDATE_ID, user);
   }
