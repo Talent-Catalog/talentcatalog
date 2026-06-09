@@ -59,6 +59,7 @@ import org.tctalent.server.request.candidate.CandidateIntakeAuditRequest;
 import org.tctalent.server.request.candidate.CandidateIntakeDataUpdate;
 import org.tctalent.server.request.candidate.CandidateNumberOrNameSearchRequest;
 import org.tctalent.server.request.candidate.CandidatePublicIdSearchRequest;
+import org.tctalent.server.request.candidate.OauthRegistrationRequest;
 import org.tctalent.server.request.candidate.ResolveTaskAssignmentsRequest;
 import org.tctalent.server.request.candidate.SavedListGetRequest;
 import org.tctalent.server.request.candidate.SelfRegistrationRequest;
@@ -139,6 +140,14 @@ public interface CandidateService {
     Candidate updateCandidate(long id, UpdateCandidateRequest request);
 
     boolean deleteCandidate(long id);
+
+    /**
+     * Register a candidate based on the given OAuth registration request.
+     * @param request Data for the registration, including the profile data managed by the IDP.
+     * @param httpRequest HTTP request for registration
+     * @return Candidate registered.
+     */
+    Candidate register(OauthRegistrationRequest request, @NonNull HttpServletRequest httpRequest);
 
     /**
      * Registers a new candidate by creating a new candidate and user.
@@ -584,43 +593,44 @@ public interface CandidateService {
     Candidate getTestCandidate();
 
     /**
-     * Returns the candidate with the given id, preloading the candidate's saved-list memberships.
-     * <p/>
-     * This is a convenience wrapper around a repository query that join-fetches the saved-list
-     * association so callers can read saved-list data without triggering additional lazy loads.
-     *
-     * @param candidateId candidate id
-     * @return candidate with saved-list associations loaded, or null if not found
+     * Retrieve a candidate by ID, loading saved lists.
+     * @param candidateId ID of the candidate to retrieve
+     * @return Candidate with saved lists loaded
      */
     Candidate findByIdLoadSavedLists(long candidateId);
 
     /**
-     * Returns the candidate with the given id and preloaded user association, applying source-country
-     * access restrictions for the current operation.
-     *
-     * @param id candidate id
-     * @param sourceCountries source-country restrictions to apply when resolving candidate visibility
-     * @return candidate with user association loaded, or null if not found or not visible for the
-     *         provided source-country restrictions
+     * Retrieve a candidate by ID, loading user details as long as candidate is resident in one of
+     * the given countries.
+     * @param id ID of the candidate to retrieve
+     * @param sourceCountries Countries that candidate is resident in
+     * @return Candidate with user details loaded or null if candidate is not resident in any of the
+     * given countries.
      */
     Candidate findByIdLoadUser(long id, Set<Country> sourceCountries);
 
     /**
-     * Builds one CSV export row for the given candidate, with values already formatted for output.
-     * <p/>
-     * Visibility and redaction rules are applied based on the logged-in user's role/permissions.
-     *
-     * @param candidate candidate to convert
-     * @return ordered column values for one exported CSV row
+     * Returns standard data of the given candidate expressed as an array of strings.
+     * <p>
+     * This is used to populate an exported CSV file.
+     * @param candidate Candidate whose data is being fetched.
+     * @return Candidate data as an array of strings
      */
     String[] getExportCandidateStrings(Candidate candidate);
 
     /**
-     * Returns the CSV export header row for candidate exports.
-     *
-     * @return ordered column titles matching {@link #getExportCandidateStrings(Candidate)}
+     * Returns standard data names of the given candidate expressed as an array of strings.
+     * This forms the header row of the exported CSV file.
+     * @see #getExportCandidateStrings(Candidate)
+     * @return Candidate data names as an array of strings
      */
     String[] getExportTitles();
+
+    /**
+     * Update audit fields and use repository to save the Candidate
+     * @param candidate Entity to save
+     */
+    void saveIt(Candidate candidate);
 
     /**
      * Stores the given answer supplied for the given question task assignment.

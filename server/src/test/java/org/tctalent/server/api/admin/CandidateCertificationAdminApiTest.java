@@ -5,12 +5,12 @@
  * the terms of the GNU General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or any later version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
  * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
  * for more details.
  *
- * You should have received a copy of the GNU General Public License 
+ * You should have received a copy of the GNU General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
@@ -44,8 +44,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.tctalent.server.model.db.CandidateCertification;
 import org.tctalent.server.request.candidate.certification.CreateCandidateCertificationRequest;
@@ -58,7 +58,7 @@ import org.tctalent.server.service.db.CandidateCertificationService;
  * @author sadatmalik
  */
 @WebMvcTest(CandidateCertificationAdminApi.class)
-@AutoConfigureMockMvc
+@AutoConfigureMockMvc(addFilters = false)
 class CandidateCertificationAdminApiTest extends ApiTestBase {
     private static final String BASE_PATH = "/api/admin/candidate-certification";
     private static final String GET_CERTIFICATION_LIST_BY_ID_PATH = "/{id}/list";
@@ -68,7 +68,8 @@ class CandidateCertificationAdminApiTest extends ApiTestBase {
     private final List<CandidateCertification> candidateCertificationList =
         getListOfCandidateCertifications();
 
-    @MockBean CandidateCertificationService candidateCertificationService;
+    @MockitoBean
+    CandidateCertificationService candidateCertificationService;
 
     @Autowired MockMvc mockMvc;
     @Autowired ObjectMapper objectMapper;

@@ -33,27 +33,38 @@ public class AuthService {
     private final Set<Role> adminRoles = new HashSet<>(Arrays.asList(
         Role.partneradmin, Role.admin, Role.systemadmin));
 
-    /**
-     * Return logged in user in form of their TcUserDetails object (ie their security principal.
-     * This has the user's role and authorities.
-     *
-     * @return Logged in user details or empty if not logged in.
-     */
-    public Optional<TcUserDetails> getLoggedInUserDetails() {
+    @Nullable
+    private CurrentUserInfo getNullableCurrentUserInfo() {
         Authentication authentication =
             SecurityContextHolder.getContext().getAuthentication();
 
         if (authentication == null ||
             !authentication.isAuthenticated() ||
-            !(authentication.getPrincipal() instanceof TcUserDetails userDetails)) {
+            authentication.getPrincipal() instanceof String) {
 
-            return Optional.empty();
+            return null;
         }
 
-        return Optional.of(userDetails);
+        return (CurrentUserInfo) authentication.getPrincipal();
     }
 
     /**
+     * //TODO JC This can be renamed to getCurrentUserinfo
+     * Return logged in user in form of their TcUserDetails object (ie their security principal.
+     * This has the user's role and authorities.
+     *
+     * @return Logged in user details or empty if not logged in.
+     */
+    public Optional<CurrentUserInfo> getLoggedInUserDetails() {
+        return Optional.ofNullable(getNullableCurrentUserInfo());
+    }
+
+    public Optional<QueryAuthorities> queryLoggedInUserAuthorities() {
+        return Optional.ofNullable(getNullableCurrentUserInfo());
+    }
+
+    /**
+     * todo This needs to be phased out in favour of getLoggedInUserDetails()
      * Return logged in user. Optional empty if not logged in.
      * <p/>
      * Note that this User object is not fetched from the database - so if you need a live
@@ -63,8 +74,8 @@ public class AuthService {
      * @return Logged in user or empty if not logged in.
      */
     public Optional<User> getLoggedInUser() {
-        Optional<TcUserDetails> userDetails = getLoggedInUserDetails();
-        return userDetails.map(TcUserDetails::getUser);
+        Optional<CurrentUserInfo> userDetails = getLoggedInUserDetails();
+        return userDetails.map(CurrentUserInfo::getUser);
     }
 
     /**
@@ -100,8 +111,8 @@ public class AuthService {
     }
 
     public @Nullable String getUserLanguage() {
-        User user = getLoggedInUser().orElse(null);
-        return user == null ? null : user.getSelectedLanguage();
+        CurrentUserInfo authUser = getLoggedInUserDetails().orElse(null);
+        return authUser == null ? null : authUser.getSelectedLanguage();
     }
 
     /**

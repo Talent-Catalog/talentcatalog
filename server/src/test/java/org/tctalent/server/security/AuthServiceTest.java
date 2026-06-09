@@ -53,10 +53,10 @@ class AuthServiceTest {
   private Authentication authentication;
 
   @Mock
-  private TcUserDetails tcUserDetails;
+  private User user;
 
   @Mock
-  private User user;
+  private CurrentUserInfo currentUserInfo;
 
   @Mock
   private Candidate candidate;
@@ -73,9 +73,9 @@ class AuthServiceTest {
 
   @Test
   void getLoggedInUser_returnsUser_whenAuthenticated() {
-    when(authentication.getPrincipal()).thenReturn(tcUserDetails);
+    when(authentication.getPrincipal()).thenReturn(currentUserInfo);
     when(authentication.isAuthenticated()).thenReturn(true);
-    when(tcUserDetails.getUser()).thenReturn(user);
+    when(currentUserInfo.getUser()).thenReturn(user);
 
     Optional<User> result = authService.getLoggedInUser();
 
@@ -104,9 +104,9 @@ class AuthServiceTest {
   @Test
   void getLoggedInCandidateId_returnsId_whenUserHasCandidate() {
     Long candidateId = 123L;
-    when(authentication.getPrincipal()).thenReturn(tcUserDetails);
+    when(authentication.getPrincipal()).thenReturn(currentUserInfo);
     when(authentication.isAuthenticated()).thenReturn(true);
-    when(tcUserDetails.getUser()).thenReturn(user);
+    when(currentUserInfo.getUser()).thenReturn(user);
     when(user.getCandidate()).thenReturn(candidate);
     when(candidate.getId()).thenReturn(candidateId);
 
@@ -126,8 +126,8 @@ class AuthServiceTest {
 
   @Test
   void getLoggedInCandidateId_returnsNull_whenUserHasNoCandidate() {
-    when(authentication.getPrincipal()).thenReturn(tcUserDetails);
-    when(tcUserDetails.getUser()).thenReturn(user);
+    when(authentication.getPrincipal()).thenReturn(currentUserInfo);
+    when(currentUserInfo.getUser()).thenReturn(user);
     when(user.getCandidate()).thenReturn(null);
 
     Long result = authService.getLoggedInCandidateId();
@@ -137,9 +137,9 @@ class AuthServiceTest {
 
   @Test
   void getLoggedInCandidate_returnsCandidate_whenUserHasCandidate() {
-    when(authentication.getPrincipal()).thenReturn(tcUserDetails);
+    when(authentication.getPrincipal()).thenReturn(currentUserInfo);
     when(authentication.isAuthenticated()).thenReturn(true);
-    when(tcUserDetails.getUser()).thenReturn(user);
+    when(currentUserInfo.getUser()).thenReturn(user);
     when(user.getCandidate()).thenReturn(candidate);
 
     Candidate result = authService.getLoggedInCandidate();
@@ -158,8 +158,8 @@ class AuthServiceTest {
 
   @Test
   void getLoggedInCandidate_returnsNull_whenUserHasNoCandidate() {
-    when(authentication.getPrincipal()).thenReturn(tcUserDetails);
-    when(tcUserDetails.getUser()).thenReturn(user);
+    when(authentication.getPrincipal()).thenReturn(currentUserInfo);
+    when(currentUserInfo.getUser()).thenReturn(user);
     when(user.getCandidate()).thenReturn(null);
 
     Candidate result = authService.getLoggedInCandidate();
@@ -170,10 +170,10 @@ class AuthServiceTest {
   @Test
   void getUserLanguage_returnsLanguage_whenUserLoggedIn() {
     String language = "en";
-    when(authentication.getPrincipal()).thenReturn(tcUserDetails);
+    when(authentication.getPrincipal()).thenReturn(currentUserInfo);
     when(authentication.isAuthenticated()).thenReturn(true);
-    when(tcUserDetails.getUser()).thenReturn(user);
-    when(user.getSelectedLanguage()).thenReturn(language);
+    when(currentUserInfo.getUser()).thenReturn(user);
+    when(currentUserInfo.getSelectedLanguage()).thenReturn(language);
 
     String result = authService.getUserLanguage();
 
@@ -200,8 +200,8 @@ class AuthServiceTest {
 
   @Test
   void authoriseLoggedInUser_returnsFalse_whenUserIsReadOnly() {
-    when(authentication.getPrincipal()).thenReturn(tcUserDetails);
-    when(tcUserDetails.getUser()).thenReturn(user);
+    when(authentication.getPrincipal()).thenReturn(currentUserInfo);
+    when(currentUserInfo.getUser()).thenReturn(user);
     when(user.getReadOnly()).thenReturn(true);
 
     boolean result = authService.authoriseLoggedInUser(candidate);
@@ -212,9 +212,9 @@ class AuthServiceTest {
   @ParameterizedTest
   @EnumSource(value = Role.class, names = {"admin", "systemadmin"})
   void authoriseLoggedInUser_returnsTrue_forAdminRoles(Role role) {
-    when(authentication.getPrincipal()).thenReturn(tcUserDetails);
+    when(authentication.getPrincipal()).thenReturn(currentUserInfo);
     when(authentication.isAuthenticated()).thenReturn(true);
-    when(tcUserDetails.getUser()).thenReturn(user);
+    when(currentUserInfo.getUser()).thenReturn(user);
     when(user.getReadOnly()).thenReturn(false);
     when(user.getRole()).thenReturn(role);
 
@@ -225,9 +225,9 @@ class AuthServiceTest {
 
   @Test
   void authoriseLoggedInUser_returnsTrue_forPartnerAdminNoCountryRestrictions() {
-    when(authentication.getPrincipal()).thenReturn(tcUserDetails);
+    when(authentication.getPrincipal()).thenReturn(currentUserInfo);
     when(authentication.isAuthenticated()).thenReturn(true);
-    when(tcUserDetails.getUser()).thenReturn(user);
+    when(currentUserInfo.getUser()).thenReturn(user);
     when(user.getReadOnly()).thenReturn(false);
     when(user.getRole()).thenReturn(Role.partneradmin);
     when(user.getSourceCountries()).thenReturn(Collections.emptySet());
@@ -239,9 +239,9 @@ class AuthServiceTest {
 
   @Test
   void authoriseLoggedInUser_returnsTrue_forPartnerAdminWithMatchingCountry() {
-    when(authentication.getPrincipal()).thenReturn(tcUserDetails);
+    when(authentication.getPrincipal()).thenReturn(currentUserInfo);
     when(authentication.isAuthenticated()).thenReturn(true);
-    when(tcUserDetails.getUser()).thenReturn(user);
+    when(currentUserInfo.getUser()).thenReturn(user);
     when(user.getReadOnly()).thenReturn(false);
     when(user.getRole()).thenReturn(Role.partneradmin);
     when(user.getSourceCountries()).thenReturn(Set.of(country));
@@ -255,8 +255,8 @@ class AuthServiceTest {
   @Test
   void authoriseLoggedInUser_returnsFalse_forPartnerAdminWithNonMatchingCountry() {
     Country otherCountry = mock(Country.class);
-    when(authentication.getPrincipal()).thenReturn(tcUserDetails);
-    when(tcUserDetails.getUser()).thenReturn(user);
+    when(authentication.getPrincipal()).thenReturn(currentUserInfo);
+    when(currentUserInfo.getUser()).thenReturn(user);
     when(user.getReadOnly()).thenReturn(false);
     when(user.getRole()).thenReturn(Role.partneradmin);
     when(user.getSourceCountries()).thenReturn(Set.of(country));
@@ -270,9 +270,9 @@ class AuthServiceTest {
   @Test
   void authoriseLoggedInUser_returnsTrue_forUserOwningCandidate() {
     Long candidateId = 123L;
-    when(authentication.getPrincipal()).thenReturn(tcUserDetails);
+    when(authentication.getPrincipal()).thenReturn(currentUserInfo);
     when(authentication.isAuthenticated()).thenReturn(true);
-    when(tcUserDetails.getUser()).thenReturn(user);
+    when(currentUserInfo.getUser()).thenReturn(user);
     when(user.getReadOnly()).thenReturn(false);
     when(user.getRole()).thenReturn(Role.user);
     when(user.getCandidate()).thenReturn(candidate);
@@ -287,8 +287,8 @@ class AuthServiceTest {
   @Test
   void authoriseLoggedInUser_returnsFalse_forUserNotOwningCandidate() {
     Candidate otherCandidate = mock(Candidate.class);
-    when(authentication.getPrincipal()).thenReturn(tcUserDetails);
-    when(tcUserDetails.getUser()).thenReturn(user);
+    when(authentication.getPrincipal()).thenReturn(currentUserInfo);
+    when(currentUserInfo.getUser()).thenReturn(user);
     when(user.getReadOnly()).thenReturn(false);
     when(user.getRole()).thenReturn(Role.user);
     when(user.getCandidate()).thenReturn(otherCandidate);
