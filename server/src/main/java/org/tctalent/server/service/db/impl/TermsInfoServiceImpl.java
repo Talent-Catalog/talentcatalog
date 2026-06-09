@@ -84,6 +84,12 @@ public class TermsInfoServiceImpl implements TermsInfoService {
             TermsType.OPC_STANDARD_DATA_PROCESSING_AGREEMENT,
             LocalDate.of(2025, Month.AUGUST, 31)
         ),
+            new TermsInfo(
+                "ReferenceServiceTermsV1",
+                "/terms/ReferenceServiceTermsV1.html",
+                TermsType.REFERENCE_SERVICE_TERMS,
+                LocalDate.of(2026, Month.JUNE, 9)
+            ),
         };
     }
 
