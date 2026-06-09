@@ -12,9 +12,13 @@ describe('ReferenceComponent', () => {
 
   beforeEach(async () => {
     mockPortalService = jasmine.createSpyObj('CasiPortalService',
-      ['checkEligibility', 'getAssignment', 'assign', 'updateResourceStatus']);
+      ['checkEligibility', 'getAssignment', 'assign', 'updateResourceStatus',
+        'checkNeedsAgreement', 'getProviderTerms', 'acceptProviderTerms']);
     mockPortalService.checkEligibility.and.returnValue(of(true));
     mockPortalService.getAssignment.and.returnValue(of(null as any));
+    mockPortalService.checkNeedsAgreement.and.returnValue(of(false));
+    mockPortalService.getProviderTerms.and.returnValue(of(null));
+    mockPortalService.acceptProviderTerms.and.returnValue(of(void 0));
     mockPortalService.assign.and.returnValue(of({
       resource: {resourceCode: 'REF-001', status: ResourceStatus.RESERVED}
     } as any));
@@ -59,5 +63,27 @@ describe('ReferenceComponent', () => {
     mockPortalService.checkEligibility.and.returnValue(throwError(() => new Error('boom')));
     component.ngOnInit();
     expect(component.error).toBeTruthy();
+  });
+
+  it('should load agreement state when eligible', () => {
+    mockPortalService.checkNeedsAgreement.and.returnValue(of(true));
+    mockPortalService.getProviderTerms.and.returnValue(of({
+      id: 'ReferenceServiceTermsV1',
+      content: '<p>Terms</p>'
+    }));
+
+    component.ngOnInit();
+
+    expect(component.needsAgreement).toBeTrue();
+    expect(component.termsInfo?.id).toEqual('ReferenceServiceTermsV1');
+    expect(mockPortalService.checkNeedsAgreement).toHaveBeenCalledWith('REFERENCE', 'VOUCHER');
+    expect(mockPortalService.getProviderTerms).toHaveBeenCalledWith('REFERENCE', 'VOUCHER');
+  });
+
+  it('should accept terms and reload', () => {
+    const reloadSpy = spyOn<any>(component, 'checkEligibilityAndLoad');
+    component.acceptTerms();
+    expect(mockPortalService.acceptProviderTerms).toHaveBeenCalledWith('REFERENCE', 'VOUCHER');
+    expect(reloadSpy).toHaveBeenCalled();
   });
 });

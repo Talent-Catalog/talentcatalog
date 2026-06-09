@@ -13,27 +13,48 @@
 
 <div class="service-content">
   <ng-container *ngIf="eligible; else notEligible">
-    <ng-container *ngIf="!assignment">
-      <p>Assign your reference voucher to start the flow.</p>
-      <tc-button [size]="'xl'" (onClick)="assign()">Assign Voucher</tc-button>
+    <ng-container *ngIf="needsAgreement && termsInfo">
+      <div *ngIf="!termsRead" class="d-flex justify-content-center text-center">
+        <div class="alert alert-danger">
+          Please review and accept the latest terms before using this service.
+        </div>
+      </div>
+
+      <app-show-terms
+        [requestTermsRead]="true"
+        (termsRead)="setTermsRead()"
+      >
+        <div [innerHtml]="termsInfo.content"></div>
+      </app-show-terms>
+
+      <tc-button color="success" [disabled]="!termsRead" (onClick)="acceptTerms()">
+        Accept Terms
+      </tc-button>
     </ng-container>
 
-    <ng-container *ngIf="assignment">
-      <p>
-        Voucher code:
-        <code>{{ assignment.resource.resourceCode }}</code>
-      </p>
-      <p>
-        Status:
-        <strong>{{ assignment.resource.status }}</strong>
-      </p>
+    <ng-container *ngIf="!needsAgreement">
+      <ng-container *ngIf="!assignment">
+        <p>Assign your reference voucher to start the flow.</p>
+        <tc-button [size]="'xl'" (onClick)="assign()">Assign Voucher</tc-button>
+      </ng-container>
 
-      <tc-button *ngIf="canRedeem"
-                 [size]="'xl'"
-                 (onClick)="redeem()"
-      >
-        Mark Redeemed
-      </tc-button>
+      <ng-container *ngIf="assignment">
+        <p>
+          Voucher code:
+          <code>{{ assignment.resource.resourceCode }}</code>
+        </p>
+        <p>
+          Status:
+          <strong>{{ assignment.resource.status }}</strong>
+        </p>
+
+        <tc-button *ngIf="canRedeem"
+                   [size]="'xl'"
+                   (onClick)="redeem()"
+        >
+          Mark Redeemed
+        </tc-button>
+      </ng-container>
     </ng-container>
   </ng-container>
 
