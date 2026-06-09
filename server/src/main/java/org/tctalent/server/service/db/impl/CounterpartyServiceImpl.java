@@ -20,6 +20,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.tctalent.server.casi.domain.model.ServiceProvider;
 import org.tctalent.server.model.db.Counterparty;
 import org.tctalent.server.model.db.CounterpartyType;
 import org.tctalent.server.model.db.PartnerImpl;
@@ -59,6 +60,20 @@ public class CounterpartyServiceImpl implements CounterpartyService {
                 Counterparty counterparty = new Counterparty();
                 counterparty.setType(type);
                 counterparty.setPartner(partner);
+                return counterpartyRepository.save(counterparty);
+            });
+    }
+
+    @Override
+    @NonNull
+    @Transactional
+    public Counterparty findOrCreateByTypeAndServiceProvider(@NonNull CounterpartyType type,
+                                                             @NonNull ServiceProvider serviceProvider) {
+        return counterpartyRepository.findByTypeAndServiceProvider(type, serviceProvider)
+            .orElseGet(() -> {
+                Counterparty counterparty = new Counterparty();
+                counterparty.setType(type);
+                counterparty.setServiceProvider(serviceProvider);
                 return counterpartyRepository.save(counterparty);
             });
     }

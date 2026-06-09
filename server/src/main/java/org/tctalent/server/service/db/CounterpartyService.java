@@ -17,6 +17,7 @@
 package org.tctalent.server.service.db;
 
 import org.springframework.lang.NonNull;
+import org.tctalent.server.casi.domain.model.ServiceProvider;
 import org.tctalent.server.model.db.Counterparty;
 import org.tctalent.server.model.db.CounterpartyType;
 import org.tctalent.server.model.db.PartnerImpl;
@@ -53,4 +54,15 @@ public interface CounterpartyService {
      */
     @NonNull
     Counterparty findOrCreateByTypeAndPartner(@NonNull CounterpartyType type, @NonNull PartnerImpl partner);
+
+    /**
+     * Finds an existing service-provider-backed counterparty, or creates one if none exists.
+     *
+     * @param type Counterparty type
+     * @param serviceProvider Backing service provider
+     * @return Existing or newly created counterparty
+     */
+    @NonNull
+    Counterparty findOrCreateByTypeAndServiceProvider(@NonNull CounterpartyType type,
+                                                      @NonNull ServiceProvider serviceProvider);
 }
