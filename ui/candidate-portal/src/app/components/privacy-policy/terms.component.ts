@@ -5,6 +5,23 @@ import {CandidateService} from "../../services/candidate.service";
 import {forkJoin} from "rxjs";
 import {Candidate} from "../../model/candidate";
 
+/**
+ * Action component for agreement acceptance flows reachable via /privacy.
+ *
+ * Responsibilities:
+ *  - GRN: presents the current privacy policy for re-acceptance when a candidate's
+ *    accepted version is out of date (stale-terms flow triggered by HomeComponent).
+ *  - TBB: displays a link to the external TBB privacy policy page.
+ *
+ * Design note — separation of concerns:
+ *  /privacy (this component) is the *action* route — it is where candidates come to
+ *  sign agreements. Other agreement acceptance flows (e.g. CASI service agreements)
+ *  will be handled inline in their respective feature areas, not here.
+ *  The Agreements tab (CandidateAgreementsComponent) is the *read-only ledger* —
+ *  it displays all agreements a candidate has already signed, regardless of where
+ *  or how they were accepted.
+ *
+ */
 @Component({
   selector: 'app-terms',
   templateUrl: './terms.component.html',

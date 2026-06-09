@@ -19,6 +19,22 @@ import {Candidate} from '../../../../../model/candidate';
 import {Agreement} from '../../../../../model/agreement';
 import {AgreementService} from '../../../../../services/agreement.service';
 
+/**
+ * Read-only ledger of all agreements signed by the candidate.
+ *
+ * This component displays the candidate's agreement history regardless of where
+ * or how each agreement was accepted (e.g. via /privacy for GRN privacy policy
+ * re-acceptance, via the registration flow for first-time acceptance, or inline
+ * in CASI for service provider agreements).
+ *
+ * This component is intentionally not an acceptance workflow — it does not
+ * drive or host any agreement signing flows. Acceptance flows live in the
+ * feature area where the agreement is relevant (e.g. TermsComponent for /privacy,
+ * CASI components for service agreements).
+ *
+ * Visibility: currently gated to GRN instances only (see ViewCandidateComponent.showAgreementsTab).
+ *
+ */
 @Component({
   selector: 'app-candidate-agreements',
   templateUrl: './candidate-agreements.component.html',
