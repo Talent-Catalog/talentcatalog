@@ -16,8 +16,6 @@
 
 package org.tctalent.server.integration.helper;
 
-import java.io.IOException;
-import org.junit.jupiter.api.BeforeAll;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
@@ -32,15 +30,6 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 @Testcontainers
 @ActiveProfiles("test")
 public abstract class BaseDBIntegrationTest {
-
-
-  /**
-   * Initializes the PostgreSQL container before executing any test cases.
-   */
-  @BeforeAll
-  public static void startDBContainer() throws IOException, InterruptedException {
-    PostgresTestContainer.startContainer();
-  }
 
   /**
    * Supplies dynamic configuration properties from the container to the Spring context.

@@ -2,6 +2,7 @@ package org.tctalent.server.integration.helper;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.concurrent.atomic.AtomicBoolean;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.testcontainers.containers.PostgreSQLContainer;
@@ -28,6 +29,7 @@ public class PostgresTestContainer {
   public static final String DEFAULT_DUMP_PATH = "/dump.sql";
   public static final String ENV_DUMP_PATH_KEY = "testcontainers.dump.location";
   public static final String ENV_CONTAINER_MOUNT_KEY = "testcontainers.container.mount";
+  private static final AtomicBoolean initialized = new AtomicBoolean(false);
 
   @Container
   public static final PostgreSQLContainer<?> container = new PostgreSQLContainer<>(getImage())
@@ -137,6 +139,7 @@ public class PostgresTestContainer {
    * @param registry Spring's dynamic property registry
    */
   public static void injectContainerProperties(DynamicPropertyRegistry registry) {
+    startContainerIfNeeded();
     registry.add("spring.datasource.url", container::getJdbcUrl);
     registry.add("spring.datasource.username", container::getUsername);
     registry.add("spring.datasource.password", container::getPassword);
@@ -150,6 +153,26 @@ public class PostgresTestContainer {
 
   private static String[] createDatabaseCommand() {
     return new String[]{"psql", "-U", "postgres", "-c", "CREATE DATABASE " + DB_NAME + ";"};
+  }
+
+
+  private static void startContainerIfNeeded() {
+    if (initialized.compareAndSet(false, true)) {
+      try {
+        log.info("Starting PostgreSQL Testcontainer...");
+        container.start();
+
+        log.info("PostgreSQL Testcontainer started.");
+        log.info("JDBC URL: {}", container.getJdbcUrl());
+
+        copyDumpFile();
+        importDump();
+
+      } catch (Exception e) {
+        initialized.set(false);
+        throw new RuntimeException("Failed to start PostgreSQL Testcontainer", e);
+      }
+    }
   }
 
   private static String[] createUserCommand() {
