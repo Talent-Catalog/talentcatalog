@@ -65,7 +65,7 @@ public class AgreementServiceImpl implements AgreementService {
                 return activeAgreement;
             }
             activeAgreement.setEnd(OffsetDateTime.now());
-            agreementRepository.save(activeAgreement);
+            agreementRepository.saveAndFlush(activeAgreement);
         }
 
         Agreement agreement = new Agreement();
