@@ -95,3 +95,8 @@ export interface ServiceResource {
   sentAt: string; // ISO 8601 datetime
   expiresAt: string; // ISO 8601 datetime
 }
+
+export interface ServiceProviderTermsInfo {
+  id: string;
+  content: string;
+}
