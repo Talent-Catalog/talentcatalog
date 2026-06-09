@@ -33,6 +33,7 @@ import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.web.reactive.function.client.WebClientException;
 import org.tctalent.server.exception.CountryRestrictionException;
+import org.tctalent.server.exception.CvGenerationException;
 import org.tctalent.server.exception.EntityReferencedException;
 import org.tctalent.server.exception.ExportFailedException;
 import org.tctalent.server.exception.InvalidRequestException;
@@ -42,6 +43,7 @@ import org.tctalent.server.exception.SalesforceException;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.CandidateSubfolderType;
 import org.tctalent.server.model.db.Country;
+import org.tctalent.server.model.db.CvFormat;
 import org.tctalent.server.model.db.DataRow;
 import org.tctalent.server.model.db.Gender;
 import org.tctalent.server.model.db.SavedList;
@@ -438,7 +440,17 @@ public interface CandidateService {
     List<DataRow> computeStatusStats(Gender gender, String country, LocalDate dateFrom, LocalDate dateTo, List<Long> sourceCountryIds);
     List<DataRow> computeStatusStats(Gender gender, String country, LocalDate dateFrom, LocalDate dateTo, Set<Long> candidateIds, List<Long> sourceCountryIds);
 
-    Resource generateCv(Candidate candidate, Boolean showName, Boolean showContact);
+    /**
+     * Generates a candidate CV in the requested format.
+     *
+     * @param candidate the candidate whose CV will be generated
+     * @param showName whether the candidate's name should be included in the generated CV
+     * @param showContact whether the candidate's contact details should be included in the generated CV
+     * @param format the requested CV output format, for example PDF or DOCX
+     * @throws CvGenerationException if the CV cannot be generated
+     * @return a {@link Resource} containing the generated CV as a DOCX document
+     */
+    Resource generateCv(Candidate candidate, Boolean showName, Boolean showContact, CvFormat format) throws CvGenerationException;
 
     /**
      * Best to use this rather than {@link CandidateRepository#save}.

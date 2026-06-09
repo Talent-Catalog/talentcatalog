@@ -22,6 +22,7 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.lang.NonNull;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
+import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.resource.PathResourceResolver;
 import org.tctalent.server.logging.LogBuilder;
@@ -53,11 +54,7 @@ public class WebConfiguration implements WebMvcConfigurer {
     @Override
     public void addResourceHandlers(@NonNull ResourceHandlerRegistry registry) {
 
-        UIBundle[] uiBundles = new UIBundle[]{
-                new UIBundle("candidate-portal", "candidate-portal"),
-                new UIBundle("admin-portal", "admin-portal"),
-                new UIBundle("public-portal", "public-portal")
-        };
+        UIBundle[] uiBundles = getUiBundles();
 
         for (UIBundle uiBundle : uiBundles) {
 
@@ -82,17 +79,49 @@ public class WebConfiguration implements WebMvcConfigurer {
                     .addResourceLocations("classpath:/ui-bundle/" + uiBundle.module + "/assets/")
                     .resourceChain(true);
 
+            /*
+             * Serve index.html for each portal's SPA routes.
+             *
+             * IMPORTANT: The resource location must point to the bundle DIRECTORY, not index.html itself.
+             * Spring Framework 6.x appends a trailing slash to static resource locations; when we pointed
+             * at ".../index.html", Spring rewrote it to ".../index.html/", which does not exist and causes
+             * NoResourceFoundException for routes like /admin-portal and /admin-portal/login.
+             */
             registry.addResourceHandler("/" + uiBundle.url, "/" + uiBundle.url + "/", "/" + uiBundle.url + "/**")
                     .setCachePeriod(0)
-                    .addResourceLocations("classpath:/ui-bundle/" + uiBundle.module + "/index.html")
+                    .addResourceLocations("classpath:/ui-bundle/" + uiBundle.module + "/")
                     .resourceChain(true)
                     .addResolver(new PathResourceResolver() {
                         protected Resource getResource(
                             @NonNull String resourcePath, @NonNull Resource location) {
-                            return location.exists() && location.isReadable() ? location : null;
+                            Resource index = new ClassPathResource("/ui-bundle/" + uiBundle.module + "/index.html");
+                            return index.exists() && index.isReadable() ? index : null;
                         }
                     });
         }
+    }
+
+    /*
+     * Spring 6 does not invoke our SPA resolver for empty portal paths consistently.
+     * Forwarding bare portal URLs to index.html keeps documented entry URLs like
+     * /admin-portal working without relying on removed trailing-slash matching behavior.
+     */
+    @Override
+    public void addViewControllers(@NonNull ViewControllerRegistry registry) {
+        for (UIBundle uiBundle : getUiBundles()) {
+            registry.addViewController("/" + uiBundle.url)
+                .setViewName("forward:/" + uiBundle.url + "/index.html");
+            registry.addViewController("/" + uiBundle.url + "/")
+                .setViewName("forward:/" + uiBundle.url + "/index.html");
+        }
+    }
+
+    private UIBundle[] getUiBundles() {
+        return new UIBundle[]{
+            new UIBundle("candidate-portal", "candidate-portal"),
+            new UIBundle("admin-portal", "admin-portal"),
+            new UIBundle("public-portal", "public-portal")
+        };
     }
 
 

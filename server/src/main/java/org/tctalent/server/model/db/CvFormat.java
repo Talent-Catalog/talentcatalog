@@ -14,24 +14,17 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tctalent.server.request.candidate;
+package org.tctalent.server.model.db;
 
-import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
-import lombok.Setter;
-import org.tctalent.server.model.db.CvFormat;
+import lombok.RequiredArgsConstructor;
 
 @Getter
-@Setter
-public class DownloadCvRequest {
-    @NotNull
-    private long candidateId;
+@RequiredArgsConstructor
+public enum CvFormat {
+  PDF("pdf", "application/pdf"),
+  DOCX("docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document");
 
-    private Boolean showName;
-    private Boolean showContact;
-    private CvFormat format;
-
-    public CvFormat getFormat() {
-        return format == null ? CvFormat.PDF : format;
-    }
+  private final String fileExtension;
+  private final String mediaType;
 }
