@@ -31,12 +31,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.tctalent.server.configuration.SystemAdminConfiguration;
+import org.tctalent.server.integration.helper.BaseDBIntegrationTest;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.CandidateStatus;
 import org.tctalent.server.model.db.Gender;
 import org.tctalent.server.model.db.SearchType;
 import org.tctalent.server.model.db.UnhcrStatus;
+import org.tctalent.server.repository.db.read.cache.CandidateRedisCache;
 import org.tctalent.server.request.candidate.SearchCandidateRequest;
 import org.tctalent.server.service.db.CandidateService;
 import org.tctalent.server.service.db.SavedSearchService;
@@ -44,7 +47,7 @@ import org.tctalent.server.service.db.util.PagedCandidateBackProcessor;
 import org.tctalent.server.util.background.PageContextBackRunner;
 
 @SpringBootTest
-class SavedSearchServiceImplTest {
+class SavedSearchServiceImplTest extends BaseDBIntegrationTest {
     @Autowired
     private SavedSearchService savedSearchService;
     @Autowired
@@ -55,6 +58,8 @@ class SavedSearchServiceImplTest {
     @Autowired
     private SavedSearchServiceImpl savedSearchServiceImpl;
 
+    @MockitoBean
+    private CandidateRedisCache candidateRedisCache;
 
     @BeforeEach
     void setUp() {

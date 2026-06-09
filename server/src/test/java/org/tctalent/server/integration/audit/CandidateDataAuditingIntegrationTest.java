@@ -30,7 +30,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.transaction.annotation.Transactional;
+import org.tctalent.server.integration.helper.BaseDBIntegrationTest;
 import org.tctalent.server.integration.helper.TestDataFactory;
 import org.tctalent.server.model.db.AbstractCandidateDataDomainObject;
 import org.tctalent.server.model.db.AttachmentType;
@@ -87,12 +89,14 @@ import org.tctalent.server.repository.db.LanguageRepository;
 import org.tctalent.server.repository.db.OccupationRepository;
 import org.tctalent.server.repository.db.SavedSearchRepository;
 import org.tctalent.server.repository.db.UserRepository;
+import org.tctalent.server.repository.db.read.cache.CandidateRedisCache;
 import org.tctalent.server.security.TcUserDetails;
+import org.tctalent.server.service.db.SavedSearchService;
 import org.tctalent.server.service.db.UserService;
 
 @SpringBootTest
 @Transactional
-class CandidateDataAuditingIntegrationTest {
+class CandidateDataAuditingIntegrationTest extends BaseDBIntegrationTest {
 
     @Autowired private UserService userService;
     @Autowired private UserRepository userRepository;
@@ -118,7 +122,10 @@ class CandidateDataAuditingIntegrationTest {
     @Autowired private LanguageLevelRepository languageLevelRepository;
 
     private User systemAdmin;
-
+    @MockitoBean
+    private SavedSearchService savedSearchService;
+    @MockitoBean
+    private CandidateRedisCache candidateRedisCache;
     @BeforeEach
     void setUp() {
         systemAdmin = userService.getSystemAdminUser();
