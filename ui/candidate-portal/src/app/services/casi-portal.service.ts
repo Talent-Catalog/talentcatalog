@@ -61,6 +61,25 @@ export class CasiPortalService {
     );
   }
 
+  getOpcDpaTerms(provider: string, serviceCode: string): Observable<ServiceProviderTermsInfo | null> {
+    return this.http.get<ServiceProviderTermsInfo | null>(
+      `${this.apiBaseUrl}/${provider}/${serviceCode}/agreement/opc-dpa/terms`
+    );
+  }
+
+  checkNeedsOpcDpa(provider: string, serviceCode: string): Observable<boolean> {
+    return this.http.get<boolean>(
+      `${this.apiBaseUrl}/${provider}/${serviceCode}/agreement/opc-dpa/needs-acceptance`
+    );
+  }
+
+  acceptOpcDpa(provider: string, serviceCode: string): Observable<void> {
+    return this.http.post<void>(
+      `${this.apiBaseUrl}/${provider}/${serviceCode}/agreement/opc-dpa/accept`,
+      null
+    );
+  }
+
   updateResourceStatus(provider: string, serviceCode: string,
       request: UpdateServiceResourceStatusRequest): Observable<void> {
     return this.http.put<void>(
