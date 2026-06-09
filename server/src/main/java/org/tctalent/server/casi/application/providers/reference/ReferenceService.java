@@ -68,6 +68,11 @@ public class ReferenceService extends AbstractCandidateAssistanceService {
   }
 
   @Override
+  public Optional<String> opcDpaAcceptedTermsInfoId() {
+    return Optional.of("OpcDataProcessingAgreementV1");
+  }
+
+  @Override
   protected ResourceAllocator allocator() {
     return referenceAllocator;
   }
