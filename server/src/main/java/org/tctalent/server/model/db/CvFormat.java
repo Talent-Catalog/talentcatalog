@@ -23,7 +23,8 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum CvFormat {
   PDF("pdf", "application/pdf"),
-  DOCX("docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document");
+  DOCX("docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document"),
+  GOOGLE_DOC("txt", "text/plain;charset=utf-8");
 
   private final String fileExtension;
   private final String mediaType;
