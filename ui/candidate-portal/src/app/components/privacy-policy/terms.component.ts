@@ -4,7 +4,6 @@ import {TermsInfoService} from "../../services/terms-info.service";
 import {CandidateService} from "../../services/candidate.service";
 import {forkJoin} from "rxjs";
 import {Candidate} from "../../model/candidate";
-import {Agreement} from "../../model/agreement";
 
 @Component({
   selector: 'app-terms',
@@ -29,20 +28,6 @@ export class TermsComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    // When opened from the Agreements tab, the clicked agreement is passed via router state.
-    // Direct navigation to /privacy has no state, so we fall back to loading the current policy.
-    // TODO: Remove this fallback when /privacy is only reached via agreement click-through.
-    const agreement: Agreement = history.state?.agreement;
-    if (agreement) {
-      // Historical read-only view from Agreements tab.
-      this.content = agreement.termsInfo?.content;
-      this.acceptedPrivacyPolicyId = agreement.termsInfoId;
-      this.acceptedPrivacyPolicyDate = agreement.start;
-      this.partnerName = agreement.counterparty?.displayName;
-      this.requestAcceptance = false;
-      return;
-    }
-
     this.loadCandidate();
   }
 
