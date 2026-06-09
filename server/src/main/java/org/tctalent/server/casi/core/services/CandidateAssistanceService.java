@@ -82,6 +82,27 @@ public interface CandidateAssistanceService {
     return Optional.empty();
   }
 
+  /**
+   * The TermsInfo id of the OPC Standard Data Processing Agreement that this service
+   * provider has accepted.
+   * <p>
+   * When non-empty, candidates will be shown the OPC DPA for acknowledgement before they
+   * can use the service. The candidate's acknowledgement is recorded as an
+   * {@link org.tctalent.server.model.db.Agreement} against this provider's
+   * {@link org.tctalent.server.model.db.Counterparty}.
+   * </p>
+   * <p>
+   * TODO (SPO): replace with Org.opcDpaAcceptedTermsInfoId when the SPO/Org
+   *   abstraction is introduced. At that point, the provider's DPA acceptance is recorded
+   *   against the Org in the database and this code-level declaration will be removed. --SM
+   * </p>
+   *
+   * @return TermsInfo id of the accepted OPC DPA version, or empty if not yet accepted
+   */
+  default Optional<String> opcDpaAcceptedTermsInfoId() {
+    return Optional.empty();
+  }
+
   // CREATE
 
   /**
