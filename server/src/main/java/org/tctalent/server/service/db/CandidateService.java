@@ -443,6 +443,11 @@ public interface CandidateService {
     /**
      * Generates a candidate CV in the requested format.
      *
+     * <p>For {@link CvFormat#PDF}, the returned resource contains PDF bytes.
+     * For {@link CvFormat#DOCX}, the returned resource contains DOCX bytes.
+     * For {@link CvFormat#GOOGLE_DOC}, the returned resource contains the created Google Doc URL as
+     * UTF-8 text.</p>
+     *
      * @param candidate the candidate whose CV will be generated
      * @param showName whether the candidate's name should be included in the generated CV
      * @param showContact whether the candidate's contact details should be included in the generated CV
