@@ -13,9 +13,13 @@ describe('ReferenceComponent', () => {
   beforeEach(async () => {
     mockPortalService = jasmine.createSpyObj('CasiPortalService',
       ['checkEligibility', 'getAssignment', 'assign', 'updateResourceStatus',
-        'checkNeedsAgreement', 'getProviderTerms', 'acceptProviderTerms']);
+        'checkNeedsAgreement', 'getProviderTerms', 'acceptProviderTerms',
+        'checkNeedsOpcDpa', 'getOpcDpaTerms', 'acceptOpcDpa']);
     mockPortalService.checkEligibility.and.returnValue(of(true));
     mockPortalService.getAssignment.and.returnValue(of(null as any));
+    mockPortalService.checkNeedsOpcDpa.and.returnValue(of(false));
+    mockPortalService.getOpcDpaTerms.and.returnValue(of(null));
+    mockPortalService.acceptOpcDpa.and.returnValue(of(void 0));
     mockPortalService.checkNeedsAgreement.and.returnValue(of(false));
     mockPortalService.getProviderTerms.and.returnValue(of(null));
     mockPortalService.acceptProviderTerms.and.returnValue(of(void 0));
@@ -66,6 +70,8 @@ describe('ReferenceComponent', () => {
   });
 
   it('should load agreement state when eligible', () => {
+    mockPortalService.checkNeedsOpcDpa.and.returnValue(of(false));
+    mockPortalService.getOpcDpaTerms.and.returnValue(of(null));
     mockPortalService.checkNeedsAgreement.and.returnValue(of(true));
     mockPortalService.getProviderTerms.and.returnValue(of({
       id: 'ReferenceServiceTermsV1',
@@ -78,6 +84,28 @@ describe('ReferenceComponent', () => {
     expect(component.termsInfo?.id).toEqual('ReferenceServiceTermsV1');
     expect(mockPortalService.checkNeedsAgreement).toHaveBeenCalledWith('REFERENCE', 'VOUCHER');
     expect(mockPortalService.getProviderTerms).toHaveBeenCalledWith('REFERENCE', 'VOUCHER');
+  });
+
+  it('should load OPC DPA state when eligible', () => {
+    mockPortalService.checkNeedsOpcDpa.and.returnValue(of(true));
+    mockPortalService.getOpcDpaTerms.and.returnValue(of({
+      id: 'OpcDataProcessingAgreementV1',
+      content: '<p>OPC DPA</p>'
+    }));
+
+    component.ngOnInit();
+
+    expect(component.needsOpcDpa).toBeTrue();
+    expect(component.opcDpaTermsInfo?.id).toEqual('OpcDataProcessingAgreementV1');
+    expect(mockPortalService.checkNeedsOpcDpa).toHaveBeenCalledWith('REFERENCE', 'VOUCHER');
+    expect(mockPortalService.getOpcDpaTerms).toHaveBeenCalledWith('REFERENCE', 'VOUCHER');
+  });
+
+  it('should accept OPC DPA and reload', () => {
+    const reloadSpy = spyOn<any>(component, 'checkEligibilityAndLoad');
+    component.acceptOpcDpa();
+    expect(mockPortalService.acceptOpcDpa).toHaveBeenCalledWith('REFERENCE', 'VOUCHER');
+    expect(reloadSpy).toHaveBeenCalled();
   });
 
   it('should accept terms and reload', () => {
