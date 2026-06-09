@@ -23,6 +23,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.tctalent.server.model.db.Agreement;
 import org.tctalent.server.model.db.CounterpartyType;
+import org.tctalent.server.model.db.TermsType;
 
 /**
  * Repository for managing Agreement entities.
@@ -40,6 +41,6 @@ public interface AgreementRepository extends JpaRepository<Agreement, Long> {
     List<Agreement> findByCandidateIdAndCounterpartyTypeOrderByStartDesc(
         Long candidateId, CounterpartyType counterpartyType);
 
-    Optional<Agreement> findFirstByCandidateIdAndCounterpartyTypeAndEndIsNullOrderByStartDesc(
-        Long candidateId, CounterpartyType counterpartyType);
+    Optional<Agreement> findFirstByCandidateIdAndCounterpartyIdAndTermsTypeAndEndIsNullOrderByStartDesc(
+        Long candidateId, Long counterpartyId, TermsType termsType);
 }

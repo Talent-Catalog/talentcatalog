@@ -20,6 +20,8 @@ import static jakarta.persistence.FetchType.LAZY;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.SequenceGenerator;
@@ -58,6 +60,10 @@ public class Agreement extends AbstractAuditableDomainObject<Long> {
      */
     @Column(name = "terms_info_id", nullable = false)
     private String termsInfoId;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "terms_type", nullable = false)
+    private TermsType termsType;
 
     @Column(name = "start_date", nullable = false)
     private OffsetDateTime start;

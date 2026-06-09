@@ -33,6 +33,7 @@ import org.tctalent.server.model.db.Agreement;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.Counterparty;
 import org.tctalent.server.model.db.CounterpartyType;
+import org.tctalent.server.model.db.TermsType;
 
 class AgreementRepositoryIntegrationTest extends BaseJpaIntegrationTest {
 
@@ -95,10 +96,12 @@ class AgreementRepositoryIntegrationTest extends BaseJpaIntegrationTest {
             candidate,
             databaseProvider,
             "OpcDataProcessingAgreementV1",
+            TermsType.OPC_STANDARD_DATA_PROCESSING_AGREEMENT,
             OffsetDateTime.now().minusDays(7),
             OffsetDateTime.now().minusDays(2));
         Agreement newer = saveAgreement(
-            candidate, databaseProvider, "OpcDataProcessingAgreementV2", OffsetDateTime.now().minusDays(1), null);
+            candidate, databaseProvider, "OpcDataProcessingAgreementV2",
+            TermsType.OPC_STANDARD_DATA_PROCESSING_AGREEMENT, OffsetDateTime.now().minusDays(1), null);
 
         List<Agreement> agreements = agreementRepository.findByCandidateIdOrderByStartDesc(candidate.getId());
 
@@ -108,40 +111,75 @@ class AgreementRepositoryIntegrationTest extends BaseJpaIntegrationTest {
     }
 
     @Test
-    @DisplayName("findFirstByCandidateIdAndCounterpartyTypeAndEndIsNullOrderByStartDesc returns active record")
-    void findFirstByCandidateIdAndCounterpartyTypeAndEndIsNullOrderByStartDesc_returnsActive() {
+    @DisplayName("findFirstByCandidateIdAndCounterpartyIdAndTermsTypeAndEndIsNullOrderByStartDesc returns active record")
+    void findFirstByCandidateIdAndCounterpartyIdAndTermsTypeAndEndIsNullOrderByStartDesc_returnsActive() {
         saveAgreement(
             candidate,
             databaseProvider,
             "OpcDataProcessingAgreementV1",
+            TermsType.OPC_STANDARD_DATA_PROCESSING_AGREEMENT,
             OffsetDateTime.now().minusDays(10),
             OffsetDateTime.now().minusDays(5));
         Agreement active = saveAgreement(
             candidate,
             databaseProvider,
             "OpcDataProcessingAgreementV2",
+            TermsType.OPC_STANDARD_DATA_PROCESSING_AGREEMENT,
             OffsetDateTime.now().minusDays(3),
             null);
 
         Optional<Agreement> current = agreementRepository
-            .findFirstByCandidateIdAndCounterpartyTypeAndEndIsNullOrderByStartDesc(
-                candidate.getId(), CounterpartyType.DATABASE_PROVIDER);
+            .findFirstByCandidateIdAndCounterpartyIdAndTermsTypeAndEndIsNullOrderByStartDesc(
+                candidate.getId(), databaseProvider.getId(), TermsType.OPC_STANDARD_DATA_PROCESSING_AGREEMENT);
 
         assertThat(current).isPresent();
         assertThat(current.get().getId()).isEqualTo(active.getId());
         assertThat(current.get().getEnd()).isNull();
     }
 
+    @Test
+    @DisplayName("two active agreements of different terms types are allowed for same counterparty")
+    void twoActiveAgreementsOfDifferentTypesAreAllowedForSameCounterparty() {
+        Agreement opcDpaAgreement = saveAgreement(
+            candidate,
+            serviceProvider,
+            "OpcDataProcessingAgreementV1",
+            TermsType.OPC_STANDARD_DATA_PROCESSING_AGREEMENT,
+            OffsetDateTime.now().minusDays(2),
+            null);
+        Agreement referenceAgreement = saveAgreement(
+            candidate,
+            serviceProvider,
+            "ReferenceServiceTermsV1",
+            TermsType.REFERENCE_SERVICE_TERMS,
+            OffsetDateTime.now().minusDays(1),
+            null);
+
+        Optional<Agreement> currentOpcDpa = agreementRepository
+            .findFirstByCandidateIdAndCounterpartyIdAndTermsTypeAndEndIsNullOrderByStartDesc(
+                candidate.getId(), serviceProvider.getId(), TermsType.OPC_STANDARD_DATA_PROCESSING_AGREEMENT);
+        Optional<Agreement> currentReference = agreementRepository
+            .findFirstByCandidateIdAndCounterpartyIdAndTermsTypeAndEndIsNullOrderByStartDesc(
+                candidate.getId(), serviceProvider.getId(), TermsType.REFERENCE_SERVICE_TERMS);
+
+        assertThat(currentOpcDpa).isPresent();
+        assertThat(currentOpcDpa.get().getId()).isEqualTo(opcDpaAgreement.getId());
+        assertThat(currentReference).isPresent();
+        assertThat(currentReference.get().getId()).isEqualTo(referenceAgreement.getId());
+    }
+
     private Agreement saveAgreement(
         Candidate agreementCandidate,
         Counterparty counterparty,
         String termsInfoId,
+        TermsType termsType,
         OffsetDateTime start,
         OffsetDateTime end) {
         Agreement agreement = new Agreement();
         agreement.setCandidate(agreementCandidate);
         agreement.setCounterparty(counterparty);
         agreement.setTermsInfoId(termsInfoId);
+        agreement.setTermsType(termsType);
         agreement.setStart(start);
         agreement.setEnd(end);
         return agreementRepository.saveAndFlush(agreement);
