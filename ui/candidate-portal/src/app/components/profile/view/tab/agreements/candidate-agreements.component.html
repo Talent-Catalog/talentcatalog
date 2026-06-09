@@ -34,7 +34,10 @@
            (click)="viewAgreement(agreement)">
         <div class="card-body">
           <div class="d-flex justify-content-between align-items-center">
-            <span class="fw-bold">{{ agreement.counterparty?.displayName }}</span>
+            <span class="fw-bold">
+              {{ ('AGREEMENTS.LABEL.' + (agreement.termsInfo?.type || 'DEFAULT'))
+                | translate:{displayName: agreement.counterparty?.displayName} }}
+            </span>
             <span class="badge" [ngClass]="isActive(agreement) ? 'bg-success' : 'bg-secondary'">
               {{ isActive(agreement) ? ('AGREEMENTS.ACTIVE' | translate) : ('AGREEMENTS.SUPERSEDED' | translate) }}
             </span>
