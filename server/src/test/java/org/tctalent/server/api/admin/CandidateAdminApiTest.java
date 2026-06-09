@@ -654,6 +654,48 @@ class CandidateAdminApiTest extends ApiTestBase {
     }
 
     @Test
+    @DisplayName("create candidate cv google doc succeeds")
+    void downloadCandidateCvGoogleDocSucceeds() throws Exception {
+        long id = 99L;
+        String googleDocUrl = "https://docs.google.com/document/d/mock-google-doc-id/edit";
+
+        DownloadCvRequest request = new DownloadCvRequest();
+        request.setCandidateId(id);
+        request.setShowName(true);
+        request.setShowContact(true);
+        request.setFormat(CvFormat.GOOGLE_DOC);
+
+        Resource report = new ByteArrayResource(googleDocUrl.getBytes());
+
+        given(candidateService
+            .getCandidate(anyLong()))
+            .willReturn(candidate);
+
+        given(candidateService
+            .generateCv(
+                any(Candidate.class),
+                anyBoolean(),
+                anyBoolean(),
+                eq(CvFormat.GOOGLE_DOC)))
+            .willReturn(report);
+
+        postDownloadCvRequestAndVerifyResponse(
+            DOWNLOAD_CV_BY_ID_PATH.replace("{id}", Long.toString(id)),
+            objectMapper.writeValueAsString(request),
+            "text/plain",
+            ".txt",
+            googleDocUrl.getBytes());
+
+        verify(candidateService).getCandidate(anyLong());
+        verify(candidateService)
+            .generateCv(
+                any(Candidate.class),
+                anyBoolean(),
+                anyBoolean(),
+                eq(CvFormat.GOOGLE_DOC));
+    }
+
+    @Test
     @DisplayName("create candidate folder by id succeeds")
     void createCandidateFolderByIdSucceeds() throws Exception {
         long id = 99L;
