@@ -277,7 +277,7 @@ public class CandidateSavedListServiceImpl implements CandidateSavedListService 
             Set<SavedList> savedLists = fetchSavedLists(request);
             candidate.addSavedLists(savedLists);
 
-            candidateService.saveIt(candidate);
+            candidateService.save(candidate);
         }
         return done;
     }

@@ -24,6 +24,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.tctalent.server.repository.db.read.annotation.JsonOneToMany;
 import org.tctalent.server.repository.db.read.annotation.SqlColumn;
 import org.tctalent.server.repository.db.read.annotation.SqlDefaults;
 import org.tctalent.server.repository.db.read.annotation.SqlTable;
@@ -39,6 +40,23 @@ class SqlJsonQueryBuilderTest {
         @SqlColumn(transform = "to_jsonb(string_to_array(%s, ','))")
         private List<String> names;
         private String somethingElse;
+    }
+
+    @Getter
+    @Setter
+    @SqlTable(name = "tag", alias = "tg")
+    @SqlDefaults(mapUnannotatedColumns = true)
+    static class TagDto {
+        private Long id;
+        private String label;
+    }
+
+    @Getter
+    @Setter
+    @SqlTable(name = "parent", alias = "p")
+    static class ParentWithOrderedChildrenDto {
+        @JsonOneToMany(joinColumn = "parent_id", orderBy = "label ASC")
+        private List<TagDto> tags;
     }
 
 
@@ -65,6 +83,29 @@ class SqlJsonQueryBuilderTest {
             from candidate c
             where c.id in (:ids)""";
         assertEquals(expected, sql);
+    }
+
+    @Test
+    void one_to_many_with_orderBy_emits_order_by_clause() {
+        String sql = sqlJsonQueryBuilder.buildByIdsQuery(ParentWithOrderedChildrenDto.class, "ids");
+
+        assertThat(sql).contains("ORDER BY label ASC");
+    }
+
+    @Test
+    void one_to_many_without_orderBy_omits_order_by_clause() {
+        String sql = sqlJsonQueryBuilder.buildByIdsQuery(SampleDto.class, "ids");
+
+        assertThat(sql).doesNotContain("ORDER BY");
+    }
+
+    @Test
+    void candidate_notes_subquery_orders_by_updated_date_desc() {
+        String sql = sqlJsonQueryBuilder.buildByIdsQuery(CandidateReadDto.class, "ids");
+
+        assertThat(sql)
+            .contains("from candidate_note")
+            .contains("ORDER BY updated_date DESC");
     }
 
     @Test

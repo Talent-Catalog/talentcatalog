@@ -37,6 +37,7 @@ import {
   ChangePasswordComponent
 } from '../../../../account/change-password/change-password.component';
 
+
 @Component({
   selector: 'app-candidate-profile',
   templateUrl: './candidate-profile.component.html',
@@ -64,6 +65,7 @@ export class CandidateProfileComponent implements OnInit {
   languageLevels: LanguageLevel[];
   surveyTypes: SurveyType[];
   @Input() candidate: Candidate;
+  @Input() showAspirations: boolean;
   usAfghan: boolean;
 
   constructor(private candidateService: CandidateService,

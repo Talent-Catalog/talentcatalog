@@ -29,6 +29,7 @@ import org.tctalent.server.model.db.CandidateJobExperience;
 import org.tctalent.server.model.db.CandidateLanguage;
 import org.tctalent.server.model.db.CandidateOccupation;
 import org.tctalent.server.model.db.CandidateStatus;
+import org.tctalent.server.model.db.CvFormat;
 import org.tctalent.server.model.db.EducationLevel;
 import org.tctalent.server.model.db.Exam;
 import org.tctalent.server.model.db.Gender;
@@ -290,7 +291,7 @@ class CandidatePortalApiTest {
   @Test
   void testGetCandidateCV_Success() throws IOException {
     Resource cvResource = new ByteArrayResource("CV content".getBytes());
-    when(candidateService.generateCv(loggedInCandidate, true, true)).thenReturn(cvResource);
+    when(candidateService.generateCv(loggedInCandidate, true, true, CvFormat.PDF)).thenReturn(cvResource);
     when(response.getOutputStream()).thenReturn(new jakarta.servlet.ServletOutputStream() {
       @Override
       public void write(int b) {
@@ -309,7 +310,7 @@ class CandidatePortalApiTest {
     candidatePortalApi.getCandidateCV(response);
 
     verify(candidateService).getLoggedInCandidate();
-    verify(candidateService).generateCv(loggedInCandidate, true, true);
+    verify(candidateService).generateCv(loggedInCandidate, true, true, CvFormat.PDF);
     verify(response).setContentType("application/pdf");
     verify(response).setHeader(eq("Content-Disposition"), contains("John Doe-CV.pdf"));
     verify(response).getOutputStream();

@@ -33,7 +33,7 @@
       <h5>General Admin Commands</h5>
       <ul class="list-unstyled">
         <li *ngFor="let cmd of adminCommands">
-          <a href="#" (click)="fillCommand(cmd.command, $event)" class="text-decoration-none">
+          <a href="#" (click)="fillCommand(cmd, $event)" class="text-decoration-none">
             <code>{{ cmd.command }}</code>
           </a>
           – {{ cmd.description }}
@@ -46,7 +46,7 @@
       <h5>API Migration Commands</h5>
       <ul class="list-unstyled">
         <li *ngFor="let cmd of migrationCommands">
-          <a href="#" (click)="fillCommand(cmd.command, $event)" class="text-decoration-none">
+          <a href="#" (click)="fillCommand(cmd, $event)" class="text-decoration-none">
             <code>{{ cmd.command }}</code>
           </a>
           – {{ cmd.description }}
@@ -59,7 +59,7 @@
       <h5>Duolingo API Commands</h5>
       <ul class="list-unstyled">
         <li *ngFor="let cmd of duolingoCommands">
-          <a href="#" (click)="fillCommand(cmd.command, $event)" class="text-decoration-none">
+          <a href="#" (click)="fillCommand(cmd, $event)" class="text-decoration-none">
             <code>{{ cmd.command }}</code>
           </a>
           – {{ cmd.description }}
@@ -72,7 +72,7 @@
       <h5>LinkedIn API Commands</h5>
       <ul class="list-unstyled">
         <li *ngFor="let cmd of linkedinCommands">
-          <a href="#" (click)="fillCommand(cmd.command, $event)" class="text-decoration-none">
+          <a href="#" (click)="fillCommand(cmd, $event)" class="text-decoration-none">
             <code>{{ cmd.command }}</code>
           </a>
           – {{ cmd.description }}

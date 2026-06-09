@@ -19,6 +19,7 @@ package org.tctalent.server.request.candidate;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
+import org.tctalent.server.model.db.CvFormat;
 
 @Getter
 @Setter
@@ -28,4 +29,9 @@ public class DownloadCvRequest {
 
     private Boolean showName;
     private Boolean showContact;
+    private CvFormat format;
+
+    public CvFormat getFormat() {
+        return format == null ? CvFormat.PDF : format;
+    }
 }

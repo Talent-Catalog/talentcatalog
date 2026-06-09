@@ -81,11 +81,21 @@ The application references two distinct sets of AWS credentials for S3 access:
 `AWS_CREDENTIALS_APP_ACCESSKEY` and `AWS_CREDENTIALS_APP_SECRETKEY` are **not managed by Terraform**
 and have no corresponding SSM parameters. They resolve to empty strings at runtime. When blank,
 `S3Config` falls back to the AWS default credential provider chain, which in ECS resolves to the
-**task role** (`<app>-<env>-fargate-task-role`). The task role has an S3 policy granting access to
-the configured buckets (`s3_bucket`, `translations_bucket`, and `candidate_files_bucket`).
+**task role** (`<app>-<env>-fargate-task-role`). The task role has an S3 policy that *would* grant
+access to `s3_bucket`, `translations_bucket`, and `candidate_files_bucket` — though see the note
+below on which of these buckets actually exist in this environment.
 
 This is intentional — using the task role avoids long-lived static IAM user credentials for S3
 operations performed by the newer code paths.
+
+> **Note — `candidate_files_bucket` is not provisioned in this environment.**
+> The opc-prod environment does not set `cloudfront_enable = true`, so `candidate_files_bucket`
+> is not actually created (see `s3.tf` and `cloudfront.tf`). The bucket name is also empty in
+> `main.tf`, so the ECS task role's S3 policy resolves it to no-op for this account. TBB candidate
+> files currently live on Google Drive, not S3. When the planned TBB-to-S3 migration is agreed and
+> actioned, this environment will gain a candidate-files bucket. The shared developer IAM user
+> (`tc-dev-s3-access`, documented in the [grn-staging README](../grn-staging/README.md#local-developer-access--tc-dev-s3-access-iam-user))
+> is staging-only and will not be granted access to any opc-prod bucket.
 
 ## Secret and parameter updates
 

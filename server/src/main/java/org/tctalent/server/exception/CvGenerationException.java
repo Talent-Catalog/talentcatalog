@@ -16,10 +16,10 @@
 
 package org.tctalent.server.exception;
 
-public class PdfGenerationException extends ServiceException {
+public class CvGenerationException extends ServiceException {
 
-    public PdfGenerationException(String message) {
-        super("pdf_generation", message);
+    public CvGenerationException (String message) {
+        super("cv_generation", message);
 
     }
 }

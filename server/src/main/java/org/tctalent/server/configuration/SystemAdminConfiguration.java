@@ -34,6 +34,7 @@ import org.tctalent.server.model.db.partner.Partner;
 import org.tctalent.server.request.list.UpdateSavedListInfoRequest;
 import org.tctalent.server.request.partner.UpdatePartnerRequest;
 import org.tctalent.server.request.user.UpdateUserRequest;
+import org.tctalent.server.security.SpringSecurityAuditorAware;
 import org.tctalent.server.service.db.PartnerService;
 import org.tctalent.server.service.db.SavedListService;
 import org.tctalent.server.service.db.ShutdownService;
@@ -72,6 +73,7 @@ public class SystemAdminConfiguration {
     private final ShutdownService shutdownService;
     private final TcInstanceService tcInstanceService;
     private final UserService userService;
+    private final SpringSecurityAuditorAware auditorAware;
 
     @Value("${tc.init.boot-admin-password}")
     private String systemAdminPassword;
@@ -143,6 +145,9 @@ public class SystemAdminConfiguration {
             //Self create system admin
             systemAdmin = userService.createUser(req, null);
         }
+        // Seed the auditor fallback id once at startup so auditing can use a lightweight shell User
+        // (id only) and avoid loading the full system-admin entity during entity flush callbacks.
+        auditorAware.setSystemAdminId(systemAdmin.getId());
 
         //Auto create default source partner.
         Partner defaultSourcePartner
