@@ -33,8 +33,8 @@ public interface AgreementService {
     /**
      * Records candidate acceptance of terms with a given counterparty.
      * <p>
-     * If an active agreement of the same counterparty type already exists for the candidate, it is
-     * ended before the new agreement is created.
+     * If an active agreement of the same counterparty and terms type already exists for the
+     * candidate, it is ended before the new agreement is created.
      * </p>
      *
      * @param candidate Candidate accepting terms

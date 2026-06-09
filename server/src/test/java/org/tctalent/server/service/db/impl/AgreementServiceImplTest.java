@@ -83,10 +83,18 @@ class AgreementServiceImplTest {
         activeAgreement.setCandidate(candidate);
         activeAgreement.setCounterparty(databaseProvider);
         activeAgreement.setTermsInfoId("OldTermsV1");
+        activeAgreement.setTermsType(TermsType.GRN_CANDIDATE_PRIVACY_POLICY);
         activeAgreement.setStart(OffsetDateTime.now().minusDays(7));
 
-        given(agreementRepository.findFirstByCandidateIdAndCounterpartyTypeAndEndIsNullOrderByStartDesc(
-            candidate.getId(), CounterpartyType.DATABASE_PROVIDER)).willReturn(Optional.of(activeAgreement));
+        given(termsInfoService.get("NewTermsV2")).willReturn(new TermsInfo(
+            "NewTermsV2",
+            "/terms/ReferenceServiceTermsV1.html",
+            TermsType.GRN_CANDIDATE_PRIVACY_POLICY,
+            LocalDate.now()));
+        given(agreementRepository
+            .findFirstByCandidateIdAndCounterpartyIdAndTermsTypeAndEndIsNullOrderByStartDesc(
+                candidate.getId(), databaseProvider.getId(), TermsType.GRN_CANDIDATE_PRIVACY_POLICY))
+            .willReturn(Optional.of(activeAgreement));
         given(agreementRepository.save(any(Agreement.class))).willAnswer(invocation -> invocation.getArgument(0));
 
         agreementService.recordAgreement(candidate, databaseProvider, "NewTermsV2");
@@ -101,6 +109,7 @@ class AgreementServiceImplTest {
         assertTrue(updatedActiveAgreement.getId().equals(activeAgreement.getId()));
         assertTrue(updatedActiveAgreement.getEnd() != null);
         assertTrue("NewTermsV2".equals(createdAgreement.getTermsInfoId()));
+        assertTrue(TermsType.GRN_CANDIDATE_PRIVACY_POLICY == createdAgreement.getTermsType());
         assertTrue(createdAgreement.getEnd() == null);
     }
 
@@ -112,10 +121,18 @@ class AgreementServiceImplTest {
         activeAgreement.setCandidate(candidate);
         activeAgreement.setCounterparty(databaseProvider);
         activeAgreement.setTermsInfoId("SameTermsV1");
+        activeAgreement.setTermsType(TermsType.GRN_CANDIDATE_PRIVACY_POLICY);
         activeAgreement.setStart(OffsetDateTime.now().minusDays(1));
 
-        given(agreementRepository.findFirstByCandidateIdAndCounterpartyTypeAndEndIsNullOrderByStartDesc(
-            candidate.getId(), CounterpartyType.DATABASE_PROVIDER)).willReturn(Optional.of(activeAgreement));
+        given(termsInfoService.get("SameTermsV1")).willReturn(new TermsInfo(
+            "SameTermsV1",
+            "/terms/ReferenceServiceTermsV1.html",
+            TermsType.GRN_CANDIDATE_PRIVACY_POLICY,
+            LocalDate.now()));
+        given(agreementRepository
+            .findFirstByCandidateIdAndCounterpartyIdAndTermsTypeAndEndIsNullOrderByStartDesc(
+                candidate.getId(), databaseProvider.getId(), TermsType.GRN_CANDIDATE_PRIVACY_POLICY))
+            .willReturn(Optional.of(activeAgreement));
 
         agreementService.recordAgreement(candidate, databaseProvider, "SameTermsV1");
 
@@ -149,11 +166,37 @@ class AgreementServiceImplTest {
         currentTerms.setContent("<p>Terms</p>");
         given(termsInfoService.getCurrentByType(TermsType.OPC_STANDARD_DATA_PROCESSING_AGREEMENT))
             .willReturn(currentTerms);
-        given(agreementRepository.findFirstByCandidateIdAndCounterpartyTypeAndEndIsNullOrderByStartDesc(
-            candidate.getId(), CounterpartyType.DATABASE_PROVIDER)).willReturn(Optional.empty());
+        given(agreementRepository
+            .findFirstByCandidateIdAndCounterpartyIdAndTermsTypeAndEndIsNullOrderByStartDesc(
+                candidate.getId(), databaseProvider.getId(),
+                TermsType.OPC_STANDARD_DATA_PROCESSING_AGREEMENT))
+            .willReturn(Optional.empty());
 
         assertTrue(agreementService.needsAcceptance(
             candidate, databaseProvider, TermsType.OPC_STANDARD_DATA_PROCESSING_AGREEMENT));
+    }
+
+    @Test
+    @DisplayName("recordAgreement allows distinct terms types for same counterparty")
+    void recordAgreement_allowsTwoDistinctTermsTypesForSameCounterparty() {
+        given(termsInfoService.get("ReferenceServiceTermsV1")).willReturn(new TermsInfo(
+            "ReferenceServiceTermsV1",
+            "/terms/ReferenceServiceTermsV1.html",
+            TermsType.REFERENCE_SERVICE_TERMS,
+            LocalDate.now()));
+        given(agreementRepository
+            .findFirstByCandidateIdAndCounterpartyIdAndTermsTypeAndEndIsNullOrderByStartDesc(
+                candidate.getId(), databaseProvider.getId(), TermsType.REFERENCE_SERVICE_TERMS))
+            .willReturn(Optional.empty());
+        given(agreementRepository.save(any(Agreement.class))).willAnswer(invocation -> invocation.getArgument(0));
+
+        agreementService.recordAgreement(candidate, databaseProvider, "ReferenceServiceTermsV1");
+
+        ArgumentCaptor<Agreement> agreementCaptor = ArgumentCaptor.forClass(Agreement.class);
+        verify(agreementRepository, times(1)).save(agreementCaptor.capture());
+        Agreement createdAgreement = agreementCaptor.getValue();
+        assertTrue(TermsType.REFERENCE_SERVICE_TERMS == createdAgreement.getTermsType());
+        assertTrue(createdAgreement.getEnd() == null);
     }
 
     @Test

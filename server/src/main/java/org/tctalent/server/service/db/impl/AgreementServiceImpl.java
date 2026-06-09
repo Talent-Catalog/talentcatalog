@@ -55,9 +55,10 @@ public class AgreementServiceImpl implements AgreementService {
         @NonNull Counterparty counterparty,
         @NonNull String termsInfoId) {
 
+        TermsType termsType = termsInfoService.get(termsInfoId).getType();
         Optional<Agreement> activeAgreementOpt =
-            agreementRepository.findFirstByCandidateIdAndCounterpartyTypeAndEndIsNullOrderByStartDesc(
-                candidate.getId(), counterparty.getType());
+            agreementRepository.findFirstByCandidateIdAndCounterpartyIdAndTermsTypeAndEndIsNullOrderByStartDesc(
+                candidate.getId(), counterparty.getId(), termsType);
 
         if (activeAgreementOpt.isPresent()) {
             Agreement activeAgreement = activeAgreementOpt.get();
@@ -65,13 +66,14 @@ public class AgreementServiceImpl implements AgreementService {
                 return activeAgreement;
             }
             activeAgreement.setEnd(OffsetDateTime.now());
-            agreementRepository.saveAndFlush(activeAgreement);
+            agreementRepository.save(activeAgreement);
         }
 
         Agreement agreement = new Agreement();
         agreement.setCandidate(candidate);
         agreement.setCounterparty(counterparty);
         agreement.setTermsInfoId(termsInfoId);
+        agreement.setTermsType(termsType);
         agreement.setStart(OffsetDateTime.now());
         return agreementRepository.save(agreement);
     }
@@ -97,8 +99,8 @@ public class AgreementServiceImpl implements AgreementService {
         }
 
         Optional<Agreement> activeAgreementOpt =
-            agreementRepository.findFirstByCandidateIdAndCounterpartyTypeAndEndIsNullOrderByStartDesc(
-                candidate.getId(), counterparty.getType());
+            agreementRepository.findFirstByCandidateIdAndCounterpartyIdAndTermsTypeAndEndIsNullOrderByStartDesc(
+                candidate.getId(), counterparty.getId(), termsType);
 
         if (activeAgreementOpt.isEmpty()) {
             return true;
