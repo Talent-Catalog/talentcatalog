@@ -17,6 +17,7 @@
 package org.tctalent.server.casi.core.services;
 
 import java.util.List;
+import java.util.Optional;
 import org.springframework.web.multipart.MultipartFile;
 import org.tctalent.server.casi.domain.model.ResourceStatus;
 import org.tctalent.server.casi.domain.model.ServiceAssignment;
@@ -27,6 +28,7 @@ import org.tctalent.server.exception.ImportFailedException;
 import org.tctalent.server.exception.InvalidRequestException;
 import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.model.db.Candidate;
+import org.tctalent.server.model.db.TermsType;
 import org.tctalent.server.model.db.User;
 
 /**
@@ -66,6 +68,18 @@ public interface CandidateAssistanceService {
    */
   default List<ServiceListSpec> serviceListSpecs() {
     return List.of();
+  }
+
+  /**
+   * Optional terms type that must be accepted before using this service.
+   * <p>
+   * By default, services do not require agreement acceptance.
+   * </p>
+   *
+   * @return Terms type to gate service access, if any
+   */
+  default Optional<TermsType> agreementTermsType() {
+    return Optional.empty();
   }
 
   // CREATE
