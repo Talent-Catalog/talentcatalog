@@ -25,6 +25,11 @@ jobs:
     name: Build and Test
     runs-on: ubuntu-latest
 
+    env:
+      GOOGLE_DRIVE_PRIVATEKEY: ${{ secrets.GOOGLE_DRIVE_PRIVATEKEY }}
+      GOOGLE_DRIVE_PRIVATEKEYID: ${{ secrets.GOOGLE_DRIVE_PRIVATEKEYID }}
+      SF_PRIVATE_KEY: ${{ secrets.SF_PRIVATE_KEY }}
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -57,10 +62,6 @@ jobs:
 
       - name: Build
         run: ./gradlew server:build -x test
-        env:
-          GOOGLE_DRIVE_PRIVATEKEY: ${{ secrets.GOOGLE_DRIVE_PRIVATEKEY }}
-          GOOGLE_DRIVE_PRIVATEKEYID: ${{ secrets.GOOGLE_DRIVE_PRIVATEKEYID }}
-          SF_PRIVATE_KEY: ${{ secrets.SF_PRIVATE_KEY }}
 
       - name: Run tests
         run: ./gradlew clean :server:test --stacktrace --rerun-tasks
