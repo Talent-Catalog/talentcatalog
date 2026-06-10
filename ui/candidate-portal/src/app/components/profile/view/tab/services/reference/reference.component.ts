@@ -1,8 +1,10 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {forkJoin} from "rxjs";
 import {Candidate} from "../../../../../../model/candidate";
 import {
   ResourceStatus,
   ServiceAssignment,
+  ServiceProviderTermsInfo,
   UpdateServiceResourceStatusRequest
 } from "../../../../../../model/services";
 import {CasiPortalService} from "../../../../../../services/casi-portal.service";
@@ -27,6 +29,12 @@ export class ReferenceComponent implements OnInit {
   @Output() backButtonClicked = new EventEmitter<void>();
   assignment?: ServiceAssignment;
   eligible = false;
+  needsOpcDpa = false;
+  opcDpaTermsInfo: ServiceProviderTermsInfo | null = null;
+  opcDpaTermsRead = false;
+  needsAgreement = false;
+  termsInfo: ServiceProviderTermsInfo | null = null;
+  termsRead = false;
   loading: boolean;
   error: any;
 
@@ -84,6 +92,44 @@ export class ReferenceComponent implements OnInit {
     this.backButtonClicked.emit();
   }
 
+  setTermsRead() {
+    this.termsRead = true;
+  }
+
+  setOpcDpaTermsRead() {
+    this.opcDpaTermsRead = true;
+  }
+
+  acceptOpcDpa() {
+    this.loading = true;
+    this.error = null;
+    this.portalService.acceptOpcDpa(this.provider, this.serviceCode).subscribe({
+      next: () => {
+        this.opcDpaTermsRead = false;
+        this.checkEligibilityAndLoad();
+      },
+      error: (error) => {
+        this.error = error;
+        this.loading = false;
+      }
+    });
+  }
+
+  acceptTerms() {
+    this.loading = true;
+    this.error = null;
+    this.portalService.acceptProviderTerms(this.provider, this.serviceCode).subscribe({
+      next: () => {
+        this.termsRead = false;
+        this.checkEligibilityAndLoad();
+      },
+      error: (error) => {
+        this.error = error;
+        this.loading = false;
+      }
+    });
+  }
+
   get canRedeem(): boolean {
     return !!this.assignment && this.assignment.resource.status !== ResourceStatus.REDEEMED;
   }
@@ -100,9 +146,19 @@ export class ReferenceComponent implements OnInit {
           return;
         }
 
-        this.portalService.getAssignment(this.provider, this.serviceCode).subscribe({
-          next: assignment => {
-            this.assignment = assignment;
+        forkJoin({
+          assignment: this.portalService.getAssignment(this.provider, this.serviceCode),
+          needsOpcDpa: this.portalService.checkNeedsOpcDpa(this.provider, this.serviceCode),
+          opcDpaTermsInfo: this.portalService.getOpcDpaTerms(this.provider, this.serviceCode),
+          needsAgreement: this.portalService.checkNeedsAgreement(this.provider, this.serviceCode),
+          termsInfo: this.portalService.getProviderTerms(this.provider, this.serviceCode)
+        }).subscribe({
+          next: result => {
+            this.assignment = result.assignment;
+            this.needsOpcDpa = result.needsOpcDpa;
+            this.opcDpaTermsInfo = result.opcDpaTermsInfo;
+            this.needsAgreement = result.needsAgreement;
+            this.termsInfo = result.termsInfo;
             this.loading = false;
           },
           error: error => {
