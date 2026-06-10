@@ -28,7 +28,7 @@ sass:
     </div>
   </a>
 
-  <a href="./v251/full_candidate_deletion" class="card" style="margin-top: 1rem">
+  <a href="./v251/full_candidate_deletion" class="card" style="margin-top: 2rem">
     <img src="./assets/images/v251/FullCandidateDeletion.png" alt="Full candidate deletion" class="card-image">
     <div class="card-body">
       <div class="card-footer">
@@ -37,7 +37,7 @@ sass:
     </div>
   </a>
 
-  <a href="./v251/task_email_alerts" class="card" style="margin-top: 1rem">
+  <a href="./v251/task_email_alerts" class="card" style="margin-top: 2rem">
     <img src="./assets/images/v251/TaskEmailAlerts.png" alt="Task email alerts" class="card-image">
     <div class="card-body">
       <div class="card-footer">
