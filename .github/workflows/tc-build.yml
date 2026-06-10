@@ -27,11 +27,6 @@ jobs:
         with:
           distribution: 'zulu'
           java-version: '17'
-
-      - name: Verify Docker is available
-        run: |
-          docker version
-          docker info
           
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
