@@ -141,7 +141,6 @@ class CandidateDataAuditingIntegrationTest extends BaseDBIntegrationTest {
     void candidateOccupationAuditsAdminFlow() {
         authenticateAs(systemAdmin);
         Candidate candidate = createCandidateFor(createUser("occ-admin", Role.user));
-        TestDataFactory.createOccupation();
         Occupation occupation = getAnyOccupation();
 
         CandidateOccupation candidateOccupation = new CandidateOccupation();
@@ -160,7 +159,6 @@ class CandidateDataAuditingIntegrationTest extends BaseDBIntegrationTest {
         User candidateUser = createUser("occ-candidate", Role.user);
         authenticateAs(candidateUser);
         Candidate candidate = createCandidateFor(candidateUser);
-        TestDataFactory.createOccupation();
         Occupation occupation = getAnyOccupation();
 
         CandidateOccupation candidateOccupation = new CandidateOccupation();
@@ -308,8 +306,6 @@ class CandidateDataAuditingIntegrationTest extends BaseDBIntegrationTest {
     void candidateLanguageAudits() {
         authenticateAs(systemAdmin);
         Candidate candidate = createCandidateFor(createUser("language", Role.user));
-        TestDataFactory.createLanguage();
-        TestDataFactory.createLanguageLevel();
         Language language = getAnyLanguage();
         LanguageLevel level = getAnyLanguageLevel();
 
