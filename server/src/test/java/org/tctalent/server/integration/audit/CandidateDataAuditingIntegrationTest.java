@@ -52,6 +52,7 @@ import org.tctalent.server.model.db.CandidateOccupation;
 import org.tctalent.server.model.db.CandidateReviewStatusItem;
 import org.tctalent.server.model.db.CandidateVisaCheck;
 import org.tctalent.server.model.db.CandidateVisaJobCheck;
+import org.tctalent.server.model.db.CefrLevel;
 import org.tctalent.server.model.db.Country;
 import org.tctalent.server.model.db.DependantRelations;
 import org.tctalent.server.model.db.EducationType;
@@ -566,7 +567,9 @@ class CandidateDataAuditingIntegrationTest extends BaseDBIntegrationTest {
     private Occupation getAnyOccupation() {
         return occupationRepository.findAll().stream()
             .findFirst()
-            .orElseThrow(() -> new IllegalStateException("No occupation records available for test"));
+            .orElseGet(() -> occupationRepository.saveAndFlush(
+                new Occupation("Test Occupation", Status.active)
+            ));
     }
 
     private Country getAnyCountry() {
@@ -584,6 +587,8 @@ class CandidateDataAuditingIntegrationTest extends BaseDBIntegrationTest {
     private LanguageLevel getAnyLanguageLevel() {
         return languageLevelRepository.findAll().stream()
             .findFirst()
-            .orElseThrow(() -> new IllegalStateException("No language level records available for test"));
+            .orElseGet(() -> languageLevelRepository.saveAndFlush(
+                new LanguageLevel("Test Language Level", Status.active, 1, CefrLevel.A1)
+            ));
     }
 }
