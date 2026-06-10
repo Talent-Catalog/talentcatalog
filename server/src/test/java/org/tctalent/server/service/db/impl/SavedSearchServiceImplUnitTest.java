@@ -1109,7 +1109,11 @@ class SavedSearchServiceImplUnitTest {
 
     String sql = service.extractFetchSQL(request, restrictedUser, null, false);
 
-    assertTrue(sql.contains("candidate.country_id in (1,2)"));
+    assertTrue(
+        sql.contains("candidate.country_id in (1,2)")
+            || sql.contains("candidate.country_id in (2,1)"),
+        "Expected SQL to restrict to source countries 1 and 2, but was: " + sql
+    );
   }
 
   @Test

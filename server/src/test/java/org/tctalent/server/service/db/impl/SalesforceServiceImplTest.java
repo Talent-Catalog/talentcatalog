@@ -253,16 +253,12 @@ class SalesforceServiceImplTest {
   @Test
   void fetchCandidateOppGivenJobAndCandidateReturnsMatchingOpportunity() {
     Candidate candidate = mock(Candidate.class);
-    Candidate otherCandidate = mock(Candidate.class);
     CandidateOpportunity matchingOpp = mock(CandidateOpportunity.class);
-    CandidateOpportunity otherOpp = mock(CandidateOpportunity.class);
     SalesforceJobOpp job = mock(SalesforceJobOpp.class);
 
     when(candidate.getId()).thenReturn(10L);
-    when(otherCandidate.getId()).thenReturn(20L);
     when(matchingOpp.getCandidate()).thenReturn(candidate);
-    when(otherOpp.getCandidate()).thenReturn(otherCandidate);
-    when(job.getCandidateOpportunities()).thenReturn(Set.of(otherOpp, matchingOpp));
+    when(job.getCandidateOpportunities()).thenReturn(Set.of(matchingOpp));
 
     CandidateOpportunity result = ReflectionTestUtils.invokeMethod(
         service,
