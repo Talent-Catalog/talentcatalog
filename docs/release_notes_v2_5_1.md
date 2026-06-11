@@ -172,7 +172,7 @@ Helpful TC user guides:
 ## Test Coverage
 
 * Add tests for candidate-related service classes
-* We’ve successfully scaled our application test coverage from 0% to a robust 60%. But we aren't stopping there. We are actively driving toward an [80% coverage threshold](https://www.atlassian.com/continuous-delivery/software-testing/code-coverage#:~:text=With%20that%20being%20said%20it%20is%20generally%20accepted%20that%2080%25%20coverage%20is%20a%20good%20goal%20to%20aim%20for.), aligning with industry-standard benchmarks.
+* We’ve successfully scaled our application test coverage from 0% to 60%. But we aren't stopping there. We are actively driving toward an [80% coverage threshold](https://www.atlassian.com/continuous-delivery/software-testing/code-coverage#:~:text=With%20that%20being%20said%20it%20is%20generally%20accepted%20that%2080%25%20coverage%20is%20a%20good%20goal%20to%20aim%20for.), aligning with industry-standard benchmarks.
 
 ## Continuous Integration & Deployment
 
