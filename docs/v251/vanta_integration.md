@@ -5,7 +5,7 @@ sass:
   style: compressed
 ---
 
-# Vanta for Security and compliance monitoring
+# [Vanta](https://www.vanta.com/) for Security and compliance monitoring
 
 Talent Catalog infrastructure can now be connected with [Vanta](https://www.vanta.com/) for compliance monitoring.
 

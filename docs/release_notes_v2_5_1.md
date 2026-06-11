@@ -136,7 +136,7 @@ Helpful TC user guides:
 
 # Performance Improvements
 
-While this release wasn't focused on performance, we aren't slowing down after those massive v2.5.0 gains. Stay tuned—even more speed improvements are already in the pipeline! We’re just getting warmed up. 🚀
+* While this release wasn't focused on performance, we aren't slowing down after those massive v2.5.0 gains. Stay tuned—even more speed improvements are already in the pipeline! We’re just getting warmed up. 🚀
 
 # Security Updates
 
@@ -170,10 +170,9 @@ While this release wasn't focused on performance, we aren't slowing down after t
 * Updated README to fix bug where a new user setting up will require a password environment variable
 
 ## Test Coverage
-* Add tests for candidate-related service classes
-* We’ve successfully scaled our application test coverage from 0% to a robust 60%. But we aren't stopping there—we are actively driving toward an 80% coverage threshold, aligning with industry-standard benchmarks to ensure maximum stability for all future releases.
 
-## Code Refactoring
+* Add tests for candidate-related service classes
+* We’ve successfully scaled our application test coverage from 0% to a robust 60%. But we aren't stopping there. We are actively driving toward an [80% coverage threshold](https://www.atlassian.com/continuous-delivery/software-testing/code-coverage#:~:text=With%20that%20being%20said%20it%20is%20generally%20accepted%20that%2080%25%20coverage%20is%20a%20good%20goal%20to%20aim%20for.), aligning with industry-standard benchmarks.
 
 ## Continuous Integration & Deployment
 
@@ -185,9 +184,8 @@ While this release wasn't focused on performance, we aren't slowing down after t
 * Standardise environment variables across all Terraform deployments
 * Configure TBB AWS tasks for new translation service
 
-## Logging and Monitoring
-
 ## Other Enhancements 
+
 * Linear product roadmap
 *  Linear - Phase 1 - prep + decisions
 *  Linear - Phase 2 - setup + developer onboarding

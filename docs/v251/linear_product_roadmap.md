@@ -5,7 +5,7 @@ sass:
   style: compressed
 ---
 
-# Linear Product Roadmap
+# [Linear](https://linear.app/)  Product Roadmap
 
 The engineering team has moved workflows from ZenHub to [Linear](https://linear.app/) — the industry standard for lightning-fast issue tracking, clear planning, and powerful GitHub integration.
 
