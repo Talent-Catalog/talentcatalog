@@ -7,13 +7,15 @@ sass:
 
 # Linear Product Roadmap
 
-The engineering team has moved workflows from ZenHub to Linear.
+The engineering team has moved workflows from ZenHub to [Linear](https://linear.app/) — the industry standard for lightning-fast issue tracking, clear planning, and powerful GitHub integration.
 
 ---
 
 ### Linear workspace setup
 
 The Linear workspace has been created as the new home for roadmap planning, issue tracking, and delivery coordination.
+
+Linear is widely used by modern product and engineering teams because it supports fast issue tracking, clear planning, and strong GitHub-based development workflows.
 
 Initial setup focused on inviting admin users first, configuring teams, and preparing the workspace before wider rollout.
 

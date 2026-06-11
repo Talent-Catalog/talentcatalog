@@ -37,23 +37,7 @@ sass:
     </div>
   </a>
 
-  <a href="./v251/task_email_alerts" class="card" style="margin-top: 2rem">
-    <img src="./assets/images/v251/TaskEmailAlerts.png" alt="Task email alerts" class="card-image">
-    <div class="card-body">
-      <div class="card-footer">
-        <button class="btn btn-sm">Learn more</button>
-      </div>
-    </div>
-  </a>
-
-</div>
-
-## Other Enhancements
-* Toggle page size for candidate results
-
-<div class="card-container">
-
-  <a href="./v251/agreement_management" class="card">
+  <a href="./v251/agreement_management" class="card" style="margin-top: 2rem">
     <img src="./assets/images/v251/AgreementManagement.png" alt="Agreement management" class="card-image">
     <div class="card-body">
       <div class="card-footer">
@@ -64,15 +48,58 @@ sass:
 
 </div>
 
+## Other Enhancements
+
+<div class="card-container">
+  <a href="./v251/task_email_alerts" class="card">
+    <img src="./assets/images/v251/TaskEmailAlerts.png" alt="Task email alerts" class="card-image">
+    <div class="card-body">
+      <div class="card-footer">
+        <button class="btn btn-sm">Learn more</button>
+      </div>
+    </div>
+  </a>
+
+  <a href="./v251/casi_service_lists" class="card">
+    <img src="./assets/images/v251/CasiServiceLists.png" alt="CASI service lists" class="card-image">
+    <div class="card-body">
+      <div class="card-footer">
+        <button class="btn btn-sm">Learn more</button>
+      </div>
+    </div>
+  </a>
+</div>
+
+
+## New Tools and Standards
+
+<div class="card-container">
+
+  <a href="./v251/linear_product_roadmap" class="card">
+    <img src="./assets/images/v251/LinearProductRoadmap.png" alt="Linear product roadmap" class="card-image">
+    <div class="card-body">
+      <div class="card-footer">
+        <button class="btn btn-sm">Learn more</button>
+      </div>
+    </div>
+  </a>
+
+  <a href="./v251/vanta_integration" class="card">
+    <img src="./assets/images/v251/VantaAwsIntegration.png" alt="Vanta AWS integration" class="card-image">
+    <div class="card-body">
+      <div class="card-footer">
+        <button class="btn btn-sm">Learn more</button>
+      </div>
+    </div>
+  </a>
+
+</div>
 
 # User Guides
 
 Helpful TC user guides:
 <ul>
-    <li>
-        <a href="https://tc-api.redocly.app/openapi" 
-        target="_blank">Talent Catalog API on Redoc</a>
-    </li>
+    
     <li>
         <a href="https://github.com/Talent-Catalog/talentcatalog/blob/staging/server/src/main/java/org/tctalent/server/casi/README.md" 
         target="_blank">CASI (Candidate Assistance Services Interface) -- Developer Guide</a>
@@ -80,6 +107,10 @@ Helpful TC user guides:
     <li>
         <a href="https://drive.google.com/file/d/1CBBYNjuRrYgOQ0xDRjiegqoznek_i-MB/view?usp=drive_link" 
         target="_blank">Italy Train-to-Hire: Task Management Documentation</a>
+    </li>
+    <li>
+        <a href="https://tc-api.redocly.app/openapi" 
+        target="_blank">Talent Catalog API on Redoc</a>
     </li>
 </ul>
 
@@ -94,13 +125,18 @@ Helpful TC user guides:
 
 # Data Improvements
 
+* Job experience text: candidate and admin text can be kept separate
+* Agreement management for candidate service-provider agreements
+* Full candidate deletion for GDPR-related erasure requests
+
 # UI / UX Enhancements
 
 *  Display folder name on Candidate profile > Additional Info tab > uploaded files
-
-## Other UI / UX Enhancements
+*  Toggle page size for candidate results
 
 # Performance Improvements
+
+While this release wasn't focused on performance, we aren't slowing down after those massive v2.5.0 gains. Stay tuned—even more speed improvements are already in the pipeline! We’re just getting warmed up. 🚀
 
 # Security Updates
 
@@ -124,6 +160,7 @@ Helpful TC user guides:
 * Fixed citizenship intake panel errors when data is missing
 * Resolved migration issue causing some candidates not to be loaded
 * Highlighting matches in search results now only highlights matching words
+* Fixed candidate note ordering in search result summary views
 
 # Developer Notes
 
@@ -134,6 +171,7 @@ Helpful TC user guides:
 
 ## Test Coverage
 * Add tests for candidate-related service classes
+* We’ve successfully scaled our application test coverage from 0% to a robust 60%. But we aren't stopping there—we are actively driving toward an 80% coverage threshold, aligning with industry-standard benchmarks to ensure maximum stability for all future releases.
 
 ## Code Refactoring
 
@@ -148,30 +186,6 @@ Helpful TC user guides:
 * Configure TBB AWS tasks for new translation service
 
 ## Logging and Monitoring
-
-## New Tools and Standards
-
-<div class="card-container">
-
-  <a href="./v251/linear_product_roadmap" class="card">
-    <img src="./assets/images/v251/LinearProductRoadmap.png" alt="Linear product roadmap" class="card-image">
-    <div class="card-body">
-      <div class="card-footer">
-        <button class="btn btn-sm">Learn more</button>
-      </div>
-    </div>
-  </a>
-
-  <a href="./v251/vanta_aws_integration" class="card">
-    <img src="./assets/images/v251/VantaAwsIntegration.png" alt="Vanta AWS integration" class="card-image">
-    <div class="card-body">
-      <div class="card-footer">
-        <button class="btn btn-sm">Learn more</button>
-      </div>
-    </div>
-  </a>
-
-</div>
 
 ## Other Enhancements 
 * Linear product roadmap

@@ -5,7 +5,7 @@ sass:
   style: compressed
 ---
 
-# Generated CV Export Options
+# Translatable cv
 
 Admins can now choose the format when generating a candidate CV from the candidate profile.
 

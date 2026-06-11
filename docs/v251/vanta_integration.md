@@ -5,15 +5,15 @@ sass:
   style: compressed
 ---
 
-# Vanta AWS integration
+# Vanta for Security and compliance monitoring
 
-Talent Catalog infrastructure can now be connected with Vanta for AWS compliance monitoring.
+Talent Catalog infrastructure can now be connected with [Vanta](https://www.vanta.com/) for compliance monitoring.
 
 ---
 
 ### Supporting compliance evidence collection
 
-The integration helps place AWS accounts under Vanta monitoring, supporting compliance visibility and evidence collection.
+The integration helps place AWS accounts, Google, and other OPC systems under [Vanta](https://www.vanta.com/) monitoring, supporting compliance visibility and evidence collection.
 
 This makes it easier to track whether AWS infrastructure is configured in line with compliance expectations.
 

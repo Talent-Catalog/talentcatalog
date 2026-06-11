@@ -11,11 +11,23 @@ Talent Catalog now supports full candidate deletion for cases where a candidate 
 
 ---
 
-### Supporting candidate privacy rights
+### Supporting candidate privacy rights 
 
 Candidates may request that all of their data is removed from Talent Catalog.
 
-This release improves support for this workflow and helps Talent Catalog meet stronger privacy and data protection requirements.
+This release improves support for this workflow and helps Talent Catalog meet stronger privacy and GDPR data protection requirements.
+
+---
+
+### Deletion status remains the preferred option
+
+In most cases, marking a candidate status as deleted remains the preferred approach.
+
+This preserves historical information for reporting, statistics, and future operational context, while ensuring the candidate is no longer shared or treated as active in normal workflows.
+
+Full candidate deletion is intended for the smaller number of cases where a candidate specifically requests that all of their data be removed.
+
+This gives administrators a supported way to complete full data deletion without needing manual database changes.
 
 ---
 
