@@ -44,8 +44,11 @@ import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.tctalent.server.configuration.SystemAdminConfiguration;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.CandidateStatus;
+import org.tctalent.server.model.db.Counterparty;
+import org.tctalent.server.model.db.CounterpartyType;
 import org.tctalent.server.model.db.Country;
 import org.tctalent.server.model.db.PartnerImpl;
 import org.tctalent.server.model.db.User;
@@ -53,11 +56,14 @@ import org.tctalent.server.model.db.partner.Partner;
 import org.tctalent.server.repository.db.CandidateRepository;
 import org.tctalent.server.repository.db.CountryRepository;
 import org.tctalent.server.repository.db.UserRepository;
+import org.tctalent.server.request.candidate.SubmitRegistrationRequest;
 import org.tctalent.server.request.candidate.UpdateCandidatePersonalRequest;
 import org.tctalent.server.request.candidate.citizenship.CreateCandidateCitizenshipRequest;
 import org.tctalent.server.security.AuthService;
+import org.tctalent.server.service.db.AgreementService;
 import org.tctalent.server.service.db.CandidateCitizenshipService;
 import org.tctalent.server.service.db.CountryService;
+import org.tctalent.server.service.db.CounterpartyService;
 import org.tctalent.server.service.db.PartnerService;
 import org.tctalent.server.service.db.SystemNotificationService;
 import org.tctalent.server.util.PersistenceContextHelper;
@@ -87,6 +93,8 @@ class CandidateServiceImplTest {
   @Mock private CandidateCitizenshipService candidateCitizenshipService;
   @Mock private PartnerImpl mockPartner;
   @Mock private TcInstanceService tcInstanceService;
+  @Mock private AgreementService agreementService;
+  @Mock private CounterpartyService counterpartyService;
 
   @Spy
   @InjectMocks
@@ -105,6 +113,7 @@ class CandidateServiceImplTest {
     candidate = new Candidate();
     candidate.setId(1L);
     candidate.setUser(user);
+    user.setCandidate(candidate);
     User user2 = new User();
     user2.setPartner(partner);
     Candidate candidate2 = new Candidate();
@@ -394,5 +403,73 @@ class CandidateServiceImplTest {
 
     assertEquals(CandidateStatus.ineligible, candidate.getStatus());
     verify(candidateService, never()).updateCandidateStatus(any(Candidate.class), any());
+  }
+
+  @Test
+  @DisplayName("updateAcceptedPrivacyPolicy records DATABASE_PROVIDER agreement on GRN")
+  void updateAcceptedPrivacyPolicy_recordsDatabaseProviderAgreementOnGrn() {
+    String termsInfoId = "GrnCandidatePrivacyPolicyV2";
+    PartnerImpl opcPartner = new PartnerImpl();
+    opcPartner.setId(99L);
+    Counterparty databaseProvider = new Counterparty();
+    databaseProvider.setId(10L);
+    databaseProvider.setType(CounterpartyType.DATABASE_PROVIDER);
+    databaseProvider.setPartner(opcPartner);
+
+    given(authService.getLoggedInUser()).willReturn(Optional.of(user));
+    given(tcInstanceService.isGRN()).willReturn(true);
+    given(partnerService.getPartnerFromAbbreviation(SystemAdminConfiguration.SYSTEM_PARTNER_ABBREVIATION))
+        .willReturn(opcPartner);
+    given(counterpartyService.findOrCreateByTypeAndPartner(CounterpartyType.DATABASE_PROVIDER, opcPartner))
+        .willReturn(databaseProvider);
+    doReturn(candidate).when(candidateService).save(any(Candidate.class));
+
+    candidateService.updateAcceptedPrivacyPolicy(termsInfoId);
+
+    verify(agreementService).recordAgreement(candidate, databaseProvider, termsInfoId);
+  }
+
+  @Test
+  @DisplayName("updateAcceptedPrivacyPolicy does not record DATABASE_PROVIDER agreement outside GRN")
+  void updateAcceptedPrivacyPolicy_doesNotRecordAgreementOutsideGrn() {
+    String termsInfoId = "TbbCandidatePrivacyPolicyV1";
+
+    given(authService.getLoggedInUser()).willReturn(Optional.of(user));
+    given(tcInstanceService.isGRN()).willReturn(false);
+    doReturn(candidate).when(candidateService).save(any(Candidate.class));
+
+    candidateService.updateAcceptedPrivacyPolicy(termsInfoId);
+
+    verify(counterpartyService, never()).findOrCreateByTypeAndPartner(any(), any());
+    verify(agreementService, never()).recordAgreement(any(), any(), any());
+  }
+
+  @Test
+  @DisplayName("submitRegistration records DATABASE_PROVIDER agreement on GRN")
+  void submitRegistration_recordsDatabaseProviderAgreementOnGrn() {
+    String termsInfoId = "GrnCandidatePrivacyPolicyV2";
+    SubmitRegistrationRequest request = new SubmitRegistrationRequest();
+    request.setAcceptedPrivacyPolicyId(termsInfoId);
+
+    PartnerImpl opcPartner = new PartnerImpl();
+    opcPartner.setId(99L);
+    Counterparty databaseProvider = new Counterparty();
+    databaseProvider.setId(20L);
+    databaseProvider.setType(CounterpartyType.DATABASE_PROVIDER);
+    databaseProvider.setPartner(opcPartner);
+
+    candidate.setStatus(CandidateStatus.pending);
+
+    doReturn(Optional.of(candidate)).when(candidateService).getLoggedInCandidate();
+    given(tcInstanceService.isGRN()).willReturn(true);
+    given(partnerService.getPartnerFromAbbreviation(SystemAdminConfiguration.SYSTEM_PARTNER_ABBREVIATION))
+        .willReturn(opcPartner);
+    given(counterpartyService.findOrCreateByTypeAndPartner(CounterpartyType.DATABASE_PROVIDER, opcPartner))
+        .willReturn(databaseProvider);
+    doReturn(candidate).when(candidateService).save(any(Candidate.class));
+
+    candidateService.submitRegistration(request);
+
+    verify(agreementService).recordAgreement(candidate, databaseProvider, termsInfoId);
   }
 }

@@ -67,6 +67,7 @@ import org.springframework.web.reactive.function.client.WebClientException;
 import org.tctalent.anonymization.model.CandidateRegistration;
 import org.tctalent.server.configuration.GoogleDriveConfig;
 import org.tctalent.server.configuration.SalesforceConfig;
+import org.tctalent.server.configuration.SystemAdminConfiguration;
 import org.tctalent.server.exception.CountryRestrictionException;
 import org.tctalent.server.exception.EntityExistsException;
 import org.tctalent.server.exception.EntityReferencedException;
@@ -88,7 +89,10 @@ import org.tctalent.server.model.db.CandidateOccupation;
 import org.tctalent.server.model.db.CandidateProperty;
 import org.tctalent.server.model.db.CandidateStatus;
 import org.tctalent.server.model.db.CandidateSubfolderType;
+import org.tctalent.server.model.db.Counterparty;
+import org.tctalent.server.model.db.CounterpartyType;
 import org.tctalent.server.model.db.Country;
+import org.tctalent.server.model.db.CvFormat;
 import org.tctalent.server.model.db.DataRow;
 import org.tctalent.server.model.db.DependantRelations;
 import org.tctalent.server.model.db.EducationLevel;
@@ -169,6 +173,7 @@ import org.tctalent.server.service.db.CandidatePropertyService;
 import org.tctalent.server.service.db.CandidateSavedListService;
 import org.tctalent.server.service.db.CandidateService;
 import org.tctalent.server.service.db.CountryService;
+import org.tctalent.server.service.db.CounterpartyService;
 import org.tctalent.server.service.db.FileSystemService;
 import org.tctalent.server.service.db.PartnerService;
 import org.tctalent.server.service.db.PublicIDService;
@@ -178,7 +183,10 @@ import org.tctalent.server.service.db.SavedListService;
 import org.tctalent.server.service.db.SavedSearchService;
 import org.tctalent.server.service.db.SystemNotificationService;
 import org.tctalent.server.service.db.UserService;
+import org.tctalent.server.service.db.AgreementService;
 import org.tctalent.server.service.db.email.EmailHelper;
+import org.tctalent.server.service.db.util.DocxHelper;
+import org.tctalent.server.service.db.util.GoogleDocHelper;
 import org.tctalent.server.service.db.util.PdfHelper;
 import org.tctalent.server.util.BeanHelper;
 import org.tctalent.server.util.PersistenceContextHelper;
@@ -263,11 +271,15 @@ public class CandidateServiceImpl implements CandidateService {
     private final TaskAssignmentRepository taskAssignmentRepository;
     private final EmailHelper emailHelper;
     private final PdfHelper pdfHelper;
+    private final DocxHelper docxHelper;
+    private final GoogleDocHelper googleDocHelper;
     private final TextExtracter textExtracter;
     private final EntityManager entityManager;
     private final PersistenceContextHelper persistenceContextHelper;
     private final SystemNotificationService systemNotificationService;
     private final TcInstanceService tcInstanceService;
+    private final AgreementService agreementService;
+    private final CounterpartyService counterpartyService;
 
     @Override
     public Page<Candidate> getSavedListCandidates(SavedList savedList, SavedListGetRequest request) {
@@ -1230,13 +1242,33 @@ public class CandidateServiceImpl implements CandidateService {
     /**
      * Factored out some common code
      */
-    private static void updatePolicyId(String acceptedPrivacyPolicyId, Candidate candidate) {
+    private void updatePolicyId(String acceptedPrivacyPolicyId, Candidate candidate) {
         if (acceptedPrivacyPolicyId == null || "null".equalsIgnoreCase(acceptedPrivacyPolicyId)) {
             throw new InvalidRequestException("Privacy policy has not been accepted");
         }
         candidate.setAcceptedPrivacyPolicyId(acceptedPrivacyPolicyId);
         candidate.setAcceptedPrivacyPolicyDate(OffsetDateTime.now());
         candidate.setAcceptedPrivacyPolicyPartner(candidate.getUser().getPartner());
+
+        recordDatabaseProviderAgreement(candidate, acceptedPrivacyPolicyId);
+    }
+
+    private void recordDatabaseProviderAgreement(Candidate candidate, String termsInfoId) {
+        // Phase-1 scope: only GRN candidates create a DATABASE_PROVIDER agreement row.
+        // TBB and dual-instance behavior (DB provider + managing source partner from one acceptance)
+        // are intentionally deferred.
+        if (!tcInstanceService.isGRN()) {
+            return;
+        }
+
+        // The OPC system partner is guaranteed to exist — it is seeded at startup by
+        // SystemAdminConfiguration. Use partner_id as the counterparty identity anchor,
+        // so the counterparty row carries a proper FK to the partner table.
+        PartnerImpl opcPartner = (PartnerImpl) partnerService.getPartnerFromAbbreviation(
+            SystemAdminConfiguration.SYSTEM_PARTNER_ABBREVIATION);
+        Counterparty databaseProvider = counterpartyService.findOrCreateByTypeAndPartner(
+            CounterpartyType.DATABASE_PROVIDER, opcPartner);
+        agreementService.recordAgreement(candidate, databaseProvider, termsInfoId);
     }
 
     @Override
@@ -2129,8 +2161,15 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     @Override
-    public Resource generateCv(Candidate candidate, Boolean showName, Boolean showContact) {
-       return pdfHelper.generatePdf(candidate, showName, showContact);
+    public Resource generateCv(
+        Candidate candidate, Boolean showName, Boolean showContact, CvFormat format) {
+        CvFormat requestedFormat = format == null ? CvFormat.PDF : format;
+
+        return switch (requestedFormat) {
+            case PDF -> pdfHelper.generatePdf(candidate, showName, showContact);
+            case GOOGLE_DOC -> googleDocHelper.generateGoogleDoc(candidate, showName, showContact);
+            case DOCX -> docxHelper.generateDocx(candidate, showName, showContact);
+        };
     }
 
     // List export

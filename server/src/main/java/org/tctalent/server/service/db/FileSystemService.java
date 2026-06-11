@@ -19,6 +19,7 @@ package org.tctalent.server.service.db;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
+import org.springframework.core.io.Resource;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.tctalent.server.util.filesystem.GoogleFileSystemBaseEntity;
@@ -157,4 +158,31 @@ public interface FileSystemService {
     GoogleFileSystemFile copyFile(
         GoogleFileSystemFolder parentFolder, String name, GoogleFileSystemFile sourceFile)
         throws IOException;
-}
+
+    /**
+     * Uploads the given generated resource and converts it to the requested Google Workspace file
+     * type.
+     *
+     * <p>Example: upload a DOCX resource with source MIME type
+     * {@code application/vnd.openxmlformats-officedocument.wordprocessingml.document} and target
+     * MIME type {@code application/vnd.google-apps.document} to create a native Google Doc.</p>
+     *
+     * @param drive drive where the file should be created
+     * @param parentFolder folder where the file should be uploaded; if null, file is uploaded to
+     *                     the drive root
+     * @param fileName name assigned to the uploaded file
+     * @param resource generated local resource to upload
+     * @param sourceMimeType MIME type of the uploaded resource content
+     * @param targetMimeType Google Workspace MIME type to convert the uploaded content into
+     * @return uploaded and converted Google Workspace file
+     * @throws IOException if there was a problem uploading or converting the file
+     */
+    @NonNull
+    GoogleFileSystemFile uploadFileWithConversion(
+        GoogleFileSystemDrive drive,
+        @Nullable GoogleFileSystemFolder parentFolder,
+        String fileName,
+        Resource resource,
+        String sourceMimeType,
+        String targetMimeType
+    ) throws IOException;}

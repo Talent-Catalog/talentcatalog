@@ -298,7 +298,7 @@ describe('CandidateService', () => {
       expect(blob).toEqual(dummyBlob);
     });
 
-    const req = httpMock.expectOne(`${environment.apiUrl}/candidate/${dummyRequest.candidateId}/cv.pdf`);
+    const req = httpMock.expectOne(`${environment.apiUrl}/candidate/${dummyRequest.candidateId}/cv`);
     expect(req.request.method).toBe('POST');
     req.flush(dummyBlob);
   });

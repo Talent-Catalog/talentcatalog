@@ -241,6 +241,12 @@ import {
 } from './components/profile/view/tab/services/reference/reference.component';
 import {UnhcrComponent} from './components/profile/view/tab/services/unhcr/unhcr.component';
 import {
+  CandidateAgreementsComponent
+} from './components/profile/view/tab/agreements/candidate-agreements.component';
+import {
+  AgreementContentComponent
+} from './components/profile/view/tab/agreements/agreement-content/agreement-content.component';
+import {
   TextPartsInputComponent
 } from "./components/util/text-parts-input/text-parts-input.component";
 import {TextPartsViewComponent} from "./components/util/text-parts-view/text-parts-view.component";
@@ -342,7 +348,9 @@ export function HttpLoaderFactory(http: HttpClient) {
     LinkedinComponent,
     LinkedinRedeemedComponent,
     ReferenceComponent,
-    UnhcrComponent
+    UnhcrComponent,
+    CandidateAgreementsComponent,
+    AgreementContentComponent
   ],
   imports: [
     BrowserModule,

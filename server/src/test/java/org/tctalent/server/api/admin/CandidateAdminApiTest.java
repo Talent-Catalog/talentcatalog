@@ -34,6 +34,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.tctalent.server.data.CandidateTestData.getCandidate;
@@ -70,6 +71,7 @@ import org.tctalent.server.model.db.CandidateDestination;
 import org.tctalent.server.model.db.CandidateStatus;
 import org.tctalent.server.model.db.CandidateVisaCheck;
 import org.tctalent.server.model.db.Country;
+import org.tctalent.server.model.db.CvFormat;
 import org.tctalent.server.model.db.Role;
 import org.tctalent.server.model.db.Status;
 import org.tctalent.server.repository.db.read.dto.CandidateReadDto;
@@ -131,7 +133,7 @@ class CandidateAdminApiTest extends ApiTestBase {
     private static final String UPDATE_MEDIA_BY_ID_PATH = "/{id}/media";
     private static final String UPDATE_REGISTRATION_BY_ID_PATH = "/{id}/registration";
     private static final String EXPORT_CSV_PATH = "/export/csv";
-    private static final String DOWNLOAD_CV_PDF_BY_ID_PATH = "/{id}/cv.pdf";
+    private static final String DOWNLOAD_CV_BY_ID_PATH = "/{id}/cv";
     private static final String CREATE_CANDIDATE_FOLDER_BY_ID_PATH = "/{id}/create-folder";
     private static final String UPDATE_LIVE_CANDIDATE_BY_ID_PATH = "/{id}/update-live";
     private static final String UPDATE_OPPS_FROM_CANDIDATE_PATH = "/update-opps";
@@ -579,23 +581,118 @@ class CandidateAdminApiTest extends ApiTestBase {
         request.setCandidateId(id);
         request.setShowName(true);
         request.setShowContact(true);
+        request.setFormat(CvFormat.PDF);
 
-        Resource report = new ByteArrayResource("report".getBytes());
-
-        given(candidateService
-                .getCandidate(anyLong()))
-                .willReturn(candidate);
+        Resource report = new ByteArrayResource("pdf-report".getBytes());
 
         given(candidateService
-                .generateCv(any(Candidate.class), anyBoolean(), anyBoolean()))
-                .willReturn(report);
+            .getCandidate(anyLong()))
+            .willReturn(candidate);
 
-        postApiRequest(
-                DOWNLOAD_CV_PDF_BY_ID_PATH.replace("{id}", Long.toString(id)),
-                objectMapper.writeValueAsString(request));
+        given(candidateService
+            .generateCv(
+                any(Candidate.class),
+                anyBoolean(),
+                anyBoolean(),
+                eq(CvFormat.PDF)))
+            .willReturn(report);
+
+        postDownloadCvRequestAndVerifyResponse(
+            DOWNLOAD_CV_BY_ID_PATH.replace("{id}", Long.toString(id)),
+            objectMapper.writeValueAsString(request),
+            "application/pdf",
+            ".pdf",
+            "pdf-report".getBytes());
 
         verify(candidateService).getCandidate(anyLong());
-        verify(candidateService).generateCv(any(Candidate.class), anyBoolean(), anyBoolean());
+        verify(candidateService)
+            .generateCv(
+                any(Candidate.class),
+                anyBoolean(),
+                anyBoolean(),
+                eq(CvFormat.PDF));
+    }
+
+    @Test
+    @DisplayName("download candidate cv docx succeeds")
+    void downloadCandidateCvDocxSucceeds() throws Exception {
+        long id = 99L;
+        DownloadCvRequest request = new DownloadCvRequest();
+        request.setCandidateId(id);
+        request.setShowName(true);
+        request.setShowContact(true);
+        request.setFormat(CvFormat.DOCX);
+
+        Resource report = new ByteArrayResource("docx-report".getBytes());
+
+        given(candidateService
+            .getCandidate(anyLong()))
+            .willReturn(candidate);
+
+        given(candidateService
+            .generateCv(
+                any(Candidate.class),
+                anyBoolean(),
+                anyBoolean(),
+                eq(CvFormat.DOCX)))
+            .willReturn(report);
+
+        postDownloadCvRequestAndVerifyResponse(
+            DOWNLOAD_CV_BY_ID_PATH.replace("{id}", Long.toString(id)),
+            objectMapper.writeValueAsString(request),
+            "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+            ".docx",
+            "docx-report".getBytes());
+
+        verify(candidateService).getCandidate(anyLong());
+        verify(candidateService)
+            .generateCv(
+                any(Candidate.class),
+                anyBoolean(),
+                anyBoolean(),
+                eq(CvFormat.DOCX));
+    }
+
+    @Test
+    @DisplayName("create candidate cv google doc succeeds")
+    void downloadCandidateCvGoogleDocSucceeds() throws Exception {
+        long id = 99L;
+        String googleDocUrl = "https://docs.google.com/document/d/mock-google-doc-id/edit";
+
+        DownloadCvRequest request = new DownloadCvRequest();
+        request.setCandidateId(id);
+        request.setShowName(true);
+        request.setShowContact(true);
+        request.setFormat(CvFormat.GOOGLE_DOC);
+
+        Resource report = new ByteArrayResource(googleDocUrl.getBytes());
+
+        given(candidateService
+            .getCandidate(anyLong()))
+            .willReturn(candidate);
+
+        given(candidateService
+            .generateCv(
+                any(Candidate.class),
+                anyBoolean(),
+                anyBoolean(),
+                eq(CvFormat.GOOGLE_DOC)))
+            .willReturn(report);
+
+        postDownloadCvRequestAndVerifyResponse(
+            DOWNLOAD_CV_BY_ID_PATH.replace("{id}", Long.toString(id)),
+            objectMapper.writeValueAsString(request),
+            "text/plain",
+            ".txt",
+            googleDocUrl.getBytes());
+
+        verify(candidateService).getCandidate(anyLong());
+        verify(candidateService)
+            .generateCv(
+                any(Candidate.class),
+                anyBoolean(),
+                anyBoolean(),
+                eq(CvFormat.GOOGLE_DOC));
     }
 
     @Test
@@ -790,4 +887,25 @@ class CandidateAdminApiTest extends ApiTestBase {
                 .andExpect(jsonPath("$.nationality.name", is("Pakistan")));
     }
 
+    private void postDownloadCvRequestAndVerifyResponse(
+        String path,
+        String body,
+        String contentType,
+        String fileExtension,
+        byte[] expectedBody
+    ) throws Exception {
+        mockMvc.perform(post(BASE_PATH + path)
+                .with(csrf())
+                .header("Authorization", "Bearer " + "jwt-token")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(body))
+
+            .andDo(print())
+            .andExpect(status().isOk())
+            .andExpect(content().contentTypeCompatibleWith(contentType))
+            .andExpect(header().string(
+                "Content-Disposition",
+                Matchers.containsString(fileExtension)))
+            .andExpect(content().bytes(expectedBody));
+    }
 }

@@ -1,0 +1,15 @@
+# Controls the GitHub issue template chooser shown when a contributor clicks "New issue".
+#
+# blank_issues_enabled: false
+#   Prevents contributors from bypassing the template chooser with a blank, unstructured issue.
+#   All new issues must use one of the defined templates (feature, bug, security, tech_debt).
+#
+# contact_links:
+#   Adds additional links to the template chooser that redirect users elsewhere rather than
+#   opening a GitHub issue. Useful for directing general enquiries away from the issue tracker.
+
+blank_issues_enabled: false
+contact_links:
+  - name: Talent Catalog Support
+    url: https://openpathwaycollective.org/
+    about: For general questions, contact Open Pathway Collective.

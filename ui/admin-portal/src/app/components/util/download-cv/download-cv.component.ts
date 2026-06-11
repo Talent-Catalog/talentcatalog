@@ -17,7 +17,7 @@
 import {Component, OnInit} from '@angular/core';
 import {UntypedFormBuilder, UntypedFormGroup} from "@angular/forms";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
-import {CandidateService, DownloadCVRequest} from "../../../services/candidate.service";
+import {CandidateService, CvFormat, DownloadCVRequest} from "../../../services/candidate.service";
 
 /**
  * Modal component fills request to open/DL CV generated from given candidates profile.
@@ -44,27 +44,53 @@ export class DownloadCvComponent implements OnInit {
     this.form = this.fb.group({
       name: [false],
       contact: [false],
+      format: ['PDF'],
     });
   }
 
   onSave() {
+    this.error = null;
+    this.saving = true;
+
+    const format: CvFormat = this.form.value.format;
+
     const request: DownloadCVRequest = {
       candidateId: this.candidateId,
       showName: this.form.value.name,
-      showContact: this.form.value.contact
-    }
-    const tab = window.open();
+      showContact: this.form.value.contact,
+      format: format
+    };
+
     this.candidateService.downloadCv(request).subscribe(
       result => {
-        tab.location.href = URL.createObjectURL(result);
-        this.closeModal()
+        if (format === 'GOOGLE_DOC') {
+          result.text().then(url => {
+            const googleDocUrl = url.trim();
+
+            window.open(googleDocUrl, '_blank', 'noopener');
+
+            this.saving = false;
+            this.closeModal();
+          }).catch(error => {
+            this.saving = false;
+            this.error = error;
+          });
+
+          return;
+        }
+
+        const cvUrl = URL.createObjectURL(result);
+        window.open(cvUrl, '_blank', 'noopener');
+
+        this.saving = false;
+        this.closeModal();
       },
       error => {
+        this.saving = false;
         this.error = error;
       }
     );
   }
-
   closeModal() {
     this.activeModal.close();
   }
@@ -72,5 +98,4 @@ export class DownloadCvComponent implements OnInit {
   dismiss() {
     this.activeModal.dismiss(false);
   }
-
 }

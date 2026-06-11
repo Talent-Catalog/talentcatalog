@@ -90,7 +90,8 @@ class CandidateAssistanceServiceImplTest {
     @Mock private UserRepository userRepository;
     @Mock private CandidateCitizenshipService candidateCitizenshipService;
     @Mock private SystemNotificationService systemNotificationService;
-
+    @Mock
+    private TcInstanceService tcInstanceService;
     @Spy
     @InjectMocks
     private CandidateServiceImpl candidateService;

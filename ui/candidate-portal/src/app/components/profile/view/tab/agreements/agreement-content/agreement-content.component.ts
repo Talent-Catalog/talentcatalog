@@ -14,12 +14,22 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tctalent.server.exception;
+import {Component, EventEmitter, Input, Output} from '@angular/core';
 
-public class PdfGenerationException extends ServiceException {
+@Component({
+  selector: 'app-agreement-content',
+  templateUrl: './agreement-content.component.html',
+  styleUrls: ['./agreement-content.component.scss']
+})
+export class AgreementContentComponent {
+  @Input() content: string;
+  @Input() counterpartyName: string;
+  @Input() acceptedId: string;
+  @Input() acceptedDate: string;
+  /** Emitted when the Back button is clicked. If no observer is bound, the button is hidden. */
+  @Output() back = new EventEmitter<void>();
 
-    public PdfGenerationException(String message) {
-        super("pdf_generation", message);
-
-    }
+  get showBack(): boolean {
+    return this.back.observers.length > 0;
+  }
 }

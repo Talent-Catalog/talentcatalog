@@ -17,17 +17,20 @@
 package org.tctalent.server.service.db.impl;
 
 import com.google.api.client.http.FileContent;
+import com.google.api.client.http.InputStreamContent;
 import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.model.File;
 import com.google.api.services.drive.model.FileList;
 import com.google.api.services.drive.model.Permission;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.security.GeneralSecurityException;
 import java.util.Collections;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
@@ -282,6 +285,49 @@ public class GoogleFileSystemServiceImpl implements FileSystemService {
         fsf.setId(copyFile.getId());
         fsf.setName(name);
         return fsf;
+    }
+
+    @Override
+    public @NonNull
+    GoogleFileSystemFile uploadFileWithConversion(
+        GoogleFileSystemDrive drive,
+        @Nullable GoogleFileSystemFolder parentFolder,
+        String fileName,
+        Resource resource,
+        String sourceMimeType,
+        String targetMimeType
+    ) throws IOException {
+        File fileMetadata = new File();
+
+        List<String> parent;
+        if (parentFolder == null) {
+            parent = Collections.singletonList(drive.getId());
+        } else {
+            parent = Collections.singletonList(parentFolder.getId());
+        }
+
+        fileMetadata.setDriveId(drive.getId());
+        fileMetadata.setParents(parent);
+        fileMetadata.setName(fileName);
+        fileMetadata.setMimeType(targetMimeType);
+
+        try (InputStream inputStream = resource.getInputStream()) {
+            InputStreamContent mediaContent = new InputStreamContent(sourceMimeType, inputStream);
+            mediaContent.setLength(resource.contentLength());
+
+            File uploadedFile = googleDriveService.files()
+                .create(fileMetadata, mediaContent)
+                .setSupportsAllDrives(true)
+                .setFields("id,webViewLink")
+                .execute();
+
+            GoogleFileSystemFile googleFileSystemFile =
+                new GoogleFileSystemFile(uploadedFile.getWebViewLink());
+            googleFileSystemFile.setId(uploadedFile.getId());
+            googleFileSystemFile.setName(fileName);
+
+            return googleFileSystemFile;
+        }
     }
 
 }

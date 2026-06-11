@@ -184,6 +184,7 @@ const ALL_FIELDS = {
         "LOGIN": null,
         "PRIVACY": null,
         "PROFILE": null,
+        "MY_AGREEMENTS": null,
         "UPLOAD": {
           "FILE": null,
           "PHOTO": null
@@ -552,6 +553,7 @@ const ALL_FIELDS = {
         "TASKS": null,
         "OPPS": null,
         "SERVICES": null,
+        "AGREEMENTS": null,
       },
       "CONTACT": {
         "TITLE": null,
@@ -1000,5 +1002,25 @@ const ALL_FIELDS = {
         "NO-MEMBER": null,
         "NOTHING-TO-DO": null
       }
+  },
+  "AGREEMENTS": {
+    "NONE": null,
+    "ACTIVE": null,
+    "SUPERSEDED": null,
+    "TERMS_VERSION": null,
+    "ACCEPTED_DATE": null,
+    "SUPERSEDED_DATE": null,
+    "BACK": null,
+    "COUNTERPARTY_TYPE": {
+      "MANAGING_SOURCE_PARTNER": null,
+      "DATABASE_PROVIDER": null,
+      "SERVICE_PROVIDER": null
+    },
+    "LABEL": {
+      "OPC_STANDARD_DATA_PROCESSING_AGREEMENT": null,
+      "REFERENCE_SERVICE_TERMS": null,
+      "GRN_CANDIDATE_PRIVACY_POLICY": null,
+      "DEFAULT": null
+    }
   }
 }
