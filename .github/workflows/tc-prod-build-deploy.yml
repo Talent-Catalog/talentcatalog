@@ -25,6 +25,11 @@ jobs:
     name: Build and Test
     runs-on: ubuntu-latest
 
+    env:
+      GOOGLE_DRIVE_PRIVATEKEY: ${{ secrets.GOOGLE_DRIVE_PRIVATEKEY }}
+      GOOGLE_DRIVE_PRIVATEKEYID: ${{ secrets.GOOGLE_DRIVE_PRIVATEKEYID }}
+      SF_PRIVATE_KEY: ${{ secrets.SF_PRIVATE_KEY }}
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -55,13 +60,11 @@ jobs:
           mkdir -p server/src/test/resources
           aws s3 cp s3://tctalent-prod-db-dumps/dump.sql server/src/test/resources/dump.sql
 
-      - name: Build and test with Gradle
-        run: ./gradlew server:build
-        env:
-          GOOGLE_DRIVE_PRIVATEKEY: ${{ secrets.GOOGLE_DRIVE_PRIVATEKEY }}
-          GOOGLE_DRIVE_PRIVATEKEYID: ${{ secrets.GOOGLE_DRIVE_PRIVATEKEYID }}
-          SF_PRIVATE_KEY: ${{ secrets.SF_PRIVATE_KEY }}
+      - name: Build
+        run: ./gradlew server:build -x test
 
+      - name: Run tests
+        run: ./gradlew clean :server:test --stacktrace --rerun-tasks
   deploy-tc-prod:
     name: Deploy to TC Prod (TBB + OPC)
     runs-on: ubuntu-latest

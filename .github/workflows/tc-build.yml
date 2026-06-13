@@ -13,6 +13,10 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      GOOGLE_DRIVE_PRIVATEKEY: ${{ secrets.GOOGLE_DRIVE_PRIVATEKEY }}
+      GOOGLE_DRIVE_PRIVATEKEYID: ${{ secrets.GOOGLE_DRIVE_PRIVATEKEYID }}
+      SF_PRIVATE_KEY: ${{ secrets.SF_PRIVATE_KEY }}
 
     steps:
       - name: Checkout code
@@ -23,7 +27,7 @@ jobs:
         with:
           distribution: 'zulu'
           java-version: '17'
-
+          
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
@@ -39,12 +43,11 @@ jobs:
           mkdir -p server/src/test/resources
           aws s3 cp s3://tctalent-integration-db-dumps/dump.sql server/src/test/resources/dump.sql
 
-      - name: Build and Run tests
-        run: ./gradlew server:build
-        env:
-          GOOGLE_DRIVE_PRIVATEKEY: ${{ secrets.GOOGLE_DRIVE_PRIVATEKEY }}
-          GOOGLE_DRIVE_PRIVATEKEYID: ${{ secrets.GOOGLE_DRIVE_PRIVATEKEYID }}
-          SF_PRIVATE_KEY: ${{ secrets.SF_PRIVATE_KEY }}
+      - name: Build
+        run: ./gradlew server:build -x test
+
+      - name: Run tests
+        run: ./gradlew clean :server:test --stacktrace --rerun-tasks
 
       - name: Upload test report on failure
         if: failure()
