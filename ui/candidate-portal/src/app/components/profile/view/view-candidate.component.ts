@@ -51,6 +51,7 @@ export class ViewCandidateComponent implements OnInit {
   sourceChat: JobChat;
   filteredOpps: CandidateOpportunity[];
   showServicesTab$: Observable<boolean>;
+  showAgreementsTab: boolean;
 
   //Candidate only sees source chat if is not empty. That way they can't start posting themselves
   //until someone else has posted in the chat.
@@ -83,6 +84,7 @@ export class ViewCandidateComponent implements OnInit {
 
   ngOnInit(): void {
     this.showAspirations = this.authenticationService.isGrnInstance();
+    this.showAgreementsTab = this.authenticationService.isGrnInstance();
 
     this.fetchCandidate();
     this.route.queryParams.subscribe(params => {

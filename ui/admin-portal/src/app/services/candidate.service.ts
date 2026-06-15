@@ -38,7 +38,7 @@ import {CandidateSource, FetchCandidatesWithChatRequest} from "../model/base";
 import {IntakeService} from "../components/util/intake/IntakeService";
 import {JobChatUserInfo} from "../model/chat";
 
-export type CvFormat = 'PDF' | 'DOCX';
+export type CvFormat = 'PDF' | 'DOCX' | 'GOOGLE_DOC';
 
 export interface DownloadCVRequest {
   candidateId: number,
@@ -168,7 +168,7 @@ export class CandidateService implements IntakeService {
   export(request) {
     return this.http.post(`${this.apiUrl}/export/csv`, request, {responseType: 'blob'});
   }
-  
+
   downloadCv(request: DownloadCVRequest) {
     const format = request.format ?? 'PDF';
 
@@ -183,7 +183,9 @@ export class CandidateService implements IntakeService {
       map(res => {
         const contentType = format === 'DOCX'
           ? 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
-          : 'application/pdf';
+          : format === 'GOOGLE_DOC'
+            ? 'text/plain;charset=utf-8'
+            : 'application/pdf';
 
         return new Blob([res], {type: contentType});
       })

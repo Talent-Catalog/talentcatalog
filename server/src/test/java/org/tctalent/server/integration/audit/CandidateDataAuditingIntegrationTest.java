@@ -30,7 +30,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.transaction.annotation.Transactional;
+import org.tctalent.server.integration.helper.BaseDBIntegrationTest;
 import org.tctalent.server.integration.helper.TestDataFactory;
 import org.tctalent.server.model.db.AbstractCandidateDataDomainObject;
 import org.tctalent.server.model.db.AttachmentType;
@@ -50,6 +52,7 @@ import org.tctalent.server.model.db.CandidateOccupation;
 import org.tctalent.server.model.db.CandidateReviewStatusItem;
 import org.tctalent.server.model.db.CandidateVisaCheck;
 import org.tctalent.server.model.db.CandidateVisaJobCheck;
+import org.tctalent.server.model.db.CefrLevel;
 import org.tctalent.server.model.db.Country;
 import org.tctalent.server.model.db.DependantRelations;
 import org.tctalent.server.model.db.EducationType;
@@ -87,12 +90,14 @@ import org.tctalent.server.repository.db.LanguageRepository;
 import org.tctalent.server.repository.db.OccupationRepository;
 import org.tctalent.server.repository.db.SavedSearchRepository;
 import org.tctalent.server.repository.db.UserRepository;
+import org.tctalent.server.repository.db.read.cache.CandidateRedisCache;
 import org.tctalent.server.security.TcUserDetails;
+import org.tctalent.server.service.db.SavedSearchService;
 import org.tctalent.server.service.db.UserService;
 
 @SpringBootTest
 @Transactional
-class CandidateDataAuditingIntegrationTest {
+class CandidateDataAuditingIntegrationTest extends BaseDBIntegrationTest {
 
     @Autowired private UserService userService;
     @Autowired private UserRepository userRepository;
@@ -118,7 +123,10 @@ class CandidateDataAuditingIntegrationTest {
     @Autowired private LanguageLevelRepository languageLevelRepository;
 
     private User systemAdmin;
-
+    @MockitoBean
+    private SavedSearchService savedSearchService;
+    @MockitoBean
+    private CandidateRedisCache candidateRedisCache;
     @BeforeEach
     void setUp() {
         systemAdmin = userService.getSystemAdminUser();
@@ -559,7 +567,9 @@ class CandidateDataAuditingIntegrationTest {
     private Occupation getAnyOccupation() {
         return occupationRepository.findAll().stream()
             .findFirst()
-            .orElseThrow(() -> new IllegalStateException("No occupation records available for test"));
+            .orElseGet(() -> occupationRepository.saveAndFlush(
+                new Occupation("Test Occupation", Status.active)
+            ));
     }
 
     private Country getAnyCountry() {
@@ -577,6 +587,8 @@ class CandidateDataAuditingIntegrationTest {
     private LanguageLevel getAnyLanguageLevel() {
         return languageLevelRepository.findAll().stream()
             .findFirst()
-            .orElseThrow(() -> new IllegalStateException("No language level records available for test"));
+            .orElseGet(() -> languageLevelRepository.saveAndFlush(
+                new LanguageLevel("Test Language Level", Status.active, 1, CefrLevel.A1)
+            ));
     }
 }

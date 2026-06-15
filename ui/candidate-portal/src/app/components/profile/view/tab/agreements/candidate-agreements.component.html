@@ -1,0 +1,70 @@
+<!--
+  ~ Copyright (c) 2026 Talent Catalog.
+  ~
+  ~ This program is free software: you can redistribute it and/or modify it under
+  ~ the terms of the GNU General Public License as published by the Free
+  ~ Software Foundation, either version 3 of the License, or any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful, but WITHOUT
+  ~ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+  ~ FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
+  ~ for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program. If not, see https://www.gnu.org/licenses/.
+  -->
+
+<div class="container">
+  <app-error [error]="error"></app-error>
+  <tc-loading [loading]="loading"></tc-loading>
+
+  <ng-container *ngIf="!loading">
+    <app-tab-header>
+      <h3>{{ 'PROFILE.TAB.AGREEMENTS' | translate }}</h3>
+    </app-tab-header>
+
+    <ng-container *ngIf="!selectedAgreement">
+      <div *ngIf="agreements.length === 0" class="text-muted">
+        {{ 'AGREEMENTS.NONE' | translate }}
+      </div>
+
+      <div *ngFor="let agreement of agreements"
+           class="card mb-3"
+           style="cursor: pointer"
+           (click)="viewAgreement(agreement)">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-center">
+            <span class="fw-bold">
+              {{ ('AGREEMENTS.LABEL.' + (agreement.termsInfo?.type || 'DEFAULT'))
+                | translate:{displayName: agreement.counterparty?.displayName} }}
+            </span>
+            <span class="badge" [ngClass]="isActive(agreement) ? 'bg-success' : 'bg-secondary'">
+              {{ isActive(agreement) ? ('AGREEMENTS.ACTIVE' | translate) : ('AGREEMENTS.SUPERSEDED' | translate) }}
+            </span>
+          </div>
+          <div class="text-muted small mt-1">
+            {{ 'AGREEMENTS.COUNTERPARTY_TYPE.' + agreement.counterparty?.type | translate }}
+          </div>
+          <div class="mt-1">
+            {{ 'AGREEMENTS.TERMS_VERSION' | translate }}: {{ agreement.termsInfoId }}
+          </div>
+          <div class="text-muted small">
+            {{ 'AGREEMENTS.ACCEPTED_DATE' | translate }}: {{ agreement.start | date:'mediumDate' }}
+            <span *ngIf="!isActive(agreement)">
+              - {{ 'AGREEMENTS.SUPERSEDED_DATE' | translate }}: {{ agreement.end | date:'mediumDate' }}
+            </span>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+
+    <app-agreement-content
+      *ngIf="selectedAgreement"
+      [content]="selectedAgreement.termsInfo?.content"
+      [counterpartyName]="selectedAgreement.counterparty?.displayName"
+      [acceptedId]="selectedAgreement.termsInfoId"
+      [acceptedDate]="selectedAgreement.start"
+      (back)="clearSelection()">
+    </app-agreement-content>
+  </ng-container>
+</div>

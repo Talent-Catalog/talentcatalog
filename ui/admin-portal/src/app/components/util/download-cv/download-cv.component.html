@@ -15,7 +15,7 @@
   -->
 
 <tc-modal heading="Download Candidate CV"
-          actionText="Download"
+          [actionText]="form?.value?.format === 'GOOGLE_DOC' ? 'Create' : 'Download'"
           (onAction)="onSave()"
           [disableAction]="form.invalid || loading || saving"
           [showCancel]="true"
@@ -51,6 +51,43 @@
     </tc-field>
 
     <tc-field [checkbox]="true">
+      <div class="d-flex align-items-center">
+        <tc-radio [id]="'google-doc'"
+                  name="format"
+                  [value]="'GOOGLE_DOC'"
+                  [label]="'Google Doc'"
+                  [formControlName]="'format'">
+        </tc-radio>
+
+        <button type="button"
+                class="btn btn-link p-0 ms-2 google-doc-help"
+                [ngbTooltip]="googleDocTooltip"
+                tooltipClass="google-doc-tooltip"
+                container="body"
+                placement="right"
+                aria-label="Google Doc translation help">
+          <i class="fas fa-question-circle"></i>
+        </button>
+      </div>
+    </tc-field>
+
+    <ng-template #googleDocTooltip>
+      <div class="text-start">
+        <div class="fw-bold mb-1">Use this for Google Doc Translate</div>
+        <div class="mb-1">
+          Exporting as a Google Doc lets you translate the CV using Google Docs.
+        </div>
+        <ol class="mb-0 ps-3">
+          <li>Open the generated Google Doc.</li>
+          <li>Click <strong>Tools</strong>.</li>
+          <li>Select <strong>Translate document</strong>.</li>
+          <li>Choose the target language.</li>
+          <li>Click <strong>Translate</strong>.</li>
+        </ol>
+      </div>
+    </ng-template>
+
+    <tc-field [checkbox]="true">
       <tc-label for="name">
         Include name?
       </tc-label>
@@ -70,9 +107,11 @@
       </tc-input>
     </tc-field>
 
+
+
     <div class="mt-3 d-flex gap-2" *ngIf="loading || saving">
       <tc-button [disabled]="true">
-        Downloading...
+        {{ form?.value?.format === 'GOOGLE_DOC' ? 'Creating Google Doc...' : 'Downloading...' }}
       </tc-button>
     </div>
 

@@ -23,6 +23,8 @@ import {of, throwError} from "rxjs";
 import {By} from "@angular/platform-browser";
 
 describe('DownloadCvComponent', () => {
+  const waitForAsyncTasks = () => new Promise(resolve => setTimeout(resolve, 100));
+
   let component: DownloadCvComponent;
   let fixture: ComponentFixture<DownloadCvComponent>;
   let candidateServiceSpy: jasmine.SpyObj<CandidateService>;
@@ -133,6 +135,35 @@ describe('DownloadCvComponent', () => {
     component.onSave();
 
     expect(candidateServiceSpy.downloadCv).toHaveBeenCalledWith(request);
+    expect(activeModalSpy.close).toHaveBeenCalled();
+  });
+
+  it('should call downloadCv and open Google Doc URL on success for GOOGLE_DOC', async () => {
+    const googleDocUrl = 'https://docs.google.com/document/d/mock-google-doc-id/edit';
+
+    const request: DownloadCVRequest = {
+      candidateId: 99,
+      showName: false,
+      showContact: false,
+      format: 'GOOGLE_DOC'
+    };
+
+    const fakeBlob = new Blob([googleDocUrl], {type: 'text/plain;charset=utf-8'});
+    candidateServiceSpy.downloadCv.and.returnValue(of(fakeBlob));
+
+    component.form.patchValue({format: 'GOOGLE_DOC'});
+    component.onSave();
+
+    await waitForAsyncTasks();
+
+    expect(candidateServiceSpy.downloadCv).toHaveBeenCalledWith(request);
+    expect(createObjectUrlSpy).not.toHaveBeenCalled();
+    expect(windowOpenSpy).toHaveBeenCalledWith(
+      googleDocUrl,
+      '_blank',
+      'noopener'
+    );
+    expect(component.saving).toBeFalse();
     expect(activeModalSpy.close).toHaveBeenCalled();
   });
 
