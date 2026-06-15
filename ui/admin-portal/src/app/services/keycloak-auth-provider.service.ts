@@ -7,7 +7,7 @@ import {reportAuthError} from './auth-error.util';
 import {AuthProfile} from "./auth-profile";
 
 /**
- * Keycloak authentication service.
+ * Keycloak authentication provider service.
  * See https://www.npmjs.com/package/keycloak-angular?activeTab=readme for installing Keycloak
  * plus the Keycloak angular library. Note also the table of version compatability with
  * Angular versions.
@@ -18,7 +18,7 @@ import {AuthProfile} from "./auth-profile";
  * which is compatible with Angular 17.
  */
 @Injectable()
-export class KeycloakAuthenticationService implements AuthProvider {
+export class KeycloakAuthProviderService implements AuthProvider {
 
   private readonly status$ = new BehaviorSubject<AuthStatus>({
     initialized: false,
@@ -84,12 +84,13 @@ export class KeycloakAuthenticationService implements AuthProvider {
     return this.keycloakService.isLoggedIn();
   }
 
-  async login(): Promise<void> {
+  async login(locale: string = 'en'): Promise<void> {
     this.patchStatus({ busy: true, error: null });
 
     try {
       await this.keycloakService.login({
-        redirectUri: window.location.origin + '/?authAction=login'
+        redirectUri: window.location.origin + '/?authAction=login',
+        locale: locale
       });
 
       this.patchStatus({ busy: false });
@@ -105,12 +106,13 @@ export class KeycloakAuthenticationService implements AuthProvider {
     }
   }
 
-  async register(): Promise<void> {
+  async register(locale: string = 'en'): Promise<void> {
     this.patchStatus({ busy: true, error: null });
 
     try {
       await this.keycloakService.register({
-        redirectUri: window.location.origin + '/?authAction=register'
+        redirectUri: window.location.origin + '/?authAction=register',
+        locale: locale
       });
 
       this.patchStatus({ busy: false });

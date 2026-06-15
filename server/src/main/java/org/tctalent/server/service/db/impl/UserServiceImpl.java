@@ -168,9 +168,11 @@ public class UserServiceImpl implements UserService {
         Optional<User> userOptional = userRepository
             .findByIdpIssuerAndIdpSubject(idpIssuer, idpSubject);
 
+        //Did we find user? (normal case is yes)
         if (userOptional.isEmpty()) {
             //Try to find the user by email. This will be necessary when migrating existing,
-            //pre-OAuth2 users to the new system.
+            //pre-OAuth2 users to the new system. Those users will be on the database with a null
+            //idpIssuer and idpSubject.
             User userByEmail = userRepository.findByEmailIgnoreCase(profile.getEmail());
             if (userByEmail != null) {
                 //Found user by email, update any changed fields.
@@ -180,7 +182,9 @@ public class UserServiceImpl implements UserService {
 
         boolean created = false;
         User user;
+        //Check if we found a user on the database.
         if (userOptional.isEmpty()) {
+            //Not found, create a new user.
             created = true;
             //Create a minimal user object.
             user = new User();
@@ -199,6 +203,7 @@ public class UserServiceImpl implements UserService {
 
             user.setPartner((PartnerImpl) partner);
         } else {
+            //We found a user on the database, so update any changed fields.
             user = userOptional.get();
             //Found, update any changed fields.
             //Idp fields can be null in the case of migrating pre OAuth2 users.

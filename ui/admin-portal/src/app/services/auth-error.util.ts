@@ -13,25 +13,30 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-// auth-provider.ts
-import {Observable} from 'rxjs';
-import {AuthStatus} from './auth-status';
-import {AuthProfile} from "./auth-profile";
+// auth-error.util.ts
+export function describeAuthError(prefix: string, error: unknown): string {
+  if (error instanceof Error && error.message) {
+    return `${prefix}: ${error.message}`;
+  }
 
-/**
- * Interface for an OAuth2 authentication provider - eg Keycloak or Cognito.
- */
-export interface AuthProvider {
-  init(): Promise<boolean>;
-  isAuthenticated(): boolean;
-  login(lang: string): Promise<void>;
-  register(lang: string): Promise<void>;
-  logout(): Promise<void>;
-  getProfile(): Promise<AuthProfile>;
-  getToken(): string | undefined;
-  refreshToken(minValiditySeconds?: number): Promise<void>;
+  if (typeof error === 'string' && error.trim().length > 0) {
+    return `${prefix}: ${error}`;
+  }
 
-  getStatus(): Observable<AuthStatus>;
-  getCurrentStatus(): AuthStatus;
-  clearError(): void;
+  try {
+    const json = JSON.stringify(error);
+    if (json && json !== '{}') {
+      return `${prefix}: ${json}`;
+    }
+  } catch {
+    // ignore JSON conversion failure
+  }
+
+  return prefix;
+}
+
+export function reportAuthError(prefix: string, error: unknown): string {
+  const message = describeAuthError(prefix, error);
+  console.error(message, error);
+  return message;
 }

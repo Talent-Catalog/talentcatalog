@@ -8,7 +8,7 @@ import {AuthProfile} from "./auth-profile";
  * Implementation of AuthProvider for Cognito authentication.
  */
 @Injectable()
-export class CognitoAuthenticationService implements AuthProvider {
+export class CognitoAuthProviderService implements AuthProvider {
   private readonly status$ = new BehaviorSubject<AuthStatus>({
     initialized: true,
     authenticated: false,

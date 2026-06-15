@@ -18,7 +18,6 @@ package org.tctalent.server.storage;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -28,6 +27,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.tctalent.server.configuration.properties.S3Properties;
+import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.exception.ServiceException;
 import software.amazon.awssdk.core.ResponseInputStream;
 import software.amazon.awssdk.core.sync.RequestBody;
@@ -64,15 +64,19 @@ public class S3TranslationStorageService {
      * @throws ServiceException if there is an error reading the file from S3 or parsing the JSON.
      */
     public Map<String, Object> getTranslationFile(String language) {
+
+        final String translationsBucket = getTranslationsBucket();
+        final String translationFileKey = getTranslationFileKey(language);
         try (ResponseInputStream<GetObjectResponse> in = s3Client.getObject(
             GetObjectRequest.builder()
-                .bucket(getTranslationsBucket())
-                .key(getTranslationFileKey(language))
+                .bucket(translationsBucket)
+                .key(translationFileKey)
                 .build())
         ) {
           return objectMapper.readValue(in, new TypeReference<Map<String, Object>>() {});
-        } catch (IOException e) {
-          throw new ServiceException("json_error", "Error reading JSON file from s3", e);
+        } catch (Exception e) {
+          throw new NoSuchObjectException(
+              "Could not load translation file for language: " + language + ": " + e.getMessage());
         }
     }
 

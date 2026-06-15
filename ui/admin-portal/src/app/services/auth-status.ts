@@ -13,25 +13,10 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-// auth-provider.ts
-import {Observable} from 'rxjs';
-import {AuthStatus} from './auth-status';
-import {AuthProfile} from "./auth-profile";
-
-/**
- * Interface for an OAuth2 authentication provider - eg Keycloak or Cognito.
- */
-export interface AuthProvider {
-  init(): Promise<boolean>;
-  isAuthenticated(): boolean;
-  login(lang: string): Promise<void>;
-  register(lang: string): Promise<void>;
-  logout(): Promise<void>;
-  getProfile(): Promise<AuthProfile>;
-  getToken(): string | undefined;
-  refreshToken(minValiditySeconds?: number): Promise<void>;
-
-  getStatus(): Observable<AuthStatus>;
-  getCurrentStatus(): AuthStatus;
-  clearError(): void;
+// auth-status.ts
+export interface AuthStatus {
+  initialized: boolean;
+  authenticated: boolean;
+  busy: boolean;
+  error: string | null;
 }
