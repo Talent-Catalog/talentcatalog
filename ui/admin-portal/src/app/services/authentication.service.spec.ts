@@ -14,33 +14,36 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {TestBed} from '@angular/core/testing';
+import {fakeAsync, flushMicrotasks, TestBed} from '@angular/core/testing';
 import {HttpClientTestingModule, HttpTestingController} from '@angular/common/http/testing';
 import {AuthenticationService} from './authentication.service';
 import {User} from '../model/user';
-import {LoginRequest} from '../model/base';
-import {JwtAuthenticationResponse} from '../model/jwt-authentication-response';
 import {environment} from '../../environments/environment';
-import {of} from 'rxjs';
-import {HttpClient} from '@angular/common/http';
-import {config_test} from "../../config-test";
 import {EncodedQrImage} from "../util/qr";
 import {LocalStorageService} from "./local-storage.service";
-import {TcInstanceType} from "../model/tc-instance-type";
+import {IDP_PROVIDER} from "./idp.tokens";
+import {IdpProvider} from "./idp-provider";
+import {AuthenticationResponse} from "../model/authentication-response";
 
 describe('AuthenticationService', () => {
   let service: AuthenticationService;
   let httpMock: HttpTestingController;
   let localStorageService: jasmine.SpyObj<LocalStorageService>;
+  let idpProvider: jasmine.SpyObj<IdpProvider>;
 
   beforeEach(() => {
     const localStorageSpy = jasmine.createSpyObj('LocalStorageService', ['get', 'set', 'remove']);
-
+    idpProvider = jasmine.createSpyObj<IdpProvider>('IdpProvider', [
+      'login',
+      'logout',
+      'getProfile'
+    ]);
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule],
       providers: [
         AuthenticationService,
-        { provide: LocalStorageService, useValue: localStorageSpy }
+        { provide: IDP_PROVIDER, useValue: idpProvider },
+        { provide: LocalStorageService, useValue: localStorageSpy },
       ]
     });
 
@@ -57,6 +60,29 @@ describe('AuthenticationService', () => {
     expect(service).toBeTruthy();
   });
 
+  it('should delegate logout to the IDP provider', async () => {
+
+    idpProvider.logout.and.resolveTo();
+
+    await service.logout();
+
+    expect(idpProvider.logout)
+
+    .toHaveBeenCalledOnceWith();
+  });
+
+  it('should delegate login to the IDP provider', async () => {
+
+    idpProvider.login.and.resolveTo();
+
+    await service.login('http://localhost/callback', 'en');
+
+    expect(idpProvider.login)
+
+    .toHaveBeenCalledOnceWith('http://localhost/callback', 'en');
+
+  });
+
   it('should set logged in user and update local storage', () => {
     const user: User = { id: 1, name: 'Test User', role: 'user', readOnly: false } as User;
     service.setLoggedInUser(user);
@@ -64,55 +90,100 @@ describe('AuthenticationService', () => {
     expect(service['loggedInUser']).toEqual(user);
     expect(localStorageService.set).toHaveBeenCalledWith('user', user);
   });
+  it('should use English as the default login language', async () => {
 
-  it('should log in and store credentials', () => {
-    const credentials: LoginRequest = { username: config_test.credentials.username, password: config_test.credentials.password,totpToken:config_test.credentials.totpToken,reCaptchaV3Token:'' };
-    const jwtResponse: JwtAuthenticationResponse = {
-      accessToken: 'test-token',
-      tcInstanceType: TcInstanceType.TBB,
-      tokenType: 'Bearer',
-      user: { id: 1, name: 'Test User', role: 'user', readOnly: false } as User,
-      canViewChats: true
-    };
+    idpProvider.login.and.resolveTo();
 
-    service.login(credentials).subscribe(response => {
-      expect(service['loggedInUser']).toEqual(jwtResponse.user);
-      expect(localStorageService.set).toHaveBeenCalledWith('access-token', jwtResponse.accessToken);
-      expect(localStorageService.set).toHaveBeenCalledWith('user', jwtResponse.user);
-    });
+    await service.login('http://localhost/callback');
 
-    const req = httpMock.expectOne(`${environment.apiUrl}/auth/login`);
-    expect(req.request.method).toBe('POST');
-    req.flush(jwtResponse);
+    expect(idpProvider.login)
+
+    .toHaveBeenCalledOnceWith('http://localhost/callback', 'en');
+
   });
 
-  it('should handle login error', () => {
-    const credentials: LoginRequest = { username: config_test.credentials.username, password: config_test.credentials.password,totpToken:config_test.credentials.totpToken,reCaptchaV3Token:'' };
-    const errorResponse = { status: 401, statusText: 'Unauthorized' };
+  it('should complete login by sending the IDP profile to the server', fakeAsync(() => {
 
-    service.login(credentials).subscribe(
-      () => fail('expected an error, not credentials'),
-      error => {
-        expect(error.status).toBe(401);
+    const profile = {
+
+      id: 'idp-user-123',
+
+      email: 'candidate@example.org',
+
+      firstName: 'Test',
+
+      lastName: 'Candidate'
+
+    };
+
+    const response: AuthenticationResponse = {
+      tcInstanceType: 'TBB',
+      user: { id: 1, name: 'Test User', role: 'user', readOnly: false } as User,
+      canViewChats: true
+    } as AuthenticationResponse;
+
+    idpProvider.getProfile.and.resolveTo(profile as any);
+
+    spyOn<any>(service, 'storeAuthenticationData');
+
+    service.completeLogin().subscribe();
+
+    flushMicrotasks();
+
+    const req = httpMock.expectOne(`${service['apiUrl']}/login`);
+
+    expect(req.request.method).toBe('POST');
+
+    expect(req.request.body).toEqual(profile);
+
+    req.flush(response);
+
+    expect(service['storeAuthenticationData'])
+
+    .toHaveBeenCalledOnceWith(response);
+
+  }));
+
+  it('should propagate an IDP profile error', fakeAsync (() => {
+    const error = new Error('Profile failed');
+
+    idpProvider.getProfile.and.rejectWith(error);
+
+    service.completeLogin().subscribe({
+      next: () => fail('Expected error'),
+
+      error: err => {
+        expect(err).toBe(error);
+      }
+    });
+  }));
+
+  it('should propagate a server login error', fakeAsync( () => {
+
+    const profile = {
+      id: 'idp-user-123',
+      email: 'candidate@example.org'
+    };
+
+    idpProvider.getProfile.and.resolveTo(profile as any);
+
+    let receivedError: any;
+    service.completeLogin().subscribe({
+      next: () => fail('Expected error'),
+      error: error => receivedError = error
       }
     );
 
-    const req = httpMock.expectOne(`${environment.apiUrl}/auth/login`);
-    expect(req.request.method).toBe('POST');
-    req.flush(null, errorResponse);
-  });
+    flushMicrotasks()
 
-  it('should log out and clear credentials', () => {
-    const httpClient = TestBed.inject(HttpClient);
-    const postSpy = httpClient.post = jasmine.createSpy().and.returnValue(of(null));
+    const req = httpMock.expectOne(`${service['apiUrl']}/login`);
+    req.flush(
+      { message: 'Login failed' },
+      { status: 500, statusText: 'Server Error' }
+    );
 
-    service.logout();
-
-    expect(postSpy).toHaveBeenCalledWith(`${environment.apiUrl}/auth/logout`, null);
-    expect(localStorageService.remove).toHaveBeenCalledWith('user');
-    expect(localStorageService.remove).toHaveBeenCalledWith('access-token');
-    expect(service['loggedInUser']).toBeNull();
-  });
+    expect(receivedError.status).toBe(500);
+  }));
 
   it('should get logged in user from local storage', () => {
     const user: User = { id: 1, name: 'Test User', role: 'user', readOnly: false } as User;

@@ -30,7 +30,8 @@ describe('AuthorizationService', () => {
   let job: Job;
 
   beforeEach(() => {
-    const spy = jasmine.createSpyObj('AuthenticationService', ['getLoggedInUser']);
+    const spy = jasmine.createSpyObj('AuthenticationService',
+      ['getLoggedInUser', 'isAuthenticated']);
 
     TestBed.configureTestingModule({
       providers: [
@@ -164,14 +165,14 @@ describe('AuthorizationService', () => {
 
   it('should return true for isAuthenticated if user is logged in', () => {
     const user: User = { id: 1, name: 'Logged In User', role: 'admin', readOnly: false } as User;
-    authenticationServiceSpy.getLoggedInUser.and.returnValue(user);
+    authenticationServiceSpy.isAuthenticated.and.returnValue(true);
 
     const isAuthenticated = service.isAuthenticated();
     expect(isAuthenticated).toBeTrue();
   });
 
   it('should return false for isAuthenticated if no user is logged in', () => {
-    authenticationServiceSpy.getLoggedInUser.and.returnValue(null);
+    authenticationServiceSpy.isAuthenticated.and.returnValue(false);
 
     const isAuthenticated = service.isAuthenticated();
     expect(isAuthenticated).toBeFalse();

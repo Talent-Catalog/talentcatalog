@@ -32,6 +32,9 @@ import {
 } from "../../util/candidate-source-description/candidate-source-description.component";
 import {AutosaveStatusComponent} from "../../util/autosave-status/autosave-status.component";
 import {RouterLinkStubDirective} from "../../login/login.component.spec";
+import {
+  provideMockAuthenticationService
+} from "../../../util/testing/test-authentication.providers.spec";
 
 describe('CandidatesListComponent', () => {
   let component: CandidatesListComponent;
@@ -65,7 +68,9 @@ describe('CandidatesListComponent', () => {
         { provide: Router, useValue: mockRouter },
         { provide: SavedListService, useValue: mockSavedListService },
         { provide: NgbModal, useValue: mockModalService },
-        { provide: Location, useValue: mockLocation }
+        { provide: Location, useValue: mockLocation },
+        provideMockAuthenticationService(),
+
       ]
     })
     .compileComponents();

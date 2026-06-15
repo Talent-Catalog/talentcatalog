@@ -62,7 +62,6 @@ import {
 } from './components/register/additional-info/registration-additional-info.component';
 import {JwtInterceptor} from './services/jwt.interceptor';
 import {LanguageInterceptor} from './services/language.interceptor';
-import {LoginComponent} from './components/account/login/login.component';
 import {HomeComponent} from './components/home/home.component';
 import {ErrorInterceptor} from './services/error.interceptor';
 import {ResetPasswordComponent} from './components/account/reset-password/reset-password.component';
@@ -241,10 +240,10 @@ import {
 } from './components/profile/view/tab/services/reference/reference.component';
 import {UnhcrComponent} from './components/profile/view/tab/services/unhcr/unhcr.component';
 import {AuthenticationService} from "./services/authentication.service";
-import {KeycloakAuthProviderService} from "./services/keycloak-auth-provider.service";
-import {CognitoAuthProviderService} from "./services/cognito-auth-provider.service";
+import {KeycloakProviderService} from "./services/keycloak-provider.service";
+import {CognitoProviderService} from "./services/cognito-provider.service";
 import {environment} from "../environments/environment";
-import {AUTH_PROVIDER} from "./services/auth.tokens";
+import {IDP_PROVIDER} from "./services/idp.tokens";
 import {KeycloakAngularModule} from "keycloak-angular";
 import {
   TextPartsInputComponent
@@ -259,12 +258,12 @@ export function HttpLoaderFactory(http: HttpClient) {
   return new TranslateHttpLoader(http);
 }
 
-export function authProviderFactory(
-  keycloakAuth: KeycloakAuthProviderService,
-  cognitoAuth: CognitoAuthProviderService
+export function idpProviderFactory(
+  keycloakIdp: KeycloakProviderService,
+  cognitoIdp: CognitoProviderService
 ) {
 
-  return environment.authProvider === 'cognito' ? cognitoAuth : keycloakAuth;
+  return environment.idpProvider === 'cognito' ? cognitoIdp : keycloakIdp;
 }
 
 export function initializeAuth(authenticationService: AuthenticationService) {
@@ -285,7 +284,6 @@ export function initializeAuth(authenticationService: AuthenticationService) {
     RegistrationLanguageComponent,
     RegistrationCertificationsComponent,
     RegistrationAdditionalInfoComponent,
-    LoginComponent,
     HomeComponent,
     ResetPasswordComponent,
     ChangePasswordComponent,
@@ -401,10 +399,10 @@ export function initializeAuth(authenticationService: AuthenticationService) {
     TextPartsViewComponent
   ],
   providers: [
-    {provide: AUTH_PROVIDER, useFactory: authProviderFactory,
-      deps: [KeycloakAuthProviderService, CognitoAuthProviderService]},
-    KeycloakAuthProviderService,
-    CognitoAuthProviderService,
+    {provide: IDP_PROVIDER, useFactory: idpProviderFactory,
+      deps: [KeycloakProviderService, CognitoProviderService]},
+    KeycloakProviderService,
+    CognitoProviderService,
     {provide: APP_INITIALIZER,
       useFactory: initializeAuth, deps: [AuthenticationService], multi: true},
     {provide: RedirectGuard},

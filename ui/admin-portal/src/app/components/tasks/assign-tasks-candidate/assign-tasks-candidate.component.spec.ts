@@ -24,6 +24,9 @@ import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {of, throwError} from "rxjs";
 import {MockCandidate} from "../../../MockData/MockCandidate";
+import {
+  provideMockAuthenticationService
+} from "../../../util/testing/test-authentication.providers.spec";
 
 describe('AssignTasksCandidateComponent', () => {
   let component: AssignTasksCandidateComponent;
@@ -47,7 +50,8 @@ describe('AssignTasksCandidateComponent', () => {
         UntypedFormBuilder,
         { provide: NgbActiveModal, useValue: activeModalSpyObj },
         { provide: TaskService, useValue: taskServiceSpyObj },
-        { provide: TaskAssignmentService, useValue: taskAssignmentServiceSpyObj }
+        { provide: TaskAssignmentService, useValue: taskAssignmentServiceSpyObj },
+        provideMockAuthenticationService()
       ]
     }).compileComponents();
 

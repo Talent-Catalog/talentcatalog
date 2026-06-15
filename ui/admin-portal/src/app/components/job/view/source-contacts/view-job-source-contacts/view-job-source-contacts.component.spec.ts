@@ -18,15 +18,25 @@ import {ComponentFixture, TestBed, waitForAsync} from '@angular/core/testing';
 import {ViewJobSourceContactsComponent} from './view-job-source-contacts.component';
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {MockPartner} from "../../../../../MockData/MockPartner";
+import {of} from "rxjs";
+import {AuthenticationService} from "../../../../../services/authentication.service";
 
 describe('ViewJobSourceContactsComponent', () => {
   let component: ViewJobSourceContactsComponent;
   let fixture: ComponentFixture<ViewJobSourceContactsComponent>;
+  const authenticationService = {
+    loggedInUser$: of(null),
+    getLoggedInUser: jasmine.createSpy('getLoggedInUser'),
+  };
+
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ViewJobSourceContactsComponent],
-      imports: [HttpClientTestingModule]
+      imports: [HttpClientTestingModule],
+      providers: [
+        { provide: AuthenticationService, useValue: authenticationService }
+      ]
     })
     .compileComponents();
   }));

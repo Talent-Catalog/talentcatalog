@@ -23,6 +23,9 @@ import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {CommonModule} from "@angular/common";
 import {CandidateOppsComponent} from "../candidate-opps/candidate-opps.component";
+import {
+  provideMockAuthenticationService
+} from "../../../util/testing/test-authentication.providers.spec";
 
 describe('CandidateOppsWithDetailComponent', () => {
   let component: CandidateOppsWithDetailComponent;
@@ -32,7 +35,9 @@ describe('CandidateOppsWithDetailComponent', () => {
     await TestBed.configureTestingModule({
       declarations: [CandidateOppsWithDetailComponent,CandidateOppsComponent],
       imports: [HttpClientTestingModule,ReactiveFormsModule,FormsModule,CommonModule],
-
+      providers: [
+        provideMockAuthenticationService()
+      ]
     })
     .compileComponents();
   });

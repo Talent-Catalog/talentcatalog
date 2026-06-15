@@ -34,6 +34,7 @@ import org.tctalent.server.request.AuthenticateInContextTranslationRequest;
 import org.tctalent.server.request.candidate.OauthRegistrationRequest;
 import org.tctalent.server.response.AuthenticationResponse;
 import org.tctalent.server.security.AuthProfile;
+import org.tctalent.server.security.OAuth2UserService;
 import org.tctalent.server.service.db.CandidateService;
 import org.tctalent.server.service.db.UserService;
 import org.tctalent.server.util.dto.DtoBuilder;
@@ -44,9 +45,10 @@ import org.tctalent.server.util.dto.DtoBuilder;
 @Slf4j
 public class AuthPortalApi {
 
-    private final UserService userService;
     private final CandidateService candidateService;
+    private final OAuth2UserService oAuth2UserService;
     private final TranslationConfig translationConfig;
+    private final UserService userService;
 
     @PostMapping("xlate")
     public void authorizeInContextTranslation(@RequestBody AuthenticateInContextTranslationRequest request)
@@ -66,6 +68,7 @@ public class AuthPortalApi {
     @PostMapping("login")
     public Map<String, Object> login(@RequestBody AuthProfile profile) {
         User user = userService.login(profile);
+        oAuth2UserService.checkUserClientId(user, OAuth2UserService.OAUTH_TC_CANDIDATE_CLIENT_ID);
         AuthenticationResponse response = userService.createAuthenticationResponse(user);
         return authenticationDto().build(response);
     }

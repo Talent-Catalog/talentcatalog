@@ -186,6 +186,9 @@ dependencies {
     // tc api
     implementation "org.tctalent:tc-api-spec:1.0.0"
 
+    // Keycloak admin client (26.0.9 is the latest available in Maven Central)
+    implementation "org.keycloak:keycloak-admin-client:26.0.9"
+
     // Hypersistence Utils for JSON type handling
     implementation 'io.hypersistence:hypersistence-utils-hibernate-63:3.7.3'
 

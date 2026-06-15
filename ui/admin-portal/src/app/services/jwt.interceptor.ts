@@ -16,25 +16,88 @@
 
 import {Injectable} from '@angular/core';
 import {HttpEvent, HttpHandler, HttpInterceptor, HttpRequest} from '@angular/common/http';
-import {Observable} from 'rxjs';
+import {EMPTY, from, Observable} from 'rxjs';
 import {AuthenticationService} from "./authentication.service";
-
+import {catchError, switchMap} from "rxjs/operators";
+import {Router} from "@angular/router";
 
 @Injectable()
 export class JwtInterceptor implements HttpInterceptor {
-  constructor(private authenticationService: AuthenticationService) { }
+  constructor(private authenticationService: AuthenticationService, private router: Router) {}
+
+
+  // IMPORTANT NOTE: This should be derived from the list of public URL patterns in the backend.
+  // See the PUBLIC_ENDPOINTS in Spring Server code: SecurityConfiguration.java
+  private readonly publicUrlPatterns = [
+    "/api/admin/branding",
+    "/api/portal/branding",
+    "/api/portal/language/system",
+    "/api/portal/language/translations",
+    "/api/admin/translate/translations",
+    "/api/admin/terms-info",
+    "/api/admin/user/check-token",
+    "/api/portal/user/check-token",
+    "/api/admin/user/reset-password",
+    "/api/portal/user/reset-password",
+    "/api/admin/user/reset-password-email",
+    "/api/portal/user/reset-password-email",
+    "/api/admin/user/verify-email",
+    "/app",
+    "/backend/jobseeker",
+    "/error",
+    "/files",
+    "/published",
+    "/status",
+    "/topic",
+    "/websocket",
+  ];
+
+  private isPublicRequest(url: string): boolean {
+    return this.publicUrlPatterns.some(pattern => url.includes(pattern));
+  }
 
   intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-    // add authorization header with jwt token if available
-    let token = this.authenticationService.getToken();
-    if (token) {
-      request = request.clone({
-        setHeaders: {
-          Authorization: `Bearer ${token}`
-        }
-      });
+    if (this.isPublicRequest(request.url)) {
+      return next.handle(request);
     }
 
-    return next.handle(request);
+    return from(this.authenticationService.refreshToken()).pipe(
+      catchError(() => this.handleRefreshFailure()),
+
+      switchMap(() => {
+        const token = this.authenticationService.getToken();
+        if (!token) {
+          return this.handleRefreshFailure();
+        }
+
+        const authRequest = request.clone({
+          setHeaders: {
+            Authorization: `Bearer ${token}`
+          }
+        });
+
+        return next.handle(authRequest);
+      })
+    );
+  }
+
+  private handleRefreshFailure(): Observable<never> {
+    //Session has probably expired.
+    //Save the url they were at before logout and pass that
+    //in to the Login as a returnUrl so that they are returned to the same page after login
+    //instead of the home page.
+    const currentUrl = this.router.url || '/';
+
+    //Note that we don't use the Logout Component here. The user does not need to see "session
+    //expired" errors.
+    //Logout to tidy things up, and they can login again.
+    void this.authenticationService.logout();
+
+    //Don't get into a loop if the returnUrl is "/login"
+    if (!currentUrl.startsWith('/login')) {
+      void this.router.navigate(['/login'], {queryParams: {returnUrl: currentUrl}});
+    }
+
+    return EMPTY;
   }
 }

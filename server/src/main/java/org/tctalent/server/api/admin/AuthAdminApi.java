@@ -17,7 +17,6 @@
 package org.tctalent.server.api.admin;
 
 import java.util.Map;
-import javax.security.auth.login.AccountLockedException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -25,13 +24,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.tctalent.server.exception.InvalidCredentialsException;
-import org.tctalent.server.exception.InvalidPasswordFormatException;
-import org.tctalent.server.exception.PasswordExpiredException;
 import org.tctalent.server.model.db.PartnerDtoHelper;
 import org.tctalent.server.model.db.User;
-import org.tctalent.server.request.LoginRequest;
-import org.tctalent.server.response.JwtAuthenticationResponse;
+import org.tctalent.server.response.AuthenticationResponse;
+import org.tctalent.server.security.AuthProfile;
+import org.tctalent.server.security.OAuth2UserService;
 import org.tctalent.server.service.db.UserService;
 import org.tctalent.server.util.dto.DtoBuilder;
 import org.tctalent.server.util.qr.EncodedQrImage;
@@ -51,24 +48,37 @@ import org.tctalent.server.util.qr.EncodedQrImage;
 public class AuthAdminApi {
 
     private final UserService userService;
+    private final OAuth2UserService oAuth2UserService;
 
+
+    /**
+     * This is the server side of an OAuth2 login flow. The actual login is handled by
+     * an external Identity Provider (IDP), e.g. Cognito or Keycloak, called from the user's browser
+     * (our Angular code). The IDP will ask the user for their log-in details (email and password).
+     * If they are valid, the user will be authenticated and redirected here through this API call
+     * passing in the profile of the user as recorded by the IDP.
+     * <p>
+     * This method looks up the user on the database using information in the profile and then
+     * returns an authentication response containing user details and permissions.
+     * <p>
+     * A user is not considered logged in by the Angular code until this method returns successfully.
+     * @param profile The authentication profile containing the user's credentials.
+     * @return A map containing the authentication response with user details and permissions.
+     */
     @PostMapping("login")
-    public Map<String, Object> login(@RequestBody LoginRequest request)
-            throws AccountLockedException, PasswordExpiredException, InvalidCredentialsException,
-        InvalidPasswordFormatException {
+    public Map<String, Object> login(@RequestBody AuthProfile profile) {
+        //Look up the user in the database using the profile.
+        //Only throws an exception if there is a system error. See UserService.login() for details.
+        User user = userService.login(profile);
 
-        JwtAuthenticationResponse response = userService.login(request);
+        //This checks that the type of user is as expected. It is intended to check for unusual
+        //cases such as an admin user logging in with a candidate's details, or vice versa.
+        //Normally this should be a no-op.
+        oAuth2UserService.checkUserClientId(user, OAuth2UserService.OAUTH_TC_ADMIN_CLIENT_ID);
 
-        User user = response.getUser();
-        if (user.getUsingMfa()) {
-            //If they are not yet configured we skip verification but they will be required
-            //to set up mfa as soon as they log in.
-            if (user.getMfaConfigured()) {
-                userService.mfaVerify(request.getTotpToken());
-            }
-        }
-
-        return jwtDto().build(response);
+        //The normal response contains some basic user details and permissions.
+        AuthenticationResponse response = userService.createAuthenticationResponse(user);
+        return authenticationDto().build(response);
     }
 
     @PostMapping("logout")
@@ -98,14 +108,12 @@ public class AuthAdminApi {
                 ;
     }
 
-    DtoBuilder jwtDto() {
+    DtoBuilder authenticationDto() {
         return new DtoBuilder()
-                .add("accessToken")
-                .add("tokenType")
-                .add("canViewChats")
-                .add("tcInstanceType")
-                .add("user", userBriefDto())
-                ;
+            .add("canViewChats")
+            .add("tcInstanceType")
+            .add("user", userBriefDto())
+            ;
     }
 
     private DtoBuilder userBriefDto() {

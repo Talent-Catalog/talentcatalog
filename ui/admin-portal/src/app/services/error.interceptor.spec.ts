@@ -1,119 +1,127 @@
-/*
- * Copyright (c) 2026 Talent Catalog.
- *
- * This program is free software: you can redistribute it and/or modify it under
- * the terms of the GNU General Public License as published by the Free
- * Software Foundation, either version 3 of the License, or any later version.
- *
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
- * for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program. If not, see https://www.gnu.org/licenses/.
- */
-
-import {TestBed} from '@angular/core/testing';
-import {HttpClientTestingModule, HttpTestingController} from '@angular/common/http/testing';
 import {HttpErrorResponse, HttpHandler, HttpRequest} from '@angular/common/http';
-import {throwError} from 'rxjs';
 import {Router} from '@angular/router';
-import {AuthenticationService} from './authentication.service';
+import {throwError} from 'rxjs';
 import {ErrorInterceptor} from './error.interceptor';
 
 describe('ErrorInterceptor', () => {
   let interceptor: ErrorInterceptor;
-  let httpTestingController: HttpTestingController;
-  let authenticationServiceSpy: jasmine.SpyObj<AuthenticationService>;
-  let routerSpy: jasmine.SpyObj<Router>;
+  let router: jasmine.SpyObj<Router>;
 
   beforeEach(() => {
-    const spyAuth = jasmine.createSpyObj('AuthenticationService', ['logout']);
-    const spyRouter = jasmine.createSpyObj('Router', ['navigate']);
+    router = jasmine.createSpyObj<Router>(
+      'Router',
+      ['navigate'],
+      { url: '/current-page' }
+    );
 
-    TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
-      providers: [
-        ErrorInterceptor,
-        { provide: AuthenticationService, useValue: spyAuth },
-        { provide: Router, useValue: spyRouter }
-      ]
-    });
-
-    interceptor = TestBed.inject(ErrorInterceptor);
-    httpTestingController = TestBed.inject(HttpTestingController);
-    authenticationServiceSpy = TestBed.inject(AuthenticationService) as jasmine.SpyObj<AuthenticationService>;
-    routerSpy = TestBed.inject(Router) as jasmine.SpyObj<Router>;
+    interceptor = new ErrorInterceptor(router);
   });
 
-  afterEach(() => {
-    httpTestingController.verify();
-  });
+  function handlerReturningError(errorResponse: HttpErrorResponse): HttpHandler {
+    return {
+      handle: () => throwError(errorResponse)
+    };
+  }
 
-  it('should call logout and handle 401 error', () => {
-    const request = new HttpRequest<any>('GET', '/test');
-    const error = new HttpErrorResponse({
-      error: 'Unauthorized',
+  it('should navigate to logout and complete on 401 error', (done) => {
+    const request = new HttpRequest('GET', '/api/test');
+
+    const errorResponse = new HttpErrorResponse({
       status: 401,
-      statusText: 'Unauthorized'
+      statusText: 'Unauthorized',
+      error: { message: 'Access denied' }
     });
 
-    interceptor.intercept(request, { handle: () => throwError(error) } as HttpHandler).subscribe(
-      () => fail('expected an error, not a response'),
-      (errorMsg: string) => {
-        expect(authenticationServiceSpy.logout).toHaveBeenCalled();
-        expect(errorMsg).toBe('Http failure response for (unknown url): 401 Unauthorized');
+    interceptor.intercept(request, handlerReturningError(errorResponse)).subscribe({
+      next: () => fail('Expected no emitted value'),
+      error: () => fail('Expected EMPTY, not an error'),
+      complete: () => {
+        expect(router.navigate).toHaveBeenCalledWith(
+          ['/logout'],
+          {
+            queryParams: {
+              reason: 'Access denied',
+              returnUrl: '/current-page'
+            }
+          }
+        );
+        done();
       }
-    );
+    });
   });
 
-  it('should call logout and handle 403 error', () => {
-    const request = new HttpRequest<any>('GET', '/test');
-    const error = new HttpErrorResponse({
-      error: 'Forbidden',
+  it('should navigate to logout and complete on 403 error', (done) => {
+    const request = new HttpRequest('GET', '/api/test');
+
+    const errorResponse = new HttpErrorResponse({
       status: 403,
-      statusText: 'Forbidden'
+      statusText: 'Forbidden',
+      error: { message: 'Forbidden' }
     });
 
-    interceptor.intercept(request, { handle: () => throwError(error) } as HttpHandler).subscribe(
-      () => fail('expected an error, not a response'),
-      (errorMsg: string) => {
-        expect(authenticationServiceSpy.logout).toHaveBeenCalled();
-        expect(errorMsg).toBe('Http failure response for (unknown url): 403 Forbidden');
+    interceptor.intercept(request, handlerReturningError(errorResponse)).subscribe({
+      error: () => fail('Expected EMPTY, not an error'),
+      complete: () => {
+        expect(router.navigate).toHaveBeenCalledWith(
+          ['/logout'],
+          {
+            queryParams: {
+              reason: 'Forbidden',
+              returnUrl: '/current-page'
+            }
+          }
+        );
+        done();
       }
-    );
+    });
   });
 
-  it('should handle other errors correctly', () => {
-    const request = new HttpRequest<any>('GET', '/test');
-    const error = new HttpErrorResponse({
-      error: null,
+  it('should throw a simple string error for non-auth errors', (done) => {
+    const request = new HttpRequest('GET', '/api/test');
+
+    const errorResponse = new HttpErrorResponse({
       status: 500,
-      statusText: 'Server Error'
+      statusText: 'Server Error',
+      error: { message: 'Something went wrong' }
     });
 
-    interceptor.intercept(request, { handle: () => throwError(error) } as HttpHandler).subscribe(
-      () => fail('expected an error, not a response'),
-      (errorMsg: string) => {
-        expect(errorMsg).toBe('Http failure response for (unknown url): 500 Server Error');
+    interceptor.intercept(request, handlerReturningError(errorResponse)).subscribe({
+      next: () => fail('Expected an error'),
+      complete: () => fail('Expected an error'),
+      error: (error) => {
+        expect(error).toBe('Something went wrong');
+        expect(router.navigate).not.toHaveBeenCalled();
+        done();
       }
-    );
+    });
   });
 
-  it('should handle errors with custom messages', () => {
-    const request = new HttpRequest<any>('GET', '/test');
-    const error = new HttpErrorResponse({
-      error: { message: 'Custom error message' },
-      status: 400,
-      statusText: 'Bad Request'
+  it('should use / as returnUrl when router url is empty', (done) => {
+    Object.defineProperty(router, 'url', {
+      get: () => ''
     });
 
-    interceptor.intercept(request, { handle: () => throwError(error) } as HttpHandler).subscribe(
-      () => fail('expected an error, not a response'),
-      (errorMsg: string) => {
-        expect(errorMsg).toBe('Custom error message');
+    const request = new HttpRequest('GET', '/api/test');
+
+    const errorResponse = new HttpErrorResponse({
+      status: 401,
+      statusText: 'Unauthorized',
+      error: { message: 'Access denied' }
+    });
+
+    interceptor.intercept(request, handlerReturningError(errorResponse)).subscribe({
+      complete: () => {
+        expect(router.navigate).toHaveBeenCalledWith(
+          ['/logout'],
+          {
+            queryParams: {
+              reason: 'Access denied',
+              returnUrl: '/'
+            }
+          }
+        );
+        done();
       }
-    );
+    });
   });
 });

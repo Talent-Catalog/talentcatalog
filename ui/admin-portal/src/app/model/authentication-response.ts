@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2026 Talent Catalog.
+ * Copyright (c) 2024 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License as published by the Free
@@ -13,13 +13,15 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
+
+import {User} from "./user";
+import {TcInstanceType} from "./tc-instance-type";
+
 /**
- * This is the data managed by the OAuth2 authentication provider.
+ * Response from the server in response to a successful login or registration
  */
-export interface AuthProfile {
-  idpIssuer?: string;
-  idpSubject?: string;
-  email?: string;
-  firstName?: string;
-  lastName?: string;
+export interface AuthenticationResponse {
+  tcInstanceType: TcInstanceType;
+  user: User;
+  canViewChats: boolean;
 }

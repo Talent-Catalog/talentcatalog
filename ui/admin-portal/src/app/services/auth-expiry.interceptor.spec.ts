@@ -1,15 +1,9 @@
-import { TestBed } from '@angular/core/testing';
-import {
-  HTTP_INTERCEPTORS,
-  HttpClient
-} from '@angular/common/http';
-import {
-  HttpClientTestingModule,
-  HttpTestingController
-} from '@angular/common/http/testing';
-import { Router } from '@angular/router';
-import { AuthExpiryInterceptor } from './auth-expiry.interceptor';
-import { AuthenticationService } from './authentication.service';
+import {TestBed} from '@angular/core/testing';
+import {HTTP_INTERCEPTORS, HttpClient} from '@angular/common/http';
+import {HttpClientTestingModule, HttpTestingController} from '@angular/common/http/testing';
+import {Router} from '@angular/router';
+import {AuthExpiryInterceptor} from './auth-expiry.interceptor';
+import {AuthenticationService} from './authentication.service';
 
 describe('AuthExpiryInterceptor', () => {
   let http: HttpClient;
@@ -47,9 +41,12 @@ describe('AuthExpiryInterceptor', () => {
     authMock.logout.calls.reset();
   });
 
-  it('redirects to /login with returnUrl and logs out on 401', () => {
+  it('redirects to /logout with returnUrl and reason on 401', () => {
+    //This is the url we were trying to access when we got the 401,
+    //and should be passed as returnUrl to the login page
     routerMock.url = '/admin-portal/list/6233';
 
+    //This is the reason for the 401, should be passed as reason to the login page
     http.get('/api/test').subscribe({
       next: () => fail('expected 401'),
       error: () => { /* ignore */ }
@@ -58,27 +55,14 @@ describe('AuthExpiryInterceptor', () => {
     const req = httpMock.expectOne('/api/test');
     req.flush(null, { status: 401, statusText: 'Unauthorized' });
 
-    expect(authMock.logout).toHaveBeenCalledTimes(1);
     expect(routerMock.navigate).toHaveBeenCalledTimes(1);
     expect(routerMock.navigate).toHaveBeenCalledWith(
-      ['/login'],
-      { queryParams: { returnUrl: '/admin-portal/list/6233' } }
+      ['/logout'],
+      { queryParams: {
+        reason: 'Http failure response for /api/test: 401 Unauthorized',
+        returnUrl: '/admin-portal/list/6233' }
+      }
     );
-  });
-
-  it('does not redirect if already on login page (still logs out)', () => {
-    routerMock.url = '/login/reset-password';
-
-    http.get('/api/test').subscribe({
-      next: () => fail('expected 401'),
-      error: () => { /* ignore */ }
-    });
-
-    const req = httpMock.expectOne('/api/test');
-    req.flush(null, { status: 401, statusText: 'Unauthorized' });
-
-    expect(authMock.logout).toHaveBeenCalledTimes(1);
-    expect(routerMock.navigate).not.toHaveBeenCalled();
   });
 
   it('does nothing on non-401 errors', () => {

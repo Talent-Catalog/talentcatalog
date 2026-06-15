@@ -25,6 +25,9 @@ import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {
   ViewJobSourceContactsComponent
 } from "../../source-contacts/view-job-source-contacts/view-job-source-contacts.component";
+import {
+  provideMockAuthenticationService
+} from "../../../../../util/testing/test-authentication.providers.spec";
 
 describe('JobSourceContactsTabComponent', () => {
   let component: JobSourceContactsTabComponent;
@@ -34,6 +37,9 @@ describe('JobSourceContactsTabComponent', () => {
     await TestBed.configureTestingModule({
       imports:[HttpClientTestingModule],
       declarations: [JobSourceContactsTabComponent,JobSourceContactsWithChatsComponent,ViewJobSourceContactsComponent],
+      providers: [
+        provideMockAuthenticationService()
+      ]
     })
     .compileComponents();
   });

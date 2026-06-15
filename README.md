@@ -223,8 +223,9 @@ The following services will all run from the Docker container:
 
 - **PostgreSQL** (listening on port 5432)
 - **Redis** (6379)
-- **Elasticsearch** (9200)
 - **Kibana** (5601)
+- **Keycloak** (8082)
+- **Keycloak-db** (5434)
 
 Verify with the following terminal command: 
 ```shell
@@ -297,7 +298,7 @@ tables. Lastly it will create a system admin user called SystemAdmin that you ca
 and start creating other users and configuration. You can use the `boot-admin-password` property
 in `application.yml` to define a password for that user.
 
-Alternately, ask TC developers for a `pg_dump` of the database. The advantage of the the dump
+Alternately, ask TC developers for a `pg_dump` of the database. The advantage of the dump
 is that you will get a database populated with a lot of test data and users. 
 
 > **Important:** Apply the DB dump before attempting to run the Spring build. Otherwise, an initial
@@ -335,6 +336,15 @@ use it to populate your empty database:
    ```shell
    docker exec -it docker-compose-postgres-1 psql -U tctalent -d tctalent -f /tmp/dump.sql
    ```
+Lastly, if you want to be able to log in with the users (candidates and admins) that were added from
+the dump, you will need to register those users in Keycloak. You can do that by 
+manually adding the users you want to log in with to the Keycloak admin console.
+
+Or if you want to add *all* users, run the server with an environment variable 
+`ADD_USERS_TO_KEYCLOAK` set to a password to be used for all added users. 
+You only need to do this once. Typically, do it by temporarily adding the environment 
+variable to your IntelliJ Run Configuration for the server as described in the "Run the server" 
+section below.
 
 ### Connect IntelliJ to your database ###
 - File > New > Data Source > PostgreSQL > PostgreSQL
@@ -356,7 +366,8 @@ use it to populate your empty database:
 - Create a new Run Profile for `org.tctalent.server.TcTalentApplication`.
 - Click 'Modify Options' and check Environment Variables, here you'll need to add a password for your
   System Admin user that is created on startup. This variable isn't included in the 
-  tc_secrets file (which Spring Boot inherits automatically) and must be added manually by entering `TC_BOOT_ADMIN_PASSWORD=` and a password 
+  tc_secrets file (which Spring Boot inherits automatically) and must be added manually by 
+  entering `TC_BOOT_ADMIN_PASSWORD=` and a password 
   of your choice (e.g. password). This will be used to access the admin portal once it is running.
 - Run the new profile, you should see something similar to this in the logs:
 

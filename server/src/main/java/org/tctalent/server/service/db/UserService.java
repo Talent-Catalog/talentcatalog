@@ -55,6 +55,11 @@ public interface UserService {
 
     /**
      * Log in a user based on the given OAuth2 profile.
+     * <p>
+     * Will only throw an exception is there is a system error or if the user is found but has been
+     * marked as inactive. Given that authentication is handled externally by the OAuth IDP, every
+     * attempt is made to log in the user on the server. Even if a user is not found, the server
+     * will attempt to create one from the data it has rather than throwing an exception.
      * @param profile Profile data managed by the IDP.
      * @return User logged in.
      */
@@ -202,6 +207,13 @@ public interface UserService {
      * @throws InvalidCredentialsException if verification fails
      */
     void mfaVerify(String mfaCode) throws InvalidCredentialsException;
+
+    /**
+     * Registers the given users on Keycloak all with the same password.
+     * @param users Users to register
+     * @param password Password to set for the users
+     */
+    void registerUsersOnKeycloak(List<User> users, String password);
 
     /**
      * Returns all staff users (ie not candidates) who are not using multi factor authentication.

@@ -79,8 +79,10 @@ describe('HeaderComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(HeaderComponent);
     component = fixture.componentInstance;
+    spyOn(component, 'logout').and.stub();
     const brandingInfo: BrandingInfo = { logo: 'logo.png', websiteUrl: 'http://example.com' };
     brandingServiceSpy.getBrandingInfo.and.returnValue(of(brandingInfo));
+    authenticationServiceSpy.getLoggedInUser.and.returnValue(new User());
     fixture.detectChanges();
   });
 

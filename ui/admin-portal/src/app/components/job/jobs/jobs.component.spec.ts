@@ -23,6 +23,8 @@ import {NgbPaginationModule} from "@ng-bootstrap/ng-bootstrap";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {SearchOppsBy} from "../../../model/base";
 import {SearchJobRequest} from "../../../model/job";
+import {AuthenticationService} from "../../../services/authentication.service";
+import {of} from "rxjs";
 
 class TestJobsComponent extends JobsComponent {
   // Expose createSearchRequest method
@@ -34,6 +36,10 @@ describe('JobsComponent', () => {
   let jobsComponent: TestJobsComponent;
   let fixture: ComponentFixture<TestJobsComponent>;
   let formBuilder: UntypedFormBuilder;
+  const authenticationService = {
+    loggedInUser$: of(null),
+    getLoggedInUser: jasmine.createSpy('getLoggedInUser'),
+  };
 
   // Setup for the test suite
   beforeEach(waitForAsync(() => {
@@ -47,6 +53,10 @@ describe('JobsComponent', () => {
       ],
       providers: [
           { provide: UntypedFormBuilder, useClass: UntypedFormBuilder },
+
+        //AuthenticationService is not actually used, but it stills to be here. It gets
+        //pulled in indirectly somehow.
+        { provide: AuthenticationService, useValue: authenticationService }
       ]
     }).compileComponents();
     formBuilder = TestBed.inject(UntypedFormBuilder);

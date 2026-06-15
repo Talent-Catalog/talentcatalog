@@ -21,6 +21,9 @@ import {UntypedFormBuilder} from "@angular/forms";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {MockJob} from "../../../../../MockData/MockJob";
 import {RouterLinkStubDirective} from "../../../../login/login.component.spec";
+import {
+  provideMockAuthenticationService
+} from "../../../../../util/testing/test-authentication.providers.spec";
 
 describe('EditJobInfoComponent', () => {
   let component: EditJobInfoComponent;
@@ -36,6 +39,8 @@ describe('EditJobInfoComponent', () => {
         { provide: NgbModal  },
         { provide: NgbActiveModal  },
         { provide: UntypedFormBuilder  },
+        provideMockAuthenticationService()
+        
       ]
     })
     .compileComponents();

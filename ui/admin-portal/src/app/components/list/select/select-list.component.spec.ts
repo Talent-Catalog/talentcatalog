@@ -26,6 +26,7 @@ import {JobNameAndId} from "../../../model/job";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {MockJob} from "../../../MockData/MockJob";
 import {SavedList} from "../../../model/saved-list";
+import {AuthenticationService} from "../../../services/authentication.service";
 
 describe('SelectListComponent', () => {
   let component: SelectListComponent;
@@ -44,7 +45,11 @@ describe('SelectListComponent', () => {
       providers: [
         UntypedFormBuilder,
         { provide: NgbActiveModal, useValue: activeModalSpyObj },
-        { provide: SavedListService, useValue: savedListServiceSpyObj }
+        { provide: SavedListService, useValue: savedListServiceSpyObj },
+
+        //AuthenticationService is not actually used, but it stills to be here. It gets
+        //pulled in indirectly somehow.
+        { provide: AuthenticationService, useValue: {} }
       ]
     }).compileComponents();
 

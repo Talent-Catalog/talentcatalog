@@ -308,6 +308,10 @@ public class CandidateServiceImpl implements CandidateService {
         return candidates;
     }
 
+    /**
+     * Update audit fields and use repository to save the Candidate
+     * @param candidate Entity to save
+     */
     public void saveIt(Candidate candidate) {
         candidate.setAuditFields(authService.getLoggedInUser().orElse(null));
         save(candidate);
@@ -1762,7 +1766,7 @@ public class CandidateServiceImpl implements CandidateService {
     @Override
     public Candidate submitRegistration(SubmitRegistrationRequest request) {
         Candidate candidate = getLoggedInCandidate()
-                .orElseThrow(() -> new InvalidSessionException("Not logged in"));
+            .orElseThrow(() -> new InvalidSessionException("Not logged in"));
 
         final String acceptedPrivacyPolicyId = request.getAcceptedPrivacyPolicyId();
         updatePolicyId(acceptedPrivacyPolicyId, candidate);

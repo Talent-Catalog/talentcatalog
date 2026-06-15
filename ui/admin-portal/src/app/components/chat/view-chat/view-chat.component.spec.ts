@@ -20,6 +20,9 @@ import {NO_ERRORS_SCHEMA} from "@angular/core";
 import {JobChat, JobChatType} from "../../../model/chat";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {TranslateModule} from "@ngx-translate/core";
+import {
+  provideMockAuthenticationService
+} from "../../../util/testing/test-authentication.providers.spec";
 
 describe('ViewChatComponent', () => {
   let component: ViewChatComponent;
@@ -29,7 +32,10 @@ describe('ViewChatComponent', () => {
     await TestBed.configureTestingModule({
       imports: [HttpClientTestingModule, TranslateModule.forRoot({})],
       declarations: [ViewChatComponent],
-      schemas: [NO_ERRORS_SCHEMA] // To ignore subcomponent and directive errors
+      schemas: [NO_ERRORS_SCHEMA], // To ignore subcomponent and directive errors
+      providers: [
+        provideMockAuthenticationService()
+      ]
     }).compileComponents();
 
     fixture = TestBed.createComponent(ViewChatComponent);

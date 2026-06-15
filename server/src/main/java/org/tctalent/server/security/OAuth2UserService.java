@@ -18,9 +18,12 @@ package org.tctalent.server.security;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 import org.tctalent.server.model.db.Role;
 import org.tctalent.server.model.db.User;
 import org.tctalent.server.repository.db.UserRepository;
@@ -33,10 +36,48 @@ import org.tctalent.server.repository.db.UserRepository;
 @Service
 public class OAuth2UserService {
 
+    public static final String OAUTH_TC_ADMIN_CLIENT_ID = "admin";
+    public static final String OAUTH_TC_CANDIDATE_CLIENT_ID = "candidate";
     private final UserRepository userRepository;
 
     public OAuth2UserService(UserRepository userRepository) {
         this.userRepository = userRepository;
+    }
+
+    /**
+     * Checks that the clientId from the JWT token matches the user's role. If not, throws an exception
+     * which will cause the authentication to fail.
+     * <p>
+     * We use one clientId, "admin", for admin-portal users, and "candidate" for candidate-portal users.
+     */
+    public void checkUserClientId
+        (@NonNull User user, @Nullable String clientId) throws UsernameNotFoundException {
+        final String idpIssuer = user.getIdpIssuer();
+        final String idpSubject = user.getIdpSubject();
+        
+        if (!StringUtils.hasText(clientId)) {
+            throw new UsernameNotFoundException("No client id provided");
+        }
+
+        boolean shouldBeCandidate = switch (clientId) {
+            case OAUTH_TC_ADMIN_CLIENT_ID, OAUTH_TC_CANDIDATE_CLIENT_ID ->
+                clientId.equals(OAUTH_TC_CANDIDATE_CLIENT_ID);
+            default -> throw new UsernameNotFoundException("Unrecognized client id: " + clientId);
+        };
+
+
+        //We have matched the user by issuer and subject - but the clientId also has to match the
+        //user role.
+        //We use one clientId, "admin", for admin-portal users, and "candidate" for
+        //candidate-portal users.
+        if (shouldBeCandidate && !user.getRole().equals(Role.user)) {
+            throw new UsernameNotFoundException(
+                "Candidate user mismatch for issuer=" + idpIssuer + ", sub=" + idpSubject);
+        }
+        if (!shouldBeCandidate && user.getRole().equals(Role.user)) {
+            throw new UsernameNotFoundException(
+                "Admin user mismatch for issuer=" + idpIssuer + ", sub=" + idpSubject);
+        }
     }
 
     public CurrentUserInfo constructUserInfo(User user, String idpIssuer, String idpSubject) {
@@ -59,11 +100,13 @@ public class OAuth2UserService {
         return currentUserInfo;
     }
 
-    public CurrentUserInfo loadUser(String idpIssuer, String idpSubject) {
+    public CurrentUserInfo loadUser(String idpIssuer, String idpSubject, String clientId) {
         User user = userRepository.findByIdpIssuerAndIdpSubject(idpIssuer, idpSubject)
             .orElseThrow(() -> new UsernameNotFoundException(
                 "User not found for issuer=" + idpIssuer + ", sub=" + idpSubject
             ));
+
+        checkUserClientId(user, clientId);
 
         CurrentUserInfo currentUserInfo = constructUserInfo(user, idpIssuer, idpSubject);
         return currentUserInfo;

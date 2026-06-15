@@ -56,6 +56,9 @@ import org.tctalent.server.exception.InvalidSessionException;
 import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.exception.ServiceException;
 import org.tctalent.server.exception.UsernameTakenException;
+import org.tctalent.server.idp.api.request.RegisterUserRequest;
+import org.tctalent.server.idp.domain.model.IdpAdminService;
+import org.tctalent.server.idp.domain.model.IdpUserRef;
 import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.model.db.Country;
 import org.tctalent.server.model.db.PartnerImpl;
@@ -63,7 +66,6 @@ import org.tctalent.server.model.db.Role;
 import org.tctalent.server.model.db.Status;
 import org.tctalent.server.model.db.User;
 import org.tctalent.server.model.db.partner.Partner;
-import org.tctalent.server.repository.db.CandidateRepository;
 import org.tctalent.server.repository.db.CountryRepository;
 import org.tctalent.server.repository.db.UserRepository;
 import org.tctalent.server.repository.db.UserSpecification;
@@ -80,11 +82,9 @@ import org.tctalent.server.response.AuthenticationResponse;
 import org.tctalent.server.response.JwtAuthenticationResponse;
 import org.tctalent.server.security.AuthProfile;
 import org.tctalent.server.security.AuthService;
-import org.tctalent.server.security.JwtTokenProvider;
 import org.tctalent.server.service.db.PartnerService;
 import org.tctalent.server.service.db.UserService;
 import org.tctalent.server.service.db.email.EmailHelper;
-import org.tctalent.server.service.policy.ChatPolicy;
 import org.tctalent.server.util.qr.EncodedQrImage;
 
 @Service
@@ -92,14 +92,10 @@ import org.tctalent.server.util.qr.EncodedQrImage;
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
-    private final CandidateRepository candidateRepository;
-    private final ChatPolicy chatPolicy;
     private final CountryRepository countryRepository;
-//    private final PasswordHelper passwordHelper;
-//    private final AuthenticationManager authenticationManager;
-    private final JwtTokenProvider tokenProvider;
     private final AuthService authService;
     private final EmailHelper emailHelper;
+    private final IdpAdminService idpAdminService;
     private final PartnerService partnerService;
     private final TcInstanceService tcInstanceService;
 
@@ -206,13 +202,8 @@ public class UserServiceImpl implements UserService {
             //We found a user on the database, so update any changed fields.
             user = userOptional.get();
             //Found, update any changed fields.
-            //Idp fields can be null in the case of migrating pre OAuth2 users.
-            if (user.getIdpIssuer() == null) {
-                user.setIdpIssuer(idpIssuer);
-            }
-            if (user.getIdpSubject() == null) {
-                user.setIdpSubject(idpSubject);
-            }
+            user.setIdpIssuer(idpIssuer);
+            user.setIdpSubject(idpSubject);
             user.setFirstName(profile.getFirstName());
             user.setLastName(profile.getLastName());
             user.setEmail(profile.getEmail());
@@ -237,16 +228,17 @@ public class UserServiceImpl implements UserService {
         throws UsernameTakenException {
 
         User user = new User();
-
         populateUserFields(user, request, creatingUser);
-        //TODO JC Remove
-        //        /* Validate the password before account creation */
-//        String passwordEncrypted = passwordHelper.validateAndEncodePassword(request.getPassword());
-//        user.setPasswordEnc(passwordEncrypted);
-        return userRepository.save(user);
+        final User savedUser = userRepository.save(user);
+
+        //Register user on IDP
+        registerUserOnKeycloak(savedUser, request.getPassword());
+
+        return savedUser;
     }
 
-    private void populateUserFields(User user, UpdateUserRequest request, @Nullable User creatingUser) {
+    private void populateUserFields(
+        User user, UpdateUserRequest request, @Nullable User creatingUser) {
         //Check for changes to something existing which must be unique
 
         final String requestedUsername = request.getUsername();
@@ -261,14 +253,7 @@ public class UserServiceImpl implements UserService {
         }
         user.setUsername(requestedUsername);
 
-        String currentEmail = user.getEmail();
-        if (currentEmail == null || !currentEmail.equals(requestedEmail)) {
-            User existing = userRepository.findByEmailIgnoreCase(requestedEmail);
-            if (existing != null) {
-                throw new UsernameTakenException("email");
-            }
-        }
-        user.setEmail(requestedEmail);
+        updateUserEmail(user, requestedEmail);
 
         reassignPartnerIfNeeded(user, request, creatingUser);
         updateApproverIfNeeded(user, request, creatingUser);
@@ -280,6 +265,10 @@ public class UserServiceImpl implements UserService {
         user.setPurpose(request.getPurpose());
         user.setJobCreator(request.getJobCreator());
 
+        //Need to make password end non-null even though OAuth2 now managed passwords
+        //Eventually this field will be removed.
+        user.setPasswordEnc("N/A OAuth");
+
         if (creatingUser == null) {
             user.setRole(request.getRole());
         } else {
@@ -290,6 +279,27 @@ public class UserServiceImpl implements UserService {
         }
         user.setAuditFields(creatingUser == null ? user : creatingUser);
     }
+
+    private void updateUserEmail(@NonNull User user, @Nullable String requestedEmail) {
+        String currentEmail = user.getEmail();
+        if (currentEmail == null || !currentEmail.equals(requestedEmail)) {
+            //Email has changed
+            User existing = userRepository.findByEmailIgnoreCase(requestedEmail);
+            if (existing != null) {
+                throw new UsernameTakenException("email");
+            }
+            user.setEmail(requestedEmail);
+
+            //If current email was null the user can't be on Idp - which requires email.
+            //So only update IDP when the current email is not null.
+            if (currentEmail != null) {
+                IdpUserRef userRef = new IdpUserRef(
+                    user.getIdpIssuer(), user.getIdpSubject(), requestedEmail);
+                idpAdminService.updateEmail(userRef, requestedEmail);
+            }
+        }
+    }
+
 
     @Override
     @Transactional
@@ -484,6 +494,11 @@ public class UserServiceImpl implements UserService {
             user.setStatus(Status.deleted);
             user.setAuditFields(loggedInUser);
             userRepository.save(user);
+
+            IdpUserRef userRef = new IdpUserRef(
+                user.getIdpIssuer(), user.getIdpSubject(), user.getEmail());
+            idpAdminService.deleteUser(userRef);
+
         } else {
             throw new InvalidRequestException("You don't have permission to delete this user.");
         }
@@ -496,8 +511,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User login(AuthProfile profile) {
-        //TODO JC Any Exception should log out the user on IDP
-
         Partner systemPartner = partnerService.getPartnerFromAbbreviation(SYSTEM_PARTNER_ABBREVIATION);
         if (systemPartner == null) {
             throw new IllegalStateException("System partner not found");
@@ -856,6 +869,38 @@ public class UserServiceImpl implements UserService {
             }
             if (!totpVerifier.isValidCode(user.getMfaSecret(), mfaCode)) {
                 throw new InvalidCredentialsException("Incorrect authentication code - try again. Or contact a Talent Catalog administrator.");
+            }
+        }
+    }
+
+    private void registerUserOnKeycloak(User user, String password) {
+        //Register user on IDP
+        RegisterUserRequest idpRequest = RegisterUserRequest.builder()
+            .email(user.getEmail())
+            .firstName(user.getFirstName())
+            .lastName(user.getLastName())
+            .password(password)
+            .publicId(null) //This should be publicId
+            .build();
+        IdpUserRef idpUserRef = idpAdminService.registerUser(idpRequest);
+        user.setIdpIssuer(idpUserRef.getIssuer());
+        user.setIdpSubject(idpUserRef.getSubject());
+        userRepository.save(user);
+    }
+
+    @Override
+    public void registerUsersOnKeycloak(List<User> users, String password) {
+        for (User user : users) {
+            //Can only register users who have an email
+            if (user.getEmail() != null) {
+                try {
+                    registerUserOnKeycloak(user, password);
+                } catch (Exception e) {
+                    LogBuilder.builder(log)
+                        .action("RegisterUserOnKeycloak")
+                        .message("Error registering user " + user.getEmail() + " on Keycloak")
+                        .logError(e);
+                }
             }
         }
     }

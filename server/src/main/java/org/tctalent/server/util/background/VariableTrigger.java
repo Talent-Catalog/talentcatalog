@@ -36,7 +36,7 @@ public class VariableTrigger implements Trigger {
     private volatile Duration initialDelay;
 
     public VariableTrigger(int percentageOfCpu) {
-        Assert.isTrue(percentageOfCpu > 0 && percentageOfCpu < 100,
+        Assert.isTrue(percentageOfCpu > 0 && percentageOfCpu <= 100,
             "percentage of CPU must be > 0 and <= 100");
         this.percentageOfCpu = percentageOfCpu;
     }

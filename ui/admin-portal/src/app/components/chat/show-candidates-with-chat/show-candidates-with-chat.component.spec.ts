@@ -27,6 +27,9 @@ import {RouterLinkStubDirective} from "../../login/login.component.spec";
 import {CandidateService} from "../../../services/candidate.service";
 import {SearchResults} from "../../../model/search-results";
 import {of} from "rxjs";
+import {
+  provideMockAuthenticationService
+} from "../../../util/testing/test-authentication.providers.spec";
 
 describe('ShowCandidatesWithChatComponent', () => {
   let component: ShowCandidatesWithChatComponent;
@@ -51,7 +54,8 @@ describe('ShowCandidatesWithChatComponent', () => {
       imports: [ HttpClientTestingModule, FormsModule, ReactiveFormsModule, NgbPagination ],
       providers: [
         { provide: UntypedFormBuilder },
-        { provide: CandidateService, useValue: candidateService }
+        { provide: CandidateService, useValue: candidateService },
+        provideMockAuthenticationService(),
       ]
     })
     .compileComponents();

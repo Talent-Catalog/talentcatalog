@@ -1,10 +1,11 @@
 import {Injectable} from '@angular/core';
 import {BehaviorSubject, Observable} from 'rxjs';
 import {KeycloakService} from 'keycloak-angular';
-import {AuthProvider} from './auth-provider';
-import {AuthStatus} from './auth-status';
+import {IdpProvider} from './idp-provider';
+import {IdpStatus} from './idp-status';
 import {reportAuthError} from './auth-error.util';
-import {AuthProfile} from "./auth-profile";
+import {IdpProfile} from "./idp-profile";
+import {environment} from "../../environments/environment";
 
 /**
  * Keycloak authentication provider service.
@@ -18,9 +19,9 @@ import {AuthProfile} from "./auth-profile";
  * which is compatible with Angular 17.
  */
 @Injectable()
-export class KeycloakAuthProviderService implements AuthProvider {
+export class KeycloakProviderService implements IdpProvider {
 
-  private readonly status$ = new BehaviorSubject<AuthStatus>({
+  private readonly status$ = new BehaviorSubject<IdpStatus>({
     initialized: false,
     authenticated: false,
     busy: false,
@@ -29,11 +30,11 @@ export class KeycloakAuthProviderService implements AuthProvider {
 
   constructor(private keycloakService: KeycloakService) {}
 
-  getStatus(): Observable<AuthStatus> {
+  getStatus(): Observable<IdpStatus> {
     return this.status$.asObservable();
   }
 
-  getCurrentStatus(): AuthStatus {
+  getCurrentStatus(): IdpStatus {
     return this.status$.value;
   }
 
@@ -49,7 +50,7 @@ export class KeycloakAuthProviderService implements AuthProvider {
         config: {
           url: 'http://localhost:8082',
           realm: 'talentcatalog',
-          clientId: 'grn-candidate'
+          clientId: environment.idpClientId
         },
         initOptions: {
           onLoad: 'check-sso',
@@ -84,12 +85,12 @@ export class KeycloakAuthProviderService implements AuthProvider {
     return this.keycloakService.isLoggedIn();
   }
 
-  async login(locale: string = 'en'): Promise<void> {
+  async login(redirectUri: string, locale: string = 'en'): Promise<void> {
     this.patchStatus({ busy: true, error: null });
 
     try {
       await this.keycloakService.login({
-        redirectUri: window.location.origin + '/?authAction=login',
+        redirectUri: window.location.origin + redirectUri,
         locale: locale
       });
 
@@ -106,12 +107,12 @@ export class KeycloakAuthProviderService implements AuthProvider {
     }
   }
 
-  async register(locale: string = 'en'): Promise<void> {
+  async register(redirectUri: string, locale: string = 'en'): Promise<void> {
     this.patchStatus({ busy: true, error: null });
 
     try {
       await this.keycloakService.register({
-        redirectUri: window.location.origin + '/?authAction=register',
+        redirectUri: window.location.origin + redirectUri,
         locale: locale
       });
 
@@ -132,7 +133,7 @@ export class KeycloakAuthProviderService implements AuthProvider {
     this.patchStatus({ busy: true, error: null });
 
     try {
-      await this.keycloakService.logout(window.location.origin);
+      await this.keycloakService.logout();
 
       this.patchStatus({
         busy: false,
@@ -151,7 +152,7 @@ export class KeycloakAuthProviderService implements AuthProvider {
     }
   }
 
-  async getProfile(): Promise<AuthProfile> {
+  async getProfile(): Promise<IdpProfile> {
     const profile = await this.keycloakService.loadUserProfile(true);
     const keycloak = this.keycloakService.getKeycloakInstance();
 
@@ -192,7 +193,7 @@ export class KeycloakAuthProviderService implements AuthProvider {
     }
   }
 
-  private patchStatus(patch: Partial<AuthStatus>): void {
+  private patchStatus(patch: Partial<IdpStatus>): void {
     this.status$.next({
       ...this.status$.value,
       ...patch

@@ -81,6 +81,9 @@ import {
 import {
   LanguageThresholdComponent
 } from "../../../../../visa/visa-job-assessments/language-threshold/language-threshold.component";
+import {
+  provideMockAuthenticationService
+} from "../../../../../../../util/testing/test-authentication.providers.spec";
 
 describe('VisaJobCheckCaComponent', () => {
   let component: VisaJobCheckCaComponent;
@@ -106,7 +109,8 @@ describe('VisaJobCheckCaComponent', () => {
       ],
       providers: [
         { provide: CandidateEducationService, useValue: educationSpy },
-        { provide: CandidateOccupationService, useValue: occupationSpy }
+        { provide: CandidateOccupationService, useValue: occupationSpy },
+        provideMockAuthenticationService()
       ],
     })
     .compileComponents();

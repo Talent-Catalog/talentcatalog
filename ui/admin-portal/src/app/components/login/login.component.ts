@@ -14,10 +14,9 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {UntypedFormBuilder, UntypedFormGroup, Validators} from "@angular/forms";
-import {ActivatedRoute, Router} from "@angular/router";
-import {LoginRequest} from "../../model/base";
+import {ActivatedRoute, Router, UrlTree} from "@angular/router";
 import {User} from "../../model/user";
 import {EncodedQrImage} from "../../util/qr";
 import {ShowQrCodeComponent} from "../util/qr/show-qr-code/show-qr-code.component";
@@ -26,14 +25,23 @@ import {AuthenticationService} from "../../services/authentication.service";
 import {environment} from "../../../environments/environment";
 import {PartnerService} from "../../services/partner.service";
 import {AuthorizationService} from "../../services/authorization.service";
+import {IdpStatus} from "../../services/idp-status";
+import {Subscription} from "rxjs";
+
+const CALLBACK_ACTION_PARAM_NAME = 'authAction';
+const LOGIN_ACTION = "login";
+const REGISTER_ACTION = "register";
 
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss']
 })
-export class LoginComponent implements OnInit {
+export class LoginComponent implements OnInit, OnDestroy {
+  authStatus: IdpStatus;
+  private authStatusSub?: Subscription;
 
+  currentUrlAsTree: UrlTree;
   loginForm: UntypedFormGroup;
   loading: boolean;
   returnUrl: string;
@@ -55,15 +63,38 @@ export class LoginComponent implements OnInit {
     this.backgroundImage = `url(${environment.assetBaseUrl}/assets/images/login-splash-v2.2.1.png)`;
     this.loginImage = `${environment.assetBaseUrl}/assets/images/tcHorizontalLogo.png`;
 
-    this.route.queryParams.subscribe(params => {
-      this.returnUrl = params['returnUrl'] || '';
-    });
+    this.currentUrlAsTree = this.router.parseUrl(this.router.url);
+    this.returnUrl = this.currentUrlAsTree.queryParams.returnUrl || '';
 
     this.loginForm = this.builder.group({
       username: ['', Validators.required],
       password: ['', Validators.required],
       totpToken: ['']
     })
+
+    this.authStatusSub = this.authenticationService.getAuthStatus().subscribe(
+      status => this.authStatus = status);
+
+    if (this.authenticationService.isAuthenticated()) {
+      const authAction = this.route.snapshot.queryParamMap.get(CALLBACK_ACTION_PARAM_NAME);
+      this.authenticationService.clearAuthError();
+      if (authAction === REGISTER_ACTION) {       console.log("Shouldn't happen to register");
+        // let request: OauthRegistrationRequest = {
+        //   //todo These consents are being mocked for now. When new UI is designed
+        //   //the register button should be disabled until the user has consented to the terms.
+        //   contactConsentRegistration: true,
+        //   contactConsentPartners: true
+        // }
+        // this.completeRegister(request);
+      } else if (authAction === LOGIN_ACTION) {
+        this.completeLogin();
+      }
+    }
+
+  }
+
+  ngOnDestroy(): any {
+    this.authStatusSub?.unsubscribe();
   }
 
   get username(): string {
@@ -76,43 +107,6 @@ export class LoginComponent implements OnInit {
 
   get totpToken(): string {
     return this.loginForm.value.totpToken;
-  }
-
-  login() {
-    this.error = null;
-    if (this.loginForm.invalid) {
-      return;
-    }
-    if (this.loading) { return; }
-    this.loading = true;
-
-    // const action = 'login';
-    // this.reCaptchaV3Service.execute(action).subscribe(
-    //   (token) => this.loginWithToken(token),
-    //   (error) => {
-    //     console.log(error);
-    //   }
-    // );
-    this.loginWithToken(null);
-  }
-
-  private loginWithToken(token: string) {
-    const req: LoginRequest = new LoginRequest();
-    req.username = this.username;
-    req.password = this.password;
-    req.totpToken = this.totpToken;
-    req.reCaptchaV3Token = token;
-
-    this.authenticationService.login(req)
-    .subscribe(() => {
-      this.loading = false;
-      this.checkMfaAndDpa();
-    }, error => {
-      // console.log(error);
-      this.error = error;
-      this.loading = false;
-    });
-
   }
 
   private checkMfaSetup() {
@@ -163,5 +157,31 @@ export class LoginComponent implements OnInit {
       }
     });
   }
+
+  login() {
+    this.authenticationService.login(this.computeRedirectUri(LOGIN_ACTION));
+  }
+
+  private computeRedirectUri(LOGIN_ACTION: string) {
+    const urlTree = this.currentUrlAsTree;
+    urlTree.queryParams[CALLBACK_ACTION_PARAM_NAME] = LOGIN_ACTION;
+    return urlTree.toString();
+  }
+
+  completeLogin() {
+    this.error = null;
+    this.authenticationService.completeLogin().subscribe({
+      next: (response) => {
+        this.router.navigateByUrl(this.returnUrl);
+      },
+      error: (error) => {
+        //Display error
+        this.error = error;
+        //Log out the user if the login did not complete successfully.
+        this.authenticationService.logout();
+      }
+    })
+  }
+
 }
 

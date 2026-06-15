@@ -178,7 +178,20 @@ export class HeaderComponent implements OnInit {
   }
 
   logout() {
-    this.authenticationService.logout();
+    //Save the url they were at before logout and pass that
+    //in to the Login as a returnUrl so that they are returned to the same page after login
+    //instead of the home page.
+    const currentUrl = this.router.url || '/';
+
+    //Note that we don't use the Logout Component here. The user does not need to see "session
+    //expired" errors.
+    //Logout to tidy things up, and they can login again.
+    void this.authenticationService.logout();
+
+    //Don't get into a loop if the returnUrl is "/login"
+    if (!currentUrl.startsWith('/login')) {
+      void this.router.navigate(['/login'], {queryParams: {returnUrl: currentUrl}});
+    }
   }
 
   selectSearchResult ($event, input) {

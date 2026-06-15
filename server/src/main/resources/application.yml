@@ -347,3 +347,14 @@ tc-skills-extraction-service:
 dpa:
   dpaVisibilityDelayDays: ${DPA_VISIBILITY_DELAY_DAYS:90}
   enabled: ${DPA_ENABLED:false}
+
+# Keycloak Configuration
+# See https://www.keycloak.org/docs/latest/securing_apps/index.html
+# Note that these values are hardcoded to local. That is intentional. Keycloak is only used in
+# local dev environments as a test OAuth2 provider.
+# When running under AWS ECS, we will use Cognito as our OAuth2 provider instead.
+keycloak:
+  server-url: http://localhost:8082
+  realm: talentcatalog
+  issuer: http://localhost:8082/realms/talentcatalog
+

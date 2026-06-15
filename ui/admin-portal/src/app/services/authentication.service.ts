@@ -14,11 +14,8 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Injectable, OnDestroy} from '@angular/core';
-import {LoginRequest} from "../model/base";
-import {catchError, map} from "rxjs/operators";
-import {JwtAuthenticationResponse} from "../model/jwt-authentication-response";
-import {Observable, Subject, throwError} from "rxjs";
+import {Inject, Injectable, OnDestroy} from '@angular/core';
+import {from, Observable, Subject, throwError} from "rxjs";
 import {HttpClient} from "@angular/common/http";
 import {environment} from "../../environments/environment";
 import {User} from "../model/user";
@@ -26,6 +23,11 @@ import {EncodedQrImage} from "../util/qr";
 import {LocalStorageService} from "./local-storage.service";
 import {TcInstanceType} from "../model/tc-instance-type";
 import {TermsType} from "../model/terms-info-dto";
+import {IDP_PROVIDER} from "./idp.tokens";
+import {IdpProvider} from "./idp-provider";
+import {IdpStatus} from "./idp-status";
+import {catchError, map, switchMap} from "rxjs/operators";
+import {AuthenticationResponse} from "../model/authentication-response";
 
 /**
  * Manages authentication - ie login/logout.
@@ -52,7 +54,7 @@ export class AuthenticationService implements OnDestroy {
    */
   loggedInUser$ = new Subject<User>();
 
-  constructor(
+  constructor(@Inject(IDP_PROVIDER) private idpProvider: IdpProvider,
     private http: HttpClient,
     private localStorageService: LocalStorageService
   ) {}
@@ -80,10 +82,6 @@ export class AuthenticationService implements OnDestroy {
     }
 
     return this.loggedInUser;
-  }
-
-  getToken(): string {
-    return this.localStorageService.get('access-token');
   }
 
   canViewChats(): boolean {
@@ -125,28 +123,76 @@ export class AuthenticationService implements OnDestroy {
     }
   }
 
-  login(credentials: LoginRequest) {
-    return this.http.post(`${this.apiUrl}/login`, credentials).pipe(
-      map((response: JwtAuthenticationResponse) => {
-        this.storeCredentials(response);
-      }),
-      catchError(e => {
-          console.log('error', e);
-          return throwError(e);
-        }
-      )
-    );
+  clearAuthError(): void {
+    this.idpProvider.clearError();
   }
 
-  logout() {
-    this.http.post(`${this.apiUrl}/logout`, null).subscribe({
-      next: () => {}
-    })
+  init(): Promise<boolean> {
+    return this.idpProvider.init();
+  }
+
+  getAuthStatus(): Observable<IdpStatus> {
+    return this.idpProvider.getStatus();
+  }
+
+  getToken(): string | undefined {
+    if (!this.idpProvider.isAuthenticated()) {
+      return undefined;
+    }
+    return this.idpProvider.getToken();
+  }
+
+  refreshToken(minValiditySeconds = 30): Promise<void> {
+    return this.idpProvider.refreshToken(minValiditySeconds);
+  }
+
+  isAuthenticated(): boolean {
+    return this.idpProvider.isAuthenticated();
+  }
+
+  login(redirectUri: string, lang: string = 'en'): Promise<void> {
+    return this.idpProvider.login(redirectUri, lang);
+  }
+
+  completeLogin(): Observable<void> {
+    //Retrieve current profile from provider and send to server so that it can be stored in the
+    //database.
+    return from(this.idpProvider.getProfile()).pipe(
+      switchMap(profile =>
+        this.http.post(`${this.apiUrl}/login`, profile).pipe(
+          map((response: AuthenticationResponse) => {
+            this.storeAuthenticationData(response);
+          }),
+          catchError(e => {
+              console.log('error', e);
+              return throwError(e);
+            }
+          )
+        )
+      )
+    )
+  }
+
+  logout(): Promise<void> {
     this.localStorageService.remove('user');
-    this.localStorageService.remove('access-token');
     localStorage.clear();
 
-    this.setLoggedInUser(null)
+    this.setLoggedInUser(null);
+
+    return this.idpProvider.logout();
+  }
+
+  private storeAuthenticationData(response: AuthenticationResponse) {
+    //Remove any old data from storage
+    this.localStorageService.remove('user');
+    this.localStorageService.remove('can_view_chats');
+    this.localStorageService.remove('tc_instance_type');
+
+    //Update new data in storage
+    this.localStorageService.set('can_view_chats', response.canViewChats);
+    this.localStorageService.set('tc_instance_type', response.tcInstanceType);
+
+    this.setLoggedInUser(response.user);
   }
 
   mfaSetup(): Observable<EncodedQrImage> {
@@ -157,21 +203,6 @@ export class AuthenticationService implements OnDestroy {
     this.loggedInUser = loggedInUser;
     this.localStorageService.set('user', this.loggedInUser);
     this.loggedInUser$.next(this.loggedInUser);
-  }
-
-  private storeCredentials(response: JwtAuthenticationResponse) {
-    //Remove any old credentials from storage
-    this.localStorageService.remove('access-token');
-    this.localStorageService.remove('user');
-    this.localStorageService.remove('can_view_chats');
-    this.localStorageService.remove('tc_instance_type');
-
-    //Update new credentials in storage
-    this.localStorageService.set('access-token', response.accessToken);
-    this.localStorageService.set('can_view_chats', response.canViewChats);
-    this.localStorageService.set('tc_instance_type', response.tcInstanceType);
-
-    this.setLoggedInUser(response.user);
   }
 
 }

@@ -32,7 +32,9 @@ export const environment = {
   environmentName: 'local',
   googleAnalyticsId: 'G-K9ML1Y40B4', // for testing,
   clarityProjectId: 'pquy45i1um', // for testing,
-  authProvider: 'keycloak',
+  idpProvider: 'keycloak',
+  idpClientId: 'admin',
+
 };
 
 /*

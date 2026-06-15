@@ -31,6 +31,9 @@ import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {MockCandidate} from "../../../../../MockData/MockCandidate";
+import {
+  provideMockAuthenticationService
+} from "../../../../../util/testing/test-authentication.providers.spec";
 
 describe('CandidateMiniIntakeTabComponent', () => {
   let component: CandidateMiniIntakeTabComponent;
@@ -51,7 +54,8 @@ describe('CandidateMiniIntakeTabComponent', () => {
         NgbModal,
         AuthorizationService,
         CandidateCitizenshipService,
-        CandidateExamService
+        CandidateExamService,
+        provideMockAuthenticationService()
       ]
     })
     .compileComponents();

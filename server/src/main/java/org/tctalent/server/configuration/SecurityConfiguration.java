@@ -95,6 +95,7 @@ public class SecurityConfiguration {
         "/api/portal/branding",
         "/api/portal/language/system/**",
         "/api/portal/language/translations/**",
+        "/api/admin/translate/translations/**",
         "/api/admin/terms-info/**",
         "/api/admin/user/check-token",
         "/api/portal/user/check-token",
@@ -105,6 +106,7 @@ public class SecurityConfiguration {
         "/api/admin/user/verify-email/**",
         "/app/**",
         "/backend/jobseeker",
+        "/error", "/error/**",
         "/files/**",
         "/published/**",
         "/status**", "/status/**",
@@ -163,7 +165,8 @@ public class SecurityConfiguration {
     @Order(1)
     SecurityFilterChain registrationSecurityFilterChain(HttpSecurity http) throws Exception {
         http
-            .securityMatcher("/api/portal/auth/register", "/api/portal/auth/login")
+            .securityMatcher("/api/portal/auth/register", "/api/portal/auth/login",
+                "/api/admin/auth/register", "/api/admin/auth/login")
             .cors(withDefaults())
             .csrf(CsrfConfigurer::disable)
             .sessionManagement(session ->
@@ -461,7 +464,7 @@ public class SecurityConfiguration {
                 .requestMatchers(HttpMethod.POST, "/api/admin/saved-list/search-ids").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
 
                 // POST: VIEW TRANSLATIONS
-                .requestMatchers(HttpMethod.POST, "/api/admin/translation/*").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
+               .requestMatchers(HttpMethod.POST, "/api/admin/translation/*").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
 
                 // GET: MIGRATE TRANSLATIONS BETWEEN DIFFERENT AWS IDENTITIES
                 .requestMatchers(HttpMethod.GET, "/api/admin/system/migrate-translations").hasRole("SYSTEMADMIN")
