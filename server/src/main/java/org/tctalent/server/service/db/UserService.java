@@ -55,6 +55,11 @@ public interface UserService {
 
     /**
      * Log in a user based on the given OAuth2 profile.
+     * <p>
+     * Will only throw an exception is there is a system error or if the user is found but has been
+     * marked as inactive. Given that authentication is handled externally by the OAuth IDP, every
+     * attempt is made to log in the user on the server. Even if a user is not found, the server
+     * will attempt to create one from the data it has rather than throwing an exception.
      * @param profile Profile data managed by the IDP.
      * @return User logged in.
      */

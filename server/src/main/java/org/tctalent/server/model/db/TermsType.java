@@ -33,5 +33,13 @@ public enum TermsType {
      * case we will need a new enum corresponding to each non-standard provider.
      * e.g. OPC_TBB_DATA_PROCESSING_AGREEMENT.
      */
-    OPC_STANDARD_DATA_PROCESSING_AGREEMENT
+    OPC_STANDARD_DATA_PROCESSING_AGREEMENT,
+
+    /**
+     * Reference service terms accepted by candidates before receiving a voucher.
+     * <p>
+     * This per-provider terms type is an interim approach while terms remain in-memory.
+     * It can be normalised when terms are persisted and linked more directly to services.
+     */
+    REFERENCE_SERVICE_TERMS
 }

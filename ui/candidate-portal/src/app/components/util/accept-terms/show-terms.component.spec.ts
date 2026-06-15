@@ -1,76 +1,62 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { ShowTermsComponent } from './show-terms.component';
-import { Component, DebugElement } from '@angular/core';
-import { By } from '@angular/platform-browser';
-import { FormsModule } from '@angular/forms';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {ShowTermsComponent} from './show-terms.component';
 
-@Component({
-  template: `
-    <app-show-terms (accepted)="onAccepted()">
-      <div style="height: 1000px;">Mock Terms Content</div>
-    </app-show-terms>
-  `
-})
-class TestHostComponent {
-  accepted = false;
-  onAccepted() {
-    this.accepted = true;
-  }
-}
-
-describe('AcceptTermsComponent', () => {
-  let fixture: ComponentFixture<TestHostComponent>;
-  let hostComponent: TestHostComponent;
-  let acceptComponent: DebugElement;
+describe('ShowTermsComponent', () => {
+  let component: ShowTermsComponent;
+  let fixture: ComponentFixture<ShowTermsComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ShowTermsComponent, TestHostComponent],
-      imports: [FormsModule]
+      declarations: [ShowTermsComponent]
     }).compileComponents();
 
-    fixture = TestBed.createComponent(TestHostComponent);
-    hostComponent = fixture.componentInstance;
-    acceptComponent = fixture.debugElement.query(By.directive(ShowTermsComponent));
-    fixture.detectChanges();
+    fixture = TestBed.createComponent(ShowTermsComponent);
+    component = fixture.componentInstance;
   });
 
-  it('should render projected content', () => {
-    const projectedContent = acceptComponent.nativeElement.querySelector('.terms-box');
-    expect(projectedContent.textContent).toContain('Mock Terms Content');
+  it('should emit termsRead when content does not need scrolling', () => {
+    component.requestTermsRead = true;
+    const emitSpy = spyOn(component.termsRead, 'emit');
+    component.termsBox = {
+      nativeElement: {
+        scrollHeight: 200,
+        clientHeight: 400
+      } as HTMLElement
+    } as any;
+
+    component.ngAfterViewInit();
+
+    expect(component.scrolledToBottom).toBeTrue();
+    expect(emitSpy).toHaveBeenCalledWith(true);
   });
 
-  it('should disable checkbox and button initially', () => {
-    const checkbox = acceptComponent.nativeElement.querySelector('input[type="checkbox"]');
-    const button = acceptComponent.nativeElement.querySelector('button');
-    expect(checkbox.disabled).toBeTrue();
-    expect(button.disabled).toBeTrue();
+  it('should not emit termsRead on init when scrolling is required', () => {
+    component.requestTermsRead = true;
+    const emitSpy = spyOn(component.termsRead, 'emit');
+    component.termsBox = {
+      nativeElement: {
+        scrollHeight: 800,
+        clientHeight: 400
+      } as HTMLElement
+    } as any;
+
+    component.ngAfterViewInit();
+
+    expect(component.scrolledToBottom).toBeFalse();
+    expect(emitSpy).not.toHaveBeenCalled();
   });
 
-  it('should enable checkbox after scrolling to bottom', () => {
-    const box = acceptComponent.nativeElement.querySelector('.terms-box');
-    box.scrollTop = box.scrollHeight; // simulate scroll to bottom
-    box.dispatchEvent(new Event('scroll'));
-    fixture.detectChanges();
+  it('should emit termsRead after scrolling to bottom', () => {
+    const emitSpy = spyOn(component.termsRead, 'emit');
+    const element = {
+      scrollTop: 400,
+      clientHeight: 400,
+      scrollHeight: 800
+    } as HTMLElement;
 
-    const checkbox = acceptComponent.nativeElement.querySelector('input[type="checkbox"]');
-    expect(checkbox.disabled).toBeFalse();
-  });
+    component.onScroll(element);
 
-  it('should emit accepted event after checking and clicking continue', () => {
-    const box = acceptComponent.nativeElement.querySelector('.terms-box');
-    box.scrollTop = box.scrollHeight;
-    box.dispatchEvent(new Event('scroll'));
-    fixture.detectChanges();
-
-    const checkbox = acceptComponent.nativeElement.querySelector('input[type="checkbox"]');
-    checkbox.click();
-    fixture.detectChanges();
-
-    const button = acceptComponent.nativeElement.querySelector('button');
-    button.click();
-    fixture.detectChanges();
-
-    expect(hostComponent.accepted).toBeTrue();
+    expect(component.scrolledToBottom).toBeTrue();
+    expect(emitSpy).toHaveBeenCalledWith(true);
   });
 });

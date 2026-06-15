@@ -246,6 +246,12 @@ import {environment} from "../environments/environment";
 import {IDP_PROVIDER} from "./services/idp.tokens";
 import {KeycloakAngularModule} from "keycloak-angular";
 import {
+  CandidateAgreementsComponent
+} from './components/profile/view/tab/agreements/candidate-agreements.component';
+import {
+  AgreementContentComponent
+} from './components/profile/view/tab/agreements/agreement-content/agreement-content.component';
+import {
   TextPartsInputComponent
 } from "./components/util/text-parts-input/text-parts-input.component";
 import {TextPartsViewComponent} from "./components/util/text-parts-view/text-parts-view.component";
@@ -360,6 +366,8 @@ export function initializeAuth(authenticationService: AuthenticationService) {
     LinkedinRedeemedComponent,
     ReferenceComponent,
     UnhcrComponent,
+    CandidateAgreementsComponent,
+    AgreementContentComponent
   ],
   imports: [
     AuthErrorComponent,

@@ -49,6 +49,9 @@ export class DownloadCvComponent implements OnInit {
   }
 
   onSave() {
+    this.error = null;
+    this.saving = true;
+
     const format: CvFormat = this.form.value.format;
 
     const request: DownloadCVRequest = {
@@ -58,19 +61,36 @@ export class DownloadCvComponent implements OnInit {
       format: format
     };
 
-    const tab = window.open();
-
     this.candidateService.downloadCv(request).subscribe(
       result => {
-        tab.location.href = URL.createObjectURL(result);
+        if (format === 'GOOGLE_DOC') {
+          result.text().then(url => {
+            const googleDocUrl = url.trim();
+
+            window.open(googleDocUrl, '_blank', 'noopener');
+
+            this.saving = false;
+            this.closeModal();
+          }).catch(error => {
+            this.saving = false;
+            this.error = error;
+          });
+
+          return;
+        }
+
+        const cvUrl = URL.createObjectURL(result);
+        window.open(cvUrl, '_blank', 'noopener');
+
+        this.saving = false;
         this.closeModal();
       },
       error => {
+        this.saving = false;
         this.error = error;
       }
     );
   }
-
   closeModal() {
     this.activeModal.close();
   }

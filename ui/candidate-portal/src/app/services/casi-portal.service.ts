@@ -2,7 +2,11 @@ import {Injectable} from '@angular/core';
 import {HttpClient} from "@angular/common/http";
 import {Observable} from "rxjs";
 import {environment} from "../../environments/environment";
-import {ServiceAssignment, UpdateServiceResourceStatusRequest} from "../model/services";
+import {
+  ServiceAssignment,
+  ServiceProviderTermsInfo,
+  UpdateServiceResourceStatusRequest
+} from "../model/services";
 
 /**
  * Service for managing CASI eligibility and assignments in the candidate portal.
@@ -34,6 +38,44 @@ export class CasiPortalService {
   assign(provider: string, serviceCode: string): Observable<ServiceAssignment> {
     return this.http.post<ServiceAssignment>(
       `${this.apiBaseUrl}/${provider}/${serviceCode}/assign`,
+      null
+    );
+  }
+
+  getProviderTerms(provider: string, serviceCode: string): Observable<ServiceProviderTermsInfo | null> {
+    return this.http.get<ServiceProviderTermsInfo | null>(
+      `${this.apiBaseUrl}/${provider}/${serviceCode}/agreement/terms`
+    );
+  }
+
+  checkNeedsAgreement(provider: string, serviceCode: string): Observable<boolean> {
+    return this.http.get<boolean>(
+      `${this.apiBaseUrl}/${provider}/${serviceCode}/agreement/needs-acceptance`
+    );
+  }
+
+  acceptProviderTerms(provider: string, serviceCode: string): Observable<void> {
+    return this.http.post<void>(
+      `${this.apiBaseUrl}/${provider}/${serviceCode}/agreement/accept`,
+      null
+    );
+  }
+
+  getOpcDpaTerms(provider: string, serviceCode: string): Observable<ServiceProviderTermsInfo | null> {
+    return this.http.get<ServiceProviderTermsInfo | null>(
+      `${this.apiBaseUrl}/${provider}/${serviceCode}/agreement/opc-dpa/terms`
+    );
+  }
+
+  checkNeedsOpcDpa(provider: string, serviceCode: string): Observable<boolean> {
+    return this.http.get<boolean>(
+      `${this.apiBaseUrl}/${provider}/${serviceCode}/agreement/opc-dpa/needs-acceptance`
+    );
+  }
+
+  acceptOpcDpa(provider: string, serviceCode: string): Observable<void> {
+    return this.http.post<void>(
+      `${this.apiBaseUrl}/${provider}/${serviceCode}/agreement/opc-dpa/accept`,
       null
     );
   }

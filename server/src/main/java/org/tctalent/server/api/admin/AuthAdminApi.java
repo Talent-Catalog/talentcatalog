@@ -51,10 +51,32 @@ public class AuthAdminApi {
     private final OAuth2UserService oAuth2UserService;
 
 
+    /**
+     * This is the server side of an OAuth2 login flow. The actual login is handled by
+     * an external Identity Provider (IDP), e.g. Cognito or Keycloak, called from the user's browser
+     * (our Angular code). The IDP will ask the user for their log-in details (email and password).
+     * If they are valid, the user will be authenticated and redirected here through this API call
+     * passing in the profile of the user as recorded by the IDP.
+     * <p>
+     * This method looks up the user on the database using information in the profile and then
+     * returns an authentication response containing user details and permissions.
+     * <p>
+     * A user is not considered logged in by the Angular code until this method returns successfully.
+     * @param profile The authentication profile containing the user's credentials.
+     * @return A map containing the authentication response with user details and permissions.
+     */
     @PostMapping("login")
     public Map<String, Object> login(@RequestBody AuthProfile profile) {
+        //Look up the user in the database using the profile.
+        //Only throws an exception if there is a system error. See UserService.login() for details.
         User user = userService.login(profile);
+
+        //This checks that the type of user is as expected. It is intended to check for unusual
+        //cases such as an admin user logging in with a candidate's details, or vice versa.
+        //Normally this should be a no-op.
         oAuth2UserService.checkUserClientId(user, OAuth2UserService.OAUTH_TC_ADMIN_CLIENT_ID);
+
+        //The normal response contains some basic user details and permissions.
         AuthenticationResponse response = userService.createAuthenticationResponse(user);
         return authenticationDto().build(response);
     }
