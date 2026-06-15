@@ -143,7 +143,7 @@ Download and install the latest of the following tools.
 
 - Angular CLI [https://angular.io/cli](https://angular.io/cli)
   ```
-  npm install -g @angular/cli@16
+  npm install -g @angular/cli@17
   ```
     - See https://angular.io/guide/versions
     - To upgrade Angular versions, see https://update.angular.io/
