@@ -1,9 +1,9 @@
-/*!
+/*
  * Copyright (c) 2026 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
- * the terms of the GNU General Public License as published by the Free
- * Software Foundation, either version 3 of the License, or any later version.
+ *  the terms of the GNU General Public License as published by the Free
+ *  Software Foundation, either version 3 of the License, or any later version.
  *
  * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
@@ -14,6 +14,19 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-:host {
-  display: block;
+package org.tctalent.server.idp.domain.model;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+
+/**
+ * Reference to an IdP user (issuer + subject) and optional username
+ */
+@Data
+@AllArgsConstructor
+public class IdpUserRef {
+    private String issuer;
+    private String subject;
+    private String email;
 }
+

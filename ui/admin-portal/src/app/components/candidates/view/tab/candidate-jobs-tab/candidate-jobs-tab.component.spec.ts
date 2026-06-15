@@ -26,6 +26,9 @@ import {
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {NgSelectModule} from "@ng-select/ng-select";
+import {
+  provideMockAuthenticationService
+} from "../../../../../util/testing/test-authentication.providers.spec";
 
 describe('CandidateJobsTabComponent', () => {
   let component: CandidateJobsTabComponent;
@@ -34,7 +37,10 @@ describe('CandidateJobsTabComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [HttpClientTestingModule,FormsModule,ReactiveFormsModule, NgSelectModule],
-      declarations: [CandidateJobsTabComponent,ViewCandidateJobsComponent, CandidateOppsComponent]
+      declarations: [CandidateJobsTabComponent,ViewCandidateJobsComponent, CandidateOppsComponent],
+      providers: [
+        provideMockAuthenticationService()
+      ]
     })
     .compileComponents();
   });

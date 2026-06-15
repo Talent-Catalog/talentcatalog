@@ -25,6 +25,9 @@ import {ShareableDocsComponent} from "../shareable-docs/shareable-docs.component
 import {UserPipe} from "../../../util/user/user.pipe";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {CUSTOM_ELEMENTS_SCHEMA} from "@angular/core";
+import {
+  provideMockAuthenticationService
+} from "../../../../util/testing/test-authentication.providers.spec";
 
 describe('ViewCandidateAttachmentComponent', () => {
   let component: ViewCandidateAttachmentComponent;
@@ -42,7 +45,8 @@ describe('ViewCandidateAttachmentComponent', () => {
       providers: [
         UntypedFormBuilder,
         { provide: CandidateAttachmentService, useValue: spy },
-        NgbModal
+        NgbModal,
+        provideMockAuthenticationService()
       ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA]
     })

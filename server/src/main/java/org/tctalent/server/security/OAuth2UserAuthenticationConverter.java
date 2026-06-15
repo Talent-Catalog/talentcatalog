@@ -41,14 +41,27 @@ public class OAuth2UserAuthenticationConverter implements Converter<Jwt, Abstrac
     public AbstractAuthenticationToken convert(Jwt jwt) {
         String issuer = jwt.getIssuer().toString();
         String subject = jwt.getSubject();
+        String clientId = getClientId(jwt);
 
         CurrentUserInfo currentUserInfo =
-            oAuth2UserService.loadUser(issuer, subject);
+            oAuth2UserService.loadUser(issuer, subject, clientId);
 
         return new TcAuthenticationToken(
             currentUserInfo,
             jwt,
             currentUserInfo.getAuthorities()
         );
+    }
+
+    /**
+     * Retrieves the client ID from the JWT, preferring 'client_id' claim if available,
+     * otherwise 'azp' (which is the OIDC standard for client ID).
+     */
+    private String getClientId(Jwt jwt) {
+        String clientId = jwt.getClaimAsString("client_id");
+        if (clientId == null) {
+            clientId = jwt.getClaimAsString("azp");
+        }
+        return clientId;
     }
 }

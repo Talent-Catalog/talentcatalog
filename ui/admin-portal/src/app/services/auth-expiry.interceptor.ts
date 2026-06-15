@@ -8,24 +8,29 @@ import {
 } from '@angular/common/http';
 import {Observable, throwError} from 'rxjs';
 import {Router} from "@angular/router";
-import {AuthenticationService} from "./authentication.service";
 import {catchError} from "rxjs/operators";
 
 @Injectable()
 export class AuthExpiryInterceptor implements HttpInterceptor {
 
-  constructor(private router: Router, private auth: AuthenticationService) {}
+  constructor(private router: Router) {}
 
   intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
     return next.handle(request).pipe(
       catchError((err: unknown) => {
         if (err instanceof HttpErrorResponse && err.status === 401) {
-          const currentUrl = this.router.url || '/';
-          this.auth.logout();
-          // Avoid infinite loop by checking if we're already on the login page
-          if (!currentUrl.startsWith('/login')) {
-            this.router.navigate(['/login'], { queryParams: { returnUrl: currentUrl } });
+          //Convert the incoming error to a simple string
+          let error: string;
+          if (err.error !== null) {
+            error = err.error.message;
+          } else if (err.message !== null) {
+            error = err.message;
+          } else {
+            error = err.status + " " + err.statusText;
           }
+          const returnUrl = this.router.url || '/';
+          void this.router.navigate(['/logout'],
+            { queryParams: { reason: error, returnUrl: returnUrl } });
         }
         return throwError(err);
       })

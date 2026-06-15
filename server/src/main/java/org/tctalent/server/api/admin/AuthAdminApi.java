@@ -17,7 +17,6 @@
 package org.tctalent.server.api.admin;
 
 import java.util.Map;
-import javax.security.auth.login.AccountLockedException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -25,13 +24,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.tctalent.server.exception.InvalidCredentialsException;
-import org.tctalent.server.exception.InvalidPasswordFormatException;
-import org.tctalent.server.exception.PasswordExpiredException;
 import org.tctalent.server.model.db.PartnerDtoHelper;
 import org.tctalent.server.model.db.User;
-import org.tctalent.server.request.LoginRequest;
-import org.tctalent.server.response.JwtAuthenticationResponse;
+import org.tctalent.server.response.AuthenticationResponse;
+import org.tctalent.server.security.AuthProfile;
+import org.tctalent.server.security.OAuth2UserService;
 import org.tctalent.server.service.db.UserService;
 import org.tctalent.server.util.dto.DtoBuilder;
 import org.tctalent.server.util.qr.EncodedQrImage;
@@ -51,24 +48,15 @@ import org.tctalent.server.util.qr.EncodedQrImage;
 public class AuthAdminApi {
 
     private final UserService userService;
+    private final OAuth2UserService oAuth2UserService;
+
 
     @PostMapping("login")
-    public Map<String, Object> login(@RequestBody LoginRequest request)
-            throws AccountLockedException, PasswordExpiredException, InvalidCredentialsException,
-        InvalidPasswordFormatException {
-
-        JwtAuthenticationResponse response = userService.login(request);
-
-        User user = response.getUser();
-        if (user.getUsingMfa()) {
-            //If they are not yet configured we skip verification but they will be required
-            //to set up mfa as soon as they log in.
-            if (user.getMfaConfigured()) {
-                userService.mfaVerify(request.getTotpToken());
-            }
-        }
-
-        return jwtDto().build(response);
+    public Map<String, Object> login(@RequestBody AuthProfile profile) {
+        User user = userService.login(profile);
+        oAuth2UserService.checkUserClientId(user, OAuth2UserService.OAUTH_TC_ADMIN_CLIENT_ID);
+        AuthenticationResponse response = userService.createAuthenticationResponse(user);
+        return authenticationDto().build(response);
     }
 
     @PostMapping("logout")
@@ -98,14 +86,12 @@ public class AuthAdminApi {
                 ;
     }
 
-    DtoBuilder jwtDto() {
+    DtoBuilder authenticationDto() {
         return new DtoBuilder()
-                .add("accessToken")
-                .add("tokenType")
-                .add("canViewChats")
-                .add("tcInstanceType")
-                .add("user", userBriefDto())
-                ;
+            .add("canViewChats")
+            .add("tcInstanceType")
+            .add("user", userBriefDto())
+            ;
     }
 
     private DtoBuilder userBriefDto() {

@@ -33,6 +33,7 @@ import {MockJob} from "../../../MockData/MockJob";
 import {MockEmployer} from "../../../MockData/MockEmployer";
 import {MockSavedList} from "../../../MockData/MockSavedList";
 import {RouterLinkStubDirective} from "../../login/login.component.spec";
+import {AuthenticationService} from "../../../services/authentication.service";
 
 
 describe('NewJobComponent', () => {
@@ -48,6 +49,11 @@ describe('NewJobComponent', () => {
   let fbSpy : any;
   let router: Router; // Add Router dependency here
   let ngbModal: NgbModal; // Add Router dependency here
+  const authenticationService = {
+    loggedInUser$: of(null),
+    getLoggedInUser: jasmine.createSpy('getLoggedInUser'),
+  };
+
 
   beforeEach(waitForAsync(() => {
     mockJobService = jasmine.createSpyObj('JobService', ['create']);
@@ -91,7 +97,8 @@ describe('NewJobComponent', () => {
             serializeUrl = jasmine.createSpy('serializeUrl');
           }
         },
-        { provide: Location, useValue: location }
+        { provide: Location, useValue: location },
+        { provide: AuthenticationService, useValue: authenticationService }
       ]
     }).compileComponents();
 

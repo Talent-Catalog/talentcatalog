@@ -40,10 +40,11 @@ export class ErrorInterceptor implements HttpInterceptor {
 
       if (err.status === 401 || err.status === 403) {
         // auto logout if Access Denied errors (eg 401) are returned from api
-        this.router.navigate(['/logout'],
-          { queryParams: { reason: error } });
+        const returnUrl = this.router.url || '/';
+        void this.router.navigate(['/logout'],
+          { queryParams: { reason: error, returnUrl: returnUrl } });
       } else {
-        //otherwise but throw an error for the code to handle
+        //otherwise throw an error for the code to handle
         return throwError(error);
       }
     }));

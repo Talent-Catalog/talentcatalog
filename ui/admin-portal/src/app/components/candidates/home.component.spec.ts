@@ -23,6 +23,9 @@ import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {LocalStorageService} from "../../services/local-storage.service";
 import {ActivatedRoute} from "@angular/router";
 import {of} from "rxjs";
+import {
+  provideMockAuthenticationService
+} from "../../util/testing/test-authentication.providers.spec";
 
 describe('HomeComponent', () => {
   let component: HomeComponent;
@@ -47,6 +50,7 @@ describe('HomeComponent', () => {
         SavedSearchService,
         AuthenticationService,
         { provide: ActivatedRoute, useValue: { queryParams: of({}) } },
+        provideMockAuthenticationService()
       ]
     }).compileComponents();
   }));

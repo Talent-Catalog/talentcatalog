@@ -26,6 +26,7 @@ import {MockSavedSearch} from "../../../MockData/MockSavedSearch";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {RouterTestingModule} from "@angular/router/testing";
 import {CandidateSourceComponent} from "../../util/candidate-source/candidate-source.component";
+import {AuthenticationService} from "../../../services/authentication.service";
 
 const mockSearchResult:SearchResults<SavedSearch> = {
   number : 1,
@@ -42,6 +43,10 @@ describe('SearchSavedSearchesComponent', () => {
   let fixture: ComponentFixture<SearchSavedSearchesComponent>;
   let savedSearchServiceSpy: jasmine.SpyObj<SavedSearchService>;
   let activeModalSpy: jasmine.SpyObj<NgbActiveModal>;
+  const authenticationService = {
+    loggedInUser$: of(null),
+    getLoggedInUser: jasmine.createSpy('getLoggedInUser'),
+  };
 
   beforeEach(async () => {
     const searchServiceSpy = jasmine.createSpyObj('SavedSearchService', ['searchPaged']);
@@ -52,7 +57,11 @@ describe('SearchSavedSearchesComponent', () => {
       imports: [HttpClientTestingModule,ReactiveFormsModule,RouterTestingModule,NgbPaginationModule],
       providers: [
         { provide: SavedSearchService, useValue: searchServiceSpy },
-        { provide: NgbActiveModal, useValue: modalSpy }
+        { provide: NgbActiveModal, useValue: modalSpy },
+
+        //AuthenticationService is not actually used, but it stills to be here. It gets
+        //pulled in indirectly somehow.
+        { provide: AuthenticationService, useValue: authenticationService }
       ]
     }).compileComponents();
 

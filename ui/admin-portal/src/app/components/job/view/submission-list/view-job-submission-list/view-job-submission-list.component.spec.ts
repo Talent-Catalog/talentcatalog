@@ -32,6 +32,9 @@ import {AutosaveStatusComponent} from "../../../../util/autosave-status/autosave
 import {RouterTestingModule} from "@angular/router/testing";
 import {NgbModule} from "@ng-bootstrap/ng-bootstrap";
 import {MockJob} from "../../../../../MockData/MockJob";
+import {
+  provideMockAuthenticationService
+} from "../../../../../util/testing/test-authentication.providers.spec";
 
 describe('ViewJobSubmissionListComponent', () => {
   let component: ViewJobSubmissionListComponent;
@@ -54,6 +57,8 @@ describe('ViewJobSubmissionListComponent', () => {
          TitleCasePipe,
          { provide: ActivatedRoute, useValue: { queryParams: of({}), snapshot: { data: {} } } }, // Mock ActivatedRoute
           UntypedFormBuilder,
+         provideMockAuthenticationService()
+         
       ]
     })
     .compileComponents();

@@ -1,13 +1,13 @@
-import { Component, Input, Pipe, PipeTransform } from '@angular/core';
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { By } from '@angular/platform-browser';
-import { ActivatedRoute, Router } from '@angular/router';
-import { of } from 'rxjs';
+import {Component, Input, Pipe, PipeTransform} from '@angular/core';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {By} from '@angular/platform-browser';
+import {ActivatedRoute, Router} from '@angular/router';
+import {of} from 'rxjs';
 
-import { LandingComponent } from './landing.component';
-import { AuthenticationService } from '../../services/authentication.service';
-import { BrandingService } from '../../services/branding.service';
-import { LanguageService } from '../../services/language.service';
+import {LandingComponent} from './landing.component';
+import {AuthenticationService} from '../../services/authentication.service';
+import {BrandingService} from '../../services/branding.service';
+import {LanguageService} from '../../services/language.service';
 
 @Pipe({name: 'translate'})
 class TranslatePipeStub implements PipeTransform {
@@ -15,9 +15,6 @@ class TranslatePipeStub implements PipeTransform {
     return value;
   }
 }
-
-@Component({selector: 'app-login', template: ''})
-class AppLoginStubComponent {}
 
 @Component({selector: 'tc-card', template: '<ng-content></ng-content>'})
 class TcCardStubComponent {
@@ -41,7 +38,6 @@ describe('LandingComponent', () => {
       declarations: [
         LandingComponent,
         TranslatePipeStub,
-        AppLoginStubComponent,
         TcCardStubComponent,
         TcButtonStubComponent
       ],

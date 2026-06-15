@@ -13,10 +13,10 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-import {AuthProfile} from "../services/auth-profile";
+import {IdpProfile} from "../services/idp-profile";
 
 export interface OauthRegistrationRequest {
-  profile?: AuthProfile;
+  profile?: IdpProfile;
   contactConsentRegistration?: boolean;
   contactConsentPartners?: boolean;
   partnerAbbreviation?: string;
