@@ -45,24 +45,23 @@ jobs:
 
       - name: Build
         run: ./gradlew server:build -x test
-      - name: Create Gradle test logging init script
+
+      - name: Run tests
+        run: ./gradlew clean :server:test --stacktrace --rerun-tasks
+
+      - name: Verify CandidateServiceImplCharacterizationTest ran
+        if: always()
         run: |
-          cat > ci-test-logging.gradle <<'EOF'
-          allprojects {
-              tasks.withType(org.gradle.api.tasks.testing.Test).configureEach {
-                  testLogging {
-                      events "started", "passed", "skipped", "failed"
-                      exceptionFormat "full"
-                      showExceptions true
-                      showCauses true
-                      showStackTraces true
-                      showStandardStreams false
-                  }
-              }
-          }
-          EOF
-      - name: Run specific failing test
-        run: ./gradlew :server:test --tests "CandidateServiceImplCharacterizationTest" --stacktrace --info --console=plain
+          echo "Compiled test class:"
+          find server/build/classes/java/test -name '*CandidateServiceImplCharacterizationTest*' -print
+          
+          echo "JUnit XML result:"
+          find server/build/test-results/test -name '*CandidateServiceImplCharacterizationTest*' -print
+          
+          echo "Search test result contents:"
+          grep -R "CandidateServiceImplCharacterizationTest" server/build/test-results/test || true
+          
+          test -f server/build/test-results/test/TEST-org.tctalent.server.service.db.impl.CandidateServiceImplCharacterizationTest.xml
 
       - name: Upload test report on failure
         if: failure()
