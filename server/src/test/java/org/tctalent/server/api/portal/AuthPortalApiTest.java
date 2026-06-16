@@ -28,6 +28,7 @@ import org.tctalent.server.request.AuthenticateInContextTranslationRequest;
 import org.tctalent.server.request.candidate.OauthRegistrationRequest;
 import org.tctalent.server.response.AuthenticationResponse;
 import org.tctalent.server.security.AuthProfile;
+import org.tctalent.server.security.OAuth2UserService;
 import org.tctalent.server.service.db.CandidateService;
 import org.tctalent.server.service.db.UserService;
 import org.tctalent.server.service.db.impl.TcInstanceService;
@@ -39,6 +40,9 @@ class AuthPortalApiTest {
 
   @Mock
   private CandidateService candidateService;
+
+  @Mock
+  private OAuth2UserService oAuth2UserService;
 
   @Mock
   private TcInstanceService tcInstanceService;
