@@ -22,6 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -62,6 +63,18 @@ public class ErrorHandler {
             .logError();
 
         return new ErrorDTO(ex.getErrorCode(), ex.getMessage());
+    }
+
+    @ExceptionHandler(UsernameNotFoundException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    @ResponseBody
+    public ErrorDTO processUsernameNotFoundException(UsernameNotFoundException ex) {
+        LogBuilder.builder(log)
+            .action("UsernameNotFoundException")
+            .message("Processing : UsernameNotFoundException: " + ex)
+            .logInfo();
+
+        return new ErrorDTO("user_not_found", ex.getMessage());
     }
 
     @ExceptionHandler(InvalidCredentialsException.class)

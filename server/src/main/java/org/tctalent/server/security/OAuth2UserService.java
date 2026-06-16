@@ -45,16 +45,18 @@ public class OAuth2UserService {
     }
 
     /**
-     * Checks that the clientId from the JWT token matches the user's role. If not, throws an exception
-     * which will cause the authentication to fail.
+     * Checks that the clientId from the JWT token matches the user's role. If not, throws an
+     * exception which will cause the authentication to fail.
      * <p>
-     * We use one clientId, "admin", for admin-portal users, and "candidate" for candidate-portal users.
+     * We use one clientId, "admin", for admin-portal users, and "candidate" for candidate-portal
+     * users.
+     * @throws UsernameNotFoundException if the clientId does not match the user's role.
      */
     public void checkUserClientId
         (@NonNull User user, @Nullable String clientId) throws UsernameNotFoundException {
         final String idpIssuer = user.getIdpIssuer();
         final String idpSubject = user.getIdpSubject();
-        
+
         if (!StringUtils.hasText(clientId)) {
             throw new UsernameNotFoundException("No client id provided");
         }
