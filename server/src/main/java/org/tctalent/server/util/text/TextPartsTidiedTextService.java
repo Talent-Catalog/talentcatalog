@@ -16,7 +16,6 @@
 
 package org.tctalent.server.util.text;
 
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -26,10 +25,7 @@ import org.springframework.util.StringUtils;
  * @author John Cameron
  */
 @Service
-@RequiredArgsConstructor
 public class TextPartsTidiedTextService {
-
-    private final TextPartsCodec textPartsCodec;
 
     public String getTidiedText(String text) {
 
@@ -37,11 +33,7 @@ public class TextPartsTidiedTextService {
             return text;
         }
 
-        TextParts parts = textPartsCodec.read(text);
-
-        if (parts == null) {
-            return text;
-        }
+        TextParts parts = TextPartsCodec.read(text);
 
         if (StringUtils.hasText(parts.getTidied())) {
             return parts.getTidied();

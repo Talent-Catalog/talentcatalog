@@ -22,6 +22,7 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OrderBy;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import java.util.List;
@@ -51,6 +52,7 @@ public class CandidateOccupation extends AbstractCandidateDataDomainObject<Long>
 
     //Todo Figure out why Cascade = MERGE doesn't work. Why do we need ALL. What does this mean?
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "candidateOccupation", cascade = CascadeType.ALL)
+    @OrderBy("startDate DESC")
     private List<CandidateJobExperience> candidateJobExperiences;
 
 
