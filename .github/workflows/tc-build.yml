@@ -45,9 +45,24 @@ jobs:
 
       - name: Build
         run: ./gradlew server:build -x test
-
+      - name: Create Gradle test logging init script
+        run: |
+          cat > ci-test-logging.gradle <<'EOF'
+          allprojects {
+              tasks.withType(org.gradle.api.tasks.testing.Test).configureEach {
+                  testLogging {
+                      events "started", "passed", "skipped", "failed"
+                      exceptionFormat "full"
+                      showExceptions true
+                      showCauses true
+                      showStackTraces true
+                      showStandardStreams false
+                  }
+              }
+          }
+          EOF
       - name: Run tests
-        run: ./gradlew clean :server:test --stacktrace --rerun-tasks
+        run: ./gradlew clean :server:test --init-script ci-test-logging.gradle --stacktrace --rerun-tasks --console=plain
 
       - name: Upload test report on failure
         if: failure()
