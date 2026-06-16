@@ -110,8 +110,8 @@ Download and install the latest of the following tools.
   ```
 
 - Node.js [https://nodejs.org/en/](https://nodejs.org/en/)
-    - This project requires **Node.js 18** 
-    - We currently pin Node 18.20.7 (via .nvmrc), which satisfies Angular 17’s Node 18.13+ 
+    - This project requires **Node.js 20** 
+    - We currently pin Node 20.19.6 (via .nvmrc), which satisfies Angular 17’s Node 20.9+ 
       requirement.
         - See [Angular Compatibility Table](https://angular.io/guide/versions)
         - See [Node.js Releases](https://nodejs.org/en/about/releases/)
@@ -129,7 +129,7 @@ Download and install the latest of the following tools.
         nvm install
         nvm use
         node -v 
-        # should output v18.20.7
+        # should output v20.19.6
         ```
       
     - **IntelliJ users**
@@ -143,7 +143,7 @@ Download and install the latest of the following tools.
 
 - Angular CLI [https://angular.io/cli](https://angular.io/cli)
   ```
-  npm install -g @angular/cli@16
+  npm install -g @angular/cli@17
   ```
     - See https://angular.io/guide/versions
     - To upgrade Angular versions, see https://update.angular.io/
