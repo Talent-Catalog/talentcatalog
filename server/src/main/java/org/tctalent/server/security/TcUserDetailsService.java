@@ -85,7 +85,7 @@ public class TcUserDetailsService implements UserDetailsService {
 
         // If read-only is checked, assign the read-only role
         if(user.getReadOnly()){
-            authorities.add(new SimpleGrantedAuthority("ROLE_READONLY"));
+            authorities.add(new SimpleGrantedAuthority("ROLE_RESTRICTED"));
         } else if (user.getRole().equals(Role.systemadmin)) {
             authorities.add(new SimpleGrantedAuthority("ROLE_SYSTEMADMIN"));
         } else if (user.getRole().equals(Role.admin)) {
