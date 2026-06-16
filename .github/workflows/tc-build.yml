@@ -61,8 +61,8 @@ jobs:
               }
           }
           EOF
-      - name: Run tests
-        run: ./gradlew clean :server:test --init-script ci-test-logging.gradle --stacktrace --rerun-tasks --console=plain
+      - name: Run specific failing test
+        run: ./gradlew :server:test --tests "CandidateServiceImplCharacterizationTest" --stacktrace --info --console=plain
 
       - name: Upload test report on failure
         if: failure()
