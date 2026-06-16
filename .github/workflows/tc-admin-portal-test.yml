@@ -3,7 +3,7 @@ name: Run Angular Tests
 on:
   push:
     branches:
-      - '*'
+      - '**'
       - '!staging' #Not execute the workflow on push to staging
       - '!master'  #Not execute the workflow on push to master
 
