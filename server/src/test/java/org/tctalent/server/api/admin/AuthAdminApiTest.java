@@ -18,7 +18,6 @@ package org.tctalent.server.api.admin;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willThrow;
@@ -52,7 +51,9 @@ import org.tctalent.server.exception.PasswordExpiredException;
 import org.tctalent.server.exception.ServiceException;
 import org.tctalent.server.exception.UserDeactivatedException;
 import org.tctalent.server.request.LoginRequest;
+import org.tctalent.server.response.AuthenticationResponse;
 import org.tctalent.server.response.JwtAuthenticationResponse;
+import org.tctalent.server.security.AuthProfile;
 import org.tctalent.server.service.db.UserService;
 import org.tctalent.server.util.qr.EncodedQrImage;
 
@@ -81,7 +82,7 @@ class AuthAdminApiTest extends ApiTestBase {
     private static final String PASSWORD_EXPIRED_CODE = "password_expired";
     private static final String QR_CODE_GEN_ERROR_CODE = "qr_error";
 
-    private LoginRequest loginRequest;
+    private AuthProfile authProfile;
 
     @Autowired AuthAdminApi controller;
     @Autowired MockMvc mockMvc;
@@ -95,9 +96,10 @@ class AuthAdminApiTest extends ApiTestBase {
     public void setUp() {
         configureAuthentication();
 
-        loginRequest = new LoginRequest();
-        loginRequest.setUsername("sadat");
-        loginRequest.setPassword("password");
+        authProfile = new AuthProfile();
+        authProfile.setFirstName("sadat");
+        authProfile.setLastName("malik");
+        authProfile.setEmail("malik@example.com");
     }
 
     @Test
@@ -108,16 +110,17 @@ class AuthAdminApiTest extends ApiTestBase {
     @Test
     @DisplayName("login succeeds - bypassing MFA and Captcha")
     void loginSucceeds() throws Exception {
-        user.setUsingMfa(false);
-        loginRequest.setReCaptchaV3Token(null);
-
-        given(userService.login(any(LoginRequest.class)))
-                .willReturn(new JwtAuthenticationResponse(JWT_ACCESS_TOKEN, user));
+        given(userService.login(any(AuthProfile.class)))
+                .willReturn(user);
+        given(userService.createAuthenticationResponse(user))
+            .willReturn(new AuthenticationResponse(user));
 
         doLoginAndVerifyResponse();
-
-        verify(userService, never()).mfaVerify(any());
     }
+
+    //TODO JC Test ClientID checking
+    //TODO JC Test return of instance type
+    //TODO JC Test return of canViewChats
 
     @Test
     @DisplayName("login fails - using MFA with no secret configured - for initial login attempt")
@@ -151,13 +154,11 @@ class AuthAdminApiTest extends ApiTestBase {
         mockMvc.perform(post(BASE_PATH + "/login")
                 .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(loginRequest))
+                        .content(objectMapper.writeValueAsString(authProfile))
                         .accept(MediaType.APPLICATION_JSON))
 
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.accessToken", is(JWT_ACCESS_TOKEN)))
-                .andExpect(jsonPath("$.tokenType", is(JWT_TOKEN_TYPE)))
 
                 .andExpect(MockMvcResultMatchers.jsonPath("$.user.username", Matchers.is(user.getUsername())))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.user.email", Matchers.is(user.getEmail())))
@@ -201,7 +202,7 @@ class AuthAdminApiTest extends ApiTestBase {
         mockMvc.perform(post(BASE_PATH + "/login")
                 .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(loginRequest))
+                        .content(objectMapper.writeValueAsString(authProfile))
                         .accept(MediaType.APPLICATION_JSON))
 
                 .andExpect(status().isUnauthorized())
