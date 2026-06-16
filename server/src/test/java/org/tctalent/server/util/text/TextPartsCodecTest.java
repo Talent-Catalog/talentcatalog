@@ -18,25 +18,23 @@ package org.tctalent.server.util.text;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import org.junit.jupiter.api.Test;
+import org.tctalent.server.util.html.HtmlSanitizer;
 
 class TextPartsCodecTest {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
-    private final TextPartsCodec codec = new TextPartsCodec(objectMapper);
 
     @Test
     void readsNullAsEmptyOriginalText() {
-        TextParts parts = codec.read(null);
+        TextParts parts = TextPartsCodec.read(null);
 
         assertEquals("", parts.getOriginal());
         assertNull(parts.getTidied());
@@ -45,7 +43,7 @@ class TextPartsCodecTest {
 
     @Test
     void readsBlankAsEmptyOriginalText() {
-        TextParts parts = codec.read("   ");
+        TextParts parts = TextPartsCodec.read("   ");
 
         assertEquals("", parts.getOriginal());
         assertNull(parts.getTidied());
@@ -54,7 +52,7 @@ class TextPartsCodecTest {
 
     @Test
     void readsLegacyPlainTextAsOriginal() {
-        TextParts parts = codec.read("I work electrician 5 years");
+        TextParts parts = TextPartsCodec.read("I work electrician 5 years");
 
         assertEquals("I work electrician 5 years", parts.getOriginal());
         assertNull(parts.getTidied());
@@ -63,7 +61,7 @@ class TextPartsCodecTest {
 
     @Test
     void readsLegacyHtmlAsOriginal() {
-        TextParts parts = codec.read("<p>Line 1</p><div>Line 2</div>");
+        TextParts parts = TextPartsCodec.read("<p>Line 1</p><div>Line 2</div>");
 
         assertEquals("<p>Line 1</p><div>Line 2</div>", parts.getOriginal());
         assertNull(parts.getTidied());
@@ -82,7 +80,7 @@ class TextPartsCodecTest {
             }
             """;
 
-        TextParts parts = codec.read(stored);
+        TextParts parts = TextPartsCodec.read(stored);
 
         assertEquals("i work electrician", parts.getOriginal());
         assertEquals("I worked as an electrician.", parts.getTidied());
@@ -101,11 +99,54 @@ class TextPartsCodecTest {
             }
             """;
 
-        TextParts parts = codec.read(stored);
+        TextParts parts = TextPartsCodec.read(stored);
 
         assertEquals("<p>Line 1</p><div>Line 2</div>", parts.getOriginal());
         assertEquals("<p>Line 1</p><p>Line 2</p>", parts.getTidied());
         assertEquals(List.of("html", "line"), parts.getKeywords());
+    }
+
+    @Test
+    void survivesJsonEncodedHtmlSanitization() {
+        //This is the html that we want stored in json.
+        String html = """
+        <ul type="circle"><li>John</li></ul>""";
+
+        //When the html is stored in the database as part of a JSON string, it will need the quotes
+        //around the type attribute to be escaped. So it will be stored as:
+        String htmlStored = "<ul type=\\\"circle\\\"><li>John</li></ul>";
+
+        //So the full json stored in the database will be:
+        String s = """
+            {"parts":{"original":\""""
+            + htmlStored + "\"}}";
+
+        String sanitized = HtmlSanitizer.sanitize(s);
+
+        TextParts parts = TextPartsCodec.read(sanitized);
+
+        assertEquals(html, parts.getOriginal());
+        assertNull(parts.getTidied());
+        assertEquals(List.of(), parts.getKeywords());
+    }
+
+    @Test
+    void survivesNonJsonEncodedHtmlSanitization() {
+        //For html that is stored in the database just as itself, not as part of a JSON
+        //string, it won't need any escaping of the quotes around the type attribute.
+        //So it will just be stored as:
+        String html = """
+        <ul type="circle"><li>John</li></ul>""";
+
+        String sanitized = HtmlSanitizer.sanitize(html);
+
+        TextParts parts = TextPartsCodec.read(sanitized);
+
+        //The original html is encoded into the original text part,
+        // and the tidied and keywords are left null/empty.
+        assertEquals(html, parts.getOriginal());
+        assertNull(parts.getTidied());
+        assertEquals(List.of(), parts.getKeywords());
     }
 
     @Test
@@ -119,7 +160,7 @@ class TextPartsCodecTest {
             }
             """;
 
-        TextParts parts = codec.read(stored);
+        TextParts parts = TextPartsCodec.read(stored);
 
         assertEquals("candidate text", parts.getOriginal());
         assertNull(parts.getTidied());
@@ -137,7 +178,7 @@ class TextPartsCodecTest {
             }
             """;
 
-        TextParts parts = codec.read(stored);
+        TextParts parts = TextPartsCodec.read(stored);
 
         assertEquals("candidate text", parts.getOriginal());
         assertEquals("Candidate text.", parts.getTidied());
@@ -155,7 +196,7 @@ class TextPartsCodecTest {
             }
             """;
 
-        TextParts parts = codec.read(stored);
+        TextParts parts = TextPartsCodec.read(stored);
 
         assertEquals("candidate text", parts.getOriginal());
         assertTrue(parts.getKeywords().isEmpty());
@@ -173,7 +214,7 @@ class TextPartsCodecTest {
             }
             """;
 
-        TextParts parts = codec.read(stored);
+        TextParts parts = TextPartsCodec.read(stored);
 
         assertEquals(stored, parts.getOriginal());
         assertNull(parts.getTidied());
@@ -184,7 +225,7 @@ class TextPartsCodecTest {
     void fallsBackToLegacyTextIfJsonIsNotTextParts() {
         String stored = "{\"hello\":\"world\"}";
 
-        TextParts parts = codec.read(stored);
+        TextParts parts = TextPartsCodec.read(stored);
 
         assertEquals(stored, parts.getOriginal());
         assertNull(parts.getTidied());
@@ -195,7 +236,7 @@ class TextPartsCodecTest {
     void treatsMalformedJsonAsLegacyOriginalText() {
         String malformedJson = "{\"parts\":{\"original\":\"hello\nworld\"}}";
 
-        TextParts parts = codec.read(malformedJson);
+        TextParts parts = TextPartsCodec.read(malformedJson);
 
         assertEquals(malformedJson, parts.getOriginal());
         assertNull(parts.getTidied());
@@ -210,7 +251,7 @@ class TextPartsCodecTest {
             List.of("electrician", "wiring")
         );
 
-        String stored = codec.write(parts);
+        String stored = TextPartsCodec.write(parts);
         JsonNode json = objectMapper.readTree(stored);
 
         assertEquals("i work electrician", json.at("/parts/original").asText());
@@ -227,7 +268,7 @@ class TextPartsCodecTest {
             List.of("html")
         );
 
-        String stored = codec.write(parts);
+        String stored = TextPartsCodec.write(parts);
         JsonNode json = objectMapper.readTree(stored);
 
         assertEquals("Line 1<div>Line 2</div>", json.at("/parts/original").asText());
@@ -242,7 +283,7 @@ class TextPartsCodecTest {
             List.of()
         );
 
-        String stored = codec.write(parts);
+        String stored = TextPartsCodec.write(parts);
         JsonNode json = objectMapper.readTree(stored);
 
         assertEquals("Line 1\nLine 2", json.at("/parts/original").asText());
@@ -251,7 +292,7 @@ class TextPartsCodecTest {
 
     @Test
     void writesNullPartsAsEmptyOriginal() throws Exception {
-        String stored = codec.write(null);
+        String stored = TextPartsCodec.write(null);
         JsonNode json = objectMapper.readTree(stored);
 
         assertEquals("", json.at("/parts/original").asText());
@@ -263,7 +304,7 @@ class TextPartsCodecTest {
     void writesNullOriginalAsEmptyString() throws Exception {
         TextParts parts = new TextParts(null, null, List.of("skill"));
 
-        String stored = codec.write(parts);
+        String stored = TextPartsCodec.write(parts);
         JsonNode json = objectMapper.readTree(stored);
 
         assertEquals("", json.at("/parts/original").asText());
@@ -274,7 +315,7 @@ class TextPartsCodecTest {
     void writesNullKeywordsAsEmptyArray() throws Exception {
         TextParts parts = new TextParts("text", null, null);
 
-        String stored = codec.write(parts);
+        String stored = TextPartsCodec.write(parts);
         JsonNode json = objectMapper.readTree(stored);
 
         assertEquals("text", json.at("/parts/original").asText());
@@ -290,7 +331,7 @@ class TextPartsCodecTest {
             new ArrayList<>(Arrays.asList("electrician", null, "", "   ", "wiring"))
         );
 
-        String stored = codec.write(parts);
+        String stored = TextPartsCodec.write(parts);
         JsonNode json = objectMapper.readTree(stored);
 
         assertEquals(2, json.at("/parts/keywords").size());
@@ -306,27 +347,10 @@ class TextPartsCodecTest {
             List.of("candidate", "html")
         );
 
-        TextParts result = codec.read(codec.write(original));
+        TextParts result = TextPartsCodec.read(TextPartsCodec.write(original));
 
         assertEquals(original.getOriginal(), result.getOriginal());
         assertEquals(original.getTidied(), result.getTidied());
         assertEquals(original.getKeywords(), result.getKeywords());
-    }
-
-    @Test
-    void writeThrowsIllegalArgumentExceptionIfObjectMapperCannotSerialize() {
-        ObjectMapper brokenMapper = new ObjectMapper() {
-            @Override
-            public String writeValueAsString(Object value) throws JsonProcessingException {
-                throw new JsonProcessingException("forced failure") {};
-            }
-        };
-
-        TextPartsCodec brokenCodec = new TextPartsCodec(brokenMapper);
-
-        assertThrows(
-            IllegalArgumentException.class,
-            () -> brokenCodec.write(new TextParts("text"))
-        );
     }
 }
