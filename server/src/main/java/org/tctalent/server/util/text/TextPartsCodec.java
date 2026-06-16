@@ -22,8 +22,8 @@ import java.util.ArrayList;
 import java.util.List;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
-
+import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 /**
  * Codec (Code/Decode) for TextParts.
  * <p>
@@ -32,54 +32,88 @@ import org.springframework.stereotype.Component;
  * The stored text is usually JSON but can be plain text.
  * </p>
  *
+ * <p>
+ *     It is static so that it can be used with HtmlSanitizer which also acts statically.
+ * </p>
+ *
  * @author John Cameron
  */
-@Component
 @Slf4j
 public class TextPartsCodec {
 
-    private final ObjectMapper objectMapper;
+    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
-    public TextPartsCodec(ObjectMapper objectMapper) {
-        this.objectMapper = objectMapper;
+    private TextPartsCodec() {
+        throw new UnsupportedOperationException("This is a utility class and cannot be instantiated");
+    }
+
+    /**
+     * Reads the given JSON string and returns a TextParts object.
+     * @param json JSON string representing a stored TextParts object.
+     * @return TextParts object represented by the given JSON string or null if the string does
+     * not represent a valid TextParts JSON object.
+     * @throws IllegalArgumentException If the given string is not valid JSON
+     * or does not represent a valid stored TextParts JSON object.
+     */
+    public static @NonNull TextParts readJson(@NonNull String json) {
+        try {
+            StoredTextParts stored = OBJECT_MAPPER.readValue(json, StoredTextParts.class);
+
+            if (stored.getParts() != null && stored.getParts().getOriginal() != null) {
+                return normalise(stored.getParts());
+            }
+            throw new IllegalArgumentException("Missing text parts in JSON: " + json);
+        } catch (JsonProcessingException ex) {
+            throw new IllegalArgumentException(
+                "Could not parse text parts from JSON: " + json, ex);
+        }
     }
 
     /**
      * Reads the given text and returns a TextParts object.
-     * @param value Text to be read.
+     * The text can be either valid JSON representing a stored TextParts object or plain text.
+     * <p>
+     *     If the text is not valid JSON, it is assumed to be plain text, and a TextParts object
+     *     is returned with the original text set to the given value, and tidied and keywords
+     *     set to null/empty.
+     * </p>
+     * @param value Text to be read. If null or blank, an empty TextParts object is returned.
+     * @return TextParts object represented by the given text.
      */
-    public TextParts read(String value) {
+    public static @NonNull TextParts read(@Nullable String value) {
         if (value == null || value.isBlank()) {
             return new TextParts("");
         }
 
         try {
-            StoredTextParts stored = objectMapper.readValue(value, StoredTextParts.class);
-
-            if (stored.getParts() != null && stored.getParts().getOriginal() != null) {
-                return normalise(stored.getParts());
-            }
-        } catch (JsonProcessingException ex) {
-            // Legacy plain text or malformed JSON.
-            log.info("Failed to parse text parts from JSON: {}", value, ex);
+            return readJson(value);
+        } catch (IllegalArgumentException ex) {
+            // Treat as plain text. Construct a TextParts object with the original text set to the
+            // given value.
+            return new TextParts(value);
         }
-
-        return new TextParts(value);
     }
 
     /**
      * Writes the given TextParts object to a JSON string.
      * @param parts Parts to be written as a JSON string.
+     * @throws IllegalArgumentException If the parts object cannot be serialized to JSON.
      */
-    public String write(TextParts parts) {
+    public static String write(TextParts parts) {
         try {
-            return objectMapper.writeValueAsString(new StoredTextParts(normalise(parts)));
+            return OBJECT_MAPPER.writeValueAsString(new StoredTextParts(normalise(parts)));
         } catch (JsonProcessingException e) {
             throw new IllegalArgumentException("Could not serialize text parts", e);
         }
     }
 
-    private TextParts normalise(TextParts parts) {
+    /**
+     * Normalises the given TextParts object by ensuring that all properties except tidied are
+     * non-null.
+     * @param parts Parts to be normalised. If null, an empty TextParts object is returned.
+     * @return Normalised TextParts object.
+     */
+    private static TextParts normalise(@Nullable TextParts parts) {
         if (parts == null) {
             return new TextParts("");
         }
@@ -116,10 +150,6 @@ public class TextPartsCodec {
     @Data
     private static class StoredTextParts {
         private TextParts parts;
-
-        StoredTextParts() {
-        }
-
         StoredTextParts(TextParts parts) {
             this.parts = parts;
         }
