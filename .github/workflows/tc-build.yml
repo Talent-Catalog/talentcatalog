@@ -46,6 +46,31 @@ jobs:
       - name: Build
         run: ./gradlew server:build -x test
 
+      - name: Print exact resolved JUnit versions
+        run: |
+          ./gradlew :server:dependencyInsight --dependency junit-jupiter-engine --configuration testRuntimeClasspath
+          ./gradlew :server:dependencyInsight --dependency junit-platform-engine --configuration testRuntimeClasspath
+          ./gradlew :server:dependencyInsight --dependency junit-platform-launcher --configuration testRuntimeClasspath
+
+      - name: Print test task config
+        run: |
+          cat > debug-test-config.gradle <<'EOF'
+          allprojects {
+            tasks.withType(Test).configureEach {
+              doFirst {
+                println "TEST TASK: ${path}"
+                println "includes: ${includes}"
+                println "excludes: ${excludes}"
+                println "filter includes: ${filter.includePatterns}"
+                println "filter excludes: ${filter.excludePatterns}"
+                println "testClassesDirs:"
+                testClassesDirs.files.each { println " - ${it}" }
+              }
+            }
+          }
+          EOF
+
+          ./gradlew :server:test --init-script debug-test-config.gradle --test-dry-run --info --console=plain
       - name: Run tests
         run: ./gradlew clean :server:test --stacktrace --rerun-tasks
 
