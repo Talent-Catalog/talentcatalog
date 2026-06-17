@@ -56,6 +56,9 @@ tasks.withType(Test).configureEach {
     useJUnitPlatform {
         excludeTags 'skip-test-in-gradle-build'
     }
+    include '**/*Test.class'
+    include '**/*Tests.class'
+    include '**/*TestCase.class'
 }
 
 configurations {
