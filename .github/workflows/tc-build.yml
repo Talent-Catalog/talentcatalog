@@ -46,6 +46,15 @@ jobs:
       - name: Build
         run: ./gradlew server:build -x test
 
+      - name: Run all server tests with Gradle test filter
+        run: |
+          ./gradlew clean :server:test \
+            --tests "*" \
+            --stacktrace \
+            --rerun-tasks \
+            --console=plain \
+            --info
+          
       - name: Run tests
         run: |
           ./gradlew clean :server:test \
