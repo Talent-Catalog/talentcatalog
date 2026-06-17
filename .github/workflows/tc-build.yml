@@ -46,58 +46,42 @@ jobs:
       - name: Build
         run: ./gradlew server:build -x test
 
-      - name: Print exact resolved JUnit versions
+      - name: Run all server tests for real
         run: |
-          ./gradlew :server:dependencyInsight --dependency junit-jupiter-engine --configuration testRuntimeClasspath
-          ./gradlew :server:dependencyInsight --dependency junit-platform-engine --configuration testRuntimeClasspath
-          ./gradlew :server:dependencyInsight --dependency junit-platform-launcher --configuration testRuntimeClasspath
-
-      - name: Print test task config
-        run: |
-          cat > debug-test-config.gradle <<'EOF'
+          cat > ci-real-test-logging.gradle <<'EOF'
           allprojects {
             tasks.withType(Test).configureEach {
-              doFirst {
-                println "TEST TASK: ${path}"
-                println "includes: ${includes}"
-                println "excludes: ${excludes}"
-                println "filter includes: ${filter.includePatterns}"
-                println "filter excludes: ${filter.excludePatterns}"
-                println "testClassesDirs:"
-                testClassesDirs.files.each { println " - ${it}" }
+              testLogging {
+                events "started", "passed", "skipped", "failed"
+                exceptionFormat "full"
+                showExceptions true
+                showCauses true
+                showStackTraces true
+              }
+
+              afterSuite { desc, result ->
+                if (!desc.parent) {
+                  println "RESULT for ${path}: ${result.testCount} tests, ${result.successfulTestCount} passed, ${result.failedTestCount} failed, ${result.skippedTestCount} skipped"
+                }
               }
             }
           }
           EOF
 
-          ./gradlew :server:test --init-script debug-test-config.gradle --test-dry-run --info --console=plain    
+          ./gradlew clean :server:test \
+            --init-script ci-real-test-logging.gradle \
+            --stacktrace \
+            --rerun-tasks \
+            --console=plain \
+            --info
 
-      - name: Print effective Gradle test config files
-        run: |
-          echo "Current commit:"
-          git rev-parse HEAD
-
-          echo "server/build.gradle test config:"
-          grep -n "tasks.withType(Test)" -A15 server/build.gradle || true
-          grep -n "tasks.named('test'" -A25 server/build.gradle || true
-          grep -n "test {" -A10 server/build.gradle || true
-          grep -n "includeTestsMatching" -A10 server/build.gradle || true
-          grep -n "scanForTestClasses" -A10 server/build.gradle || true
-
-          echo "Any junit-platform.properties:"
-          find . -name "junit-platform.properties" -print -exec cat {} \;
-          
-      - name: Check CandidateServiceImplCharacterizationTest discovery
-        run: |
-          ./gradlew :server:test \
-            --tests "org.tctalent.server.service.db.impl.CandidateServiceImplCharacterizationTest" \
-            --test-dry-run \
-            --info \
-            --console=plain
-
-          find server/build/test-results/test -name '*CandidateServiceImplCharacterizationTest*' -print
       - name: Run tests
-        run: ./gradlew clean :server:test --stacktrace --rerun-tasks
+        run: ./gradlew clean :server:test \
+          --init-script ci-real-test-logging.gradle \
+          --stacktrace \
+          --rerun-tasks \
+          --console=plain \
+          --info
 
       - name: Upload test report on failure
         if: failure()
