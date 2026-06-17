@@ -52,19 +52,9 @@ tasks.withType(JavaCompile).configureEach {
 //application starts up. We used to comment out the @Test's in the code. But this allows us to
 //tag those tests and then exclude running them. So the code is not changed and we can manually
 //run those test when we need to in our dev environments. JC.
-tasks.named('test', Test) {
+tasks.withType(Test).configureEach {
     useJUnitPlatform {
         excludeTags 'skip-test-in-gradle-build'
-    }
-
-    scanForTestClasses = false
-
-    include '**/*Test.class'
-    include '**/*Tests.class'
-    include '**/*TestCase.class'
-
-    if (isDev) {
-        finalizedBy jacocoTestReport
     }
 }
 
@@ -253,7 +243,12 @@ jib {
 jacoco {
     toolVersion = "0.8.12"
 }
-
+test {
+    useJUnitPlatform()
+    if (isDev){
+        finalizedBy jacocoTestReport
+    }
+}
 jacocoTestReport {
     dependsOn test
     reports {

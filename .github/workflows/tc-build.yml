@@ -49,20 +49,6 @@ jobs:
       - name: Run tests
         run: ./gradlew clean :server:test --stacktrace --rerun-tasks
 
-      - name: Verify CandidateServiceImplCharacterizationTest ran
-        if: always()
-        run: |
-          echo "Compiled test class:"
-          find server/build/classes/java/test -name '*CandidateServiceImplCharacterizationTest*' -print
-          
-          echo "JUnit XML result:"
-          find server/build/test-results/test -name '*CandidateServiceImplCharacterizationTest*' -print
-          
-          echo "Search test result contents:"
-          grep -R "CandidateServiceImplCharacterizationTest" server/build/test-results/test || true
-          
-          test -f server/build/test-results/test/TEST-org.tctalent.server.service.db.impl.CandidateServiceImplCharacterizationTest.xml
-
       - name: Upload test report on failure
         if: failure()
         uses: actions/upload-artifact@v4
