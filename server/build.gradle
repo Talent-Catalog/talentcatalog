@@ -57,11 +57,11 @@ tasks.named('test', Test) {
         excludeTags 'skip-test-in-gradle-build'
     }
 
-    filter {
-        includeTestsMatching '*Test'
-        includeTestsMatching '*Tests'
-        includeTestsMatching '*TestCase'
-    }
+    scanForTestClasses = false
+
+    include '**/*Test.class'
+    include '**/*Tests.class'
+    include '**/*TestCase.class'
 
     if (isDev) {
         finalizedBy jacocoTestReport
@@ -253,12 +253,7 @@ jib {
 jacoco {
     toolVersion = "0.8.12"
 }
-test {
-    useJUnitPlatform()
-    if (isDev){
-        finalizedBy jacocoTestReport
-    }
-}
+
 jacocoTestReport {
     dependsOn test
     reports {
