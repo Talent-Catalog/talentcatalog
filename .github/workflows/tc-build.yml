@@ -54,7 +54,7 @@ jobs:
             --rerun-tasks \
             --console=plain \
             --info
-          
+
       - name: Run tests
         run: |
           ./gradlew clean :server:test \
