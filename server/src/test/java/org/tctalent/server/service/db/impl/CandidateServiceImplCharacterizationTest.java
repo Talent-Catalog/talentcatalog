@@ -90,7 +90,7 @@ import org.tctalent.server.service.db.UserService;
 import org.tctalent.server.service.db.email.EmailHelper;
 
 @ExtendWith(MockitoExtension.class)
-class CandidateServiceImplCharacterizationTest {
+public class CandidateServiceImplCharacterizationTest {
 
   private static final long AFGHANISTAN_COUNTRY_ID = 6180L;
   private static final long UKRAINE_COUNTRY_ID = 6406L;
