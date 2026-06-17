@@ -15,58 +15,21 @@
   -->
 <div class="container">
 
+  <app-error [error]="error"></app-error>
+
   <tc-loading [loading]="loading"></tc-loading>
 
-  <form [formGroup]="registrationForm" *ngIf="!loading" (submit)="register()">
+  @if (!authenticated && !loading) {
+    <tc-label class="form-check-label">
+      <input type="checkbox" [value]="consented" (change)="onToggleConsent()">
+      {{ 'REGISTRATION.CONTACT.LABEL.CONTACTCONSENTREGISTRATION' | translate }}
+    </tc-label>
 
-    <app-error [error]="error"></app-error>
-
-<!--    &lt;!&ndash; USERNAME (EMAIL) &ndash;&gt;-->
-<!--    <tc-field>-->
-<!--      <tc-label class="form-label" for="username">{{'REGISTRATION.CONTACT.LABEL.USERNAME' | translate }} <sup>*</sup></tc-label>-->
-<!--      <tc-input type="email" id="username" placeholder="" [formControlName]="'username'"-->
-<!--                pattern="{{emailRegex}}"></tc-input>-->
-<!--      <div *ngIf="registrationForm.get('username').touched || registrationForm.get('username').dirty">-->
-<!--        <tc-error-message *ngIf="registrationForm.get('username').errors?.['pattern']">-->
-<!--          {{ 'FORM.ERROR.EMAIL' | translate }}-->
-<!--        </tc-error-message>-->
-<!--      </div>-->
-<!--    </tc-field>-->
-
-<!--    &lt;!&ndash; PASSWORD &ndash;&gt;-->
-<!--    <tc-field>-->
-<!--      <tc-label  class="form-label" for="password">{{ 'REGISTRATION.CONTACT.LABEL.PASSWORD' | translate }} <sup>*</sup></tc-label>-->
-<!--      <tc-input type="password" id="password" placeholder=""-->
-<!--             [formControlName]="'password'"></tc-input>-->
-<!--      <app-form-control-error [control]="registrationForm.controls.password"></app-form-control-error>-->
-<!--    </tc-field>-->
-
-<!--    &lt;!&ndash; PASSWORD CONFIRMATION &ndash;&gt;-->
-<!--    <tc-field class="mb-3">-->
-<!--      <tc-label class="form-label" for="passwordConfirmation">{{ 'REGISTRATION.CONTACT.LABEL.PASSWORDCONFIRMATION' | translate }}-->
-<!--        <sup>*</sup></tc-label>-->
-<!--      <tc-input type="password" id="passwordConfirmation" placeholder=""-->
-<!--             [formControlName]="'passwordConfirmation'"></tc-input>-->
-<!--      <app-form-control-error [control]="registrationForm.controls.passwordConfirmation"></app-form-control-error>-->
-<!--    </tc-field>-->
-
-    <hr class="my-4"/>
-
-    <div class="mb-3 form-check">
-      <input class="form-check-input" type="checkbox" id="contactConsentRegistration" [value]="false" [formControlName]="'contactConsentRegistration'">
-      <tc-label class="form-check-label" for="contactConsentRegistration">
-        {{ 'REGISTRATION.CONTACT.LABEL.CONTACTCONSENTREGISTRATION' | translate }}
-        <sup>*</sup>
-      </tc-label>
-      <app-form-control-error [control]="registrationForm.controls.contactConsentRegistration"></app-form-control-error>
-    </div>
-
-    <div class="text-center my-3">
-      <tc-button type="submit" class="w-75"
-         [routerLink]="'/register'"
-         [queryParamsHandling]="'merge'"
-         [disabled]="!registrationForm.valid"
-      >{{ 'LANDING.REGISTER' | translate }}</tc-button>
+    <div class="text-center mt-2">
+      <tc-button [disabled]="!consented" class="w-75"
+                 (onClick)="onRegister()"
+      >{{ 'LANDING.REGISTER' | translate }}
+      </tc-button>
     </div>
 
     <div class="text-center mt-2">
@@ -74,5 +37,5 @@
         {{ 'LOGIN.BUTTON.ALREADY' | translate }}
       </a>
     </div>
-  </form>
+  }
 </div>

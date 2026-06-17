@@ -40,7 +40,13 @@ export class AuthenticateInContextTranslationRequest {
 @Injectable({
   providedIn: 'root'
 })
+
+
 export class AuthenticationService implements OnDestroy {
+  static readonly CALLBACK_ACTION_PARAM_NAME = 'authAction';
+  static readonly LOGIN_ACTION = "login";
+  static readonly REGISTER_ACTION = "register";
+
   apiUrl = environment.apiUrl + '/auth';
 
   private candidateStatus: CandidateStatus;

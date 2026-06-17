@@ -22,12 +22,7 @@ import {BrandingInfo, BrandingService} from "../../services/branding.service";
 import {AuthenticationService} from "../../services/authentication.service";
 import {Subscription, timer} from "rxjs";
 import {IdpStatus} from "../../services/idp-status";
-import {OauthRegistrationRequest} from "../../model/oauth-registration-request";
 import {finalize} from "rxjs/internal/operators";
-
-const CALLBACK_ACTION_PARAM_NAME = 'authAction';
-const LOGIN_ACTION = "login";
-const REGISTER_ACTION = "register";
 
 @Component({
   selector: 'app-landing',
@@ -86,17 +81,11 @@ export class LandingComponent implements OnInit, OnDestroy {
     this.currentUrlAsTree = this.router.parseUrl(this.router.url);
 
     if (this.authenticationService.isAuthenticated()) {
-      this.authAction = this.route.snapshot.queryParamMap.get(CALLBACK_ACTION_PARAM_NAME);
+      this.authAction = this.route.snapshot.queryParamMap.get(AuthenticationService.CALLBACK_ACTION_PARAM_NAME);
       this.authenticationService.clearAuthError();
-      if (this.authAction === REGISTER_ACTION) {
-        let request: OauthRegistrationRequest = {
-          //todo These consents are being mocked for now. When new UI is designed
-          //the register button should be disabled until the user has consented to the terms.
-          contactConsentRegistration: true,
-          contactConsentPartners: true
-        }
-        this.completeRegister(request);
-      } else if (this.authAction === LOGIN_ACTION) {
+      if (this.authAction === AuthenticationService.REGISTER_ACTION) {
+        this.redirectToRegisterPage();
+      } else if (this.authAction === AuthenticationService.LOGIN_ACTION) {
         this.completeLogin();
       }
     } else {
@@ -154,19 +143,20 @@ export class LandingComponent implements OnInit, OnDestroy {
 
   onLogin() {
     this.authenticationService.login(
-      this.computeRedirectUri(LOGIN_ACTION), this.languageService.getSelectedLanguage());
+      this.computeRedirectUri(AuthenticationService.LOGIN_ACTION), this.languageService.getSelectedLanguage());
   }
 
+  /**
+   * Just redirect to the register page.
+   * The register component will handle the rest.
+   */
   onRegister() {
-    //Logout Idp if it thinks we are still logged in. Can happen.
-    this.authenticationService.logoutIdp();
-    this.authenticationService.register(
-      this.computeRedirectUri(REGISTER_ACTION), this.languageService.getSelectedLanguage());
+    this.router.navigate(['/register']);
   }
 
-  private computeRedirectUri(LOGIN_ACTION: string) {
+  private computeRedirectUri(action: string) {
     const urlTree = this.currentUrlAsTree;
-    urlTree.queryParams[CALLBACK_ACTION_PARAM_NAME] = LOGIN_ACTION;
+    urlTree.queryParams[AuthenticationService.CALLBACK_ACTION_PARAM_NAME] = action;
     return urlTree.toString();
   }
 
@@ -186,20 +176,13 @@ export class LandingComponent implements OnInit, OnDestroy {
     })
   }
 
-  completeRegister(request: OauthRegistrationRequest) {
-    this.error = null;
-    this.authenticationService.completeRegister(request)
-    .pipe(finalize(() => this.authAction = null))
-    .subscribe({
-      next: (response) => {
-        this.router.navigate(['/register']);
-      },
-      error: (error) => {
-        //Display error
-        this.error = error;
-        this.pauseThenLogout();
-      }
-    })
+  redirectToRegisterPage() {
+    //todo We have to merge with existing query params? Maybe not. Links with query params should
+    //just go to register page.
+    this.router.navigate(['/register'], {
+      queryParams: {
+[AuthenticationService.CALLBACK_ACTION_PARAM_NAME]:  AuthenticationService.REGISTER_ACTION}
+    });
   }
 
   private pauseThenLogout() {

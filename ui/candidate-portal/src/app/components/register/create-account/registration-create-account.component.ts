@@ -16,7 +16,7 @@
 
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators} from "@angular/forms";
-import {ActivatedRoute} from "@angular/router";
+import {ActivatedRoute, Router, UrlTree} from "@angular/router";
 import {BrandingService} from "../../../services/branding.service";
 import {CandidateService} from "../../../services/candidate.service";
 import {AuthenticationService} from "../../../services/authentication.service";
@@ -24,6 +24,9 @@ import {RegistrationService} from "../../../services/registration.service";
 import {LanguageService} from "../../../services/language.service";
 import {RegisterCandidateRequest} from "../../../model/candidate";
 import {EMAIL_REGEX} from "../../../model/base";
+import {OauthRegistrationRequest} from "../../../model/oauth-registration-request";
+import {finalize} from "rxjs/internal/operators";
+import {timer} from "rxjs";
 
 @Component({
   selector: 'app-registration-create-account',
@@ -36,6 +39,22 @@ export class RegistrationCreateAccountComponent implements OnInit {
   @Input() edit: boolean = false;
 
   @Output() onSave = new EventEmitter();
+
+  /**
+   * This corresponds to the query parameter 'authAction' which is set by the IdpService
+   *  and indicates whether the user is logging in or registering.
+   *  <p/>
+   *  It is used to direct the user to the correct component (RegisterComponent or HomeComponent)
+   *  depending on whether it is a login or register action.
+   *  <p/>
+   *  When this component is entered with a non-null authAction, the login and register buttons
+   *  are hidden and the component completes the action by calling down to the server.
+   */
+  authAction: string | null;
+
+  consented: boolean = false;
+
+  currentUrlAsTree: UrlTree;
 
   registrationForm: UntypedFormGroup;
   error: any;
@@ -52,6 +71,7 @@ export class RegistrationCreateAccountComponent implements OnInit {
   readonly emailRegex: string = EMAIL_REGEX;
 
   constructor(private builder: UntypedFormBuilder,
+              private router: Router,
               private route: ActivatedRoute,
               private brandingService: BrandingService,
               private candidateService: CandidateService,
@@ -63,6 +83,8 @@ export class RegistrationCreateAccountComponent implements OnInit {
     this.authenticated = false;
     this.loading = true;
 
+    this.currentUrlAsTree = this.router.parseUrl(this.router.url);
+
     this.registrationForm = this.builder.group({
       username: [''],
       password: [''],
@@ -70,52 +92,87 @@ export class RegistrationCreateAccountComponent implements OnInit {
     });
 
     if (this.authenticationService.isAuthenticated()) {
-      // Skip this step if logged in
-      this.authenticated = true;
-      this.registrationService.next();
-
+      this.authAction = this.route.snapshot.queryParamMap.get(AuthenticationService.CALLBACK_ACTION_PARAM_NAME);
+      this.authenticationService.clearAuthError();
+      if (!this.authAction) {
+        //Just continue with registration if there is no auth action -
+        //this can happen if the user is already authenticated when they start the
+        //registration process.
+        this.registrationService.next();
+      } else if (this.authAction === AuthenticationService.REGISTER_ACTION) {
+        let request: OauthRegistrationRequest = {
+          //todo These consents are being mocked for now. When new UI is designed
+          //the register button should be disabled until the user has consented to the terms.
+          contactConsentRegistration: true,
+          contactConsentPartners: true
+        }
+        this.completeRegister(request);
+      } else {
+        this.error = 'Unknown or unexpected auth action: ' + this.authAction;
+        console.error(this.error);
+      }
     } else {
-
-      //If we are not yet authenticated, look for us-afghan query parameter.
-      //(if we are authenticated we pick up US Afghan tagging from the survey type)
-
-      //Record if this is a US Afghan candidate - can this processing be removed? (See issue #527)
-      this.usAfghan = this.route.snapshot.queryParams['source'] === 'us-afghan';
-      this.languageService.setUsAfghan(this.usAfghan);
-
-      // Get the partner name from the branding info object.
-      this.brandingService.getBrandingInfo().subscribe((brandingInfo) => this.partnerName = brandingInfo.partnerName)
-
-      // The user has not registered - add the password fields to the reactive form
-      this.registrationForm.addControl('password', new UntypedFormControl('', [Validators.required, Validators.minLength(8)]));
-      this.registrationForm.addControl('passwordConfirmation', new UntypedFormControl('', [Validators.required, Validators.minLength(8)]));
-
-      // The user has not registered - add the email consent fields
-      this.registrationForm.addControl('contactConsentRegistration', new UntypedFormControl(false, [Validators.requiredTrue]));
-      this.registrationForm.addControl('contactConsentPartners', new UntypedFormControl(false));
-
-      this.loading = false;
+      this.authenticated = false;
+      this.authAction = null;
     }
+
+
+    // Get the partner name from the branding info object.
+    this.brandingService.getBrandingInfo().subscribe((brandingInfo) => this.partnerName = brandingInfo.partnerName)
+
+    // The user has not registered - add the email consent fields
+    this.registrationForm.addControl('contactConsentRegistration', new UntypedFormControl(false, [Validators.requiredTrue]));
+    this.registrationForm.addControl('contactConsentPartners', new UntypedFormControl(false));
+
+    this.loading = false;
   }
 
-  get username(): string {
-    return this.registrationForm.value.username;
+  onToggleConsent() {
+    this.consented = !this.consented;
   }
 
-  get password(): string {
-    return this.registrationForm.value.password;
+  onRegister() {
+    //Logout Idp if it thinks we are still logged in. Can happen.
+    this.authenticationService.logoutIdp();
+    this.authenticationService.register(
+      this.computeRedirectUri(
+        AuthenticationService.REGISTER_ACTION), this.languageService.getSelectedLanguage());
   }
 
-  get passwordConfirmation(): string {
-    return this.registrationForm.value.passwordConfirmation;
+
+  //todo This should only be called once consent has been gathered.
+  //todo Also the request should contain all the utm parameters see getParamesAndRegister() below.
+  completeRegister(request: OauthRegistrationRequest) {
+    this.error = null;
+    this.loading = true;
+    this.authenticationService.completeRegister(request)
+    .pipe(finalize(() => this.loading = false))
+    .subscribe({
+      next: (response) => {
+        //Proceed with registration.
+        this.registrationService.next();
+      },
+      error: (error) => {
+        //Display error
+        this.error = error;
+        this.pauseThenLogout();
+      }
+    })
   }
 
-  register() {
+  private pauseThenLogout() {
+    //Log out the user if the login did not complete successfully.
+    //Pause so user can see the error before logging out and being redirected to the landing page.
+    timer(10000).subscribe(() => {
+      //Log out the user if the registration did not complete successfully.
+      this.authenticationService.logout();
+    });
+  }
 
-    //todo Is this still needed?
-
-    this.registrationService.next();
-
+  private computeRedirectUri(action: string) {
+    const urlTree = this.currentUrlAsTree;
+    urlTree.queryParams[AuthenticationService.CALLBACK_ACTION_PARAM_NAME] = action;
+    return urlTree.toString();
   }
 
   private getParamsAndRegister() {
@@ -123,14 +180,6 @@ export class RegistrationCreateAccountComponent implements OnInit {
 
     // Check for the partner query param and use it to configure the branding service.
     const req: RegisterCandidateRequest = new RegisterCandidateRequest();
-    req.username = this.username;
-
-    // See Issue #526 which has been opened for clarification of the long term use of username /
-    // email / alternative email
-    req.email = this.username;
-
-    req.password = this.password;
-    req.passwordConfirmation = this.passwordConfirmation;
     req.partnerAbbreviation = this.brandingService.partnerAbbreviation;
 
     //Populate query params

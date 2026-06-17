@@ -19,18 +19,6 @@
   <tc-loading [loading]="loading"></tc-loading>
 
   <form [formGroup]="form" *ngIf="!loading">
-
-    <!-- EMAIL -->
-    <tc-field class="mb-3">
-      <tc-label class="form-label" for="email">{{'REGISTRATION.CONTACT.LABEL.EMAIL' | translate }} <sup>*</sup></tc-label>
-      <tc-input type="email" id="email" placeholder="" [formControlName]="'email'" pattern="{{emailRegex}}"></tc-input>
-      <div *ngIf="form.get('email').touched || form.get('email').dirty">
-        <tc-error-message *ngIf="form.get('email').errors?.['pattern']">
-          {{ 'FORM.ERROR.EMAIL' | translate }}
-        </tc-error-message>
-      </div>
-    </tc-field>
-
     <!-- PHONE # -->
     <tc-field class="mb-3">
       <tc-label class="form-label" for="phone">{{ 'REGISTRATION.CONTACT.LABEL.PHONE' | translate }}</tc-label>
@@ -76,8 +64,7 @@
 </div>
 
 
-<app-registration-footer [nextDisabled]="form.invalid"
-                         [hideBack]="!edit"
+<app-registration-footer [hideBack]="!edit"
                          [type]="edit ? 'update' : 'step'"
                          (backClicked)="cancel()"
                          (nextClicked)="save()">

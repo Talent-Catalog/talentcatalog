@@ -34,7 +34,7 @@ export class RegistrationService {
     },
     {
       key: 'contact',
-      title: 'How can we contact you?',
+      title: 'How else can we contact you?',
       section: 1
     },
     {
