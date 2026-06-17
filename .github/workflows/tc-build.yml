@@ -70,7 +70,32 @@ jobs:
           }
           EOF
 
-          ./gradlew :server:test --init-script debug-test-config.gradle --test-dry-run --info --console=plain
+          ./gradlew :server:test --init-script debug-test-config.gradle --test-dry-run --info --console=plain    
+
+      - name: Print effective Gradle test config files
+        run: |
+          echo "Current commit:"
+          git rev-parse HEAD
+
+          echo "server/build.gradle test config:"
+          grep -n "tasks.withType(Test)" -A15 server/build.gradle || true
+          grep -n "tasks.named('test'" -A25 server/build.gradle || true
+          grep -n "test {" -A10 server/build.gradle || true
+          grep -n "includeTestsMatching" -A10 server/build.gradle || true
+          grep -n "scanForTestClasses" -A10 server/build.gradle || true
+
+          echo "Any junit-platform.properties:"
+          find . -name "junit-platform.properties" -print -exec cat {} \;
+          
+      - name: Check CandidateServiceImplCharacterizationTest discovery
+        run: |
+          ./gradlew :server:test \
+            --tests "org.tctalent.server.service.db.impl.CandidateServiceImplCharacterizationTest" \
+            --test-dry-run \
+            --info \
+            --console=plain
+
+          find server/build/test-results/test -name '*CandidateServiceImplCharacterizationTest*' -print
       - name: Run tests
         run: ./gradlew clean :server:test --stacktrace --rerun-tasks
 
