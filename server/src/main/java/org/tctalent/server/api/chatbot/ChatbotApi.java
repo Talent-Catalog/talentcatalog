@@ -2,15 +2,15 @@
  * Copyright (c) 2026 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
- * the terms of the GNU Affero General Public License as published by the Free
+ * the terms of the GNU General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or any later version.
  *
  * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
  * for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
+ * You should have received a copy of the GNU General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
@@ -19,17 +19,21 @@ package org.tctalent.server.api.chatbot;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+import java.util.HashMap;
+import java.util.Map;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import org.tctalent.server.model.db.chatbot.ChatbotMessage;
 import org.tctalent.server.service.db.ChatbotService;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * REST API for chatbot functionality.
@@ -39,13 +43,14 @@ import java.util.Map;
 @RequestMapping("/api/chatbot")
 @RequiredArgsConstructor
 @Slf4j
+@PreAuthorize("hasRole('USER')")
 public class ChatbotApi {
 
     private final ChatbotService chatbotService;
 
     /**
      * Sends a message to the chatbot and gets a response.
-     * 
+     *
      * @param request The message request containing the user's message and session ID
      * @return The chatbot's response
      */
@@ -56,12 +61,12 @@ public class ChatbotApi {
                 log.warn("Received message request without session ID");
                 return ResponseEntity.badRequest().build();
             }
-            
+
             ChatbotMessage response = chatbotService.sendMessage(request.getMessage(), request.getSessionId());
-            
+
             log.info("Chatbot message processed for session: {}", request.getSessionId());
             return ResponseEntity.ok(response);
-            
+
         } catch (Exception e) {
             log.error("Error processing chatbot message", e);
             return ResponseEntity.internalServerError().build();
@@ -70,20 +75,20 @@ public class ChatbotApi {
 
     /**
      * Gets a welcome message for the chatbot.
-     * 
+     *
      * @return Welcome message
      */
     @GetMapping("/welcome")
     public ResponseEntity<Map<String, String>> getWelcomeMessage() {
         try {
             String welcomeMessage = chatbotService.getWelcomeMessage();
-            
+
             Map<String, String> response = new HashMap<>();
             response.put("message", welcomeMessage);
-            
+
             log.info("Welcome message generated");
             return ResponseEntity.ok(response);
-            
+
         } catch (Exception e) {
             log.error("Error generating welcome message", e);
             return ResponseEntity.internalServerError().build();

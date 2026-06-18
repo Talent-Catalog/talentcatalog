@@ -1,16 +1,16 @@
 /*
- * Copyright (c) 2024 Talent Catalog.
+ * Copyright (c) 2026 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
- * the terms of the GNU Affero General Public License as published by the Free
+ * the terms of the GNU General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or any later version.
  *
  * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
  * for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
+ * You should have received a copy of the GNU General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
@@ -55,8 +55,6 @@ export class CandidateSourceBaseComponent {
   reviewStatusFilter: string[] = defaultReviewStatusFilter;
 
   @Input() candidateSource: CandidateSource;
-  //Temporary - todo to be removed when we no longer use Elasticsearch or CandidateSpecifications
-  @Input() useOldSearch: boolean;
 
   //Temporary - todo to be removed when we no longer use old fetching
   useOldFetch: boolean = false;
@@ -153,11 +151,9 @@ export class CandidateSourceBaseComponent {
     let defaultSortField = 'id';
     let defaultSortDirection = 'DESC';
     if (isSavedSearch(this.candidateSource)) {
-      if (this.useOldSearch == null || !this.useOldSearch) {
         if (!isNullOrEmpty(this.candidateSource.simpleQueryString)) {
           defaultSortField = 'text_match'
         }
-      }
     }
 
     this.sortField = this.sortField || defaultSortField;

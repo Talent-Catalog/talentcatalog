@@ -1,16 +1,16 @@
 /*
- * Copyright (c) 2024 Talent Catalog.
+ * Copyright (c) 2026 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
- * the terms of the GNU Affero General Public License as published by the Free
+ * the terms of the GNU General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or any later version.
  *
  * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
  * for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
+ * You should have received a copy of the GNU General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
@@ -24,7 +24,6 @@ import org.tctalent.server.exception.InvalidSessionException;
 import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.CandidateCertification;
-import org.tctalent.server.model.db.User;
 import org.tctalent.server.repository.db.CandidateCertificationRepository;
 import org.tctalent.server.repository.db.CandidateRepository;
 import org.tctalent.server.request.candidate.certification.CreateCandidateCertificationRequest;
@@ -32,7 +31,6 @@ import org.tctalent.server.request.candidate.certification.UpdateCandidateCertif
 import org.tctalent.server.security.AuthService;
 import org.tctalent.server.service.db.CandidateCertificationService;
 import org.tctalent.server.service.db.CandidateService;
-import org.tctalent.server.util.audit.AuditHelper;
 
 @Service
 public class CandidateCertificationServiceImpl implements CandidateCertificationService {
@@ -60,8 +58,8 @@ public class CandidateCertificationServiceImpl implements CandidateCertification
 
     @Override
     public CandidateCertification createCandidateCertification(CreateCandidateCertificationRequest request) {
-        User loggedInUser = authService.getLoggedInUser()
-                .orElseThrow(() -> new InvalidSessionException("Not logged in"));
+        authService.getLoggedInUser()
+            .orElseThrow(() -> new InvalidSessionException("Not logged in"));
 
         Candidate candidate = candidateService.getCandidateFromRequest(request.getCandidateId());
 
@@ -76,16 +74,15 @@ public class CandidateCertificationServiceImpl implements CandidateCertification
         // Save the entity
         candidateCertification = candidateCertificationRepository.save(candidateCertification);
 
-        AuditHelper.setAuditFieldsFromUser(candidate, loggedInUser);
-        candidateService.save(candidate, true);
+        candidateService.save(candidate);
 
         return candidateCertification;
     }
 
     @Override
     public CandidateCertification updateCandidateCertification(UpdateCandidateCertificationRequest request) {
-        User loggedInUser = authService.getLoggedInUser()
-                .orElseThrow(() -> new InvalidSessionException("Not logged in"));
+        authService.getLoggedInUser()
+            .orElseThrow(() -> new InvalidSessionException("Not logged in"));
 
         CandidateCertification candidateCertification = this.candidateCertificationRepository.findByIdLoadCandidate(request.getId())
                 .orElseThrow(() -> new NoSuchObjectException(CandidateCertification.class, request.getId()));
@@ -100,16 +97,15 @@ public class CandidateCertificationServiceImpl implements CandidateCertification
         // Save the candidate certification
         candidateCertification = candidateCertificationRepository.save(candidateCertification);
 
-        AuditHelper.setAuditFieldsFromUser(candidate, loggedInUser);
-        candidateService.save(candidate, true);
+        candidateService.save(candidate);
 
         return candidateCertification;
     }
 
     @Override
     public void deleteCandidateCertification(Long id) {
-        User loggedInUser = authService.getLoggedInUser()
-                .orElseThrow(() -> new InvalidSessionException("Not logged in"));
+        authService.getLoggedInUser()
+            .orElseThrow(() -> new InvalidSessionException("Not logged in"));
 
         CandidateCertification candidateCertification = candidateCertificationRepository.findByIdLoadCandidate(id)
                 .orElseThrow(() -> new NoSuchObjectException(CandidateCertification.class, id));
@@ -123,8 +119,7 @@ public class CandidateCertificationServiceImpl implements CandidateCertification
 
         candidateCertificationRepository.delete(candidateCertification);
 
-        AuditHelper.setAuditFieldsFromUser(candidate, loggedInUser);
-        candidateService.save(candidate, true);
+        candidateService.save(candidate);
 
     }
 }

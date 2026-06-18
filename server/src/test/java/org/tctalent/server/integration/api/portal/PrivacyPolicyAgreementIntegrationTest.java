@@ -1,16 +1,16 @@
 /*
- * Copyright (c) 2025 Talent Catalog.
+ * Copyright (c) 2026 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
- * the terms of the GNU Affero General Public License as published by the Free
+ * the terms of the GNU General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or any later version.
  *
  * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
  * for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
+ * You should have received a copy of the GNU General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
@@ -30,7 +30,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -79,7 +78,9 @@ public class PrivacyPolicyAgreementIntegrationTest extends BaseDBIntegrationTest
   private SavedList pendingTermsList;
   private String jwtToken;
   private User user;
-  private final String privacyPolicyId = "policy123";
+  private static final String PRIVACY_POLICY_ID = "GrnCandidatePrivacyPolicyV2";
+  private static final String FIRST_PRIVACY_POLICY_ID = "GrnCandidatePrivacyPolicyV1";
+  private static final String SECOND_PRIVACY_POLICY_ID = "GrnCandidatePrivacyPolicyV2";
 
   @BeforeEach
   void setUp() {
@@ -134,13 +135,13 @@ public class PrivacyPolicyAgreementIntegrationTest extends BaseDBIntegrationTest
   void testUpdateAcceptedPrivacyPolicy_Success() throws Exception {
     authenticateUser(user);
 
-    mockMvc.perform(put("/api/portal/candidate/privacy/" + privacyPolicyId)
+    mockMvc.perform(put("/api/portal/candidate/privacy/" + PRIVACY_POLICY_ID)
             .header("Authorization", "Bearer " + jwtToken))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.id").exists());
 
     Candidate updated = candidateRepository.findById(candidate.getId()).orElseThrow();
-    assertEquals(privacyPolicyId, updated.getAcceptedPrivacyPolicyId());
+    assertEquals(PRIVACY_POLICY_ID, updated.getAcceptedPrivacyPolicyId());
     assertNotNull(updated.getAcceptedPrivacyPolicyDate());
     assertTrue(updated.getAcceptedPrivacyPolicyDate().isBefore(OffsetDateTime.now().plusSeconds(2)));
 
@@ -157,7 +158,7 @@ public class PrivacyPolicyAgreementIntegrationTest extends BaseDBIntegrationTest
   void testUpdateAcceptedPrivacyPolicy_Unauthenticated() throws Exception {
     SecurityContextHolder.clearContext();
 
-    mockMvc.perform(put("/api/portal/candidate/privacy/" + privacyPolicyId))
+    mockMvc.perform(put("/api/portal/candidate/privacy/" + PRIVACY_POLICY_ID))
         .andExpect(status().isUnauthorized());
   }
 
@@ -178,28 +179,23 @@ public class PrivacyPolicyAgreementIntegrationTest extends BaseDBIntegrationTest
   void testAcceptDifferentPolicyUpdatesDateAndId() throws Exception {
     authenticateUser(user);
 
-    String firstPolicyId = "policy123";
-    String secondPolicyId = "policy456";
-
-    // Accept first policy
-    mockMvc.perform(put("/api/portal/candidate/privacy/" + firstPolicyId)
+    mockMvc.perform(put("/api/portal/candidate/privacy/" + FIRST_PRIVACY_POLICY_ID)
             .header("Authorization", "Bearer " + jwtToken))
         .andExpect(status().isOk());
 
     Candidate afterFirst = candidateRepository.findById(candidate.getId()).orElseThrow();
     OffsetDateTime firstDate = afterFirst.getAcceptedPrivacyPolicyDate();
 
-    Thread.sleep(1000); // wait 1 sec
+    Thread.sleep(1000);
 
-    // Accept second (different) policy
-    mockMvc.perform(put("/api/portal/candidate/privacy/" + secondPolicyId)
+    mockMvc.perform(put("/api/portal/candidate/privacy/" + SECOND_PRIVACY_POLICY_ID)
             .header("Authorization", "Bearer " + jwtToken))
         .andExpect(status().isOk());
 
     Candidate afterSecond = candidateRepository.findById(candidate.getId()).orElseThrow();
     OffsetDateTime secondDate = afterSecond.getAcceptedPrivacyPolicyDate();
 
-    assertEquals(secondPolicyId, afterSecond.getAcceptedPrivacyPolicyId());
+    assertEquals(SECOND_PRIVACY_POLICY_ID, afterSecond.getAcceptedPrivacyPolicyId());
     assertTrue(secondDate.isAfter(firstDate), "Acceptance date should update on new policy");
   }
 

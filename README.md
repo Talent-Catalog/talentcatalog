@@ -21,6 +21,17 @@ make up the TC system. In particular, it contains:
   This is written in Angular and connects to the REST API endpoints under
   `/api/public` provided by the server.
 
+## Open Source ##
+
+Talent Catalog is open-source software, licensed under
+[GNU GPLv3 or later](https://www.gnu.org/licenses/gpl-3.0.txt).
+
+The full source code, commit history, and pull requests are publicly visible on GitHub.
+**Never commit secrets, credentials, or sensitive data to this repository.**
+This includes AWS access keys, database passwords, private keys, API tokens, and `.env` files.
+Secrets must be distributed out-of-band (for example, via tc-secrets) and kept out of version 
+control.
+
 ## Contributing ##
 
 Contributions are very welcome. Please see
@@ -99,8 +110,8 @@ Download and install the latest of the following tools.
   ```
 
 - Node.js [https://nodejs.org/en/](https://nodejs.org/en/)
-    - This project requires **Node.js 18** 
-    - We currently pin Node 18.20.7 (via .nvmrc), which satisfies Angular 17’s Node 18.13+ 
+    - This project requires **Node.js 20** 
+    - We currently pin Node 20.19.6 (via .nvmrc), which satisfies Angular 17’s Node 20.9+ 
       requirement.
         - See [Angular Compatibility Table](https://angular.io/guide/versions)
         - See [Node.js Releases](https://nodejs.org/en/about/releases/)
@@ -118,7 +129,7 @@ Download and install the latest of the following tools.
         nvm install
         nvm use
         node -v 
-        # should output v18.20.7
+        # should output v20.19.6
         ```
       
     - **IntelliJ users**
@@ -132,7 +143,7 @@ Download and install the latest of the following tools.
 
 - Angular CLI [https://angular.io/cli](https://angular.io/cli)
   ```
-  npm install -g @angular/cli@16
+  npm install -g @angular/cli@17
   ```
     - See https://angular.io/guide/versions
     - To upgrade Angular versions, see https://update.angular.io/
@@ -258,6 +269,10 @@ environment variables for the TC software, you need to copy a special file `terr
 to that directory before running terraform. Contact support@talentcatalog.net for a copy of that
 file.
 
+> **Security note:** `terraform.tfvars`, `secrets.auto.tfvars`, and any file containing
+> credentials are git-ignored and must never be committed. If you accidentally commit a
+> secret, treat it as compromised immediately and rotate it.
+
 Then you can run `init` (only need to do this once), and then `plan` or `apply`, as needed.
 
    ```
@@ -284,6 +299,10 @@ in `application.yml` to define a password for that user.
 
 Alternately, ask TC developers for a `pg_dump` of the database. The advantage of the the dump
 is that you will get a database populated with a lot of test data and users. 
+
+> **Important:** Apply the DB dump before attempting to run the Spring build. Otherwise, an initial
+> schema will be created that conflicts with the dump, requiring you to reset Docker containers and
+> volumes before trying again.
 
 Note that the dump does not have to be recent. 
 The software will automatically apply any required updates to the database definition, driven by 
@@ -335,8 +354,10 @@ use it to populate your empty database:
   depending on whether you are running bash or zsh.
 
 - Create a new Run Profile for `org.tctalent.server.TcTalentApplication`.
-  In the Environment Variables section of Intellij, check the
-  "Include system environment variables" checkbox.
+- Click 'Modify Options' and check Environment Variables, here you'll need to add a password for your
+  System Admin user that is created on startup. This variable isn't included in the 
+  tc_secrets file (which Spring Boot inherits automatically) and must be added manually by entering `TC_BOOT_ADMIN_PASSWORD=` and a password 
+  of your choice (e.g. password). This will be used to access the admin portal once it is running.
 - Run the new profile, you should see something similar to this in the logs:
 
 ```
@@ -460,7 +481,8 @@ into the server and serve through Apache Tomcat._
 ### Log In To The Admin Portal ###
 
 - On startup, the server automatically creates a default user with username `SystemAdmin`
-  and password `password` that can be used to log in to the admin portal in development.
+  and the password that you added to your environment variables. These credentials can be used to 
+  log in to the admin portal in development.
 - Details about this user can be found in
   `org/talentcatalog/server/configuration/SystemAdminConfiguration.java`
 
@@ -588,6 +610,6 @@ See the Deployment and Monitoring pages on the
 
 ## License
 
-[GNU AGPLv3](https://choosealicense.com/licenses/agpl-3.0/)
+[GNU GPLv3 or later](https://www.gnu.org/licenses/gpl-3.0.txt)
 
 For copyright header format and conventions, see [CONTRIBUTING.md](CONTRIBUTING.md).

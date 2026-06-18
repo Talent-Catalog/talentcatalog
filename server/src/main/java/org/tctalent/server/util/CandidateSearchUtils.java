@@ -1,16 +1,16 @@
 /*
- * Copyright (c) 2025 Talent Catalog.
+ * Copyright (c) 2026 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
- * the terms of the GNU Affero General Public License as published by the Free
+ * the terms of the GNU General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or any later version.
  *
  * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
  * for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
+ * You should have received a copy of the GNU General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
@@ -168,9 +168,21 @@ public abstract class CandidateSearchUtils {
     }
 
     /**
-     * Builds the Postgres to_tsquery function suitable for inserting into Postgres text matching
-     * SQL.
-     * @param esQuery  Elasticsearch simple query. If null, it will return an empty string.
+     * Builds the PostgreSQL to_tsquery function used for candidate text search.
+     *
+     * DeepScan DS-002 context:
+     * This method does not allow SQL injection through tsquery operators. User input is placed
+     * inside a quoted SQL string literal after single quotes are escaped by buildTsQuerySQL().
+     * Characters such as &, |, !, <->, parentheses, and :* are PostgreSQL tsquery syntax
+     * characters. They may affect the tsquery expression, or cause a tsquery syntax error if
+     * the search text is invalid, but they do not break out of the quoted SQL string into the
+     * surrounding SQL statement.
+     *
+     * We intentionally use to_tsquery() rather than plainto_tsquery() because candidate search
+     * supports boolean / Elasticsearch-style search syntax. Replacing this with plainto_tsquery()
+     * would change existing search behavior by treating those operators as plain text.
+     *
+     * @param esQuery Elasticsearch simple query. If null, it will return an empty string.
      * @return to_tsquery function call suitable for inserting into Postgres SQL
      */
     public static @NonNull String buildToTsQueryFunction(@Nullable String esQuery) {

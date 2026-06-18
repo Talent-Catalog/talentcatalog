@@ -1,16 +1,16 @@
 /*
- * Copyright (c) 2025 Talent Catalog.
+ * Copyright (c) 2026 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
- * the terms of the GNU Affero General Public License as published by the Free
+ * the terms of the GNU General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or any later version.
  *
  * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
  * for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
+ * You should have received a copy of the GNU General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
@@ -28,6 +28,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.lang.Nullable;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.tctalent.server.files.UploadType;
 import org.tctalent.server.model.db.AttachmentType;
 import org.tctalent.server.model.db.AuditLog;
@@ -126,6 +127,7 @@ import org.tctalent.server.service.db.audit.AuditType;
  * Utility class for creating and persisting test data entities for integration testing.
  */
 public class TestDataFactory {
+  private static final String TEST_PASSWORD_HASH = new BCryptPasswordEncoder().encode("password");
 
   /**
    * Creates a new TaskImpl instance with specified or default values.
@@ -190,6 +192,8 @@ public class TestDataFactory {
   public static Candidate createAndSaveCandidate(CandidateRepository repository, User user) {
     Candidate candidate = createCandidate();
     candidate.setUser(user);
+    candidate.setCreatedBy(user);
+    candidate = saveEntity(repository, candidate);
     candidate.setCreatedBy(user);
     return saveEntity(repository, candidate);
   }
@@ -412,6 +416,7 @@ public class TestDataFactory {
     user.setLastName("blogs");
     user.setRole(Role.user);
     user.setStatus(Status.active);
+    user.setPasswordEnc(TEST_PASSWORD_HASH);
     user.setUsingMfa(false);
     PartnerImpl partner = new PartnerImpl();
     partner.setId(1L); // TBB partner

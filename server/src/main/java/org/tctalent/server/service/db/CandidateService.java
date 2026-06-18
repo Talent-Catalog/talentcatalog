@@ -1,16 +1,16 @@
 /*
- * Copyright (c) 2024 Talent Catalog.
+ * Copyright (c) 2026 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
- * the terms of the GNU Affero General Public License as published by the Free
+ * the terms of the GNU General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or any later version.
  *
  * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
  * for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
+ * You should have received a copy of the GNU General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
@@ -29,11 +29,11 @@ import java.util.Optional;
 import java.util.Set;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.web.reactive.function.client.WebClientException;
 import org.tctalent.server.exception.CountryRestrictionException;
+import org.tctalent.server.exception.CvGenerationException;
 import org.tctalent.server.exception.EntityReferencedException;
 import org.tctalent.server.exception.ExportFailedException;
 import org.tctalent.server.exception.InvalidRequestException;
@@ -43,6 +43,7 @@ import org.tctalent.server.exception.SalesforceException;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.CandidateSubfolderType;
 import org.tctalent.server.model.db.Country;
+import org.tctalent.server.model.db.CvFormat;
 import org.tctalent.server.model.db.DataRow;
 import org.tctalent.server.model.db.Gender;
 import org.tctalent.server.model.db.SavedList;
@@ -63,6 +64,7 @@ import org.tctalent.server.request.candidate.SavedListGetRequest;
 import org.tctalent.server.request.candidate.SelfRegistrationRequest;
 import org.tctalent.server.request.candidate.SubmitRegistrationRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateAdditionalInfoRequest;
+import org.tctalent.server.request.candidate.UpdateCandidateAspirationsRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateContactRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateEducationRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateLinksRequest;
@@ -83,55 +85,6 @@ import org.tctalent.server.util.dto.DtoBuilder;
 
 public interface CandidateService {
 
-    /**
-     * Adds or updates the Elasticsearch records corresponding to candidates on
-     * our standard database.
-     * <p/>
-     * This is intended to be a bulk update which updates the contents of the
-     * elasticsearch server to for ALL non deleted candidates on our database.
-     * <p/>
-     * For performance reasons (and to minimize memory use) this update is done
-     * a page of records (eg 20) at a time - as defined by the "pageable"
-     * parameter passed to this method. This method will normally be called
-     * repeatedly from a background Async task, triggered by an API call to
-     * SystemAdminApi, starting with page 0, page 1, etc, until all candidates
-     * have been added/updated.
-     *
-     * @param pageable      The page request - basically the page number.
-     * @param logTotal      If true, the method is requested to log the total
-     *                      number of candidates to be updated.
-     * @param createElastic If true, it is assumed that the Elasticsearch has
-     *                      started empty, so new records need to be created
-     *                      (rather than updating existing records).
-     * @return The number of candidates added or updated on this call. Normally
-     * that will be page full (eg 20).
-     */
-    int populateElasticCandidates(
-            Pageable pageable, boolean logTotal, boolean createElastic);
-
-    /**
-     * Updates the candidates database records corresponding to candidates on
-     * elasticsearch.
-     * <p/>
-     * This is intended to be a bulk update which updates the contents of the
-     * database server for ALL non deleted candidates on our database and
-     * updates a specific field/fields in the database from ES.
-     * This was made to handle if the two databases get out of sync
-     * (e.g. due to a bad flyway) and we want the restore the data from the ES.
-     * As long as the ES hasn't been reloaded (so retains the original data before flyway).
-     * <p/>
-     * For performance reasons (and to minimize memory use) this update is done
-     * a page of records (eg 20) at a time - as defined by the "pageable"
-     * parameter passed to this method. This method will normally be called
-     * repeatedly from a background Async task, triggered by an API call to
-     * SystemAdminApi, starting with page 0, page 1, etc, until all candidates
-     * have been added/updated.
-     *
-     * @param pageable      The page request - basically the page number.
-     * @return The number of candidates added or updated on this call. Normally
-     * that will be page full (eg 20).
-     */
-    int populateCandidatesFromElastic(Pageable pageable);
 
     Page<Candidate> searchCandidates(CandidateEmailSearchRequest request);
 
@@ -160,6 +113,8 @@ public interface CandidateService {
     Candidate getCandidate(long id) throws NoSuchObjectException;
 
     Candidate updateCandidateAdditionalInfo(long id, UpdateCandidateAdditionalInfoRequest request);
+
+    Candidate updateCandidateAspirations(long id, UpdateCandidateAspirationsRequest request);
 
     Candidate updateShareableNotes(long id, UpdateCandidateShareableNotesRequest request);
 
@@ -485,25 +440,40 @@ public interface CandidateService {
     List<DataRow> computeStatusStats(Gender gender, String country, LocalDate dateFrom, LocalDate dateTo, List<Long> sourceCountryIds);
     List<DataRow> computeStatusStats(Gender gender, String country, LocalDate dateFrom, LocalDate dateTo, Set<Long> candidateIds, List<Long> sourceCountryIds);
 
-    Resource generateCv(Candidate candidate, Boolean showName, Boolean showContact);
+    /**
+     * Generates a candidate CV in the requested format.
+     *
+     * <p>For {@link CvFormat#PDF}, the returned resource contains PDF bytes.
+     * For {@link CvFormat#DOCX}, the returned resource contains DOCX bytes.
+     * For {@link CvFormat#GOOGLE_DOC}, the returned resource contains the created Google Doc URL as
+     * UTF-8 text.</p>
+     *
+     * @param candidate the candidate whose CV will be generated
+     * @param showName whether the candidate's name should be included in the generated CV
+     * @param showContact whether the candidate's contact details should be included in the generated CV
+     * @param format the requested CV output format, for example PDF or DOCX
+     * @throws CvGenerationException if the CV cannot be generated
+     * @return a {@link Resource} containing the generated CV as a DOCX document
+     */
+    Resource generateCv(Candidate candidate, Boolean showName, Boolean showContact, CvFormat format) throws CvGenerationException;
 
     /**
-     * IMPORTANT: Use this instead of {@link CandidateRepository#save} Saves
-     * candidate to repository, but also optionally updates corresponding
-     * Elasticsearch CandidateEs
+     * Best to use this rather than {@link CandidateRepository#save}.
+     * Saves the candidate to repository.
      *
      * @param candidate         Candidate to be saved
-     * @param updateCandidateEs If true, will also update Elasticsearch
      * @return Candidate object as returned by {@link CandidateRepository#save}
      */
-    Candidate save(Candidate candidate, boolean updateCandidateEs);
+    Candidate save(Candidate candidate);
 
     /**
      * Allows for automatic updating of the candidate text before saving the candidate.
-     * @see #save(Candidate, boolean)
+     * @see #save(Candidate)
+     * @param candidate         Candidate to be saved
+     * @param updateCandidateText   Whether to update candidate text before saving
      * @return Candidate object as returned by {@link CandidateRepository#save}
      */
-    Candidate save(Candidate candidate, boolean updateCandidateEs, boolean updateCandidateText);
+    Candidate save(Candidate candidate, boolean updateCandidateText);
 
     /**
      * Creates a folder for the given candidate on Google Drive, as well as standard subfolders.
@@ -618,19 +588,43 @@ public interface CandidateService {
      */
     Candidate getTestCandidate();
 
-    // TODO: 12/2/22 Doc
+    /**
+     * Returns the candidate with the given id, preloading the candidate's saved-list memberships.
+     * <p/>
+     * This is a convenience wrapper around a repository query that join-fetches the saved-list
+     * association so callers can read saved-list data without triggering additional lazy loads.
+     *
+     * @param candidateId candidate id
+     * @return candidate with saved-list associations loaded, or null if not found
+     */
     Candidate findByIdLoadSavedLists(long candidateId);
 
-    //TODO JC Doc
-    void saveIt(Candidate candidate);
-
-    //todo doc
+    /**
+     * Returns the candidate with the given id and preloaded user association, applying source-country
+     * access restrictions for the current operation.
+     *
+     * @param id candidate id
+     * @param sourceCountries source-country restrictions to apply when resolving candidate visibility
+     * @return candidate with user association loaded, or null if not found or not visible for the
+     *         provided source-country restrictions
+     */
     Candidate findByIdLoadUser(long id, Set<Country> sourceCountries);
 
-    //todo doc
+    /**
+     * Builds one CSV export row for the given candidate, with values already formatted for output.
+     * <p/>
+     * Visibility and redaction rules are applied based on the logged-in user's role/permissions.
+     *
+     * @param candidate candidate to convert
+     * @return ordered column values for one exported CSV row
+     */
     String[] getExportCandidateStrings(Candidate candidate);
 
-    //todo doc
+    /**
+     * Returns the CSV export header row for candidate exports.
+     *
+     * @return ordered column titles matching {@link #getExportCandidateStrings(Candidate)}
+     */
     String[] getExportTitles();
 
     /**

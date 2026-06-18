@@ -2,15 +2,15 @@
  * Copyright (c) 2026 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
- * the terms of the GNU Affero General Public License as published by the Free
+ * the terms of the GNU General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or any later version.
  *
  * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
  * for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
+ * You should have received a copy of the GNU General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
@@ -31,14 +31,20 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class S3Properties {
 
     /**
-     * AWS access key
+     * AWS app credentials.
+     * In staging and production environments these fields are empty; S3 access is granted
+     * instead via the ECS task role assigned to the Fargate container.
      */
     private String accessKey;
+    private String secretKey;
 
     /**
-     * AWS secret key
+     * Per-instance-type translation bucket names for local development.
+     * These are selected at runtime based on tc.instance-type when S3_TRANSLATIONS_BUCKET
+     * is not explicitly set.
      */
-    private String secretKey;
+    private String tbbTranslationsBucket;
+    private String grnTranslationsBucket;
 
     /**
      * Max file size
@@ -51,7 +57,13 @@ public class S3Properties {
     private String region;
 
     /**
-     * S3 bucket for candidate files storage.
+     * S3 bucket for candidate files storage. Used by the GRN instance only.
+     * <p>
+     * TBB candidate files are stored on Google Drive (the legacy file-system path) and do not
+     * use this property. When the planned TBB-to-S3 migration is agreed and actioned, this
+     * field will likely be split into per-instance-type buckets mirroring the translations
+     * bucket configuration (see {@link #tbbTranslationsBucket} / {@link #grnTranslationsBucket}).
+     * <p>
      * Example: candidate-files.globalrefugee.net
      */
     private String candidateFilesBucket;

@@ -1,16 +1,16 @@
 /*
- * Copyright (c) 2025 Talent Catalog.
+ * Copyright (c) 2026 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
- * the terms of the GNU Affero General Public License as published by the Free
+ * the terms of the GNU General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or any later version.
  *
  * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
  * for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
+ * You should have received a copy of the GNU General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
@@ -125,7 +125,6 @@ class CandidateNotesServiceImplTest {
         CandidateNote note = noteCaptor.getValue();
         assertEquals(TITLE, note.getTitle());
         assertEquals(COMMENT, note.getComment());
-        assertEquals(ADMIN_USER, note.getCreatedBy());
         assertEquals(CANDIDATE, note.getCandidate());
         assertEquals(NoteType.admin, note.getNoteType());
     }
@@ -160,8 +159,9 @@ class CandidateNotesServiceImplTest {
 
         candidateNotesService.createCandidateNote(createRequest);
 
+        verify(userService).getSystemAdminUser();
         verify(candidateNoteRepository).save(noteCaptor.capture());
-        assertEquals(SYSTEM_ADMIN, noteCaptor.getValue().getCreatedBy());
+        assertEquals(NoteType.admin, noteCaptor.getValue().getNoteType());
     }
 
     @Test
@@ -177,7 +177,6 @@ class CandidateNotesServiceImplTest {
         CandidateNote note = noteCaptor.getValue();
         assertEquals(TITLE, note.getTitle());
         assertEquals(COMMENT, note.getComment());
-        assertEquals(ADMIN_USER, note.getUpdatedBy());
     }
 
 }

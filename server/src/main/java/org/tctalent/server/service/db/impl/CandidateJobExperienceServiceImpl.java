@@ -1,16 +1,16 @@
 /*
- * Copyright (c) 2024 Talent Catalog.
+ * Copyright (c) 2026 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
- * the terms of the GNU Affero General Public License as published by the Free
+ * the terms of the GNU General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or any later version.
  *
  * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
  * for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
+ * You should have received a copy of the GNU General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
@@ -107,13 +107,8 @@ public class CandidateJobExperienceServiceImpl implements CandidateJobExperience
         // Save the candidateOccupation
         final CandidateJobExperience jobExperience = candidateJobExperienceRepository.save(candidateJobExperience);
 
-        // Update candidate audit fields
-        User user = authService.getLoggedInUser()
-                .orElseThrow(() -> new InvalidSessionException("Not logged in"));
-        candidate.setAuditFields(user);
-
         //Save the candidate
-        candidateService.save(candidate, true, true);
+        candidateService.save(candidate, true);
 
         return jobExperience;
     }
@@ -124,7 +119,6 @@ public class CandidateJobExperienceServiceImpl implements CandidateJobExperience
         if (candidate == null) {
             throw new InvalidSessionException("Not logged in");
         }
-        candidate.setAuditFields(candidate.getUser());
         CandidateJobExperience experience = updateCandidateJobExperience(request.getId(), request);
 
         return experience;
@@ -163,14 +157,9 @@ public class CandidateJobExperienceServiceImpl implements CandidateJobExperience
         // Save the candidate experience
         candidateJobExperience = candidateJobExperienceRepository.save(candidateJobExperience);
 
-        // Set candidate + update audit fields
-        Candidate candidate;
-        User user = authService.getLoggedInUser()
-                .orElseThrow(() -> new InvalidSessionException("Not logged in"));
-        candidate = candidateJobExperience.getCandidate();
-        candidate.setAuditFields(user);
+        Candidate candidate = candidateJobExperience.getCandidate();
 
-        candidateService.save(candidate, true, true);
+        candidateService.save(candidate, true);
 
         return candidateJobExperience;
     }
@@ -200,8 +189,7 @@ public class CandidateJobExperienceServiceImpl implements CandidateJobExperience
 
         candidateJobExperienceRepository.delete(candidateJobExperience);
 
-        candidate.setAuditFields(user);
-        candidateService.save(candidate, true, true);
+        candidateService.save(candidate, true);
     }
 
     // Load the country from the database - throw an exception if not found

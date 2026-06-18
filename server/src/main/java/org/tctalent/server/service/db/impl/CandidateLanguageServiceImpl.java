@@ -1,16 +1,16 @@
 /*
- * Copyright (c) 2024 Talent Catalog.
+ * Copyright (c) 2026 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
- * the terms of the GNU Affero General Public License as published by the Free
+ * the terms of the GNU General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or any later version.
  *
  * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
  * for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
+ * You should have received a copy of the GNU General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
@@ -30,7 +30,6 @@ import org.tctalent.server.model.db.CandidateLanguage;
 import org.tctalent.server.model.db.Language;
 import org.tctalent.server.model.db.LanguageLevel;
 import org.tctalent.server.model.db.Status;
-import org.tctalent.server.model.db.User;
 import org.tctalent.server.repository.db.CandidateLanguageRepository;
 import org.tctalent.server.repository.db.CandidateRepository;
 import org.tctalent.server.repository.db.LanguageLevelRepository;
@@ -41,7 +40,6 @@ import org.tctalent.server.request.candidate.language.UpdateCandidateLanguagesRe
 import org.tctalent.server.security.AuthService;
 import org.tctalent.server.service.db.CandidateLanguageService;
 import org.tctalent.server.service.db.CandidateService;
-import org.tctalent.server.util.audit.AuditHelper;
 
 @Service
 public class CandidateLanguageServiceImpl implements CandidateLanguageService {
@@ -75,8 +73,8 @@ public class CandidateLanguageServiceImpl implements CandidateLanguageService {
      */
     @Override
     public CandidateLanguage createCandidateLanguage(CreateCandidateLanguageRequest request) {
-        User loggedInUser = authService.getLoggedInUser()
-                .orElseThrow(() -> new InvalidSessionException("Not logged in"));
+        authService.getLoggedInUser()
+            .orElseThrow(() -> new InvalidSessionException("Not logged in"));
 
         Candidate candidate = candidateService.getCandidateFromRequest(request.getCandidateId());
 
@@ -100,8 +98,7 @@ public class CandidateLanguageServiceImpl implements CandidateLanguageService {
 
         // Save the candidateLanguage
         candidateLanguage = candidateLanguageRepository.save(candidateLanguage);
-        AuditHelper.setAuditFieldsFromUser(candidate, loggedInUser);
-        candidateService.save(candidate, true);
+        candidateService.save(candidate);
         return candidateLanguage;
     }
 
@@ -112,8 +109,8 @@ public class CandidateLanguageServiceImpl implements CandidateLanguageService {
      */
     @Override
     public CandidateLanguage updateCandidateLanguage(UpdateCandidateLanguageRequest request) {
-        User loggedInUser = authService.getLoggedInUser()
-                .orElseThrow(() -> new InvalidSessionException("Not logged in"));
+        authService.getLoggedInUser()
+            .orElseThrow(() -> new InvalidSessionException("Not logged in"));
 
         CandidateLanguage candidateLanguage = candidateLanguageRepository.findById(request.getId())
                 .orElseThrow(() -> new NoSuchObjectException(CandidateLanguage.class, request.getId()));
@@ -137,8 +134,7 @@ public class CandidateLanguageServiceImpl implements CandidateLanguageService {
         candidateLanguage = candidateLanguageRepository.save(candidateLanguage);
 
         Candidate candidate = candidateLanguage.getCandidate();
-        AuditHelper.setAuditFieldsFromUser(candidate, loggedInUser);
-        candidateService.save(candidate, true);
+        candidateService.save(candidate);
 
         return candidateLanguage;
     }
@@ -149,16 +145,15 @@ public class CandidateLanguageServiceImpl implements CandidateLanguageService {
      */
     @Override
     public void deleteCandidateLanguage(Long id) {
-        User loggedInUser = authService.getLoggedInUser()
-                .orElseThrow(() -> new InvalidSessionException("Not logged in"));
+        authService.getLoggedInUser()
+            .orElseThrow(() -> new InvalidSessionException("Not logged in"));
 
         CandidateLanguage candidateLanguage = candidateLanguageRepository.findByIdLoadCandidate(id)
                 .orElseThrow(() -> new NoSuchObjectException(CandidateLanguage.class, id));
 
         Candidate candidate = candidateLanguage.getCandidate();
         candidateLanguageRepository.delete(candidateLanguage);
-        AuditHelper.setAuditFieldsFromUser(candidate, loggedInUser);
-        candidateService.save(candidate, true);
+        candidateService.save(candidate);
     }
 
     @Override
@@ -222,8 +217,7 @@ public class CandidateLanguageServiceImpl implements CandidateLanguageService {
             }
         }
 
-        candidate.setAuditFields(candidate.getUser());
-        candidateService.save(candidate, true);
+        candidateService.save(candidate);
 
         return candidateLanguages;
     }

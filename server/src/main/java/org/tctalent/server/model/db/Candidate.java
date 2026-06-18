@@ -1,16 +1,16 @@
 /*
- * Copyright (c) 2024 Talent Catalog.
+ * Copyright (c) 2026 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
- * the terms of the GNU Affero General Public License as published by the Free
+ * the terms of the GNU General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or any later version.
  *
  * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
  * for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
+ * You should have received a copy of the GNU General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
@@ -58,7 +58,6 @@ import org.tctalent.server.api.admin.SavedSearchAdminApi;
 import org.tctalent.server.api.admin.SystemAdminApi;
 import org.tctalent.server.configuration.SystemAdminConfiguration;
 import org.tctalent.server.logging.LogBuilder;
-import org.tctalent.server.model.es.CandidateEs;
 import org.tctalent.server.service.db.BackgroundProcessingService;
 import org.tctalent.server.service.db.CandidateSavedListService;
 import org.tctalent.server.util.SalesforceHelper;
@@ -67,7 +66,7 @@ import org.tctalent.server.util.SalesforceHelper;
 @Table(name = "candidate")
 @SequenceGenerator(name = "seq_gen", sequenceName = "candidate_id_seq", allocationSize = 1)
 @Slf4j
-public class Candidate extends AbstractAuditableDomainObject<Long> implements HasPublicId {
+public class Candidate extends AbstractCandidateDataDomainObject<Long> implements HasPublicId {
 
     private String candidateNumber;
     private String publicId;
@@ -240,17 +239,32 @@ public class Candidate extends AbstractAuditableDomainObject<Long> implements Ha
     private CandidateStatus status;
 
     /**
+     * Date and time when this candidate was marked as deleted or fully erased.
+     *
+     * <p>This is separate from {@code updatedDate}. The updated date can change for many reasons, but
+     * this field specifically records when the candidate deletion/erasure happened.</p>
+     */
+    @Column(name = "deleted_date")
+    @Nullable
+    private OffsetDateTime deletedDate;
+
+    /**
+     * User who marked this candidate as deleted or performed full erasure.
+     *
+     * <p>This is separate from {@code updatedBy}. The updated user can change for many reasons, but
+     * this field specifically records who performed the deletion/erasure action.</p>
+     */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "deleted_by")
+    @Nullable
+    private User deletedBy;
+
+    /**
      * Computed field of all searchable text associated with the candidate.
      * <p/>
      * Updated in {@link #updateText}
      */
     private String text;
-
-    /**
-     * ID of corresponding candidate record in Elasticsearch
-     * @see CandidateEs#getId()
-     */
-    private String textSearchId;
 
     /**
      * Even though we would prefer CascadeType.ALL with 'orphanRemoval' so that
@@ -1292,12 +1306,34 @@ public class Candidate extends AbstractAuditableDomainObject<Long> implements Ha
         this.status = status;
     }
 
-    public String getTextSearchId() {
-        return textSearchId;
+    @Nullable
+    public OffsetDateTime getDeletedDate() {
+        return deletedDate;
     }
 
-    public void setTextSearchId(String textSearchId) {
-        this.textSearchId = textSearchId;
+    public void setDeletedDate(@Nullable OffsetDateTime deletedDate) {
+        this.deletedDate = deletedDate;
+    }
+
+    @Nullable
+    public User getDeletedBy() {
+        return deletedBy;
+    }
+
+    public void setDeletedBy(@Nullable User deletedBy) {
+        this.deletedBy = deletedBy;
+    }
+
+
+    public void setDeletedFields(User deletedBy) {
+        this.deletedDate = OffsetDateTime.now();
+        this.deletedBy = deletedBy;
+    }
+
+
+    public void clearDeletedFields() {
+        this.deletedDate = null;
+        this.deletedBy = null;
     }
 
     public Country getCountry() {
@@ -2608,6 +2644,10 @@ public class Candidate extends AbstractAuditableDomainObject<Long> implements Ha
 
     public String getText() {
         return text;
+    }
+
+    public void setText(String text) {
+        this.text = text;
     }
 
     public void updateText() {

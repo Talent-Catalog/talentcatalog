@@ -1,16 +1,16 @@
 /*
- * Copyright (c) 2025 Talent Catalog.
+ * Copyright (c) 2026 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
- * the terms of the GNU Affero General Public License as published by the Free
+ * the terms of the GNU General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or any later version.
  *
  * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
  * for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
+ * You should have received a copy of the GNU General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
@@ -33,5 +33,13 @@ public enum TermsType {
      * case we will need a new enum corresponding to each non-standard provider.
      * e.g. OPC_TBB_DATA_PROCESSING_AGREEMENT.
      */
-    OPC_STANDARD_DATA_PROCESSING_AGREEMENT
+    OPC_STANDARD_DATA_PROCESSING_AGREEMENT,
+
+    /**
+     * Reference service terms accepted by candidates before receiving a voucher.
+     * <p>
+     * This per-provider terms type is an interim approach while terms remain in-memory.
+     * It can be normalised when terms are persisted and linked more directly to services.
+     */
+    REFERENCE_SERVICE_TERMS
 }

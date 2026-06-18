@@ -1,16 +1,16 @@
 /*
- * Copyright (c) 2024 Talent Catalog.
+ * Copyright (c) 2026 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
- * the terms of the GNU Affero General Public License as published by the Free
+ * the terms of the GNU General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or any later version.
  *
  * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
  * for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
+ * You should have received a copy of the GNU General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
@@ -52,6 +52,7 @@ import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.exception.SalesforceException;
 import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.model.db.Candidate;
+import org.tctalent.server.model.db.CvFormat;
 import org.tctalent.server.model.db.JobChatUserInfo;
 import org.tctalent.server.repository.db.read.dto.CandidateReadDto;
 import org.tctalent.server.request.RegisterCandidateByPartnerRequest;
@@ -63,9 +64,11 @@ import org.tctalent.server.request.candidate.CandidateIntakeDataUpdate;
 import org.tctalent.server.request.candidate.CandidateNumberOrNameSearchRequest;
 import org.tctalent.server.request.candidate.CandidatePublicIdSearchRequest;
 import org.tctalent.server.request.candidate.DownloadCvRequest;
+import org.tctalent.server.request.candidate.EraseCandidateRequest;
 import org.tctalent.server.request.candidate.ResolveTaskAssignmentsRequest;
 import org.tctalent.server.request.candidate.SearchCandidateRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateAdditionalInfoRequest;
+import org.tctalent.server.request.candidate.UpdateCandidateAspirationsRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateLinksRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateListOppsRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateMaxEducationLevelRequest;
@@ -80,8 +83,10 @@ import org.tctalent.server.request.candidate.UpdateCandidateShareableNotesReques
 import org.tctalent.server.request.candidate.UpdateCandidateStatusRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateSurveyRequest;
 import org.tctalent.server.request.chat.FetchCandidatesWithChatRequest;
+import org.tctalent.server.response.EraseCandidateResponse;
 import org.tctalent.server.security.CandidateTokenProvider;
 import org.tctalent.server.security.CvClaims;
+import org.tctalent.server.service.db.CandidateErasureService;
 import org.tctalent.server.service.db.CandidateOpportunityService;
 import org.tctalent.server.service.db.CandidateSavedListService;
 import org.tctalent.server.service.db.CandidateService;
@@ -103,6 +108,7 @@ public class CandidateAdminApi {
     private final SavedSearchService savedSearchService;
     private final CandidateIntakeDataBuilderSelector intakeDataBuilderSelector;
     private final CandidateTokenProvider candidateTokenProvider;
+    private final CandidateErasureService candidateErasureService;
 
     @PostMapping("search")
     public Map<String, Object> search(@RequestBody SearchCandidateRequest request) {
@@ -268,6 +274,14 @@ public class CandidateAdminApi {
         return builder.build(candidate);
     }
 
+    @PutMapping("{id}/aspirations")
+    public Map<String, Object> updateAspirations(@PathVariable("id") long id,
+        @RequestBody UpdateCandidateAspirationsRequest request) {
+        Candidate candidate = candidateService.updateCandidateAspirations(id, request);
+        DtoBuilder builder = builderSelector.selectBuilder();
+        return builder.build(candidate);
+    }
+
     @PutMapping("{id}/shareable-notes")
     public Map<String, Object> updateShareableNotes(@PathVariable("id") long id,
         @RequestBody UpdateCandidateShareableNotesRequest request) {
@@ -331,22 +345,34 @@ public class CandidateAdminApi {
         savedSearchService.exportToCsv(request, response.getWriter());
     }
 
-    @PostMapping(value = "{id}/cv.pdf")
-    public void downloadCandidateCVPdf(@RequestBody DownloadCvRequest request, HttpServletResponse response)
-            throws IOException {
+    @PostMapping(value = {"{id}/cv"})
+    public void downloadCandidateCV(@PathVariable("id") long candidateId, @RequestBody DownloadCvRequest request, HttpServletResponse response
+    ) throws IOException {
+
+        CvFormat format = request.getFormat();
 
         LogBuilder.builder(log)
-            .candidateId(request.getCandidateId())
-            .action("downloadCandidateCVPdf")
+            .candidateId(candidateId)
+            .action("downloadCandidateCV")
             .message("Downloading CV for candidate")
             .logInfo();
 
-        Candidate candidate = candidateService.getCandidate(request.getCandidateId());
-        String name = candidate.getUser().getDisplayName()+"-"+ "CV";
-        response.setContentType("application/pdf");
-        response.setHeader("Content-Disposition", "attachment; filename=" + name + ".pdf");
+        Candidate candidate = candidateService.getCandidate(candidateId);
+        String name = candidate.getUser().getDisplayName() + "-CV";
 
-        Resource report = candidateService.generateCv(candidate, request.getShowName(), request.getShowContact());
+        response.setContentType(format.getMediaType());
+        response.setHeader(
+            "Content-Disposition",
+            "attachment; filename=\"" + name + "." + format.getFileExtension() + "\""
+        );
+
+        Resource report = candidateService.generateCv(
+            candidate,
+            request.getShowName(),
+            request.getShowContact(),
+            format
+        );
+
         try (InputStream reportStream = report.getInputStream()) {
             IOUtils.copy(reportStream, response.getOutputStream());
             response.flushBuffer();
@@ -493,4 +519,26 @@ public class CandidateAdminApi {
         return builder.buildList(candidateList);
     }
 
+    /**
+     * Erases a candidate's personally identifiable data.
+     *
+     * <p>This endpoint is intentionally separate from the normal DELETE endpoint. The normal delete
+     * behaviour marks a candidate deleted, while this endpoint performs data erasure:
+     * it removes personal fields, documents, notes, candidate-submitted free text, user login data,
+     * attachment metadata, and search text while preserving a dummy candidate placeholder row for
+     * database integrity.</p>
+     *
+     * @param id ID of the candidate to erase.
+     * @param request erasure options and confirmation data.
+     * @return minimal details of the erased placeholder candidate.
+     */
+    @PreAuthorize("hasAnyAuthority('ROLE_SYSTEMADMIN')")
+    @PostMapping("{id}/erase")
+    public EraseCandidateResponse eraseCandidate(
+        @PathVariable("id") long id,
+        @RequestBody EraseCandidateRequest request
+    ) {
+        Candidate candidate = candidateErasureService.eraseCandidate(id, request);
+        return EraseCandidateResponse.fromCandidate(candidate);
+    }
 }

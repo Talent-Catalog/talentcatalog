@@ -1,16 +1,16 @@
 /*
- * Copyright (c) 2024 Talent Catalog.
+ * Copyright (c) 2026 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
- * the terms of the GNU Affero General Public License as published by the Free
+ * the terms of the GNU General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or any later version.
  *
  * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
  * for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
+ * You should have received a copy of the GNU General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
@@ -22,6 +22,7 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.lang.NonNull;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
+import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.resource.PathResourceResolver;
 import org.tctalent.server.logging.LogBuilder;
@@ -53,11 +54,7 @@ public class WebConfiguration implements WebMvcConfigurer {
     @Override
     public void addResourceHandlers(@NonNull ResourceHandlerRegistry registry) {
 
-        UIBundle[] uiBundles = new UIBundle[]{
-                new UIBundle("candidate-portal", "candidate-portal"),
-                new UIBundle("admin-portal", "admin-portal"),
-                new UIBundle("public-portal", "public-portal")
-        };
+        UIBundle[] uiBundles = getUiBundles();
 
         for (UIBundle uiBundle : uiBundles) {
 
@@ -82,17 +79,49 @@ public class WebConfiguration implements WebMvcConfigurer {
                     .addResourceLocations("classpath:/ui-bundle/" + uiBundle.module + "/assets/")
                     .resourceChain(true);
 
+            /*
+             * Serve index.html for each portal's SPA routes.
+             *
+             * IMPORTANT: The resource location must point to the bundle DIRECTORY, not index.html itself.
+             * Spring Framework 6.x appends a trailing slash to static resource locations; when we pointed
+             * at ".../index.html", Spring rewrote it to ".../index.html/", which does not exist and causes
+             * NoResourceFoundException for routes like /admin-portal and /admin-portal/login.
+             */
             registry.addResourceHandler("/" + uiBundle.url, "/" + uiBundle.url + "/", "/" + uiBundle.url + "/**")
                     .setCachePeriod(0)
-                    .addResourceLocations("classpath:/ui-bundle/" + uiBundle.module + "/index.html")
+                    .addResourceLocations("classpath:/ui-bundle/" + uiBundle.module + "/")
                     .resourceChain(true)
                     .addResolver(new PathResourceResolver() {
                         protected Resource getResource(
                             @NonNull String resourcePath, @NonNull Resource location) {
-                            return location.exists() && location.isReadable() ? location : null;
+                            Resource index = new ClassPathResource("/ui-bundle/" + uiBundle.module + "/index.html");
+                            return index.exists() && index.isReadable() ? index : null;
                         }
                     });
         }
+    }
+
+    /*
+     * Spring 6 does not invoke our SPA resolver for empty portal paths consistently.
+     * Forwarding bare portal URLs to index.html keeps documented entry URLs like
+     * /admin-portal working without relying on removed trailing-slash matching behavior.
+     */
+    @Override
+    public void addViewControllers(@NonNull ViewControllerRegistry registry) {
+        for (UIBundle uiBundle : getUiBundles()) {
+            registry.addViewController("/" + uiBundle.url)
+                .setViewName("forward:/" + uiBundle.url + "/index.html");
+            registry.addViewController("/" + uiBundle.url + "/")
+                .setViewName("forward:/" + uiBundle.url + "/index.html");
+        }
+    }
+
+    private UIBundle[] getUiBundles() {
+        return new UIBundle[]{
+            new UIBundle("candidate-portal", "candidate-portal"),
+            new UIBundle("admin-portal", "admin-portal"),
+            new UIBundle("public-portal", "public-portal")
+        };
     }
 
 

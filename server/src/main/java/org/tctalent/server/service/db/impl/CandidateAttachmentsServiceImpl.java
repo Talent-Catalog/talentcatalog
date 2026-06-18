@@ -1,16 +1,16 @@
 /*
- * Copyright (c) 2024 Talent Catalog.
+ * Copyright (c) 2026 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
- * the terms of the GNU Affero General Public License as published by the Free
+ * the terms of the GNU General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or any later version.
  *
  * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
  * for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
+ * You should have received a copy of the GNU General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
@@ -142,31 +142,30 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
         // Create a record of the attachment
         CandidateAttachment attachment = new CandidateAttachment();
         storedFileMapper.updateCandidateAttachment(attachment, request);
-
+        attachment.setFolder(request.getFolder());
         //Add extras
         attachment.setActive(true);
         attachment.setCandidate(candidate);
         attachment.setMigrated(false);
-        attachment.setAuditFields(user);
-        
+
         //Add a publicId
         String publicId = publicIDService.generatePublicID();
         attachment.setPublicId(publicId);
 
         AttachmentType attachmentType = request.getType();
         if (attachmentType == null) {
-            throw new InvalidRequestException("Missing attachment type");       
+            throw new InvalidRequestException("Missing attachment type");
         }
         attachment.setType(attachmentType);
         switch (attachmentType) {
             case googlefile:
                 attachment.setUrl(request.getUrl());
                 attachment.setTextExtract(request.getTextExtract());
-                break; 
+                break;
             case grnfile:
                 //Compute url.
                 attachment.setUrl(fileUrlService.createApplicationUrl(attachment));
-                
+
                 if (attachment.isCv()) {
                     String text = extractTextFromAttachment(attachment);
                     attachment.setTextExtract(text);
@@ -177,17 +176,16 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
                 break;
             case file:
                 throw new InvalidRequestException("Creation of S3 file is no longer supported. Please upload to Google Drive instead.");
-                    
+
         }
 
         //Save the updated attachment
         attachment = candidateAttachmentRepository.save(attachment);
 
-        //Now update candidate audit fields and potentially update candidate text to take
+        //Now potentially update candidate text to take
         //account of any cv text in the attachment we just updated above.
-        candidate.setAuditFields(user);
         boolean updateCandidateText = UploadType.cv.equals(request.getUploadType());
-        candidateService.save(candidate, true, updateCandidateText);
+        candidateService.save(candidate, updateCandidateText);
 
         return attachment;
     }
@@ -196,10 +194,10 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
         if (!AttachmentType.grnfile.equals(attachment.getType())) {
             throw new UnsupportedOperationException("extractTextFromAttachment is not supported");
         }
-        
+
         try (InputStream inputStream = storageService.openStream(attachment.getStorageKey())) {
             return TextExtractHelper.getTextExtractFromStream(inputStream, attachment.getFileType());
-        } 
+        }
     }
 
     // Removed @Transactional to fix logged error ObjectDeletedException. There is a risk that now deleting from
@@ -243,9 +241,7 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
             }
         }
 
-        // Update the candidate audit fields
-        candidate.setAuditFields(user);
-        candidateService.save(candidate, true);
+        candidateService.save(candidate);
 
         //Try and delete associated file on file system
         AttachmentType attachmentType = candidateAttachment.getType();
@@ -359,13 +355,13 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
             // Update the name
             if (!candidateAttachment.getName().equals(request.getName())) {
                 candidateAttachment.setName(request.getName());
-                
+
                 //Note that for GRN files we don't rename the uploaded file because the file name is
                 //not stored with the uploaded file.
                 //File names are fetched from the CandidateAttachment info and are added to the
                 //final generated url used to fetch the file from S3 storage.
                 //See the code in DefaultFileUrlService.createObjectUrl.
-                
+
                 if (attachmentType == AttachmentType.googlefile) {
                     //For Google files we also rename the uploaded file
                     GoogleFileSystemFile fsf = new GoogleFileSystemFile(candidateAttachment.getUrl());
@@ -385,13 +381,10 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
             if (candidateAttachment.getType().equals(AttachmentType.link)) {
                 candidateAttachment.setUrl(request.getUrl());
             }
-            candidateAttachment.setAuditFields(user);
             candidateAttachment = candidateAttachmentRepository.save(candidateAttachment);
 
-            // UPDATE THE CANDIDATE AUDIT FIELDS
             Candidate candidate = candidateAttachment.getCandidate();
-            candidate.setAuditFields(user);
-            candidateService.save(candidate, true, extractedCvTextChanged);
+            candidateService.save(candidate, extractedCvTextChanged);
         } else {
             throw new UnauthorisedActionException("update");
         }
@@ -428,7 +421,7 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
             .build();
 
         StoredFileInfo storedFileInfo = storageService.store(req);
-        
+
         //Add in extra info
         storedFileInfo.setActive(true);
         storedFileInfo.setUploadType(uploadType);
@@ -438,6 +431,7 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
         CreateCandidateAttachmentRequest attachmentRequest = new CreateCandidateAttachmentRequest();
         attachmentRequest.setType(AttachmentType.grnfile);
         attachmentRequest.setCandidateId(candidate.getId());
+        attachmentRequest.setFolder(subfolderName);
         storedFileMapper.updateCreateCandidateAttachmentRequest(attachmentRequest, storedFileInfo);
 
         return attachmentRequest;
@@ -521,6 +515,7 @@ public class CandidateAttachmentsServiceImpl implements CandidateAttachmentServi
         req.setFileType(fileType);
         req.setUrl(uploadedFile.getUrl());
         req.setUploadType(uploadType);
+        req.setFolder(subfolderName);
         if(StringUtils.hasText(textExtract)) {
             req.setTextExtract(textExtract);
         }

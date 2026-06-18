@@ -1,16 +1,16 @@
 /*
- * Copyright (c) 2024 Talent Catalog.
+ * Copyright (c) 2026 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
- * the terms of the GNU Affero General Public License as published by the Free
+ * the terms of the GNU General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or any later version.
  *
  * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
  * for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
+ * You should have received a copy of the GNU General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
@@ -55,9 +55,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -118,7 +120,6 @@ import org.tctalent.server.service.db.JobService;
 import org.tctalent.server.service.db.LanguageService;
 import org.tctalent.server.service.db.NotificationService;
 import org.tctalent.server.service.db.PartnerService;
-import org.tctalent.server.service.db.PopulateElasticsearchService;
 import org.tctalent.server.service.db.SalesforceService;
 import org.tctalent.server.service.db.SavedListService;
 import org.tctalent.server.service.db.SavedSearchService;
@@ -131,6 +132,7 @@ import org.tctalent.server.util.filesystem.GoogleFileSystemFolder;
 
 @RestController
 @RequestMapping("/api/admin/system")
+@PreAuthorize("hasRole('SYSTEMADMIN')")
 @Slf4j
 public class SystemAdminApi {
     final static String DATE_FORMAT = "dd-MM-yyyy";
@@ -150,7 +152,6 @@ public class SystemAdminApi {
     private final JobService jobService;
     private final LanguageService languageService;
     private final NotificationService notificationService;
-    private final PopulateElasticsearchService populateElasticsearchService;
     private final SalesforceService salesforceService;
     private final SalesforceConfig salesforceConfig;
     private final SavedListRepository savedListRepository;
@@ -220,7 +221,6 @@ public class SystemAdminApi {
         FileSystemService fileSystemService,
         JobService jobService, LanguageService languageService,
         NotificationService notificationService,
-        PopulateElasticsearchService populateElasticsearchService,
         SalesforceService salesforceService,
         SalesforceConfig salesforceConfig,
         SalesforceJobOppRepository salesforceJobOppRepository,
@@ -257,7 +257,6 @@ public class SystemAdminApi {
         this.jobService = jobService;
         this.languageService = languageService;
         this.notificationService = notificationService;
-        this.populateElasticsearchService = populateElasticsearchService;
         this.salesforceService = salesforceService;
         this.salesforceConfig = salesforceConfig;
         this.savedListRepository = savedListRepository;
@@ -295,7 +294,7 @@ public class SystemAdminApi {
      * @param destinationPrefix Optional destination prefix/folder. Defaults to {@code translations}.
      * @return Status map including copy mode and number of copied objects
      */
-    @GetMapping("migrate-translations")
+    @PostMapping("migrate-translations")
     public Map<String, Object> migrateTranslations(
         @RequestParam("sourceBucket") String sourceBucket,
         @RequestParam("destinationBucket") String destinationBucket,
@@ -345,7 +344,7 @@ public class SystemAdminApi {
      * Clears the firstDpaSeenDate field for the partner with the given ID.
      * @param partnerId The ID of the partner
      */
-    @GetMapping("partner/clear-first-dpa-seen/{partnerId}")
+    @PostMapping("partner/clear-first-dpa-seen/{partnerId}")
     public void clearFirstDpaSeen(@PathVariable("partnerId") Long partnerId) {
         // Fetch the partner by ID
         PartnerImpl partner = (PartnerImpl) partnerService.getPartner(partnerId);
@@ -357,20 +356,20 @@ public class SystemAdminApi {
         partnerRepository.save(partner);
     }
 
-    @GetMapping("set_candidate_text/cpu-{cpu}")
+    @PostMapping("set_candidate_text/cpu-{cpu}")
     public ResponseEntity<String> setCandidateText(
         @PathVariable("cpu") int cpu) throws Exception {
         return setCandidateTextCommon("", 0, cpu);
     }
 
-    @GetMapping("set_candidate_text/search-{sourceId}-cpu-{cpu}")
+    @PostMapping("set_candidate_text/search-{sourceId}-cpu-{cpu}")
     public ResponseEntity<String> setCandidateTextBySearch(
         @PathVariable("sourceId") int sourceId,
         @PathVariable("cpu") int cpu) throws Exception {
         return setCandidateTextCommon("search", sourceId, cpu);
     }
 
-    @GetMapping("set_candidate_text/list-{sourceId}-cpu-{cpu}")
+    @PostMapping("set_candidate_text/list-{sourceId}-cpu-{cpu}")
     public ResponseEntity<String> setCandidateTextByList(
         @PathVariable("sourceId") int sourceId,
         @PathVariable("cpu") int cpu) throws Exception {
@@ -416,7 +415,7 @@ public class SystemAdminApi {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("set_public_ids")
+    @PostMapping("set_public_ids")
     public void setPublicIds() {
         backgroundProcessingService.setCandidatePublicIds();
         backgroundProcessingService.setPartnerPublicIds();
@@ -424,19 +423,19 @@ public class SystemAdminApi {
         backgroundProcessingService.setSavedSearchPublicIds();
     }
 
-    @GetMapping("run_api_migration")
+    @PostMapping("run_api_migration")
     public ResponseEntity<String> runApiMigration() {
         String response = tcApiService.runApiMigration();
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("run_api_migration/list/{listId}")
+    @PostMapping("run_api_migration/list/{listId}")
     public ResponseEntity<String> runApiMigrationByListId(@PathVariable("listId") long listId) {
         String response = tcApiService.runApiMigrationByListId(listId);
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("run_api_migration/{name}")
+    @PostMapping("run_api_migration/{name}")
     public ResponseEntity<String> runApiMigration(@PathVariable("name") String name) {
         if (name == null || name.isBlank()) {
             return ResponseEntity.badRequest().body("Migration name cannot be null or empty");
@@ -455,19 +454,19 @@ public class SystemAdminApi {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("stop_api_migration/{id}")
+    @PostMapping("stop_api_migration/{id}")
     public ResponseEntity<String> stopApiMigration(@PathVariable("id") long id) {
         String response = tcApiService.stopApiMigration(id);
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("restart_api_migration/{id}")
+    @PostMapping("restart_api_migration/{id}")
     public ResponseEntity<String> restartApiMigration(@PathVariable("id") long id) {
         String response = tcApiService.restartApiMigration(id);
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("fix_null_case_sfids")
+    @PostMapping("fix_null_case_sfids")
     public void fixNullCaseSfids() {
         List<CandidateOpportunity> opps = candidateOpportunityRepository.findAllBySfIdIsNull();
         for (CandidateOpportunity opp : opps) {
@@ -518,7 +517,7 @@ public class SystemAdminApi {
      * @param birthdate The birthdate of the certificate holder in 'yyyy-MM-dd' format.
      * @return A response containing the score verification details.
      */
-    @GetMapping("duolingo/verify-score")
+    @PostMapping("duolingo/verify-score")
     public DuolingoVerifyScoreResponse verifyScore(
         @RequestParam String certificateId,
         @RequestParam String birthdate) {
@@ -532,7 +531,7 @@ public class SystemAdminApi {
      * @return A ResponseEntity containing the details of the newly assigned coupon.
      * @throws NoSuchObjectException If the candidate or available coupons are not found.
      */
-    @GetMapping("reassign-duolingo-coupon/{candidateNumber}")
+    @PostMapping("reassign-duolingo-coupon/{candidateNumber}")
     public ResponseEntity<DuolingoCouponResponse> reassignDuolingoCoupon(@PathVariable("candidateNumber") String candidateNumber) {
         try {
             User user = authService.getLoggedInUser()
@@ -549,7 +548,7 @@ public class SystemAdminApi {
         }
     }
 
-    @GetMapping("flush_user_cache")
+    @PostMapping("flush_user_cache")
     public void flushUserCache() {
         cacheService.flushUserCache();
         LogBuilder.builder(log)
@@ -559,7 +558,7 @@ public class SystemAdminApi {
             .logInfo();
     }
 
-    @GetMapping("notifyOfChatsWithNewUnreadPosts")
+    @PostMapping("notifyOfChatsWithNewUnreadPosts")
     public void notifyOfNewChatPosts() {
         notificationService.notifyUsersOfChatsWithNewUnreadPosts();
     }
@@ -567,13 +566,13 @@ public class SystemAdminApi {
     /**
      * This loads the last active stages of all cases from Salesforce.
      */
-    @GetMapping("load_case_last_active_stages")
+    @PostMapping("load_case_last_active_stages")
     public void loadCandidateOpportunityLastActiveStages() {
         candidateOpportunityService.loadCandidateOpportunityLastActiveStages();
     }
 
 
-    @GetMapping("create_employer_for_all_jobs")
+    @PostMapping("create_employer_for_all_jobs")
     public void createEmployerForAllJobs() {
         jobService.createEmployerForAllJobs();
     }
@@ -582,12 +581,12 @@ public class SystemAdminApi {
      * This loads ALL historical data of jobs which had candidates - creating jobs and cases
      * on the TC as needed.
      */
-    @GetMapping("load_job_opps_and_candidate_opps")
+    @PostMapping("load_job_opps_and_candidate_opps")
     public void loadJobOppsAndCandidateOpps() {
         jobService.loadJobOppsAndCandidateOpps();
     }
 
-    @GetMapping("close_candidate_ops_for_closed_jobs")
+    @PostMapping("close_candidate_ops_for_closed_jobs")
     public void closeCandidateOpportunitiesForClosedJobs() {
         //Get all closed job opps
         SearchJobRequest request = new SearchJobRequest();
@@ -648,7 +647,7 @@ public class SystemAdminApi {
 //        candidateOpportunityService.loadCandidateOpportunities(jobIds);
 //    }
 
-    @GetMapping("sf-sync-open-jobs")
+    @PostMapping("sf-sync-open-jobs")
     ResponseEntity<?> sfSyncOpenJobs() {
       try {
         LogBuilder.builder(log)
@@ -675,7 +674,7 @@ public class SystemAdminApi {
    * equivalents.
    * @return ResponseEntity indicating success or failure
    */
-  @GetMapping("sf-sync-open-cases")
+  @PostMapping("sf-sync-open-cases")
   ResponseEntity<?> sfSyncOpenCases() {
     try {
       LogBuilder.builder(log)
@@ -703,7 +702,7 @@ public class SystemAdminApi {
      * @param number Candidate number
      * @throws IOException
      */
-    @GetMapping("move-candidate-drive/{number}")
+    @PostMapping("move-candidate-drive/{number}")
     public void moveCandidate(@PathVariable("number") String number) throws IOException {
         doMoveCandidate(number);
     }
@@ -715,7 +714,7 @@ public class SystemAdminApi {
      * continue processing on server.
      * @param id List of candidates to be processed.
      */
-    @GetMapping("move-candidates-drive/{listid}")
+    @PostMapping("move-candidates-drive/{listid}")
     public void moveCandidates(@PathVariable("listid") long id) {
         SavedList savedList = savedListService.get(id);
 
@@ -1145,7 +1144,7 @@ public class SystemAdminApi {
         return "Done";
     }
 
-    @GetMapping("updatesflinks")
+    @PostMapping("updatesflinks")
     public String updateCandidateSalesforceLinks() throws GeneralSecurityException {
         LogBuilder.builder(log)
             .user(authService.getLoggedInUser())
@@ -1194,7 +1193,7 @@ public class SystemAdminApi {
         return "done";
     }
 
-    @GetMapping("sfcontactsupdate")
+    @PostMapping("sfcontactsupdate")
     public String updateContactsMatchingCondition(@RequestParam String q) throws GeneralSecurityException {
         LogBuilder.builder(log)
             .user(authService.getLoggedInUser())
@@ -1335,7 +1334,7 @@ public class SystemAdminApi {
         return "Done. Now run esload to update elasticsearch.";
     }
 
-    @GetMapping("google")
+    @PostMapping("google")
     public String migrateGoogleDriveFolders() throws IOException, GeneralSecurityException {
         LogBuilder.builder(log)
             .user(authService.getLoggedInUser())
@@ -1421,7 +1420,7 @@ public class SystemAdminApi {
         }
     }
 
-    @GetMapping("dbcopy")
+    @PostMapping("dbcopy")
     public String doDBCopy() throws Exception {
         dataSharingService.dbCopy();
         return "done";
@@ -1506,27 +1505,6 @@ public class SystemAdminApi {
         return "done";
     }
 
-    /**
-     * @see PopulateElasticsearchService#populateElasticCandidates(boolean, boolean, Integer, Integer)
-     */
-    @GetMapping("esload")
-    public void loadElasticsearch(
-        @RequestParam(value = "reset", required = false) String reset,
-        @RequestParam(value = "frompage", required = false) Integer fromPage,
-        @RequestParam(value = "topage", required = false) Integer toPage) {
-
-        boolean deleteExisting = reset != null;
-
-        boolean createElastic = deleteExisting;
-
-        populateElasticsearchService.populateElasticCandidates(
-            deleteExisting, createElastic, fromPage, toPage);
-    }
-
-//    @GetMapping("es-to-db/unhcr-status")
-    public void migrateUnhcrStatus() {
-        populateElasticsearchService.populateCandidateFromElastic();
-    }
 
 //    @GetMapping("migrate/survey")
     public String migrateSurvey() {
@@ -2947,7 +2925,7 @@ public class SystemAdminApi {
         this.targetPwd = targetPwd;
     }
 
-    @GetMapping("delete-job/{jobId}")
+    @PostMapping("delete-job/{jobId}")
     @Transactional
     public ResponseEntity<Void> deleteJob(@PathVariable("jobId") Long jobId) {
         try {
@@ -3035,7 +3013,7 @@ public class SystemAdminApi {
      * @param partnerId id of the partner org to which the candidates will be reassigned
      */
     @Transactional
-    @GetMapping("reassign-candidates/{candidateSource}-{sourceId}-to-partner-{partnerId}")
+    @PostMapping("reassign-candidates/{candidateSource}-{sourceId}-to-partner-{partnerId}")
     public ResponseEntity<?> reassignCandidates(
         @PathVariable("candidateSource") String candidateSource,
         @PathVariable("sourceId") int sourceId,
@@ -3114,7 +3092,7 @@ public class SystemAdminApi {
         }
     }
 
-    @GetMapping("processPotentialDuplicateCandidates")
+    @PostMapping("processPotentialDuplicateCandidates")
     ResponseEntity<?> processPotentialDuplicateCandidates() {
         try {
             this.backgroundProcessingService.processPotentialDuplicateCandidates();
@@ -3140,7 +3118,7 @@ public class SystemAdminApi {
     /**
      * Cancels the candidate's previous coupon assignment and makes a new one.
      */
-    @GetMapping("{candidateNumber}/reassign-linkedin-coupon")
+    @PostMapping("{candidateNumber}/reassign-linkedin-coupon")
     ResponseEntity<?> reassignLinkedinCoupon(@PathVariable("candidateNumber") String candidateNumber) {
         try {
             linkedInService.reassignForCandidate(candidateNumber, userService.getLoggedInUser());

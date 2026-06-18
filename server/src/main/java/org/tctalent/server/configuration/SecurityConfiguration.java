@@ -1,23 +1,22 @@
 /*
- * Copyright (c) 2024 Talent Catalog.
+ * Copyright (c) 2026 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
- * the terms of the GNU Affero General Public License as published by the Free
+ * the terms of the GNU General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or any later version.
  *
  * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
  * for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
+ * You should have received a copy of the GNU General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
 package org.tctalent.server.configuration;
 
 import static org.springframework.security.config.Customizer.withDefaults;
-import static org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -40,7 +39,6 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -120,13 +118,11 @@ public class SecurityConfiguration {
             //below.
             .cors(withDefaults())
             .csrf(CsrfConfigurer::disable)
-            .exceptionHandling()
-                .authenticationEntryPoint(unauthorizedHandler)
-                .and()
-            .sessionManagement()
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                .and()
-            .authorizeRequests()
+            .exceptionHandling(exception ->
+                exception.authenticationEntryPoint(unauthorizedHandler))
+            .sessionManagement(session ->
+                session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .authorizeHttpRequests(authorize -> authorize
                 .requestMatchers("/backend/jobseeker").permitAll()
                 .requestMatchers("/api/portal/auth").permitAll()
                 .requestMatchers("/api/portal/auth/**").permitAll()
@@ -137,6 +133,7 @@ public class SecurityConfiguration {
                 .requestMatchers("/api/portal/language/system/**").permitAll()
                 .requestMatchers("/api/portal/language/translations/**").permitAll()
                 .requestMatchers("/api/portal/**").hasAnyRole("USER")
+                .requestMatchers("/api/chatbot/**").hasAnyRole("USER")
                 .requestMatchers("/api/admin/auth").permitAll()
                 .requestMatchers("/api/admin/auth/**").permitAll()
                 .requestMatchers("/api/admin/branding").permitAll()
@@ -148,18 +145,26 @@ public class SecurityConfiguration {
                 .requestMatchers("/").permitAll()
                 .requestMatchers("/files/**").permitAll()
                 .requestMatchers("/published/**").permitAll()
+                .requestMatchers("/admin-portal", "/admin-portal/**").permitAll()
+                .requestMatchers("/candidate-portal", "/candidate-portal/**").permitAll()
+                .requestMatchers("/public-portal", "/public-portal/**").permitAll()
+                .requestMatchers("/favicon.ico").permitAll()
+                .requestMatchers("/actuator/health").permitAll()
+                .requestMatchers("/api/public/**").permitAll()
 
                 .requestMatchers("/websocket","/websocket/**").permitAll()
                 .requestMatchers("/app/**","/app/**").permitAll()
                 .requestMatchers("/topic", "/topic/**").permitAll()
+                .requestMatchers("/error", "/error/**").permitAll()
+                .requestMatchers("/jobchat", "/jobchat/**").permitAll()
                 .requestMatchers("/status**", "/status/**").permitAll()
 
 
                 // DELETE: DELETE SAVE SEARCHES
-                .requestMatchers(HttpMethod.DELETE, "/api/admin/saved-search/*").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
+                .requestMatchers(HttpMethod.DELETE, "/api/admin/saved-search/*").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "RESTRICTED")
 
                 // DELETE: DELETE LIST
-                .requestMatchers(HttpMethod.DELETE, "/api/admin/saved-list/*").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
+                .requestMatchers(HttpMethod.DELETE, "/api/admin/saved-list/*").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "RESTRICTED")
 
                 // DELETE: DELETE ATTACHMENT
                 .requestMatchers(HttpMethod.DELETE, "/api/admin/candidate-attachment/*").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED")
@@ -196,7 +201,7 @@ public class SecurityConfiguration {
 
                 // ADMIN ONLY RESTRICTIONS
                     // All OTHER DELETE end points
-                .requestMatchers(antMatcher(HttpMethod.DELETE, "/api/admin/**/*")).hasAnyRole("SYSTEMADMIN", "ADMIN")
+                .requestMatchers(HttpMethod.DELETE, "/api/admin/**").hasAnyRole("SYSTEMADMIN", "ADMIN")
                     // Migrate database
                 .requestMatchers("/api/admin/system/migrate").hasAnyRole("SYSTEMADMIN", "ADMIN")
 
@@ -222,107 +227,109 @@ public class SecurityConfiguration {
                         "/api/admin/education-major").hasAnyRole("SYSTEMADMIN", "ADMIN")
 
                 // CREATE/UPDATE USERS
-                .requestMatchers(HttpMethod.PUT, "/api/admin/user/*").hasAnyRole("SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "READONLY")
-                .requestMatchers(HttpMethod.POST, "/api/admin/user/*").hasAnyRole("SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "READONLY")
+                .requestMatchers(HttpMethod.PUT, "/api/admin/user/*").hasAnyRole("SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "RESTRICTED")
+                .requestMatchers(HttpMethod.POST, "/api/admin/user/*").hasAnyRole("SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "RESTRICTED")
 
                 // SEE CANDIDATE FILE ATTACHMENTS. ADMIN/SOURCE PARTNER ADMIN ALLOWED. READ ONLY has access BUT has the data restricted in the DTO based on role.
-                .requestMatchers(HttpMethod.POST, "/api/admin/candidate-attachment/search").hasAnyRole("SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "READONLY")
+                .requestMatchers(HttpMethod.POST, "/api/admin/candidate-attachment/search").hasAnyRole("SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "RESTRICTED")
 
                 // POST: REQUEST INFOGRAPHICS
-                .requestMatchers(HttpMethod.POST, "/api/admin/candidate/stat/all").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
+                .requestMatchers(HttpMethod.POST, "/api/admin/candidate/stat/all").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "RESTRICTED")
 
                 // POST: REQUEST PRESET
-                .requestMatchers(HttpMethod.POST, "/api/admin/preset/*/guest-token").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
+                .requestMatchers(HttpMethod.POST, "/api/admin/preset/*/guest-token").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "RESTRICTED")
 
                 /*
                  * CHECKING CHATS
                  */
-                .requestMatchers(HttpMethod.POST, "/api/admin/candidate/check-unread-chats").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
-                .requestMatchers(HttpMethod.POST, "/api/admin/opp/check-unread-chats").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
-                .requestMatchers(HttpMethod.POST, "/api/admin/job/check-unread-chats").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
+                .requestMatchers(HttpMethod.POST, "/api/admin/candidate/check-unread-chats").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "RESTRICTED")
+                .requestMatchers(HttpMethod.POST, "/api/admin/opp/check-unread-chats").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "RESTRICTED")
+                .requestMatchers(HttpMethod.POST, "/api/admin/job/check-unread-chats").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "RESTRICTED")
 
                 /*
                  * SAVED SEARCH ENDPOINTS
                 */
                 // POST: CREATE SAVED SEARCHES
-                .requestMatchers(HttpMethod.POST, "/api/admin/saved-search").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
+                .requestMatchers(HttpMethod.POST, "/api/admin/saved-search").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "RESTRICTED")
 
                 // PUT: UPDATE SAVED SEARCHES
-                .requestMatchers(HttpMethod.PUT, "/api/admin/saved-search/*").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
+                .requestMatchers(HttpMethod.PUT, "/api/admin/saved-search/*").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "RESTRICTED")
 
                 // PUT: UPDATE SAVED SEARCH DESCRIPTION
-                .requestMatchers(HttpMethod.PUT, "/api/admin/saved-search/description/*").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
+                .requestMatchers(HttpMethod.PUT, "/api/admin/saved-search/description/*").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "RESTRICTED")
 
                 // PUT: UPDATE CONTEXT NOTES
-                .requestMatchers(HttpMethod.PUT, "/api/admin/saved-search/context/*").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
+                .requestMatchers(HttpMethod.PUT, "/api/admin/saved-search/context/*").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "RESTRICTED")
 
                 // GET: LOAD SAVE SEARCHES
-                .requestMatchers(HttpMethod.GET, "/api/admin/saved-search/*/load").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
+                .requestMatchers(HttpMethod.GET, "/api/admin/saved-search/*/load").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "RESTRICTED")
 
                 // PUT: SELECT CANDIDATE SAVED SEARCHES
-                .requestMatchers(HttpMethod.PUT, "/api/admin/saved-search/select-candidate/*").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
+                .requestMatchers(HttpMethod.PUT, "/api/admin/saved-search/select-candidate/*").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "RESTRICTED")
 
                 // GET: SELECTION COUNT SAVED SEARCHES
-                .requestMatchers(HttpMethod.GET, "/api/admin/saved-search/get-selection-count/*").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
+                .requestMatchers(HttpMethod.GET, "/api/admin/saved-search/get-selection-count/*").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "RESTRICTED")
 
                 // PUT: SAVE SELECTION SAVED SEARCHES
-                .requestMatchers(HttpMethod.PUT, "/api/admin/saved-search/save-selection/*").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
+                .requestMatchers(HttpMethod.PUT, "/api/admin/saved-search/save-selection/*").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "RESTRICTED")
 
                 // PUT: UPDATE STATUSES
                 .requestMatchers(HttpMethod.PUT, "/api/admin/saved-search/update-selected-statuses/*").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED")
 
                 // PUT: CLEAR SELECTION SAVED SEARCHES
-                .requestMatchers(HttpMethod.PUT, "/api/admin/saved-search/clear-selection/*").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
+                .requestMatchers(HttpMethod.PUT, "/api/admin/saved-search/clear-selection/*").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "RESTRICTED")
 
                 // PUT: SELECT COLUMNS SAVED SEARCHES
-                .requestMatchers(HttpMethod.PUT, "/api/admin/saved-search/displayed-fields/*").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
+                .requestMatchers(HttpMethod.PUT, "/api/admin/saved-search/displayed-fields/*").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "RESTRICTED")
 
                 // POST: EXPORT SAVE SELECTION SAVED SEARCHES
-                .requestMatchers(HttpMethod.POST, "/api/admin/saved-search-candidate/*/export/csv").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
+                .requestMatchers(HttpMethod.POST, "/api/admin/saved-search-candidate/*/export/csv").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "RESTRICTED")
 
                 /*
                  * SEARCH ENDPOINTS
                  */
                 // POST: ALL SEARCHES
-                .requestMatchers(new AntPathRequestMatcher("/api/admin/**/search",HttpMethod.POST.name())).hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
-
-                // POST: ADD TO WATCHER
-                .requestMatchers(new AntPathRequestMatcher("/api/admin/saved-search/watcher-add/*",HttpMethod.PUT.name())).hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
-
-                // POST: REMOVE FROM WATCHER
-                .requestMatchers(new AntPathRequestMatcher("/api/admin/saved-search/watcher-remove/*",HttpMethod.PUT.name())).hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
+                .requestMatchers(HttpMethod.POST, "/api/admin/*/search").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "RESTRICTED")
+                .requestMatchers(HttpMethod.POST, "/api/admin/*/*/search").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "RESTRICTED")
 
                 // POST: ALL PAGED SEARCHES
-                .requestMatchers(new AntPathRequestMatcher("/api/admin/**/search-paged", HttpMethod.POST.name())).hasAnyRole("SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
+                .requestMatchers(HttpMethod.POST, "/api/admin/*/search-paged").hasAnyRole("SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "RESTRICTED")
+                .requestMatchers(HttpMethod.POST, "/api/admin/*/*/search-paged").hasAnyRole("SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "RESTRICTED")
+
+                // POST: ADD TO WATCHER
+                .requestMatchers(HttpMethod.PUT, "/api/admin/saved-search/watcher-add/*").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "RESTRICTED")
+
+                // POST: REMOVE FROM WATCHER
+                .requestMatchers(HttpMethod.PUT, "/api/admin/saved-search/watcher-remove/*").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "RESTRICTED")
 
                 // POST: SEARCH BY NUMBER/NAME
-                .requestMatchers(HttpMethod.POST, "/api/admin/candidate/findbynumberorname").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
+                .requestMatchers(HttpMethod.POST, "/api/admin/candidate/findbynumberorname").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "RESTRICTED")
 
                 // POST: SEARCH BY EMAIL
-                .requestMatchers(HttpMethod.POST, "/api/admin/candidate/findbyemail").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
+                .requestMatchers(HttpMethod.POST, "/api/admin/candidate/findbyemail").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "RESTRICTED")
 
                 // POST: SEARCH BY PHONE
-                .requestMatchers(HttpMethod.POST, "/api/admin/candidate/findbyphone").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
+                .requestMatchers(HttpMethod.POST, "/api/admin/candidate/findbyphone").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "RESTRICTED")
 
                 // POST: SEARCH BY EMAIL/PHONE/WHATSAPP
-                .requestMatchers(HttpMethod.POST, "/api/admin/candidate/findbyemailphoneorwhatsapp").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
+                .requestMatchers(HttpMethod.POST, "/api/admin/candidate/findbyemailphoneorwhatsapp").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "RESTRICTED")
 
                 // POST: SEARCH BY EXTERNAL ID
-                .requestMatchers(HttpMethod.POST, "/api/admin/candidate/findbyexternalid").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
+                .requestMatchers(HttpMethod.POST, "/api/admin/candidate/findbyexternalid").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "RESTRICTED")
 
                 // POST: FETCH CANDIDATES WITH CHATS
-                .requestMatchers(HttpMethod.POST, "/api/admin/candidate/fetch-candidates-with-chat").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
+                .requestMatchers(HttpMethod.POST, "/api/admin/candidate/fetch-candidates-with-chat").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "RESTRICTED")
 
-                // CHAT - include USER but exclude READONLY
-                .requestMatchers(HttpMethod.GET, "/api/admin/chat/**").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "USER", "READONLY")
-                .requestMatchers(HttpMethod.POST, "/api/admin/chat/get-or-create").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "USER", "READONLY")
+                // CHAT - include USER but exclude RESTRICTED
+                .requestMatchers(HttpMethod.GET, "/api/admin/chat/**").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "USER", "RESTRICTED")
+                .requestMatchers(HttpMethod.POST, "/api/admin/chat/get-or-create").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "USER", "RESTRICTED")
                 .requestMatchers(HttpMethod.POST, "/api/admin/chat/**").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "USER")
                 .requestMatchers(HttpMethod.POST, "/api/admin/chat/**").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "USER")
                 .requestMatchers(HttpMethod.PUT, "/api/admin/chat/**").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "USER")
-                .requestMatchers(HttpMethod.GET, "/api/admin/chat-post/**").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "USER", "READONLY")
+                .requestMatchers(HttpMethod.GET, "/api/admin/chat-post/**").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "USER", "RESTRICTED")
                 .requestMatchers(HttpMethod.POST, "/api/admin/chat-post/**").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "USER")
 
-                // CHAT REACTIONS - include USER but exclude READONLY
+                // CHAT REACTIONS - include USER but exclude RESTRICTED
                 .requestMatchers(HttpMethod.POST, "/api/admin/reaction/**").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "USER")
                 .requestMatchers(HttpMethod.PUT, "/api/admin/reaction/**").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "USER")
 
@@ -333,46 +340,46 @@ public class SecurityConfiguration {
                  * LIST ENDPOINTS
                  */
                 // POST: CREATE LIST
-                .requestMatchers(HttpMethod.POST, "/api/admin/saved-list").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
+                .requestMatchers(HttpMethod.POST, "/api/admin/saved-list").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "RESTRICTED")
 
                 // POST: CREATE LIST 2
-                .requestMatchers(HttpMethod.POST, "/api/admin/saved-list-candidate").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
+                .requestMatchers(HttpMethod.POST, "/api/admin/saved-list-candidate").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "RESTRICTED")
 
                 // PUT: MERGE CANDIDATE INTO LIST (ADD BY NAME/NUMBER)
-                .requestMatchers(HttpMethod.PUT, "/api/admin/saved-list-candidate/*/merge").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
+                .requestMatchers(HttpMethod.PUT, "/api/admin/saved-list-candidate/*/merge").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "RESTRICTED")
 
                 // PUT: REMOVE CANDIDATE FROM LIST
-                .requestMatchers(HttpMethod.PUT, "/api/admin/saved-list-candidate/*/remove").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
+                .requestMatchers(HttpMethod.PUT, "/api/admin/saved-list-candidate/*/remove").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "RESTRICTED")
 
                 // PUT: SAVE SELECTION FROM LIST
-                .requestMatchers(HttpMethod.PUT, "/api/admin/saved-list-candidate/*/save-selection").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
+                .requestMatchers(HttpMethod.PUT, "/api/admin/saved-list-candidate/*/save-selection").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "RESTRICTED")
 
                 // PUT: UPDATE SF
-                .requestMatchers(HttpMethod.PUT, "/api/admin/sf/*").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
+                .requestMatchers(HttpMethod.PUT, "/api/admin/sf/*").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "RESTRICTED")
 
                 // PUT: UPDATE SAVED LIST
-                .requestMatchers(HttpMethod.PUT, "/api/admin/saved-list/*").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
+                .requestMatchers(HttpMethod.PUT, "/api/admin/saved-list/*").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "RESTRICTED")
 
                 // PUT: SELECT COLUMNS SAVED LIST
-                .requestMatchers(HttpMethod.PUT, "/api/admin/saved-list/displayed-fields/*").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
+                .requestMatchers(HttpMethod.PUT, "/api/admin/saved-list/displayed-fields/*").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "RESTRICTED")
 
                 // PUT: UPDATE SAVED LIST DESCRIPTION
-                .requestMatchers(HttpMethod.PUT, "/api/admin/saved-list/description/*").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
+                .requestMatchers(HttpMethod.PUT, "/api/admin/saved-list/description/*").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "RESTRICTED")
 
                 // PUT: UPDATE CONTEXT NOTES
-                .requestMatchers(HttpMethod.PUT, "/api/admin/saved-list/context/*").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
+                .requestMatchers(HttpMethod.PUT, "/api/admin/saved-list/context/*").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "RESTRICTED")
 
                 // PUT: COPY LIST
-                .requestMatchers(HttpMethod.PUT, "/api/admin/saved-list/copy/*").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
+                .requestMatchers(HttpMethod.PUT, "/api/admin/saved-list/copy/*").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "RESTRICTED")
 
                 // POST: EXPORT LIST
-                .requestMatchers(HttpMethod.POST, "/api/admin/saved-list-candidate/*/export/csv").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
+                .requestMatchers(HttpMethod.POST, "/api/admin/saved-list-candidate/*/export/csv").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "RESTRICTED")
 
                 // POST: SEARCH LISTS BY IDS
-                .requestMatchers(new AntPathRequestMatcher("/api/admin/saved-list/search-ids",HttpMethod.POST.name())).hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
+                .requestMatchers(HttpMethod.POST, "/api/admin/saved-list/search-ids").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "RESTRICTED")
 
                 // POST: VIEW TRANSLATIONS
-                .requestMatchers(HttpMethod.POST, "/api/admin/translation/*").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
+                .requestMatchers(HttpMethod.POST, "/api/admin/translation/*").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "RESTRICTED")
 
                 // GET: MIGRATE TRANSLATIONS BETWEEN DIFFERENT AWS IDENTITIES
                 .requestMatchers(HttpMethod.GET, "/api/admin/system/migrate-translations").hasRole("SYSTEMADMIN")
@@ -381,7 +388,7 @@ public class SecurityConfiguration {
                  * CANDIDATE INTAKE ENDPOINTS
                  */
                 // GET (EXC. READ ONLY)
-                .requestMatchers(HttpMethod.GET, "/api/admin/candidate/*/intake").hasAnyRole("SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
+                .requestMatchers(HttpMethod.GET, "/api/admin/candidate/*/intake").hasAnyRole("SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "RESTRICTED")
 
                 // PUT (EXC. READ ONLY)
                 .requestMatchers(HttpMethod.PUT, "/api/admin/candidate/*/intake").hasAnyRole("SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED")
@@ -390,30 +397,30 @@ public class SecurityConfiguration {
                  * CANDIDATE ENDPOINTS
                  */
                 // DOWNLOAD CV (admins and read only)
-                .requestMatchers(HttpMethod.POST, "/api/admin/candidate/*/cv.pdf").hasAnyRole("SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "READONLY")
+                .requestMatchers(HttpMethod.POST, "/api/admin/candidate/*/cv.pdf").hasAnyRole("SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "RESTRICTED")
 
                 /*
-                 * READONLY can star and share things
+                 * RESTRICTED can star and share things
                  */
-                .requestMatchers(HttpMethod.PUT, "/api/admin/job/*/starred").hasAnyRole("SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
+                .requestMatchers(HttpMethod.PUT, "/api/admin/job/*/starred").hasAnyRole("SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "RESTRICTED")
 
                 // PUT: SHARE LIST
-                .requestMatchers(HttpMethod.PUT, "/api/admin/saved-list/shared-add/*").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
+                .requestMatchers(HttpMethod.PUT, "/api/admin/saved-list/shared-add/*").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "RESTRICTED")
 
                 // PUT: UNSHARE LIST
-                .requestMatchers(HttpMethod.PUT, "/api/admin/saved-list/shared-remove/*").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
+                .requestMatchers(HttpMethod.PUT, "/api/admin/saved-list/shared-remove/*").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "RESTRICTED")
 
                 // PUT: SHARE SEARCH
-                .requestMatchers(HttpMethod.PUT, "/api/admin/saved-search/shared-add/*").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
+                .requestMatchers(HttpMethod.PUT, "/api/admin/saved-search/shared-add/*").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "RESTRICTED")
 
                 // PUT: UNSHARE SEARCH
-                .requestMatchers(HttpMethod.PUT, "/api/admin/saved-search/shared-remove/*").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
+                .requestMatchers(HttpMethod.PUT, "/api/admin/saved-search/shared-remove/*").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "RESTRICTED")
 
                 /*
                  * JOB INTAKE ENDPOINTS
                  */
                 // GET (EXC. READ ONLY)
-                .requestMatchers(HttpMethod.GET, "/api/admin/job/*/intake").hasAnyRole("SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
+                .requestMatchers(HttpMethod.GET, "/api/admin/job/*/intake").hasAnyRole("SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "RESTRICTED")
 
                 // PUT (EXC. READ ONLY)
                 .requestMatchers(HttpMethod.PUT, "/api/admin/job/*/intake").hasAnyRole("SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED")
@@ -427,9 +434,13 @@ public class SecurityConfiguration {
                 .requestMatchers(HttpMethod.PUT, "/api/admin/**").hasAnyRole("SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED")
 
                     // GET
-                .requestMatchers(HttpMethod.GET, "/api/admin/**").hasAnyRole("SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "READONLY")
+                .requestMatchers(HttpMethod.GET, "/api/admin/**")
+                .hasAnyRole("SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "RESTRICTED")
 
-                .and()
+                //SPRING REST - currently just CandidatePropertyDefinitions (see CandidatePropertyDefinitionRepository).
+                .requestMatchers(HttpMethod.GET, "/api/hal/**").authenticated()
+
+            );
 
         //Commented out below code because it was causing "Too many redirects" error as described below
         //https://stackoverflow.com/questions/42715718/aws-load-balancer-err-too-many-redirects/52598630#52598630
@@ -450,8 +461,6 @@ public class SecurityConfiguration {
 //when running locally.
 //See https://www.lenar.io/force-redirect-http-to-https-in-spring-boot/
 //        .requiresChannel().requestMatchers( r -> r.getHeader("X-Forwarded-Proto") != null).requiresSecure()
-
-        ;
 
         // Add the JWT security filter
         http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);

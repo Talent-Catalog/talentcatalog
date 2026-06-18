@@ -1,16 +1,16 @@
 /*
- * Copyright (c) 2024 Talent Catalog.
+ * Copyright (c) 2026 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
- * the terms of the GNU Affero General Public License as published by the Free
+ * the terms of the GNU General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or any later version.
  *
  * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
  * for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
+ * You should have received a copy of the GNU General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
@@ -942,21 +942,6 @@ class UserCacheEvictionTest {
     // Calling delete all candidate should clear the user cache
     Candidate candidate = foundUser.getCandidate();
     candidateRepository.deleteAll(List.of(candidate));
-
-    // Verify that the cache was cleared
-    verifyCacheIsEmpty();
-  }
-
-  @Test
-  @Transactional
-  @Rollback
-  @DisplayName("clear all candidate text search ids should evict the user cache")
-  void whenClearAllCandidateTextSearchIds_thenCacheShouldBeEvicted() {
-    // Find the user to cache it initially
-    User foundUser = findUserAndVerifyCache("test-candidate", "Talent Beyond Boundaries");
-
-    // Calling clearAllCandidateTextSearchIds should clear the user cache
-    candidateRepository.clearAllCandidateTextSearchIds();
 
     // Verify that the cache was cleared
     verifyCacheIsEmpty();

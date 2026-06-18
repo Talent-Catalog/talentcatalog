@@ -1,16 +1,16 @@
 /*
- * Copyright (c) 2024 Talent Catalog.
+ * Copyright (c) 2026 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
- * the terms of the GNU Affero General Public License as published by the Free
+ * the terms of the GNU General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or any later version.
  *
  * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
  * for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
+ * You should have received a copy of the GNU General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
@@ -184,6 +184,7 @@ const ALL_FIELDS = {
         "LOGIN": null,
         "PRIVACY": null,
         "PROFILE": null,
+        "MY_AGREEMENTS": null,
         "UPLOAD": {
           "FILE": null,
           "PHOTO": null
@@ -552,6 +553,7 @@ const ALL_FIELDS = {
         "TASKS": null,
         "OPPS": null,
         "SERVICES": null,
+        "AGREEMENTS": null,
       },
       "CONTACT": {
         "TITLE": null,
@@ -1000,5 +1002,25 @@ const ALL_FIELDS = {
         "NO-MEMBER": null,
         "NOTHING-TO-DO": null
       }
+  },
+  "AGREEMENTS": {
+    "NONE": null,
+    "ACTIVE": null,
+    "SUPERSEDED": null,
+    "TERMS_VERSION": null,
+    "ACCEPTED_DATE": null,
+    "SUPERSEDED_DATE": null,
+    "BACK": null,
+    "COUNTERPARTY_TYPE": {
+      "MANAGING_SOURCE_PARTNER": null,
+      "DATABASE_PROVIDER": null,
+      "SERVICE_PROVIDER": null
+    },
+    "LABEL": {
+      "OPC_STANDARD_DATA_PROCESSING_AGREEMENT": null,
+      "REFERENCE_SERVICE_TERMS": null,
+      "GRN_CANDIDATE_PRIVACY_POLICY": null,
+      "DEFAULT": null
+    }
   }
 }

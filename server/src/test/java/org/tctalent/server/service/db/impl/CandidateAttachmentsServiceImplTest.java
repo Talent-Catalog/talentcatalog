@@ -1,16 +1,16 @@
 /*
- * Copyright (c) 2025 Talent Catalog.
+ * Copyright (c) 2026 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
- * the terms of the GNU Affero General Public License as published by the Free
+ * the terms of the GNU General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or any later version.
  *
  * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
  * for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
+ * You should have received a copy of the GNU General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
@@ -291,13 +291,12 @@ public class CandidateAttachmentsServiceImplTest {
 
         candidateAttachmentsService.createCandidateAttachment(createRequest);
 
-        verify(candidateService).save(candidate, true,false);
+        verify(candidateService).save(candidate, false);
         verify(candidateAttachmentRepository).save(attachmentCaptor.capture());
         CandidateAttachment attachment = attachmentCaptor.getValue();
         assertEquals(NAME, attachment.getName());
         assertEquals(LOCATION, attachment.getUrl());
         assertEquals(AttachmentType.link, attachment.getType());
-        assertEquals(ADMIN_USER, attachment.getCreatedBy());
     }
 
     @Test
@@ -315,7 +314,7 @@ public class CandidateAttachmentsServiceImplTest {
 
         candidateAttachmentsService.createCandidateAttachment(createRequest);
 
-        verify(candidateService).save(candidate, true, true);
+        verify(candidateService).save(candidate, true);
         verify(candidateAttachmentRepository).save(attachmentCaptor.capture());
         CandidateAttachment attachment = attachmentCaptor.getValue();
         assertEquals(NAME, attachment.getName());
@@ -324,7 +323,6 @@ public class CandidateAttachmentsServiceImplTest {
         assertTrue(attachment.isCv());
         assertEquals(TEXT_EXTRACT, attachment.getTextExtract());
         assertEquals(FILE_TYPE, attachment.getFileType());
-        assertEquals(ADMIN_USER, attachment.getCreatedBy());
     }
 
     @Test
@@ -407,8 +405,7 @@ public class CandidateAttachmentsServiceImplTest {
         assertDoesNotThrow(() -> candidateAttachmentsService.deleteCandidateAttachment(ATTACHMENT_ID));
 
         verify(candidateAttachmentRepository).delete(attachment);
-        assertEquals(ADMIN_USER, candidate2.getUpdatedBy());
-        verify(candidateService).save(candidate2, true);
+        verify(candidateService).save(candidate2);
     }
 
     @Test
@@ -428,8 +425,7 @@ public class CandidateAttachmentsServiceImplTest {
         candidateAttachmentsService.deleteCandidateAttachment(ATTACHMENT_ID);
 
         verify(candidateAttachmentRepository).delete(attachment);
-        assertEquals(candidate2.getUser(), candidate2.getUpdatedBy());
-        verify(candidateService).save(candidate2, true);
+        verify(candidateService).save(candidate2);
         verify(fileSystemService).renameFile(any(GoogleFileSystemFile.class));
         verify(fileSystemService, never()).deleteFile(any(GoogleFileSystemFile.class));
     }
@@ -451,8 +447,7 @@ public class CandidateAttachmentsServiceImplTest {
         assertDoesNotThrow(() -> candidateAttachmentsService.deleteCandidateAttachment(ATTACHMENT_ID));
 
         verify(candidateAttachmentRepository).delete(attachment);
-        assertEquals(candidate2.getUser(), candidate2.getUpdatedBy());
-        verify(candidateService).save(candidate2, true);
+        verify(candidateService).save(candidate2);
         verify(fileSystemService).renameFile(any(GoogleFileSystemFile.class));
         verify(fileSystemService, never()).deleteFile(any(GoogleFileSystemFile.class));
     }
@@ -472,8 +467,7 @@ public class CandidateAttachmentsServiceImplTest {
         candidateAttachmentsService.deleteCandidateAttachment(ATTACHMENT_ID);
 
         verify(candidateAttachmentRepository).delete(attachment);
-        assertEquals(ADMIN_USER, candidate.getUpdatedBy());
-        verify(candidateService).save(candidate, true);
+        verify(candidateService).save(candidate);
         verify(fileSystemService).deleteFile(any(GoogleFileSystemFile.class));
     }
 
@@ -635,9 +629,7 @@ public class CandidateAttachmentsServiceImplTest {
 
         assertEquals(newName, attachment.getName());
         verify(fileSystemService).renameFile(any(GoogleFileSystemFile.class));
-        assertEquals(ADMIN_USER, candidate.getUpdatedBy());
-        verify(candidateService).save(candidate, true, false);
-        assertEquals(ADMIN_USER, attachment.getUpdatedBy());
+        verify(candidateService).save(candidate, false);
         verify(candidateAttachmentRepository).save(attachment);
     }
 
@@ -661,9 +653,7 @@ public class CandidateAttachmentsServiceImplTest {
 
         assertEquals(newName, attachment.getName());
         assertEquals(newLocation, attachment.getUrl());
-        assertEquals(ADMIN_USER, candidate.getUpdatedBy());
-        verify(candidateService).save(candidate, true, false);
-        assertEquals(ADMIN_USER, attachment.getUpdatedBy());
+        verify(candidateService).save(candidate, false);
         verify(candidateAttachmentRepository).save(attachment);
     }
 
@@ -699,15 +689,13 @@ public class CandidateAttachmentsServiceImplTest {
 
         candidateAttachmentsService.uploadAttachment(candidateId, false, file);
 
-        assertEquals(ADMIN_USER, candidate.getUpdatedBy());
-        verify(candidateService).save(candidate, true, false);
+        verify(candidateService).save(candidate, false);
         verify(candidateAttachmentRepository).save(attachmentCaptor.capture());
         CandidateAttachment upload = attachmentCaptor.getValue();
         assertEquals(candidate, upload.getCandidate());
         assertEquals(AttachmentType.googlefile, upload.getType());
         assertEquals(ORIGINAL_FILE_NAME, upload.getName());
         assertEquals("pdf", upload.getFileType());
-        assertEquals(ADMIN_USER, upload.getUpdatedBy());
     }
 
     @Test

@@ -1,22 +1,23 @@
 /*
- * Copyright (c) 2025 Talent Catalog.
+ * Copyright (c) 2026 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
- * the terms of the GNU Affero General Public License as published by the Free
+ * the terms of the GNU General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or any later version.
  *
  * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
  * for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
+ * You should have received a copy of the GNU General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
 package org.tctalent.server.casi.core.services;
 
 import java.util.List;
+import java.util.Optional;
 import org.springframework.web.multipart.MultipartFile;
 import org.tctalent.server.casi.domain.model.ResourceStatus;
 import org.tctalent.server.casi.domain.model.ServiceAssignment;
@@ -27,6 +28,7 @@ import org.tctalent.server.exception.ImportFailedException;
 import org.tctalent.server.exception.InvalidRequestException;
 import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.model.db.Candidate;
+import org.tctalent.server.model.db.TermsType;
 import org.tctalent.server.model.db.User;
 
 /**
@@ -66,6 +68,39 @@ public interface CandidateAssistanceService {
    */
   default List<ServiceListSpec> serviceListSpecs() {
     return List.of();
+  }
+
+  /**
+   * Optional terms type that must be accepted before using this service.
+   * <p>
+   * By default, services do not require agreement acceptance.
+   * </p>
+   *
+   * @return Terms type to gate service access, if any
+   */
+  default Optional<TermsType> agreementTermsType() {
+    return Optional.empty();
+  }
+
+  /**
+   * The TermsInfo id of the OPC Standard Data Processing Agreement that this service
+   * provider has accepted.
+   * <p>
+   * When non-empty, candidates will be shown the OPC DPA for acknowledgement before they
+   * can use the service. The candidate's acknowledgement is recorded as an
+   * {@link org.tctalent.server.model.db.Agreement} against this provider's
+   * {@link org.tctalent.server.model.db.Counterparty}.
+   * </p>
+   * <p>
+   * TODO (SPO): replace with Org.opcDpaAcceptedTermsInfoId when the SPO/Org
+   *   abstraction is introduced. At that point, the provider's DPA acceptance is recorded
+   *   against the Org in the database and this code-level declaration will be removed. --SM
+   * </p>
+   *
+   * @return TermsInfo id of the accepted OPC DPA version, or empty if not yet accepted
+   */
+  default Optional<String> opcDpaAcceptedTermsInfoId() {
+    return Optional.empty();
   }
 
   // CREATE

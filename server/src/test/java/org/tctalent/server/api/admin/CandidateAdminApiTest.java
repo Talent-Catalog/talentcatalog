@@ -1,16 +1,16 @@
 /*
- * Copyright (c) 2024 Talent Catalog.
+ * Copyright (c) 2026 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
- * the terms of the GNU Affero General Public License as published by the Free
+ * the terms of the GNU General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or any later version.
  *
  * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
  * for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
+ * You should have received a copy of the GNU General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
@@ -24,6 +24,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
@@ -33,6 +34,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.tctalent.server.data.CandidateTestData.getCandidate;
@@ -41,6 +43,7 @@ import static org.tctalent.server.data.CandidateTestData.getListOfCandidates;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.PrintWriter;
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import org.hamcrest.Matchers;
@@ -58,14 +61,18 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.tctalent.server.api.dto.CandidateBuilderSelector;
 import org.tctalent.server.api.dto.CandidateIntakeDataBuilderSelector;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.CandidateDestination;
+import org.tctalent.server.model.db.CandidateStatus;
 import org.tctalent.server.model.db.CandidateVisaCheck;
 import org.tctalent.server.model.db.Country;
+import org.tctalent.server.model.db.CvFormat;
+import org.tctalent.server.model.db.Role;
 import org.tctalent.server.model.db.Status;
 import org.tctalent.server.repository.db.read.dto.CandidateReadDto;
 import org.tctalent.server.request.candidate.CandidateEmailPhoneOrWhatsappSearchRequest;
@@ -74,6 +81,7 @@ import org.tctalent.server.request.candidate.CandidateExternalIdSearchRequest;
 import org.tctalent.server.request.candidate.CandidateIntakeDataUpdate;
 import org.tctalent.server.request.candidate.CandidateNumberOrNameSearchRequest;
 import org.tctalent.server.request.candidate.DownloadCvRequest;
+import org.tctalent.server.request.candidate.EraseCandidateRequest;
 import org.tctalent.server.request.candidate.ResolveTaskAssignmentsRequest;
 import org.tctalent.server.request.candidate.SearchCandidateRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateAdditionalInfoRequest;
@@ -90,6 +98,7 @@ import org.tctalent.server.request.candidate.UpdateCandidateSurveyRequest;
 import org.tctalent.server.request.candidate.opportunity.CandidateOpportunityParams;
 import org.tctalent.server.security.CandidateTokenProvider;
 import org.tctalent.server.security.CvClaims;
+import org.tctalent.server.service.db.CandidateErasureService;
 import org.tctalent.server.service.db.CandidateOpportunityService;
 import org.tctalent.server.service.db.CandidateSavedListService;
 import org.tctalent.server.service.db.CandidateService;
@@ -124,7 +133,7 @@ class CandidateAdminApiTest extends ApiTestBase {
     private static final String UPDATE_MEDIA_BY_ID_PATH = "/{id}/media";
     private static final String UPDATE_REGISTRATION_BY_ID_PATH = "/{id}/registration";
     private static final String EXPORT_CSV_PATH = "/export/csv";
-    private static final String DOWNLOAD_CV_PDF_BY_ID_PATH = "/{id}/cv.pdf";
+    private static final String DOWNLOAD_CV_BY_ID_PATH = "/{id}/cv";
     private static final String CREATE_CANDIDATE_FOLDER_BY_ID_PATH = "/{id}/create-folder";
     private static final String UPDATE_LIVE_CANDIDATE_BY_ID_PATH = "/{id}/update-live";
     private static final String UPDATE_OPPS_FROM_CANDIDATE_PATH = "/update-opps";
@@ -132,6 +141,7 @@ class CandidateAdminApiTest extends ApiTestBase {
     private static final String UPDATE_INTAKE_DATA_BY_ID_PATH = "/{id}/intake";
     private static final String RESOLVE_TASKS_PATH = "/resolve-tasks";
     private static final String GENERATE_TOKEN_PATH = "/token/{cn}";
+    private static final String ERASE_CANDIDATE_BY_ID_PATH = "/{id}/erase";
 
     private final Page<Candidate> candidates =
             new PageImpl<>(
@@ -165,6 +175,8 @@ class CandidateAdminApiTest extends ApiTestBase {
     CandidateBuilderSelector candidateBuilderSelector;
     @MockBean
     CandidateIntakeDataBuilderSelector candidateIntakeDataBuilderSelector;
+    @MockBean
+    CandidateErasureService candidateErasureService;
 
     @Autowired MockMvc mockMvc;
     @Autowired ObjectMapper objectMapper;
@@ -515,6 +527,43 @@ class CandidateAdminApiTest extends ApiTestBase {
     }
 
     @Test
+    @DisplayName("erase candidate by id succeeds")
+    @WithMockUser(authorities = "ROLE_SYSTEMADMIN")
+    void eraseCandidateByIdSucceeds() throws Exception {
+        long id = 99L;
+
+        user.setRole(Role.systemadmin);
+
+        candidate.setStatus(CandidateStatus.deleted);
+        candidate.setDeletedDate(OffsetDateTime.parse("2026-01-01T10:15:30+00:00"));
+        candidate.setDeletedBy(user);
+
+        EraseCandidateRequest request = new EraseCandidateRequest();
+        request.setConfirmationCandidateNumber(candidate.getCandidateNumber());
+
+        given(candidateErasureService
+            .eraseCandidate(eq(id), any(EraseCandidateRequest.class)))
+            .willReturn(candidate);
+
+        mockMvc.perform(post(BASE_PATH + ERASE_CANDIDATE_BY_ID_PATH.replace("{id}", Long.toString(id)))
+                .with(csrf())
+                .header("Authorization", "Bearer " + "jwt-token")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request))
+                .accept(MediaType.APPLICATION_JSON))
+
+            .andDo(print())
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+            .andExpect(jsonPath("$.id", is(99)))
+            .andExpect(jsonPath("$.candidateNumber", is(candidate.getCandidateNumber())))
+            .andExpect(jsonPath("$.status", is("deleted")))
+            .andExpect(jsonPath("$.erased", is(true)));
+
+        verify(candidateErasureService).eraseCandidate(eq(id), any(EraseCandidateRequest.class));
+    }
+
+    @Test
     @DisplayName("export csv succeeds")
     void exportCsvSucceeds() throws Exception {
         SearchCandidateRequest request = new SearchCandidateRequest();
@@ -532,23 +581,118 @@ class CandidateAdminApiTest extends ApiTestBase {
         request.setCandidateId(id);
         request.setShowName(true);
         request.setShowContact(true);
+        request.setFormat(CvFormat.PDF);
 
-        Resource report = new ByteArrayResource("report".getBytes());
-
-        given(candidateService
-                .getCandidate(anyLong()))
-                .willReturn(candidate);
+        Resource report = new ByteArrayResource("pdf-report".getBytes());
 
         given(candidateService
-                .generateCv(any(Candidate.class), anyBoolean(), anyBoolean()))
-                .willReturn(report);
+            .getCandidate(anyLong()))
+            .willReturn(candidate);
 
-        postApiRequest(
-                DOWNLOAD_CV_PDF_BY_ID_PATH.replace("{id}", Long.toString(id)),
-                objectMapper.writeValueAsString(request));
+        given(candidateService
+            .generateCv(
+                any(Candidate.class),
+                anyBoolean(),
+                anyBoolean(),
+                eq(CvFormat.PDF)))
+            .willReturn(report);
+
+        postDownloadCvRequestAndVerifyResponse(
+            DOWNLOAD_CV_BY_ID_PATH.replace("{id}", Long.toString(id)),
+            objectMapper.writeValueAsString(request),
+            "application/pdf",
+            ".pdf",
+            "pdf-report".getBytes());
 
         verify(candidateService).getCandidate(anyLong());
-        verify(candidateService).generateCv(any(Candidate.class), anyBoolean(), anyBoolean());
+        verify(candidateService)
+            .generateCv(
+                any(Candidate.class),
+                anyBoolean(),
+                anyBoolean(),
+                eq(CvFormat.PDF));
+    }
+
+    @Test
+    @DisplayName("download candidate cv docx succeeds")
+    void downloadCandidateCvDocxSucceeds() throws Exception {
+        long id = 99L;
+        DownloadCvRequest request = new DownloadCvRequest();
+        request.setCandidateId(id);
+        request.setShowName(true);
+        request.setShowContact(true);
+        request.setFormat(CvFormat.DOCX);
+
+        Resource report = new ByteArrayResource("docx-report".getBytes());
+
+        given(candidateService
+            .getCandidate(anyLong()))
+            .willReturn(candidate);
+
+        given(candidateService
+            .generateCv(
+                any(Candidate.class),
+                anyBoolean(),
+                anyBoolean(),
+                eq(CvFormat.DOCX)))
+            .willReturn(report);
+
+        postDownloadCvRequestAndVerifyResponse(
+            DOWNLOAD_CV_BY_ID_PATH.replace("{id}", Long.toString(id)),
+            objectMapper.writeValueAsString(request),
+            "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+            ".docx",
+            "docx-report".getBytes());
+
+        verify(candidateService).getCandidate(anyLong());
+        verify(candidateService)
+            .generateCv(
+                any(Candidate.class),
+                anyBoolean(),
+                anyBoolean(),
+                eq(CvFormat.DOCX));
+    }
+
+    @Test
+    @DisplayName("create candidate cv google doc succeeds")
+    void downloadCandidateCvGoogleDocSucceeds() throws Exception {
+        long id = 99L;
+        String googleDocUrl = "https://docs.google.com/document/d/mock-google-doc-id/edit";
+
+        DownloadCvRequest request = new DownloadCvRequest();
+        request.setCandidateId(id);
+        request.setShowName(true);
+        request.setShowContact(true);
+        request.setFormat(CvFormat.GOOGLE_DOC);
+
+        Resource report = new ByteArrayResource(googleDocUrl.getBytes());
+
+        given(candidateService
+            .getCandidate(anyLong()))
+            .willReturn(candidate);
+
+        given(candidateService
+            .generateCv(
+                any(Candidate.class),
+                anyBoolean(),
+                anyBoolean(),
+                eq(CvFormat.GOOGLE_DOC)))
+            .willReturn(report);
+
+        postDownloadCvRequestAndVerifyResponse(
+            DOWNLOAD_CV_BY_ID_PATH.replace("{id}", Long.toString(id)),
+            objectMapper.writeValueAsString(request),
+            "text/plain",
+            ".txt",
+            googleDocUrl.getBytes());
+
+        verify(candidateService).getCandidate(anyLong());
+        verify(candidateService)
+            .generateCv(
+                any(Candidate.class),
+                anyBoolean(),
+                anyBoolean(),
+                eq(CvFormat.GOOGLE_DOC));
     }
 
     @Test
@@ -743,4 +887,25 @@ class CandidateAdminApiTest extends ApiTestBase {
                 .andExpect(jsonPath("$.nationality.name", is("Pakistan")));
     }
 
+    private void postDownloadCvRequestAndVerifyResponse(
+        String path,
+        String body,
+        String contentType,
+        String fileExtension,
+        byte[] expectedBody
+    ) throws Exception {
+        mockMvc.perform(post(BASE_PATH + path)
+                .with(csrf())
+                .header("Authorization", "Bearer " + "jwt-token")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(body))
+
+            .andDo(print())
+            .andExpect(status().isOk())
+            .andExpect(content().contentTypeCompatibleWith(contentType))
+            .andExpect(header().string(
+                "Content-Disposition",
+                Matchers.containsString(fileExtension)))
+            .andExpect(content().bytes(expectedBody));
+    }
 }

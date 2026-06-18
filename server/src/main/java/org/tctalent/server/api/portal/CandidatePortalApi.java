@@ -1,16 +1,16 @@
 /*
- * Copyright (c) 2024 Talent Catalog.
+ * Copyright (c) 2026 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
- * the terms of the GNU Affero General Public License as published by the Free
+ * the terms of the GNU General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or any later version.
  *
  * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
  * for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
+ * You should have received a copy of the GNU General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
@@ -33,6 +33,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.tctalent.server.exception.InvalidSessionException;
 import org.tctalent.server.model.db.Candidate;
+import org.tctalent.server.model.db.CvFormat;
 import org.tctalent.server.model.db.TaskDtoHelper;
 import org.tctalent.server.request.candidate.SubmitRegistrationRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateContactRequest;
@@ -201,7 +202,7 @@ public class CandidatePortalApi {
         response.setContentType("application/pdf");
         response.setHeader("Content-Disposition", "attachment; filename=" + name + ".pdf");
 
-        Resource report = candidateService.generateCv(candidate, true, true);
+        Resource report = candidateService.generateCv(candidate, true, true, CvFormat.PDF);
         try (InputStream reportStream = report.getInputStream()) {
             IOUtils.copy(reportStream, response.getOutputStream());
             response.flushBuffer();

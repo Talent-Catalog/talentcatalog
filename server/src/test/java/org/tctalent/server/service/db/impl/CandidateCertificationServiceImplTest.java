@@ -1,16 +1,16 @@
 /*
- * Copyright (c) 2025 Talent Catalog.
+ * Copyright (c) 2026 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
- * the terms of the GNU Affero General Public License as published by the Free
+ * the terms of the GNU General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or any later version.
  *
  * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
  * for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
+ * You should have received a copy of the GNU General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
@@ -170,11 +170,10 @@ class CandidateCertificationServiceImplTest {
 
     private void verifyCandidateCertification(CandidateCertification certification) {
         verify(candidateCertificationRepository).save(any(CandidateCertification.class));
-        verify(candidateService).save(candidate, true);
+        verify(candidateService).save(candidate);
         assertEquals(NAME, certification.getName());
         assertEquals(INSTITUTION, certification.getInstitution());
         assertEquals(DATE_COMPLETED, certification.getDateCompleted());
-        assertEquals(ADMIN_USER, candidate.getUpdatedBy());
     }
 
     @Test
@@ -207,8 +206,7 @@ class CandidateCertificationServiceImplTest {
         candidateCertificationService.deleteCandidateCertification(CERT_ID);
 
         verify(candidateCertificationRepository).delete(certification);
-        assertEquals(ADMIN_USER, candidate.getUpdatedBy());
-        verify(candidateService).save(candidate, true);
+        verify(candidateService).save(candidate);
     }
 
 }

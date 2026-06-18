@@ -1,17 +1,17 @@
 
 <!--
-  ~ Copyright (c) 2024 Talent Catalog.
+  ~ Copyright (c) 2026 Talent Catalog.
   ~
   ~ This program is free software: you can redistribute it and/or modify it under
-  ~ the terms of the GNU Affero General Public License as published by the Free
+  ~ the terms of the GNU General Public License as published by the Free
   ~ Software Foundation, either version 3 of the License, or any later version.
   ~
   ~ This program is distributed in the hope that it will be useful, but WITHOUT
   ~ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-  ~ FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+  ~ FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
   ~ for more details.
   ~
-  ~ You should have received a copy of the GNU Affero General Public License
+  ~ You should have received a copy of the GNU General Public License
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
@@ -73,6 +73,9 @@
           {{attachment.name}}
         </a>
         <span class="small text-dark"> - {{attachment.type}}</span>
+        <span *ngIf="attachment.folder" class="small text-muted ms-1 attachment-folder">
+          | <i class="fas fa-folder"></i> {{attachment.folder | titlecase}}
+        </span>
         <div class="d-inline ms-2" *ngIf="attachment.uploadType === UploadType.cv">
           <app-cv-icon
             [candidate]="candidate"

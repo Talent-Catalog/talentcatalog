@@ -1,16 +1,16 @@
 /*
- * Copyright (c) 2024 Talent Catalog.
+ * Copyright (c) 2026 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
- * the terms of the GNU Affero General Public License as published by the Free
+ * the terms of the GNU General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or any later version.
  *
  * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
  * for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
+ * You should have received a copy of the GNU General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
@@ -76,6 +76,7 @@ export interface Candidate extends HasId {
   candidateReviewStatusItems: CandidateReviewStatusItem[];
   migrationEducationMajor: EducationMajor;
   additionalInfo: string;
+  aspirations?: string;
   linkedInLink: string;
   muted: boolean;
   candidateMessage: string;
@@ -494,6 +495,17 @@ export interface UpdateCandidateMutedRequest {
   muted: boolean;
 }
 
+export interface EraseCandidateRequest {
+  confirmationCandidateNumber?: string;
+}
+
+export interface EraseCandidateResponse {
+  id: number;
+  candidateNumber: string;
+  status: string;
+  erased: boolean;
+}
+
 export enum FamilyRelations {
   NoRelation = "No relatives",
   Child = "Daughter/Son",
@@ -519,7 +531,9 @@ export enum DependantRelations {
 export enum HasPassport {
   ValidPassport = "Has valid passport",
   InvalidPassport = "Has invalid passport",
-  NoPassport = "No passport"
+  ValidDocument = "Has valid travel document",
+  InvalidDocument = "Has invalid travel document",
+  NoPassport = "No passport or travel document"
 }
 
 export enum TBBEligibilityAssessment {

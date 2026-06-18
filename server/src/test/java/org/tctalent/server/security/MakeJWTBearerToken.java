@@ -1,21 +1,23 @@
 /*
- * Copyright (c) 2024 Talent Catalog.
+ * Copyright (c) 2026 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
- * the terms of the GNU Affero General Public License as published by the Free
+ * the terms of the GNU General Public License as published by the Free
  * Software Foundation, either version 3 of the License, or any later version.
  *
  * This program is distributed in the hope that it will be useful, but WITHOUT 
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
  * for more details.
  *
- * You should have received a copy of the GNU Affero General Public License 
+ * You should have received a copy of the GNU General Public License 
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
 package org.tctalent.server.security;
 
+import io.jsonwebtoken.io.Decoders;
+import io.jsonwebtoken.io.Encoders;
 import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
 import java.security.KeyFactory;
@@ -23,9 +25,6 @@ import java.security.PrivateKey;
 import java.security.Signature;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.text.MessageFormat;
-
-import io.jsonwebtoken.io.Decoders;
-import io.jsonwebtoken.io.Encoders;
 
 /**
  * Comes from https://help.salesforce.com/articleView?id=remoteaccess_oauth_jwt_flow.htm&type=5

@@ -249,7 +249,7 @@ module "tc-plus-prod" {
   translations_bucket                   = "translations.tctalent.org"
   translations_folder                   = "translations"
   s3_region                             = "eu-west-2"
-  environment                           = "opc-prod"
+  environment                           = "prod"
   email_default                         = "-" # todo: confirm if used/needed
   email_test_override                   = "-" # todo: set prod value
   email_user                            = "-" # todo: confirm if used/needed
@@ -277,7 +277,7 @@ module "tc-plus-prod" {
   tc_api_url                            = "https://api.plus.tctalent.org"               # todo: set TC API URL
   tc_cors_urls                          = "https://tctalent.org"                        # todo: set prod CORS URLs
   tc_db_copy_config                     = "data.sharing/tcCopies.xml"                   # todo: can this be retired?
-  tc_destinations                       = "Australia,Canada,New Zealand,United Kingdom" # todo: set TC destinations
+  tc_destinations                       = "Australia,Belgium,Canada,France,Germany,Ireland,Italy,Slovakia,Spain,United Kingdom,United States" # todo: set TC destinations
   tc_skills_extraction_api_url          = "https://skills.plus.tctalent.org"            # todo: confirm prod URL
   web_admin                             = "https://plus.tctalent.org/admin-portal"
   web_portal                            = "https://plus.tctalent.org/candidate-portal"
