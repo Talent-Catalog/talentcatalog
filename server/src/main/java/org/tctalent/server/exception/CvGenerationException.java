@@ -22,4 +22,8 @@ public class CvGenerationException extends ServiceException {
         super("cv_generation", message);
 
     }
+
+    public CvGenerationException(String message, Throwable cause) {
+        super("cv_generation", message, cause);
+    }
 }
