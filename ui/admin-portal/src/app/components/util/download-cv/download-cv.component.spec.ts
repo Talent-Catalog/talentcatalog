@@ -151,6 +151,21 @@ describe('DownloadCvComponent', () => {
     const fakeBlob = new Blob([googleDocUrl], {type: 'text/plain;charset=utf-8'});
     candidateServiceSpy.downloadCv.and.returnValue(of(fakeBlob));
 
+    const mockGoogleDocWindow = {
+      opener: null,
+      document: {
+        write: jasmine.createSpy('write')
+      },
+      location: {
+        href: ''
+      },
+      close: jasmine.createSpy('close')
+    } as unknown as Window;
+
+    windowOpenSpy.and.returnValue(mockGoogleDocWindow);
+
+    activeModalSpy.close.calls.reset();
+
     component.form.patchValue({format: 'GOOGLE_DOC'});
     component.onSave();
 
@@ -158,13 +173,14 @@ describe('DownloadCvComponent', () => {
 
     expect(candidateServiceSpy.downloadCv).toHaveBeenCalledWith(request);
     expect(createObjectUrlSpy).not.toHaveBeenCalled();
-    expect(windowOpenSpy).toHaveBeenCalledWith(
-      googleDocUrl,
-      '_blank',
-      'noopener'
-    );
+
+    expect(windowOpenSpy).toHaveBeenCalledWith('', '_blank');
+    expect(mockGoogleDocWindow.document.write).toHaveBeenCalledWith('Creating Google Doc...');
+    expect(mockGoogleDocWindow.location.href).toBe(googleDocUrl);
+
+    expect(component.googleDocUrl).toBe(googleDocUrl);
+    expect(component.googleDocPopupBlocked).toBeFalse();
     expect(component.saving).toBeFalse();
-    expect(activeModalSpy.close).toHaveBeenCalled();
   });
 
   it('should set error message on failure', () => {
