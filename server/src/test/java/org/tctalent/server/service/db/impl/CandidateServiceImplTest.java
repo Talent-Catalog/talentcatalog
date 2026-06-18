@@ -462,18 +462,56 @@ class CandidateServiceImplTest {
   }
 
   @Test
-  @DisplayName("findByCandidateNumberRestricted returns deleted candidate")
-  void findByCandidateNumberRestrictedReturnsDeletedCandidate() {
+  @DisplayName("findByCandidateNumberRestricted returns soft-deleted candidate whose country is in scope")
+  void findByCandidateNumberRestrictedReturnsSoftDeletedCandidateWhenCountryAllowed() {
     String candidateNumber = "123456";
     candidate.setCandidateNumber(candidateNumber);
     candidate.setStatus(CandidateStatus.deleted);
+    candidate.setCountry(testCountry);
 
     given(authService.getLoggedInUser()).willReturn(Optional.of(mockUser));
     given(candidateRepository.findByCandidateNumber(candidateNumber)).willReturn(candidate);
+    given(userService.getDefaultSourceCountries(mockUser)).willReturn(Set.of(testCountry));
 
     Candidate result = candidateService.findByCandidateNumberRestricted(candidateNumber);
 
     assertEquals(candidate, result);
+  }
+
+  @Test
+  @DisplayName("findByCandidateNumberRestricted throws access error for soft-deleted candidate outside source countries")
+  void findByCandidateNumberRestrictedThrowsForSoftDeletedCandidateOutsideSourceCountries() {
+    String candidateNumber = "123459";
+    candidate.setCandidateNumber(candidateNumber);
+    candidate.setStatus(CandidateStatus.deleted);
+    candidate.setCountry(testCountry);
+    Country otherCountry = new Country();
+    otherCountry.setId(99L);
+
+    given(authService.getLoggedInUser()).willReturn(Optional.of(mockUser));
+    given(candidateRepository.findByCandidateNumber(candidateNumber)).willReturn(candidate);
+    given(userService.getDefaultSourceCountries(mockUser)).willReturn(Set.of(otherCountry));
+
+    assertThrows(CountryRestrictionException.class,
+        () -> candidateService.findByCandidateNumberRestricted(candidateNumber));
+  }
+
+  @Test
+  @DisplayName("findByCandidateNumberRestricted throws not found for fully erased candidate")
+  void findByCandidateNumberRestrictedThrowsNotFoundForErasedCandidate() {
+    String candidateNumber = "123460";
+    candidate.setCandidateNumber(candidateNumber);
+    candidate.setStatus(CandidateStatus.deleted);
+    // country is null after GDPR erasure — deliberately not set
+
+    given(authService.getLoggedInUser()).willReturn(Optional.of(mockUser));
+    given(candidateRepository.findByCandidateNumber(candidateNumber)).willReturn(candidate);
+
+    NoSuchObjectException ex = assertThrows(NoSuchObjectException.class,
+        () -> candidateService.findByCandidateNumberRestricted(candidateNumber));
+
+    assertEquals("This candidate's data has been fully deleted from the Talent Catalog.",
+        ex.getMessage());
   }
 
   @Test
