@@ -3,6 +3,8 @@ package org.tctalent.server.integration.helper;
 import java.io.File;
 import java.io.IOException;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.Tag;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
@@ -20,6 +22,8 @@ import org.testcontainers.utility.TestcontainersConfiguration;
  * - Ensure the SQL dump path starts with a `/` (e.g., `/my-dump.sql`).
  */
 @Slf4j
+@Tag("integration")
+@ActiveProfiles("integration-test")
 public class PostgresTestContainer {
 
   private static final String DB_NAME = "tctalent";

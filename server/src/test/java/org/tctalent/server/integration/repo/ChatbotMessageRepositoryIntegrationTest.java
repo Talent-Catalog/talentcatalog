@@ -28,13 +28,17 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ActiveProfiles;
 import org.tctalent.server.integration.helper.BaseJpaIntegrationTest;
 import org.tctalent.server.integration.helper.PostgresTestContainer;
 import org.tctalent.server.model.db.chatbot.ChatbotMessage;
 import org.tctalent.server.repository.db.ChatbotMessageRepository;
 
+@Tag("integration")
+@ActiveProfiles("integration-test")
 class ChatbotMessageRepositoryIntegrationTest extends BaseJpaIntegrationTest {
 
   @Autowired private ChatbotMessageRepository chatbotMessageRepository;

@@ -55,7 +55,32 @@ tasks.withType(JavaCompile).configureEach {
 tasks.withType(Test).configureEach {
     useJUnitPlatform {
         excludeTags 'skip-test-in-gradle-build'
+        excludeTags 'integration'
     }
+}
+
+tasks.register('integrationTest', Test) {
+    description = 'Runs integration tests'
+    group = 'verification'
+
+    testClassesDirs = sourceSets.test.output.classesDirs
+    classpath = sourceSets.test.runtimeClasspath
+
+    useJUnitPlatform {
+        includeTags 'integration'
+    }
+
+    systemProperty 'spring.profiles.active', 'integration-test'
+
+    // Keep integration tests isolated and deterministic
+    maxParallelForks = 1
+    forkEvery = 1
+
+    shouldRunAfter test
+}
+
+tasks.named('check') {
+    dependsOn integrationTest
 }
 
 configurations {

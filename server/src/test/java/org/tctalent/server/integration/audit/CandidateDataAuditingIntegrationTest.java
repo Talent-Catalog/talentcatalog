@@ -25,11 +25,13 @@ import java.util.List;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.transaction.annotation.Transactional;
 import org.tctalent.server.integration.helper.BaseDBIntegrationTest;
@@ -97,6 +99,8 @@ import org.tctalent.server.service.db.UserService;
 
 @SpringBootTest
 @Transactional
+@Tag("integration")
+@ActiveProfiles("integration-test")
 class CandidateDataAuditingIntegrationTest extends BaseDBIntegrationTest {
 
     @Autowired private UserService userService;

@@ -25,8 +25,10 @@ import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ActiveProfiles;
 import org.tctalent.server.casi.domain.model.ServiceProvider;
 import org.tctalent.server.integration.helper.BaseJpaIntegrationTest;
 import org.tctalent.server.model.db.Agreement;
@@ -35,6 +37,8 @@ import org.tctalent.server.model.db.Counterparty;
 import org.tctalent.server.model.db.CounterpartyType;
 import org.tctalent.server.model.db.TermsType;
 
+@Tag("integration")
+@ActiveProfiles("integration-test")
 class AgreementRepositoryIntegrationTest extends BaseJpaIntegrationTest {
 
     @Autowired

@@ -29,8 +29,10 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.support.TransactionTemplate;
@@ -46,6 +48,8 @@ import org.tctalent.server.integration.helper.BaseJpaIntegrationTest;
  * concurrent {@code FOR UPDATE SKIP LOCKED} behaviour), the expiry finder queries, count
  * queries, and existence/lookup queries.
  */
+@Tag("integration")
+@ActiveProfiles("integration-test")
 class ServiceResourceRepositoryIntegrationTest extends BaseJpaIntegrationTest {
 
   @Autowired

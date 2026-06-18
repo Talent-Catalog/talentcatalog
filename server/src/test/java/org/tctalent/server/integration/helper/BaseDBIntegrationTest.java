@@ -18,6 +18,7 @@ package org.tctalent.server.integration.helper;
 
 import java.io.IOException;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Tag;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
@@ -30,7 +31,8 @@ import org.testcontainers.junit.jupiter.Testcontainers;
  * To use, simply extend this class—no additional setup is required in your test classes.
  */
 @Testcontainers
-@ActiveProfiles("test")
+@Tag("integration")
+@ActiveProfiles("integration-test")
 public abstract class BaseDBIntegrationTest {
 
 

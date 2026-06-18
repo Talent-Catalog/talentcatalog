@@ -25,8 +25,10 @@ import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ActiveProfiles;
 import org.tctalent.server.casi.domain.model.AssignmentStatus;
 import org.tctalent.server.casi.domain.model.ResourceStatus;
 import org.tctalent.server.casi.domain.model.ServiceCode;
@@ -42,6 +44,8 @@ import org.tctalent.server.repository.db.UserRepository;
  * instance via Testcontainers. Covers all custom finder queries including filtering, ordering,
  * join-fetch, and edge cases.
  */
+@Tag("integration")
+@ActiveProfiles("integration-test")
 class ServiceAssignmentRepositoryIntegrationTest extends BaseJpaIntegrationTest {
 
   @Autowired

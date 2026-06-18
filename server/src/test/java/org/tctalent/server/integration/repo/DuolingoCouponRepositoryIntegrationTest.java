@@ -31,8 +31,10 @@ import java.time.LocalDateTime;
 import java.util.List;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ActiveProfiles;
 import org.tctalent.server.integration.helper.BaseJpaIntegrationTest;
 import org.tctalent.server.integration.helper.PostgresTestContainer;
 import org.tctalent.server.model.db.Candidate;
@@ -47,6 +49,8 @@ import org.tctalent.server.repository.db.UserRepository;
 /**
  * Integration tests for DuolingoCouponRepository, verifying coupon retrieval, existence, and counting functionality.
  */
+@Tag("integration")
+@ActiveProfiles("integration-test")
 public class DuolingoCouponRepositoryIntegrationTest extends BaseJpaIntegrationTest {
 
   @Autowired

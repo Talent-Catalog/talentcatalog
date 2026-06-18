@@ -8,10 +8,12 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.io.IOException;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.test.context.ActiveProfiles;
 import org.tctalent.server.integration.helper.BaseJpaIntegrationTest;
 import org.tctalent.server.integration.helper.PostgresTestContainer;
 import org.tctalent.server.integration.helper.TestDataFactory;
@@ -23,6 +25,8 @@ import org.tctalent.server.repository.db.UserRepository;
 /**
  * Integration tests for UserRepository, verifying user retrieval and search functionality.
  */
+@Tag("integration")
+@ActiveProfiles("integration-test")
 public class UserRepositoryIntegrationTest extends BaseJpaIntegrationTest {
 
   @Autowired

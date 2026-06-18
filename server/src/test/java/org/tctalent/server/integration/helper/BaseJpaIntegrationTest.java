@@ -16,8 +16,10 @@
 
 package org.tctalent.server.integration.helper;
 
+import org.junit.jupiter.api.Tag;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.test.context.ActiveProfiles;
 
 /**
  * Base class for JPA/repository integration tests.
@@ -25,5 +27,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
  */
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
+@Tag("integration")
+@ActiveProfiles("integration-test")
 public abstract class BaseJpaIntegrationTest extends BaseDBIntegrationTest {
 }

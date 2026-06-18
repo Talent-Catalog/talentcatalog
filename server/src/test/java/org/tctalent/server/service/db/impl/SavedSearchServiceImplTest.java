@@ -26,11 +26,13 @@ import java.util.List;
 import java.util.Set;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.tctalent.server.configuration.SystemAdminConfiguration;
 import org.tctalent.server.integration.helper.BaseDBIntegrationTest;
@@ -47,6 +49,8 @@ import org.tctalent.server.service.db.util.PagedCandidateBackProcessor;
 import org.tctalent.server.util.background.PageContextBackRunner;
 
 @SpringBootTest
+@Tag("integration")
+@ActiveProfiles("integration-test")
 class SavedSearchServiceImplTest extends BaseDBIntegrationTest {
     @Autowired
     private SavedSearchService savedSearchService;
