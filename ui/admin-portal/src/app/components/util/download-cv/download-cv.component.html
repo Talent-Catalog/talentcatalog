@@ -87,6 +87,12 @@
       </div>
     </ng-template>
 
+    <div class="text-muted small mb-3"
+         *ngIf="form?.value?.format === 'GOOGLE_DOC' && !googleDocUrl">
+      Please allow popups from this site to open the exported Google Doc automatically.
+      If the popup is blocked, the direct link will appear here after creation.
+    </div>
+
     <tc-field [checkbox]="true">
       <tc-label for="name">
         Include name?
@@ -107,12 +113,20 @@
       </tc-input>
     </tc-field>
 
+    <div class="mt-3" *ngIf="googleDocUrl">
+      <strong>Created!</strong> View Google Doc here:
+      <a [href]="googleDocUrl"
+         target="_blank"
+         rel="noopener noreferrer">
+        {{ googleDocUrl }}
+      </a>
+    </div>
 
-
-    <div class="mt-3 d-flex gap-2" *ngIf="loading || saving">
-      <tc-button [disabled]="true">
-        {{ form?.value?.format === 'GOOGLE_DOC' ? 'Creating Google Doc...' : 'Downloading...' }}
-      </tc-button>
+    <div class="mt-3 d-flex align-items-center gap-2" *ngIf="loading || saving">
+      <i class="fas fa-spinner fa-spin"></i>
+      <span>
+         {{ form?.value?.format === 'GOOGLE_DOC' ? 'Creating Google Doc...' : 'Downloading...' }}
+      </span>
     </div>
 
   </form>

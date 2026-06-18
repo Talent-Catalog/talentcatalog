@@ -33,6 +33,8 @@ export class DownloadCvComponent implements OnInit {
   error = null;
   loading = null;
   saving = null;
+  googleDocUrl = null;
+  googleDocPopupBlocked = false;
   form: UntypedFormGroup;
   candidateId: number;
 
@@ -51,8 +53,22 @@ export class DownloadCvComponent implements OnInit {
   onSave() {
     this.error = null;
     this.saving = true;
+    this.googleDocUrl = null;
 
     const format: CvFormat = this.form.value.format;
+
+    let googleDocWindow: Window | null = null;
+
+    if (format === 'GOOGLE_DOC') {
+      googleDocWindow = window.open('', '_blank');
+
+      if (googleDocWindow) {
+        googleDocWindow.opener = null;
+        googleDocWindow.document.write('Creating Google Doc...');
+      } else {
+        this.googleDocPopupBlocked = true;
+      }
+    }
 
     const request: DownloadCVRequest = {
       candidateId: this.candidateId,
@@ -65,10 +81,10 @@ export class DownloadCvComponent implements OnInit {
       result => {
         if (format === 'GOOGLE_DOC') {
           result.text().then(url => {
-            const googleDocUrl = url.trim();
-
-            window.open(googleDocUrl, '_blank', 'noopener');
-
+            this.googleDocUrl = url.trim();
+            if (googleDocWindow) {
+              googleDocWindow.location.href = this.googleDocUrl;
+            }
             this.saving = false;
             this.closeModal();
           }).catch(error => {
