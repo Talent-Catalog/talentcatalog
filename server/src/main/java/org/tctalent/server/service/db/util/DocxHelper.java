@@ -16,12 +16,11 @@
 
 package org.tctalent.server.service.db.util;
 
-import java.io.ByteArrayOutputStream;
+import static org.tctalent.server.service.db.util.DocxFormatterHelper.DOCX_GENERATION_ERROR_MESSAGE;
+
 import java.net.URL;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.docx4j.convert.in.xhtml.XHTMLImporterImpl;
-import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
@@ -47,6 +46,7 @@ public class DocxHelper {
   private static final String PDF_RESOURCE_BASE_PATH = "/pdf/";
 
   private final CvTemplateHelper cvTemplateHelper;
+  private final DocxFormatterHelper docxFormatterHelper;
 
   /**
    * Generates a DOCX CV for the given candidate.
@@ -60,25 +60,25 @@ public class DocxHelper {
   public Resource generateDocx(Candidate candidate, Boolean showName, Boolean showContact) {
     try {
       String xhtml = cvTemplateHelper.renderCvXhtml(candidate, showName, showContact);
+      String resourceBaseUrl = getResourceBaseUrl();
 
-      WordprocessingMLPackage wordPackage = WordprocessingMLPackage.createPackage();
-      XHTMLImporterImpl importer = new XHTMLImporterImpl(wordPackage);
+      byte[] docxBytes = docxFormatterHelper.formatXhtmlAsDocx(xhtml, resourceBaseUrl);
 
-      wordPackage.getMainDocumentPart()
-          .getContent()
-          .addAll(importer.convert(xhtml, getResourceBaseUrl()));
+      return new ByteArrayResource(docxBytes);
+    } catch (CvGenerationException e) {
+      LogBuilder.builder(log)
+          .action("generateDocx")
+          .message(DOCX_GENERATION_ERROR_MESSAGE)
+          .logError(e);
 
-      try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
-        wordPackage.save(outputStream);
-        return new ByteArrayResource(outputStream.toByteArray());
-      }
+      throw e;
     } catch (Exception e) {
       LogBuilder.builder(log)
           .action("generateDocx")
-          .message("Error generating DOCX")
+          .message(DOCX_GENERATION_ERROR_MESSAGE)
           .logError(e);
 
-      throw new CvGenerationException(e.getMessage());
+      throw new CvGenerationException(DOCX_GENERATION_ERROR_MESSAGE, e);
     }
   }
 
