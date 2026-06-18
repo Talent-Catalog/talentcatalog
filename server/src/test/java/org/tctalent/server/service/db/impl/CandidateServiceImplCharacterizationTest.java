@@ -111,6 +111,7 @@ public class CandidateServiceImplCharacterizationTest {
   @Mock private EmailHelper emailHelper;
   @Mock private AuthService authService;
   @Mock private TaskAssignmentRepository taskAssignmentRepository;
+  @Mock private TcInstanceService tcInstanceService;
   @Mock private UserRepository userRepository;
   @Mock private UserService userService;
 
