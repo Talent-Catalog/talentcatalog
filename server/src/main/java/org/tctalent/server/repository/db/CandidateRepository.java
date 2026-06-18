@@ -163,13 +163,6 @@ public interface CandidateRepository extends CacheEvictingRepository<Candidate, 
     String sourceCountryRestriction = " and c.country in (:userSourceCountries)";
     String excludeDeleted = " and c.status <> 'deleted'";
 
-    @Query(" select distinct c from Candidate c "
-            + " where lower(c.candidateNumber) like lower(:number)"
-            + excludeDeleted
-            + sourceCountryRestriction)
-    Optional<Candidate> findByCandidateNumberRestricted(@Param("number") String number,
-                                              @Param("userSourceCountries") Set<Country> userSourceCountries);
-
     @Query(" select distinct c from Candidate c left join c.user u "
             + " where lower(u.email) like lower(:candidateEmail) "
             + excludeDeleted
