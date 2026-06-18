@@ -64,6 +64,12 @@ public class TextPartsCodec {
             }
             throw new IllegalArgumentException("Missing text parts in JSON: " + json);
         } catch (JsonProcessingException ex) {
+            boolean isTextPartsJson = json.startsWith("{\"parts");
+            if (isTextPartsJson) {
+                //Probably a corrupted TextParts JSON string.
+                log.error("Corrupted TextParts JSON string: {}", json);
+                log.error("Json parsing exception", ex);
+            }
             throw new IllegalArgumentException(
                 "Could not parse text parts from JSON: " + json, ex);
         }
@@ -150,6 +156,16 @@ public class TextPartsCodec {
     @Data
     private static class StoredTextParts {
         private TextParts parts;
+
+        /**
+         * DO NOT REMOVE null constructor. Required by Jackson.
+         * <p>
+         * Intellij will flag this constructor as unused, but it is used by Jackson when parsing
+         * JSON. Parsing will always fail if there is no null constructor.
+         */
+        public StoredTextParts() {
+        }
+
         StoredTextParts(TextParts parts) {
             this.parts = parts;
         }
