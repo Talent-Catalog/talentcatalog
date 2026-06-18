@@ -16,13 +16,13 @@
   </div>
 
   <div *ngIf="!hideKeywords" class="mb-3">
-    <label class="form-label">Keywords</label>
+    <label class="form-label">Keywords (separate words/phrases with commas)</label>
     <input
       class="form-control"
       type="text"
       [formControl]="keywordsControl"
       (blur)="markTouched()"
-      placeholder="electrician, wiring, maintenance"
+      placeholder="electrician, safety officer, wiring"
     />
   </div>
 </div>
