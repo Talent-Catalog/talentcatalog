@@ -30,8 +30,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.tctalent.anonymization.model.CandidateRegistration;
 import org.tctalent.server.model.db.mapper.CandidateMapper;
 
-@Tag("skip-test-in-gradle-build")
 @SpringBootTest
+@Tag("skip-test-in-gradle-build")
 class CandidateMapperTest {
     @Autowired
     private CandidateMapper candidateMapper;

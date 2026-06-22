@@ -6,7 +6,7 @@ name: tc-build
 on:
   push:
     branches:
-      - '*'
+      - '**'
       - '!staging'
       - '!master'
 

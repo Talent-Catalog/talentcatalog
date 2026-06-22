@@ -160,11 +160,10 @@ class TcUserDetailsServiceTest {
 
         Collection<? extends GrantedAuthority> authorities = tcUserDetails.getAuthorities();
         assertEquals(1, authorities.size(), "Should have exactly one authority");
-        assertTrue(authorities.stream().anyMatch(a -> a.getAuthority().equals("ROLE_READONLY")),
-            "Authority should be ROLE_READONLY");
-        assertTrue(tcUserDetails.hasRole("READONLY"), "Authority should be ROLE_READONLY");
-        assertTrue(tcUserDetails.hasAnyRole("X", "READONLY", "Y"),
-            "Authority should be ROLE_READONLY");
+        assertTrue(authorities.stream().anyMatch(a -> a.getAuthority().equals("ROLE_RESTRICTED")),
+         "Authority should be ROLE_RESTRICTED");
+        assertTrue(tcUserDetails.hasRole("RESTRICTED"), "Authority should be ROLE_RESTRICTED");
+        assertTrue(tcUserDetails.hasAnyRole("X", "RESTRICTED", "Y"), "Authority should be ROLE_RESTRICTED");
 
     }
 

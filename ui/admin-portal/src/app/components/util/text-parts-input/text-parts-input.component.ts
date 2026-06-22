@@ -49,6 +49,7 @@ import {NgIf} from "@angular/common";
     NgIf
   ],
   templateUrl: './text-parts-input.component.html',
+  styleUrl: './text-parts-input.component.scss',
 
   //This makes the component a provider for NG_VALUE_ACCESSOR, allowing it to be used as a form
   //control.
