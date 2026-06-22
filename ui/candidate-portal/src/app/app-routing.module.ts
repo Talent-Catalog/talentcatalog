@@ -22,7 +22,6 @@ import {ResetPasswordComponent} from './components/account/reset-password/reset-
 import {
   ChangePasswordComponent
 } from './components/account/change-password/change-password.component';
-import {RegisterComponent} from './components/register/register.component';
 import {AuthGuard} from './services/auth.guard';
 import {EditCandidateComponent} from './components/profile/edit/edit-candidate.component';
 import {ViewCandidateComponent} from "./components/profile/view/view-candidate.component";
@@ -62,7 +61,7 @@ const routes: Routes = [
   },
   {
     path: 'register',
-    component: RegisterComponent,
+    component: LandingComponent,
     title: 'Register'
   },
   {

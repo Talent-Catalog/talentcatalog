@@ -23,6 +23,8 @@ import {AuthenticationService} from "../../services/authentication.service";
 import {Subscription, timer} from "rxjs";
 import {IdpStatus} from "../../services/idp-status";
 import {finalize} from "rxjs/internal/operators";
+import {OauthRegistrationRequest} from "../../model/oauth-registration-request";
+import {RegistrationService} from "../../services/registration.service";
 
 @Component({
   selector: 'app-landing',
@@ -48,6 +50,9 @@ import {finalize} from "rxjs/internal/operators";
  * </p>
  */
 export class LandingComponent implements OnInit, OnDestroy {
+  MODE_PARAM_NAME = "mode";
+  MODE_LOGIN = "login";
+  MODE_REGISTER = "register";
 
   /**
    * This corresponds to the query parameter 'authAction' which is set by the IdpService
@@ -63,12 +68,16 @@ export class LandingComponent implements OnInit, OnDestroy {
   authStatus: IdpStatus;
   private authStatusSub?: Subscription;
   private brandingInfo: BrandingInfo;
+  consented: boolean = false;
   currentUrlAsTree: UrlTree;
   error: string;
+  loading: boolean;
+  private _mode: string | null;
   showUSAfghanInfo: boolean = false;
 
   constructor(private authenticationService: AuthenticationService,
               private brandingService: BrandingService,
+              private registrationService: RegistrationService,
               private router: Router,
               private route: ActivatedRoute,
               private languageService: LanguageService) {
@@ -80,16 +89,32 @@ export class LandingComponent implements OnInit, OnDestroy {
 
     this.currentUrlAsTree = this.router.parseUrl(this.router.url);
 
+    const pathMinusQueryParams = this.router.url.split('?')[0];
+    if (pathMinusQueryParams.includes('register')) {
+      this.mode = this.MODE_REGISTER;
+    } else if (pathMinusQueryParams.includes('login')) {
+      this.mode = this.MODE_LOGIN;
+    } else {
+      let modeValue = this.route.snapshot.queryParamMap.get(this.MODE_PARAM_NAME);
+      this.mode = modeValue === this.MODE_REGISTER ? this.MODE_REGISTER : this.MODE_LOGIN;
+    }
+    this.authAction = this.route.snapshot.queryParamMap.get(AuthenticationService.CALLBACK_ACTION_PARAM_NAME);
+
     if (this.authenticationService.isAuthenticated()) {
-      this.authAction = this.route.snapshot.queryParamMap.get(AuthenticationService.CALLBACK_ACTION_PARAM_NAME);
       this.authenticationService.clearAuthError();
+
+      //todo We can't reliably tell without calling the server whether this is a login or
+      // registration action
+      //Need to call server then figure out what to do. If it is a registration and no consent
+      //has been given (this could happen if did a Login, then switched to Registration in Keycloak)
+      // we need to grab consent before progressing.
       if (this.authAction === AuthenticationService.REGISTER_ACTION) {
-        this.redirectToRegisterPage();
+        if (this.mode !== this.MODE_REGISTER) {
+          this.mode = this.MODE_REGISTER;
+        }
       } else if (this.authAction === AuthenticationService.LOGIN_ACTION) {
         this.completeLogin();
       }
-    } else {
-      this.authAction = null;
     }
 
     //todo All this query param handling needs to happen after we are authenticated
@@ -141,17 +166,63 @@ export class LandingComponent implements OnInit, OnDestroy {
     this.authStatusSub?.unsubscribe();
   }
 
+  get mode(): string | null {
+    return this._mode;
+  }
+
+  set mode(value: string | null) {
+    this._mode = value;
+    this.consented = false;
+  }
+
   onLogin() {
     this.authenticationService.login(
       this.computeRedirectUri(AuthenticationService.LOGIN_ACTION), this.languageService.getSelectedLanguage());
   }
 
-  /**
-   * Just redirect to the register page.
-   * The register component will handle the rest.
-   */
   onRegister() {
-    this.router.navigate(['/register']);
+    //Logout Idp if it thinks we are still logged in. Can happen.
+    this.authenticationService.logoutIdp();
+    this.authenticationService.register(
+      this.computeRedirectUri(
+        AuthenticationService.REGISTER_ACTION), this.languageService.getSelectedLanguage());
+  }
+
+  onCompleteRegister() {
+    let request: OauthRegistrationRequest = {
+      //todo These consents are being mocked for now. When new UI is designed
+      //the register button should be disabled until the user has consented to the terms.
+      contactConsentRegistration: true,
+      contactConsentPartners: true
+    }
+    this.completeRegister(request);
+  }
+
+  onToggleConsent() {
+    this.consented = !this.consented;
+  }
+
+  //todo This should only be called once consent has been gathered.
+  //todo Also the request should contain all the utm parameters see getParamesAndRegister() below.
+  private completeRegister(request: OauthRegistrationRequest) {
+    this.error = null;
+    this.loading = true;
+    this.authenticationService.completeRegister(request)
+    .pipe(finalize(() => {
+      this.authAction = null;
+      this.loading = false;
+    }))
+    .subscribe({
+      next: (response) => {
+        //Proceed with registration.
+        this.registrationService.next();
+      },
+      error: (error) => {
+        //Display error
+        this.error = error;
+        this.pauseThenLogout();
+      }
+    })
   }
 
   private computeRedirectUri(action: string) {
@@ -162,8 +233,12 @@ export class LandingComponent implements OnInit, OnDestroy {
 
   completeLogin() {
     this.error = null;
+    this.loading = true;
     this.authenticationService.completeLogin()
-    .pipe(finalize(() => this.authAction = null))
+    .pipe(finalize(() => {
+      this.authAction = null;
+      this.loading = false;
+    }))
     .subscribe({
       next: (response) => {
         this.router.navigate(['/home']);
@@ -174,15 +249,6 @@ export class LandingComponent implements OnInit, OnDestroy {
         this.pauseThenLogout();
       }
     })
-  }
-
-  redirectToRegisterPage() {
-    //todo We have to merge with existing query params? Maybe not. Links with query params should
-    //just go to register page.
-    this.router.navigate(['/register'], {
-      queryParams: {
-[AuthenticationService.CALLBACK_ACTION_PARAM_NAME]:  AuthenticationService.REGISTER_ACTION}
-    });
   }
 
   private pauseThenLogout() {

@@ -23,3 +23,13 @@
   font-size: 14px;
   padding: 4px 1em;
 }
+
+.link-button {
+  background: none;
+  border: none;
+  padding: 0;
+  color: lightblue;
+  text-decoration: underline;
+  cursor: pointer;
+  font: inherit;
+}
