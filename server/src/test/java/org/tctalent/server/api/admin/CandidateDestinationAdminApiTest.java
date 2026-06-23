@@ -18,6 +18,7 @@ package org.tctalent.server.api.admin;
 
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.mockito.ArgumentMatchers.any;
@@ -26,7 +27,9 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -34,6 +37,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.tctalent.server.data.CandidateTestData.getCandidateDestination;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -45,9 +49,9 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.tctalent.server.model.db.CandidateDestination;
 import org.tctalent.server.request.candidate.destination.CreateCandidateDestinationRequest;
+import org.tctalent.server.request.candidate.destination.UpdateCandidateDestinationRequest;
 import org.tctalent.server.service.db.CandidateDestinationService;
 import org.tctalent.server.service.db.CountryService;
-
 /**
  * Unit tests for Candidate Destination Admin Api endpoints.
  *
@@ -120,4 +124,57 @@ class CandidateDestinationAdminApiTest extends ApiTestBase {
         verify(candidateDestinationService).deleteDestination(anyLong());
     }
 
+    @Test
+    @DisplayName("list candidate destinations by candidate id succeeds")
+    void listCandidateDestinationsByCandidateIdSucceeds() throws Exception {
+        given(candidateDestinationService.list(CANDIDATE_ID))
+            .willReturn(List.of(candidateDestination));
+
+        mockMvc.perform(get(BASE_PATH + "/" + CANDIDATE_ID + "/list")
+                .header("Authorization", "Bearer " + "jwt-token")
+                .accept(MediaType.APPLICATION_JSON))
+
+            .andDo(print())
+            .andExpect(status().isOk())
+            .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+            .andExpect(jsonPath("$").isArray())
+            .andExpect(jsonPath("$", hasSize(1)))
+            .andExpect(jsonPath("$[0]", notNullValue()))
+            .andExpect(jsonPath("$[0].country.name", is("USA")))
+            .andExpect(jsonPath("$[0].country.status", is("active")))
+            .andExpect(jsonPath("$[0].interest", is("Yes")))
+            .andExpect(jsonPath("$[0].notes", is("Some destination notes")));
+
+        verify(candidateDestinationService).list(CANDIDATE_ID);
+    }
+
+    @Test
+    @DisplayName("update candidate destination succeeds")
+    void updateCandidateDestinationSucceeds() throws Exception {
+        UpdateCandidateDestinationRequest request = new UpdateCandidateDestinationRequest();
+
+        given(candidateDestinationService.updateDestination(
+            anyLong(),
+            any(UpdateCandidateDestinationRequest.class)))
+            .willReturn(candidateDestination);
+
+        mockMvc.perform(put(BASE_PATH + "/" + CANDIDATE_ID)
+                .with(csrf())
+                .header("Authorization", "Bearer " + "jwt-token")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request))
+                .accept(MediaType.APPLICATION_JSON))
+
+            .andDo(print())
+            .andExpect(status().isOk())
+            .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+            .andExpect(jsonPath("$", notNullValue()))
+            .andExpect(jsonPath("$.country.name", is("USA")))
+            .andExpect(jsonPath("$.country.status", is("active")))
+            .andExpect(jsonPath("$.interest", is("Yes")))
+            .andExpect(jsonPath("$.notes", is("Some destination notes")));
+
+        verify(candidateDestinationService)
+            .updateDestination(anyLong(), any(UpdateCandidateDestinationRequest.class));
+    }
 }
