@@ -18,14 +18,20 @@ package org.tctalent.server.api.admin;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.containsString;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -38,7 +44,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.tctalent.server.model.db.BrandingInfo;
 import org.tctalent.server.service.db.BrandingService;
 import org.tctalent.server.service.db.RootRequestService;
-
 /**
  * Unit tests for Root Route Admin Api endpoints.
  *
@@ -125,4 +130,127 @@ class RootRouteAdminApiTest extends ApiTestBase {
         .andExpect(header().string("Location", containsString(("?p=partner"))));
   }
 
+  @Test
+  @DisplayName("redirects to candidate portal when no query string and no partner")
+  void redirectsToCandidatePortalWhenNoQueryStringAndNoPartner() throws Exception {
+    given(brandingService.getBrandingInfo(isNull()))
+        .willReturn(brandingInfo);
+
+    mockMvc.perform(get(BASE_PATH)
+            .header("Authorization", "Bearer " + "jwt-token")
+            .accept(MediaType.APPLICATION_JSON))
+
+        .andDo(print())
+        .andExpect(status().isFound())
+        .andExpect(header().string("Location", "/candidate-portal/login"));
+
+    verify(brandingService).getBrandingInfo(null);
+    verify(rootRequestService, never()).createRootRequest(
+        any(HttpServletRequest.class),
+        anyString(),
+        anyString(),
+        anyString(),
+        anyString(),
+        anyString(),
+        anyString(),
+        anyString());
+  }
+
+  @Test
+  @DisplayName("stores query info when query string is present")
+  void storesQueryInfoWhenQueryStringIsPresent() throws Exception {
+    given(brandingService.getBrandingInfo(anyString()))
+        .willReturn(brandingInfo);
+
+    mockMvc.perform(get(BASE_PATH)
+            .header("Authorization", "Bearer " + "jwt-token")
+            .queryParam("p", "partner")
+            .queryParam("r", "referrer")
+            .queryParam("utm_source", "google")
+            .queryParam("utm_medium", "cpc")
+            .queryParam("utm_campaign", "spring")
+            .queryParam("utm_term", "jobs")
+            .queryParam("utm_content", "banner")
+            .accept(MediaType.APPLICATION_JSON))
+
+        .andDo(print())
+        .andExpect(status().isFound())
+        .andExpect(header().string("Location", containsString("/candidate-portal/login")))
+        .andExpect(header().string("Location", containsString("p=partner")))
+        .andExpect(header().string("Location", containsString("utm_source=google")));
+
+    verify(rootRequestService).createRootRequest(
+        any(HttpServletRequest.class),
+        eq("partner"),
+        eq("referrer"),
+        eq("google"),
+        eq("cpc"),
+        eq("spring"),
+        eq("jobs"),
+        eq("banner"));
+  }
+
+  @Test
+  @DisplayName("show headers logs request headers and uses remote address when forwarded header missing")
+  void showHeadersUsesRemoteAddressWhenForwardedHeaderMissing() throws Exception {
+    given(brandingService.getBrandingInfo(anyString()))
+        .willReturn(brandingInfo);
+
+    mockMvc.perform(get(BASE_PATH)
+            .header("Authorization", "Bearer " + "jwt-token")
+            .header("Host", "tctalent.org")
+            .header("X-Test-Header", "test-value")
+            .queryParam("h", "true")
+            .queryParam("p", "partner")
+            .accept(MediaType.APPLICATION_JSON))
+
+        .andDo(print())
+        .andExpect(status().isFound())
+        .andExpect(header().string("Location", containsString("/candidate-portal/login")))
+        .andExpect(header().string("Location", containsString("h=true")))
+        .andExpect(header().string("Location", containsString("p=partner")));
+
+    verify(rootRequestService).createRootRequest(
+        any(HttpServletRequest.class),
+        eq("partner"),
+        isNull(),
+        isNull(),
+        isNull(),
+        isNull(),
+        isNull(),
+        isNull());
+  }
+
+  @Test
+  @DisplayName("show headers skips remote address logging when forwarded header exists")
+  void showHeadersSkipsRemoteAddressWhenForwardedHeaderExists() throws Exception {
+    brandingInfo.setLandingPage("landing-page-url");
+
+    given(brandingService.getBrandingInfo(anyString()))
+        .willReturn(brandingInfo);
+
+    mockMvc.perform(get(BASE_PATH)
+            .header("Authorization", "Bearer " + "jwt-token")
+            .header("Host", "partner.tctalent.org")
+            .header("X-Forward-For", "203.0.113.10")
+            .queryParam("h", "true")
+            .queryParam("p", "partner")
+            .accept(MediaType.APPLICATION_JSON))
+
+        .andDo(print())
+        .andExpect(status().isFound())
+        .andExpect(header().string("Location", containsString("landing-page-url")))
+        .andExpect(header().string("Location", containsString("h=true")))
+        .andExpect(header().string("Location", containsString("p=partner")));
+
+    verify(rootRequestService).createRootRequest(
+        any(HttpServletRequest.class),
+        eq("partner"),
+        isNull(),
+        isNull(),
+        isNull(),
+        isNull(),
+        isNull(),
+        isNull());
+  }
 }
