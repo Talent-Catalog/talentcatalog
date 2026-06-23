@@ -72,7 +72,7 @@ class SavedSearchCandidateAdminApiTest extends ApiTestBase {
   private static final String EXPORT_CSV_PATH = "/{id}/export/csv";
   private static final String SEARCH_PAGED_PATH = "/{id}/search-paged";
   private static final Long SAVED_SEARCH_ID = 123L;
-
+  private static final String SEARCH_PAGED_OLD_FETCH_PATH = "/{id}/search-paged-old-fetch";
   private final Page<Candidate> candidatePage =
       new PageImpl<>(
           getListOfCandidates(),
@@ -189,4 +189,35 @@ class SavedSearchCandidateAdminApiTest extends ApiTestBase {
       any(PrintWriter.class));
   }
 
+  @Test
+  @DisplayName("saved search candidate search paged old fetch succeeds")
+  void savedSearchCandidateSearchPagedOldFetchSucceeds() throws Exception {
+    SavedSearchGetRequest request = new SavedSearchGetRequest();
+
+    given(savedSearchService.searchCandidates(anyLong(), any(SavedSearchGetRequest.class)))
+        .willReturn(candidatePage);
+
+    mockMvc.perform(post(BASE_PATH + SEARCH_PAGED_OLD_FETCH_PATH
+            .replace("{id}", Long.toString(SAVED_SEARCH_ID)))
+            .with(csrf())
+            .header("Authorization", "Bearer " + "jwt-token")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(request))
+            .accept(MediaType.APPLICATION_JSON))
+
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(jsonPath("$.number", is(0)))
+        .andExpect(jsonPath("$.numberOfElements", is(3)))
+        .andExpect(jsonPath("$.totalPages", is(1)))
+        .andExpect(jsonPath("$.hasPrevious", is(false)))
+        .andExpect(jsonPath("$.hasNext", is(false)))
+        .andExpect(jsonPath("$.content", notNullValue()))
+        .andExpect(jsonPath("$.content[0].selected", is(false)))
+        .andExpect(jsonPath("$.content[0].status", is("draft")));
+
+    verify(savedSearchService).searchCandidates(anyLong(), any(SavedSearchGetRequest.class));
+    verify(savedSearchService).setCandidateContext(anyLong(), any(Page.class));
+  }
 }
