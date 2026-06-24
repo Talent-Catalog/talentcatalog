@@ -16,6 +16,7 @@
 
 import {Component, EventEmitter, Input, Output, QueryList} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {UntypedFormControl, UntypedFormGroup} from '@angular/forms';
 import {By} from '@angular/platform-browser';
 import {TranslateModule} from '@ngx-translate/core';
 import {of, throwError} from 'rxjs';
@@ -54,6 +55,16 @@ class RegistrationFooterStubComponent {
   @Input() type?: string;
   @Output() backClicked = new EventEmitter<void>();
   @Output() nextClicked = new EventEmitter<void>();
+}
+
+@Component({
+  selector: 'tc-button',
+  template: '<button type="button" [disabled]="disabled" (click)="onClick.emit()"><ng-content></ng-content></button>'
+})
+class TcButtonStubComponent {
+  @Input() disabled?: boolean;
+  @Input() type?: string;
+  @Output() onClick = new EventEmitter<void>();
 }
 
 @Component({
@@ -153,6 +164,7 @@ describe('RegistrationDestinationsComponent', () => {
         TcLoadingStubComponent,
         ErrorStubComponent,
         RegistrationFooterStubComponent,
+        TcButtonStubComponent,
         DestinationStubComponent
       ],
       imports: [TranslateModule.forRoot()],
@@ -221,6 +233,22 @@ describe('RegistrationDestinationsComponent', () => {
       expect(destinationEls.length).toBe(2);
     });
 
+    it('should render a mark all as Yes button', () => {
+      const button = fixture.debugElement.query(By.directive(TcButtonStubComponent));
+
+      expect(button).toBeTruthy();
+      expect(button.nativeElement.textContent).toContain('Mark all as Yes');
+      expect(button.componentInstance.disabled).toBeFalse();
+    });
+
+    it('should disable the mark all as Yes button while saving', () => {
+      component.saving = true;
+      fixture.detectChanges();
+      const button = fixture.debugElement.query(By.directive(TcButtonStubComponent));
+
+      expect(button.componentInstance.disabled).toBeTrue();
+    });
+
     it('should pass the registration footer type based on edit mode', async () => {
       TestBed.resetTestingModule();
       await configureAndCreate({edit: true});
@@ -245,6 +273,62 @@ describe('RegistrationDestinationsComponent', () => {
       setDestinationForms([{invalid: false}, {invalid: true}]);
 
       expect(component.validationPassed).toBeFalse();
+    });
+  });
+
+  describe('setAllDestinationsToInterested', () => {
+    beforeEach(async () => configureAndCreate());
+
+    it('should set every destination interest to Yes and mark changed forms dirty', () => {
+      const yesForm = new UntypedFormGroup({
+        interest: new UntypedFormControl(YesNoUnsureLearn.Yes)
+      });
+      const noForm = new UntypedFormGroup({
+        interest: new UntypedFormControl(YesNoUnsureLearn.No)
+      });
+      const emptyForm = new UntypedFormGroup({
+        interest: new UntypedFormControl(null)
+      });
+      setDestinationForms([yesForm, noForm, emptyForm]);
+
+      component.setAllDestinationsToInterested();
+
+      expect(yesForm.value.interest).toBe(YesNoUnsureLearn.Yes);
+      expect(noForm.value.interest).toBe(YesNoUnsureLearn.Yes);
+      expect(emptyForm.value.interest).toBe(YesNoUnsureLearn.Yes);
+      expect(yesForm.dirty).toBeFalse();
+      expect(noForm.dirty).toBeTrue();
+      expect(emptyForm.dirty).toBeTrue();
+      expect(yesForm.get('interest').dirty).toBeFalse();
+      expect(noForm.get('interest').dirty).toBeTrue();
+      expect(emptyForm.get('interest').dirty).toBeTrue();
+    });
+
+    it('should not emit value changes when setting interests in bulk', () => {
+      const noForm = new UntypedFormGroup({
+        interest: new UntypedFormControl(YesNoUnsureLearn.No)
+      });
+      const valueChangesSpy = jasmine.createSpy('valueChanges');
+      noForm.get('interest').valueChanges.subscribe(valueChangesSpy);
+      setDestinationForms([noForm]);
+
+      component.setAllDestinationsToInterested();
+
+      expect(valueChangesSpy).not.toHaveBeenCalled();
+    });
+
+    it('should set all interests to Yes when the button is clicked', () => {
+      const noForm = new UntypedFormGroup({
+        interest: new UntypedFormControl(YesNoUnsureLearn.No)
+      });
+      setDestinationForms([noForm]);
+      const button = fixture.debugElement.query(By.directive(TcButtonStubComponent));
+
+      button.triggerEventHandler('onClick', null);
+
+      expect(noForm.value.interest).toBe(YesNoUnsureLearn.Yes);
+      expect(noForm.dirty).toBeTrue();
+      expect(noForm.get('interest').dirty).toBeTrue();
     });
   });
 

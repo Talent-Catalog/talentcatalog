@@ -22,6 +22,14 @@
 
     <app-error [error]="error"></app-error>
 
+    <div class="destination-actions">
+      <tc-button type="outline"
+                 [disabled]="saving"
+                 (onClick)="setAllDestinationsToInterested()">
+        Mark all as Yes
+      </tc-button>
+    </div>
+
     <div class="destination-card" *ngFor="let destination of destinations; let i = index;">
       <div class="card">
         <app-destination
