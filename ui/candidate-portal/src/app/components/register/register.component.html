@@ -18,19 +18,14 @@
 
   <div class="container">
 
-    <h5 *ngIf="registrationService?.currentStep?.section > 0">
+    <h5>
       {{ 'REGISTRATION.HEADER.STEP' | translate: {current: registrationService?.currentStep?.section, total: registrationService?.totalSections} }}
     </h5>
 
     <h3 class="fw-bold">{{ 'REGISTRATION.HEADER.TITLE.' + registrationService?.currentStep?.key | uppercase | translate }}</h3>
 
-    <p *ngIf="registrationService?.currentStep?.section > 0" class="explain">
+    <p class="explain">
       {{ 'REGISTRATION.HEADER.EXPLANATION' | translate }}
-    </p>
-
-    <p *ngIf="registrationService?.currentStep?.section === 0" class="explain"
-       [innerHTML]="'REGISTRATION.HEADER.ACCOUNT.EXPLANATION' | translate"
-    >
     </p>
 
   </div>
@@ -46,9 +41,6 @@
 <div class="step-body"
      [ngClass]="{'register-submit' : !isRegistered() && registrationService?.currentStepKey == 'complete'}"
      [ngSwitch]="registrationService?.currentStepKey">
-
-  <app-registration-create-account *ngSwitchCase="'account'">
-  </app-registration-create-account>
 
   <app-registration-contact *ngSwitchCase="'contact'">
   </app-registration-contact>

@@ -166,9 +166,6 @@ import {
   CreateUpdatePostComponent
 } from "./components/chat/create-update-post/create-update-post.component";
 import {QuillModule} from "ngx-quill";
-import {
-  RegistrationCreateAccountComponent
-} from './components/register/create-account/registration-create-account.component';
 import {FileSelectorComponent} from "./components/util/file-selector/file-selector.component";
 import {PickerModule} from "@ctrl/ngx-emoji-mart";
 import {PreviewLinkComponent} from './components/chat/preview-link/preview-link.component';
@@ -334,7 +331,6 @@ export function initializeAuth(authenticationService: AuthenticationService) {
     ViewPostComponent,
     ChatReadStatusComponent,
     TruncatePipe,
-    RegistrationCreateAccountComponent,
     FileSelectorComponent,
     PreviewLinkComponent,
     LinkTooltipComponent,

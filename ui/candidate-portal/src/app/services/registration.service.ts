@@ -28,11 +28,6 @@ export class RegistrationService {
 
   public steps: RegistrationStep[] = [
     {
-      key: 'account',
-      title: 'Welcome to Talent Catalog!',
-      section: 0
-    },
-    {
       key: 'contact',
       title: 'How else can we contact you?',
       section: 1
@@ -75,23 +70,23 @@ export class RegistrationService {
     {
       key: 'destinations',
       title: 'Do you have any destination preferences?',
-      section: 8
+      section: 9
     },
     {
       key: 'additional',
       title: 'How did you hear about us?',
-      section: 9
+      section: 10
     },
     {
       key: 'upload',
       title: 'Do you have any files to upload?',
-      section: 10
+      section: 11
     },
     {
       key: 'complete',
       title: '',
       hideHeader: true,
-      section: 10
+      section: 11
     }
   ];
   public totalSections: number = Math.max(...this.steps.map(s => s.section));
