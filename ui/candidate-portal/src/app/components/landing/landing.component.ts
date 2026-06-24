@@ -234,7 +234,7 @@ export class LandingComponent implements OnInit, OnDestroy {
           //New users should go through the registration process where we ask them for extra data
           //about their skills, qualifications and experiences.
           if (response.contactConsentRegistration) {
-            this.gatherRegistrationData();
+            this.doRegistrationDataEntry();
           } else {
             //If they haven't already given their consent to contact them, we need to ask them
             //to do that before proceeding further.
@@ -252,58 +252,14 @@ export class LandingComponent implements OnInit, OnDestroy {
     })
   }
 
-  gatherRegistrationData() {
+  doRegistrationDataEntry() {
     //Proceed with registration.
-    this.registrationService.next();
-    this.router.navigate(['/profile']);
+    void this.router.navigate(['/register-entry'], {queryParams: {}});
   }
 
   private requestContactConsent() {
     //todo Set mode that shows contact consent checkbox plus button to complete Authentication again.
     this.mode = this.MODE_REGISTER;
-  }
-
-  completeLogin() {
-    this.error = null;
-    this.loading = true;
-    this.authenticationService.completeLogin()
-    .pipe(finalize(() => {
-      this.authAction = null;
-      this.loading = false;
-    }))
-    .subscribe({
-      next: (response) => {
-        this.router.navigate(['/home']);
-      },
-      error: (error) => {
-        //Display error
-        this.error = error;
-        this.pauseThenLogout();
-      }
-    })
-  }
-
-  //todo This should only be called once consent has been gathered.
-  //todo Also the request should contain all the utm parameters see getParamesAndRegister() below.
-  private completeRegister(request: CompleteOauthAuthenticationRequest) {
-    this.error = null;
-    this.loading = true;
-    this.authenticationService.completeRegister(request)
-    .pipe(finalize(() => {
-      this.authAction = null;
-      this.loading = false;
-    }))
-    .subscribe({
-      next: (response) => {
-        //Proceed with registration.
-        this.registrationService.next();
-      },
-      error: (error) => {
-        //Display error
-        this.error = error;
-        this.pauseThenLogout();
-      }
-    })
   }
 
   private pauseThenLogout() {

@@ -27,9 +27,10 @@ import {EMAIL_REGEX} from "../../../model/base";
 import {
   CompleteOauthAuthenticationRequest
 } from "../../../model/complete-oauth-authentication-request";
-import {finalize} from "rxjs/internal/operators";
 import {timer} from "rxjs";
 
+
+//todo Can I delete this altogther.
 @Component({
   selector: 'app-registration-create-account',
   templateUrl: './registration-create-account.component.html',
@@ -145,21 +146,21 @@ export class RegistrationCreateAccountComponent implements OnInit {
   //todo This should only be called once consent has been gathered.
   //todo Also the request should contain all the utm parameters see getParamesAndRegister() below.
   completeRegister(request: CompleteOauthAuthenticationRequest) {
-    this.error = null;
-    this.loading = true;
-    this.authenticationService.completeRegister(request)
-    .pipe(finalize(() => this.loading = false))
-    .subscribe({
-      next: (response) => {
-        //Proceed with registration.
-        this.registrationService.next();
-      },
-      error: (error) => {
-        //Display error
-        this.error = error;
-        this.pauseThenLogout();
-      }
-    })
+    // this.error = null;
+    // this.loading = true;
+    // this.authenticationService.completeRegister(request)
+    // .pipe(finalize(() => this.loading = false))
+    // .subscribe({
+    //   next: (response) => {
+    //     //Proceed with registration.
+    //     this.registrationService.next();
+    //   },
+    //   error: (error) => {
+    //     //Display error
+    //     this.error = error;
+    //     this.pauseThenLogout();
+    //   }
+    // })
   }
 
   private pauseThenLogout() {
