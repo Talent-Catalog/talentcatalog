@@ -53,7 +53,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
@@ -159,23 +159,23 @@ class CandidateAdminApiTest extends ApiTestBase {
 
     private final Candidate candidate = getCandidate();
 
-    @MockBean
+    @MockitoBean
     CandidateService candidateService;
-    @MockBean
+    @MockitoBean
     CandidateOpportunityService candidateOpportunityService;
-    @MockBean
+    @MockitoBean
     CandidateSavedListService candidateSavedListService;
-    @MockBean
+    @MockitoBean
     SavedListService savedListService;
-    @MockBean
+    @MockitoBean
     SavedSearchService savedSearchService;
-    @MockBean
+    @MockitoBean
     CandidateTokenProvider candidateTokenProvider;
-    @MockBean
+    @MockitoBean
     CandidateBuilderSelector candidateBuilderSelector;
-    @MockBean
+    @MockitoBean
     CandidateIntakeDataBuilderSelector candidateIntakeDataBuilderSelector;
-    @MockBean
+    @MockitoBean
     CandidateErasureService candidateErasureService;
 
     @Autowired MockMvc mockMvc;
