@@ -18,6 +18,8 @@ package org.tctalent.server.api.portal;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -29,7 +31,6 @@ import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.tctalent.server.model.db.Agreement;
@@ -39,6 +40,8 @@ import org.tctalent.server.model.db.TermsInfo;
 import org.tctalent.server.model.db.TermsType;
 import org.tctalent.server.service.db.AgreementService;
 import org.tctalent.server.service.db.TermsInfoService;
+import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.context.Context;
 
 class AgreementPortalApiTest {
 
@@ -48,12 +51,15 @@ class AgreementPortalApiTest {
     @Mock
     private TermsInfoService termsInfoService;
 
-    @InjectMocks
+    @Mock
+    private TemplateEngine termsTemplateEngine;
+
     private AgreementPortalApi agreementPortalApi;
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
+        agreementPortalApi = new AgreementPortalApi(agreementService, termsInfoService, termsTemplateEngine);
     }
 
     @SuppressWarnings("unchecked")
@@ -76,10 +82,12 @@ class AgreementPortalApiTest {
             "/terms/OpcDataProcessingAgreement-20250831.html",
             TermsType.OPC_STANDARD_DATA_PROCESSING_AGREEMENT,
             LocalDate.of(2025, Month.AUGUST, 31));
-        termsInfo.setContent("<h1>OPC Terms</h1>");
+        termsInfo.setContent("<p th:text=\"${companyName}\">[Your Organization]</p>");
 
         when(agreementService.listMyAgreements()).thenReturn(List.of(agreement));
         when(termsInfoService.get("OpcDataProcessingAgreementV1")).thenReturn(termsInfo);
+        when(termsTemplateEngine.process(eq(termsInfo.getContent()), any(Context.class)))
+            .thenReturn("<p>OPC</p>");
 
         List<Map<String, Object>> result = agreementPortalApi.listMyAgreements();
 
@@ -99,9 +107,10 @@ class AgreementPortalApiTest {
         assertEquals("OpcDataProcessingAgreementV1", termsInfoDto.get("id"));
         assertEquals(TermsType.OPC_STANDARD_DATA_PROCESSING_AGREEMENT, termsInfoDto.get("type"));
         assertEquals("/terms/OpcDataProcessingAgreement-20250831.html", termsInfoDto.get("pathToContent"));
-        assertEquals("<h1>OPC Terms</h1>", termsInfoDto.get("content"));
+        assertEquals("<p>OPC</p>", termsInfoDto.get("content"));
 
         verify(agreementService).listMyAgreements();
         verify(termsInfoService).get("OpcDataProcessingAgreementV1");
+        verify(termsTemplateEngine).process(eq(termsInfo.getContent()), any(Context.class));
     }
 }

@@ -66,6 +66,8 @@ import org.tctalent.server.service.db.CandidateService;
 import org.tctalent.server.service.db.CounterpartyService;
 import org.tctalent.server.service.db.TermsInfoService;
 import org.tctalent.server.service.db.UserService;
+import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.context.Context;
 
 @WebMvcTest(ServicesPortalController.class)
 @AutoConfigureMockMvc
@@ -88,6 +90,8 @@ class ServicesPortalControllerTest extends ApiTestBase {
   @MockBean private CounterpartyService counterpartyService;
   @MockBean private CandidateService candidateService;
   @MockBean private TermsInfoService termsInfoService;
+  @MockBean(name = "termsTemplateEngine")
+  private TemplateEngine termsTemplateEngine;
 
   @Autowired private MockMvc mockMvc;
   @Autowired private ObjectMapper objectMapper;
@@ -266,12 +270,17 @@ class ServicesPortalControllerTest extends ApiTestBase {
   void getOpcDpaTermsReturnsConfiguredTerms() throws Exception {
     given(candidateAssistanceService.opcDpaAcceptedTermsInfoId()).willReturn(Optional.of(OPC_DPA_TERMS_ID));
     given(termsInfoService.get(OPC_DPA_TERMS_ID)).willReturn(opcDpaTermsInfo);
+    given(counterpartyService.findOrCreateByTypeAndServiceProvider(
+        CounterpartyType.SERVICE_PROVIDER, ServiceProvider.LINKEDIN)).willReturn(counterparty);
+    given(termsTemplateEngine.process(ArgumentMatchers.eq(opcDpaTermsInfo.getContent()),
+        ArgumentMatchers.any(Context.class)))
+        .willReturn("<p>Rendered OPC DPA</p>");
 
     mockMvc.perform(get(BASE_PATH + "/" + PROVIDER + "/" + SERVICE_CODE + "/agreement/opc-dpa/terms")
             .header("Authorization", "Bearer jwt-token"))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.id", is(OPC_DPA_TERMS_ID)))
-        .andExpect(jsonPath("$.content", is("<p>OPC DPA</p>")));
+        .andExpect(jsonPath("$.content", is("<p>Rendered OPC DPA</p>")));
   }
 
   @Test
@@ -322,12 +331,17 @@ class ServicesPortalControllerTest extends ApiTestBase {
     given(candidateAssistanceService.agreementTermsType())
         .willReturn(Optional.of(TermsType.REFERENCE_SERVICE_TERMS));
     given(termsInfoService.getCurrentByType(TermsType.REFERENCE_SERVICE_TERMS)).willReturn(termsInfo);
+    given(counterpartyService.findOrCreateByTypeAndServiceProvider(
+        CounterpartyType.SERVICE_PROVIDER, ServiceProvider.LINKEDIN)).willReturn(counterparty);
+    given(termsTemplateEngine.process(ArgumentMatchers.eq(termsInfo.getContent()),
+        ArgumentMatchers.any(Context.class)))
+        .willReturn("<p>Rendered Terms</p>");
 
     mockMvc.perform(get(BASE_PATH + "/" + PROVIDER + "/" + SERVICE_CODE + "/agreement/terms")
             .header("Authorization", "Bearer jwt-token"))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.id", is(TERMS_ID)))
-        .andExpect(jsonPath("$.content", is("<p>Terms</p>")));
+        .andExpect(jsonPath("$.content", is("<p>Rendered Terms</p>")));
   }
 
   @Test
