@@ -20,10 +20,12 @@ import {LanguageService} from '../../services/language.service';
 import {initializePhraseAppEditor} from "ngx-translate-phraseapp";
 import {BrandingInfo, BrandingService} from "../../services/branding.service";
 import {AuthenticationService} from "../../services/authentication.service";
-import {Subscription, timer} from "rxjs";
+import {Subscription} from "rxjs";
 import {IdpStatus} from "../../services/idp-status";
 import {finalize} from "rxjs/internal/operators";
-import {OauthRegistrationRequest} from "../../model/oauth-registration-request";
+import {
+  CompleteOauthAuthenticationRequest
+} from "../../model/complete-oauth-authentication-request";
 import {RegistrationService} from "../../services/registration.service";
 
 @Component({
@@ -103,18 +105,28 @@ export class LandingComponent implements OnInit, OnDestroy {
     if (this.authenticationService.isAuthenticated()) {
       this.authenticationService.clearAuthError();
 
-      //todo We can't reliably tell without calling the server whether this is a login or
-      // registration action
-      //Need to call server then figure out what to do. If it is a registration and no consent
-      //has been given (this could happen if did a Login, then switched to Registration in Keycloak)
-      // we need to grab consent before progressing.
-      if (this.authAction === AuthenticationService.REGISTER_ACTION) {
-        if (this.mode !== this.MODE_REGISTER) {
-          this.mode = this.MODE_REGISTER;
-        }
-      } else if (this.authAction === AuthenticationService.LOGIN_ACTION) {
-        this.completeLogin();
-      }
+      //Note that we can't reliably tell whether the user logged to an existing account or
+      //registered a new account on the Idp service because, even though they might have clicked
+      //on Login in our Angular app, and we directed them to Login on the Idp service, they can
+      //switch to registering inside the Idp service. And vice versa: we can direct them to
+      //register, and they switch to logging in.
+      //All we can rely on is that they are authenticated. We let our server figure out whether
+      //it is a new user that we should route to gather registration data, or whether it is an
+      //existing user who has just logged in.
+      this.completeAuthentication();
+
+      // //todo We can't reliably tell without calling the server whether this is a login or
+      // // registration action
+      // //Need to call server then figure out what to do. If it is a registration and no consent
+      // //has been given (this could happen if did a Login, then switched to Registration in Keycloak)
+      // // we need to grab consent before progressing.
+      // if (this.authAction === AuthenticationService.REGISTER_ACTION) {
+      //   if (this.mode !== this.MODE_REGISTER) {
+      //     this.mode = this.MODE_REGISTER;
+      //   }
+      // } else if (this.authAction === AuthenticationService.LOGIN_ACTION) {
+      //   this.completeLogin();
+      // }
     }
 
     //todo All this query param handling needs to happen after we are authenticated
@@ -189,33 +201,48 @@ export class LandingComponent implements OnInit, OnDestroy {
   }
 
   onCompleteRegister() {
-    let request: OauthRegistrationRequest = {
-      //todo These consents are being mocked for now. When new UI is designed
-      //the register button should be disabled until the user has consented to the terms.
-      contactConsentRegistration: true,
-      contactConsentPartners: true
-    }
-    this.completeRegister(request);
+    this.completeAuthentication();
   }
 
   onToggleConsent() {
     this.consented = !this.consented;
   }
 
-  //todo This should only be called once consent has been gathered.
-  //todo Also the request should contain all the utm parameters see getParamesAndRegister() below.
-  private completeRegister(request: OauthRegistrationRequest) {
+  private computeRedirectUri(action: string) {
+    const urlTree = this.currentUrlAsTree;
+    urlTree.queryParams[AuthenticationService.CALLBACK_ACTION_PARAM_NAME] = action;
+    return urlTree.toString();
+  }
+
+  private completeAuthentication() {
+    let request: CompleteOauthAuthenticationRequest = {
+      contactConsentRegistration: true,
+      contactConsentPartners: true
+      //todo query params
+    }
     this.error = null;
     this.loading = true;
-    this.authenticationService.completeRegister(request)
+    this.authenticationService.completeAuthentication(request)
     .pipe(finalize(() => {
       this.authAction = null;
       this.loading = false;
     }))
     .subscribe({
       next: (response) => {
-        //Proceed with registration.
-        this.registrationService.next();
+        //The server response tells us whether this is a new user or an existing user.
+        if (response.userIsNew) {
+          //New users should go through the registration process where we ask them for extra data
+          //about their skills, qualifications and experiences.
+          if (response.contactConsentRegistration) {
+            this.gatherRegistrationData();
+          } else {
+            //If they haven't already given their consent to contact them, we need to ask them
+            //to do that before proceeding further.
+            this.requestContactConsent();
+          }
+        } else {
+          this.router.navigate(['/home']);
+        }
       },
       error: (error) => {
         //Display error
@@ -225,10 +252,15 @@ export class LandingComponent implements OnInit, OnDestroy {
     })
   }
 
-  private computeRedirectUri(action: string) {
-    const urlTree = this.currentUrlAsTree;
-    urlTree.queryParams[AuthenticationService.CALLBACK_ACTION_PARAM_NAME] = action;
-    return urlTree.toString();
+  gatherRegistrationData() {
+    //Proceed with registration.
+    this.registrationService.next();
+    this.router.navigate(['/profile']);
+  }
+
+  private requestContactConsent() {
+    //todo Set mode that shows contact consent checkbox plus button to complete Authentication again.
+    this.mode = this.MODE_REGISTER;
   }
 
   completeLogin() {
@@ -251,13 +283,33 @@ export class LandingComponent implements OnInit, OnDestroy {
     })
   }
 
+  //todo This should only be called once consent has been gathered.
+  //todo Also the request should contain all the utm parameters see getParamesAndRegister() below.
+  private completeRegister(request: CompleteOauthAuthenticationRequest) {
+    this.error = null;
+    this.loading = true;
+    this.authenticationService.completeRegister(request)
+    .pipe(finalize(() => {
+      this.authAction = null;
+      this.loading = false;
+    }))
+    .subscribe({
+      next: (response) => {
+        //Proceed with registration.
+        this.registrationService.next();
+      },
+      error: (error) => {
+        //Display error
+        this.error = error;
+        this.pauseThenLogout();
+      }
+    })
+  }
+
   private pauseThenLogout() {
     //Log out the user if the login did not complete successfully.
     //Pause so user can see the error before logging out and being redirected to the landing page.
-    timer(10000).subscribe(() => {
-      //Log out the user if the registration did not complete successfully.
-      this.authenticationService.logout();
-    });
+    void this.router.navigate(['/logout'], { queryParams: { reason: this.error } });
   }
 
   dismissAuthError(): void {

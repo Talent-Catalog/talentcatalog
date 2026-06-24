@@ -26,9 +26,9 @@ import {TermsType} from "../model/terms-info-dto";
 import {IdpProvider} from "./idp-provider";
 import {IDP_PROVIDER} from "./idp.tokens";
 import {IdpStatus} from "./idp-status";
-import {catchError, map, switchMap} from "rxjs/operators";
+import {catchError, switchMap, tap} from "rxjs/operators";
 import {AuthenticationResponse} from "../model/authentication-response";
-import {OauthRegistrationRequest} from "../model/oauth-registration-request";
+import {CompleteOauthAuthenticationRequest} from "../model/complete-oauth-authentication-request";
 
 export class AuthenticateInContextTranslationRequest {
   password: string;
@@ -106,33 +106,16 @@ export class AuthenticationService implements OnDestroy {
     return this.idpProvider.logout();
   }
 
-  completeLogin(): Observable<void> {
-    //Retrieve current profile from provider and send to server so that it can be stored in the
-    //database.
-    return from(this.idpProvider.getProfile()).pipe(
-      switchMap(profile =>
-        this.http.post(`${this.apiUrl}/login`, profile).pipe(
-          map((response: AuthenticationResponse) => {
-            this.storeAuthenticationData(response);
-          }),
-          catchError(e => {
-              console.log('error', e);
-              return throwError(e);
-            }
-          )
-        )
-      )
-    )
-  }
-
-  completeRegister(request: OauthRegistrationRequest): Observable<void> {
+  completeAuthentication(request: CompleteOauthAuthenticationRequest)
+    : Observable<AuthenticationResponse> {
     //Retrieve current profile from provider and send to server so that it can be stored in the
     //database.
     return from(this.idpProvider.getProfile()).pipe(
       switchMap(profile => {
           request.profile = profile;
-          return this.http.post(`${this.apiUrl}/register`, request).pipe(
-            map((response: AuthenticationResponse) => {
+          return this.http.post(`${this.apiUrl}/complete-auth`, request).pipe(
+            tap((response: AuthenticationResponse) => {
+              //Save the returned authentication data - including the current user.
               this.storeAuthenticationData(response);
             }),
             catchError(e => {

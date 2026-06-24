@@ -26,21 +26,27 @@ export class LoggingOutComponent implements OnInit, OnDestroy {
   {}
 
   ngOnInit() {
-    this.reason = this.route.snapshot.queryParamMap.get('reason');
+    if (!this.authenticationService.isAuthenticated()) {
+      //If already logged out. This can happen after logging out from idp.
+      //It can call back to this page.
+      this.goToLandingPage();
+    } else {
+      this.reason = this.route.snapshot.queryParamMap.get('reason');
 
-    const countdownSeconds = 180;
-    //Automatically logout after countdown seconds
-    timer(0, 1000).pipe(
-      //Convert elapsed seconds to remaining seconds
-      map(elapsedSeconds => countdownSeconds - elapsedSeconds),
-      tap(remainingSeconds => this.secondsRemaining = remainingSeconds),
-      takeWhile(remainingSeconds => remainingSeconds >= 0),
-      takeUntil(this.destroy$)
-    ).subscribe(remainingSeconds => {
-      if (remainingSeconds <= 0) {
-        this.logout();
-      }
-    });
+      const countdownSeconds = 180;
+      //Automatically logout after countdown seconds
+      timer(0, 1000).pipe(
+        //Convert elapsed seconds to remaining seconds
+        map(elapsedSeconds => countdownSeconds - elapsedSeconds),
+        tap(remainingSeconds => this.secondsRemaining = remainingSeconds),
+        takeWhile(remainingSeconds => remainingSeconds >= 0),
+        takeUntil(this.destroy$)
+      ).subscribe(remainingSeconds => {
+        if (remainingSeconds <= 0) {
+          this.logout();
+        }
+      });
+    }
   }
 
   logout() {
@@ -50,7 +56,11 @@ export class LoggingOutComponent implements OnInit, OnDestroy {
     //Force a logout
     this.authenticationService.logout();
 
-    this.router.navigate(['']);
+    this.goToLandingPage();
+  }
+
+  private goToLandingPage() {
+    this.router.navigate([''], {queryParams: {}});
   }
 
   ngOnDestroy() {

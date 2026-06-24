@@ -18,10 +18,46 @@ import {User} from "./user";
 import {TcInstanceType} from "./tc-instance-type";
 
 /**
- * Response from the server in response to a successful login or registration
+ * Response from the server in response to a successful user login or registration
  */
 export interface AuthenticationResponse {
-  tcInstanceType: TcInstanceType;
-  user: User;
+
+  /**
+   * True if the user is authorized to view chats.
+   */
   canViewChats: boolean;
+
+  /**
+   * Indicates that the user is a candidate who gave their to being contacted
+   * by partners.
+   * <p>
+   * Note that this value is only valid in response to a candidate registration - ie when
+   * {@link #userIsNew} is true. At any other time it will always be false.
+   */
+  contactConsentPartners: boolean;
+
+  /**
+   * Indicates that the user is a candidate who gave their to being contacted
+   * related to their registration.
+   * <p>
+   * Note that this value is only valid in response to a candidate registration - ie when
+   * {@link #userIsNew} is true. At any other time it will always be false.
+   */
+  contactConsentRegistration: boolean;
+
+  /**
+   * Instance of the running server.
+   */
+  tcInstanceType: TcInstanceType;
+
+  /**
+   * True if the returned User is new.
+   * This will mean that a full registration process should start.
+   */
+  userIsNew: boolean;
+
+  /**
+   * Authenticated user.
+   */
+  user: User;
 }

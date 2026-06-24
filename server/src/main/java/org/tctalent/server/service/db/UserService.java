@@ -54,6 +54,13 @@ public interface UserService {
     boolean isCandidate(@Nullable User user);
 
     /**
+     * True if we have no user on the database with the given profile.
+     * @param profile Profile of a user.
+     * @return True if no such user is on our database - i.e., they are a new user.
+     */
+    boolean isNewUser(AuthProfile profile);
+
+    /**
      * Log in a user based on the given OAuth2 profile.
      * <p>
      * Will only throw an exception is there is a system error or if the user is found but has been

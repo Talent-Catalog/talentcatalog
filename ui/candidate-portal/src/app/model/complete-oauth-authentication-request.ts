@@ -15,7 +15,7 @@
  */
 import {IdpProfile} from "../services/idp-profile";
 
-export interface OauthRegistrationRequest {
+export interface CompleteOauthAuthenticationRequest {
   profile?: IdpProfile;
   contactConsentRegistration?: boolean;
   contactConsentPartners?: boolean;

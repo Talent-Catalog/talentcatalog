@@ -140,8 +140,8 @@ import org.tctalent.server.request.candidate.CandidateIntakeAuditRequest;
 import org.tctalent.server.request.candidate.CandidateIntakeDataUpdate;
 import org.tctalent.server.request.candidate.CandidateNumberOrNameSearchRequest;
 import org.tctalent.server.request.candidate.CandidatePublicIdSearchRequest;
+import org.tctalent.server.request.candidate.CompleteOauthAuthenticationRequest;
 import org.tctalent.server.request.candidate.CreateCandidateRequest;
-import org.tctalent.server.request.candidate.OauthRegistrationRequest;
 import org.tctalent.server.request.candidate.ResolveTaskAssignmentsRequest;
 import org.tctalent.server.request.candidate.SavedListGetRequest;
 import org.tctalent.server.request.candidate.SelfRegistrationRequest;
@@ -169,6 +169,7 @@ import org.tctalent.server.request.note.CreateCandidateNoteRequest;
 import org.tctalent.server.security.AuthProfile;
 import org.tctalent.server.security.AuthService;
 import org.tctalent.server.security.PasswordHelper;
+import org.tctalent.server.service.db.AgreementService;
 import org.tctalent.server.service.db.CandidateCitizenshipService;
 import org.tctalent.server.service.db.CandidateDependantService;
 import org.tctalent.server.service.db.CandidateDestinationService;
@@ -176,8 +177,8 @@ import org.tctalent.server.service.db.CandidateNoteService;
 import org.tctalent.server.service.db.CandidatePropertyService;
 import org.tctalent.server.service.db.CandidateSavedListService;
 import org.tctalent.server.service.db.CandidateService;
-import org.tctalent.server.service.db.CountryService;
 import org.tctalent.server.service.db.CounterpartyService;
+import org.tctalent.server.service.db.CountryService;
 import org.tctalent.server.service.db.FileSystemService;
 import org.tctalent.server.service.db.PartnerService;
 import org.tctalent.server.service.db.PublicIDService;
@@ -187,7 +188,6 @@ import org.tctalent.server.service.db.SavedListService;
 import org.tctalent.server.service.db.SavedSearchService;
 import org.tctalent.server.service.db.SystemNotificationService;
 import org.tctalent.server.service.db.UserService;
-import org.tctalent.server.service.db.AgreementService;
 import org.tctalent.server.service.db.email.EmailHelper;
 import org.tctalent.server.service.db.util.DocxHelper;
 import org.tctalent.server.service.db.util.GoogleDocHelper;
@@ -1137,7 +1137,7 @@ public class CandidateServiceImpl implements CandidateService {
 
     @Transactional
     @Override
-    public Candidate register(OauthRegistrationRequest request, @NotNull HttpServletRequest httpRequest) {
+    public Candidate register(CompleteOauthAuthenticationRequest request, @NotNull HttpServletRequest httpRequest) {
         //TODO JC Any Exception should log out the user on IDP. Logout can happen from Angular
         //TODO JC Some exceptions may need to delete the user on IDP?
 

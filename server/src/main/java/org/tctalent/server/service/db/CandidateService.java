@@ -59,7 +59,7 @@ import org.tctalent.server.request.candidate.CandidateIntakeAuditRequest;
 import org.tctalent.server.request.candidate.CandidateIntakeDataUpdate;
 import org.tctalent.server.request.candidate.CandidateNumberOrNameSearchRequest;
 import org.tctalent.server.request.candidate.CandidatePublicIdSearchRequest;
-import org.tctalent.server.request.candidate.OauthRegistrationRequest;
+import org.tctalent.server.request.candidate.CompleteOauthAuthenticationRequest;
 import org.tctalent.server.request.candidate.ResolveTaskAssignmentsRequest;
 import org.tctalent.server.request.candidate.SavedListGetRequest;
 import org.tctalent.server.request.candidate.SelfRegistrationRequest;
@@ -147,7 +147,7 @@ public interface CandidateService {
      * @param httpRequest HTTP request for registration
      * @return Candidate registered.
      */
-    Candidate register(OauthRegistrationRequest request, @NonNull HttpServletRequest httpRequest);
+    Candidate register(CompleteOauthAuthenticationRequest request, @NonNull HttpServletRequest httpRequest);
 
     /**
      * Registers a new candidate by creating a new candidate and user.

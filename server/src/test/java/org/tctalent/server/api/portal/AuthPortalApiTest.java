@@ -25,7 +25,7 @@ import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.TcInstanceType;
 import org.tctalent.server.model.db.User;
 import org.tctalent.server.request.AuthenticateInContextTranslationRequest;
-import org.tctalent.server.request.candidate.OauthRegistrationRequest;
+import org.tctalent.server.request.candidate.CompleteOauthAuthenticationRequest;
 import org.tctalent.server.response.AuthenticationResponse;
 import org.tctalent.server.security.AuthProfile;
 import org.tctalent.server.security.OAuth2UserService;
@@ -147,7 +147,7 @@ class AuthPortalApiTest {
   void testRegister_Success() {
     User user = createSampleUser();
     Candidate candidate = createSampleCandidate(user);
-    OauthRegistrationRequest registrationRequest = new OauthRegistrationRequest();
+    CompleteOauthAuthenticationRequest registrationRequest = new CompleteOauthAuthenticationRequest();
     HttpServletRequest httpRequest = new MockHttpServletRequest();
     when(candidateService.register(registrationRequest, httpRequest)).thenReturn(candidate);
     AuthenticationResponse response = createSampleAuthenticationResponse(user);
@@ -166,9 +166,9 @@ class AuthPortalApiTest {
 
   @Test
   void testRegister_Exception() {
-    OauthRegistrationRequest registrationRequest = new OauthRegistrationRequest();
+    CompleteOauthAuthenticationRequest registrationRequest = new CompleteOauthAuthenticationRequest();
     HttpServletRequest httpRequest = new MockHttpServletRequest();
-    when(candidateService.register(any(OauthRegistrationRequest.class),
+    when(candidateService.register(any(CompleteOauthAuthenticationRequest.class),
         any(HttpServletRequest.class)))
         .thenThrow(new RuntimeException("Some Exception"));
 

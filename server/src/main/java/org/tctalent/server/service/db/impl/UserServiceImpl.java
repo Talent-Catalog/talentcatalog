@@ -157,26 +157,11 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User syncOauthUserAtLoginOrRegister(AuthProfile profile, @NonNull Partner partner) {
-        String idpIssuer = profile.getIdpIssuer();
-        String idpSubject = profile.getIdpSubject();
-
-        //Look up based on idpIssuer and idpSubject
-        Optional<User> userOptional = userRepository
-            .findByIdpIssuerAndIdpSubject(idpIssuer, idpSubject);
-
-        //Did we find user? (normal case is yes)
-        if (userOptional.isEmpty()) {
-            //Try to find the user by email. This will be necessary when migrating existing,
-            //pre-OAuth2 users to the new system. Those users will be on the database with a null
-            //idpIssuer and idpSubject.
-            User userByEmail = userRepository.findByEmailIgnoreCase(profile.getEmail());
-            if (userByEmail != null) {
-                //Found user by email, update any changed fields.
-                userOptional = Optional.of(userByEmail);
-            }
-        }
+        Optional<User> userOptional = findUser(profile);
 
         boolean created = false;
+        String idpIssuer = profile.getIdpIssuer();
+        String idpSubject = profile.getIdpSubject();
         User user;
         //Check if we found a user on the database.
         if (userOptional.isEmpty()) {
@@ -504,9 +489,42 @@ public class UserServiceImpl implements UserService {
         }
     }
 
+    /**
+     * Searches the database for a user with the given profile.
+     * @param profile Profile of user we are looking for.
+     * @return User in an Optional - empty if no such user found.
+     */
+    private Optional<User> findUser(AuthProfile profile) {
+        String idpIssuer = profile.getIdpIssuer();
+        String idpSubject = profile.getIdpSubject();
+
+        //Look up based on idpIssuer and idpSubject
+        Optional<User> userOptional = userRepository
+            .findByIdpIssuerAndIdpSubject(idpIssuer, idpSubject);
+
+        //Did we find user? (normal case is yes)
+        if (userOptional.isEmpty()) {
+            //Try to find the user by email. This will be necessary when migrating existing,
+            //pre-OAuth2 users to the new system. Those users will be on the database with a null
+            //idpIssuer and idpSubject.
+            User userByEmail = userRepository.findByEmailIgnoreCase(profile.getEmail());
+            if (userByEmail != null) {
+                //Found user by email, update any changed fields.
+                userOptional = Optional.of(userByEmail);
+            }
+        }
+        return userOptional;
+    }
+
     @Override
     public boolean isCandidate(@Nullable User user) {
         return user != null && user.getRole().equals(Role.user);
+    }
+
+    @Override
+    public boolean isNewUser(AuthProfile profile) {
+        Optional<User> userOptional = findUser(profile);
+        return userOptional.isEmpty();
     }
 
     @Override

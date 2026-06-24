@@ -31,9 +31,8 @@ import org.tctalent.server.exception.InvalidCredentialsException;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.User;
 import org.tctalent.server.request.AuthenticateInContextTranslationRequest;
-import org.tctalent.server.request.candidate.OauthRegistrationRequest;
+import org.tctalent.server.request.candidate.CompleteOauthAuthenticationRequest;
 import org.tctalent.server.response.AuthenticationResponse;
-import org.tctalent.server.security.AuthProfile;
 import org.tctalent.server.security.OAuth2UserService;
 import org.tctalent.server.service.db.CandidateService;
 import org.tctalent.server.service.db.UserService;
@@ -65,20 +64,30 @@ public class AuthPortalApi {
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping("login")
-    public Map<String, Object> login(@RequestBody AuthProfile profile) {
-        User user = userService.login(profile);
-        oAuth2UserService.checkUserClientId(user, OAuth2UserService.OAUTH_TC_CANDIDATE_CLIENT_ID);
+    @PostMapping("complete-auth")
+    public Map<String, Object> completeAuthentication(
+        @RequestBody CompleteOauthAuthenticationRequest request, @NonNull HttpServletRequest httpRequest) {
+
+        //We need to handle both logins and registrations.
+        //Is this a new user or one that we already have on our database?
+        final boolean newUser = userService.isNewUser(request.getProfile());
+        boolean consentedPartners = false;
+        boolean consentedRegistration = false;
+        User user;
+        if (newUser) {
+            Candidate candidate = candidateService.register(request, httpRequest);
+            consentedPartners = candidate.getContactConsentPartners();
+            consentedRegistration = candidate.getContactConsentRegistration();
+            user = candidate.getUser();
+        } else {
+            user = userService.login(request.getProfile());
+            oAuth2UserService.checkUserClientId(user, OAuth2UserService.OAUTH_TC_CANDIDATE_CLIENT_ID);
+        }
+
         AuthenticationResponse response = userService.createAuthenticationResponse(user);
-        return authenticationDto().build(response);
-    }
-
-    @PostMapping("register")
-    public Map<String, Object> register(
-        @RequestBody OauthRegistrationRequest request, @NonNull HttpServletRequest httpRequest) {
-
-        Candidate candidate = candidateService.register(request, httpRequest);
-        AuthenticationResponse response = userService.createAuthenticationResponse(candidate.getUser());
+        response.setUserIsNew(newUser);
+        response.setContactConsentPartners(consentedPartners);
+        response.setContactConsentRegistration(consentedRegistration);
 
         return authenticationDto().build(response);
     }
@@ -86,8 +95,10 @@ public class AuthPortalApi {
     DtoBuilder authenticationDto() {
         return new DtoBuilder()
             .add("canViewChats")
+            .add("contactConsentRegistration")
             .add("tcInstanceType")
             .add("user", candidateBriefDto())
+            .add("userIsNew")
             ;
     }
 

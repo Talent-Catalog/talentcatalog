@@ -23,7 +23,7 @@ import org.tctalent.server.security.AuthProfile;
 
 @Getter
 @Setter
-public class OauthRegistrationRequest implements HasTcQueryParameters {
+public class CompleteOauthAuthenticationRequest implements HasTcQueryParameters {
     private AuthProfile profile;
 
     /**

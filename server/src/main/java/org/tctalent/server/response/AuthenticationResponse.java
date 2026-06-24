@@ -28,9 +28,44 @@ import org.tctalent.server.model.db.User;
 @Setter
 public class AuthenticationResponse {
 
+    /**
+     * True if the user is authorized to view chats.
+     */
     private boolean canViewChats;
-    private User user;
+
+    /**
+     * Indicates that the user is a candidate who gave their to being contacted
+     * by partners.
+     * <p>
+     * Note that this value is only valid in response to a candidate registration - ie when
+     * {@link #userIsNew} is true. At any other time it will always be false.
+     */
+    private boolean contactConsentPartners;
+
+    /**
+     * Indicates that the user is a candidate who gave their to being contacted
+     * related to their registration.
+     * <p>
+     * Note that this value is only valid in response to a candidate registration - ie when
+     * {@link #userIsNew} is true. At any other time it will always be false.
+     */
+    private boolean contactConsentRegistration;
+
+    /**
+     * Instance of the running server.
+     */
     private TcInstanceType tcInstanceType;
+
+    /**
+     * Authenticated user.
+     */
+    private User user;
+
+    /**
+     * True if the returned User is new.
+     * This will mean that a full registration process should start.
+     */
+    private boolean userIsNew;
 
     public AuthenticationResponse(User user) {
       this.user = user;

@@ -166,7 +166,7 @@ public class SecurityConfiguration {
     SecurityFilterChain registrationSecurityFilterChain(HttpSecurity http) throws Exception {
         http
             .securityMatcher(
-                "/api/portal/auth/register", "/api/portal/auth/login",
+                "/api/portal/auth/complete-auth",
                 "/api/admin/auth/login")
             .cors(withDefaults())
             .csrf(CsrfConfigurer::disable)

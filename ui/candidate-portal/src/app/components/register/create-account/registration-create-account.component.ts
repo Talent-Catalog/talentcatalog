@@ -24,7 +24,9 @@ import {RegistrationService} from "../../../services/registration.service";
 import {LanguageService} from "../../../services/language.service";
 import {RegisterCandidateRequest} from "../../../model/candidate";
 import {EMAIL_REGEX} from "../../../model/base";
-import {OauthRegistrationRequest} from "../../../model/oauth-registration-request";
+import {
+  CompleteOauthAuthenticationRequest
+} from "../../../model/complete-oauth-authentication-request";
 import {finalize} from "rxjs/internal/operators";
 import {timer} from "rxjs";
 
@@ -100,7 +102,7 @@ export class RegistrationCreateAccountComponent implements OnInit {
         //registration process.
         this.registrationService.next();
       } else if (this.authAction === AuthenticationService.REGISTER_ACTION) {
-        let request: OauthRegistrationRequest = {
+        let request: CompleteOauthAuthenticationRequest = {
           //todo These consents are being mocked for now. When new UI is designed
           //the register button should be disabled until the user has consented to the terms.
           contactConsentRegistration: true,
@@ -142,7 +144,7 @@ export class RegistrationCreateAccountComponent implements OnInit {
 
   //todo This should only be called once consent has been gathered.
   //todo Also the request should contain all the utm parameters see getParamesAndRegister() below.
-  completeRegister(request: OauthRegistrationRequest) {
+  completeRegister(request: CompleteOauthAuthenticationRequest) {
     this.error = null;
     this.loading = true;
     this.authenticationService.completeRegister(request)
