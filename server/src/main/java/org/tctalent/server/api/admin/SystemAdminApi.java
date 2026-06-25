@@ -2571,10 +2571,11 @@ public class SystemAdminApi {
     private Set<Long> loadReferenceIds(Connection targetConn,
                                        String tableName) throws SQLException {
         Set<Long> referenceIds = new HashSet<>();
-        Statement stmt = targetConn.createStatement();
-        ResultSet result = stmt.executeQuery("select id from " + tableName);
-        while (result.next()) {
-            referenceIds.add(result.getLong(1));
+        try (Statement stmt = targetConn.createStatement();
+            ResultSet result = stmt.executeQuery("select id from " + tableName)) {
+            while (result.next()) {
+                referenceIds.add(result.getLong(1));
+            }
         }
 
         LogBuilder.builder(log)
