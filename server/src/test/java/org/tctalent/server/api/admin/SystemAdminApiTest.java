@@ -1520,6 +1520,7 @@ class SystemAdminApiTest {
 
       ReflectionTestUtils.invokeMethod(systemAdminApi, "migrateAdmins", connection, statement);
 
+      verify(admins).close();
       verify(adminInsert).setString(6, "admin");
       verify(adminInsert).setString(7, Status.inactive.name());
       verify(adminInsert).setNull(3, Types.VARCHAR);
