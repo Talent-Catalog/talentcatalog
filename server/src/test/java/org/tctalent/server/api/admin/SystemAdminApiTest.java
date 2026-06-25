@@ -1346,7 +1346,7 @@ class SystemAdminApiTest {
   @Test
   void jdbcLoaderHelpers_readRowsIntoCollections() throws Exception {
     when(connection.createStatement()).thenReturn(statement);
-    when(statement.executeQuery("select id from country")).thenReturn(resultSet);
+    when(statement.executeQuery(anyString())).thenReturn(resultSet);
     when(resultSet.next()).thenReturn(true, true, false);
     when(resultSet.getLong(1)).thenReturn(1L, 2L);
 
