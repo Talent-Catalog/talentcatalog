@@ -1489,14 +1489,20 @@ class SystemAdminApiTest {
     when(users.getLong("created_at")).thenReturn(1609459200L);
     when(users.getLong("updated_at")).thenReturn(1609459300L);
 
-    ReflectionTestUtils.invokeMethod(systemAdminApi, "migrateUsers", connection, statement);
+    try {
+      ReflectionTestUtils.invokeMethod(systemAdminApi, "migrateUsers", connection, statement);
 
-    verify(insert).setLong(1, 101L);
-    verify(insert).setString(6, "user");
-    verify(insert).setString(7, Status.active.name());
-    verify(insert, times(2)).executeBatch();
-    verify(users).close();
-    verify(insert).close();
+      verify(insert).setLong(1, 101L);
+      verify(insert).setString(6, "user");
+      verify(insert).setString(7, Status.active.name());
+      verify(insert, times(2)).executeBatch();
+      verify(users).close();
+      verify(insert).close();
+    } finally {
+      users.close();
+      insert.close();
+    }
+
     PreparedStatement adminInsert = mock(PreparedStatement.class);
     ResultSet admins = mock(ResultSet.class);
     when(connection.prepareStatement("insert into users (id, username, first_name, last_name, email, role, status, password_enc, created_by, created_date, updated_date) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) on conflict (id) do nothing"))
@@ -1512,14 +1518,19 @@ class SystemAdminApiTest {
     when(admins.getLong("created_at")).thenReturn(1609459200L);
     when(admins.getLong("updated_at")).thenReturn(1609459300L);
 
-    ReflectionTestUtils.invokeMethod(systemAdminApi, "migrateAdmins", connection, statement);
+    try {
+      ReflectionTestUtils.invokeMethod(systemAdminApi, "migrateAdmins", connection, statement);
 
-    verify(adminInsert).setString(6, "admin");
-    verify(adminInsert).setString(7, Status.inactive.name());
-    verify(adminInsert).setNull(3, Types.VARCHAR);
-    verify(adminInsert).setNull(4, Types.VARCHAR);
-    verify(admins).close();
-    verify(adminInsert).close();
+      verify(adminInsert).setString(6, "admin");
+      verify(adminInsert).setString(7, Status.inactive.name());
+      verify(adminInsert).setNull(3, Types.VARCHAR);
+      verify(adminInsert).setNull(4, Types.VARCHAR);
+      verify(admins).close();
+      verify(adminInsert).close();
+    } finally {
+      admins.close();
+      adminInsert.close();
+    }
   }
 
   @Test
