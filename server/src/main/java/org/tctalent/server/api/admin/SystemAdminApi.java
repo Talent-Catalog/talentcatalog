@@ -1774,36 +1774,40 @@ public class SystemAdminApi {
 
         String insertSql = "insert into users (id, username, first_name, last_name, email, role, status, password_enc, created_by, created_date, updated_date) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) on conflict (id) do nothing";
         String selectSql = "select u.id, username, j.first_name, j.last_name, email, status, password_hash, created_at, updated_at from user u join user_jobseeker j on j.user_id = u.id";
-        PreparedStatement insert = targetConn.prepareStatement(insertSql);
-        ResultSet result = sourceStmt.executeQuery(selectSql);
-        int count = 0;
-        while (result.next()) {
-            int i = 1;
-            insert.setLong(i++, result.getLong("id"));
-            insert.setString(i++, result.getString("username"));
-            insert.setString(i++, result.getString("first_name"));
-            insert.setString(i++, result.getString("last_name"));
-            insert.setString(i++, result.getString("email"));
-            insert.setString(i++, "user");
-            insert.setString(i++, getUserStatus(result.getInt("status")));
-            insert.setString(i++, result.getString("password_hash"));
-            insert.setLong(i++, 1);
-            insert.setTimestamp(i++, convertToTimestamp(result.getLong("created_at")));
-            insert.setTimestamp(i++, convertToTimestamp(result.getLong("updated_at")));
-            insert.addBatch();
 
-            if (count%100 == 0) {
-                insert.executeBatch();
-                LogBuilder.builder(log)
-                    .user(authService.getLoggedInUser())
-                    .action("Migrate")
-                    .message("users - saving batch " + count)
-                    .logInfo();
+        int count = 0;
+        try (PreparedStatement insert = targetConn.prepareStatement(insertSql);
+            ResultSet result = sourceStmt.executeQuery(selectSql)) {
+
+            while (result.next()) {
+                int i = 1;
+                insert.setLong(i++, result.getLong("id"));
+                insert.setString(i++, result.getString("username"));
+                insert.setString(i++, result.getString("first_name"));
+                insert.setString(i++, result.getString("last_name"));
+                insert.setString(i++, result.getString("email"));
+                insert.setString(i++, "user");
+                insert.setString(i++, getUserStatus(result.getInt("status")));
+                insert.setString(i++, result.getString("password_hash"));
+                insert.setLong(i++, 1);
+                insert.setTimestamp(i++, convertToTimestamp(result.getLong("created_at")));
+                insert.setTimestamp(i++, convertToTimestamp(result.getLong("updated_at")));
+                insert.addBatch();
+
+                if (count % 100 == 0) {
+                    insert.executeBatch();
+                    LogBuilder.builder(log)
+                        .user(authService.getLoggedInUser())
+                        .action("Migrate")
+                        .message("users - saving batch " + count)
+                        .logInfo();
+                }
+
+                count++;
             }
 
-            count++;
+            insert.executeBatch();
         }
-        insert.executeBatch();
 
         LogBuilder.builder(log)
             .user(authService.getLoggedInUser())
@@ -1822,37 +1826,42 @@ public class SystemAdminApi {
 
         String insertSql = "insert into users (id, username, first_name, last_name, email, role, status, password_enc, created_by, created_date, updated_date) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) on conflict (id) do nothing";
         String selectSql = "select id, username, email, status, password_hash, created_at, updated_at from admin;";
-        PreparedStatement insert = targetConn.prepareStatement(insertSql);
-        ResultSet result = sourceStmt.executeQuery(selectSql);
+
         int count = 0;
-        while (result.next()) {
-            int i = 1;
-            insert.setLong(i++, result.getLong("id"));
-            insert.setString(i++, result.getString("username"));
-            insert.setNull(i++, Types.VARCHAR);
-            insert.setNull(i++, Types.VARCHAR);
-            insert.setString(i++, result.getString("email"));
-            insert.setString(i++, "admin");
-            insert.setString(i++, getUserStatus(result.getInt("status")));
-            insert.setString(i++, result.getString("password_hash"));
-            insert.setLong(i++, 1);
-            insert.setTimestamp(i++, convertToTimestamp(result.getLong("created_at")));
-            insert.setTimestamp(i++, convertToTimestamp(result.getLong("updated_at")));
-            insert.addBatch();
 
-            if (count%100 == 0) {
-                insert.executeBatch();
+        try (PreparedStatement insert = targetConn.prepareStatement(insertSql);
+            ResultSet result = sourceStmt.executeQuery(selectSql)) {
 
-                LogBuilder.builder(log)
-                    .user(authService.getLoggedInUser())
-                    .action("Migrate")
-                    .message("admins - saving batch " + count)
-                    .logInfo();
+            while (result.next()) {
+                int i = 1;
+                insert.setLong(i++, result.getLong("id"));
+                insert.setString(i++, result.getString("username"));
+                insert.setNull(i++, Types.VARCHAR);
+                insert.setNull(i++, Types.VARCHAR);
+                insert.setString(i++, result.getString("email"));
+                insert.setString(i++, "admin");
+                insert.setString(i++, getUserStatus(result.getInt("status")));
+                insert.setString(i++, result.getString("password_hash"));
+                insert.setLong(i++, 1);
+                insert.setTimestamp(i++, convertToTimestamp(result.getLong("created_at")));
+                insert.setTimestamp(i++, convertToTimestamp(result.getLong("updated_at")));
+                insert.addBatch();
+
+                if (count % 100 == 0) {
+                    insert.executeBatch();
+
+                    LogBuilder.builder(log)
+                        .user(authService.getLoggedInUser())
+                        .action("Migrate")
+                        .message("admins - saving batch " + count)
+                        .logInfo();
+                }
+
+                count++;
             }
 
-            count++;
+            insert.executeBatch();
         }
-        insert.executeBatch();
 
         LogBuilder.builder(log)
             .user(authService.getLoggedInUser())
