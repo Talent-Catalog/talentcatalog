@@ -1350,11 +1350,14 @@ class SystemAdminApiTest {
     when(resultSet.next()).thenReturn(true, true, false);
     when(resultSet.getLong(1)).thenReturn(1L, 2L);
 
-    Set<Long> referenceIds = ReflectionTestUtils.invokeMethod(
-        systemAdminApi, "loadReferenceIds", connection, "country");
-    assertEquals(Set.of(1L, 2L), referenceIds);
-    verify(resultSet).close();
-    verify(statement).close();
+    try {
+      Set<Long> referenceIds = ReflectionTestUtils.invokeMethod(
+          systemAdminApi, "loadReferenceIds", connection, "country");
+      assertEquals(Set.of(1L, 2L), referenceIds);
+    } finally {
+      verify(resultSet).close();
+      verify(statement).close();
+    }
   }
 
   @Test
@@ -1442,7 +1445,9 @@ class SystemAdminApiTest {
     PreparedStatement optionInsert = mock(PreparedStatement.class);
     PreparedStatement translationInsert = mock(PreparedStatement.class);
 
-    try (optionInsert; translationInsert) {
+    try (optionInsert; translationInsert;
+        ResultSet ignored = statement.executeQuery(
+            "select id, name, name_ar, `order` from frm_options where type = 'education_level'")) {
       when(connection.prepareStatement(
           "insert into education_level (id, name, level, status, education_type) values (?, ?, ?, ?, ?) on conflict (id) do nothing"))
           .thenReturn(optionInsert);
@@ -1465,15 +1470,13 @@ class SystemAdminApiTest {
       verify(optionInsert, times(2)).executeBatch();
       verify(translationInsert).addBatch();
       verify(translationInsert, times(2)).executeBatch();
-    } finally {
-      resultSet.close();
     }
   }
 
   @Test
   void migrateUsersAndAdmins_insertExpectedRows() throws Exception {
-    PreparedStatement insert = mock(PreparedStatement.class);
-    try (ResultSet users = mock(ResultSet.class)) {
+    try (PreparedStatement insert = mock(PreparedStatement.class);
+         ResultSet users = mock(ResultSet.class)) {
       when(connection.prepareStatement("insert into users (id, username, first_name, last_name, email, role, status, password_enc, created_by, created_date, updated_date) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) on conflict (id) do nothing"))
           .thenReturn(insert);
       when(statement.executeQuery("select u.id, username, j.first_name, j.last_name, email, status, password_hash, created_at, updated_at from user u join user_jobseeker j on j.user_id = u.id"))
@@ -1489,22 +1492,18 @@ class SystemAdminApiTest {
       when(users.getLong("created_at")).thenReturn(1609459200L);
       when(users.getLong("updated_at")).thenReturn(1609459300L);
 
-      try {
-        ReflectionTestUtils.invokeMethod(systemAdminApi, "migrateUsers", connection, statement);
+      ReflectionTestUtils.invokeMethod(systemAdminApi, "migrateUsers", connection, statement);
 
-        verify(insert).setLong(1, 101L);
-        verify(insert).setString(6, "user");
-        verify(insert).setString(7, Status.active.name());
-        verify(insert, times(2)).executeBatch();
-        verify(users).close();
-        verify(insert).close();
-      } finally {
-        insert.close();
-      }
+      verify(insert).setLong(1, 101L);
+      verify(insert).setString(6, "user");
+      verify(insert).setString(7, Status.active.name());
+      verify(insert, times(2)).executeBatch();
+      verify(users).close();
+      verify(insert).close();
     }
 
-    PreparedStatement adminInsert = mock(PreparedStatement.class);
-    try (ResultSet admins = mock(ResultSet.class)) {
+    try (PreparedStatement adminInsert = mock(PreparedStatement.class);
+         ResultSet admins = mock(ResultSet.class)) {
       when(connection.prepareStatement("insert into users (id, username, first_name, last_name, email, role, status, password_enc, created_by, created_date, updated_date) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) on conflict (id) do nothing"))
           .thenReturn(adminInsert);
       when(statement.executeQuery("select id, username, email, status, password_hash, created_at, updated_at from admin;"))
@@ -1518,18 +1517,14 @@ class SystemAdminApiTest {
       when(admins.getLong("created_at")).thenReturn(1609459200L);
       when(admins.getLong("updated_at")).thenReturn(1609459300L);
 
-      try {
-        ReflectionTestUtils.invokeMethod(systemAdminApi, "migrateAdmins", connection, statement);
+      ReflectionTestUtils.invokeMethod(systemAdminApi, "migrateAdmins", connection, statement);
 
-        verify(adminInsert).setString(6, "admin");
-        verify(adminInsert).setString(7, Status.inactive.name());
-        verify(adminInsert).setNull(3, Types.VARCHAR);
-        verify(adminInsert).setNull(4, Types.VARCHAR);
-        verify(admins).close();
-        verify(adminInsert).close();
-      } finally {
-        adminInsert.close();
-      }
+      verify(adminInsert).setString(6, "admin");
+      verify(adminInsert).setString(7, Status.inactive.name());
+      verify(adminInsert).setNull(3, Types.VARCHAR);
+      verify(adminInsert).setNull(4, Types.VARCHAR);
+      verify(admins).close();
+      verify(adminInsert).close();
     }
   }
 
