@@ -49,7 +49,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -94,10 +94,10 @@ class PartnerAdminApiTest extends ApiTestBase {
           1
       );
 
-  @MockBean EmployerService employerService;
-  @MockBean PartnerService partnerService;
-  @MockBean JobService jobService;
-  @MockBean UserService userService;
+  @MockitoBean EmployerService employerService;
+  @MockitoBean PartnerService partnerService;
+  @MockitoBean JobService jobService;
+  @MockitoBean UserService userService;
 
   @Autowired MockMvc mockMvc;
   @Autowired ObjectMapper objectMapper;

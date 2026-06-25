@@ -19,7 +19,7 @@ package org.tctalent.server.api.admin;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.tctalent.server.model.db.Role;
 import org.tctalent.server.model.db.User;
@@ -43,13 +43,13 @@ public class ApiTestBase {
 
     protected User user;
 
-    @MockBean
+    @MockitoBean
     UserRepository userRepository;
-    @MockBean
+    @MockitoBean
     JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
-    @MockBean
+    @MockitoBean
     JwtTokenProvider jwtTokenProvider;
-    @MockBean
+    @MockitoBean
     EmailHelper emailHelper;
 
     public void configureAuthentication() {
