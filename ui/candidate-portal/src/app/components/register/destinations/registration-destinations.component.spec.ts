@@ -18,7 +18,7 @@ import {Component, EventEmitter, Input, Output, QueryList} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {UntypedFormControl, UntypedFormGroup} from '@angular/forms';
 import {By} from '@angular/platform-browser';
-import {TranslateModule} from '@ngx-translate/core';
+import {TranslateModule, TranslateService} from '@ngx-translate/core';
 import {of, throwError} from 'rxjs';
 
 import {RegistrationDestinationsComponent} from './registration-destinations.component';
@@ -111,6 +111,7 @@ describe('RegistrationDestinationsComponent', () => {
   let countryServiceSpy: jasmine.SpyObj<CountryService>;
   let candidateDestinationServiceSpy: jasmine.SpyObj<CandidateDestinationService>;
   let registrationServiceSpy: jasmine.SpyObj<RegistrationService>;
+  let translateService: TranslateService;
 
   async function configureAndCreate(options?: {
     destinations?: Country[];
@@ -175,6 +176,18 @@ describe('RegistrationDestinationsComponent', () => {
         {provide: RegistrationService, useValue: registrationServiceSpy}
       ]
     }).compileComponents();
+
+    translateService = TestBed.inject(TranslateService);
+    translateService.setTranslation('en', {
+      REGISTRATION: {
+        DESTINATIONS: {
+          BUTTON: {
+            MARK_ALL_YES: 'Mark all as Yes'
+          }
+        }
+      }
+    });
+    translateService.use('en');
 
     fixture = TestBed.createComponent(RegistrationDestinationsComponent);
     component = fixture.componentInstance;
