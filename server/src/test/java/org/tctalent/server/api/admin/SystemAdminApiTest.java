@@ -1475,57 +1475,55 @@ class SystemAdminApiTest {
 
   @Test
   void migrateUsersAndAdmins_insertExpectedRows() throws Exception {
-    try (PreparedStatement insert = mock(PreparedStatement.class);
-         ResultSet users = mock(ResultSet.class)) {
-      when(connection.prepareStatement("insert into users (id, username, first_name, last_name, email, role, status, password_enc, created_by, created_date, updated_date) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) on conflict (id) do nothing"))
-          .thenReturn(insert);
-      when(statement.executeQuery("select u.id, username, j.first_name, j.last_name, email, status, password_hash, created_at, updated_at from user u join user_jobseeker j on j.user_id = u.id"))
-          .thenReturn(users);
-      when(users.next()).thenReturn(true, false);
-      when(users.getLong("id")).thenReturn(101L);
-      when(users.getString("username")).thenReturn("candidate");
-      when(users.getString("first_name")).thenReturn("First");
-      when(users.getString("last_name")).thenReturn("Last");
-      when(users.getString("email")).thenReturn("candidate@example.com");
-      when(users.getInt("status")).thenReturn(10);
-      when(users.getString("password_hash")).thenReturn("hash");
-      when(users.getLong("created_at")).thenReturn(1609459200L);
-      when(users.getLong("updated_at")).thenReturn(1609459300L);
+    PreparedStatement insert = mock(PreparedStatement.class);
+    ResultSet users = mock(ResultSet.class);
+    when(connection.prepareStatement("insert into users (id, username, first_name, last_name, email, role, status, password_enc, created_by, created_date, updated_date) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) on conflict (id) do nothing"))
+        .thenReturn(insert);
+    when(statement.executeQuery("select u.id, username, j.first_name, j.last_name, email, status, password_hash, created_at, updated_at from user u join user_jobseeker j on j.user_id = u.id"))
+        .thenReturn(users);
+    when(users.next()).thenReturn(true, false);
+    when(users.getLong("id")).thenReturn(101L);
+    when(users.getString("username")).thenReturn("candidate");
+    when(users.getString("first_name")).thenReturn("First");
+    when(users.getString("last_name")).thenReturn("Last");
+    when(users.getString("email")).thenReturn("candidate@example.com");
+    when(users.getInt("status")).thenReturn(10);
+    when(users.getString("password_hash")).thenReturn("hash");
+    when(users.getLong("created_at")).thenReturn(1609459200L);
+    when(users.getLong("updated_at")).thenReturn(1609459300L);
 
-      ReflectionTestUtils.invokeMethod(systemAdminApi, "migrateUsers", connection, statement);
+    ReflectionTestUtils.invokeMethod(systemAdminApi, "migrateUsers", connection, statement);
 
-      verify(insert).setLong(1, 101L);
-      verify(insert).setString(6, "user");
-      verify(insert).setString(7, Status.active.name());
-      verify(insert, times(2)).executeBatch();
-      verify(users).close();
-      verify(insert).close();
-    }
+    verify(insert).setLong(1, 101L);
+    verify(insert).setString(6, "user");
+    verify(insert).setString(7, Status.active.name());
+    verify(insert, times(2)).executeBatch();
+    verify(users).close();
+    verify(insert).close();
 
-    try (PreparedStatement adminInsert = mock(PreparedStatement.class);
-         ResultSet admins = mock(ResultSet.class)) {
-      when(connection.prepareStatement("insert into users (id, username, first_name, last_name, email, role, status, password_enc, created_by, created_date, updated_date) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) on conflict (id) do nothing"))
-          .thenReturn(adminInsert);
-      when(statement.executeQuery("select id, username, email, status, password_hash, created_at, updated_at from admin;"))
-          .thenReturn(admins);
-      when(admins.next()).thenReturn(true, false);
-      when(admins.getLong("id")).thenReturn(201L);
-      when(admins.getString("username")).thenReturn("admin");
-      when(admins.getString("email")).thenReturn("admin@example.com");
-      when(admins.getInt("status")).thenReturn(0);
-      when(admins.getString("password_hash")).thenReturn("hash2");
-      when(admins.getLong("created_at")).thenReturn(1609459200L);
-      when(admins.getLong("updated_at")).thenReturn(1609459300L);
+    PreparedStatement adminInsert = mock(PreparedStatement.class);
+    ResultSet admins = mock(ResultSet.class);
+    when(connection.prepareStatement("insert into users (id, username, first_name, last_name, email, role, status, password_enc, created_by, created_date, updated_date) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) on conflict (id) do nothing"))
+        .thenReturn(adminInsert);
+    when(statement.executeQuery("select id, username, email, status, password_hash, created_at, updated_at from admin;"))
+        .thenReturn(admins);
+    when(admins.next()).thenReturn(true, false);
+    when(admins.getLong("id")).thenReturn(201L);
+    when(admins.getString("username")).thenReturn("admin");
+    when(admins.getString("email")).thenReturn("admin@example.com");
+    when(admins.getInt("status")).thenReturn(0);
+    when(admins.getString("password_hash")).thenReturn("hash2");
+    when(admins.getLong("created_at")).thenReturn(1609459200L);
+    when(admins.getLong("updated_at")).thenReturn(1609459300L);
 
-      ReflectionTestUtils.invokeMethod(systemAdminApi, "migrateAdmins", connection, statement);
+    ReflectionTestUtils.invokeMethod(systemAdminApi, "migrateAdmins", connection, statement);
 
-      verify(adminInsert).setString(6, "admin");
-      verify(adminInsert).setString(7, Status.inactive.name());
-      verify(adminInsert).setNull(3, Types.VARCHAR);
-      verify(adminInsert).setNull(4, Types.VARCHAR);
-      verify(admins).close();
-      verify(adminInsert).close();
-    }
+    verify(adminInsert).setString(6, "admin");
+    verify(adminInsert).setString(7, Status.inactive.name());
+    verify(adminInsert).setNull(3, Types.VARCHAR);
+    verify(adminInsert).setNull(4, Types.VARCHAR);
+    verify(admins).close();
+    verify(adminInsert).close();
   }
 
   @Test
