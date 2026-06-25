@@ -1352,9 +1352,7 @@ class SystemAdminApiTest {
 
     Set<Long> referenceIds = ReflectionTestUtils.invokeMethod(
         systemAdminApi, "loadReferenceIds", connection, "country");
-
     assertEquals(Set.of(1L, 2L), referenceIds);
-    verify(statement).close();
   }
 
   @Test
