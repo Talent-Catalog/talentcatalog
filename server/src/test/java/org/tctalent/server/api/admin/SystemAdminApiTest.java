@@ -1473,12 +1473,8 @@ class SystemAdminApiTest {
 
   @Test
   void migrateUsersAndAdmins_insertExpectedRows() throws Exception {
-    PreparedStatement insert = mock(PreparedStatement.class);
-    ResultSet users = mock(ResultSet.class);
-    PreparedStatement adminInsert = mock(PreparedStatement.class);
-    ResultSet admins = mock(ResultSet.class);
-
-    try (insert; users) {
+    try (PreparedStatement insert = mock(PreparedStatement.class);
+         ResultSet users = mock(ResultSet.class)) {
       when(connection.prepareStatement("insert into users (id, username, first_name, last_name, email, role, status, password_enc, created_by, created_date, updated_date) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) on conflict (id) do nothing"))
           .thenReturn(insert);
       when(statement.executeQuery("select u.id, username, j.first_name, j.last_name, email, status, password_hash, created_at, updated_at from user u join user_jobseeker j on j.user_id = u.id"))
@@ -1504,7 +1500,8 @@ class SystemAdminApiTest {
       verify(insert).close();
     }
 
-    try (adminInsert; admins) {
+    try (PreparedStatement adminInsert = mock(PreparedStatement.class);
+         ResultSet admins = mock(ResultSet.class)) {
       when(connection.prepareStatement("insert into users (id, username, first_name, last_name, email, role, status, password_enc, created_by, created_date, updated_date) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) on conflict (id) do nothing"))
           .thenReturn(adminInsert);
       when(statement.executeQuery("select id, username, email, status, password_hash, created_at, updated_at from admin;"))
