@@ -1350,14 +1350,12 @@ class SystemAdminApiTest {
     when(resultSet.next()).thenReturn(true, true, false);
     when(resultSet.getLong(1)).thenReturn(1L, 2L);
 
-    try {
-      Set<Long> referenceIds = ReflectionTestUtils.invokeMethod(
-          systemAdminApi, "loadReferenceIds", connection, "country");
-      assertEquals(Set.of(1L, 2L), referenceIds);
-    } finally {
-      verify(resultSet).close();
-      verify(statement).close();
-    }
+    Set<Long> referenceIds = ReflectionTestUtils.invokeMethod(
+        systemAdminApi, "loadReferenceIds", connection, "country");
+    assertEquals(Set.of(1L, 2L), referenceIds);
+
+    verify(resultSet).close();
+    verify(statement).close();
   }
 
   @Test
