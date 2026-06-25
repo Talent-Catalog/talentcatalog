@@ -1375,7 +1375,6 @@ class SystemAdminApiTest {
     ResultSet occupations = mock(ResultSet.class);
     ResultSet candidates = mock(ResultSet.class);
     ResultSet admins = mock(ResultSet.class);
-    when(connection.createStatement()).thenReturn(statement);
     when(statement.executeQuery("select id, candidate_id, occupation_id from candidate_occupation"))
         .thenReturn(occupations);
     when(occupations.next()).thenReturn(true, false);
@@ -1391,7 +1390,7 @@ class SystemAdminApiTest {
     when(admins.getLong(1)).thenReturn(42L);
 
     Map<String, Long> occupationMap = ReflectionTestUtils.invokeMethod(
-        systemAdminApi, "loadCandidateOccupations", connection);
+        systemAdminApi, "loadCandidateOccupations", statement);
     Map<Long, Long> candidateIds = ReflectionTestUtils.invokeMethod(
         systemAdminApi, "loadCandidateIds", connection);
     Set<Long> adminIds = ReflectionTestUtils.invokeMethod(systemAdminApi, "loadAdminIds", connection);
@@ -1399,6 +1398,10 @@ class SystemAdminApiTest {
     assertEquals(Map.of("6~7", 5L), occupationMap);
     assertEquals(Map.of(20L, 10L), candidateIds);
     assertEquals(Set.of(42L), adminIds);
+    verify(occupations).close();
+    verify(candidates).close();
+    verify(admins).close();
+
   }
 
   @Test
@@ -1429,18 +1432,21 @@ class SystemAdminApiTest {
     when(resultSet.getInt("order")).thenReturn(1);
     when(resultSet.getString("name_ar")).thenReturn("بكالوريوس");
 
-    ReflectionTestUtils.invokeMethod(systemAdminApi, "migrateFormOption", connection, statement,
-        translationInsert, 42L, "education_level", "education_level", true);
-
-    verify(optionInsert).setLong(1, 6864L);
-    verify(optionInsert).setString(2, "Bachelor's Degree");
-    verify(optionInsert).setInt(3, 1);
-    verify(optionInsert).setString(4, "active");
-    verify(optionInsert).setString(5, EducationType.Bachelor.name());
-    verify(optionInsert).addBatch();
-    verify(optionInsert, times(2)).executeBatch();
-    verify(translationInsert).addBatch();
-    verify(translationInsert, times(2)).executeBatch();
+    try {
+      ReflectionTestUtils.invokeMethod(systemAdminApi, "migrateFormOption", connection, statement,
+          translationInsert, 42L, "education_level", "education_level", true);
+      verify(optionInsert).setLong(1, 6864L);
+      verify(optionInsert).setString(2, "Bachelor's Degree");
+      verify(optionInsert).setInt(3, 1);
+      verify(optionInsert).setString(4, "active");
+      verify(optionInsert).setString(5, EducationType.Bachelor.name());
+      verify(optionInsert).addBatch();
+      verify(optionInsert, times(2)).executeBatch();
+      verify(translationInsert).addBatch();
+      verify(translationInsert, times(2)).executeBatch();
+    } finally {
+      optionInsert.close();
+    }
   }
 
   @Test
@@ -1468,7 +1474,8 @@ class SystemAdminApiTest {
     verify(insert).setString(6, "user");
     verify(insert).setString(7, Status.active.name());
     verify(insert, times(2)).executeBatch();
-
+    verify(users).close();
+    verify(insert).close();
     PreparedStatement adminInsert = mock(PreparedStatement.class);
     ResultSet admins = mock(ResultSet.class);
     when(connection.prepareStatement("insert into users (id, username, first_name, last_name, email, role, status, password_enc, created_by, created_date, updated_date) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) on conflict (id) do nothing"))
@@ -1490,6 +1497,8 @@ class SystemAdminApiTest {
     verify(adminInsert).setString(7, Status.inactive.name());
     verify(adminInsert).setNull(3, Types.VARCHAR);
     verify(adminInsert).setNull(4, Types.VARCHAR);
+    verify(admins).close();
+    verify(adminInsert).close();
   }
 
   @Test
