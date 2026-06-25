@@ -1374,26 +1374,31 @@ class SystemAdminApiTest {
 
   @Test
   void loadCandidateOccupationsAndIdsAndAdminIds_readExpectedMapsAndSets() throws Exception {
+    Statement occupationStatement = mock(Statement.class);
+    Statement candidateStatement = mock(Statement.class);
+    Statement adminStatement = mock(Statement.class);
+
     ResultSet occupations = mock(ResultSet.class);
     ResultSet candidates = mock(ResultSet.class);
     ResultSet admins = mock(ResultSet.class);
 
-    when(connection.createStatement()).thenReturn(statement);
+    when(connection.createStatement())
+        .thenReturn(occupationStatement, candidateStatement, adminStatement);
 
-    when(statement.executeQuery("select id, candidate_id, occupation_id from candidate_occupation"))
+    when(occupationStatement.executeQuery("select id, candidate_id, occupation_id from candidate_occupation"))
         .thenReturn(occupations);
     when(occupations.next()).thenReturn(true, false);
     when(occupations.getLong(1)).thenReturn(5L);
     when(occupations.getLong(2)).thenReturn(6L);
     when(occupations.getLong(3)).thenReturn(7L);
 
-    when(statement.executeQuery("select id, user_id from candidate"))
+    when(candidateStatement.executeQuery("select id, user_id from candidate"))
         .thenReturn(candidates);
     when(candidates.next()).thenReturn(true, false);
     when(candidates.getLong(1)).thenReturn(10L);
     when(candidates.getLong(2)).thenReturn(20L);
 
-    when(statement.executeQuery("select id from users where role = 'admin'"))
+    when(adminStatement.executeQuery("select id from users where role = 'admin'"))
         .thenReturn(admins);
     when(admins.next()).thenReturn(true, false);
     when(admins.getLong(1)).thenReturn(42L);
@@ -1412,8 +1417,11 @@ class SystemAdminApiTest {
     verify(occupations).close();
     verify(candidates).close();
     verify(admins).close();
-  }
 
+    verify(occupationStatement).close();
+    verify(candidateStatement).close();
+    verify(adminStatement).close();
+  }
   @Test
   void addTranslation_setsAllColumnsAndAddsBatch() throws Exception {
     ReflectionTestUtils.invokeMethod(
@@ -1431,18 +1439,20 @@ class SystemAdminApiTest {
   @Test
   void migrateFormOption_insertsEducationLevelAndTranslations() throws Exception {
     PreparedStatement optionInsert = mock(PreparedStatement.class);
-    PreparedStatement translationInsert = mock(PreparedStatement.class);
-    when(connection.prepareStatement("insert into education_level (id, name, level, status, education_type) values (?, ?, ?, ?, ?) on conflict (id) do nothing"))
-        .thenReturn(optionInsert);
-    when(statement.executeQuery("select id, name, name_ar, `order` from frm_options where type = 'education_level'"))
-        .thenReturn(resultSet);
-    when(resultSet.next()).thenReturn(true, false);
-    when(resultSet.getLong("id")).thenReturn(6864L);
-    when(resultSet.getString("name")).thenReturn("Bachelor's Degree");
-    when(resultSet.getInt("order")).thenReturn(1);
-    when(resultSet.getString("name_ar")).thenReturn("بكالوريوس");
 
-    try {
+    try (optionInsert) {
+      PreparedStatement translationInsert = mock(PreparedStatement.class);
+      when(connection.prepareStatement(
+          "insert into education_level (id, name, level, status, education_type) values (?, ?, ?, ?, ?) on conflict (id) do nothing"))
+          .thenReturn(optionInsert);
+      when(statement.executeQuery(
+          "select id, name, name_ar, `order` from frm_options where type = 'education_level'"))
+          .thenReturn(resultSet);
+      when(resultSet.next()).thenReturn(true, false);
+      when(resultSet.getLong("id")).thenReturn(6864L);
+      when(resultSet.getString("name")).thenReturn("Bachelor's Degree");
+      when(resultSet.getInt("order")).thenReturn(1);
+      when(resultSet.getString("name_ar")).thenReturn("بكالوريوس");
       ReflectionTestUtils.invokeMethod(systemAdminApi, "migrateFormOption", connection, statement,
           translationInsert, 42L, "education_level", "education_level", true);
       verify(optionInsert).setLong(1, 6864L);
@@ -1455,7 +1465,7 @@ class SystemAdminApiTest {
       verify(translationInsert).addBatch();
       verify(translationInsert, times(2)).executeBatch();
     } finally {
-      optionInsert.close();
+      resultSet.close();
     }
   }
 
