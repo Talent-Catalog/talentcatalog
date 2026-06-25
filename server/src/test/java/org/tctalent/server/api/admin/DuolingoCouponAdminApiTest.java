@@ -31,7 +31,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
@@ -72,17 +72,17 @@ class DuolingoCouponAdminApiTest extends ApiTestBase {
   private static final TaskImpl task = getTask();
   private static final TaskAssignmentImpl taskAssignment = getTaskAssignment();
 
-  @MockBean
+  @MockitoBean
   AuthService authService;
-  @MockBean
+  @MockitoBean
   DuolingoCouponService couponService;
-  @MockBean
+  @MockitoBean
   SavedListService savedListService;
-  @MockBean
+  @MockitoBean
   TaskAssignmentService taskAssignmentService;
-  @MockBean
+  @MockitoBean
   TaskService taskService;
-  @MockBean
+  @MockitoBean
   CandidateService candidateService;
 
 

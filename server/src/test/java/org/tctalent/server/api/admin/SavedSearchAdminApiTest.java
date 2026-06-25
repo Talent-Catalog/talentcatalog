@@ -45,7 +45,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -122,13 +122,13 @@ class SavedSearchAdminApiTest extends ApiTestBase {
           1
       );
 
-  @MockBean
+  @MockitoBean
   CandidateService candidateService;
-  @MockBean
+  @MockitoBean
   CandidateSavedListService candidateSavedListService;
-  @MockBean
+  @MockitoBean
   SavedListService savedListService;
-  @MockBean
+  @MockitoBean
   SavedSearchService savedSearchService;
 
   @Autowired

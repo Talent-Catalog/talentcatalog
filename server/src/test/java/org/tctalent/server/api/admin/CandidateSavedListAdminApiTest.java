@@ -41,7 +41,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
@@ -73,8 +73,8 @@ class CandidateSavedListAdminApiTest extends ApiTestBase {
 
   private static final long CANDIDATE_ID = 99L;
 
-  @MockBean CandidateSavedListService candidateSavedListService;
-  @MockBean SavedListService savedListService;
+  @MockitoBean CandidateSavedListService candidateSavedListService;
+  @MockitoBean SavedListService savedListService;
 
   @Autowired MockMvc mockMvc;
   @Autowired ObjectMapper objectMapper;
