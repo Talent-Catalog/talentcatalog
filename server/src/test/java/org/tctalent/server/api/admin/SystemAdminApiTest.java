@@ -1367,6 +1367,7 @@ class SystemAdminApiTest {
         systemAdminApi, "loadOtherReferenceIds", statement, "language_other");
 
     assertEquals(Map.of(99L, "Klingon"), result);
+    verify(resultSet).close();
   }
 
   @Test

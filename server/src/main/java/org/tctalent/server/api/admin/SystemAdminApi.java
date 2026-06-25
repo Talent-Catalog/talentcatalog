@@ -2589,9 +2589,11 @@ public class SystemAdminApi {
     private Map<Long, String> loadOtherReferenceIds(Statement sourceStmt,
                                                     String type) throws SQLException {
         Map<Long, String> referenceIds = new HashMap<>();
-        ResultSet result = sourceStmt.executeQuery("select id, name from frm_options_other where type = '" + type + "'");
-        while (result.next()) {
-            referenceIds.put(result.getLong(1), result.getString(2));
+        try (ResultSet result = sourceStmt.executeQuery(
+            "select id, name from frm_options_other where type = '" + type + "'")) {
+            while (result.next()) {
+                referenceIds.put(result.getLong(1), result.getString(2));
+            }
         }
 
         LogBuilder.builder(log)
