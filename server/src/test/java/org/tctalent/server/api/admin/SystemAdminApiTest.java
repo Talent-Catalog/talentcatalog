@@ -1377,33 +1377,41 @@ class SystemAdminApiTest {
     ResultSet occupations = mock(ResultSet.class);
     ResultSet candidates = mock(ResultSet.class);
     ResultSet admins = mock(ResultSet.class);
+
+    when(connection.createStatement()).thenReturn(statement);
+
     when(statement.executeQuery("select id, candidate_id, occupation_id from candidate_occupation"))
         .thenReturn(occupations);
     when(occupations.next()).thenReturn(true, false);
     when(occupations.getLong(1)).thenReturn(5L);
     when(occupations.getLong(2)).thenReturn(6L);
     when(occupations.getLong(3)).thenReturn(7L);
-    when(statement.executeQuery("select id, user_id from candidate")).thenReturn(candidates);
+
+    when(statement.executeQuery("select id, user_id from candidate"))
+        .thenReturn(candidates);
     when(candidates.next()).thenReturn(true, false);
     when(candidates.getLong(1)).thenReturn(10L);
     when(candidates.getLong(2)).thenReturn(20L);
-    when(statement.executeQuery("select id from users where role = 'admin'")).thenReturn(admins);
+
+    when(statement.executeQuery("select id from users where role = 'admin'"))
+        .thenReturn(admins);
     when(admins.next()).thenReturn(true, false);
     when(admins.getLong(1)).thenReturn(42L);
 
     Map<String, Long> occupationMap = ReflectionTestUtils.invokeMethod(
-        systemAdminApi, "loadCandidateOccupations", statement);
+        systemAdminApi, "loadCandidateOccupations", connection);
     Map<Long, Long> candidateIds = ReflectionTestUtils.invokeMethod(
         systemAdminApi, "loadCandidateIds", connection);
-    Set<Long> adminIds = ReflectionTestUtils.invokeMethod(systemAdminApi, "loadAdminIds", connection);
+    Set<Long> adminIds = ReflectionTestUtils.invokeMethod(
+        systemAdminApi, "loadAdminIds", connection);
 
     assertEquals(Map.of("6~7", 5L), occupationMap);
     assertEquals(Map.of(20L, 10L), candidateIds);
     assertEquals(Set.of(42L), adminIds);
+
     verify(occupations).close();
     verify(candidates).close();
     verify(admins).close();
-
   }
 
   @Test

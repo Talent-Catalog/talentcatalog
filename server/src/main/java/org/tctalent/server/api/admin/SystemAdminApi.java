@@ -2608,10 +2608,14 @@ public class SystemAdminApi {
 
     private Map<String, Long> loadCandidateOccupations(Connection targetConn) throws SQLException {
         Map<String, Long> candidateOccupations = new HashMap<>();
-        Statement stmt = targetConn.createStatement();
-        ResultSet result = stmt.executeQuery("select id, candidate_id, occupation_id from candidate_occupation");
-        while (result.next()) {
-            candidateOccupations.put(result.getLong(2) + "~" + result.getLong(3), result.getLong(1));
+        try (Statement stmt = targetConn.createStatement();
+            ResultSet result = stmt.executeQuery(
+                "select id, candidate_id, occupation_id from candidate_occupation")) {
+            while (result.next()) {
+                candidateOccupations.put(
+                    result.getLong(2) + "~" + result.getLong(3),
+                    result.getLong(1));
+            }
         }
 
         LogBuilder.builder(log)
@@ -2625,10 +2629,11 @@ public class SystemAdminApi {
 
     private Map<Long, Long> loadCandidateIds(Connection targetConn) throws SQLException {
         Map<Long, Long> referenceMap = new HashMap<>();
-        Statement stmt = targetConn.createStatement();
-        ResultSet result = stmt.executeQuery("select id, user_id from candidate");
-        while (result.next()) {
-            referenceMap.put(result.getLong(2), result.getLong(1));
+        try (Statement stmt = targetConn.createStatement();
+            ResultSet result = stmt.executeQuery("select id, user_id from candidate")) {
+            while (result.next()) {
+                referenceMap.put(result.getLong(2), result.getLong(1));
+            }
         }
 
         LogBuilder.builder(log)
@@ -2642,12 +2647,12 @@ public class SystemAdminApi {
 
     private Set<Long> loadAdminIds(Connection targetConn) throws SQLException {
         Set<Long> referenceMap = new HashSet<>();
-        Statement stmt = targetConn.createStatement();
-        ResultSet result = stmt.executeQuery("select id from users where role = 'admin'");
-        while (result.next()) {
-            referenceMap.add(result.getLong(1));
+        try (Statement stmt = targetConn.createStatement();
+            ResultSet result = stmt.executeQuery("select id from users where role = 'admin'")) {
+            while (result.next()) {
+                referenceMap.add(result.getLong(1));
+            }
         }
-
         LogBuilder.builder(log)
             .user(authService.getLoggedInUser())
             .action("Migrate")
