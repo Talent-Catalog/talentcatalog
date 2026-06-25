@@ -1346,7 +1346,7 @@ class SystemAdminApiTest {
   @Test
   void jdbcLoaderHelpers_readRowsIntoCollections() throws Exception {
     when(connection.createStatement()).thenReturn(statement);
-    when(statement.executeQuery("select id from country")).thenReturn(resultSet);
+    when(statement.executeQuery(anyString())).thenReturn(resultSet);
     when(resultSet.next()).thenReturn(true, true, false);
     when(resultSet.getLong(1)).thenReturn(1L, 2L);
 
@@ -1402,22 +1402,23 @@ class SystemAdminApiTest {
         .thenReturn(admins);
     when(admins.next()).thenReturn(true, false);
     when(admins.getLong(1)).thenReturn(42L);
+    try {
+      Map<String, Long> occupationMap = ReflectionTestUtils.invokeMethod(
+          systemAdminApi, "loadCandidateOccupations", connection);
+      Map<Long, Long> candidateIds = ReflectionTestUtils.invokeMethod(
+          systemAdminApi, "loadCandidateIds", connection);
+      Set<Long> adminIds = ReflectionTestUtils.invokeMethod(
+          systemAdminApi, "loadAdminIds", connection);
 
-    Map<String, Long> occupationMap = ReflectionTestUtils.invokeMethod(
-        systemAdminApi, "loadCandidateOccupations", connection);
-    Map<Long, Long> candidateIds = ReflectionTestUtils.invokeMethod(
-        systemAdminApi, "loadCandidateIds", connection);
-    Set<Long> adminIds = ReflectionTestUtils.invokeMethod(
-        systemAdminApi, "loadAdminIds", connection);
-
-    assertEquals(Map.of("6~7", 5L), occupationMap);
-    assertEquals(Map.of(20L, 10L), candidateIds);
-    assertEquals(Set.of(42L), adminIds);
-
-    verify(occupations).close();
-    verify(candidates).close();
-    verify(admins).close();
-
+      assertEquals(Map.of("6~7", 5L), occupationMap);
+      assertEquals(Map.of(20L, 10L), candidateIds);
+      assertEquals(Set.of(42L), adminIds);
+    }
+    finally {
+      verify(occupations).close();
+      verify(candidates).close();
+      verify(admins).close();
+    }
     verify(occupationStatement).close();
     verify(candidateStatement).close();
     verify(adminStatement).close();
