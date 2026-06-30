@@ -16,31 +16,11 @@
 
 package org.tctalent.server.repository.db;
 
-/*
- * Copyright (c) 2026 Talent Catalog.
- *
- * This program is free software: you can redistribute it and/or modify it under
- * the terms of the GNU General Public License as published by the Free
- * Software Foundation, either version 3 of the License, or any later version.
- *
- * This program is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
- * for more details.
- *
- * You should have received a copy of the GNU General Public License.
- * If not, see https://www.gnu.org/licenses/.
- */
-
-
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.withSettings;
 
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
@@ -55,6 +35,10 @@ import java.util.List;
 import java.util.Set;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Answers;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.CandidateFilterByOpps;
 import org.tctalent.server.model.db.CandidateStatus;
@@ -65,7 +49,47 @@ import org.tctalent.server.model.db.UnhcrStatus;
 import org.tctalent.server.model.db.User;
 import org.tctalent.server.request.candidate.SearchCandidateRequest;
 
+@ExtendWith(MockitoExtension.class)
 class CandidateSpecificationTest {
+
+  @Mock(answer = Answers.RETURNS_DEEP_STUBS)
+  private Root<Candidate> candidate;
+
+  @Mock(answer = Answers.RETURNS_DEEP_STUBS)
+  private CriteriaQuery<Candidate> query;
+
+  @Mock(answer = Answers.RETURNS_DEEP_STUBS)
+  private CriteriaQuery<Long> countQuery;
+
+  @Mock(answer = Answers.RETURNS_DEEP_STUBS)
+  private CriteriaBuilder cb;
+
+  @Mock(answer = Answers.RETURNS_DEEP_STUBS)
+  private JoinFetch userFetch;
+
+  @Mock(answer = Answers.RETURNS_DEEP_STUBS)
+  private JoinFetch partnerFetch;
+
+  @Mock(answer = Answers.RETURNS_DEEP_STUBS)
+  private JoinFetch nationalityFetch;
+
+  @Mock(answer = Answers.RETURNS_DEEP_STUBS)
+  private JoinFetch countryFetch;
+
+  @Mock(answer = Answers.RETURNS_DEEP_STUBS)
+  private JoinFetch maxEducationLevelFetch;
+
+  @Mock(answer = Answers.RETURNS_DEEP_STUBS)
+  private Predicate conjunction;
+
+  @Mock
+  private Candidate excludedCandidate;
+
+  @Mock
+  private User loggedInUser;
+
+  @Mock
+  private Country sourceCountry;
 
   @Test
   @DisplayName("should cover default constructor")
@@ -78,9 +102,11 @@ class CandidateSpecificationTest {
   void buildSearchQuery_shouldThrow_whenCriteriaQueryIsNull() {
     SearchCandidateRequest request = new SearchCandidateRequest();
 
+    when(cb.conjunction()).thenReturn(conjunction);
+
     assertThrows(IllegalArgumentException.class,
         () -> CandidateSpecification.buildSearchQuery(request, null, null)
-            .toPredicate(mockCandidateRoot(), null, mockCriteriaBuilder()));
+            .toPredicate(candidate, null, cb));
   }
 
   @Test
@@ -124,8 +150,6 @@ class CandidateSpecificationTest {
     request.setListAllIds(List.of(9L, 10L));
     request.setCandidateFilterByOpps(CandidateFilterByOpps.someOpps);
 
-    Candidate excludedCandidate = mock(Candidate.class);
-
     assertNotNull(runNonCount(request, null, List.of(excludedCandidate)));
   }
 
@@ -134,7 +158,7 @@ class CandidateSpecificationTest {
   void buildSearchQuery_shouldBuildCountQuery() {
     SearchCandidateRequest request = new SearchCandidateRequest();
 
-    assertNotNull(runCount(request, null, null));
+    assertNotNull(runCount(request));
   }
 
   @Test
@@ -164,8 +188,7 @@ class CandidateSpecificationTest {
   void buildSearchQuery_shouldLimitByLoggedInUserSourceCountries() {
     SearchCandidateRequest request = new SearchCandidateRequest();
 
-    User loggedInUser = mock(User.class);
-    when(loggedInUser.getSourceCountries()).thenReturn(Set.of(mock(Country.class)));
+    when(loggedInUser.getSourceCountries()).thenReturn(Set.of(sourceCountry));
 
     assertNotNull(runNonCount(request, loggedInUser, null));
   }
@@ -175,7 +198,6 @@ class CandidateSpecificationTest {
   void buildSearchQuery_shouldIgnoreSourceCountryLimitation_whenLoggedInUserHasNoSourceCountries() {
     SearchCandidateRequest request = new SearchCandidateRequest();
 
-    User loggedInUser = mock(User.class);
     when(loggedInUser.getSourceCountries()).thenReturn(Set.of());
 
     assertNotNull(runNonCount(request, loggedInUser, null));
@@ -342,73 +364,37 @@ class CandidateSpecificationTest {
         .toPredicate(context.candidate, context.query, context.cb);
   }
 
-  private Predicate runCount(
-      SearchCandidateRequest request,
-      User loggedInUser,
-      Collection<Candidate> excludedCandidates
-  ) {
+  private Predicate runCount(SearchCandidateRequest request) {
     CriteriaContext context = countContext();
 
-    return CandidateSpecification.buildSearchQuery(request, loggedInUser, excludedCandidates)
+    return CandidateSpecification.buildSearchQuery(request, null, null)
         .toPredicate(context.candidate, context.query, context.cb);
   }
 
   private CriteriaContext nonCountContext() {
-    Root<Candidate> candidate = mockCandidateRoot();
-    CriteriaQuery<Candidate> query = mock(CriteriaQuery.class, RETURNS_DEEP_STUBS);
-    CriteriaBuilder cb = mockCriteriaBuilder();
-
     when(query.getResultType()).thenReturn(Candidate.class);
-    stubFetchJoins(candidate);
+    when(cb.conjunction()).thenReturn(conjunction);
+    stubFetchJoins();
 
     return new CriteriaContext(candidate, query, cb);
   }
 
   private CriteriaContext countContext() {
-    Root<Candidate> candidate = mockCandidateRoot();
-    CriteriaQuery<Long> query = mock(CriteriaQuery.class, RETURNS_DEEP_STUBS);
-    CriteriaBuilder cb = mockCriteriaBuilder();
+    when(countQuery.getResultType()).thenReturn(Long.class);
+    when(cb.conjunction()).thenReturn(conjunction);
 
-    when(query.getResultType()).thenReturn(Long.class);
-
-    return new CriteriaContext(candidate, query, cb);
+    return new CriteriaContext(candidate, countQuery, cb);
   }
 
-  private CriteriaBuilder mockCriteriaBuilder() {
-    CriteriaBuilder cb = mock(CriteriaBuilder.class, RETURNS_DEEP_STUBS);
-    when(cb.conjunction()).thenReturn(mock(Predicate.class, RETURNS_DEEP_STUBS));
-    return cb;
+  private void stubFetchJoins() {
+    doReturn(userFetch).when(candidate).fetch("user", JoinType.INNER);
+    doReturn(partnerFetch).when(userFetch).fetch("partner", JoinType.INNER);
+    doReturn(nationalityFetch).when(candidate).fetch("nationality");
+    doReturn(countryFetch).when(candidate).fetch("country");
+    doReturn(maxEducationLevelFetch).when(candidate).fetch("maxEducationLevel");
   }
 
-  private Root<Candidate> mockCandidateRoot() {
-    return mock(Root.class, RETURNS_DEEP_STUBS);
-  }
-
-  private void stubFetchJoins(Root<Candidate> candidate) {
-    Join<Object, Object> user = mockJoinFetch();
-    Join<Object, Object> partner = mockJoinFetch();
-    Join<Object, Object> nationality = mockJoinFetch();
-    Join<Object, Object> country = mockJoinFetch();
-    Join<Object, Object> maxEducationLevel = mockJoinFetch();
-
-    doReturn(asFetch(user)).when(candidate).fetch("user", JoinType.INNER);
-    doReturn(asFetch(partner)).when(user).fetch("partner", JoinType.INNER);
-    doReturn(asFetch(nationality)).when(candidate).fetch("nationality");
-    doReturn(asFetch(country)).when(candidate).fetch("country");
-    doReturn(asFetch(maxEducationLevel)).when(candidate).fetch("maxEducationLevel");
-  }
-
-  private Join<Object, Object> mockJoinFetch() {
-    return mock(
-        Join.class,
-        withSettings()
-            .extraInterfaces(Fetch.class)
-            .defaultAnswer(RETURNS_DEEP_STUBS)
-    );
-  }
-
-  private Fetch<Object, Object> asFetch(Join<Object, Object> join) {
-    return (Fetch<Object, Object>) join;
+  private interface JoinFetch extends Join<Object, Object>, Fetch<Object, Object> {
   }
 
   private record CriteriaContext(
