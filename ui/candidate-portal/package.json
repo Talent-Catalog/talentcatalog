@@ -35,6 +35,8 @@
     "@popperjs/core": "^2.10.2",
     "@stomp/rx-stomp": "^1.1.4",
     "@types/jasmine": "^5.1.4",
+    "@zxing/library": "^0.21.3",
+    "@zxing/ngx-scanner": "^17.0.4",
     "bootstrap": "^5.0.2",
     "core-js": "^3.25.3",
     "jquery": "^3.6.1",
