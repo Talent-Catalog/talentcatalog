@@ -1,0 +1,54 @@
+<!--
+  ~ Copyright (c) 2026 Talent Catalog.
+  ~
+  ~ This program is free software: you can redistribute it and/or modify it under
+  ~ the terms of the GNU General Public License as published by the Free
+  ~ Software Foundation, either version 3 of the License, or any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful, but WITHOUT
+  ~ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+  ~ FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
+  ~ for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program. If not, see https://www.gnu.org/licenses/.
+  -->
+
+<div class="verify-plus-scanner">
+  <div class="scanner-actions" *ngIf="!scanning && cameraPermission !== false && hasDevices !== false">
+    <tc-button [type]="'outline'" (onClick)="startScanning()">
+      Enable camera
+    </tc-button>
+  </div>
+
+  <div class="scanner-actions" *ngIf="cameraPermission === false && hasDevices !== false">
+    <p class="scanner-message scanner-message-error">
+    Camera access was denied. Please enable camera permission and try again.
+    </p>
+    <tc-button [type]="'outline'" (onClick)="startScanning()">
+      Try again
+    </tc-button>
+  </div>
+
+  <p class="scanner-message scanner-message-error" *ngIf="hasDevices === false">
+    No camera was detected on this device.
+  </p>
+
+  <zxing-scanner
+    *ngIf="hasDevices !== false"
+    [autostart]="false"
+    [enable]="scanning"
+    [formats]="formats"
+    [device]="selectedDevice"
+    (camerasFound)="onCamerasFound($event)"
+    (camerasNotFound)="onCamerasNotFound()"
+    (permissionResponse)="onPermissionResponse($event)"
+    (scanSuccess)="onScanSuccess($event)"
+    (scanFailure)="onScanFailure()"
+    (scanError)="onScanError($event)"
+  ></zxing-scanner>
+
+  <p class="scanner-message" *ngIf="scanning && invalidScan && cameraPermission !== false && hasDevices !== false">
+    A QR code has not been detected yet. Try moving closer and improving lighting.
+  </p>
+</div>

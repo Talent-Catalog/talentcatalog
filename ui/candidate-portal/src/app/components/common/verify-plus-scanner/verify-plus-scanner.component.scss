@@ -1,0 +1,28 @@
+.verify-plus-scanner {
+  display: block;
+}
+
+.scanner-actions {
+  margin-bottom: 0.75rem;
+}
+
+.scanner-message {
+  margin-bottom: 0.75rem;
+}
+
+.scanner-message-error {
+  color: #8b1f1f;
+}
+
+zxing-scanner {
+  display: block;
+  width: 100%;
+  max-width: 420px;
+  aspect-ratio: 3 / 4;
+}
+
+:host ::ng-deep zxing-scanner video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
