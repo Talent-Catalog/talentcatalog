@@ -17,8 +17,11 @@
 zxing-scanner {
   display: block;
   width: 100%;
-  max-width: 420px;
-  aspect-ratio: 3 / 4;
+  max-width: 100%;
+  aspect-ratio: 4 / 3;
+  max-height: 60vh;
+  margin: 0 auto;
+  overflow: hidden;
 }
 
 :host ::ng-deep zxing-scanner video {
