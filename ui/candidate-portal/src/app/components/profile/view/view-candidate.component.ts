@@ -163,6 +163,8 @@ export class ViewCandidateComponent implements OnInit {
       linkedIn: this.linkedinService.isEligible(this.candidate.id),
       reference: this.casiPortalService.checkEligibility('REFERENCE', 'VOUCHER'),
       unhcr: this.casiPortalService.checkEligibility('UNHCR', 'HELP_SITE_LINK'),
+      // TODO - SM -when eligibility criteria is determined move this to the server as a
+      //  checkEligibility test (for example by enrolled/approved country)
       verifyPlus: of(this.authenticationService.isGrnInstance())
       // Additional async service eligibility calls here
     }).pipe(shareReplay(1)); // Avoid re-triggering on multiple subscriptions
