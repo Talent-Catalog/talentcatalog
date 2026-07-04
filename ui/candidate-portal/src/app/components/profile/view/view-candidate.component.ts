@@ -20,7 +20,7 @@ import {CandidateService} from "../../../services/candidate.service";
 import {US_AFGHAN_SURVEY_TYPE} from "../../../model/survey-type";
 import {NgbNavChangeEvent} from "@ng-bootstrap/ng-bootstrap";
 import {ChatPost, JobChat, JobChatType, JobChatUserInfo} from "../../../model/chat";
-import {forkJoin, Observable, Subscription} from "rxjs";
+import {forkJoin, Observable, of, Subscription} from "rxjs";
 import {ChatService} from "../../../services/chat.service";
 import {LocalStorageService} from "../../../services/local-storage.service";
 import {Location} from "@angular/common";
@@ -69,6 +69,7 @@ export class ViewCandidateComponent implements OnInit {
   linkedinEligible$: Observable<boolean>;
   referenceEligible$: Observable<boolean>;
   unhcrEligible$: Observable<boolean>;
+  verifyPlusEligible$: Observable<boolean>;
 
   constructor(
     private authorizationService: AuthorizationService,
@@ -161,12 +162,13 @@ export class ViewCandidateComponent implements OnInit {
     const results$ = forkJoin({
       linkedIn: this.linkedinService.isEligible(this.candidate.id),
       reference: this.casiPortalService.checkEligibility('REFERENCE', 'VOUCHER'),
-      unhcr: this.casiPortalService.checkEligibility('UNHCR', 'HELP_SITE_LINK')
+      unhcr: this.casiPortalService.checkEligibility('UNHCR', 'HELP_SITE_LINK'),
+      verifyPlus: of(this.authenticationService.isGrnInstance())
       // Additional async service eligibility calls here
     }).pipe(shareReplay(1)); // Avoid re-triggering on multiple subscriptions
 
     this.showServicesTab$ = results$.pipe(
-      map(results => results.linkedIn || (this.isLocalEnv() && results.reference) || results.unhcr || !!this.activeDuolingoTask)
+      map(results => results.linkedIn || (this.isLocalEnv() && results.reference) || results.unhcr || results.verifyPlus || !!this.activeDuolingoTask)
     );
 
     this.linkedinEligible$ = results$.pipe(
@@ -179,6 +181,10 @@ export class ViewCandidateComponent implements OnInit {
 
     this.unhcrEligible$ = results$.pipe(
       map(results => results.unhcr)
+    );
+
+    this.verifyPlusEligible$ = results$.pipe(
+      map(results => results.verifyPlus)
     );
   }
 
