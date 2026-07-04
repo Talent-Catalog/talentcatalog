@@ -35,11 +35,8 @@
   </p>
 
   <zxing-scanner
-    *ngIf="hasDevices !== false"
-    [autostart]="false"
-    [enable]="scanning"
+    *ngIf="scanning && hasDevices !== false"
     [formats]="formats"
-    [device]="selectedDevice"
     (camerasFound)="onCamerasFound($event)"
     (camerasNotFound)="onCamerasNotFound()"
     (permissionResponse)="onPermissionResponse($event)"

@@ -62,15 +62,12 @@ describe('VerifyPlusScannerComponent', () => {
     expect(component.invalidScan).toBeFalse();
   });
 
-  it('should prefer a back camera when available', () => {
-    const devices = [
-      {label: 'Front Camera'} as MediaDeviceInfo,
-      {label: 'Back Camera'} as MediaDeviceInfo
-    ];
+  it('should update hasDevices when cameras are found or missing', () => {
+    component.onCamerasFound([{label: 'Front Camera'} as MediaDeviceInfo]);
+    expect(component.hasDevices).toBeTrue();
 
-    component.onCamerasFound(devices);
-
-    expect(component.selectedDevice).toBe(devices[1]);
+    component.onCamerasNotFound();
+    expect(component.hasDevices).toBeFalse();
   });
 
   it('should emit scanner errors', () => {

@@ -41,7 +41,6 @@ export class VerifyPlusScannerComponent {
   hasDevices = true;
   cameraPermission: boolean | null = null;
   invalidScan = false;
-  selectedDevice: MediaDeviceInfo | undefined;
 
   startScanning() {
     this.invalidScan = false;
@@ -50,7 +49,6 @@ export class VerifyPlusScannerComponent {
 
   onCamerasFound(devices: MediaDeviceInfo[]) {
     this.hasDevices = devices.length > 0;
-    this.selectedDevice = this.selectBackCamera(devices);
   }
 
   onCamerasNotFound() {
@@ -82,15 +80,4 @@ export class VerifyPlusScannerComponent {
     this.scannerError.emit(error);
   }
 
-  private selectBackCamera(devices: MediaDeviceInfo[]): MediaDeviceInfo | undefined {
-    if (!devices.length) {
-      return undefined;
-    }
-
-    const backCamera = devices.find(device =>
-      /back|rear|environment/i.test(device.label)
-    );
-
-    return backCamera ?? devices[0];
-  }
 }
