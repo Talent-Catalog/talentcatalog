@@ -34,6 +34,7 @@ describe('ServicesComponent', () => {
     component = fixture.componentInstance;
     component.showLinkedin$ = of(true);
     component.showReference$ = of(true);
+    component.showVerifyPlus$ = of(true);
     fixture.detectChanges();
   });
 
