@@ -129,6 +129,15 @@
           Description *
         </tc-label>
         <app-text-parts-input formControlName="description"></app-text-parts-input>
+        <label class="form-label">Extracted Skills</label>
+        <div>
+          <span
+            class="badge bg-secondary me-1"
+            *ngFor="let skill of extractedSkills">
+            {{ skill }}
+          </span>
+        </div>
+
       </tc-field>
     </form>
 
