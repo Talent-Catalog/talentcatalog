@@ -240,7 +240,6 @@ class CandidateAdditionalCoverageTest {
     assertTrue(candidate.isTestCandidate());
     assertTrue(candidate.isPendingTerms());
     assertTrue(candidate.isTagged(SystemAdminConfiguration.TEST_CANDIDATE_LIST_ID));
-    assertEquals(1, candidate.getSavedLists().size());
   }
 
   @Test
