@@ -31,8 +31,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.model.db.SkillsEscoEn;
+import org.tctalent.server.model.db.SkillsTcEn;
 import org.tctalent.server.model.db.SkillsTechOnetEn;
 import org.tctalent.server.repository.db.SkillsEscoEnRepository;
+import org.tctalent.server.repository.db.SkillsTcEnRepository;
 import org.tctalent.server.repository.db.SkillsTechOnetEnRepository;
 import org.tctalent.server.service.api.ExtractSkillsRequest;
 import org.tctalent.server.service.api.SkillName;
@@ -70,6 +72,7 @@ import org.tctalent.server.service.db.SkillsService;
 public class SkillsServiceImpl implements SkillsService {
     private final TcSkillsExtractionService skillsExtractionService;
     private final SkillsEscoEnRepository skillsEscoEnRepository;
+    private final SkillsTcEnRepository skillsTcEnRepository;
     private final SkillsTechOnetEnRepository skillsTechOnetEnRepository;
 
     /**
@@ -98,7 +101,9 @@ public class SkillsServiceImpl implements SkillsService {
 
             if (!newSkills.isEmpty()) {
                 log.info("Unmatched (new) skills: {}", newSkills);
-                // TODO: persist new skills into the TC skills table if desired.
+                // TODO: persist new skills into the TC skills table.
+                //TODO JC Note that a restart is required to pick up new skills because the cached
+                // list is only loaded once on first request.
             }
         }
 
@@ -177,12 +182,29 @@ public class SkillsServiceImpl implements SkillsService {
 
             loadEscoSkills(skills);
             loadOnetSkills(skills);
+            loadTcSkills(skills);
 
             //Copy into an immutable list so that it can be shared around.
             cachedList = List.copyOf(skills);
         }
 
         return cachedList;
+    }
+
+    private void loadTcSkills(Set<SkillName> skillNames) {
+        PageRequest request = PageRequest.ofSize(CHUNK_SIZE);
+        request = request.first();
+        Page<SkillsTcEn> page;
+        do {
+            //Get page of skills
+            page = skillsTcEnRepository.findAll(request);
+            //Process skills in page
+            final List<SkillsTcEn> pageContent = page.getContent();
+            for (SkillsTcEn skillsTcEn : pageContent) {
+                addSkills(skillNames, skillsTcEn);
+            }
+            request = request.next();
+        } while (page.hasNext());
     }
 
     private void loadOnetSkills(Set<SkillName> skillNames) {
@@ -250,6 +272,20 @@ public class SkillsServiceImpl implements SkillsService {
         final String example = rec.getExample();
         if (!ObjectUtils.isEmpty(example)) {
             String lower = example.toLowerCase(Locale.ENGLISH);
+            final SkillName sn = new SkillName(Locale.ENGLISH.getLanguage(), lower);
+            skillNames.add(sn);
+        }
+    }
+
+    /**
+     * Adds TC skill names
+     * @param skillNames Collection of skill names to add to
+     * @param rec TC skill record
+     */
+    private void addSkills(Collection<SkillName> skillNames, SkillsTcEn rec) {
+        final String name = rec.getName();
+        if (!ObjectUtils.isEmpty(name)) {
+            String lower = name.toLowerCase(Locale.ENGLISH);
             final SkillName sn = new SkillName(Locale.ENGLISH.getLanguage(), lower);
             skillNames.add(sn);
         }
