@@ -40,6 +40,16 @@ import org.tctalent.server.service.api.TcSkillsExtractionService;
 import org.tctalent.server.service.db.SkillsService;
 
 /**
+ * This service manages all known skills. Skills can be single words or short phrases.
+ * There could be around 20,000 of them.
+ * The skills are loaded from the database and cached in memory.
+ * <p>
+ *     The skills can come from multiple sources (for example Esco and ONet) which have been copied
+ *     into our local database.
+ *     In addition, there is a table for extra skills that TC users have identified that are not in
+ *     the other sources.
+ * </p>
+ *
  * This service imports skills from
  * <a href="https://esco.ec.europa.eu/en/use-esco/download">ESCO</a>
  * which requires the following acknowledgements:
@@ -61,11 +71,74 @@ public class SkillsServiceImpl implements SkillsService {
     private final TcSkillsExtractionService skillsExtractionService;
     private final SkillsEscoEnRepository skillsEscoEnRepository;
     private final SkillsTechOnetEnRepository skillsTechOnetEnRepository;
+
+    /**
+     * Cached list of skills. This is loaded from the database on the first request and then
+     * cached in memory.
+     * The list is immutable and can be shared across threads.
+     */
     private List<SkillName> cachedList;
 
     private final static int CHUNK_SIZE = 100;
     private final static String DELIMITER = "\n";
     private final static int INITIAL_CAPACITY = 30_000;
+
+    @Override
+    public void addTcSkillsIfNew(@NonNull List<String> skills, @NonNull String languageCode) {
+        if (skills.isEmpty()) {
+            return;
+        }
+        final String skillsAsString = String.join(",", skills);
+        List<SkillName> matchedSkills = extractSkillNames(skillsAsString, languageCode);
+
+        //Are there any skills that are not already in the database?
+        if (matchedSkills.size() < skills.size()) {
+            // Find which skills didn't match and are therefore new (case-insensitive, trimmed).
+            final List<String> newSkills = getNewSkills(skills, matchedSkills);
+
+            if (!newSkills.isEmpty()) {
+                log.info("Unmatched (new) skills: {}", newSkills);
+                // TODO: persist new skills into the TC skills table if desired.
+            }
+        }
+
+    }
+
+    /**
+     * Identify which input skill strings are not present in the provided list of
+     * matched {@link SkillName} results.
+     * <p>
+     * Matching is performed case-insensitively and with surrounding whitespace removed
+     * (using {@link Locale#ENGLISH} for lower-casing). Null entries in either list are
+     * ignored. The returned list contains the original input strings from {@code skills}
+     * that had no match in {@code matchedSkills} after normalization.
+     *
+     * @param skills input candidate skill strings to check (must not be null)
+     * @param matchedSkills skill names returned by the extraction process (must not be null)
+     * @return list of skills from {@code skills} that are not present in {@code matchedSkills}
+     */
+    @NonNull
+    private static List<String> getNewSkills(@NonNull List<String> skills,
+        List<SkillName> matchedSkills) {
+        final Set<String> matchedSet = new HashSet<>();
+        for (SkillName sn : matchedSkills) {
+            if (sn != null && sn.getName() != null) {
+                matchedSet.add(sn.getName().toLowerCase(Locale.ENGLISH).trim());
+            }
+        }
+
+        final List<String> newSkills = new java.util.ArrayList<>();
+        for (String s : skills) {
+            if (s == null) {
+                continue;
+            }
+            final String normalized = s.toLowerCase(Locale.ENGLISH).trim();
+            if (!matchedSet.contains(normalized)) {
+                newSkills.add(s);
+            }
+        }
+        return newSkills;
+    }
 
     @Override
     public List<SkillName> extractSkillNames(@NonNull String text, @NonNull String languageCode) {
