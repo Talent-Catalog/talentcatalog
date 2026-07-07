@@ -104,7 +104,6 @@ public class SkillsServiceImpl implements SkillsService {
                 //Persist new skills into the TC skills table.
                 for (String newSkill : newSkills) {
                     if (!skillsTcEnRepository.existsByNameIgnoreCase(newSkill)) {
-                        log.info("Adding new TC skill: {}", newSkill);
                         SkillsTcEn skillsTcEn = new SkillsTcEn();
                         skillsTcEn.setName(newSkill);
                         skillsTcEnRepository.save(skillsTcEn);
