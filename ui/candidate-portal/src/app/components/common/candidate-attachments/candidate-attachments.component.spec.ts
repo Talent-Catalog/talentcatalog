@@ -31,6 +31,9 @@ import {AttachmentType, CandidateAttachment} from '../../../model/candidate-atta
 import {CandidateAttachmentService} from '../../../services/candidate-attachment.service';
 import {CandidateService} from '../../../services/candidate.service';
 import {UserService} from '../../../services/user.service';
+import {UploadType} from "../../../model/task";
+import {User} from "../../../model/user";
+import {Candidate} from "../../../model/candidate";
 
 @Component({
   selector: 'tc-button',
@@ -101,7 +104,19 @@ class ErrorStubComponent {
   @Input() error: unknown;
 }
 
-function makeAttachment(overrides: Partial<CandidateAttachment> = {}): CandidateAttachment {
+function makeAttachment(overrides: Partial<CandidateAttachment> = {}): {
+  candidate?: Candidate;
+  cv: boolean;
+  createdDate: string;
+  createdBy: any | User;
+  name: string;
+  uploadType: any | UploadType;
+  id: number;
+  type: AttachmentType;
+  migrated: boolean;
+  url: string;
+  fileType: string
+} {
   return {
     id: 1,
     name: 'Resume.pdf',
