@@ -20,4 +20,11 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.tctalent.server.model.db.SkillsTcEn;
 
 public interface SkillsTcEnRepository extends JpaRepository<SkillsTcEn, Long> {
+    /**
+     * Checks if a skill with the given name exists in the database.
+     *
+     * @param name the name of the skill to check for existence
+     * @return true if a skill with the given name exists, false otherwise
+     */
+    boolean existsByNameIgnoreCase(String name);
 }

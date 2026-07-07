@@ -100,13 +100,20 @@ public class SkillsServiceImpl implements SkillsService {
             final List<String> newSkills = getNewSkills(skills, matchedSkills);
 
             if (!newSkills.isEmpty()) {
-                log.info("Unmatched (new) skills: {}", newSkills);
-                // TODO: persist new skills into the TC skills table.
-                //TODO JC Note that a restart is required to pick up new skills because the cached
-                // list is only loaded once on first request.
+                log.info("Adding new TC skills: {}", newSkills);
+                //Persist new skills into the TC skills table.
+                for (String newSkill : newSkills) {
+                    if (!skillsTcEnRepository.existsByNameIgnoreCase(newSkill)) {
+                        log.info("Adding new TC skill: {}", newSkill);
+                        SkillsTcEn skillsTcEn = new SkillsTcEn();
+                        skillsTcEn.setName(newSkill);
+                        skillsTcEnRepository.save(skillsTcEn);
+                    } else {
+                        log.info("TC skill already exists: {}", newSkill);
+                    }
+                }
             }
         }
-
     }
 
     /**

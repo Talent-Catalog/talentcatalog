@@ -32,6 +32,16 @@ public interface SkillsService {
     /**
      * Adds new skills (identified by Talent Catalog users) to the database if they do not already
      * exist.
+     * <p>
+     *     Note that new skills will not be recognized until the TC server application is restarted
+     *     and also the Python skill extractor is restarted.
+     *     This is because the server only loads skills from tehdatabase at startup and then serves
+     *     them from an in-memory cache.
+     *     Also, the skill extractor only loads the skills from the TC server once at startup.
+     * </p>
+     * <p>
+     *     Restart the TC server, then restart the Python skill extractor.
+     * </p>
      * @param skills List of skill names to add.
      * @param languageCode Language code.
      */

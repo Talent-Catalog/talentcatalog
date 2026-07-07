@@ -17,6 +17,7 @@
 package org.tctalent.server.model.db;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -27,6 +28,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 /**
  * Entity corresponding to a skill that has been entered by a Talent Catalog user.
@@ -34,6 +36,7 @@ import org.springframework.data.annotation.CreatedDate;
  * @author John Cameron
  */
 @Entity
+@EntityListeners(AuditingEntityListener.class)
 @Table(name = "skills_tc_en")
 @SequenceGenerator(name = "seq_gen", sequenceName = "skills_tc_en_id_seq", allocationSize = 1)
 @Getter
