@@ -20,11 +20,11 @@ import jsPDF from "jspdf";
 import {Candidate} from "../../../model/candidate";
 
 @Component({
-  selector: 'app-export-pdf',
-  templateUrl: './export-pdf.component.html',
-  styleUrls: ['./export-pdf.component.scss']
+  selector: 'app-print-page',
+  templateUrl: './print-page.component.html',
+  styleUrls: ['./print-page.component.scss']
 })
-export class ExportPdfComponent implements OnInit {
+export class PrintPageComponent implements OnInit {
 
   @Input() candidate: Candidate;
   @Input() idToExport: string;
