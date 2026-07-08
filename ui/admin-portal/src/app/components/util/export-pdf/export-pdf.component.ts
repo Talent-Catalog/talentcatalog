@@ -36,6 +36,12 @@ export class ExportPdfComponent implements OnInit {
   ngOnInit(): void {
   }
 
+  public printPage() {
+    window.print();
+  }
+
+  //Disabled. This code does not wrap lines in side text boxes.
+  //It is better to use the printPage function to print the page.
   /**
    * Called when export button on intake forms is clicked. Exports the div containing
    * the forms and downloads the file.
