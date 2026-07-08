@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.tctalent.server.exception.InvalidVerifyPlusPayloadException;
 import org.tctalent.server.service.db.verify.VerifyPlusPayload;
@@ -19,6 +20,7 @@ class VerifyPlusPayloadParserImplTest {
     }
 
     @Test
+    @DisplayName("Given a valid mock-1 payload, when parsed, then returns a VerifyPlusPayload with correct fields")
     void parse_validMock1Payload_returnsParsedPayload() {
         String raw = "{\"v\":\"mock-1\",\"unhcrId\":\"123-45C67890\",\"name\":\"Test User\"}";
 
@@ -30,6 +32,7 @@ class VerifyPlusPayloadParserImplTest {
     }
 
     @Test
+    @DisplayName("Given a payload missing the version field, when parsed, then throws InvalidVerifyPlusPayloadException")
     void parse_missingVersion_throwsInvalidVerifyPlusPayloadException() {
         String raw = "{\"unhcrId\":\"123-45C67890\"}";
 
@@ -37,6 +40,7 @@ class VerifyPlusPayloadParserImplTest {
     }
 
     @Test
+    @DisplayName("Given a payload with an unknown version, when parsed, then throws InvalidVerifyPlusPayloadException")
     void parse_unknownVersion_throwsInvalidVerifyPlusPayloadException() {
         String raw = "{\"v\":\"mock-2\",\"unhcrId\":\"123-45C67890\"}";
 
@@ -44,6 +48,7 @@ class VerifyPlusPayloadParserImplTest {
     }
 
     @Test
+    @DisplayName("Given a malformed JSON payload, when parsed, then throws InvalidVerifyPlusPayloadException")
     void parse_malformedJson_throwsInvalidVerifyPlusPayloadException() {
         String raw = "{\"v\":\"mock-1\",\"unhcrId\":\"123-45C67890\"";
 
@@ -51,6 +56,7 @@ class VerifyPlusPayloadParserImplTest {
     }
 
     @Test
+    @DisplayName("Given a payload missing the unhcrId field, when parsed, then throws InvalidVerifyPlusPayloadException")
     void parse_missingUnhcrId_throwsInvalidVerifyPlusPayloadException() {
         String raw = "{\"v\":\"mock-1\"}";
 
@@ -58,6 +64,7 @@ class VerifyPlusPayloadParserImplTest {
     }
 
     @Test
+    @DisplayName("Given a payload with extra whitespace, when parsed, then preserves the raw payload exactly")
     void parse_preservesRawPayloadExactly() {
         String raw = "  {\"v\":\"mock-1\",\"unhcrId\":\"123-45C67890\"}  ";
 

@@ -12,6 +12,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -54,6 +55,7 @@ class VerifyPlusServiceImplTest {
     }
 
     @Test
+    @DisplayName("Given a valid payload with a unique UNHCR ID, when ingestScan is called, then the candidate's UNHCR number is updated and duplicate is false")
     void ingestScan_uniqueUnhcrId_persistsAndReturnsDuplicateFalse() {
         VerifyPlusPayload parsed = new VerifyPlusPayload("mock-1", request.getRawPayload(), "UNHCR-1");
         when(candidateService.getLoggedInCandidate()).thenReturn(Optional.of(candidate));
@@ -71,6 +73,7 @@ class VerifyPlusServiceImplTest {
     }
 
     @Test
+    @DisplayName("Given a valid payload with a duplicate UNHCR ID, when ingestScan is called, then the candidate's UNHCR number is updated and duplicate is true")
     void ingestScan_duplicateUnhcrId_returnsDuplicateTrue() {
         VerifyPlusPayload parsed = new VerifyPlusPayload("mock-1", request.getRawPayload(), "UNHCR-1");
         Candidate other = new Candidate();
@@ -88,6 +91,7 @@ class VerifyPlusServiceImplTest {
     }
 
     @Test
+    @DisplayName("Given a candidate with an existing UNHCR number, when ingestScan is called with a new UNHCR number, then the candidate's UNHCR number is overwritten")
     void ingestScan_overwritesUnhcrNumberOnRescan() {
         candidate.setUnhcrNumber("OLD-UNHCR");
         VerifyPlusPayload parsed = new VerifyPlusPayload("mock-1", request.getRawPayload(), "NEW-UNHCR");
@@ -105,6 +109,7 @@ class VerifyPlusServiceImplTest {
     }
 
     @Test
+    @DisplayName("Given no logged-in candidate, when ingestScan is called, then an InvalidSessionException is thrown")
     void ingestScan_notLoggedIn_throwsInvalidSessionException() {
         when(candidateService.getLoggedInCandidate()).thenReturn(Optional.empty());
 

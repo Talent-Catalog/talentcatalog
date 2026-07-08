@@ -8,6 +8,7 @@ import static org.mockito.Mockito.when;
 
 import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -35,6 +36,7 @@ class VerifyPlusPortalApiTest {
     }
 
     @Test
+    @DisplayName("Given a valid payload, when submitted, then returns a mapped result with UNHCR number and duplicate flag")
     void submit_validPayload_returnsMappedResult() {
         VerifyPlusIngestResult result = new VerifyPlusIngestResult("UNHCR-1", true);
         when(verifyPlusService.ingestScan(request)).thenReturn(result);
@@ -48,6 +50,7 @@ class VerifyPlusPortalApiTest {
     }
 
     @Test
+    @DisplayName("Given a malformed payload, when submitted, then propagates InvalidVerifyPlusPayloadException")
     void submit_malformedPayload_propagatesValidationException() {
         when(verifyPlusService.ingestScan(request))
             .thenThrow(new InvalidVerifyPlusPayloadException("Malformed Verify+ payload"));
