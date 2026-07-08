@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
   ~ Copyright (c) 2026 Talent Catalog.
   ~
@@ -15,10 +16,10 @@
   -->
 
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" lang="en">
 
 <head>
-    <meta content charset="UTF-8">
+    <meta charset="UTF-8" />
     <link rel="stylesheet" type="text/css" media="all" th:href="@{style.css}"/>
     <title></title>
 </head>
@@ -35,9 +36,9 @@
         <span th:text="${candidate.country.name}"></span>
     </div>
 </div>
-<div th:if="${showContact}" class="left">
+    <div th:if="${showContact}" class="left">
     <h4>Contact Information</h4>
-    <hr>
+    <hr />
 </div>
 <table th:if="${showContact}">
     <tr>
@@ -81,7 +82,7 @@
     <div class="left">
         <h4>Experience</h4>
     </div>
-    <hr>
+    <hr />
     <table>
         <tr th:each="experience: ${candidate.candidateJobExperiences}">
             <td class="large-break">
@@ -110,7 +111,7 @@
     <div class="left">
         <h4>Education</h4>
     </div>
-    <hr>
+    <hr />
     <table>
         <tr th:each="education: ${candidate.candidateEducations}">
             <td>
@@ -129,7 +130,7 @@
     <div class="left">
         <h4>Certification</h4>
     </div>
-    <hr>
+    <hr />
     <table>
         <tr th:each="certification: ${candidate.candidateCertifications}">
             <td>
@@ -147,7 +148,7 @@
     <div class="left">
         <h4>Languages</h4>
     </div>
-    <hr>
+    <hr />
     <table>
         <tr th:each="language: ${candidate.candidateLanguages}">
             <td>
