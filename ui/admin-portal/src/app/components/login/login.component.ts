@@ -106,7 +106,9 @@ export class LoginComponent implements OnInit {
     this.authenticationService.login(req)
     .subscribe(() => {
       this.loading = false;
-      this.checkMfaAndDpa();
+      // todo: temporary disabled the DPA
+      // this.checkMfaAndDpa();
+      this.checkMfaSetup();
     }, error => {
       // console.log(error);
       this.error = error;
