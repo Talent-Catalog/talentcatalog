@@ -47,6 +47,7 @@ export class ViewCandidateTasksComponent implements OnInit, OnChanges {
   loading;
   loadingResponse;
   error;
+  showAssignmentEmailNotification: boolean;
   saving;
   ongoingTasks: TaskAssignment[];
   completedTasks: TaskAssignment[];
@@ -91,6 +92,8 @@ export class ViewCandidateTasksComponent implements OnInit, OnChanges {
   }
 
   assignTask() {
+    this.showAssignmentEmailNotification = false;
+
     const assignTaskCandidateModal = this.modalService.open(AssignTasksCandidateComponent, {
       centered: true,
       backdrop: 'static'
@@ -99,7 +102,13 @@ export class ViewCandidateTasksComponent implements OnInit, OnChanges {
     assignTaskCandidateModal.componentInstance.candidateId = this.candidate.id;
 
     assignTaskCandidateModal.result
-      .then((taskAssignment: TaskAssignment) => this.candidateService.updateCandidate())
+      .then((taskAssignment: TaskAssignment) => {
+        if (taskAssignment?.task?.notifyOnAssignment) {
+          this.showAssignmentEmailNotification = true;
+          setTimeout(() => this.showAssignmentEmailNotification = false, 5000);
+        }
+        this.candidateService.updateCandidate();
+      })
       .catch(() => { /* Isn't possible */ });
 
   }
