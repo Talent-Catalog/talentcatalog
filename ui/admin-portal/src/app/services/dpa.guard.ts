@@ -16,8 +16,7 @@
 
 import {Injectable} from '@angular/core';
 import {ActivatedRouteSnapshot, CanActivate, Router, RouterStateSnapshot} from '@angular/router';
-import {Observable} from 'rxjs';
-import {map, tap} from 'rxjs/operators';
+import {Observable, of} from 'rxjs';
 import {PartnerService} from './partner.service';
 import {AuthorizationService} from "./authorization.service";
 
@@ -32,21 +31,28 @@ export class DpaGuard implements CanActivate {
   ) {
   }
 
+  // canActivate(
+  //   route: ActivatedRouteSnapshot,
+  //   state: RouterStateSnapshot
+  // ): Observable<boolean> {
+  //   // Only check DPA for source partner users
+  //   if (!this.authorizationService.isSourcePartner()) {
+  //     return new Observable<boolean>(observer => observer.next(true));
+  //   }
+  //   return this.partnerService.requiresDpaAcceptance().pipe(
+  //     map(requiresDpa => !requiresDpa),
+  //     tap(isAllowed => {
+  //       if (!isAllowed) {
+  //         this.router.navigate(['/dpa']);
+  //       }
+  //     })
+  //   );
+  // }
+
   canActivate(
     route: ActivatedRouteSnapshot,
     state: RouterStateSnapshot
   ): Observable<boolean> {
-    // Only check DPA for source partner users
-    if (!this.authorizationService.isSourcePartner()) {
-      return new Observable<boolean>(observer => observer.next(true));
-    }
-    return this.partnerService.requiresDpaAcceptance().pipe(
-      map(requiresDpa => !requiresDpa),
-      tap(isAllowed => {
-        if (!isAllowed) {
-          this.router.navigate(['/dpa']);
-        }
-      })
-    );
+    return of(true);
   }
 }
