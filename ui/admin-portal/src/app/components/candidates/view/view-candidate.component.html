@@ -46,7 +46,6 @@
             <tc-dropdown-item (itemSelect)="downloadGeneratedCV()"
                               target="_blank"
                               title="Open/download generated CV"
-                              [style.line-height]="'1rem'"
             >
               <tc-icon [color]="'primary'"
                        [size]="'md'"
@@ -131,7 +130,6 @@
             </tc-dropdown-item>
 
             <tc-dropdown-item (itemSelect)="createTailoredCv()"
-                              [style.line-height]="'1rem'"
             >
               <tc-icon [color]="'primary'"
                        [size]="'md'"
@@ -142,9 +140,20 @@
               View tailored CV
             </tc-dropdown-item>
 
+            <tc-dropdown-item *ngIf="isAnAdmin()"
+                              (itemSelect)="deleteCandidate()"
+            >
+              <tc-icon [color]="'error'"
+                       [size]="'md'"
+                       title="Delete candidate"
+              >
+                <i class="fa-solid fa-user-xmark"></i>
+              </tc-icon>
+              Delete candidate
+            </tc-dropdown-item>
+
             <tc-dropdown-item *ngIf="canEraseCandidateData()"
                               (itemSelect)="eraseCandidateData()"
-                              [style.line-height]="'1rem'"
             >
               <tc-icon [color]="'error'"
                        [size]="'md'"
