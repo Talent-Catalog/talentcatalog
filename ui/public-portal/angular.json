@@ -124,7 +124,9 @@
             "styles": [
               "src/styles.scss"
             ],
-            "scripts": []
+            "scripts": [],
+            "codeCoverage": true,
+            "sourceMap": true
           }
         },
         "e2e": {
