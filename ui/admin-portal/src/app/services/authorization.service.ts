@@ -347,7 +347,7 @@ export class AuthorizationService {
   }
 
   canEraseCandidateData(): boolean {
-    return this.isSystemAdminOnly && !this.isReadOnly();
+    return this.isSystemAdminOnly() && !this.isReadOnly();
   }
 
   isPartnerAdminOrGreater(): boolean {
