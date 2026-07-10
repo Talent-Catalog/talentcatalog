@@ -68,6 +68,7 @@ public class CvExportDataPreparer {
     }
   }
 
+  //TODO JC This should be done when the job description is saved, not when the CV is exported.
   /**
    * Normalizes text fields in the candidate's job experience records before export.
    *

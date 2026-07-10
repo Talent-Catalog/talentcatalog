@@ -85,9 +85,14 @@ public class CvTemplateHelper {
       context.setVariable("showContact", showContact);
       context.setVariable("logoFile", tcInstanceService.getLogoFile());
 
+      //TODO JC Rename this variable. The output is not HTML, it's XHTML. The template is already XHTML-compliant.
       String renderedHtmlContent = pdfTemplateEngine.process("template", context);
+
+      //TODO JC This is unnecessary given that the template is already XHTML.
       String xhtml = convertToXhtml(renderedHtmlContent);
 
+      //TODO JC This shouldn't be necessary once the template is fully XHTML-compliant, and
+      //the data in the database is cleaned of invalid characters.
       // Remove null bytes to avoid invalid XML character errors in PDF/DOCX converters.
       return NULL_BYTE_PATTERN.matcher(xhtml).replaceAll("");
     } catch (Exception e) {
@@ -100,6 +105,7 @@ public class CvTemplateHelper {
     }
   }
 
+  //TODO JC THis is unnecessary given that the template is already XHTML.
   private String convertToXhtml(String html) {
     Tidy tidy = new Tidy();
     tidy.setInputEncoding(UTF_8);
