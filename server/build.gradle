@@ -169,7 +169,8 @@ dependencies {
 
     implementation("org.apache.commons:commons-lang3")
     implementation('commons-beanutils:commons-beanutils:1.11.0')
-    implementation("org.xhtmlrenderer:flying-saucer-pdf-itext5:9.7.2")
+    // Source: https://mvnrepository.com/artifact/com.openhtmltopdf/openhtmltopdf-pdfbox
+    implementation("com.openhtmltopdf:openhtmltopdf-pdfbox:1.0.10")
     implementation('net.sf.jtidy:jtidy:r938')
     implementation('org.jsoup:jsoup:1.15.4')
 

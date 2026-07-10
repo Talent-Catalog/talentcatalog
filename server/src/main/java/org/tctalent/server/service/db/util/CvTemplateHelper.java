@@ -16,12 +16,10 @@
 
 package org.tctalent.server.service.db.util;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.nio.charset.StandardCharsets;
 import java.util.regex.Pattern;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 import org.tctalent.server.exception.CvGenerationException;
 import org.tctalent.server.logging.LogBuilder;
@@ -30,9 +28,13 @@ import org.tctalent.server.service.db.impl.TcInstanceService;
 import org.tctalent.server.util.text.CandidateTidiedTextViewFactory;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
-import org.w3c.tidy.Tidy;
+
 /**
  * Shared service for rendering candidate CV data through the common Thymeleaf CV template.
+ * <p>
+ * See also {@link org.tctalent.server.configuration.CvConfiguration} for the template engine
+ * configuration.
+ * </p>
  *
  * <p>This class deliberately contains only the shared template/XHTML work. PDF conversion belongs
  * in {@link PdfHelper}; DOCX conversion belongs in
@@ -42,10 +44,9 @@ import org.w3c.tidy.Tidy;
 @Slf4j
 public class CvTemplateHelper {
 
-  private static final String UTF_8 = "UTF-8";
   private static final Pattern NULL_BYTE_PATTERN = Pattern.compile("\\x00");
 
-  private final TemplateEngine pdfTemplateEngine;
+  private final TemplateEngine cvTemplateEngine;
   private final TcInstanceService tcInstanceService;
   private final CandidateTidiedTextViewFactory candidateTidiedTextViewFactory;
   private final CvExportDataPreparer cvExportDataPreparer;
@@ -55,15 +56,28 @@ public class CvTemplateHelper {
    * the @Qualifier annotation to the constructor.
    */
   public CvTemplateHelper(
-      @Qualifier("pdfTemplateEngine") TemplateEngine pdfTemplateEngine,
+      @Qualifier("cvTemplateEngine") TemplateEngine cvTemplateEngine,
       TcInstanceService tcInstanceService,
       CandidateTidiedTextViewFactory candidateTidiedTextViewFactory,
       CvExportDataPreparer cvExportDataPreparer
   ) {
-    this.pdfTemplateEngine = pdfTemplateEngine;
+    this.cvTemplateEngine = cvTemplateEngine;
     this.tcInstanceService = tcInstanceService;
     this.candidateTidiedTextViewFactory = candidateTidiedTextViewFactory;
     this.cvExportDataPreparer = cvExportDataPreparer;
+  }
+
+  public String getResourceBaseUrl() {
+    try {
+      return new ClassPathResource("/cv/").getURL().toExternalForm();
+    } catch (Exception e) {
+      LogBuilder.builder(log)
+          .action("getResourceBaseUrl")
+          .message("Error getting resource base URL for CV template")
+          .logError(e);
+
+      throw new CvGenerationException("Error getting resource base URL for CV template: " + e.getMessage());
+    }
   }
 
   /**
@@ -85,50 +99,16 @@ public class CvTemplateHelper {
       context.setVariable("showContact", showContact);
       context.setVariable("logoFile", tcInstanceService.getLogoFile());
 
-      //TODO JC Rename this variable. The output is not HTML, it's XHTML. The template is already XHTML-compliant.
-      String renderedHtmlContent = pdfTemplateEngine.process("template", context);
+      //Note that the template is XHTML-compliant, so the Thymeleaf output should also be XHTML.
+      String xhtml = cvTemplateEngine.process("cvTemplate", context);
 
-      //TODO JC This is unnecessary given that the template is already XHTML.
-      String xhtml = convertToXhtml(renderedHtmlContent);
-
-      //TODO JC This shouldn't be necessary once the template is fully XHTML-compliant, and
-      //the data in the database is cleaned of invalid characters.
+      //TODO JC This shouldn't be necessary once the data in the database is cleaned of invalid characters.
       // Remove null bytes to avoid invalid XML character errors in PDF/DOCX converters.
       return NULL_BYTE_PATTERN.matcher(xhtml).replaceAll("");
     } catch (Exception e) {
       LogBuilder.builder(log)
           .action("renderCvXhtml")
           .message("Error rendering CV XHTML")
-          .logError(e);
-
-      throw new CvGenerationException(e.getMessage());
-    }
-  }
-
-  //TODO JC THis is unnecessary given that the template is already XHTML.
-  private String convertToXhtml(String html) {
-    Tidy tidy = new Tidy();
-    tidy.setInputEncoding(UTF_8);
-    tidy.setOutputEncoding(UTF_8);
-    tidy.setXHTML(true);
-
-    try (ByteArrayInputStream inputStream = new ByteArrayInputStream(html.getBytes(StandardCharsets.UTF_8));
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream()
-    ) {
-      tidy.parseDOM(inputStream, outputStream);
-
-      String xhtml = outputStream.toString(StandardCharsets.UTF_8);
-
-      LogBuilder.builder(log)
-          .action("convertToXhtml")
-          .message("Converted HTML to XHTML")
-          .logInfo();
-
-      return xhtml;
-    } catch (Exception e) {
-      LogBuilder.builder(log)
-          .action("convertToXhtml")
-          .message("Error converting HTML to XHTML")
           .logError(e);
 
       throw new CvGenerationException(e.getMessage());
