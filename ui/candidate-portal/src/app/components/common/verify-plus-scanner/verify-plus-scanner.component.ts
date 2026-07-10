@@ -38,6 +38,7 @@ export class VerifyPlusScannerComponent {
   readonly formats = [BarcodeFormat.QR_CODE];
 
   scanning = false;
+  hasScanned = false;
   hasDevices = true;
   cameraPermission: boolean | null = null;
   invalidScan = false;
@@ -63,12 +64,18 @@ export class VerifyPlusScannerComponent {
   }
 
   onScanSuccess(decodedValue: string) {
+    if (!this.scanning) {
+      return;  // ignore any late duplicate emit
+    }
+
     if (!decodedValue) {
       this.invalidScan = true;
       return;
     }
 
     this.invalidScan = false;
+    this.hasScanned = true;
+    this.scanning = false;  // stop the camera after a successful capture
     this.scanned.emit(decodedValue);
   }
 

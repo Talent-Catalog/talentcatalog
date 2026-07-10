@@ -40,10 +40,22 @@ describe('VerifyPlusScannerComponent', () => {
 
   it('should emit scanned payload on successful scan', () => {
     spyOn(component.scanned, 'emit');
+    component.scanning = true;
 
     component.onScanSuccess('payload-value');
 
     expect(component.scanned.emit).toHaveBeenCalledWith('payload-value');
+    expect(component.scanning).toBeFalse();
+  });
+
+  it('should ignore duplicate onScanSuccess events after scanning stops', () => {
+    spyOn(component.scanned, 'emit');
+    component.scanning = true;
+
+    component.onScanSuccess('payload-value');
+    component.onScanSuccess('payload-value');
+
+    expect(component.scanned.emit).toHaveBeenCalledTimes(1);
   });
 
   it('should mark invalid scan on scan failure', () => {

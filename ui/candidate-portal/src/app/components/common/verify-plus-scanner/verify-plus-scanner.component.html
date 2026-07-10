@@ -17,7 +17,7 @@
 <div class="verify-plus-scanner">
   <div class="scanner-actions" *ngIf="!scanning && cameraPermission !== false && hasDevices !== false">
     <tc-button [type]="'outline'" (onClick)="startScanning()">
-      Enable camera
+      {{ hasScanned ? 'Scan again' : 'Enable camera' }}
     </tc-button>
   </div>
 
