@@ -965,4 +965,17 @@ public interface CandidateRepository extends CacheEvictingRepository<Candidate, 
         @Param("id") long id
     );
 
+    @Query(
+        """
+        SELECT c FROM Candidate c
+        WHERE c.status IN :statuses
+          AND c.unhcrNumber = :unhcrNumber
+          AND c.id != :id
+        """)
+    List<Candidate> findOthersByUnhcrNumber(
+        @Param("statuses") List<CandidateStatus> statuses,
+        @Param("unhcrNumber") String unhcrNumber,
+        @Param("id") long id
+    );
+
 }
