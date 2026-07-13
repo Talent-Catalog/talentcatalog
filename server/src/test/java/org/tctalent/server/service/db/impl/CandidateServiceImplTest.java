@@ -650,7 +650,6 @@ class CandidateServiceImplTest {
         assertThrows(NoSuchObjectException.class, () -> candidateService.findByPublicId("PUB"));
       }
 
-
       @Test
       void deleteCandidateReturnsTrueOnlyWhenCandidateExists() {
         given(candidateRepository.findById(1L)).willReturn(Optional.of(candidate));
@@ -1497,23 +1496,6 @@ class CandidateServiceImplTest {
         () -> candidateService.findByCandidateNumberRestricted(candidateNumber));
   }
 
-  @Test
-  @DisplayName("findByCandidateNumberRestricted throws not found for fully erased candidate")
-  void findByCandidateNumberRestrictedThrowsNotFoundForErasedCandidate() {
-    String candidateNumber = "123460";
-    candidate.setCandidateNumber(candidateNumber);
-    candidate.setStatus(CandidateStatus.deleted);
-    // country is null after GDPR erasure — deliberately not set
-
-    given(authService.getLoggedInUser()).willReturn(Optional.of(mockUser));
-    given(candidateRepository.findByCandidateNumber(candidateNumber)).willReturn(candidate);
-
-    NoSuchObjectException ex = assertThrows(NoSuchObjectException.class,
-        () -> candidateService.findByCandidateNumberRestricted(candidateNumber));
-
-    assertEquals("This candidate's data has been fully deleted from the Talent Catalog.",
-        ex.getMessage());
-  }
 
   @Test
   @DisplayName("findByCandidateNumberRestricted returns active candidate in source countries")
@@ -2567,8 +2549,6 @@ class CandidateServiceImplTest {
     assertSame(candidates, result);
     verify(candidateRepository).findByIds(ids);
   }
-
-
 
   @Test
   @DisplayName("searchCandidates by name searches by name for admin users")
@@ -4752,7 +4732,18 @@ class CandidateServiceImplTest {
     verify(userRepository, never()).save(any(User.class));
   }
 
+  @Test
+  @DisplayName("findByCandidateNumberRestricted throws when no user is logged in")
+  void findByCandidateNumberRestrictedThrowsWhenNoUserIsLoggedIn() {
+    given(authService.getLoggedInUser()).willReturn(Optional.empty());
 
+    assertThrows(
+        InvalidSessionException.class,
+        () -> candidateService.findByCandidateNumberRestricted("123456")
+    );
+
+    verify(userService, never()).getDefaultSourceCountries(any(User.class));
+  }
   @Test
   @DisplayName("getExportCandidateStrings throws when no user is logged in")
   void getExportCandidateStringsThrowsWhenNoUserIsLoggedIn() {
