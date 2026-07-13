@@ -25,7 +25,13 @@ import {
   ViewChild
 } from '@angular/core';
 import {CandidateJobExperience} from "../../../model/candidate-job-experience";
-import {UntypedFormBuilder, UntypedFormGroup, Validators} from "@angular/forms";
+import {
+  AbstractControl,
+  UntypedFormBuilder,
+  UntypedFormGroup,
+  ValidationErrors,
+  Validators
+} from "@angular/forms";
 import {Country} from "../../../model/country";
 import {CountryService} from "../../../services/country.service";
 import {CandidateOccupation} from "../../../model/candidate-occupation";
@@ -98,7 +104,10 @@ export class CandidateJobExperienceFormComponent implements OnInit, AfterViewIni
       endDate: [this.candidateJobExperience ? this.candidateJobExperience.endDate : null],
       fullTime: [this.candidateJobExperience ? this.candidateJobExperience.fullTime : null, Validators.required],
       paid: [this.candidateJobExperience ? this.candidateJobExperience.paid : null, Validators.required],
-      description: [this.candidateJobExperience ? this.candidateJobExperience.description : '', Validators.required]
+      description: [
+        this.candidateJobExperience ? this.candidateJobExperience.description : '',
+        this.textPartsDescriptionRequired
+      ]
     }, {validator: this.startDateBeforeEndDate('startDate', 'endDate')});
 
     this.form.controls['paid'].valueChanges.subscribe(
@@ -167,6 +176,30 @@ export class CandidateJobExperienceFormComponent implements OnInit, AfterViewIni
 
   cancel() {
     this.formClosed.emit();
+  }
+
+  private textPartsDescriptionRequired(control: AbstractControl): ValidationErrors | null {
+    const value = control.value;
+    if (typeof value !== 'string' || !value.trim()) {
+      return {required: true};
+    }
+
+    let description = value;
+    try {
+      const parsed = JSON.parse(value);
+      if (typeof parsed?.parts?.original === 'string') {
+        description = parsed.parts.original;
+      }
+    } catch {
+      // Legacy plain text descriptions are valid input, so validate the raw value.
+    }
+
+    const visibleText = description
+    .replace(/<[^>]*>/g, ' ')
+    .replace(/&nbsp;|&#160;/gi, ' ')
+    .trim();
+
+    return visibleText ? null : {required: true};
   }
 
 }
