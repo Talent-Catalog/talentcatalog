@@ -36,6 +36,7 @@ export class ServicesComponent {
   @Input() showLinkedin$: Observable<boolean>;
   @Input() showReference$: Observable<boolean>;
   @Input() showUnhcr$: Observable<boolean>;
+  @Input() showVerifyPlus$: Observable<boolean>;
   @Output() refresh = new EventEmitter();
 
   constructor() { }
