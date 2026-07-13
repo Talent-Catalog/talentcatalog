@@ -220,6 +220,7 @@ class CandidateServiceImplTest {
   @Mock private SystemNotificationService systemNotificationService;
   @Mock private CountryRepository countryRepository;
   @Mock private AuthService authService;
+  @Mock private UserService userService;
   @Mock private UserRepository userRepository;
   @Mock private User mockUser;
   @Mock private CandidateCitizenshipService candidateCitizenshipService;
@@ -227,7 +228,6 @@ class CandidateServiceImplTest {
   @Mock private TcInstanceService tcInstanceService;
   @Mock private AgreementService agreementService;
   @Mock private CounterpartyService counterpartyService;
-  @Mock private UserService userService;
   @Mock private CandidateNoteService candidateNoteService;
   @Mock private EducationLevelRepository educationLevelRepository;
   @Mock private SurveyTypeRepository surveyTypeRepository;
@@ -650,18 +650,6 @@ class CandidateServiceImplTest {
         assertThrows(NoSuchObjectException.class, () -> candidateService.findByPublicId("PUB"));
       }
 
-      @Test
-      void findByCandidateNumberRestrictedThrowsCountryRestrictionWhenNotAccessible() {
-        Set<Country> sourceCountries = Set.of(new Country());
-        given(authService.getLoggedInUser()).willReturn(Optional.of(loggedInUser));
-        given(userService.getDefaultSourceCountries(loggedInUser)).willReturn(sourceCountries);
-        given(candidateRepository.findByCandidateNumberRestricted("123456", sourceCountries))
-            .willReturn(Optional.empty());
-
-        assertThrows(
-            CountryRestrictionException.class,
-            () -> candidateService.findByCandidateNumberRestricted("123456"));
-      }
 
       @Test
       void deleteCandidateReturnsTrueOnlyWhenCandidateExists() {
@@ -1459,6 +1447,109 @@ class CandidateServiceImplTest {
 
     verify(counterpartyService, never()).findOrCreateByTypeAndPartner(any(), any());
     verify(agreementService, never()).recordAgreement(any(), any(), any());
+  }
+
+  @Test
+  @DisplayName("findByCandidateNumberRestricted throws not found for unknown candidate number")
+  void findByCandidateNumberRestrictedThrowsNotFoundForUnknownCandidate() {
+    String candidateNumber = "999999";
+    given(authService.getLoggedInUser()).willReturn(Optional.of(mockUser));
+    given(candidateRepository.findByCandidateNumber(candidateNumber)).willReturn(null);
+
+    NoSuchObjectException ex = assertThrows(NoSuchObjectException.class,
+        () -> candidateService.findByCandidateNumberRestricted(candidateNumber));
+
+    assertEquals("No candidate exists with number: " + candidateNumber, ex.getMessage());
+  }
+
+  @Test
+  @DisplayName("findByCandidateNumberRestricted returns soft-deleted candidate whose country is in scope")
+  void findByCandidateNumberRestrictedReturnsSoftDeletedCandidateWhenCountryAllowed() {
+    String candidateNumber = "123456";
+    candidate.setCandidateNumber(candidateNumber);
+    candidate.setStatus(CandidateStatus.deleted);
+    candidate.setCountry(testCountry);
+
+    given(authService.getLoggedInUser()).willReturn(Optional.of(mockUser));
+    given(candidateRepository.findByCandidateNumber(candidateNumber)).willReturn(candidate);
+    given(userService.getDefaultSourceCountries(mockUser)).willReturn(Set.of(testCountry));
+
+    Candidate result = candidateService.findByCandidateNumberRestricted(candidateNumber);
+
+    assertEquals(candidate, result);
+  }
+
+  @Test
+  @DisplayName("findByCandidateNumberRestricted throws access error for soft-deleted candidate outside source countries")
+  void findByCandidateNumberRestrictedThrowsForSoftDeletedCandidateOutsideSourceCountries() {
+    String candidateNumber = "123459";
+    candidate.setCandidateNumber(candidateNumber);
+    candidate.setStatus(CandidateStatus.deleted);
+    candidate.setCountry(testCountry);
+    Country otherCountry = new Country();
+    otherCountry.setId(99L);
+
+    given(authService.getLoggedInUser()).willReturn(Optional.of(mockUser));
+    given(candidateRepository.findByCandidateNumber(candidateNumber)).willReturn(candidate);
+    given(userService.getDefaultSourceCountries(mockUser)).willReturn(Set.of(otherCountry));
+
+    assertThrows(CountryRestrictionException.class,
+        () -> candidateService.findByCandidateNumberRestricted(candidateNumber));
+  }
+
+  @Test
+  @DisplayName("findByCandidateNumberRestricted throws not found for fully erased candidate")
+  void findByCandidateNumberRestrictedThrowsNotFoundForErasedCandidate() {
+    String candidateNumber = "123460";
+    candidate.setCandidateNumber(candidateNumber);
+    candidate.setStatus(CandidateStatus.deleted);
+    // country is null after GDPR erasure — deliberately not set
+
+    given(authService.getLoggedInUser()).willReturn(Optional.of(mockUser));
+    given(candidateRepository.findByCandidateNumber(candidateNumber)).willReturn(candidate);
+
+    NoSuchObjectException ex = assertThrows(NoSuchObjectException.class,
+        () -> candidateService.findByCandidateNumberRestricted(candidateNumber));
+
+    assertEquals("This candidate's data has been fully deleted from the Talent Catalog.",
+        ex.getMessage());
+  }
+
+  @Test
+  @DisplayName("findByCandidateNumberRestricted returns active candidate in source countries")
+  void findByCandidateNumberRestrictedReturnsCandidateWhenCountryAllowed() {
+    String candidateNumber = "123457";
+    candidate.setCandidateNumber(candidateNumber);
+    candidate.setStatus(CandidateStatus.active);
+    candidate.setCountry(testCountry);
+
+    given(authService.getLoggedInUser()).willReturn(Optional.of(mockUser));
+    given(candidateRepository.findByCandidateNumber(candidateNumber)).willReturn(candidate);
+    given(userService.getDefaultSourceCountries(mockUser)).willReturn(Set.of(testCountry));
+
+    Candidate result = candidateService.findByCandidateNumberRestricted(candidateNumber);
+
+    assertEquals(candidate, result);
+  }
+
+  @Test
+  @DisplayName("findByCandidateNumberRestricted throws access error for disallowed country")
+  void findByCandidateNumberRestrictedThrowsForCountryRestriction() {
+    String candidateNumber = "123458";
+    candidate.setCandidateNumber(candidateNumber);
+    candidate.setStatus(CandidateStatus.active);
+    candidate.setCountry(testCountry);
+    Country otherCountry = new Country();
+    otherCountry.setId(2L);
+
+    given(authService.getLoggedInUser()).willReturn(Optional.of(mockUser));
+    given(candidateRepository.findByCandidateNumber(candidateNumber)).willReturn(candidate);
+    given(userService.getDefaultSourceCountries(mockUser)).willReturn(Set.of(otherCountry));
+
+    CountryRestrictionException ex = assertThrows(CountryRestrictionException.class,
+        () -> candidateService.findByCandidateNumberRestricted(candidateNumber));
+
+    assertEquals("You don't have access to this candidate.", ex.getMessage());
   }
 
   @Test
@@ -2477,36 +2568,7 @@ class CandidateServiceImplTest {
     verify(candidateRepository).findByIds(ids);
   }
 
-  @Test
-  @DisplayName("findByCandidateNumberRestricted returns candidate when user has access")
-  void findByCandidateNumberRestrictedReturnsCandidateWhenUserHasAccess() {
-    Set<Country> sourceCountries = Set.of(testCountry);
 
-    given(authService.getLoggedInUser()).willReturn(Optional.of(user));
-    given(userService.getDefaultSourceCountries(user)).willReturn(sourceCountries);
-    given(candidateRepository.findByCandidateNumberRestricted("123456", sourceCountries))
-        .willReturn(Optional.of(candidate));
-
-    Candidate result = candidateService.findByCandidateNumberRestricted("123456");
-
-    assertSame(candidate, result);
-  }
-
-  @Test
-  @DisplayName("findByCandidateNumberRestricted throws when candidate is not accessible")
-  void findByCandidateNumberRestrictedThrowsWhenCandidateIsNotAccessible() {
-    Set<Country> sourceCountries = Set.of(testCountry);
-
-    given(authService.getLoggedInUser()).willReturn(Optional.of(user));
-    given(userService.getDefaultSourceCountries(user)).willReturn(sourceCountries);
-    given(candidateRepository.findByCandidateNumberRestricted("123456", sourceCountries))
-        .willReturn(Optional.empty());
-
-    assertThrows(
-        CountryRestrictionException.class,
-        () -> candidateService.findByCandidateNumberRestricted("123456")
-    );
-  }
 
   @Test
   @DisplayName("searchCandidates by name searches by name for admin users")
@@ -4690,19 +4752,7 @@ class CandidateServiceImplTest {
     verify(userRepository, never()).save(any(User.class));
   }
 
-  @Test
-  @DisplayName("findByCandidateNumberRestricted throws when no user is logged in")
-  void findByCandidateNumberRestrictedThrowsWhenNoUserIsLoggedIn() {
-    given(authService.getLoggedInUser()).willReturn(Optional.empty());
 
-    assertThrows(
-        InvalidSessionException.class,
-        () -> candidateService.findByCandidateNumberRestricted("123456")
-    );
-
-    verify(userService, never()).getDefaultSourceCountries(any(User.class));
-    verify(candidateRepository, never()).findByCandidateNumberRestricted(any(), any());
-  }
   @Test
   @DisplayName("getExportCandidateStrings throws when no user is logged in")
   void getExportCandidateStringsThrowsWhenNoUserIsLoggedIn() {

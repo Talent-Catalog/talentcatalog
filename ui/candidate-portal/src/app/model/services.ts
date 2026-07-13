@@ -21,7 +21,8 @@ export enum ServiceProvider {
   LINKEDIN = "LINKEDIN",
   DUOLINGO = "DUOLINGO",
   REFERENCE = "REFERENCE",
-  UNHCR = "UNHCR"
+  UNHCR = "UNHCR",
+  VERIFY_PLUS = "VERIFY_PLUS"
 }
 
 /**

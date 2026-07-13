@@ -151,6 +151,7 @@ import {
   CandidateOppComponent
 } from './components/profile/view/tab/opps/opp/candidate-opp/candidate-opp.component';
 import {NgxWigModule} from 'ngx-wig';
+import {ZXingScannerModule} from '@zxing/ngx-scanner';
 import {TruncatePipe} from "./pipes/truncate.pipe";
 import {RxStompService} from "./services/rx-stomp.service";
 import {ViewPostComponent} from "./components/chat/view-post/view-post.component";
@@ -240,6 +241,8 @@ import {
   ReferenceComponent
 } from './components/profile/view/tab/services/reference/reference.component';
 import {UnhcrComponent} from './components/profile/view/tab/services/unhcr/unhcr.component';
+import {VerifyPlusComponent} from './components/profile/view/tab/services/verify-plus/verify-plus.component';
+import {VerifyPlusScannerComponent} from './components/common/verify-plus-scanner/verify-plus-scanner.component';
 import {
   CandidateAgreementsComponent
 } from './components/profile/view/tab/agreements/candidate-agreements.component';
@@ -349,6 +352,8 @@ export function HttpLoaderFactory(http: HttpClient) {
     LinkedinRedeemedComponent,
     ReferenceComponent,
     UnhcrComponent,
+    VerifyPlusComponent,
+    VerifyPlusScannerComponent,
     CandidateAgreementsComponent,
     AgreementContentComponent
   ],
@@ -381,6 +386,7 @@ export function HttpLoaderFactory(http: HttpClient) {
     }),
     NgSelectModule,
     NgxWigModule,
+    ZXingScannerModule,
     QuillModule.forRoot(),
     PickerModule,
     TextPartsInputComponent,

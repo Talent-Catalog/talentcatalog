@@ -22,6 +22,12 @@
   <div><strong>{{error}}</strong></div>
 </tc-alert>
 
+<tc-alert type="success"
+          *ngIf="showAssignmentEmailNotification"
+          [dismissible]="false">
+  <div>Task assigned. Email notification will be sent to the candidate.</div>
+</tc-alert>
+
 <tc-card *ngIf="!loading">
   <tc-card-header>
     <span [ngClass]="{'custom-flex-40' : editable, 'custom-flex-75' : !editable}">

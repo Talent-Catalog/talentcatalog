@@ -46,6 +46,7 @@ import java.io.PrintWriter;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -75,19 +76,26 @@ import org.tctalent.server.model.db.CvFormat;
 import org.tctalent.server.model.db.Role;
 import org.tctalent.server.model.db.Status;
 import org.tctalent.server.repository.db.read.dto.CandidateReadDto;
+import org.tctalent.server.request.RegisterCandidateByPartnerRequest;
 import org.tctalent.server.request.candidate.CandidateEmailPhoneOrWhatsappSearchRequest;
 import org.tctalent.server.request.candidate.CandidateEmailSearchRequest;
 import org.tctalent.server.request.candidate.CandidateExternalIdSearchRequest;
+import org.tctalent.server.request.candidate.CandidateIntakeAuditRequest;
 import org.tctalent.server.request.candidate.CandidateIntakeDataUpdate;
 import org.tctalent.server.request.candidate.CandidateNumberOrNameSearchRequest;
+import org.tctalent.server.request.candidate.CandidatePublicIdSearchRequest;
 import org.tctalent.server.request.candidate.DownloadCvRequest;
 import org.tctalent.server.request.candidate.EraseCandidateRequest;
 import org.tctalent.server.request.candidate.ResolveTaskAssignmentsRequest;
 import org.tctalent.server.request.candidate.SearchCandidateRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateAdditionalInfoRequest;
+import org.tctalent.server.request.candidate.UpdateCandidateAspirationsRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateLinksRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateListOppsRequest;
+import org.tctalent.server.request.candidate.UpdateCandidateMaxEducationLevelRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateMediaRequest;
+import org.tctalent.server.request.candidate.UpdateCandidateMutedRequest;
+import org.tctalent.server.request.candidate.UpdateCandidateNotificationPreferenceRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateOppsRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateRegistrationRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateRequest;
@@ -96,6 +104,7 @@ import org.tctalent.server.request.candidate.UpdateCandidateShareableNotesReques
 import org.tctalent.server.request.candidate.UpdateCandidateStatusRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateSurveyRequest;
 import org.tctalent.server.request.candidate.opportunity.CandidateOpportunityParams;
+import org.tctalent.server.request.chat.FetchCandidatesWithChatRequest;
 import org.tctalent.server.security.CandidateTokenProvider;
 import org.tctalent.server.security.CvClaims;
 import org.tctalent.server.service.db.CandidateErasureService;
@@ -105,7 +114,6 @@ import org.tctalent.server.service.db.CandidateService;
 import org.tctalent.server.service.db.SavedListService;
 import org.tctalent.server.service.db.SavedSearchService;
 import org.tctalent.server.util.dto.DtoBuilder;
-
 /**
  * Unit tests for Candidate Admin Api endpoints.
  *
@@ -142,7 +150,18 @@ class CandidateAdminApiTest extends ApiTestBase {
     private static final String RESOLVE_TASKS_PATH = "/resolve-tasks";
     private static final String GENERATE_TOKEN_PATH = "/token/{cn}";
     private static final String ERASE_CANDIDATE_BY_ID_PATH = "/{id}/erase";
-
+    private static final String SEARCH_OLD_FETCH_PATH = "/search-old-fetch";
+    private static final String FIND_BY_PUBLIC_ID_PATH = "/findbypublicid";
+    private static final String UPDATE_MUTED_BY_ID_PATH = "/{id}/muted";
+    private static final String UPDATE_MAX_EDUCATION_LEVEL_BY_ID_PATH = "/{id}/education";
+    private static final String UPDATE_ASPIRATIONS_BY_ID_PATH = "/{id}/aspirations";
+    private static final String UPDATE_NOTIFICATION_BY_ID_PATH = "/{id}/notification";
+    private static final String COMPLETE_INTAKE_BY_ID_PATH = "/{id}/intake";
+    private static final String REGISTER_BY_PARTNER_PATH = "/register-by-partner";
+    private static final String CHECK_UNREAD_CHATS_PATH = "/check-unread-chats";
+    private static final String FETCH_CANDIDATES_WITH_CHAT_PATH = "/fetch-candidates-with-chat";
+    private static final String FETCH_DUPLICATES_BY_ID_PATH =
+        "/{id}/fetch-potential-duplicates-of-given-candidate";
     private final Page<Candidate> candidates =
             new PageImpl<>(
                     getListOfCandidates(),
@@ -809,6 +828,216 @@ class CandidateAdminApiTest extends ApiTestBase {
                 .andExpect(jsonPath("$.hasNext", is(false)))
                 .andExpect(jsonPath("$.hasPrevious", is(false)))
                 .andExpect(jsonPath("$.content", notNullValue()));
+    }
+
+    @Test
+    @DisplayName("search old fetch succeeds")
+    void searchOldFetchSucceeds() throws Exception {
+        SearchCandidateRequest request = new SearchCandidateRequest();
+
+        given(savedSearchService.searchCandidates(any(SearchCandidateRequest.class)))
+            .willReturn(candidates);
+
+        postSearchRequestAndVerifyResponse(
+            SEARCH_OLD_FETCH_PATH,
+            objectMapper.writeValueAsString(request));
+
+        verify(savedSearchService).searchCandidates(any(SearchCandidateRequest.class));
+    }
+
+    @Test
+    @DisplayName("find by public id succeeds")
+    void findByPublicIdSucceeds() throws Exception {
+        CandidatePublicIdSearchRequest request = new CandidatePublicIdSearchRequest();
+
+        given(candidateService.searchCandidates(any(CandidatePublicIdSearchRequest.class)))
+            .willReturn(candidates);
+
+        postSearchRequestAndVerifyResponse(
+            FIND_BY_PUBLIC_ID_PATH,
+            objectMapper.writeValueAsString(request));
+
+        verify(candidateService).searchCandidates(any(CandidatePublicIdSearchRequest.class));
+    }
+
+    @Test
+    @DisplayName("update muted status succeeds")
+    void updateMutedStatusSucceeds() throws Exception {
+        long id = 99L;
+        UpdateCandidateMutedRequest request = new UpdateCandidateMutedRequest();
+
+        updateCandidate(
+            UPDATE_MUTED_BY_ID_PATH.replace("{id}", Long.toString(id)),
+            objectMapper.writeValueAsString(request));
+
+        verify(candidateService).updateMutedStatus(anyLong(), any(UpdateCandidateMutedRequest.class));
+    }
+
+    @Test
+    @DisplayName("update max education level succeeds")
+    void updateMaxEducationLevelSucceeds() throws Exception {
+        long id = 99L;
+        UpdateCandidateMaxEducationLevelRequest request =
+            new UpdateCandidateMaxEducationLevelRequest();
+
+        given(candidateService.updateCandidateMaxEducationLevel(
+            anyLong(),
+            any(UpdateCandidateMaxEducationLevelRequest.class)))
+            .willReturn(candidate);
+
+        updateCandidateAndVerifyResponse(
+            UPDATE_MAX_EDUCATION_LEVEL_BY_ID_PATH.replace("{id}", Long.toString(id)),
+            objectMapper.writeValueAsString(request));
+
+        verify(candidateService).updateCandidateMaxEducationLevel(
+            anyLong(),
+            any(UpdateCandidateMaxEducationLevelRequest.class));
+    }
+
+    @Test
+    @DisplayName("update aspirations succeeds")
+    void updateAspirationsSucceeds() throws Exception {
+        long id = 99L;
+        UpdateCandidateAspirationsRequest request = new UpdateCandidateAspirationsRequest();
+
+        given(candidateService.updateCandidateAspirations(
+            anyLong(),
+            any(UpdateCandidateAspirationsRequest.class)))
+            .willReturn(candidate);
+
+        updateCandidateAndVerifyResponse(
+            UPDATE_ASPIRATIONS_BY_ID_PATH.replace("{id}", Long.toString(id)),
+            objectMapper.writeValueAsString(request));
+
+        verify(candidateService).updateCandidateAspirations(
+            anyLong(),
+            any(UpdateCandidateAspirationsRequest.class));
+    }
+
+    @Test
+    @DisplayName("update shareable docs with saved list id succeeds")
+    void updateShareableDocsWithSavedListIdSucceeds() {
+        long id = 99L;
+        UpdateCandidateShareableDocsRequest request = new UpdateCandidateShareableDocsRequest();
+        request.setSavedListId(786L);
+
+        given(candidateSavedListService.updateShareableDocs(
+            eq(id),
+            any(UpdateCandidateShareableDocsRequest.class)))
+            .willReturn(candidate);
+
+        Map<String, Object> response = candidateAdminApi.updateShareableDocs(id, request);
+
+        assertThat(response).isNotNull();
+        assertThat(response).containsEntry("id", 99L);
+
+        verify(candidateSavedListService).updateShareableDocs(
+            eq(id),
+            any(UpdateCandidateShareableDocsRequest.class));
+    }
+    @Test
+    @DisplayName("update notification preference succeeds")
+    void updateNotificationPreferenceSucceeds() throws Exception {
+        long id = 99L;
+        UpdateCandidateNotificationPreferenceRequest request =
+            new UpdateCandidateNotificationPreferenceRequest();
+
+        updateCandidate(
+            UPDATE_NOTIFICATION_BY_ID_PATH.replace("{id}", Long.toString(id)),
+            objectMapper.writeValueAsString(request));
+
+        verify(candidateService).updateNotificationPreference(
+            anyLong(),
+            any(UpdateCandidateNotificationPreferenceRequest.class));
+    }
+
+    @Test
+    @DisplayName("complete intake succeeds")
+    void completeIntakeSucceeds() {
+        long id = 99L;
+        CandidateIntakeAuditRequest request = new CandidateIntakeAuditRequest();
+
+        given(candidateService.completeIntake(id, request)).willReturn(candidate);
+
+        Map<String, Object> response = candidateAdminApi.completeIntake(id, request);
+
+        assertThat(response).isNotNull();
+        assertThat(response).containsEntry("id", 99L);
+
+        verify(candidateService).completeIntake(id, request);
+    }
+
+    @Test
+    @DisplayName("register candidate by partner succeeds")
+    @WithMockUser(authorities = "ROLE_ADMIN")
+    void registerCandidateByPartnerSucceeds() {
+        RegisterCandidateByPartnerRequest request = new RegisterCandidateByPartnerRequest();
+
+        given(candidateService.registerByPartner(any(RegisterCandidateByPartnerRequest.class)))
+            .willReturn(candidate);
+
+        var response = candidateAdminApi.registerCandidateByPartner(request);
+
+        assertThat(response.getStatusCode().value()).isEqualTo(201);
+        assertThat(response.getBody()).isNotNull();
+
+        verify(candidateService).registerByPartner(any(RegisterCandidateByPartnerRequest.class));
+    }
+
+    @Test
+    @DisplayName("check unread chats succeeds")
+    void checkUnreadChatsSucceeds() throws Exception {
+        given(candidateService.findUnreadChatsInCandidates())
+            .willReturn(List.of(101L, 202L, 303L));
+
+        mockMvc.perform(post(BASE_PATH + CHECK_UNREAD_CHATS_PATH)
+                .with(csrf())
+                .header("Authorization", "Bearer " + "jwt-token")
+                .accept(MediaType.APPLICATION_JSON))
+
+            .andDo(print())
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+            .andExpect(jsonPath("$.numberUnreadChats", is(3)));
+
+        verify(candidateService).findUnreadChatsInCandidates();
+    }
+
+    @Test
+    @DisplayName("fetch candidates with chat succeeds")
+    void fetchCandidatesWithChatSucceeds() {
+        FetchCandidatesWithChatRequest request = new FetchCandidatesWithChatRequest();
+
+        given(candidateService.fetchCandidatesWithChat(request)).willReturn(candidates);
+
+        Map<String, Object> response = candidateAdminApi.fetchCandidatesWithChat(request);
+
+        assertThat(response).isNotNull();
+        assertThat(response).containsEntry("totalElements", (long) getListOfCandidates().size());
+
+        verify(candidateService).fetchCandidatesWithChat(request);
+    }
+
+    @Test
+    @DisplayName("fetch potential duplicates of given candidate succeeds")
+    void fetchPotentialDuplicatesOfGivenCandidateSucceeds() throws Exception {
+        long id = 99L;
+
+        given(candidateService.fetchPotentialDuplicatesOfCandidateWithGivenId(id))
+            .willReturn(List.of(candidate));
+
+        mockMvc.perform(get(BASE_PATH + FETCH_DUPLICATES_BY_ID_PATH.replace("{id}", Long.toString(id)))
+                .header("Authorization", "Bearer " + "jwt-token")
+                .accept(MediaType.APPLICATION_JSON))
+
+            .andDo(print())
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+            .andExpect(jsonPath("$", hasSize(1)))
+            .andExpect(jsonPath("$[0].id", is(99)))
+            .andExpect(jsonPath("$[0].nationality.name", is("Pakistan")));
+
+        verify(candidateService).fetchPotentialDuplicatesOfCandidateWithGivenId(id);
     }
 
     private void postApiRequest(String path, String body) throws Exception {

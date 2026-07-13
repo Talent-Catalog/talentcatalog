@@ -39,6 +39,11 @@
              (backButtonClicked)="onBackButtonClick()"
   ></app-unhcr>
 
+  <app-verify-plus *ngIf="(showVerifyPlus$ | async) && selectedService === Service.VERIFY_PLUS"
+                   [candidate]="candidate"
+                   (backButtonClicked)="onBackButtonClick()"
+  ></app-verify-plus>
+
   <ng-container *ngIf="!loading && !selectedService">
 
     <app-tab-header>
@@ -120,6 +125,25 @@
         </p>
       </div>
       <img src="assets/images/services/unhcr.png" alt="UNHCR Logo"/>
+    </div>
+
+    <!-- Verify+ -->
+    <div *ngIf="showVerifyPlus$ | async"
+         class="service-card unhcr"
+         (click)="selectService(Service.VERIFY_PLUS)"
+    >
+      <div>
+        <span class="service-tag unhcr">
+          Verify+
+        </span>
+        <h3>
+          UNHCR Verify+
+        </h3>
+        <p>
+          Scan your UNHCR Verify+ QR code to capture data from your card.
+        </p>
+      </div>
+      <img src="assets/images/services/unhcr.png" alt="UNHCR Verify+ Logo"/>
     </div>
 
   </ng-container>

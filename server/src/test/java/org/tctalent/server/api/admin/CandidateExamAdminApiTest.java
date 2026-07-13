@@ -17,6 +17,7 @@
 package org.tctalent.server.api.admin;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.mockito.ArgumentMatchers.any;
@@ -25,7 +26,9 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -33,6 +36,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.tctalent.server.data.CandidateTestData.getCandidateExam;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -44,6 +48,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.tctalent.server.model.db.CandidateExam;
 import org.tctalent.server.request.candidate.exam.CreateCandidateExamRequest;
+import org.tctalent.server.request.candidate.exam.UpdateCandidateExamRequest;
 import org.tctalent.server.service.db.CandidateExamService;
 import org.tctalent.server.service.db.CandidateService;
 
@@ -118,4 +123,54 @@ class CandidateExamAdminApiTest extends ApiTestBase {
         verify(candidateService).deleteCandidateExam(CANDIDATE_ID);
     }
 
+    @Test
+    @DisplayName("list candidate exams by candidate id succeeds")
+    void listCandidateExamsByCandidateIdSucceeds() throws Exception {
+        given(candidateExamService.list(CANDIDATE_ID))
+            .willReturn(List.of(candidateExam));
+
+        mockMvc.perform(get(BASE_PATH + "/" + CANDIDATE_ID + "/list")
+                .header("Authorization", "Bearer " + "jwt-token")
+                .accept(MediaType.APPLICATION_JSON))
+
+            .andDo(print())
+            .andExpect(status().isOk())
+            .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+            .andExpect(jsonPath("$").isArray())
+            .andExpect(jsonPath("$", hasSize(1)))
+            .andExpect(jsonPath("$[0]", notNullValue()))
+            .andExpect(jsonPath("$[0].exam", is("IELTSGen")))
+            .andExpect(jsonPath("$[0].score", is("100")))
+            .andExpect(jsonPath("$[0].otherExam", is("IELTS")))
+            .andExpect(jsonPath("$[0].notes", is("Some exam notes")));
+
+        verify(candidateExamService).list(CANDIDATE_ID);
+    }
+
+    @Test
+    @DisplayName("update candidate exam by id succeeds")
+    void updateCandidateExamByIdSucceeds() throws Exception {
+        UpdateCandidateExamRequest request = new UpdateCandidateExamRequest();
+
+        given(candidateExamService.updateCandidateExam(any(UpdateCandidateExamRequest.class)))
+            .willReturn(candidateExam);
+
+        mockMvc.perform(put(BASE_PATH + "/" + CANDIDATE_ID)
+                .with(csrf())
+                .header("Authorization", "Bearer " + "jwt-token")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request))
+                .accept(MediaType.APPLICATION_JSON))
+
+            .andDo(print())
+            .andExpect(status().isOk())
+            .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+            .andExpect(jsonPath("$", notNullValue()))
+            .andExpect(jsonPath("$.exam", is("IELTSGen")))
+            .andExpect(jsonPath("$.score", is("100")))
+            .andExpect(jsonPath("$.otherExam", is("IELTS")))
+            .andExpect(jsonPath("$.notes", is("Some exam notes")));
+
+        verify(candidateExamService).updateCandidateExam(any(UpdateCandidateExamRequest.class));
+    }
 }

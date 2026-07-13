@@ -21,9 +21,13 @@ import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
+import static org.junit.Assert.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.willThrow;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -53,11 +57,20 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.web.servlet.ModelAndView;
+import org.tctalent.server.exception.ExpiredEmailTokenException;
+import org.tctalent.server.exception.InvalidSessionException;
+import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.model.db.Role;
 import org.tctalent.server.model.db.User;
+import org.tctalent.server.request.user.CheckPasswordResetTokenRequest;
+import org.tctalent.server.request.user.ResetPasswordRequest;
 import org.tctalent.server.request.user.SearchUserRequest;
+import org.tctalent.server.request.user.SendResetPasswordEmailRequest;
 import org.tctalent.server.request.user.UpdateUserPasswordRequest;
 import org.tctalent.server.request.user.UpdateUserRequest;
+import org.tctalent.server.request.user.emailverify.SendVerifyEmailRequest;
+import org.tctalent.server.request.user.emailverify.VerifyEmailRequest;
 import org.tctalent.server.security.AuthService;
 import org.tctalent.server.service.db.CountryService;
 import org.tctalent.server.service.db.UserService;
@@ -480,4 +493,132 @@ class UserAdminApiTest extends ApiTestBase {
     verify(userService).deleteUser(USER_ID);
   }
 
+  @Test
+  @DisplayName("get user without logged in user throws invalid session")
+  void getUserWithoutLoggedInUserThrowsInvalidSession() {
+    given(userService.getUser(USER_ID)).willReturn(fullUser);
+    given(authService.getLoggedInUser()).willReturn(Optional.empty());
+
+    assertThrows(InvalidSessionException.class, () -> userAdminApi.get(USER_ID));
+
+    verify(userService).getUser(USER_ID);
+    verify(authService).getLoggedInUser();
+  }
+
+  @Test
+  @DisplayName("send reset password email succeeds")
+  void sendResetPasswordEmailSucceeds() throws Exception {
+    SendResetPasswordEmailRequest request = new SendResetPasswordEmailRequest();
+
+    mockMvc.perform(post(BASE_PATH + "/reset-password-email")
+            .with(csrf())
+            .header("Authorization", "Bearer " + "jwt-token")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(request))
+            .accept(MediaType.APPLICATION_JSON))
+
+        .andExpect(status().isOk());
+
+    verify(userService).generateResetPasswordToken(any(SendResetPasswordEmailRequest.class));
+  }
+
+  @Test
+  @DisplayName("check reset token validity succeeds")
+  void checkResetTokenValiditySucceeds() throws Exception {
+    CheckPasswordResetTokenRequest request = new CheckPasswordResetTokenRequest();
+
+    mockMvc.perform(post(BASE_PATH + "/check-token")
+            .with(csrf())
+            .header("Authorization", "Bearer " + "jwt-token")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(request))
+            .accept(MediaType.APPLICATION_JSON))
+
+        .andExpect(status().isOk());
+
+    verify(userService).checkResetToken(any(CheckPasswordResetTokenRequest.class));
+  }
+
+  @Test
+  @DisplayName("reset password succeeds")
+  void resetPasswordSucceeds() throws Exception {
+    ResetPasswordRequest request = new ResetPasswordRequest();
+
+    mockMvc.perform(post(BASE_PATH + "/reset-password")
+            .with(csrf())
+            .header("Authorization", "Bearer " + "jwt-token")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(request))
+            .accept(MediaType.APPLICATION_JSON))
+
+        .andExpect(status().isOk());
+
+    verify(userService).resetPassword(any(ResetPasswordRequest.class));
+  }
+
+  @Test
+  @DisplayName("send verify email request succeeds")
+  void sendVerifyEmailRequestSucceeds() throws Exception {
+    SendVerifyEmailRequest request = new SendVerifyEmailRequest();
+
+    mockMvc.perform(post(BASE_PATH + "/verify-email")
+            .with(csrf())
+            .header("Authorization", "Bearer " + "jwt-token")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(request))
+            .accept(MediaType.APPLICATION_JSON))
+
+        .andExpect(status().isOk());
+
+    verify(userService).sendVerifyEmailRequest(any(SendVerifyEmailRequest.class));
+  }
+
+  @Test
+  @DisplayName("verify email succeeds")
+  void verifyEmailSucceeds() throws Exception {
+    String token = "valid-token";
+    given(userService.getUserByEmailVerificationToken(token)).willReturn(fullUser);
+
+    ModelAndView modelAndView = userAdminApi.verifyEmail(token);
+
+    assertThat(modelAndView.getViewName()).isEqualTo("verify-email-success");
+    assertThat(modelAndView.getModel()).containsEntry("displayName", fullUser.getDisplayName());
+
+    verify(userService).getUserByEmailVerificationToken(token);
+    verify(userService).verifyEmail(argThat(request -> token.equals(request.getToken())));
+  }
+
+  @Test
+  @DisplayName("verify email fails when token is invalid")
+  void verifyEmailFailsWhenTokenInvalid() throws Exception {
+    String token = "invalid-token";
+    given(userService.getUserByEmailVerificationToken(token))
+        .willThrow(new NoSuchObjectException("missing user"));
+
+    ModelAndView modelAndView = userAdminApi.verifyEmail(token);
+
+    assertThat(modelAndView.getViewName()).isEqualTo("verify-email-failure");
+    assertThat(modelAndView.getModel()).containsEntry("displayName", "User");
+
+    verify(userService).getUserByEmailVerificationToken(token);
+    verify(userService, never()).verifyEmail(any(VerifyEmailRequest.class));
+  }
+
+  @Test
+  @DisplayName("verify email fails when token is expired")
+  void verifyEmailFailsWhenTokenExpired() throws Exception {
+    String token = "expired-token";
+    given(userService.getUserByEmailVerificationToken(token)).willReturn(fullUser);
+    willThrow(new ExpiredEmailTokenException())
+        .given(userService)
+        .verifyEmail(any(VerifyEmailRequest.class));
+
+    ModelAndView modelAndView = userAdminApi.verifyEmail(token);
+
+    assertThat(modelAndView.getViewName()).isEqualTo("verify-email-failure");
+    assertThat(modelAndView.getModel()).containsEntry("displayName", fullUser.getDisplayName());
+
+    verify(userService).getUserByEmailVerificationToken(token);
+    verify(userService).verifyEmail(argThat(request -> token.equals(request.getToken())));
+  }
 }
