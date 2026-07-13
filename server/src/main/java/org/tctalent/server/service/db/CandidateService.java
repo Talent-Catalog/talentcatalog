@@ -337,7 +337,8 @@ public interface CandidateService {
      * @param candidateNumber Number of desired candidate
      * @return Candidate
      * @throws InvalidSessionException if user is not logged in
-     * @throws CountryRestrictionException if the candidate is not found
+     * @throws NoSuchObjectException if no candidate exists with the given number
+     * @throws CountryRestrictionException if candidate is outside the user's source countries
      */
     Candidate findByCandidateNumberRestricted(String candidateNumber);
 
