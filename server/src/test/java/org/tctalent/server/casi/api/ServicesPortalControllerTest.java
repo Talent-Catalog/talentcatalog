@@ -40,7 +40,7 @@ import org.mockito.ArgumentMatchers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.tctalent.server.api.admin.ApiTestBase;
@@ -81,16 +81,16 @@ class ServicesPortalControllerTest extends ApiTestBase {
   private static final String TERMS_ID = "ReferenceServiceTermsV1";
   private static final String OPC_DPA_TERMS_ID = "OpcDataProcessingAgreementV1";
 
-  @MockBean private AuthService authService;
-  @MockBean private UserService userService;
-  @MockBean private CandidateServiceRegistry candidateServiceRegistry;
-  @MockBean private EligibilityPolicyRegistry eligibilityPolicyRegistry;
-  @MockBean private CandidateAssistanceService candidateAssistanceService;
-  @MockBean private AgreementService agreementService;
-  @MockBean private CounterpartyService counterpartyService;
-  @MockBean private CandidateService candidateService;
-  @MockBean private TermsInfoService termsInfoService;
-  @MockBean(name = "termsTemplateEngine")
+  @MockitoBean private AuthService authService;
+  @MockitoBean private UserService userService;
+  @MockitoBean private CandidateServiceRegistry candidateServiceRegistry;
+  @MockitoBean private EligibilityPolicyRegistry eligibilityPolicyRegistry;
+  @MockitoBean private CandidateAssistanceService candidateAssistanceService;
+  @MockitoBean private AgreementService agreementService;
+  @MockitoBean private CounterpartyService counterpartyService;
+  @MockitoBean private CandidateService candidateService;
+  @MockitoBean private TermsInfoService termsInfoService;
+  @MockitoBean(name = "termsTemplateEngine")
   private TemplateEngine termsTemplateEngine;
 
   @Autowired private MockMvc mockMvc;

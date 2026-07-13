@@ -162,7 +162,7 @@ describe('RegistrationSubmitComponent', () => {
     it('should load the current privacy policy and candidate', async () => {
       await configureAndCreate();
 
-      expect(termsInfoServiceSpy.getCurrentByType).toHaveBeenCalledWith(TermsType.CANDIDATE_PRIVACY_POLICY);
+      expect(termsInfoServiceSpy.getCurrentByType).toHaveBeenCalledWith(TermsType.GRN_CANDIDATE_PRIVACY_POLICY);
       expect(candidateServiceSpy.getCandidatePersonal).toHaveBeenCalled();
       expect(component.currentPrivacyPolicy.id).toBe('policy-1');
       expect(component.candidate.user.partner.name).toBe('Talent Beyond Boundaries');
