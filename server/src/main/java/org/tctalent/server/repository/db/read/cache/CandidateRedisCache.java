@@ -25,6 +25,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Repository;
+import org.tctalent.server.configuration.properties.CandidateCacheProperties;
 
 /**
  * Redis-backed L1 cache for candidate JSON.
@@ -46,15 +47,7 @@ import org.springframework.stereotype.Repository;
 public class CandidateRedisCache {
 
     private final StringRedisTemplate redisTemplate;
-
-    /**
-     * Optional TTL for Redis entries.
-     * Can be null to disable expiry.
-     * <p>
-     * In practice, 7–30 days is a reasonable default.
-     * </p>
-     */
-    private final Duration ttl = null; //todo Pick up from config
+    private final CandidateCacheProperties cacheProperties;
 
     private ValueOperations<String, String> values() {
         return redisTemplate.opsForValue();
@@ -109,7 +102,7 @@ public class CandidateRedisCache {
      * does not support per-key TTL.
      * </p>
      * <p>
-     * If TTL is null, entries are stored without expiry.
+     * If TTL is non-positive, entries are stored without expiry.
      * </p>
      */
     public void putAll(Map<Long, VersionedJson> rows) {
@@ -118,10 +111,13 @@ public class CandidateRedisCache {
             return;
         }
 
+        Duration ttl = cacheProperties.getTtl();
+        boolean hasTtl = ttl != null && !ttl.isZero() && !ttl.isNegative();
+
         for (VersionedJson row : rows.values()) {
             String key = key(row.candidateId(), row.version());
 
-            if (ttl == null) {
+            if (!hasTtl) {
                 values().set(key, row.json());
             } else {
                 values().set(key, row.json(), ttl);
