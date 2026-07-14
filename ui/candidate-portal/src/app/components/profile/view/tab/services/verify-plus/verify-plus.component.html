@@ -25,6 +25,7 @@
 
 <div class="service-content">
   <app-verify-plus-scanner
+    [hideScanAgain]="true"
     (scanned)="onScanned($event)"
     (scannerError)="onScannerError($event)"
   ></app-verify-plus-scanner>
@@ -33,9 +34,33 @@
     A camera or scanner error occurred. Please refresh and try again.
   </p>
 
-  <div class="scan-result mt-3" *ngIf="decodedPayload">
-    <h3>Decoded payload</h3>
-    <pre>{{ decodedPayload }}</pre>
+  <div class="scan-result mt-3" *ngIf="decodedPayload && !submitResult">
+    <h3>Review scanned payload</h3>
+    <pre>{{ formattedPayload }}</pre>
+  </div>
+
+  <p class="mt-3 text-danger" *ngIf="submitError">
+    We couldn't submit this scan right now. Please rescan or try confirming again.
+  </p>
+
+  <div class="mt-3 d-flex flex-wrap gap-2" *ngIf="decodedPayload && !submitResult">
+    <tc-button [type]="'outline'" [disabled]="submitting" (onClick)="onRescan()">
+      Rescan
+    </tc-button>
+    <tc-button [loading]="submitting" [disabled]="submitting" (onClick)="onConfirm()">
+      Confirm
+    </tc-button>
+  </div>
+
+  <div class="scan-result mt-3" *ngIf="submitResult && !submitResult.duplicate">
+    <h3>Verification submitted</h3>
+    <p>Your UNHCR number was captured successfully: <strong>{{ submitResult.unhcrNumber }}</strong></p>
+  </div>
+
+  <div class="scan-result mt-3" *ngIf="submitResult?.duplicate">
+    <h3>Duplicate UNHCR number found</h3>
+    <p>We submitted your scan, but this UNHCR number already exists on another active candidate: <strong>{{ submitResult.unhcrNumber }}</strong></p>
+    <p>You can rescan if needed.</p>
   </div>
 
   <div class="mt-5">

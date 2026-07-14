@@ -14,8 +14,11 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, EventEmitter, Input, Output} from '@angular/core';
+import {Component, EventEmitter, Input, Output, ViewChild} from '@angular/core';
+import {finalize} from 'rxjs/operators';
 import {Candidate} from '../../../../../../model/candidate';
+import {VerifyPlusScannerComponent} from '../../../../../common/verify-plus-scanner/verify-plus-scanner.component';
+import {VerifyPlusScanResult, VerifyPlusService} from '../../../../../../services/verify-plus.service';
 
 /**
  * Component for verifying a candidate's credentials using a QR code scanner.
@@ -34,17 +37,65 @@ import {Candidate} from '../../../../../../model/candidate';
 export class VerifyPlusComponent {
   @Input() candidate!: Candidate;
   @Output() backButtonClicked = new EventEmitter<void>();
+  @ViewChild(VerifyPlusScannerComponent) scanner?: VerifyPlusScannerComponent;
 
   decodedPayload: string | null = null;
   scannerError: unknown;
+  submitting = false;
+  submitResult: VerifyPlusScanResult | null = null;
+  submitError = false;
+
+  constructor(private verifyPlusService: VerifyPlusService) {
+  }
+
+  get formattedPayload(): string {
+    if (!this.decodedPayload) {
+      return '';
+    }
+
+    try {
+      return JSON.stringify(JSON.parse(this.decodedPayload), null, 2);
+    } catch {
+      return this.decodedPayload;
+    }
+  }
 
   onScanned(payload: string) {
     this.decodedPayload = payload;
     this.scannerError = null;
+    this.submitResult = null;
+    this.submitError = false;
   }
 
   onScannerError(error: unknown) {
     this.scannerError = error;
+  }
+
+  onConfirm() {
+    if (!this.decodedPayload || this.submitting) {
+      return;
+    }
+
+    this.submitError = false;
+    this.submitting = true;
+
+    this.verifyPlusService.submitScan(this.decodedPayload)
+      .pipe(finalize(() => this.submitting = false))
+      .subscribe({
+        next: (result) => {
+          this.submitResult = result;
+        },
+        error: () => {
+          this.submitError = true;
+        }
+      });
+  }
+
+  onRescan() {
+    this.decodedPayload = null;
+    this.submitResult = null;
+    this.submitError = false;
+    this.scanner?.startScanning();
   }
 
   onBackButtonClicked() {
