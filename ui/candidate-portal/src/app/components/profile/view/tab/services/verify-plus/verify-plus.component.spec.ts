@@ -16,16 +16,24 @@
 
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {NO_ERRORS_SCHEMA} from '@angular/core';
+import {of, throwError} from 'rxjs';
 
 import {VerifyPlusComponent} from './verify-plus.component';
+import {VerifyPlusService} from '../../../../../../services/verify-plus.service';
 
 describe('VerifyPlusComponent', () => {
   let component: VerifyPlusComponent;
   let fixture: ComponentFixture<VerifyPlusComponent>;
+  let verifyPlusService: jasmine.SpyObj<VerifyPlusService>;
 
   beforeEach(() => {
+    verifyPlusService = jasmine.createSpyObj<VerifyPlusService>('VerifyPlusService', ['submitScan']);
+
     TestBed.configureTestingModule({
       declarations: [VerifyPlusComponent],
+      providers: [
+        {provide: VerifyPlusService, useValue: verifyPlusService}
+      ],
       schemas: [NO_ERRORS_SCHEMA]
     });
 
@@ -52,5 +60,47 @@ describe('VerifyPlusComponent', () => {
     component.onBackButtonClicked();
 
     expect(component.backButtonClicked.emit).toHaveBeenCalled();
+  });
+
+  it('should submit scanned payload and store result on confirm success', () => {
+    const payload = '{"v":"mock-1","unhcrId":"123-45C67890"}';
+    component.onScanned(payload);
+    verifyPlusService.submitScan.and.returnValue(of({
+      unhcrNumber: '123-45C67890',
+      duplicate: false
+    }));
+
+    component.onConfirm();
+
+    expect(verifyPlusService.submitScan).toHaveBeenCalledWith(payload);
+    expect(component.submitResult).toEqual({
+      unhcrNumber: '123-45C67890',
+      duplicate: false
+    });
+    expect(component.submitError).toBeFalse();
+    expect(component.submitting).toBeFalse();
+  });
+
+  it('should set submitError when confirm fails', () => {
+    component.onScanned('{"v":"mock-2","unhcrId":"bad"}');
+    verifyPlusService.submitScan.and.returnValue(throwError(() => new Error('bad request')));
+
+    component.onConfirm();
+
+    expect(component.submitError).toBeTrue();
+    expect(component.submitting).toBeFalse();
+  });
+
+  it('should reset submit state when rescanning', () => {
+    component.decodedPayload = '{"v":"mock-1","unhcrId":"123-45C67890"}';
+    component.submitResult = {unhcrNumber: '123-45C67890', duplicate: true};
+    component.submitError = true;
+    component.scannerError = new Error('scanner');
+
+    component.onRescan();
+
+    expect(component.decodedPayload).toBeNull();
+    expect(component.submitResult).toBeNull();
+    expect(component.submitError).toBeFalse();
   });
 });
