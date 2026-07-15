@@ -826,7 +826,6 @@ import {
   EditMaxEducationLevelComponent
 } from './components/candidates/view/education/edit-max-education-level/edit-max-education-level.component';
 import {SharedModule} from "./shared/shared.module";
-import {PartnerDpaComponent} from './components/util/partner-dpa/partner-dpa.component';
 import {SafeHtmlPipe} from './pipes/safehtml.pipe';
 import {
   ChatMuteToggleButtonComponent
@@ -1196,7 +1195,6 @@ import {
     EditMaxEducationLevelComponent,
     ChatMuteToggleButtonComponent,
     ViewPrivacyPolicyInfoComponent,
-    PartnerDpaComponent,
     SafeHtmlPipe,
     CandidateCvTextTabComponent,
     CasiManagementComponent,
