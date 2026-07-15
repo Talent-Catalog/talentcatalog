@@ -343,6 +343,10 @@ tc-skills-extraction-service:
   apiUrl: ${TC_SKILLS_EXTRACTION_API_URL:http://localhost:8000}
   apiKey: ${TC_SKILLS_EXTRACTION_API_KEY:}
 
+tc-vector-embedding-service:
+  apiUrl: ${TC_VECTOR_EMBEDDING_API_URL:http://localhost:8000}
+  apiKey: ${TC_VECTOR_EMBEDDING_API_KEY:}
+
 dpa:
   dpaVisibilityDelayDays: ${DPA_VISIBILITY_DELAY_DAYS:90}
   enabled: ${DPA_ENABLED:false}
