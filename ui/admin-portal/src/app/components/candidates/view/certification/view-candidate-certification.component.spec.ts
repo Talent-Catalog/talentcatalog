@@ -27,12 +27,14 @@ import {CandidateOccupation} from "../../../../model/candidate-occupation";
 import {CUSTOM_ELEMENTS_SCHEMA} from "@angular/core";
 import {By} from "@angular/platform-browser";
 import {throwError} from "rxjs";
+import {SkillsService} from "../../../../services/skills.service";
 
 describe('ViewCandidateCertificationComponent', () => {
   let component: ViewCandidateJobExperienceComponent;
   let fixture: ComponentFixture<ViewCandidateJobExperienceComponent>;
   let mockCandidateJobExperienceService: jasmine.SpyObj<CandidateJobExperienceService>;
   let mockCandidateService: jasmine.SpyObj<CandidateService>;
+  let mockSkillsService: jasmine.SpyObj<SkillsService>;
   let mockModalService: jasmine.SpyObj<NgbModal>;
 
   // Mock data
@@ -49,6 +51,7 @@ describe('ViewCandidateCertificationComponent', () => {
     // Create spy objects for services
     mockCandidateJobExperienceService = jasmine.createSpyObj('CandidateJobExperienceService', ['delete']);
     mockCandidateService = jasmine.createSpyObj('CandidateService', ['updateCandidate']);
+    mockSkillsService = jasmine.createSpyObj('SkillsService', ['extractSkills']);
     mockModalService = jasmine.createSpyObj('NgbModal', ['open']);
 
     await TestBed.configureTestingModule({
@@ -56,6 +59,7 @@ describe('ViewCandidateCertificationComponent', () => {
       providers: [
         { provide: CandidateJobExperienceService, useValue: mockCandidateJobExperienceService },
         { provide: CandidateService, useValue: mockCandidateService },
+        { provide: SkillsService, useValue: mockSkillsService },
         { provide: NgbModal, useValue: mockModalService }
       ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA] // Ignore custom directives like appHighlightSearch
