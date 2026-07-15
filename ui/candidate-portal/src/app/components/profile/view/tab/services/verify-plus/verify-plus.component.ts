@@ -44,6 +44,7 @@ export class VerifyPlusComponent {
   submitting = false;
   submitResult: VerifyPlusScanResult | null = null;
   submitError = false;
+  submitErrorMessage: string | null = null;
 
   constructor(private verifyPlusService: VerifyPlusService) {
   }
@@ -65,6 +66,7 @@ export class VerifyPlusComponent {
     this.scannerError = null;
     this.submitResult = null;
     this.submitError = false;
+    this.submitErrorMessage = null;
   }
 
   onScannerError(error: unknown) {
@@ -77,6 +79,7 @@ export class VerifyPlusComponent {
     }
 
     this.submitError = false;
+    this.submitErrorMessage = null;
     this.submitting = true;
 
     this.verifyPlusService.submitScan(this.decodedPayload)
@@ -85,8 +88,9 @@ export class VerifyPlusComponent {
         next: (result) => {
           this.submitResult = result;
         },
-        error: () => {
+        error: (message: unknown) => {
           this.submitError = true;
+          this.submitErrorMessage = typeof message === 'string' ? message : null;
         }
       });
   }
@@ -95,6 +99,7 @@ export class VerifyPlusComponent {
     this.decodedPayload = null;
     this.submitResult = null;
     this.submitError = false;
+    this.submitErrorMessage = null;
     this.scanner?.startScanning();
   }
 

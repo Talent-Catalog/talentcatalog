@@ -81,13 +81,16 @@ describe('VerifyPlusComponent', () => {
     expect(component.submitting).toBeFalse();
   });
 
-  it('should set submitError when confirm fails', () => {
-    component.onScanned('{"v":"mock-2","unhcrId":"bad"}');
-    verifyPlusService.submitScan.and.returnValue(throwError(() => new Error('bad request')));
+  it('should set submitError and capture message when confirm fails', () => {
+    component.onScanned('{"v":"mock-2","unhcrId":"123-45C67890"}');
+    verifyPlusService.submitScan.and.returnValue(
+      throwError(() => 'Unsupported Verify+ payload version: mock-2')
+    );
 
     component.onConfirm();
 
     expect(component.submitError).toBeTrue();
+    expect(component.submitErrorMessage).toBe('Unsupported Verify+ payload version: mock-2');
     expect(component.submitting).toBeFalse();
   });
 
@@ -95,6 +98,7 @@ describe('VerifyPlusComponent', () => {
     component.decodedPayload = '{"v":"mock-1","unhcrId":"123-45C67890"}';
     component.submitResult = {unhcrNumber: '123-45C67890', duplicate: true};
     component.submitError = true;
+    component.submitErrorMessage = 'Unsupported Verify+ payload version: mock-2';
     component.scannerError = new Error('scanner');
 
     component.onRescan();
@@ -102,5 +106,6 @@ describe('VerifyPlusComponent', () => {
     expect(component.decodedPayload).toBeNull();
     expect(component.submitResult).toBeNull();
     expect(component.submitError).toBeFalse();
+    expect(component.submitErrorMessage).toBeNull();
   });
 });
