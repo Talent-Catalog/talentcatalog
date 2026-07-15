@@ -703,7 +703,7 @@ import {
   CreateUpdatePostComponent
 } from './components/chat/create-update-post/create-update-post.component';
 import {EnvService} from "./services/env.service";
-import {ExportPdfComponent} from './components/util/export-pdf/export-pdf.component';
+import {PrintPageComponent} from './components/util/export-pdf/print-page.component';
 import {ChatsComponent} from './components/chat/chats/chats.component';
 import {
   ChatsWithPostsComponent
@@ -1137,7 +1137,7 @@ import {
     OccupationCategoryComponent,
     OccupationSubcategoryComponent,
     CreateUpdatePostComponent,
-    ExportPdfComponent,
+    PrintPageComponent,
     ChatsComponent,
     ChatsWithPostsComponent,
     ViewChatComponent,
