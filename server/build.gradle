@@ -30,6 +30,9 @@ ext {
     awsSdkVersion = "2.42.15"
     // Flyway upgrade (Postgres 17.5 compatible)
     set('flyway.version', '11.20.1')
+    //Note that there are breaking changes in jjwt 0.12 and 0.13. Fairly minor though.
+    //If you upgrade you will get some compile errors which should be easy to fix. JC
+    jjwtVersion = "0.11.2"
 }
 
 java {
@@ -162,17 +165,12 @@ dependencies {
     implementation "net.javacrumbs.shedlock:shedlock-spring:5.10.0"
     implementation "net.javacrumbs.shedlock:shedlock-provider-jdbc-template:5.10.0"
 
-    //Note that there are breaking changes in jjwt 0.12 and 0.13. Fairly minor though.
-    //If you upgrade you will get some compile errors which should be easy to fix. JC
-    def jjwtVersion = "0.11.2"
-    dependencies {
-        // Public API used by application code.
-        implementation("io.jsonwebtoken:jjwt-api:$jjwtVersion")
-
-        // Runtime implementation and Jackson JSON support.
-        runtimeOnly("io.jsonwebtoken:jjwt-impl:$jjwtVersion")
-        runtimeOnly("io.jsonwebtoken:jjwt-jackson:$jjwtVersion")
-    }
+    // JWT support (JSON Web Token) for authentication and authorization.
+    // Public API used by application code.
+    implementation("io.jsonwebtoken:jjwt-api:$jjwtVersion")
+    // Runtime implementation and Jackson JSON support.
+    runtimeOnly("io.jsonwebtoken:jjwt-impl:$jjwtVersion")
+    runtimeOnly("io.jsonwebtoken:jjwt-jackson:$jjwtVersion")
 
     implementation 'com.google.api-client:google-api-client:1.32.1'
     implementation 'com.google.oauth-client:google-oauth-client-jetty:1.32.1'

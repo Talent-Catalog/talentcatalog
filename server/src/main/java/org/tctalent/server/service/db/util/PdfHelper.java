@@ -28,15 +28,7 @@ import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.model.db.Candidate;
 
 /**
- * Service for generating PDFs using Flying Saucer and Thymeleaf templates.
- * The PDF will display a letter styled with CSS.
- * <p/>
- * There is also a main method which will generate a letter.
- * The letter has two pages and will contain text and images.
- * <p>
- * Run main to generate the PDF. The file is called:
- * <p>
- * /test.pdf
+ * Service for generating PDFs using OpenHTMLToPDF/PDFBox and Thymeleaf templates.
  */
 @Service
 @RequiredArgsConstructor
