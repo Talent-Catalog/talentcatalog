@@ -1,4 +1,9 @@
 tc:
+  cache:
+    candidate:
+      # Memory-hygiene TTL for the candidate JSON read cache. Set to 0 to disable expiry.
+      ttl: ${TC_CANDIDATE_CACHE_TTL:7d}
+
   cors:
     urls: ${TC_CORS_URLS:http://localhost:4200,http://127.0.0.1:4200,http://localhost:4201,http://localhost:4202}
 
