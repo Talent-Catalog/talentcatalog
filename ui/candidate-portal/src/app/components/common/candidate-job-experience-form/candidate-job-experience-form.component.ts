@@ -195,8 +195,14 @@ export class CandidateJobExperienceFormComponent implements OnInit, AfterViewIni
     }
 
     const visibleText = description
+    // Replace HTML tags such as <p>, </div>, <br> with a normal space.
     .replace(/<[^>]*>/g, ' ')
+
+    // Replace HTML non-breaking spaces with a normal space.
+    // Handles both &nbsp; and &#160;, case-insensitively.
     .replace(/&nbsp;|&#160;/gi, ' ')
+
+    // Remove whitespace from the start and end.
     .trim();
 
     return visibleText ? null : {required: true};
