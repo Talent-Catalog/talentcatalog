@@ -17,6 +17,7 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {
   Candidate,
+  CandidateStatus,
   UpdateCandidateNotificationPreferenceRequest,
   UpdateCandidateStatusInfo,
   UpdateCandidateStatusRequest
@@ -24,7 +25,6 @@ import {
 import {CandidateService, DownloadCVRequest} from '../../../services/candidate.service';
 import {ActivatedRoute, Router} from '@angular/router';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
-import {DeleteCandidateComponent} from './delete/delete-candidate.component';
 import {EditCandidateStatusComponent} from './status/edit-candidate-status.component';
 import {Title} from '@angular/platform-browser';
 import {AuthorizationService} from '../../../services/authorization.service';
@@ -226,14 +226,18 @@ export class ViewCandidateComponent extends MainSidePanelBase implements OnInit,
     );
   }
 
+  /**
+   * This is the standard delete and changes the status to deleted, can be done by all admins.
+   * For full data delete, see eraseCandidateData().
+   */
   deleteCandidate() {
-    const modal = this.modalService.open(DeleteCandidateComponent);
-    modal.componentInstance.candidate = this.candidate;
-    modal.result.then(result => {
-      this.router.navigate(['/']);
-    });
+    this.openEditCandidateStatusModal(CandidateStatus.deleted);
   }
 
+  /**
+   * Restricted to system admins is a full erasure of candidate data.
+   * Most deletes are done by changing status to deleted. See deleteCandidate().
+   */
   eraseCandidateData() {
     const modal = this.modalService.open(EraseCandidateDataComponent, {
       centered: true,
@@ -252,12 +256,18 @@ export class ViewCandidateComponent extends MainSidePanelBase implements OnInit,
     });
   }
 
-  editCandidate() {
+  editCandidateStatus() {
+    this.openEditCandidateStatusModal(this.candidate.status)
+  }
+
+  /**
+   * Open the modal to edit the candidate status and save the status
+   * @param candidateStatus the status that will populate in the status dropdown
+   * @private
+   */
+  private openEditCandidateStatusModal(candidateStatus: string) {
     const modal = this.modalService.open(EditCandidateStatusComponent);
-
-    //Initialize status with candidate's current status
-    modal.componentInstance.candidateStatus = this.candidate.status;
-
+    modal.componentInstance.candidateStatus = candidateStatus;
     modal.result
       .then((info: UpdateCandidateStatusInfo) => {
         this.updateCandidateStatus(info);
