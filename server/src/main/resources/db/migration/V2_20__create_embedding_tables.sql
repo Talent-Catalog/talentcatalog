@@ -41,10 +41,10 @@ CREATE TABLE job_experience_embedding_384 (
           UNIQUE (candidate_job_experience_id, embedding_model_id)
 );
 
--- Note every time add a new embedding model you need to add a new index which
+-- Note every time you add a new embedding model you need to add a new index which
 -- just indexes entries for that embedding model.
--- This a bit messy because we need to know the id of the newly created embedding model,
--- and then use that in the index name as welle as the id in the WHERE clause.
+-- This a bit messy because we need to know the id of the newly created embedding model
+-- and then use that in the index name as well as the id in the WHERE clause.
 DO $$
     DECLARE
         embedding_model_id bigint;
