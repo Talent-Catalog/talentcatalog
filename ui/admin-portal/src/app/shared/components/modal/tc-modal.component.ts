@@ -22,6 +22,7 @@ import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
  *  - `disableAction: boolean` — disables the action button
  *  - `showCancel: boolean` — toggles the cancel button visibility
  *  - `icon: string` — optional FontAwesome icon class
+ *  - `iconSize: 'sm' | 'md' | 'lg' | 'xl' | 'inherit'` — optional icon size
  *  - `isError: boolean = false` — switches the modal to an error style (red header + red icon)
  *  - `cancelText: string = 'Cancel'` — label for the cancel button
  *  - `showClose: boolean = false` — toggles the top-right close “X”
@@ -101,6 +102,7 @@ export class TcModalComponent {
   @Input() disableAction: boolean = false;
   @Input() showCancel: boolean = true;
   @Input() icon: string;
+  @Input() iconSize: 'sm' | 'md' | 'lg' | 'xl' | 'inherit' = 'inherit';
   @Input() isError: boolean = false;
   @Input() cancelText: string = 'Cancel';
   /**

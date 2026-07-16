@@ -129,6 +129,24 @@
           Description *
         </tc-label>
         <app-text-parts-input formControlName="description"></app-text-parts-input>
+        <label class="form-label">Found Skills</label>
+        <div>
+          <span
+            class="badge bg-secondary me-1"
+            *ngFor="let skill of extractedSkills">
+            {{ skill }}
+          </span>
+        </div>
+        <div>
+          <small class="text-muted">
+            * The above "Found Skills" have been extracted from  the description using AI and a
+            list of known skills.
+            If you think that there is a skill evident in the description that is not being
+            extracted we may need to add that new skill to our list of skills.
+            Please add the skill as a keyword.
+          </small>
+        </div>
+
       </tc-field>
     </form>
 

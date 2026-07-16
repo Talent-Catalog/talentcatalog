@@ -5,6 +5,7 @@ import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {By} from "@angular/platform-browser";
 import {ButtonComponent} from "../button/button.component";
 import {Component} from "@angular/core";
+import {TcIconComponent} from "../icon-component/tc-icon.component";
 
 @Component({
   template: `
@@ -14,6 +15,7 @@ import {Component} from "@angular/core";
       [disableAction]="disableAction"
       [showCancel]="showCancel"
       [icon]="icon"
+      [iconSize]="iconSize"
       (onAction)="onAction()"
     >
       <p>Modal body content</p>
@@ -26,6 +28,7 @@ class TestHostComponent {
   disableAction = false;
   showCancel = true;
   icon?: string;
+  iconSize: 'sm' | 'md' | 'lg' | 'xl' | 'inherit' = 'inherit';
 
   actionCalled = false;
   onAction() {
@@ -40,7 +43,7 @@ describe('TcModalComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [TcModalComponent, TestHostComponent, ButtonComponent],
+      declarations: [TcModalComponent, TestHostComponent, ButtonComponent, TcIconComponent],
       providers: [NgbActiveModal],
     }).compileComponents();
 
@@ -71,6 +74,15 @@ describe('TcModalComponent', () => {
 
     const modalDiv = fixture.debugElement.query(By.css('.tc-modal'));
     expect(modalDiv.nativeElement.className).toContain('has-icon');
+  });
+
+  it('should pass icon size to tc-icon', () => {
+    host.icon = 'fas fa-bell';
+    host.iconSize = 'xl';
+    fixture.detectChanges();
+
+    const icon = fixture.debugElement.query(By.directive(TcIconComponent));
+    expect(icon.componentInstance.size).toBe('xl');
   });
 
   it('should not show icon if not provided', () => {

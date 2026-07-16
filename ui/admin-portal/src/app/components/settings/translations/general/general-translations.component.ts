@@ -488,6 +488,9 @@ const ALL_FIELDS = {
           "INTEREST": null,
           "NOTES": null,
         },
+        "BUTTON": {
+          "MARK_ALL_YES": null
+        },
       },
       "CERTIFICATIONS": {
         "LABEL": {

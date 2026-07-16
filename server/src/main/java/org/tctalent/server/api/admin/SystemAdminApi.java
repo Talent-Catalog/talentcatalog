@@ -79,7 +79,6 @@ import org.tctalent.server.model.db.EducationType;
 import org.tctalent.server.model.db.Gender;
 import org.tctalent.server.model.db.JobChat;
 import org.tctalent.server.model.db.NoteType;
-import org.tctalent.server.model.db.PartnerImpl;
 import org.tctalent.server.model.db.SalesforceJobOpp;
 import org.tctalent.server.model.db.SavedList;
 import org.tctalent.server.model.db.SavedSearch;
@@ -340,21 +339,6 @@ public class SystemAdminApi {
         return prefix.endsWith("/") ? prefix : prefix + "/";
     }
 
-    /**
-     * Clears the firstDpaSeenDate field for the partner with the given ID.
-     * @param partnerId The ID of the partner
-     */
-    @PostMapping("partner/clear-first-dpa-seen/{partnerId}")
-    public void clearFirstDpaSeen(@PathVariable("partnerId") Long partnerId) {
-        // Fetch the partner by ID
-        PartnerImpl partner = (PartnerImpl) partnerService.getPartner(partnerId);
-
-        // Clear the firstDpaSeenDate field
-        partner.setFirstDpaSeenDate(null);
-
-        // Save the updated partner back to the repository
-        partnerRepository.save(partner);
-    }
 
     @PostMapping("set_candidate_text/cpu-{cpu}")
     public ResponseEntity<String> setCandidateText(

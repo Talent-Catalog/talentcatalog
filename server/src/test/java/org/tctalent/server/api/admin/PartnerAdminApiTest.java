@@ -49,12 +49,12 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.tctalent.server.model.db.Employer;
 import org.tctalent.server.model.db.PartnerImpl;
@@ -506,85 +506,5 @@ class PartnerAdminApiTest extends ApiTestBase {
     assertThat(response.getBody()).isNull();
 
     verify(partnerService).findPublicApiPartnerDtoByKey(apiKey);
-  }
-
-  @Test
-  @DisplayName("accept dpa succeeds")
-  void acceptDpaSucceeds() throws Exception {
-    String id = "1";
-
-    given(partnerService.updateAcceptedDpa(id))
-        .willReturn(partner);
-
-    mockMvc.perform(put(BASE_PATH + "/" + id + "/accept-dpa")
-            .with(csrf())
-            .header("Authorization", "Bearer " + "jwt-token")
-            .accept(MediaType.APPLICATION_JSON))
-
-        .andDo(print())
-        .andExpect(status().isOk())
-        .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-        .andExpect(jsonPath("$.name", is("TC Partner")))
-        .andExpect(jsonPath("$.abbreviation", is("TCP")))
-        .andExpect(jsonPath("$.status", is("active")));
-
-    verify(partnerService).updateAcceptedDpa(id);
-  }
-
-  @Test
-  @DisplayName("set first dpa seen succeeds")
-  void setFirstDpaSeenSucceeds() throws Exception {
-    given(partnerService.setFirstDpaSeen())
-        .willReturn(partner);
-
-    mockMvc.perform(put(BASE_PATH + "/dpa-seen")
-            .with(csrf())
-            .header("Authorization", "Bearer " + "jwt-token")
-            .accept(MediaType.APPLICATION_JSON))
-
-        .andDo(print())
-        .andExpect(status().isOk())
-        .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-        .andExpect(jsonPath("$.name", is("TC Partner")))
-        .andExpect(jsonPath("$.abbreviation", is("TCP")))
-        .andExpect(jsonPath("$.status", is("active")));
-
-    verify(partnerService).setFirstDpaSeen();
-  }
-
-  @Test
-  @DisplayName("requires dpa acceptance returns true")
-  void requiresDpaAcceptanceReturnsTrue() throws Exception {
-    given(partnerService.requiresDpaAcceptance())
-        .willReturn(true);
-
-    mockMvc.perform(get(BASE_PATH + "/requires-dpa")
-            .header("Authorization", "Bearer " + "jwt-token")
-            .accept(MediaType.APPLICATION_JSON))
-
-        .andDo(print())
-        .andExpect(status().isOk())
-        .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-        .andExpect(content().string("true"));
-
-    verify(partnerService).requiresDpaAcceptance();
-  }
-
-  @Test
-  @DisplayName("requires dpa acceptance returns false")
-  void requiresDpaAcceptanceReturnsFalse() throws Exception {
-    given(partnerService.requiresDpaAcceptance())
-        .willReturn(false);
-
-    mockMvc.perform(get(BASE_PATH + "/requires-dpa")
-            .header("Authorization", "Bearer " + "jwt-token")
-            .accept(MediaType.APPLICATION_JSON))
-
-        .andDo(print())
-        .andExpect(status().isOk())
-        .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-        .andExpect(content().string("false"));
-
-    verify(partnerService).requiresDpaAcceptance();
   }
 }

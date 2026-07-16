@@ -24,7 +24,7 @@ import {
   ViewChildren
 } from '@angular/core';
 import {UntypedFormBuilder, UntypedFormGroup} from "@angular/forms";
-import {Candidate, CandidateDestination} from "../../../model/candidate";
+import {Candidate, CandidateDestination, YesNoUnsureLearn} from "../../../model/candidate";
 import {CandidateService} from "../../../services/candidate.service";
 import {RegistrationService} from "../../../services/registration.service";
 import {CountryService} from "../../../services/country.service";
@@ -91,6 +91,16 @@ export class RegistrationDestinationsComponent implements OnInit {
 
   fetchDestination(countryId: number) {
      return this.candidateDestinations?.find(d => d.country.id === countryId)
+  }
+
+  setAllDestinationsToInterested() {
+    this.destinationFormComponents?.forEach(destination => {
+      const interestControl = destination.form?.get('interest');
+      if (interestControl && interestControl.value !== YesNoUnsureLearn.Yes) {
+        interestControl.setValue(YesNoUnsureLearn.Yes, {emitEvent: false});
+        interestControl.markAsDirty();
+      }
+    });
   }
 
   save(dir: string) {

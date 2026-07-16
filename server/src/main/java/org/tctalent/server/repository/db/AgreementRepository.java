@@ -34,6 +34,9 @@ public interface AgreementRepository extends JpaRepository<Agreement, Long> {
 
     List<Agreement> findByCandidateIdOrderByStartDesc(Long candidateId);
 
+    //MODEL: JOIN FETCH in a @Query eagerly loads a LAZY association in a single SQL JOIN,
+    // avoiding N+1 queries when the association is needed in the same transaction.
+    // Use when a specific query needs an association that is LAZY by default on the entity.
     @Query("SELECT a FROM Agreement a JOIN FETCH a.counterparty "
         + "WHERE a.candidate.id = :candidateId ORDER BY a.start DESC")
     List<Agreement> findWithCounterpartyByCandidateIdOrderByStartDesc(@Param("candidateId") Long candidateId);

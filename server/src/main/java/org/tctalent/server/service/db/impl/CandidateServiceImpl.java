@@ -1820,12 +1820,29 @@ public class CandidateServiceImpl implements CandidateService {
         User loggedInUser = authService.getLoggedInUser()
                 .orElseThrow(() -> new InvalidSessionException("Not logged in"));
 
+        Candidate candidate = candidateRepository.findByCandidateNumber(candidateNumber);
+        if (candidate == null) {
+            throw new NoSuchObjectException("No candidate exists with number: " + candidateNumber);
+        }
+
+        // Fully erased candidates (GDPR) have their country scrubbed to null.
+        // Return a specific not-found message rather than an empty placeholder profile.
+        if (CandidateStatus.deleted.equals(candidate.getStatus())
+                && candidate.getCountry() == null) {
+            throw new NoSuchObjectException(
+                "This candidate's data has been fully deleted from the Talent Catalog.");
+        }
+
         Set<Country> sourceCountries = userService.getDefaultSourceCountries(loggedInUser);
-        Candidate candidate = candidateRepository.findByCandidateNumberRestricted(candidateNumber, sourceCountries)
-                .orElseThrow(() -> new CountryRestrictionException("You don't have access to this candidate."));
+        if (!sourceCountries.contains(candidate.getCountry())) {
+            throw new CountryRestrictionException("You don't have access to this candidate.");
+        }
 
         //TODO JC Review how this is done. Commented out for now. See issue 2989
 //        taskAssignmentService.populateTransientTaskAssignmentFields(candidate.getTaskAssignments());
+
+        // Returns candidate regardless of status — soft-deleted candidates with a country
+        // in the user's source countries are returned alongside active candidates.
         return candidate;
     }
 

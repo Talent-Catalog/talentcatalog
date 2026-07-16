@@ -16,6 +16,7 @@
 
 package org.tctalent.server.service.db.impl;
 
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
@@ -37,6 +38,9 @@ import org.tctalent.server.request.work.experience.UpdateJobExperienceRequest;
 import org.tctalent.server.security.AuthService;
 import org.tctalent.server.service.db.CandidateJobExperienceService;
 import org.tctalent.server.service.db.CandidateService;
+import org.tctalent.server.service.db.SkillsService;
+import org.tctalent.server.util.text.TextParts;
+import org.tctalent.server.util.text.TextPartsCodec;
 
 @Service
 public class CandidateJobExperienceServiceImpl implements CandidateJobExperienceService {
@@ -47,6 +51,7 @@ public class CandidateJobExperienceServiceImpl implements CandidateJobExperience
     private final CandidateService candidateService;
     private final CandidateOccupationRepository candidateOccupationRepository;
     private final AuthService authService;
+    private final SkillsService skillsService;
 
     @Autowired
     public CandidateJobExperienceServiceImpl(CandidateJobExperienceRepository candidateJobExperienceRepository,
@@ -54,13 +59,14 @@ public class CandidateJobExperienceServiceImpl implements CandidateJobExperience
                                       CountryRepository countryRepository,
                                       CandidateService candidateService,
                                       CandidateRepository candidateRepository,
-                                      AuthService authService) {
+                                      AuthService authService, SkillsService skillsService) {
         this.candidateJobExperienceRepository = candidateJobExperienceRepository;
         this.countryRepository = countryRepository;
         this.candidateRepository = candidateRepository;
         this.candidateService = candidateService;
         this.candidateOccupationRepository = candidateOccupationRepository;
         this.authService = authService;
+        this.skillsService = skillsService;
     }
 
     @Override
@@ -102,7 +108,7 @@ public class CandidateJobExperienceServiceImpl implements CandidateJobExperience
         candidateJobExperience.setEndDate(request.getEndDate());
         candidateJobExperience.setFullTime(request.getFullTime());
         candidateJobExperience.setPaid(request.getPaid());
-        candidateJobExperience.setDescription(request.getDescription());
+        updateJobExperienceDescription(candidateJobExperience, request.getDescription());
 
         // Save the candidateOccupation
         final CandidateJobExperience jobExperience = candidateJobExperienceRepository.save(candidateJobExperience);
@@ -151,7 +157,7 @@ public class CandidateJobExperienceServiceImpl implements CandidateJobExperience
         candidateJobExperience.setEndDate(request.getEndDate());
         candidateJobExperience.setFullTime(request.getFullTime());
         candidateJobExperience.setPaid(request.getPaid());
-        candidateJobExperience.setDescription(request.getDescription());
+        updateJobExperienceDescription(candidateJobExperience, request.getDescription());
         candidateJobExperience.setCandidateOccupation(candidateOccupation);
 
         // Save the candidate experience
@@ -162,6 +168,24 @@ public class CandidateJobExperienceServiceImpl implements CandidateJobExperience
         candidateService.save(candidate, true);
 
         return candidateJobExperience;
+    }
+
+    /**
+     * Updates the description of a CandidateJobExperience object.
+     * <p>
+     * It also checks for any additional keywords that have been specified that may need to be
+     * stored as new skills.
+     * @param candidateJobExperience Job experience to update
+     * @param description New description
+     */
+    private void updateJobExperienceDescription(
+        CandidateJobExperience candidateJobExperience, String description) {
+        //Extract any keywords.
+        TextParts textParts = TextPartsCodec.read(description);
+        final List<String> keywords = textParts.getKeywords();
+        //Add any new skills to the database.
+        skillsService.addTcSkillsIfNew(keywords, "en");
+        candidateJobExperience.setDescription(description);
     }
 
     @Override

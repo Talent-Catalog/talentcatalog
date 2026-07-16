@@ -17,8 +17,22 @@
 <tc-button [color]="'secondary'"
            [size]="'sm'"
            [loading]="saving"
-           (onClick)="exportAsPdf(idToExport)"
+           (onClick)="printPage()"
            [disabled]="saving"
 >
-  Export PDF
+  Print page
 </tc-button>
+<tc-button [type]="'plain'"
+           class="tool-tip-button"
+           ngbTooltip=
+             "Note that you can print as a PDF.
+             Landscape orientation is recommended for better readability.
+             Remember to expand all fields so that all data is visible."
+           triggers="click"
+           tooltipClass="search-tips"
+           placement="bottom top"
+           [stopNativeClickPropagation]="false"
+>
+  <i class="fa-regular fa-circle-question fa-xs"></i>
+</tc-button>
+

@@ -7,6 +7,7 @@
     "start": "ng serve --host=127.0.0.1",
     "build": "ng build",
     "test": "ng test",
+    "test:coverage": "ng test admin-portal --watch=false --code-coverage=true --browsers=ChromeHeadless --source-map=true",
     "lint": "ng lint",
     "e2e": "ng e2e"
   },
@@ -70,6 +71,7 @@
     "codelyzer": "^6.0.2",
     "jasmine-spec-reporter": "^7.0.0",
     "karma": "^6.4.3",
+    "karma-coverage": "^2.2.1",
     "karma-jasmine": "^5.1.0",
     "ng-packagr": "^17.3.0",
     "protractor": "~7.0.0",
