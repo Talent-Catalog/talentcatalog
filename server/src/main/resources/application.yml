@@ -302,8 +302,13 @@ email:
   defaultEmail: ${EMAIL_DEFAULTEMAIL:noreply@talentcatalog.net}
   testOverrideEmail: ${EMAIL_TESTOVERRIDEEMAIL:}
 
-  # Duolingo API Configuration:
-  # Contains the API secret and base URL for interacting with the Duolingo English test API.
+vector-embedding-model:
+  embeddingModelKey: MINILM_L6_SPACY_V3
+  alternateEmbeddingTable: job_experience_embedding_minilm_l6_spacy_v3
+  alternateEmbeddingModelKey: MINILM_L6_SPACY_V3
+
+# Duolingo API Configuration:
+# Contains the API secret and base URL for interacting with the Duolingo English test API.
 duolingo:
   api:
     apiSecret: ${DUOLINGO_SECRET:}

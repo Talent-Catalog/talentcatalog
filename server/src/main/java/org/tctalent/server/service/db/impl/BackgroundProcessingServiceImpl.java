@@ -130,6 +130,12 @@ public class BackgroundProcessingServiceImpl implements BackgroundProcessingServ
   }
 
   @Override
+  public void buildAlternateEmbeddings() {
+    //TODO JC Implement buildExperienceVectors
+    throw new UnsupportedOperationException("buildExperienceVectors not implemented");
+  }
+
+  @Override
   public void setCandidatePublicIds() {
 
     //Process all candidates except deleted or withdrawn

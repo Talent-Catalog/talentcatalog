@@ -1,0 +1,33 @@
+/*
+ * Copyright (c) 2026 Talent Catalog.
+ *
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
+ * for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see https://www.gnu.org/licenses/.
+ */
+
+package org.tctalent.server.repository.db;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.tctalent.server.model.db.embedding.JobExperienceEmbedding;
+
+/**
+ * Repository for JobExperienceEmbedding.
+ * <p>
+ *     See also AlternateJobExperienceEmbeddingRepository which we use when we only know the name
+ *     of an alternateEmbeddingTable. Those tables are only used temporarily to migrate from
+ *     one model to another. We don't use JPA for the limited access we have to them.
+ *     Setting up full JPA access involves a lot of code that we don't need.
+ * </p>
+ */
+public interface JobExperienceEmbeddingRepository
+    extends JpaRepository<JobExperienceEmbedding, Long> {
+}
