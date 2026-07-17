@@ -18,7 +18,7 @@ INSERT INTO embedding_model (
     status
 )
 VALUES (
-           'SPACY_PREPROCESS_V3',
+           'SPACY_PREPROCESSING_V3',
            'sentence-transformers/all-MiniLM-L6-v2',
            'MINILM_L6_SPACY_V3',
            'SENTENCE_TRANSFORMERS',
