@@ -6,6 +6,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
+import org.tctalent.server.model.db.embedding.EmbeddingModel;
+import org.tctalent.server.repository.db.EmbeddingModelRepository;
 import org.tctalent.server.service.embedding.TcVectorEmbeddingService;
 import org.tctalent.server.service.embedding.dto.EmbeddingConfigurationVersion;
 import org.tctalent.server.service.embedding.dto.EmbeddingInput;
@@ -20,33 +22,19 @@ import org.tctalent.server.service.embedding.dto.TcVectorEmbeddingServiceClient;
 public class TcVectorEmbeddingServiceImpl implements TcVectorEmbeddingService {
 
     private final TcVectorEmbeddingServiceClient tcVectorEmbeddingServiceClient;
-//    private final EmbeddingModelRepository embeddingModelRepository;
+    private final EmbeddingModelRepository embeddingModelRepository;
 //    private final EmbeddingModelDetailsMapper embeddingModelDetailsMapper;
 
     @Override
     public @NonNull GenerateEmbeddingsResponse generateEmbeddings(
-        Long embeddingModelId, Map<String, String> sourceTexts) {
-        //TODO JC Do the database set up.
-//        EmbeddingModel embeddingModel = embeddingModelRepository
-//            .findById(embeddingModelId)
-//            .orElseThrow(() -> new NoSuchObjectException(
-//                "Embedding model not found: " + embeddingModelId
-//            ));
-//
-//        if (!embeddingModel.isActive()) {
-//            throw new IllegalStateException(
-//                "Embedding model is not active: " + embeddingModelId
-//            );
-//        }
-//
-//        EmbeddingModelDetails modelDetails =
-//            embeddingModelDetailsMapper.toDto(embeddingModel);
+        String modelKey, Map<String, String> sourceTexts) {
+        EmbeddingModel embeddingModel = embeddingModelRepository.findByModelKey(modelKey);
 
-        //todo Hard code the model details for now until we have the database set up.
         EmbeddingModelDetails modelDetails = EmbeddingModelDetails.builder()
-            .modelName("all-MiniLM-L6-v2")
-            .configurationVersion(EmbeddingConfigurationVersion.SPACY_PREPROCESSING_V3)
-            .dimensions(384)
+            .modelName(embeddingModel.getModelName())
+            .configurationVersion(
+                EmbeddingConfigurationVersion.valueOf(embeddingModel.getConfigurationVersion()))
+            .dimensions(embeddingModel.getDimensions())
             .build();
 
         List<EmbeddingInput> inputs = sourceTexts.entrySet().stream()

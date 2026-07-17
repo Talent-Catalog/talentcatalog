@@ -465,7 +465,7 @@ public class JobServiceImpl implements JobService {
         texts.put("test2", " ");
         texts.put("test3", "John was here doing his thing as a Java and Python developer. He was also a great team player and a good communicator.");
         final GenerateEmbeddingsResponse generateEmbeddingsResponse = tcVectorEmbeddingService.generateEmbeddings(
-            1L, texts);
+            "MINILM_L6_SPACY_V3", texts);
 
         return skillsService.extractSkillNames(text, lang);
     }

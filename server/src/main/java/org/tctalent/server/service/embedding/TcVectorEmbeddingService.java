@@ -19,12 +19,11 @@ public interface TcVectorEmbeddingService {
     /**
      * Generates embeddings for the given source texts using the specified embedding model.
      *
-     * @param embeddingModelId The ID of the embedding model to use.
+     * @param modelKey The key of the embedding model to use.
      * @param sourceTexts      A map of source text identifiers to their corresponding text
      *                         content.
      * @return A response containing the generated embeddings and any associated errors.
      */
     @NonNull
-    GenerateEmbeddingsResponse generateEmbeddings(
-        Long embeddingModelId, Map<String, String> sourceTexts);
+    GenerateEmbeddingsResponse generateEmbeddings(String modelKey, Map<String, String> sourceTexts);
 }

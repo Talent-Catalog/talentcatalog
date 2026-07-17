@@ -16,6 +16,7 @@
 
 package org.tctalent.server.service.db;
 
+import java.util.List;
 import org.springframework.data.domain.Page;
 import org.tctalent.server.model.db.CandidateJobExperience;
 import org.tctalent.server.request.work.experience.CreateJobExperienceRequest;
@@ -31,6 +32,8 @@ public interface CandidateJobExperienceService {
     CandidateJobExperience updateCandidateJobExperience(UpdateJobExperienceRequest request);
 
     CandidateJobExperience updateCandidateJobExperience(Long candidateId, UpdateJobExperienceRequest request);
+
+    void updateCandidateJobExperienceEmbeddings(List<CandidateJobExperience> experiences);
 
     void deleteCandidateJobExperience(Long id);
 }

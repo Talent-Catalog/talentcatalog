@@ -49,6 +49,12 @@ public interface CandidateJobExperienceRepository extends JpaRepository<Candidat
             + " where c.id = :candidateId")
     Page<CandidateJobExperience> findByCandidateId(@Param("candidateId") Long candidateId, Pageable request);
 
+    @Query(" select w from CandidateJobExperience w "
+            + " left join w.candidate c "
+            + " where not c.status in (CandidateStatus.deleted, CandidateStatus.withdrawn)"
+    )
+    Page<CandidateJobExperience> findByActiveCandidate(Pageable request);
+
     List<CandidateJobExperience> findByCandidateId(Long candidateId);
 
 }

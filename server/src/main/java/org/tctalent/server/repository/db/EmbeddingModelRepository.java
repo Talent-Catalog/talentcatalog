@@ -24,4 +24,5 @@ import org.tctalent.server.model.db.embedding.EmbeddingModel;
  */
 public interface EmbeddingModelRepository extends JpaRepository<EmbeddingModel, Long> {
     boolean existsByModelKey(String modelKey);
+    EmbeddingModel findByModelKey(String modelKey);
 }
