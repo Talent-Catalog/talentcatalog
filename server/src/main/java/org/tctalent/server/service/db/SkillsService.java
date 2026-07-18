@@ -30,13 +30,30 @@ import org.tctalent.server.service.api.SkillName;
 public interface SkillsService {
 
     /**
+     * Adds new skills (identified by Talent Catalog users) to the database if they do not already
+     * exist.
+     * <p>
+     *     Note that new skills will not be recognized until the TC server application is restarted
+     *     and also the Python skill extractor is restarted.
+     *     This is because the server only loads skills from tehdatabase at startup and then serves
+     *     them from an in-memory cache.
+     *     Also, the skill extractor only loads the skills from the TC server once at startup.
+     * </p>
+     * <p>
+     *     Restart the TC server, then restart the Python skill extractor.
+     * </p>
+     * @param skills List of skill names to add.
+     * @param languageCode Language code.
+     */
+    void addTcSkillsIfNew(@NonNull List<String> skills, @NonNull String languageCode);
+
+    /**
      * Extracts skill names from the given text.
      * @param text Text to extract skills from.
      * @param languageCode Language code.
      * @return List of skills extracted from the given text.
      */
     List<SkillName> extractSkillNames(@NonNull String text, @NonNull String languageCode);
-
 
     /**
      * Returns a page of skill names.

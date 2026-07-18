@@ -349,3 +349,12 @@ ngx-wig {
     }
   }
 }
+
+@media print {
+  .fixed-top {
+    overflow: visible !important;
+    height: auto !important;
+    max-height: none !important;
+    position: static !important;
+  }
+}

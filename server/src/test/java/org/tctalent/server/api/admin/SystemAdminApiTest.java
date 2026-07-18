@@ -74,7 +74,6 @@ import org.tctalent.server.model.db.EducationType;
 import org.tctalent.server.model.db.JobChat;
 import org.tctalent.server.model.db.JobOpportunityStage;
 import org.tctalent.server.model.db.NoteType;
-import org.tctalent.server.model.db.PartnerImpl;
 import org.tctalent.server.model.db.SalesforceJobOpp;
 import org.tctalent.server.model.db.SavedList;
 import org.tctalent.server.model.db.SavedSearch;
@@ -799,17 +798,6 @@ class SystemAdminApiTest {
     assertEquals("new", result.get("destinationBucket"));
     assertEquals("custom/", result.get("destinationPrefix"));
     assertTrue((Long) result.get("durationMs") >= 0L);
-  }
-
-  @Test
-  void clearFirstDpaSeen_clearsAndSavesPartner() {
-    PartnerImpl partner = mock(PartnerImpl.class);
-    when(partnerService.getPartner(99L)).thenReturn(partner);
-
-    systemAdminApi.clearFirstDpaSeen(99L);
-
-    verify(partner).setFirstDpaSeenDate(null);
-    verify(partnerRepository).save(partner);
   }
 
   @Test

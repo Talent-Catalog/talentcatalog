@@ -113,20 +113,27 @@ class TcRadioStubComponent implements ControlValueAccessor {
 }
 
 @Component({
-  selector: 'ngx-wig',
+  selector: 'app-text-parts-input',
   template: '',
-  providers: [{
-    provide: NG_VALUE_ACCESSOR,
-    useExisting: forwardRef(() => NgxWigStubComponent),
-    multi: true
-  }]
+  providers: [
+    {
+      provide: NG_VALUE_ACCESSOR,
+      useExisting: forwardRef(() => TextPartsInputStubComponent),
+      multi: true
+    }
+  ]
 })
-class NgxWigStubComponent implements ControlValueAccessor {
-  @Input() id?: string;
-  @Input() formControlName?: string;
-  writeValue(): void {}
-  registerOnChange(): void {}
-  registerOnTouched(): void {}
+class TextPartsInputStubComponent implements ControlValueAccessor {
+  @Input() hideKeywords?: boolean;
+  @Input() hideTidied?: boolean;
+
+  writeValue(_value: unknown): void {}
+
+  registerOnChange(_fn: (value: unknown) => void): void {}
+
+  registerOnTouched(_fn: () => void): void {}
+
+  setDisabledState(_isDisabled: boolean): void {}
 }
 
 function makeCountry(id: number, name: string): Country {
@@ -216,7 +223,7 @@ describe('CandidateJobExperienceFormComponent', () => {
         NgSelectStubComponent,
         TcDatePickerStubComponent,
         TcRadioStubComponent,
-        NgxWigStubComponent
+        TextPartsInputStubComponent
       ],
       imports: [FormsModule, ReactiveFormsModule, TranslateModule.forRoot()],
       providers: [

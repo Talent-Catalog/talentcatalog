@@ -46,8 +46,6 @@ import {
 } from "./components/account/user-change-password/user-change-password.component";
 import {UnsavedChangesGuard} from "./services/unsaved-changes.guard";
 import {IntelligenceComponent} from "./components/intelligence/intelligence.component";
-import {DpaGuard} from "./services/dpa.guard";
-import {PartnerDpaComponent} from "./components/util/partner-dpa/partner-dpa.component";
 import {CasiManagementComponent} from "./components/casi-management/casi-management.component";
 
 const routes: Routes = [
@@ -76,7 +74,6 @@ const routes: Routes = [
         path: 'searches',
         pathMatch: 'full' as const,
         component: SearchHomeComponent,
-        canActivate: [DpaGuard],
         data: {title: 'TC Searches'}
       },
       {
@@ -86,14 +83,12 @@ const routes: Routes = [
             path: '',
             pathMatch: 'full' as const,
             component: CandidatesSearchComponent,
-            canActivate: [DpaGuard],
             data: {title: 'TC Search'}
           },
           {
             path: ':id',
             component: CandidatesSearchComponent,
             canDeactivate: [UnsavedChangesGuard],
-            canActivate: [DpaGuard],
             data: {title: 'TC Search'},
           },
         ]
@@ -102,7 +97,6 @@ const routes: Routes = [
         path: 'jobs',
         pathMatch: 'full' as const,
         component: JobHomeComponent,
-        canActivate: [DpaGuard],
         data: {title: 'TC Jobs'}
       },
       {
@@ -112,13 +106,11 @@ const routes: Routes = [
             path: '',
             pathMatch: 'full' as const,
             component: JobHomeComponent,
-            canActivate: [DpaGuard],
             data: {title: 'TC Jobs'}
           },
           {
             path: ':id',
             component: ViewJobFromUrlComponent,
-            canActivate: [DpaGuard],
             data: {title: 'TC Job'}
           },
         ]
@@ -127,7 +119,6 @@ const routes: Routes = [
         path: 'lists',
         pathMatch: 'full' as const,
         component: ListHomeComponent,
-        canActivate: [DpaGuard],
         data: {title: 'TC Candidate Lists'}
       },
       {
@@ -136,7 +127,6 @@ const routes: Routes = [
           {
             path: ':id',
             component: ViewCandidateOppFromUrlComponent,
-            canActivate: [DpaGuard],
             data: {title: 'TC Opp'}
           },
         ]
@@ -148,13 +138,11 @@ const routes: Routes = [
             path: '',
             pathMatch: 'full' as const,
             component: CandidatesListComponent,
-            canActivate: [DpaGuard],
             data: {title: 'TC List'}
           },
           {
             path: ':id',
             component: CandidatesListComponent,
-            canActivate: [DpaGuard],
             data: {title: 'TC List'}
           },
         ]
@@ -165,14 +153,13 @@ const routes: Routes = [
           {
             path: ':candidateNumber',
             component: ViewCandidateComponent,
-            canActivate: [DpaGuard],
             data: {title: 'TC Candidate'}
           },
         ]
       },
       {
         path: 'settings',
-        canActivate: [RoleGuardService, DpaGuard],
+        canActivate: [RoleGuardService],
         data: {
           expectedRoles: [Role.systemadmin, Role.admin, Role.partneradmin]
         },
@@ -187,7 +174,7 @@ const routes: Routes = [
       },
       {
         path: 'candidate-services',
-        canActivate: [RoleGuardService, DpaGuard],
+        canActivate: [RoleGuardService],
         data: {
           expectedRoles: [Role.systemadmin, Role.admin, Role.partneradmin]
         },
@@ -207,13 +194,11 @@ const routes: Routes = [
             path: '',
             pathMatch: 'full' as const,
             component: InfographicComponent,
-            canActivate: [DpaGuard],
             data: {title: 'TC Stats'}
           },
           {
             path: ':source/:id',
             component: InfographicComponent,
-            canActivate: [DpaGuard],
             data: {title: 'TC Stats'}
           },
         ]
@@ -225,7 +210,6 @@ const routes: Routes = [
             path: '',
             pathMatch: 'full' as const,
             component: IntelligenceComponent,
-            canActivate: [DpaGuard],
             data: {title: 'TC Intelligence'}
           }
         ]
@@ -237,17 +221,9 @@ const routes: Routes = [
             path: '',
             pathMatch: 'full' as const,
             component: ManageChatsComponent,
-            canActivate: [DpaGuard],
             data: {title: 'Chat'}
           },
         ]
-      },
-      {
-        path: 'dpa',
-        component: PartnerDpaComponent,
-        data: {
-          title: 'Data Processing Agreement',
-        }
       },
     ]
   },

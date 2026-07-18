@@ -57,6 +57,7 @@ import org.tctalent.server.request.work.experience.SearchJobExperienceRequest;
 import org.tctalent.server.request.work.experience.UpdateJobExperienceRequest;
 import org.tctalent.server.security.AuthService;
 import org.tctalent.server.service.db.CandidateService;
+import org.tctalent.server.service.db.SkillsService;
 
 @ExtendWith(MockitoExtension.class)
 class CandidateJobExperienceServiceImplTest {
@@ -91,6 +92,7 @@ class CandidateJobExperienceServiceImplTest {
     @Mock private CandidateRepository candidateRepository;
     @Mock private CandidateService candidateService;
     @Mock private CandidateOccupationRepository occupationRepository;
+    @Mock private SkillsService skillsService;
     @Mock private AuthService authService;
 
     @Captor private ArgumentCaptor<CandidateJobExperience> jobExperienceCaptor;

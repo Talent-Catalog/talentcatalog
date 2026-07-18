@@ -703,7 +703,7 @@ import {
   CreateUpdatePostComponent
 } from './components/chat/create-update-post/create-update-post.component';
 import {EnvService} from "./services/env.service";
-import {ExportPdfComponent} from './components/util/export-pdf/export-pdf.component';
+import {PrintPageComponent} from './components/util/export-pdf/print-page.component';
 import {ChatsComponent} from './components/chat/chats/chats.component';
 import {
   ChatsWithPostsComponent
@@ -826,7 +826,6 @@ import {
   EditMaxEducationLevelComponent
 } from './components/candidates/view/education/edit-max-education-level/edit-max-education-level.component';
 import {SharedModule} from "./shared/shared.module";
-import {PartnerDpaComponent} from './components/util/partner-dpa/partner-dpa.component';
 import {SafeHtmlPipe} from './pipes/safehtml.pipe';
 import {
   ChatMuteToggleButtonComponent
@@ -1137,7 +1136,7 @@ import {
     OccupationCategoryComponent,
     OccupationSubcategoryComponent,
     CreateUpdatePostComponent,
-    ExportPdfComponent,
+    PrintPageComponent,
     ChatsComponent,
     ChatsWithPostsComponent,
     ViewChatComponent,
@@ -1196,7 +1195,6 @@ import {
     EditMaxEducationLevelComponent,
     ChatMuteToggleButtonComponent,
     ViewPrivacyPolicyInfoComponent,
-    PartnerDpaComponent,
     SafeHtmlPipe,
     CandidateCvTextTabComponent,
     CasiManagementComponent,
