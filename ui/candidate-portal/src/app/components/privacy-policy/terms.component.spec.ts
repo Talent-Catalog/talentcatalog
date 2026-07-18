@@ -1,11 +1,11 @@
-import { Component, EventEmitter, Input, Output, Pipe, PipeTransform } from '@angular/core';
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { By } from '@angular/platform-browser';
-import { of } from 'rxjs';
+import {Component, EventEmitter, Input, Output, Pipe, PipeTransform} from '@angular/core';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {By} from '@angular/platform-browser';
+import {of} from 'rxjs';
 
-import { TermsComponent } from './terms.component';
-import { CandidateService } from '../../services/candidate.service';
-import { TermsInfoService } from '../../services/terms-info.service';
+import {TermsComponent} from './terms.component';
+import {CandidateService} from '../../services/candidate.service';
+import {TermsInfoService} from '../../services/terms-info.service';
 
 @Pipe({name: 'translate'})
 class TranslatePipeStub implements PipeTransform {
@@ -71,7 +71,7 @@ describe('PrivacyPolicyComponent', () => {
         {
           provide: TermsInfoService,
           useValue: {
-            getCurrentByType: () => of({id: 'new-policy', content: '<p>Policy</p>'})
+            getCurrentCandidatePolicy: () => of({id: 'new-policy', content: '<p>Policy</p>'})
           }
         }
       ]

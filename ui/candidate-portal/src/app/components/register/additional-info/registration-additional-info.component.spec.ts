@@ -27,6 +27,8 @@ import {CandidateService} from '../../../services/candidate.service';
 import {RegistrationService} from '../../../services/registration.service';
 import {SurveyTypeService} from '../../../services/survey-type.service';
 import {SurveyType, US_AFGHAN_SURVEY_TYPE} from '../../../model/survey-type';
+import {AuthenticationService} from "../../../services/authentication.service";
+import {TcInstanceType} from "../../../model/tc-instance-type";
 
 @Component({
   selector: 'tc-loading',
@@ -136,7 +138,7 @@ describe('RegistrationAdditionalInfoComponent', () => {
   let candidateServiceSpy: jasmine.SpyObj<CandidateService>;
   let registrationServiceSpy: jasmine.SpyObj<RegistrationService>;
   let surveyTypeServiceSpy: jasmine.SpyObj<SurveyTypeService>;
-
+  let authenticationServiceSpy: jasmine.SpyObj<AuthenticationService>;
   async function configureAndCreate(options?: {
     surveyResponse?: any;
     additionalInfoResponse?: any;
@@ -156,7 +158,9 @@ describe('RegistrationAdditionalInfoComponent', () => {
     ]);
     registrationServiceSpy = jasmine.createSpyObj('RegistrationService', ['next', 'back']);
     surveyTypeServiceSpy = jasmine.createSpyObj('SurveyTypeService', ['listActiveSurveyTypes']);
+    authenticationServiceSpy = jasmine.createSpyObj('AuthenticationService', ['getTcInstanceType']);
 
+    authenticationServiceSpy.getTcInstanceType.and.returnValue(TcInstanceType.TBB);
     const surveyTypes = options?.surveyTypes ?? [
       makeSurveyType(1, 'Friend'),
       makeSurveyType(8, 'Other'),
@@ -218,7 +222,8 @@ describe('RegistrationAdditionalInfoComponent', () => {
         {provide: Router, useValue: jasmine.createSpyObj('Router', ['navigate'])},
         {provide: CandidateService, useValue: candidateServiceSpy},
         {provide: RegistrationService, useValue: registrationServiceSpy},
-        {provide: SurveyTypeService, useValue: surveyTypeServiceSpy}
+        {provide: SurveyTypeService, useValue: surveyTypeServiceSpy},
+        {provide: AuthenticationService, useValue: authenticationServiceSpy}
       ]
     }).compileComponents();
 
