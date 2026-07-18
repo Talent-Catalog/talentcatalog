@@ -15,6 +15,10 @@ on:
     paths:
       - 'ui/admin-portal/**'
       - '.github/workflows/tc-admin-portal-test.yml'
+
+permissions:
+  contents: read
+
 jobs:
   admin-portal-tests:
     name: Run Admin Portal Angular Tests

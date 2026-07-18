@@ -17,6 +17,9 @@ on:
     paths:
       - 'ui/candidate-portal/**'
       - '.github/workflows/tc-candidate-portal-test.yml'
+      
+permissions:
+  contents: read
 
 jobs:
   candidate-portal-tests:
