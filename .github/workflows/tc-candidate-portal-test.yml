@@ -8,6 +8,7 @@ on:
     paths:
       - 'ui/candidate-portal/**'
       - '.github/workflows/tc-candidate-portal-test.yml'
+      - '.nvmrc'
 
   push:
     branches:
@@ -17,7 +18,8 @@ on:
     paths:
       - 'ui/candidate-portal/**'
       - '.github/workflows/tc-candidate-portal-test.yml'
-      
+      - '.nvmrc'
+
 permissions:
   contents: read
 
