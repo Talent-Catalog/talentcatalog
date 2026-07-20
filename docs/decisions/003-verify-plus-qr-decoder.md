@@ -108,6 +108,10 @@ test, and reason about.
 - Diagnostic scripts and the sample PNG are retained in-tree as verification/
   regression tools and referenced from this ADR; the `BarcodeDetector` result is
   preserved as `docs/decisions/assets/003-barcode-detector-chrome.png`.
+- Implemented in TC-1392 by replacing `@zxing/ngx-scanner` camera+decode usage
+  with direct `getUserMedia` frame capture + `zxing-wasm` decoding in
+  `verify-plus-scanner.component`, and by bundling `zxing_reader.wasm` as an
+  Angular asset for runtime loading.
 
 ## Alternatives Considered
 
