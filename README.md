@@ -1,4 +1,5 @@
 # Talent Catalog #
+[![codecov](https://codecov.io/gh/Talent-Catalog/talentcatalog/branch/staging/graph/badge.svg)](https://codecov.io/gh/Talent-Catalog/talentcatalog)
 
 ## Overview ##
 
