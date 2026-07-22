@@ -29,11 +29,6 @@ jobs:
             report: ui/candidate-portal/coverage/lcov.info
             flag: candidate-portal
 
-          - name: Public Portal
-            directory: ui/public-portal
-            report: ui/public-portal/coverage/lcov.info
-            flag: public-portal
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
