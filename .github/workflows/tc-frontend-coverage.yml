@@ -1,0 +1,74 @@
+name: Frontend Coverage
+
+on:
+  push:
+    branches:
+      - ehsan/tc-1342-add-test-coverage-badge-to-github-readme
+
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  coverage:
+    name: ${{ matrix.name }} Coverage
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: Admin Portal
+            directory: ui/admin-portal
+            report: ui/admin-portal/coverage/lcov.info
+            flag: admin-portal
+
+          - name: Candidate Portal
+            directory: ui/candidate-portal
+            report: ui/candidate-portal/coverage/lcov.info
+            flag: candidate-portal
+
+          - name: Public Portal
+            directory: ui/public-portal
+            report: ui/public-portal/coverage/lcov.info
+            flag: public-portal
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+          cache: npm
+          cache-dependency-path: ${{ matrix.directory }}/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+        working-directory: ${{ matrix.directory }}
+
+      - name: Run tests with coverage
+        run: npm run test:coverage
+        working-directory: ${{ matrix.directory }}
+        env:
+          CI: true
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: ${{ matrix.report }}
+          flags: ${{ matrix.flag }}
+          name: ${{ matrix.flag }}-coverage
+          fail_ci_if_error: true
+          disable_search: true
+
+      - name: Archive coverage report on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.flag }}-coverage-report
+          path: ${{ matrix.directory }}/coverage
+          if-no-files-found: ignore

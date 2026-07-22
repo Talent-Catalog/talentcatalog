@@ -52,9 +52,20 @@ jobs:
       - name: Build
         run: ./gradlew server:build -x test -Ptest-tc-system
 
-      - name: Run tests
-        run: ./gradlew clean :server:test --stacktrace --rerun-tasks
+      - name: Run tests and generate coverage
+        run: ./gradlew clean :server:test :server:jacocoTestReport --stacktrace --rerun-tasks
       # --- Deploy to TBB Staging (us-east-1) ---
+
+      - name: Upload server coverage to Codecov
+        uses: codecov/codecov-action@v5
+        continue-on-error: true
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: ./server/build/reports/jacoco/test/jacocoTestReport.xml
+          flags: server
+          name: server-coverage
+          fail_ci_if_error: true
+          disable_search: true
 
       - name: Configure AWS credentials for TBB
         uses: aws-actions/configure-aws-credentials@v4
