@@ -28,8 +28,3 @@ flags:
     paths:
       - ui/candidate-portal/
     carryforward: true
-
-  public-portal:
-    paths:
-      - ui/public-portal/
-    carryforward: true
