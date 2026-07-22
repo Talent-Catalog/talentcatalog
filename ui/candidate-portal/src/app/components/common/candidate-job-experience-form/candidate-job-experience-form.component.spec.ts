@@ -379,6 +379,26 @@ describe('CandidateJobExperienceFormComponent', () => {
       expect(component.form.invalid).toBeTrue();
     });
 
+    it('should require visible description text after text parts input is cleared', () => {
+      component.form.controls.description.setValue(JSON.stringify({
+        parts: {
+          original: ''
+        }
+      }));
+
+      expect(component.form.controls.description.hasError('required')).toBeTrue();
+    });
+
+    it('should allow visible description text in text parts input format', () => {
+      component.form.controls.description.setValue(JSON.stringify({
+        parts: {
+          original: '<p>Managed customer support tickets.</p>'
+        }
+      }));
+
+      expect(component.form.controls.description.hasError('required')).toBeFalse();
+    });
+
     it('should set invalidDate when startDate is after endDate', () => {
       // The form-group validator re-runs when patchValue updates either date control.
       component.form.patchValue({
