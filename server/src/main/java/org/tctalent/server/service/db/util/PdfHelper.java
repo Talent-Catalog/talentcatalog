@@ -16,6 +16,7 @@
 
 package org.tctalent.server.service.db.util;
 
+import com.openhtmltopdf.pdfboxout.PdfRendererBuilder;
 import java.io.ByteArrayOutputStream;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,24 +26,14 @@ import org.springframework.stereotype.Service;
 import org.tctalent.server.exception.CvGenerationException;
 import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.model.db.Candidate;
-import org.xhtmlrenderer.pdf.ITextRenderer;
 
 /**
- * Service for generating PDFs using Flying Saucer and Thymeleaf templates.
- * The PDF will display a letter styled with CSS.
- * <p/>
- * There is also a main method which will generate a letter.
- * The letter has two pages and will contain text and images.
- * <p>
- * Run main to generate the PDF. The file is called:
- * <p>
- * /test.pdf
+ * Service for generating PDFs using OpenHTMLToPDF/PDFBox and Thymeleaf templates.
  */
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class PdfHelper {
-    private static final String PDF_RESOURCE_BASE_URL = "classpath:pdf/";
     private final CvTemplateHelper cvTemplateHelper;
     /**
      * Generates a PDF CV for the given candidate.
@@ -68,13 +59,12 @@ public class PdfHelper {
     }
 
     private Resource createPdf(String xhtml) throws Exception {
-        ITextRenderer renderer = new ITextRenderer();
-        renderer.setDocumentFromString(xhtml, PDF_RESOURCE_BASE_URL);
-        renderer.layout();
-
-        try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
-            renderer.createPDF(outputStream);
-            return new ByteArrayResource(outputStream.toByteArray());
+        try (ByteArrayOutputStream outputStream2 = new ByteArrayOutputStream()) {
+            PdfRendererBuilder builder = new PdfRendererBuilder();
+            builder.withHtmlContent(xhtml, cvTemplateHelper.getResourceBaseUrl());
+            builder.toStream(outputStream2);
+            builder.run();
+            return new ByteArrayResource(outputStream2.toByteArray());
         }
     }
 
