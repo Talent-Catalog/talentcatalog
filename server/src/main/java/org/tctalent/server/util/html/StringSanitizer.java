@@ -99,7 +99,9 @@ public class StringSanitizer {
 
   /**
    * Sanitizes contact information fields (e.g., phone, WhatsApp) by removing:
-   * - LRE / RLE / PDF characters (Unicode: 202A, 202B, 202C)
+   * - <a href="https://unicode-explorer.com/c/202A">LRE</a> /
+   * <a href="https://unicode-explorer.com/c/202B">RLE</a> /
+   * <a href="https://unicode-explorer.com/c/202C">PDF</a> characters (Unicode: 202A, 202B, 202C)
    * - Non-breaking spaces (Unicode: 00A0)
    * - Extra spacing
    *
