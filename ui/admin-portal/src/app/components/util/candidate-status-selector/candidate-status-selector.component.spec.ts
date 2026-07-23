@@ -54,7 +54,7 @@ describe('CandidateStatusSelectorComponent', () => {
 
   it('should filter out draft option from candidateStatusOptions', () => {
     const options: EnumOption[] = enumOptions(CandidateStatus);
-    const filteredOptions = options.filter(option => option.key !== CandidateStatus.draft);
+    const filteredOptions = options.filter(option => option.stringValue !== CandidateStatus.draft);
     expect(component.candidateStatusOptions).toEqual(filteredOptions);
   });
 
