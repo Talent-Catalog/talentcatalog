@@ -116,7 +116,6 @@ describe('CvLandingComponent', () => {
 
   it('should not request a CV when the route has no token', () => {
     routeParamMap.next(convertToParamMap({}));
-
     expect(cvService.decodeCvRequest).not.toHaveBeenCalled();
   });
 });
