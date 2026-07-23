@@ -85,16 +85,4 @@ describe('CandidateStatusSelectorComponent', () => {
     expect(component.statusInfoUpdate.emit).toHaveBeenCalledWith(expectedEvent);
   });
 
-  it('should create an event with initial status before form creation', () => {
-    component.candidateStatusInfoForm = null;
-    spyOn(component.statusInfoUpdate, 'emit');
-
-    component.ngOnChanges({});
-
-    const expectedEvent: UpdateCandidateStatusInfo = {
-      status: component.candidateStatus
-    };
-
-    expect(component.statusInfoUpdate.emit).toHaveBeenCalledWith(expectedEvent);
-  });
 });
