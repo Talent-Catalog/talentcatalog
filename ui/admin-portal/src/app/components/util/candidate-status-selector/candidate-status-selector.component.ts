@@ -14,25 +14,17 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {
-  Component,
-  EventEmitter,
-  Input,
-  OnChanges,
-  OnInit,
-  Output,
-  SimpleChanges
-} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {CandidateStatus, UpdateCandidateStatusInfo} from "../../../model/candidate";
 import {UntypedFormBuilder, UntypedFormGroup, Validators} from "@angular/forms";
-import {EnumOption, enumOptions} from "../../../util/enum";
+import {EnumOption, enumOptions, toEnumKey} from "../../../util/enum";
 
 @Component({
   selector: 'app-candidate-status-selector',
   templateUrl: './candidate-status-selector.component.html',
   styleUrls: ['./candidate-status-selector.component.scss']
 })
-export class CandidateStatusSelectorComponent implements OnInit, OnChanges {
+export class CandidateStatusSelectorComponent implements OnInit {
 
   @Input() candidateStatus: CandidateStatus;
   @Output() statusInfoUpdate = new EventEmitter<UpdateCandidateStatusInfo>();
@@ -48,18 +40,18 @@ export class CandidateStatusSelectorComponent implements OnInit, OnChanges {
 
     //Filter out the draft option. Users should not be able to set a candidate's status to draft.
     this.candidateStatusOptions =
-      enumOptions(CandidateStatus).filter(option => option.key !== CandidateStatus.draft);
+      enumOptions(CandidateStatus).filter(option => option.stringValue !== CandidateStatus.draft);
 
+    // Sometimes the status may be a key from the DB, other times it may come as a string value
+    // (e.g. CandidateStatus.active). So I need to convert to a key for the ng-select to bind in the form.
     this.candidateStatusInfoForm = this.fb.group({
-      status: [this.candidateStatus, Validators.required],
+      status: [toEnumKey(CandidateStatus, this.candidateStatus), Validators.required],
       comment: [null, Validators.required],
       candidateMessage: [null],
     });
 
     this.candidateStatusInfoForm.valueChanges.subscribe(() => this.onUpdate());
-  }
 
-  ngOnChanges(changes: SimpleChanges): void {
     this.onUpdate();
   }
 
@@ -76,23 +68,11 @@ export class CandidateStatusSelectorComponent implements OnInit, OnChanges {
   }
 
   private onUpdate() {
-    let info: UpdateCandidateStatusInfo;
-    if (this.candidateStatusInfoForm) {
-      //Create updated info event from the current form contents
-      info = {
-        candidateMessage: this.candidateMessage,
-        comment: this.comment,
-        status: this.status
-      };
-    } else {
-      //Very first update will occur with initial status - before form has even been created.
-      //See https://angular.io/guide/lifecycle-hooks
-      //Create an event just containing the input status
-      info = {
-        status: this.candidateStatus
-      }
-    }
-    this.statusInfoUpdate.emit(info);
+    this.statusInfoUpdate.emit({
+      status: this.status,
+      comment: this.comment,
+      candidateMessage: this.candidateMessage
+    });
   }
 
 }

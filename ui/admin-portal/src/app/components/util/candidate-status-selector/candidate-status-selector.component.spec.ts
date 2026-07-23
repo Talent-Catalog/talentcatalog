@@ -54,7 +54,7 @@ describe('CandidateStatusSelectorComponent', () => {
 
   it('should filter out draft option from candidateStatusOptions', () => {
     const options: EnumOption[] = enumOptions(CandidateStatus);
-    const filteredOptions = options.filter(option => option.key !== CandidateStatus.draft);
+    const filteredOptions = options.filter(option => option.stringValue !== CandidateStatus.draft);
     expect(component.candidateStatusOptions).toEqual(filteredOptions);
   });
 
@@ -85,16 +85,4 @@ describe('CandidateStatusSelectorComponent', () => {
     expect(component.statusInfoUpdate.emit).toHaveBeenCalledWith(expectedEvent);
   });
 
-  it('should create an event with initial status before form creation', () => {
-    component.candidateStatusInfoForm = null;
-    spyOn(component.statusInfoUpdate, 'emit');
-
-    component.ngOnChanges({});
-
-    const expectedEvent: UpdateCandidateStatusInfo = {
-      status: component.candidateStatus
-    };
-
-    expect(component.statusInfoUpdate.emit).toHaveBeenCalledWith(expectedEvent);
-  });
 });

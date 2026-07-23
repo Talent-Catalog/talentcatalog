@@ -123,5 +123,16 @@ export function getOrdinal(enumeration: any, key: string ): number {
   return Object.keys(enumeration).indexOf(key);
 }
 
+export function toEnumKey(enumeration: any, valueOrKey: string): string | undefined {
+  // Already a key
+  if (valueOrKey in enumeration) {
+    return valueOrKey;
+  }
+
+  // Find the key for the value
+  return Object.keys(enumeration)
+    .find(key => enumeration[key] === valueOrKey);
+}
+
 
 
