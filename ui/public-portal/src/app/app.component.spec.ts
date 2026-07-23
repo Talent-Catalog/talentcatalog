@@ -42,10 +42,13 @@ describe('AppComponent', () => {
     expect(app.title).toEqual('public-portal');
   });
 
-  it('should render title', () => {
+  it('should render the router outlet', () => {
     const fixture = TestBed.createComponent(AppComponent);
     fixture.detectChanges();
-    const compiled = fixture.nativeElement;
-    expect(compiled.querySelector('.content span').textContent).toContain('public-portal app is running!');
+
+    const routerOutlet =
+      fixture.nativeElement.querySelector('router-outlet');
+
+    expect(routerOutlet).not.toBeNull();
   });
 });
