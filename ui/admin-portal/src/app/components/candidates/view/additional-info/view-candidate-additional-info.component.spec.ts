@@ -14,34 +14,68 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import {ViewCandidateAdditionalInfoComponent} from "./view-candidate-additional-info.component";
-import {ComponentFixture, TestBed} from "@angular/core/testing";
-import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
-import {HttpClientTestingModule} from "@angular/common/http/testing";
-import {MockCandidate} from "../../../../MockData/MockCandidate";
+import {NgbModal, NgbModalRef} from "@ng-bootstrap/ng-bootstrap";
+import {NO_ERRORS_SCHEMA} from '@angular/core';
+import {CandidateService} from '../../../../services/candidate.service';
+import {ComponentFixture, fakeAsync, TestBed, tick} from "@angular/core/testing";
+import {
+  EditCandidateAdditionalInfoComponent
+} from "./edit/edit-candidate-additional-info.component";
 
 describe('ViewCandidateAdditionalInfoComponent', () => {
   let component: ViewCandidateAdditionalInfoComponent;
   let fixture: ComponentFixture<ViewCandidateAdditionalInfoComponent>;
+
   let modalService: jasmine.SpyObj<NgbModal>;
-  const mockCandidate = new MockCandidate();
+  let candidateService: jasmine.SpyObj<CandidateService>;
+
+  const candidate = {
+    id: 123,
+    additionalInfo: 'Additional candidate information'
+  } as any;
+
+  function modalRef(result: Promise<any>): NgbModalRef {
+    return {
+      componentInstance: {},
+      result,
+      close: jasmine.createSpy('close'),
+      dismiss: jasmine.createSpy('dismiss')
+    } as unknown as NgbModalRef;
+  }
+
   beforeEach(async () => {
-    const modalServiceSpy = jasmine.createSpyObj('NgbModal', ['open']);
+    modalService = jasmine.createSpyObj<NgbModal>(
+      'NgbModal',
+      ['open']
+    );
+
+    candidateService = jasmine.createSpyObj<CandidateService>(
+      'CandidateService',
+      ['updateCandidate']
+    );
 
     await TestBed.configureTestingModule({
-      declarations: [ ViewCandidateAdditionalInfoComponent ],
-      imports:[HttpClientTestingModule],
-      providers: [{ provide: NgbModal, useValue: modalServiceSpy }]
-    })
-    .compileComponents();
+      declarations: [ViewCandidateAdditionalInfoComponent],
+      providers: [
+        {
+          provide: NgbModal,
+          useValue: modalService
+        },
+        {
+          provide: CandidateService,
+          useValue: candidateService
+        }
+      ],
+      schemas: [NO_ERRORS_SCHEMA]
+    }).compileComponents();
 
-    modalService = TestBed.inject(NgbModal) as jasmine.SpyObj<NgbModal>;
-  });
-
-  beforeEach(() => {
-    fixture = TestBed.createComponent(ViewCandidateAdditionalInfoComponent);
+    fixture = TestBed.createComponent(
+      ViewCandidateAdditionalInfoComponent
+    );
     component = fixture.componentInstance;
-    component.candidate = mockCandidate;
-    component.editable = true; // Set to true or false based on your test case
+    component.candidate = candidate;
+    component.editable = true;
+
     fixture.detectChanges();
   });
 
@@ -49,32 +83,93 @@ describe('ViewCandidateAdditionalInfoComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should render the card header', () => {
-    const cardHeader = fixture.nativeElement.querySelector('tc-card-header');
-    expect(cardHeader.textContent).toContain('Anything else we should know?');
+  it('should run ngOnInit', () => {
+    expect(() => component.ngOnInit()).not.toThrow();
   });
 
-  it('should render edit button if editable is true', () => {
-    const editButton = fixture.nativeElement.querySelector('tc-card-header tc-button');
+  it('should render the card header', () => {
+    const cardHeader =
+      fixture.nativeElement.querySelector('tc-card-header');
+
+    expect(cardHeader).toBeTruthy();
+    expect(cardHeader.textContent)
+    .toContain('Anything else we should know?');
+  });
+
+  it('should render the edit button when editable is true', () => {
+    component.editable = true;
+    fixture.detectChanges();
+
+    const editButton =
+      fixture.nativeElement.querySelector(
+        'tc-card-header tc-button'
+      );
+
     expect(editButton).toBeTruthy();
   });
 
-  it('should not render edit button if editable is false', () => {
+  it('should not render the edit button when editable is false', () => {
     component.editable = false;
-
     fixture.detectChanges();
 
-    const editButton = fixture.nativeElement.querySelector('tc-card-header tc-button');
+    const editButton =
+      fixture.nativeElement.querySelector(
+        'tc-card-header tc-button'
+      );
+
     expect(editButton).toBeNull();
   });
 
-  it('should not render edit button if editable is false', () => {
-    component.editable = false;
-    fixture.detectChanges();
+  it('should display candidate additional information', () => {
+    const description: HTMLElement =
+      fixture.nativeElement.querySelector('tc-description-item');
 
-    const compiled = fixture.nativeElement;
-    const editButton = compiled.querySelector('.card-header button');
-
-    expect(editButton).toBeFalsy();
+    expect(description).toBeTruthy();
+    expect(description.innerHTML)
+    .toContain(candidate.additionalInfo);
   });
+
+  it('should open the edit modal and refresh the candidate after success', fakeAsync(() => {
+    const ref = modalRef(Promise.resolve(candidate));
+    modalService.open.and.returnValue(ref);
+
+    component.editAdditionalInfo();
+    tick();
+
+    expect(modalService.open).toHaveBeenCalledWith(
+      EditCandidateAdditionalInfoComponent,
+      {
+        centered: true,
+        backdrop: 'static'
+      }
+    );
+
+    expect(ref.componentInstance.candidateId)
+    .toBe(candidate.id);
+
+    expect(candidateService.updateCandidate)
+    .toHaveBeenCalledTimes(1);
+  }));
+
+  it('should ignore modal dismissal', fakeAsync(() => {
+    const ref = modalRef(Promise.reject('dismissed'));
+    modalService.open.and.returnValue(ref);
+
+    component.editAdditionalInfo();
+    tick();
+
+    expect(modalService.open).toHaveBeenCalledWith(
+      EditCandidateAdditionalInfoComponent,
+      {
+        centered: true,
+        backdrop: 'static'
+      }
+    );
+
+    expect(ref.componentInstance.candidateId)
+    .toBe(candidate.id);
+
+    expect(candidateService.updateCandidate)
+    .not.toHaveBeenCalled();
+  }));
 });
