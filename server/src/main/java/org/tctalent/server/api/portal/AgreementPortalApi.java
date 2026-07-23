@@ -18,7 +18,7 @@ package org.tctalent.server.api.portal;
 
 import java.util.List;
 import java.util.Map;
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -26,19 +26,34 @@ import org.tctalent.server.model.db.TermsInfo;
 import org.tctalent.server.service.db.AgreementService;
 import org.tctalent.server.service.db.TermsInfoService;
 import org.tctalent.server.util.dto.DtoBuilder;
+import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.context.Context;
 
 /**
  * API for candidate agreement management.
  *
  * @author sadatmalik
  */
-@RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/portal/agreement")
 public class AgreementPortalApi {
 
     private final AgreementService agreementService;
     private final TermsInfoService termsInfoService;
+    private final TemplateEngine termsTemplateEngine;
+
+    /**
+     * Note - we can't use Lombok RequiredArgsConstructor because currently Lombok doesn't copy
+     * the @Qualifier annotation to the constructor.
+     */
+    public AgreementPortalApi(
+        AgreementService agreementService,
+        TermsInfoService termsInfoService,
+        @Qualifier("termsTemplateEngine") TemplateEngine termsTemplateEngine) {
+        this.agreementService = agreementService;
+        this.termsInfoService = termsInfoService;
+        this.termsTemplateEngine = termsTemplateEngine;
+    }
 
     @GetMapping("list")
     public List<Map<String, Object>> listMyAgreements() {
@@ -46,9 +61,22 @@ public class AgreementPortalApi {
         for (Map<String, Object> agreementDto : agreementDtos) {
             String termsInfoId = (String) agreementDto.get("termsInfoId");
             TermsInfo termsInfo = termsInfoService.get(termsInfoId);
-            agreementDto.put("termsInfo", termsInfoDto().build(termsInfo));
+            Map<String, Object> termsInfoDto = termsInfoDto().build(termsInfo);
+
+            // Render template variables into terms content before returning to the candidate portal.
+            Map<String, Object> counterpartyDto = (Map<String, Object>) agreementDto.get("counterparty");
+            String companyName = (String) counterpartyDto.get("displayName");
+            termsInfoDto.put("content", renderTermsContent(termsInfo, companyName));
+
+            agreementDto.put("termsInfo", termsInfoDto);
         }
         return agreementDtos;
+    }
+
+    private String renderTermsContent(TermsInfo termsInfo, String companyName) {
+        Context context = new Context();
+        context.setVariable("companyName", companyName);
+        return termsTemplateEngine.process(termsInfo.getContent(), context);
     }
 
     private DtoBuilder agreementDto() {
