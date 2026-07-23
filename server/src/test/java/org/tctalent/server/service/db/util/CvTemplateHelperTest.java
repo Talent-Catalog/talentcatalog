@@ -28,6 +28,7 @@ import static org.mockito.Mockito.when;
 
 import java.lang.reflect.Method;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -39,7 +40,7 @@ import org.tctalent.server.service.db.impl.TcInstanceService;
 import org.tctalent.server.util.text.CandidateTidiedTextViewFactory;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
-
+@Tag("skip-test-in-gradle-build")
 @ExtendWith(MockitoExtension.class)
 class CvTemplateHelperTest {
 

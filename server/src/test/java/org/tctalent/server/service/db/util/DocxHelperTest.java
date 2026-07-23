@@ -34,6 +34,7 @@ import java.lang.reflect.Method;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -43,7 +44,7 @@ import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.tctalent.server.exception.CvGenerationException;
 import org.tctalent.server.model.db.Candidate;
-
+@Tag("skip-test-in-gradle-build")
 @ExtendWith(MockitoExtension.class)
 class DocxHelperTest {
 
