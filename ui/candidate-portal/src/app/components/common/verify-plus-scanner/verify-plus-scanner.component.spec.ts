@@ -14,18 +14,47 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {ComponentFixture, TestBed, fakeAsync, tick, discardPeriodicTasks} from '@angular/core/testing';
 import {NO_ERRORS_SCHEMA} from '@angular/core';
 
 import {VerifyPlusScannerComponent} from './verify-plus-scanner.component';
+import {VerifyPlusDecoderService} from '../../../services/verify-plus-decoder.service';
 
 describe('VerifyPlusScannerComponent', () => {
   let component: VerifyPlusScannerComponent;
   let fixture: ComponentFixture<VerifyPlusScannerComponent>;
+  let decoderService: jasmine.SpyObj<VerifyPlusDecoderService>;
+  let getUserMediaSpy: jasmine.Spy;
+  let enumerateDevicesSpy: jasmine.Spy;
+  let stopTrackSpy: jasmine.Spy;
+
+  const mediaTrack = {stop: () => undefined} as MediaStreamTrack;
+  const mediaStream = {getTracks: () => [mediaTrack]} as MediaStream;
 
   beforeEach(() => {
+    jasmine.getEnv().allowRespy(true);
+    decoderService = jasmine.createSpyObj<VerifyPlusDecoderService>('VerifyPlusDecoderService', ['decode']);
+    stopTrackSpy = spyOn(mediaTrack, 'stop');
+    getUserMediaSpy = jasmine.createSpy('getUserMedia').and.resolveTo(mediaStream);
+    enumerateDevicesSpy = jasmine.createSpy('enumerateDevices').and.resolveTo([
+      {kind: 'videoinput'} as MediaDeviceInfo
+    ]);
+    spyOn(HTMLMediaElement.prototype, 'play').and.resolveTo();
+    spyOn(HTMLMediaElement.prototype, 'pause');
+
+    Object.defineProperty(navigator, 'mediaDevices', {
+      value: {
+        getUserMedia: getUserMediaSpy,
+        enumerateDevices: enumerateDevicesSpy
+      },
+      configurable: true
+    });
+
     TestBed.configureTestingModule({
       declarations: [VerifyPlusScannerComponent],
+      providers: [
+        {provide: VerifyPlusDecoderService, useValue: decoderService}
+      ],
       schemas: [NO_ERRORS_SCHEMA]
     });
 
@@ -38,65 +67,91 @@ describe('VerifyPlusScannerComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should emit scanned payload on successful scan', () => {
+  it('should emit scanned payload on successful decode and stop stream', fakeAsync(() => {
     spyOn(component.scanned, 'emit');
-    component.scanning = true;
-
-    component.onScanSuccess('payload-value');
-
-    expect(component.scanned.emit).toHaveBeenCalledWith('payload-value');
-    expect(component.scanning).toBeFalse();
-  });
-
-  it('should ignore duplicate onScanSuccess events after scanning stops', () => {
-    spyOn(component.scanned, 'emit');
-    component.scanning = true;
-
-    component.onScanSuccess('payload-value');
-    component.onScanSuccess('payload-value');
-
-    expect(component.scanned.emit).toHaveBeenCalledTimes(1);
-  });
-
-  it('should mark invalid scan on scan failure', () => {
-    component.onScanFailure();
-
-    expect(component.invalidScan).toBeTrue();
-  });
-
-  it('should start scanning and clear invalid scan state', () => {
-    component.invalidScan = true;
-    component.scanning = false;
+    decoderService.decode.and.resolveTo('payload-value');
 
     component.startScanning();
+    fixture.detectChanges();
+    tick();
+    fixture.detectChanges();
 
-    expect(component.scanning).toBeTrue();
+    const video = fixture.nativeElement.querySelector('video') as HTMLVideoElement;
+    expect(video).toBeTruthy();
+    Object.defineProperty(video, 'videoWidth', {value: 1200, configurable: true});
+    Object.defineProperty(video, 'videoHeight', {value: 900, configurable: true});
+
+    tick(260);
+    expect(component.scanned.emit).toHaveBeenCalledWith('payload-value');
+    expect(component.scanning).toBeFalse();
+    expect(stopTrackSpy).toHaveBeenCalled();
+    discardPeriodicTasks();
+  }));
+
+  it('should mark invalid scan when decode misses', fakeAsync(() => {
+    decoderService.decode.and.resolveTo(null);
+
+    component.startScanning();
+    fixture.detectChanges();
+    tick();
+    fixture.detectChanges();
+
+    const video = fixture.nativeElement.querySelector('video') as HTMLVideoElement;
+    Object.defineProperty(video, 'videoWidth', {value: 800, configurable: true});
+    Object.defineProperty(video, 'videoHeight', {value: 600, configurable: true});
+
+    tick(260);
     expect(component.invalidScan).toBeFalse();
-  });
+    tick(260);
+    expect(component.invalidScan).toBeTrue();
+    component.ngOnDestroy();
+    discardPeriodicTasks();
+  }));
 
-  it('should update hasDevices when cameras are found or missing', () => {
-    component.onCamerasFound([{label: 'Front Camera'} as MediaDeviceInfo]);
-    expect(component.hasDevices).toBeTrue();
-
-    component.onCamerasNotFound();
+  it('should set hasDevices false when no camera devices are available', fakeAsync(() => {
+    enumerateDevicesSpy.and.resolveTo([]);
+    component.startScanning();
+    tick();
     expect(component.hasDevices).toBeFalse();
-  });
+    expect(component.scanning).toBeFalse();
+  }));
 
-  it('should emit scanner errors', () => {
-    spyOn(component.scannerError, 'emit');
-    const error = new Error('scanner-failed');
-
-    component.onScanError(error);
-
-    expect(component.scannerError.emit).toHaveBeenCalledWith(error);
-  });
-
-  it('should stop scanning when permission is denied', () => {
-    component.scanning = true;
-
-    component.onPermissionResponse(false);
-
+  it('should stop scanning when permission is denied', fakeAsync(() => {
+    getUserMediaSpy.and.rejectWith(new DOMException('denied', 'NotAllowedError'));
+    component.startScanning();
+    tick();
     expect(component.cameraPermission).toBeFalse();
     expect(component.scanning).toBeFalse();
-  });
+  }));
+
+  it('should emit scanner errors from decoder failures', fakeAsync(() => {
+    spyOn(component.scannerError, 'emit');
+    decoderService.decode.and.rejectWith(new Error('decoder-failed'));
+
+    component.startScanning();
+    fixture.detectChanges();
+    tick();
+    fixture.detectChanges();
+
+    const video = fixture.nativeElement.querySelector('video') as HTMLVideoElement;
+    Object.defineProperty(video, 'videoWidth', {value: 640, configurable: true});
+    Object.defineProperty(video, 'videoHeight', {value: 480, configurable: true});
+
+    tick(260);
+    expect(component.scannerError.emit).toHaveBeenCalled();
+    component.ngOnDestroy();
+    discardPeriodicTasks();
+  }));
+
+  it('should stop camera tracks on destroy', fakeAsync(() => {
+    decoderService.decode.and.resolveTo(null);
+
+    component.startScanning();
+    fixture.detectChanges();
+    tick();
+    fixture.detectChanges();
+
+    component.ngOnDestroy();
+    expect(stopTrackSpy).toHaveBeenCalled();
+  }));
 });

@@ -151,7 +151,6 @@ import {
   CandidateOppComponent
 } from './components/profile/view/tab/opps/opp/candidate-opp/candidate-opp.component';
 import {NgxWigModule} from 'ngx-wig';
-import {ZXingScannerModule} from '@zxing/ngx-scanner';
 import {TruncatePipe} from "./pipes/truncate.pipe";
 import {RxStompService} from "./services/rx-stomp.service";
 import {ViewPostComponent} from "./components/chat/view-post/view-post.component";
@@ -386,7 +385,6 @@ export function HttpLoaderFactory(http: HttpClient) {
     }),
     NgSelectModule,
     NgxWigModule,
-    ZXingScannerModule,
     QuillModule.forRoot(),
     PickerModule,
     TextPartsInputComponent,

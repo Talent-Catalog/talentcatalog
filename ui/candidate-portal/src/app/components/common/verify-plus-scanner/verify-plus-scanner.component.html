@@ -34,16 +34,10 @@
     No camera was detected on this device.
   </p>
 
-  <zxing-scanner
-    *ngIf="scanning && hasDevices !== false"
-    [formats]="formats"
-    (camerasFound)="onCamerasFound($event)"
-    (camerasNotFound)="onCamerasNotFound()"
-    (permissionResponse)="onPermissionResponse($event)"
-    (scanSuccess)="onScanSuccess($event)"
-    (scanFailure)="onScanFailure()"
-    (scanError)="onScanError($event)"
-  ></zxing-scanner>
+  <div class="camera-preview" [hidden]="!(scanning && hasDevices !== false)">
+    <video #cameraVideo autoplay playsinline muted></video>
+    <canvas #captureCanvas class="capture-canvas" aria-hidden="true"></canvas>
+  </div>
 
   <p class="scanner-message" *ngIf="scanning && invalidScan && cameraPermission !== false && hasDevices !== false">
     A QR code has not been detected yet. Try moving closer and improving lighting.
