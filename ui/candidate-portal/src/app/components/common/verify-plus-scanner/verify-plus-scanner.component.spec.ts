@@ -14,7 +14,14 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {ComponentFixture, TestBed, fakeAsync, tick, discardPeriodicTasks} from '@angular/core/testing';
+import {
+  ComponentFixture,
+  discardPeriodicTasks,
+  fakeAsync,
+  flushMicrotasks,
+  TestBed,
+  tick
+} from '@angular/core/testing';
 import {NO_ERRORS_SCHEMA} from '@angular/core';
 
 import {VerifyPlusScannerComponent} from './verify-plus-scanner.component';
@@ -69,41 +76,41 @@ describe('VerifyPlusScannerComponent', () => {
 
   it('should emit scanned payload on successful decode and stop stream', fakeAsync(() => {
     spyOn(component.scanned, 'emit');
+    // Avoid using the real canvas/video APIs in the unit test.
+    spyOn<any>(component, 'captureFrame').and.returnValue({} as ImageData);
+
     decoderService.decode.and.resolveTo('payload-value');
 
-    component.startScanning();
-    fixture.detectChanges();
-    tick();
-    fixture.detectChanges();
+    component.scanning = true;
+    (component as any).stream = mediaStream;
+    (component as any).startDecodeLoop();
 
-    const video = fixture.nativeElement.querySelector('video') as HTMLVideoElement;
-    expect(video).toBeTruthy();
-    Object.defineProperty(video, 'videoWidth', {value: 1200, configurable: true});
-    Object.defineProperty(video, 'videoHeight', {value: 900, configurable: true});
+    tick(250);
+    flushMicrotasks();
 
-    tick(260);
+    expect(decoderService.decode).toHaveBeenCalled();
     expect(component.scanned.emit).toHaveBeenCalledWith('payload-value');
     expect(component.scanning).toBeFalse();
     expect(stopTrackSpy).toHaveBeenCalled();
+
     discardPeriodicTasks();
   }));
 
   it('should mark invalid scan when decode misses', fakeAsync(() => {
+    spyOn<any>(component, 'captureFrame').and.returnValue({} as ImageData);
     decoderService.decode.and.resolveTo(null);
 
-    component.startScanning();
-    fixture.detectChanges();
-    tick();
-    fixture.detectChanges();
+    component.scanning = true;
+    (component as any).startDecodeLoop();
 
-    const video = fixture.nativeElement.querySelector('video') as HTMLVideoElement;
-    Object.defineProperty(video, 'videoWidth', {value: 800, configurable: true});
-    Object.defineProperty(video, 'videoHeight', {value: 600, configurable: true});
-
-    tick(260);
     expect(component.invalidScan).toBeFalse();
-    tick(260);
+
+    tick(250);
+    flushMicrotasks();
+
+    expect(decoderService.decode).toHaveBeenCalled();
     expect(component.invalidScan).toBeTrue();
+
     component.ngOnDestroy();
     discardPeriodicTasks();
   }));
