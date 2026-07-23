@@ -24,7 +24,7 @@ import {RegistrationSubmitComponent} from './registration-submit.component';
 import {Candidate, CandidateStatus} from '../../../model/candidate';
 import {CandidateService} from '../../../services/candidate.service';
 import {AuthenticationService} from '../../../services/authentication.service';
-import {TermsInfoDto, TermsType} from '../../../model/terms-info-dto';
+import {TermsInfoDto} from '../../../model/terms-info-dto';
 import {TermsInfoService} from '../../../services/terms-info.service';
 
 @Component({
@@ -103,7 +103,7 @@ describe('RegistrationSubmitComponent', () => {
       'submitRegistration'
     ]);
     authenticationServiceSpy = jasmine.createSpyObj('AuthenticationService', ['setCandidateStatus']);
-    termsInfoServiceSpy = jasmine.createSpyObj('TermsInfoService', ['getCurrentByType']);
+    termsInfoServiceSpy = jasmine.createSpyObj('TermsInfoService', ['getCurrentCandidatePolicy']);
 
     const candidate = options?.candidate ?? makeCandidate();
     const terms = options?.terms ?? makeTerms('<p>Policy content</p>');
@@ -115,9 +115,9 @@ describe('RegistrationSubmitComponent', () => {
     }
 
     if (options?.termsError) {
-      termsInfoServiceSpy.getCurrentByType.and.returnValue(throwError(options.termsError));
+      termsInfoServiceSpy.getCurrentCandidatePolicy.and.returnValue(throwError(options.termsError));
     } else {
-      termsInfoServiceSpy.getCurrentByType.and.returnValue(of(terms));
+      termsInfoServiceSpy.getCurrentCandidatePolicy.and.returnValue(of(terms));
     }
 
     if (options?.submitError) {
@@ -162,7 +162,7 @@ describe('RegistrationSubmitComponent', () => {
     it('should load the current privacy policy and candidate', async () => {
       await configureAndCreate();
 
-      expect(termsInfoServiceSpy.getCurrentByType).toHaveBeenCalledWith(TermsType.GRN_CANDIDATE_PRIVACY_POLICY);
+      expect(termsInfoServiceSpy.getCurrentCandidatePolicy).toHaveBeenCalled();
       expect(candidateServiceSpy.getCandidatePersonal).toHaveBeenCalled();
       expect(component.currentPrivacyPolicy.id).toBe('policy-1');
       expect(component.candidate.user.partner.name).toBe('Talent Beyond Boundaries');

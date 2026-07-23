@@ -15,7 +15,7 @@
  */
 
 import {BarcodeFormat} from '@zxing/library';
-import {Component, EventEmitter, Output} from '@angular/core';
+import {Component, EventEmitter, Input, Output} from '@angular/core';
 
 /**
  * Component for scanning QR codes using the device's camera.
@@ -32,6 +32,7 @@ import {Component, EventEmitter, Output} from '@angular/core';
   styleUrl: './verify-plus-scanner.component.scss'
 })
 export class VerifyPlusScannerComponent {
+  @Input() hideScanAgain = false;
   @Output() scanned = new EventEmitter<string>();
   @Output() scannerError = new EventEmitter<unknown>();
 

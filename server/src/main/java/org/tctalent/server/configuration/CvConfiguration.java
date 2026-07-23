@@ -27,18 +27,18 @@ import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
 import org.thymeleaf.templateresolver.ITemplateResolver;
 
 @Configuration
-public class PdfConfiguration {
+public class CvConfiguration {
 
     @Bean
-    public TemplateEngine pdfTemplateEngine() {
+    public TemplateEngine cvTemplateEngine() {
         final SpringTemplateEngine templateEngine = new SpringTemplateEngine();
-        templateEngine.addTemplateResolver(pdfTemplateResolver());
+        templateEngine.addTemplateResolver(cvTemplateResolver());
         return templateEngine;
     }
 
-    private ITemplateResolver pdfTemplateResolver() {
+    private ITemplateResolver cvTemplateResolver() {
         ClassLoaderTemplateResolver templateResolver = new ClassLoaderTemplateResolver();
-        templateResolver.setPrefix("pdf/");
+        templateResolver.setPrefix("cv/");
         templateResolver.setSuffix(".html");
         templateResolver.setTemplateMode(HTML);
         templateResolver.setCharacterEncoding(StandardCharsets.UTF_8.name());
