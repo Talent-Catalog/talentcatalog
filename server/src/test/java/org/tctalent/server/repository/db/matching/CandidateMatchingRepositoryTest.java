@@ -46,11 +46,10 @@ class CandidateMatchingRepositoryTest {
     @Test
     void sqlCollapsesExperiencesToCandidatesUsingBestScore() {
         String sql = repository.buildSql(
-            CandidateMatchingRepository.PRIMARY_EMBEDDING_TABLE, 3);
+            CandidateMatchingRepository.PRIMARY_EMBEDDING_TABLE, 3,
+            "", "");
 
         assertThat(sql)
-            .contains("GROUP BY candidate_id")
-            .contains("MAX(lexical_score)")
             .contains("MAX(1.0 - sp.distance)")
             .contains("FULL OUTER JOIN semantic_candidates")
             .contains("ORDER BY rrf_score DESC, candidate_id");
@@ -59,7 +58,8 @@ class CandidateMatchingRepositoryTest {
     @Test
     void semanticPoolPreservesHnswFriendlyShapeBeforeFiltering() {
         String sql = repository.buildSql(
-            CandidateMatchingRepository.PRIMARY_EMBEDDING_TABLE, 3);
+            CandidateMatchingRepository.PRIMARY_EMBEDDING_TABLE, 3,
+            "", "");
         String pool = sql.substring(sql.indexOf("semantic_pool AS"),
             sql.indexOf("semantic_candidate_scores AS"));
 
@@ -101,14 +101,16 @@ class CandidateMatchingRepositoryTest {
 
     @Test
     void invalidEmbeddingTableNameIsRejected() {
-        assertThatThrownBy(() -> repository.buildSql("embedding; drop table candidate", 3))
+        assertThatThrownBy(() -> repository.buildSql(
+            "embedding; drop table candidate", 3, "", ""))
             .isInstanceOf(IllegalArgumentException.class)
             .hasMessageContaining("Invalid embedding table name");
     }
 
     @Test
     void wrongEmbeddingDimensionsAreRejected() {
-        assertThatThrownBy(() -> repository.match(request(List.of(0.1, 0.2))))
+        assertThatThrownBy(() -> repository.match(
+            request(List.of(0.1, 0.2)), "", ""))
             .isInstanceOf(IllegalArgumentException.class)
             .hasMessageContaining("expected 3");
     }
@@ -129,7 +131,8 @@ class CandidateMatchingRepositoryTest {
                 return List.of(mapper.mapRow(rs, 0));
             });
 
-        CandidateMatchingResult result = repository.match(request(List.of(0.1, 0.2, 0.3))).get(0);
+        CandidateMatchingResult result = repository.match(
+            request(List.of(0.1, 0.2, 0.3)), "", "").get(0);
 
         assertThat(result.getLexicalRank()).isNull();
         assertThat(result.getLexicalScore()).isNull();

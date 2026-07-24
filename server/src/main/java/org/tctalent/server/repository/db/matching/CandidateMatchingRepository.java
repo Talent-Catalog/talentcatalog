@@ -35,7 +35,8 @@ public class CandidateMatchingRepository {
     private final VectorEmbeddingModelProperties embeddingProperties;
     private final EmbeddingModelRepository embeddingModelRepository;
 
-    public List<CandidateMatchingResult> match(CandidateMatchingRequest request) {
+    public List<CandidateMatchingResult> match(CandidateMatchingRequest request,
+    String lexicalCandidateScoresSql, String constraintJoinsAndWhereSql) {
         String tableName = configuredTableName();
         EmbeddingModel model = configuredModel();
         validate(request, tableName, model.getDimensions());
@@ -53,11 +54,13 @@ public class CandidateMatchingRepository {
             .addValue("semanticCandidateLimit", request.getSemanticCandidateLimit())
             .addValue("finalResultLimit", request.getFinalResultLimit());
 
-        return jdbc.query(buildSql(tableName, model.getDimensions()), parameters,
-            CandidateMatchingRepository::mapRow);
+        final String sql = buildSql(tableName, model.getDimensions(),
+            lexicalCandidateScoresSql, constraintJoinsAndWhereSql);
+        return jdbc.query(sql, parameters, CandidateMatchingRepository::mapRow);
     }
 
-    String buildSql(String embeddingTable, int dimensions) {
+    String buildSql(String embeddingTable, int dimensions,
+        String lexicalCandidateScoresSql, String constraintJoinsAndWhereSql) {
         validateTableName(embeddingTable);
         if (dimensions <= 0) {
             throw new IllegalArgumentException("Embedding dimensions must be positive");
@@ -67,24 +70,14 @@ public class CandidateMatchingRepository {
         // only after syntax and configured-model allow-list validation.
         return """
             WITH parameters AS (
-                SELECT websearch_to_tsquery('english', :queryText) AS text_query
-            ),
-            lexical_experience_results AS (
-                SELECT cje.id AS experience_id,
-                       cje.candidate_id,
-                       ts_rank_cd(cje.ts, p.text_query) AS lexical_score
-                FROM candidate_job_experience cje
-                JOIN candidate_occupation co ON co.id = cje.candidate_occupation_id
-                CROSS JOIN parameters p
-                WHERE co.occupation_id = :occupationId
-                  AND cje.ts @@ p.text_query
-                ORDER BY lexical_score DESC, cje.id
-                LIMIT :lexicalExperienceLimit
+                SELECT to_tsquery('english', :queryText) AS text_query
             ),
             lexical_candidate_scores AS (
-                SELECT candidate_id, MAX(lexical_score) AS lexical_score
-                FROM lexical_experience_results
-                GROUP BY candidate_id
+            """
+                +
+                lexicalCandidateScoresSql
+                +
+            """
             ),
             lexical_candidates AS (
                 SELECT candidate_id, lexical_score,
@@ -107,8 +100,12 @@ public class CandidateMatchingRepository {
                 FROM semantic_pool sp
                 JOIN candidate_job_experience cje
                   ON cje.id = sp.candidate_job_experience_id
-                JOIN candidate_occupation co ON co.id = cje.candidate_occupation_id
-                WHERE co.occupation_id = :occupationId
+                JOIN candidate on cje.candidate_id = candidate.id
+            """.formatted(dimensions, embeddingTable, dimensions)
+                +
+                constraintJoinsAndWhereSql
+                +
+            """
                 GROUP BY cje.candidate_id
             ),
             semantic_candidates AS (
@@ -138,7 +135,7 @@ public class CandidateMatchingRepository {
             FROM fused_candidates
             ORDER BY rrf_score DESC, candidate_id
             LIMIT :finalResultLimit
-            """.formatted(dimensions, embeddingTable, dimensions);
+            """;
     }
 
     private String configuredTableName() {
