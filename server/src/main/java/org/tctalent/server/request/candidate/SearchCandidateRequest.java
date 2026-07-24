@@ -39,6 +39,39 @@ import org.tctalent.server.request.PagedSearchRequest;
 @ToString(callSuper = true)
 public class SearchCandidateRequest extends PagedSearchRequest {
 
+    /**
+     * This is text that describes in natural language the candidates that we are looking for.
+     * In the context of job matching, it would correspond to the job description, but it could
+     * also be used for other purposes. It is a textual representation of the requirements or
+     * criteria that the candidates must meet.
+     */
+    private String requirementsDescription;
+
+    /**
+     * When a {@link #requirementsDescription} is present, it is used to filter the candidates
+     * in two ways:
+     * <ul>
+     *     <li>
+     *         Lexically: based on matched keywords in the description, in particular required
+     *         skills, with each candidate's skills as they appear in their job experiences.
+     *     </li>
+     *     <li>
+     *         Semantically: based on semantic similarity between the description
+     *         and each candidate's various job experiences. Vector embeddings are used to detect
+     *         that semantic similarity.
+     *     </li>
+     * </ul>
+     * <p>
+     *   This lexicalScoreProportion parameter defines how much weight to give to lexical and
+     *   semantic matches.
+     *   It is a float value between 0 and 1, where 0 means that the lexical score will not be used
+     *   at all and 1 means that it will be used completely. The semantic score proportion will be
+     *   1 minus the lexical score proportion.
+     *   So a value of 0.5 means that lexical and semantic scores will be given equal weight.
+     * </p>
+     */
+    private float lexicalScoreProportion;
+
     private String simpleQueryString;
     @NotNull
     private Long savedSearchId;

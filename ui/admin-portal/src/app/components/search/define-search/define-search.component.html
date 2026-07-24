@@ -126,6 +126,50 @@
             <div class="mb-3 col-md-6">
               <!-- providing 'placement' as an empty string makes the tooltip appear over the
               element in a suitable direction for the viewport -->
+              <tc-label size="sm" class="form-label" for="requirements">Requirements</tc-label>
+              <tc-button [type]="'plain'"
+                         class="tool-tip-button"
+                         ngbTooltip="This is a free text field that allows you to specify the candidate experience you are looking for."
+                         placement="bottom top"
+                         triggers="click"
+                         tooltipClass="search-tips keyword"
+                         [stopNativeClickPropagation]="false"
+              >
+                <i class="fa-regular fa-circle-question fa-xs"></i>
+              </tc-button>
+              <tc-input id="requirements"
+                        type="text"
+                        placeholder='For example, a job description'
+                        aria-label="Requirements"
+                        formControlName="requirementsDescription"
+              ></tc-input>
+            </div>
+
+            <!-- Lexical vs Semantic importance -->
+            <div class="mb-3 col-md-6">
+              <tc-label size="sm" class="form-label" for="lexicalScoreProportion">Lexical vs Semantic importance when matching requirements</tc-label>
+              <tc-button [type]="'plain'"
+                         class="tool-tip-button"
+                         ngbTooltip="Enter a value between 0 and 1. The default is 0.5 which means that the lexical score is equally important as the semantic score."
+                         triggers="click"
+                         tooltipClass="search-tips"
+                         placement="bottom top"
+                         [stopNativeClickPropagation]="false"
+              >
+                <i class="fa-regular fa-circle-question fa-xs"></i>
+              </tc-button>
+
+              <tc-input
+                id="lexicalScoreProportion"
+                type="number"
+                formControlName="lexicalScoreProportion"
+              ></tc-input>
+            </div>
+          </div>
+          <div class="row">
+            <div class="mb-3 col-md-6">
+              <!-- providing 'placement' as an empty string makes the tooltip appear over the
+              element in a suitable direction for the viewport -->
               <tc-label size="sm" class="form-label" for="simpleQueryString">Keyword Search</tc-label>
               <tc-button [type]="'plain'"
                          class="tool-tip-button"
