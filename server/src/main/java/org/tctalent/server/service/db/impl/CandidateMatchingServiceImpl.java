@@ -18,6 +18,23 @@ public class CandidateMatchingServiceImpl implements CandidateMatchingService {
 
     @Override
     public List<CandidateMatchingResult> match(CandidateMatchingRequest request) {
-        return candidateMatchingRepository.match(request);
+        String lexicalCandidateScoresSql = """
+select distinct candidate.id as candidate_id,
+ts_rank(candidate.ts_text,to_tsquery('english','welder')) as lexical_score
+from candidate left join users on candidate.user_id = users.id
+where candidate.ts_text @@ to_tsquery('english','welder')
+  and candidate.status in ('active','incomplete','ineligibleReview','pending','unreachable')
+  and candidate.id not in (select candidate_id from candidate_saved_list where saved_list_id = 71)
+  and users.partner_id in (10002,1,4,7,10003,5,6,8,3,10004)
+order by lexical_score DESC,candidate.id DESC;
+            """;
+
+        String constraintJoinsAndWhereSql = """
+left join candidate_occupation on candidate.id = candidate_occupation.candidate_id
+WHERE candidate_occupation.occupation_id in (:occupationId)
+            """;
+        //TODO JC Compute the special sql
+        return candidateMatchingRepository.match(
+            request, lexicalCandidateScoresSql, constraintJoinsAndWhereSql);
     }
 }
