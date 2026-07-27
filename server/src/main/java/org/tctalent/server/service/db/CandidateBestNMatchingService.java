@@ -42,6 +42,13 @@ public interface CandidateBestNMatchingService {
      */
     List<CandidateBestNMatchingResult> match(CandidateBestNMatchingRequest request);
 
+    /**
+     * Returns the best candidate matches corresponding to the given search request.
+     * @param request Request that candidates are matched against.
+     * @return Sorted results with the best match first.
+     * @throws UnsupportedOperationException if the request does not contain a non empty
+     * {@link SearchCandidateRequest#getRequirementsDescription()}
+     */
     Page<CandidateReadDto> match(SearchCandidateRequest request);
 
 }

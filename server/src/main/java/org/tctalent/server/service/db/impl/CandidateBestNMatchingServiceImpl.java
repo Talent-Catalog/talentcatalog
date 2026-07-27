@@ -69,6 +69,10 @@ WHERE candidate_occupation.occupation_id in (:occupationId)
         List<CandidateBestNMatchingResult> results = candidateBestNMatchingRepository.match(
             matchingRequest, lexicalCandidateScoresSql, constraintJoinsAndWhereSql);
 
+        //TODO JC Fetch candidate Dtos
+
+        //TODO JC Populate ranks and explanations
+
         throw new UnsupportedOperationException("NotImplemented match");
     }
 }
