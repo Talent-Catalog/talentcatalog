@@ -12,8 +12,8 @@ import org.tctalent.server.service.embedding.TcVectorEmbeddingService;
 import org.tctalent.server.service.embedding.dto.EmbeddingConfigurationVersion;
 import org.tctalent.server.service.embedding.dto.EmbeddingInput;
 import org.tctalent.server.service.embedding.dto.EmbeddingModelDetails;
-import org.tctalent.server.service.embedding.dto.GenerateEmbeddingsRequest;
-import org.tctalent.server.service.embedding.dto.GenerateEmbeddingsResponse;
+import org.tctalent.server.service.embedding.dto.EmbeddingsRequest;
+import org.tctalent.server.service.embedding.dto.EmbeddingsResponse;
 import org.tctalent.server.service.embedding.dto.TcVectorEmbeddingServiceClient;
 
 @Slf4j
@@ -26,7 +26,7 @@ public class TcVectorEmbeddingServiceImpl implements TcVectorEmbeddingService {
 //    private final EmbeddingModelDetailsMapper embeddingModelDetailsMapper;
 
     @Override
-    public @NonNull GenerateEmbeddingsResponse generateEmbeddings(
+    public @NonNull EmbeddingsResponse generateEmbeddings(
         String modelKey, Map<String, String> sourceTexts) {
         EmbeddingModel embeddingModel = embeddingModelRepository.findByModelKey(modelKey);
 
@@ -44,7 +44,7 @@ public class TcVectorEmbeddingServiceImpl implements TcVectorEmbeddingService {
                 .build())
             .toList();
 
-        GenerateEmbeddingsRequest request = GenerateEmbeddingsRequest.builder()
+        EmbeddingsRequest request = EmbeddingsRequest.builder()
             .model(modelDetails)
             .inputs(inputs)
             .build();

@@ -19,7 +19,7 @@ public interface TcVectorEmbeddingServiceClient {
      */
     @PostExchange("/embeddings")
     @NotNull
-    GenerateEmbeddingsResponse generateEmbeddings(
-        @Valid @RequestBody GenerateEmbeddingsRequest request
+    EmbeddingsResponse generateEmbeddings(
+        @Valid @RequestBody EmbeddingsRequest request
     );
 }

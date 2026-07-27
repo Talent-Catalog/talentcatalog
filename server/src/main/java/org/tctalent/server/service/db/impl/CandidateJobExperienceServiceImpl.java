@@ -48,7 +48,7 @@ import org.tctalent.server.service.db.CandidateService;
 import org.tctalent.server.service.db.SkillsService;
 import org.tctalent.server.service.embedding.TcVectorEmbeddingService;
 import org.tctalent.server.service.embedding.dto.EmbeddingResult;
-import org.tctalent.server.service.embedding.dto.GenerateEmbeddingsResponse;
+import org.tctalent.server.service.embedding.dto.EmbeddingsResponse;
 import org.tctalent.server.util.text.TextParts;
 import org.tctalent.server.util.text.TextPartsCodec;
 
@@ -184,7 +184,7 @@ public class CandidateJobExperienceServiceImpl implements CandidateJobExperience
             descriptionsById.put(experience.getId().toString(), experience.getDescription());
         });
 
-        final GenerateEmbeddingsResponse response =
+        final EmbeddingsResponse response =
             tcVectorEmbeddingService.generateEmbeddings(modelKey, descriptionsById);
 
         final List<EmbeddingResult> results = response.getResults();
