@@ -82,18 +82,18 @@ describe('VerifyPlusComponent', () => {
   });
 
   it('should set submitError and capture message when confirm fails', () => {
+    const payload = '{"v":"mock-2","unhcrId":"123-45C67890"}';
     const errorMessage = 'Unsupported Verify+ payload version: mock-2';
 
-    component.onScanned('{"v":"mock-2","unhcrId":"123-45C67890"}');
+    component.onScanned(payload);
+
     verifyPlusService.submitScan.and.returnValue(
       throwError(errorMessage)
     );
 
     component.onConfirm();
 
-    expect(verifyPlusService.submitScan).toHaveBeenCalledWith(
-      '{"v":"mock-2","unhcrId":"123-45C67890"}'
-    );
+    expect(verifyPlusService.submitScan).toHaveBeenCalledWith(payload);
     expect(component.submitError).toBeTrue();
     expect(component.submitErrorMessage).toBe(errorMessage);
     expect(component.submitting).toBeFalse();
