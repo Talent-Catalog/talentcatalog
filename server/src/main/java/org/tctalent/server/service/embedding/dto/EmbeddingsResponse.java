@@ -17,7 +17,7 @@ import lombok.extern.jackson.Jacksonized;
 @Value
 @Builder
 @Jacksonized
-public class GenerateEmbeddingsResponse {
+public class EmbeddingsResponse {
 
     @NotNull
     @Valid

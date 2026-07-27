@@ -2,8 +2,8 @@
  * Copyright (c) 2026 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
- *  the terms of the GNU General Public License as published by the Free
- *  Software Foundation, either version 3 of the License, or any later version.
+ * the terms of the GNU General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or any later version.
  *
  * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
@@ -13,6 +13,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
+
 
 package org.tctalent.server.service.db.util;
 
@@ -26,7 +27,6 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.lang.reflect.Method;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -44,7 +44,7 @@ import org.thymeleaf.context.Context;
 class CvTemplateHelperTest {
 
   @Mock
-  private TemplateEngine pdfTemplateEngine;
+  private TemplateEngine cvTemplateEngine;
 
   @Mock
   private TcInstanceService tcInstanceService;
@@ -59,16 +59,12 @@ class CvTemplateHelperTest {
 
   @BeforeEach
   void setUp() {
-    helper = new CvTemplateHelper(
-        pdfTemplateEngine,
-        tcInstanceService,
-        candidateTidiedTextViewFactory,
-        cvExportDataPreparer
-    );
+    helper = new CvTemplateHelper(cvTemplateEngine, tcInstanceService,
+        candidateTidiedTextViewFactory, cvExportDataPreparer);
   }
 
   @Test
-  void renderCvXhtmlPreparesCandidateSetsTemplateVariablesConvertsToXhtmlAndRemovesNullBytes() {
+  void renderCvXhtmlPreparesCandidateSetsTemplateVariablesAndRemovesNullBytes() {
     Candidate originalCandidate = new Candidate();
     Candidate preparedCandidate = new Candidate();
     Candidate candidateView = new Candidate();
@@ -76,9 +72,9 @@ class CvTemplateHelperTest {
     when(cvExportDataPreparer.prepare(originalCandidate, true)).thenReturn(preparedCandidate);
     when(candidateTidiedTextViewFactory.create(preparedCandidate)).thenReturn(candidateView);
     when(tcInstanceService.getLogoFile()).thenReturn("tbblogo.png");
-    when(pdfTemplateEngine.process(eq("template"), any(Context.class))).thenReturn(
-        "<html><body><p>Hello CV\u0000</p></body></html>"
-    );
+
+    when(cvTemplateEngine.process(eq("cvTemplate"), any(Context.class))).thenReturn(
+        "<html><body><p>Hello CV\u0000</p></body></html>");
 
     String result = helper.renderCvXhtml(originalCandidate, true, true);
 
@@ -91,7 +87,8 @@ class CvTemplateHelperTest {
     verify(tcInstanceService).getLogoFile();
 
     ArgumentCaptor<Context> contextCaptor = ArgumentCaptor.forClass(Context.class);
-    verify(pdfTemplateEngine).process(eq("template"), contextCaptor.capture());
+
+    verify(cvTemplateEngine).process(eq("cvTemplate"), contextCaptor.capture());
 
     Context context = contextCaptor.getValue();
 
@@ -110,87 +107,62 @@ class CvTemplateHelperTest {
     when(cvExportDataPreparer.prepare(originalCandidate, false)).thenReturn(preparedCandidate);
     when(candidateTidiedTextViewFactory.create(preparedCandidate)).thenReturn(candidateView);
     when(tcInstanceService.getLogoFile()).thenReturn("grnlogo.png");
-    when(pdfTemplateEngine.process(eq("template"), any(Context.class))).thenReturn(
-        "<html><body><p>No contact CV</p></body></html>"
-    );
+
+    when(cvTemplateEngine.process(eq("cvTemplate"), any(Context.class))).thenReturn(
+        "<html><body><p>No contact CV</p></body></html>");
 
     String result = helper.renderCvXhtml(originalCandidate, false, false);
 
     assertTrueContains(result, "No contact CV");
 
+    verify(cvExportDataPreparer).prepare(originalCandidate, false);
+
     ArgumentCaptor<Context> contextCaptor = ArgumentCaptor.forClass(Context.class);
-    verify(pdfTemplateEngine).process(eq("template"), contextCaptor.capture());
+
+    verify(cvTemplateEngine).process(eq("cvTemplate"), contextCaptor.capture());
 
     Context context = contextCaptor.getValue();
 
+    assertSame(candidateView, context.getVariable("candidate"));
     assertEquals(false, context.getVariable("showName"));
     assertEquals(false, context.getVariable("showContact"));
     assertEquals("grnlogo.png", context.getVariable("logoFile"));
   }
 
   @Test
-  void renderCvXhtmlWrapsFailureInCvGenerationException() {
+  void renderCvXhtmlWrapsPreparationFailureInCvGenerationException() {
     Candidate candidate = new Candidate();
 
-    when(cvExportDataPreparer.prepare(candidate, true))
-        .thenThrow(new RuntimeException("prepare failed"));
+    when(cvExportDataPreparer.prepare(candidate, true)).thenThrow(
+        new RuntimeException("prepare failed"));
 
-    CvGenerationException exception = assertThrows(
-        CvGenerationException.class,
-        () -> helper.renderCvXhtml(candidate, true, true)
-    );
+    CvGenerationException exception = assertThrows(CvGenerationException.class,
+        () -> helper.renderCvXhtml(candidate, true, true));
 
     assertEquals("prepare failed", exception.getMessage());
   }
 
   @Test
-  void convertToXhtmlConvertsHtmlToXhtml() throws Exception {
-    String result = invokeString(
-        new Class<?>[] {String.class},
-        "<html><body><p>Hello <strong>World</strong></p></body></html>"
-    );
+  void renderCvXhtmlWrapsTemplateFailureInCvGenerationException() {
+    Candidate candidate = new Candidate();
+    Candidate preparedCandidate = new Candidate();
+    Candidate candidateView = new Candidate();
 
-    assertNotNull(result);
-    assertTrueContains(result, "Hello");
-    assertTrueContains(result, "World");
-    assertTrueContains(result, "<!DOCTYPE html");
-  }
+    when(cvExportDataPreparer.prepare(candidate, true)).thenReturn(preparedCandidate);
+    when(candidateTidiedTextViewFactory.create(preparedCandidate)).thenReturn(candidateView);
+    when(tcInstanceService.getLogoFile()).thenReturn("tbblogo.png");
 
-  @Test
-  void convertToXhtmlThrowsCvGenerationExceptionWhenHtmlIsNull() {
-    CvGenerationException exception = assertThrows(
-        CvGenerationException.class,
-        () -> invokeString(new Class<?>[] {String.class}, (Object) null)
-    );
+    when(cvTemplateEngine.process(eq("cvTemplate"), any(Context.class))).thenThrow(
+        new RuntimeException("template failed"));
 
-    assertNotNull(exception.getMessage());
-  }
+    CvGenerationException exception = assertThrows(CvGenerationException.class,
+        () -> helper.renderCvXhtml(candidate, true, true));
 
-  private String invokeString(Class<?>[] parameterTypes, Object... args)
-      throws Exception {
-    Object result = invoke(parameterTypes, args);
-    return result == null ? null : (String) result;
-  }
-
-  private Object invoke(Class<?>[] parameterTypes, Object... args)
-      throws Exception {
-    Method method = CvTemplateHelper.class.getDeclaredMethod("convertToXhtml", parameterTypes);
-    method.setAccessible(true);
-
-    try {
-      return method.invoke(helper, args);
-    } catch (java.lang.reflect.InvocationTargetException e) {
-      if (e.getCause() instanceof RuntimeException runtimeException) {
-        throw runtimeException;
-      }
-      throw e;
-    }
+    assertEquals("template failed", exception.getMessage());
   }
 
   private void assertTrueContains(String actual, String expectedPart) {
-    org.junit.jupiter.api.Assertions.assertTrue(
-        actual.contains(expectedPart),
-        "Expected text to contain: " + expectedPart + "\nActual text:\n" + actual
-    );
+    org.junit.jupiter.api.Assertions.assertTrue(actual.contains(expectedPart),
+        "Expected text to contain: " + expectedPart + "\nActual text:\n" + actual);
   }
 }

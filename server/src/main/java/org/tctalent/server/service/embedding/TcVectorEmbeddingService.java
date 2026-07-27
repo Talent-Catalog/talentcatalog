@@ -6,7 +6,7 @@ package org.tctalent.server.service.embedding;
 
 import java.util.Map;
 import org.springframework.lang.NonNull;
-import org.tctalent.server.service.embedding.dto.GenerateEmbeddingsResponse;
+import org.tctalent.server.service.embedding.dto.EmbeddingsResponse;
 
 /**
  * Service interface for generating vector embeddings from source texts.
@@ -25,5 +25,5 @@ public interface TcVectorEmbeddingService {
      * @return A response containing the generated embeddings and any associated errors.
      */
     @NonNull
-    GenerateEmbeddingsResponse generateEmbeddings(String modelKey, Map<String, String> sourceTexts);
+    EmbeddingsResponse generateEmbeddings(String modelKey, Map<String, String> sourceTexts);
 }
