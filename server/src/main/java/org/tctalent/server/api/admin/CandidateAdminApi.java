@@ -33,6 +33,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.NonNull;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -86,6 +87,7 @@ import org.tctalent.server.request.chat.FetchCandidatesWithChatRequest;
 import org.tctalent.server.response.EraseCandidateResponse;
 import org.tctalent.server.security.CandidateTokenProvider;
 import org.tctalent.server.security.CvClaims;
+import org.tctalent.server.service.db.CandidateBestNMatchingService;
 import org.tctalent.server.service.db.CandidateErasureService;
 import org.tctalent.server.service.db.CandidateOpportunityService;
 import org.tctalent.server.service.db.CandidateSavedListService;
@@ -101,6 +103,7 @@ import org.tctalent.server.util.dto.DtoBuilder;
 public class CandidateAdminApi {
 
     private final CandidateService candidateService;
+    private final CandidateBestNMatchingService candidateBestNMatchingService;
     private final CandidateOpportunityService candidateOpportunityService;
     private final CandidateSavedListService candidateSavedListService;
     private final CandidateBuilderSelector builderSelector;
@@ -112,7 +115,14 @@ public class CandidateAdminApi {
 
     @PostMapping("search")
     public Map<String, Object> search(@RequestBody SearchCandidateRequest request) {
-        Page<CandidateReadDto> candidates = savedSearchService.searchCandidateDtos(request);
+        Page<CandidateReadDto> candidates;
+        if (StringUtils.hasText(request.getRequirementsDescription())) {
+            //Any text in the requirementsDescription flags a BestN matching.
+            //Note that results of BestN matching can still be paged.
+            candidates = candidateBestNMatchingService.match(request);
+        } else {
+            candidates = savedSearchService.searchCandidateDtos(request);
+        }
 
         long start = System.currentTimeMillis();
         long end;

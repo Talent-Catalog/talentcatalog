@@ -16,7 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.tctalent.server.configuration.properties.VectorEmbeddingModelProperties;
 import org.tctalent.server.model.db.embedding.EmbeddingModel;
 import org.tctalent.server.repository.db.EmbeddingModelRepository;
-import org.tctalent.server.request.candidate.matching.CandidateMatchingRequest;
+import org.tctalent.server.request.candidate.matching.CandidateBestNMatchingRequest;
 
 /**
  * Executes candidate matching with JDBC because the PostgreSQL-specific CTEs, full-text operators,
@@ -25,8 +25,13 @@ import org.tctalent.server.request.candidate.matching.CandidateMatchingRequest;
 @Repository
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-public class CandidateMatchingRepository {
+public class CandidateBestNMatchingRepository {
 
+    //This is the most comon standard for K in Reciprocal Rank Fusion.
+    //We will standardize on it.
+    private static final int RRF_K = 60;
+
+    //TODO JC This should com from config
     static final String PRIMARY_EMBEDDING_TABLE =
         "job_experience_embedding_minilm_l6_spacy_v3";
     private static final Pattern SAFE_IDENTIFIER = Pattern.compile("[a-z][a-z0-9_]*");
@@ -35,28 +40,26 @@ public class CandidateMatchingRepository {
     private final VectorEmbeddingModelProperties embeddingProperties;
     private final EmbeddingModelRepository embeddingModelRepository;
 
-    public List<CandidateMatchingResult> match(CandidateMatchingRequest request,
+    public List<CandidateBestNMatchingResult> match(CandidateBestNMatchingRequest request,
     String lexicalCandidateScoresSql, String constraintJoinsAndWhereSql) {
         String tableName = configuredTableName();
         EmbeddingModel model = configuredModel();
         validate(request, tableName, model.getDimensions());
 
         MapSqlParameterSource parameters = new MapSqlParameterSource()
-            .addValue("queryText", request.getQueryText())
+            .addValue("queryText", request.getSimpleQueryString())
             .addValue("queryEmbedding", toVectorLiteral(request.getQueryEmbedding()))
             .addValue("occupationId", request.getOccupationId())
             .addValue("lexicalWeight", request.getLexicalWeight())
             .addValue("semanticWeight", request.getSemanticWeight())
-            .addValue("rrfK", request.getRrfK())
-            .addValue("lexicalExperienceLimit", request.getLexicalExperienceLimit())
-            .addValue("lexicalCandidateLimit", request.getLexicalCandidateLimit())
+            .addValue("rrfK", RRF_K)
+            .addValue("candidateLimit", request.getCandidateLimit())
             .addValue("semanticPoolSize", request.getSemanticPoolSize())
-            .addValue("semanticCandidateLimit", request.getSemanticCandidateLimit())
-            .addValue("finalResultLimit", request.getFinalResultLimit());
+            .addValue("resultLimit", request.getResultLimit());
 
         final String sql = buildSql(tableName, model.getDimensions(),
             lexicalCandidateScoresSql, constraintJoinsAndWhereSql);
-        return jdbc.query(sql, parameters, CandidateMatchingRepository::mapRow);
+        return jdbc.query(sql, parameters, CandidateBestNMatchingRepository::mapRow);
     }
 
     String buildSql(String embeddingTable, int dimensions,
@@ -75,6 +78,7 @@ public class CandidateMatchingRepository {
             lexical_candidate_scores AS (
             """
                 +
+            //todo This SQL needs to return candidate_id, lexical_score. Confirm that it does.
                 lexicalCandidateScoresSql
                 +
             """
@@ -84,7 +88,7 @@ public class CandidateMatchingRepository {
                        ROW_NUMBER() OVER (ORDER BY lexical_score DESC, candidate_id) AS lexical_rank
                 FROM lexical_candidate_scores
                 ORDER BY lexical_score DESC, candidate_id
-                LIMIT :lexicalCandidateLimit
+                LIMIT :candidateLimit
             ),
             semantic_pool AS (
                 -- Deliberately no join or occupation predicate here: this exact nearest-neighbour
@@ -114,7 +118,7 @@ public class CandidateMatchingRepository {
                            AS semantic_rank
                 FROM semantic_candidate_scores
                 ORDER BY semantic_score DESC, candidate_id
-                LIMIT :semanticCandidateLimit
+                LIMIT :candidateLimit
             ),
             fused_candidates AS (
                 SELECT COALESCE(lc.candidate_id, sc.candidate_id) AS candidate_id,
@@ -134,7 +138,7 @@ public class CandidateMatchingRepository {
                    lexical_score, semantic_score, rrf_score
             FROM fused_candidates
             ORDER BY rrf_score DESC, candidate_id
-            LIMIT :finalResultLimit
+            LIMIT :resultLimit
             """;
     }
 
@@ -155,7 +159,7 @@ public class CandidateMatchingRepository {
         return model;
     }
 
-    private void validate(CandidateMatchingRequest request, String tableName, int dimensions) {
+    private void validate(CandidateBestNMatchingRequest request, String tableName, int dimensions) {
         if (request == null) {
             throw new IllegalArgumentException("Matching request is required");
         }
@@ -166,7 +170,7 @@ public class CandidateMatchingRepository {
             && !tableName.equals(embeddingProperties.getAlternateEmbeddingTable())) {
             throw new IllegalArgumentException("Embedding table is not configured: " + tableName);
         }
-        if (request.getQueryText() == null || request.getQueryText().isBlank()) {
+        if (request.getSimpleQueryString() == null || request.getSimpleQueryString().isBlank()) {
             throw new IllegalArgumentException("Query text is required");
         }
         if (request.getOccupationId() == null) {
@@ -183,10 +187,19 @@ public class CandidateMatchingRepository {
         if (embedding.stream().anyMatch(value -> value == null || !Double.isFinite(value))) {
             throw new IllegalArgumentException("Query embedding values must be finite");
         }
-        if (request.getRrfK() < 0 || request.getLexicalExperienceLimit() <= 0
-            || request.getLexicalCandidateLimit() <= 0 || request.getSemanticPoolSize() <= 0
-            || request.getSemanticCandidateLimit() <= 0 || request.getFinalResultLimit() <= 0) {
-            throw new IllegalArgumentException("RRF constant must be non-negative and limits positive");
+        if (request.getCandidateLimit() <= 0 || request.getSemanticPoolSize() <= 0
+            || request.getResultLimit() <= 0) {
+            throw new IllegalArgumentException("Limits must be positive");
+        }
+        if (request.getSemanticPoolSize() < request.getCandidateLimit()) {
+            throw new IllegalArgumentException(
+                "Semantic pool size must be greater than result limit"
+            );
+        }
+        if (request.getCandidateLimit() < request.getResultLimit()) {
+            throw new IllegalArgumentException(
+                "Candidate limit should be greater than result limit"
+            );
         }
         if (!Double.isFinite(request.getLexicalWeight())
             || !Double.isFinite(request.getSemanticWeight())
@@ -207,13 +220,13 @@ public class CandidateMatchingRepository {
             .collect(Collectors.joining(",", "[", "]"));
     }
 
-    private static CandidateMatchingResult mapRow(ResultSet resultSet, int rowNumber)
+    private static CandidateBestNMatchingResult mapRow(ResultSet resultSet, int rowNumber)
         throws SQLException {
         Number lexicalRank = (Number) resultSet.getObject("lexical_rank");
         Number semanticRank = (Number) resultSet.getObject("semantic_rank");
         Number lexicalScore = (Number) resultSet.getObject("lexical_score");
         Number semanticScore = (Number) resultSet.getObject("semantic_score");
-        return CandidateMatchingResult.builder()
+        return CandidateBestNMatchingResult.builder()
             .candidateId(resultSet.getLong("candidate_id"))
             .lexicalRank(lexicalRank == null ? null : lexicalRank.intValue())
             .semanticRank(semanticRank == null ? null : semanticRank.intValue())

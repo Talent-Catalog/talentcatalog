@@ -30,6 +30,7 @@ import org.tctalent.server.model.db.CandidateFilterByOpps;
 import org.tctalent.server.model.db.CandidateStatus;
 import org.tctalent.server.model.db.Gender;
 import org.tctalent.server.model.db.ReviewStatus;
+import org.tctalent.server.model.db.SavedSearch;
 import org.tctalent.server.model.db.SearchType;
 import org.tctalent.server.model.db.UnhcrStatus;
 import org.tctalent.server.request.PagedSearchRequest;
@@ -72,7 +73,11 @@ public class SearchCandidateRequest extends PagedSearchRequest {
      */
     private float lexicalScoreProportion;
 
+    /**
+     * @see SavedSearch#getSimpleQueryString()
+     */
     private String simpleQueryString;
+
     @NotNull
     private Long savedSearchId;
     private String keyword;

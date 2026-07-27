@@ -19,14 +19,14 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.tctalent.server.configuration.properties.VectorEmbeddingModelProperties;
 import org.tctalent.server.model.db.embedding.EmbeddingModel;
 import org.tctalent.server.repository.db.EmbeddingModelRepository;
-import org.tctalent.server.request.candidate.matching.CandidateMatchingRequest;
+import org.tctalent.server.request.candidate.matching.CandidateBestNMatchingRequest;
 
-class CandidateMatchingRepositoryTest {
+class CandidateBestNMatchingRepositoryTest {
 
     private NamedParameterJdbcTemplate jdbc;
     private VectorEmbeddingModelProperties properties;
     private EmbeddingModelRepository modelRepository;
-    private CandidateMatchingRepository repository;
+    private CandidateBestNMatchingRepository repository;
 
     @BeforeEach
     void setUp() {
@@ -35,18 +35,18 @@ class CandidateMatchingRepositoryTest {
         properties.setEmbeddingModelKey("MINILM_L6_SPACY_V3");
         properties.setAlternateEmbeddingModelKey("MINILM_L6_SPACY_V3");
         properties.setAlternateEmbeddingTable(
-            CandidateMatchingRepository.PRIMARY_EMBEDDING_TABLE);
+            CandidateBestNMatchingRepository.PRIMARY_EMBEDDING_TABLE);
         modelRepository = mock(EmbeddingModelRepository.class);
         EmbeddingModel model = new EmbeddingModel();
         model.setDimensions(3);
         when(modelRepository.findByModelKey("MINILM_L6_SPACY_V3")).thenReturn(model);
-        repository = new CandidateMatchingRepository(jdbc, properties, modelRepository);
+        repository = new CandidateBestNMatchingRepository(jdbc, properties, modelRepository);
     }
 
     @Test
     void sqlCollapsesExperiencesToCandidatesUsingBestScore() {
         String sql = repository.buildSql(
-            CandidateMatchingRepository.PRIMARY_EMBEDDING_TABLE, 3,
+            CandidateBestNMatchingRepository.PRIMARY_EMBEDDING_TABLE, 3,
             "", "");
 
         assertThat(sql)
@@ -58,7 +58,7 @@ class CandidateMatchingRepositoryTest {
     @Test
     void semanticPoolPreservesHnswFriendlyShapeBeforeFiltering() {
         String sql = repository.buildSql(
-            CandidateMatchingRepository.PRIMARY_EMBEDDING_TABLE, 3,
+            CandidateBestNMatchingRepository.PRIMARY_EMBEDDING_TABLE, 3,
             "", "");
         String pool = sql.substring(sql.indexOf("semantic_pool AS"),
             sql.indexOf("semantic_candidate_scores AS"));
@@ -127,11 +127,11 @@ class CandidateMatchingRepositoryTest {
         when(rs.getDouble("rrf_score")).thenReturn(0.02);
         when(jdbc.query(anyString(), any(MapSqlParameterSource.class), any(RowMapper.class)))
             .thenAnswer(invocation -> {
-                RowMapper<CandidateMatchingResult> mapper = invocation.getArgument(2);
+                RowMapper<CandidateBestNMatchingResult> mapper = invocation.getArgument(2);
                 return List.of(mapper.mapRow(rs, 0));
             });
 
-        CandidateMatchingResult result = repository.match(
+        CandidateBestNMatchingResult result = repository.match(
             request(List.of(0.1, 0.2, 0.3)), "", "").get(0);
 
         assertThat(result.getLexicalRank()).isNull();
@@ -142,34 +142,31 @@ class CandidateMatchingRepositoryTest {
 
     @Test
     void finalOrderingIsDeterministicForTiedScores() {
-        List<CandidateMatchingResult> results = new ArrayList<>(List.of(
+        List<CandidateBestNMatchingResult> results = new ArrayList<>(List.of(
             result(9, 0.1), result(2, 0.1), result(5, 0.2)));
 
-        results.sort(Comparator.comparingDouble(CandidateMatchingResult::getRrfScore)
-            .reversed().thenComparingLong(CandidateMatchingResult::getCandidateId));
+        results.sort(Comparator.comparingDouble(CandidateBestNMatchingResult::getRrfScore)
+            .reversed().thenComparingLong(CandidateBestNMatchingResult::getCandidateId));
 
-        assertThat(results).extracting(CandidateMatchingResult::getCandidateId)
+        assertThat(results).extracting(CandidateBestNMatchingResult::getCandidateId)
             .containsExactly(5L, 2L, 9L);
     }
 
-    private CandidateMatchingRequest request(List<Double> embedding) {
-        return CandidateMatchingRequest.builder()
-            .queryText("java engineer")
+    private CandidateBestNMatchingRequest request(List<Double> embedding) {
+        return CandidateBestNMatchingRequest.builder()
+            .simpleQueryString("java engineer")
             .queryEmbedding(embedding)
             .occupationId(7L)
             .lexicalWeight(1)
             .semanticWeight(1)
-            .rrfK(60)
-            .lexicalExperienceLimit(100)
-            .lexicalCandidateLimit(20)
+            .candidateLimit(20)
             .semanticPoolSize(200)
-            .semanticCandidateLimit(20)
-            .finalResultLimit(10)
+            .resultLimit(10)
             .build();
     }
 
-    private static CandidateMatchingResult result(long candidateId, double score) {
-        return CandidateMatchingResult.builder()
+    private static CandidateBestNMatchingResult result(long candidateId, double score) {
+        return CandidateBestNMatchingResult.builder()
             .candidateId(candidateId)
             .rrfScore(score)
             .build();
