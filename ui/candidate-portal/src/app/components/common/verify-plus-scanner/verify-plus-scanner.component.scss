@@ -14,7 +14,7 @@
   color: #8b1f1f;
 }
 
-zxing-scanner {
+.camera-preview {
   display: block;
   width: 100%;
   max-width: 100%;
@@ -24,8 +24,16 @@ zxing-scanner {
   overflow: hidden;
 }
 
-:host ::ng-deep zxing-scanner video {
+.camera-preview[hidden] {
+  display: none;
+}
+
+.camera-preview video {
   width: 100%;
   height: 100%;
   object-fit: cover;
+}
+
+.capture-canvas {
+  display: none;
 }

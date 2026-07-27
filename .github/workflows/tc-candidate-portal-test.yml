@@ -1,0 +1,62 @@
+name: Candidate Portal Tests
+
+on:
+  pull_request:
+    branches:
+      - staging
+      - master
+    paths:
+      - 'ui/candidate-portal/**'
+      - '.github/workflows/tc-candidate-portal-test.yml'
+      - '.nvmrc'
+
+  push:
+    branches:
+      - '**'
+      - '!staging'
+      - '!master'
+    paths:
+      - 'ui/candidate-portal/**'
+      - '.github/workflows/tc-candidate-portal-test.yml'
+      - '.nvmrc'
+
+permissions:
+  contents: read
+
+jobs:
+  candidate-portal-tests:
+    name: Run Candidate Portal Angular Tests
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: ui/candidate-portal
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+          cache: npm
+          cache-dependency-path: ui/candidate-portal/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run Angular tests
+        run: npm run test -- --watch=false --browsers=ChromeHeadless
+        env:
+          CI: true
+
+      - name: Archive test results
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: candidate-portal-test-results
+          path: |
+            ui/candidate-portal/coverage
+            ui/candidate-portal/dist/test-results
+          if-no-files-found: ignore

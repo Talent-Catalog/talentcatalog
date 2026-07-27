@@ -1,14 +1,29 @@
-name: Run Angular Tests
-
+name: Admin Portal Tests
 on:
+  pull_request:
+    branches:
+      - staging
+      - master
+    paths:
+      - 'ui/admin-portal/**'
+      - '.github/workflows/tc-admin-portal-test.yml'
+      - '.nvmrc'
   push:
     branches:
       - '**'
       - '!staging' #Not execute the workflow on push to staging
       - '!master'  #Not execute the workflow on push to master
+    paths:
+      - 'ui/admin-portal/**'
+      - '.github/workflows/tc-admin-portal-test.yml'
+      - '.nvmrc'
+      
+permissions:
+  contents: read
 
 jobs:
-  test:
+  admin-portal-tests:
+    name: Run Admin Portal Angular Tests
     runs-on: ubuntu-latest
 
     steps:
@@ -26,7 +41,7 @@ jobs:
 
       # Step 3: Install project dependencies
       - name: Install dependencies
-        run: npm install
+        run: npm ci
         working-directory: ui/admin-portal
 
       # Step 4: Run Angular tests using Karma
