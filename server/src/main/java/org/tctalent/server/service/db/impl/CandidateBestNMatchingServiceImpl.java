@@ -57,10 +57,16 @@ WHERE candidate_occupation.occupation_id in (:occupationId)
         //TODO JC Generate embedding from description
         final List<Double> embedding = new ArrayList<>();
 
-        //TODO JC Construct a matching request from the Search request.
+        //TODO JC These params are fields taken from the search request.
+        int n = 50;
+        double lexicalWeight = 0.5;
         CandidateBestNMatchingRequest matchingRequest = CandidateBestNMatchingRequest.builder()
             .simpleQueryString(simpleQueryString)
             .queryEmbedding(embedding)
+            .lexicalWeight(lexicalWeight)
+            .resultLimit(n)
+            .candidateLimit(n*2)
+            .semanticPoolSize(n*10)
             .build();
 
         String lexicalCandidateScoresSql = "";

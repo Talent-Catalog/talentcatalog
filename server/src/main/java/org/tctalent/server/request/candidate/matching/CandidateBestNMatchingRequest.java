@@ -50,7 +50,7 @@ public class CandidateBestNMatchingRequest {
      *   want to match.
      * </p>
      * <p>
-     *     This is the "semantic" match. See {@link #getSemanticWeight()}
+     *     This is the "semantic" match.
      * </p>
      */
     List<Double> queryEmbedding;
@@ -60,7 +60,7 @@ public class CandidateBestNMatchingRequest {
      * A fraction between 0 and 1. Zero means that lexical matches are ignored.
      * </p>
      * <p>
-     * The {@link #getSemanticWeight()} is 1 - the lexical weight.
+     * The semanticWeight is 1 - the lexical weight.
      * </p>
      * <p>
      * In other words, lexicalWeight and semanticWeight should sum to 1.
@@ -69,21 +69,6 @@ public class CandidateBestNMatchingRequest {
      * </p>
      */
     double lexicalWeight;
-
-    /**
-     * <p>
-     * A fraction between 0 and 1. Zero means that semantic matches are ignored.
-     * </p>
-     * <p>
-     * The {@link #getLexicalWeight()} is 1 - the semantic weight.
-     * </p>
-     * <p>
-     * In other words, lexicalWeight and semanticWeight should sum to 1.
-     * So a weight of 0.5 indicates that lexical and semantic matches have equal weight in computing
-     * the final ranking.
-     * </p>
-     */
-    double semanticWeight;
 
     /**
      * <p>

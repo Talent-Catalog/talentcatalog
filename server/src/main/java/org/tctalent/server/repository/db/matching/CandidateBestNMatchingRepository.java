@@ -50,7 +50,7 @@ public class CandidateBestNMatchingRepository {
             .addValue("queryText", request.getSimpleQueryString())
             .addValue("queryEmbedding", toVectorLiteral(request.getQueryEmbedding()))
             .addValue("lexicalWeight", request.getLexicalWeight())
-            .addValue("semanticWeight", request.getSemanticWeight())
+            .addValue("semanticWeight", 1-request.getLexicalWeight())
             .addValue("rrfK", RRF_K)
             .addValue("candidateLimit", request.getCandidateLimit())
             .addValue("semanticPoolSize", request.getSemanticPoolSize())
@@ -197,10 +197,10 @@ public class CandidateBestNMatchingRepository {
                 "Candidate limit should be greater than result limit"
             );
         }
-        if (!Double.isFinite(request.getLexicalWeight())
-            || !Double.isFinite(request.getSemanticWeight())
-            || request.getLexicalWeight() < 0 || request.getSemanticWeight() < 0) {
-            throw new IllegalArgumentException("Weights must be finite and non-negative");
+        if (!Double.isFinite(request.getLexicalWeight()) || request.getLexicalWeight() < 0
+            || request.getLexicalWeight() > 1) {
+            throw new IllegalArgumentException(
+                "Lexical weight must be finite between 0 and 1 inclusive");
         }
     }
 
