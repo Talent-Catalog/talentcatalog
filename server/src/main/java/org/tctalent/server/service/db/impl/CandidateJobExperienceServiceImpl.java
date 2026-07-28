@@ -176,7 +176,7 @@ public class CandidateJobExperienceServiceImpl implements CandidateJobExperience
     public void updateCandidateJobExperienceEmbeddings(List<CandidateJobExperience> experiences) {
 
         final String tableName = vectorEmbeddingModelProperties.getAlternateEmbeddingTable();
-        final String modelKey = vectorEmbeddingModelProperties.getEmbeddingModelKey();
+        final String modelKey = vectorEmbeddingModelProperties.getAlternateEmbeddingModelKey();
         final EmbeddingModel model = embeddingModelRepository.findByModelKey(
             modelKey);
         Map<String, String> descriptionsById = new HashMap<>();

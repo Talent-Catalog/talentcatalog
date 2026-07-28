@@ -32,6 +32,23 @@ import org.tctalent.server.model.db.embedding.EmbeddingModel;
 public class VectorEmbeddingModelProperties {
 
   /**
+   * This is the name of the current job experience embedding table.
+   * <p>
+   * It must match a table name in the database.
+   * </p>
+   * <p>
+   *     Vector embeddings of job experiences will be computed using the model specified by the
+   *     {@link #alternateEmbeddingModelKey} and updated in the table as well
+   *     as in the table associated with the JobExperienceEmbedding entity.
+   * </p>
+   * <p>
+   *     There is also a standard SystemAdminApi batch that can be run to initialize the contents
+   *     of this table by computing embeddings of all job experiences.
+   * </p>
+   */
+  private String embeddingTable;
+
+  /**
    * This identifies the embedding model used by the JobExperienceEmbedding entity.
    * <p>
    *     It should match a modelKey in an {@link EmbeddingModel} entity.

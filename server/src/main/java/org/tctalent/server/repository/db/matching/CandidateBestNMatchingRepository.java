@@ -31,9 +31,6 @@ public class CandidateBestNMatchingRepository {
     //We will standardize on it.
     private static final int RRF_K = 60;
 
-    //TODO JC This should com from config
-    static final String PRIMARY_EMBEDDING_TABLE =
-        "job_experience_embedding_minilm_l6_spacy_v3";
     private static final Pattern SAFE_IDENTIFIER = Pattern.compile("[a-z][a-z0-9_]*");
 
     private final NamedParameterJdbcTemplate jdbc;
@@ -42,7 +39,7 @@ public class CandidateBestNMatchingRepository {
 
     public List<CandidateBestNMatchingResult> match(CandidateBestNMatchingRequest request,
     String lexicalCandidateScoresSql, String constraintJoinsAndWhereSql) {
-        String tableName = configuredTableName();
+        String tableName = embeddingProperties.getEmbeddingTable();
         EmbeddingModel model = configuredModel();
         validate(request, tableName, model.getDimensions());
 
@@ -141,16 +138,8 @@ public class CandidateBestNMatchingRepository {
             """;
     }
 
-    private String configuredTableName() {
-        String alternate = embeddingProperties.getAlternateEmbeddingTable();
-        return alternate == null || alternate.isBlank() ? PRIMARY_EMBEDDING_TABLE : alternate;
-    }
-
     private EmbeddingModel configuredModel() {
-        String alternateTable = embeddingProperties.getAlternateEmbeddingTable();
-        String modelKey = alternateTable == null || alternateTable.isBlank()
-            ? embeddingProperties.getEmbeddingModelKey()
-            : embeddingProperties.getAlternateEmbeddingModelKey();
+        String modelKey = embeddingProperties.getEmbeddingModelKey();
         EmbeddingModel model = embeddingModelRepository.findByModelKey(modelKey);
         if (model == null) {
             throw new IllegalStateException("Configured embedding model not found: " + modelKey);
@@ -163,12 +152,6 @@ public class CandidateBestNMatchingRepository {
             throw new IllegalArgumentException("Matching request is required");
         }
         validateTableName(tableName);
-        // This is an explicit allow-list: matching may use only the primary entity table or the
-        // alternate table supplied by application configuration, never a request value.
-        if (!tableName.equals(PRIMARY_EMBEDDING_TABLE)
-            && !tableName.equals(embeddingProperties.getAlternateEmbeddingTable())) {
-            throw new IllegalArgumentException("Embedding table is not configured: " + tableName);
-        }
         if (request.getSimpleQueryString() == null || request.getSimpleQueryString().isBlank()) {
             throw new IllegalArgumentException("Query text is required");
         }

@@ -3,23 +3,35 @@
  */
 package org.tctalent.server.service.db.impl;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
+import org.tctalent.server.configuration.properties.VectorEmbeddingModelProperties;
 import org.tctalent.server.repository.db.matching.CandidateBestNMatchingRepository;
 import org.tctalent.server.repository.db.matching.CandidateBestNMatchingResult;
 import org.tctalent.server.repository.db.read.dto.CandidateReadDto;
 import org.tctalent.server.request.candidate.SearchCandidateRequest;
 import org.tctalent.server.request.candidate.matching.CandidateBestNMatchingRequest;
+import org.tctalent.server.service.api.SkillName;
 import org.tctalent.server.service.db.CandidateBestNMatchingService;
+import org.tctalent.server.service.db.SkillsService;
+import org.tctalent.server.service.embedding.TcVectorEmbeddingService;
+import org.tctalent.server.service.embedding.dto.EmbeddingResult;
+import org.tctalent.server.service.embedding.dto.EmbeddingsResponse;
 
 @Service
 @RequiredArgsConstructor
 public class CandidateBestNMatchingServiceImpl implements CandidateBestNMatchingService {
     private final CandidateBestNMatchingRepository candidateBestNMatchingRepository;
+    private final SkillsService skillsService;
+    private final TcVectorEmbeddingService tcVectorEmbeddingService;
+    private final VectorEmbeddingModelProperties embeddingProperties;
+
 
     @Override
     public List<CandidateBestNMatchingResult> match(CandidateBestNMatchingRequest request) {
@@ -51,11 +63,24 @@ WHERE candidate_occupation.occupation_id in (:occupationId)
             throw new UnsupportedOperationException("RequirementsDescription must be specified");
         }
 
-        //TODO JC Extract skills from description
-        String simpleQueryString = ""; //TODO JC
+        //Extract skills from description
+        //TODO JC Should retain any existing simpleQueryString? Concatenate?
+        List<SkillName> skillNames =
+            skillsService.extractSkillNames(requirementsDescription, "en");
+        //Construct the simpleQueryString by concatenating the skills separated by space.
+        //If a skill contains spaces, quote in ""
+        String simpleQueryString = skillNames.stream()
+            .map(SkillName::getName)
+            .map(s -> s.contains(" ") ? "\"" + s + "\"" : s)
+            .collect(Collectors.joining(" "));
 
-        //TODO JC Generate embedding from description
-        final List<Double> embedding = new ArrayList<>();
+        //TODO JC Need simpler call for getting a single embedding. Returns error or List<Double>
+        Map<String, String> sourceTexts = new HashMap<>();
+        sourceTexts.put("target", requirementsDescription);
+        final EmbeddingsResponse embeddingsResponse = tcVectorEmbeddingService.generateEmbeddings(
+            embeddingProperties.getEmbeddingModelKey(), sourceTexts);
+        final List<EmbeddingResult> results1 = embeddingsResponse.getResults();
+        final List<Double> embedding = results1.get(0).getEmbedding();
 
         //TODO JC These params are fields taken from the search request.
         int n = 50;
@@ -69,7 +94,7 @@ WHERE candidate_occupation.occupation_id in (:occupationId)
             .semanticPoolSize(n*10)
             .build();
 
-        String lexicalCandidateScoresSql = "";
+        String lexicalCandidateScoresSql = "";  //TODO JC ExtractFetchSQL
         String constraintJoinsAndWhereSql = "";
 
         List<CandidateBestNMatchingResult> results = candidateBestNMatchingRepository.match(
