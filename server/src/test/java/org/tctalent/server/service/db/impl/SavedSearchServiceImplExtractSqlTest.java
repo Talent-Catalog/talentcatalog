@@ -132,6 +132,41 @@ class SavedSearchServiceImplExtractSqlTest {
     }
 
     @Test
+    @DisplayName("SQL generated from text search unordered request")
+    void extractFetchSQLFromTextSearchUnorderedRequest() {
+        request.setSimpleQueryString("excel java");
+        String sql = savedSearchService.extractFetchSQL(
+            request, null, null, false);
+        assertEquals(ORDERED_SELECT_PREFIX + FROM_CANDIDATE +
+            WHERE + "candidate.ts_text @@ to_tsquery('english','excel | java')", sql);
+    }
+
+    @Test
+    @DisplayName("SQL generated from text search ordered request")
+    void extractFetchSQLFromTextSearchOrderedRequest() {
+        request.setSimpleQueryString("excel java");
+        String sql = savedSearchService.extractFetchSQL(
+            request, null, null, true);
+        assertEquals(ORDERED_SELECT_PREFIX + FROM_CANDIDATE +
+            WHERE + "candidate.ts_text @@ to_tsquery('english','excel | java')" +
+            ORDER_BY + "candidate.id " + Direction.DESC, sql);
+    }
+
+    @Test
+    @DisplayName("SQL generated from text search request order by rank")
+    void extractFetchSQLFromTextSearchRequestOrderByRank() {
+        request.setSortFields(new String[] {"text_match"});
+        request.setSimpleQueryString("excel java");
+        String sql = savedSearchService.extractFetchSQL(
+            request, null, null, true);
+        assertEquals(ORDERED_SELECT_PREFIX +
+            ",ts_rank(candidate.ts_text,to_tsquery('english','excel | java')) as rank" +
+            FROM_CANDIDATE +
+            WHERE + "candidate.ts_text @@ to_tsquery('english','excel | java')" +
+            ORDER_BY + "rank DESC,candidate.id " + Direction.DESC, sql);
+    }
+
+    @Test
     @DisplayName("SQL generated from ordered request on country")
     void extractFetchSQLFromOrderedRequestOnCountry() {
         request.setPartnerIds(List.of(1L));

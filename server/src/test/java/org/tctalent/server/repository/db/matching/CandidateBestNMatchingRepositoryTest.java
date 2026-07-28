@@ -34,8 +34,7 @@ class CandidateBestNMatchingRepositoryTest {
         properties = new VectorEmbeddingModelProperties();
         properties.setEmbeddingModelKey("MINILM_L6_SPACY_V3");
         properties.setAlternateEmbeddingModelKey("MINILM_L6_SPACY_V3");
-        properties.setAlternateEmbeddingTable(
-            CandidateBestNMatchingRepository.PRIMARY_EMBEDDING_TABLE);
+        properties.setAlternateEmbeddingTable("job_experience_embedding_minilm_l6_spacy_v3");
         modelRepository = mock(EmbeddingModelRepository.class);
         EmbeddingModel model = new EmbeddingModel();
         model.setDimensions(3);
@@ -46,8 +45,8 @@ class CandidateBestNMatchingRepositoryTest {
     @Test
     void sqlCollapsesExperiencesToCandidatesUsingBestScore() {
         String sql = repository.buildSql(
-            CandidateBestNMatchingRepository.PRIMARY_EMBEDDING_TABLE, 3,
-            "", "");
+            "job_experience_embedding_minilm_l6_spacy_v3",
+             3,"", "");
 
         assertThat(sql)
             .contains("MAX(1.0 - sp.distance)")
@@ -58,7 +57,7 @@ class CandidateBestNMatchingRepositoryTest {
     @Test
     void semanticPoolPreservesHnswFriendlyShapeBeforeFiltering() {
         String sql = repository.buildSql(
-            CandidateBestNMatchingRepository.PRIMARY_EMBEDDING_TABLE, 3,
+            "job_experience_embedding_minilm_l6_spacy_v3", 3,
             "", "");
         String pool = sql.substring(sql.indexOf("semantic_pool AS"),
             sql.indexOf("semantic_candidate_scores AS"));
@@ -156,9 +155,7 @@ class CandidateBestNMatchingRepositoryTest {
         return CandidateBestNMatchingRequest.builder()
             .simpleQueryString("java engineer")
             .queryEmbedding(embedding)
-            .occupationId(7L)
             .lexicalWeight(1)
-            .semanticWeight(1)
             .candidateLimit(20)
             .semanticPoolSize(200)
             .resultLimit(10)
