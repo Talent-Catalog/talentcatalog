@@ -18,6 +18,7 @@ package org.tctalent.server.service.db.impl;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -33,8 +34,10 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
+import java.security.KeyPairGenerator;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
+import java.util.Base64;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -54,16 +57,23 @@ import org.tctalent.server.exception.InvalidRequestException;
 import org.tctalent.server.exception.SalesforceException;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.CandidateDependant;
+import org.tctalent.server.model.db.CandidateLanguage;
+import org.tctalent.server.model.db.CandidateOccupation;
 import org.tctalent.server.model.db.CandidateOpportunity;
+import org.tctalent.server.model.db.CandidateOpportunityStage;
 import org.tctalent.server.model.db.Country;
 import org.tctalent.server.model.db.Gender;
 import org.tctalent.server.model.db.JobOpportunityStage;
+import org.tctalent.server.model.db.PartnerImpl;
 import org.tctalent.server.model.db.SalesforceJobOpp;
 import org.tctalent.server.model.db.User;
 import org.tctalent.server.model.sf.Contact;
 import org.tctalent.server.model.sf.Opportunity;
 import org.tctalent.server.model.sf.Opportunity.OpportunityType;
 import org.tctalent.server.model.sf.OpportunityHistory;
+import org.tctalent.server.request.candidate.EmployerCandidateDecision;
+import org.tctalent.server.request.candidate.EmployerCandidateFeedbackData;
+import org.tctalent.server.request.candidate.opportunity.CandidateOpportunityParams;
 import org.tctalent.server.request.opportunity.UpdateEmployerOpportunityRequest;
 import org.tctalent.server.service.db.CandidateDependantService;
 import org.tctalent.server.service.db.NextStepProcessingService;
@@ -1024,6 +1034,615 @@ class SalesforceServiceImplTest {
     );
   }
 
+  @Test
+  void contactRequestMapsAllOptionalCandidateFields() {
+    when(salesforceTbbAccountsConfig.getOtherAccount()).thenReturn("other-account");
+
+    Candidate candidate = mock(Candidate.class, RETURNS_DEEP_STUBS);
+    User user = new User();
+    user.setFirstName("Jane");
+    user.setLastName("Doe");
+    user.setEmail("jane@example.com");
+    PartnerImpl partner = mock(PartnerImpl.class);
+    when(partner.getSfId()).thenReturn("001PARTNER");
+    user.setPartner(partner);
+
+    Country country = mock(Country.class);
+    when(country.getName()).thenReturn("Afghanistan");
+    Country nationality = mock(Country.class);
+    when(nationality.getName()).thenReturn("Afghan");
+    Country relocatedCountry = mock(Country.class);
+    when(relocatedCountry.getName()).thenReturn("Canada");
+
+    CandidateLanguage english = mock(CandidateLanguage.class, RETURNS_DEEP_STUBS);
+    when(english.getLanguage().getName()).thenReturn("English");
+    when(english.getSpokenLevel().getName()).thenReturn("Advanced");
+    CandidateLanguage french = mock(CandidateLanguage.class, RETURNS_DEEP_STUBS);
+    when(french.getLanguage().getName()).thenReturn("French");
+    when(french.getSpokenLevel().getName()).thenReturn("Intermediate");
+    CandidateLanguage german = mock(CandidateLanguage.class, RETURNS_DEEP_STUBS);
+    when(german.getLanguage().getName()).thenReturn("German");
+    when(german.getSpokenLevel().getName()).thenReturn("Basic");
+    CandidateLanguage spanish = mock(CandidateLanguage.class, RETURNS_DEEP_STUBS);
+    when(spanish.getLanguage().getName()).thenReturn("Spanish");
+    when(spanish.getSpokenLevel().getName()).thenReturn("Fluent");
+    CandidateLanguage missingLanguage = mock(CandidateLanguage.class);
+
+    CandidateOccupation occupation = mock(CandidateOccupation.class, RETURNS_DEEP_STUBS);
+    when(occupation.getOccupation().getName()).thenReturn("Software Engineer");
+    CandidateOccupation missingOccupation = mock(CandidateOccupation.class);
+
+    when(candidate.getUser()).thenReturn(user);
+    when(candidate.getCandidateNumber()).thenReturn("123");
+    when(candidate.getCountry()).thenReturn(country);
+    when(candidate.getNationality()).thenReturn(nationality);
+    when(candidate.getGender()).thenReturn(Gender.female);
+    when(candidate.getTopLevelIntakeCompleted()).thenReturn("Yes");
+    when(candidate.getTopLevelIntakeCompletedDate()).thenReturn("2026-01-02");
+    when(candidate.getDob()).thenReturn(LocalDate.of(1995, 5, 10));
+    when(candidate.getCreatedDate()).thenReturn(OffsetDateTime.parse("2026-01-01T00:00:00Z"));
+    when(candidate.getCandidateLanguages())
+        .thenReturn(List.of(english, french, german, spanish, missingLanguage));
+    when(candidate.getCandidateOccupations()).thenReturn(List.of(occupation, missingOccupation));
+    when(candidate.getMaxEducationLevel().getName()).thenReturn("Bachelor");
+    when(candidate.getContactConsentRegistration()).thenReturn(true);
+    when(candidate.getContactConsentPartners()).thenReturn(true);
+    when(candidate.getRelocatedAddress()).thenReturn("10 Main Street");
+    when(candidate.getRelocatedCity()).thenReturn("Toronto");
+    when(candidate.getRelocatedState()).thenReturn("Ontario");
+    when(candidate.getRelocatedCountry()).thenReturn(relocatedCountry);
+
+    SalesforceServiceImpl.ContactRequest request = service.new ContactRequest(
+        new SalesforceServiceImpl.CompositeAttributes("Contact"),
+        candidate
+    );
+
+    assertAll(
+        () -> assertTrue(request.containsKey("attributes")),
+        () -> assertEquals("001PARTNER", request.get("Source_Partner__c")),
+        () -> assertEquals("other-account", request.get("AccountId")),
+        () -> assertEquals("Afghan", request.get("Nationality__c")),
+        () -> assertEquals("2026-01-02", request.get("Intake_Date__c")),
+        () -> assertEquals("1995-05-10", request.get("Date_of_Birth__c")),
+        () -> assertEquals("Advanced", request.get("English_Speaking_Level__c")),
+        () -> assertEquals("Intermediate", request.get("French_Speaking_Level__c")),
+        () -> assertEquals("Basic", request.get("German_Speaking_Level__c")),
+        () -> assertEquals("Fluent", request.get("Spanish_Speaking_Level__c")),
+        () -> assertEquals("Software Engineer; ", request.get("Occupation_s__c")),
+        () -> assertEquals("10 Main Street", request.get("Relocated_Street__c")),
+        () -> assertEquals("Toronto", request.get("Relocated_City__c")),
+        () -> assertEquals("Ontario", request.get("Relocated_State_Province__c")),
+        () -> assertEquals("Canada", request.get("Relocated_Country__c"))
+    );
+  }
+
+  @Test
+  void contactRequestOmitsLanguageLevelWhenSpokenLevelIsNull() {
+    when(salesforceTbbAccountsConfig.getOtherAccount()).thenReturn("other-account");
+    CandidateLanguage english = mock(CandidateLanguage.class, RETURNS_DEEP_STUBS);
+    when(english.getLanguage().getName()).thenReturn("English");
+    when(english.getSpokenLevel()).thenReturn(null);
+    Candidate candidate = candidateForContact("123", "Other", List.of(english));
+
+    SalesforceServiceImpl.ContactRequest request =
+        service.new ContactRequest(null, candidate);
+
+    assertTrue(!request.containsKey("English_Speaking_Level__c"));
+  }
+
+  @Test
+  void candidateOpportunityRequestCoversCreateUpdateAndOptionalSetters() {
+    Candidate candidate = mock(Candidate.class);
+    User user = new User();
+    user.setFirstName("Jane");
+    PartnerImpl partner = mock(PartnerImpl.class);
+    when(partner.getSfId()).thenReturn("001PARTNER");
+    user.setPartner(partner);
+
+    SalesforceJobOpp job = mock(SalesforceJobOpp.class);
+    when(candidate.getCandidateNumber()).thenReturn("123");
+    when(candidate.getUser()).thenReturn(user);
+    when(candidate.getSfId()).thenReturn("003CONTACT");
+    when(job.getSfId()).thenReturn("006JOB");
+    when(job.getName()).thenReturn("Developer");
+    when(job.getAccountId()).thenReturn("001EMPLOYER");
+    when(job.getOwnerId()).thenReturn("005OWNER");
+
+    SalesforceServiceImpl.CandidateOpportunityRecordComposite createRequest =
+        service.new CandidateOpportunityRecordComposite(
+            "Candidate recruitment", candidate, job, true);
+
+    createRequest.setClosingComments("Closing");
+    createRequest.setClosingCommentsForCandidate("Candidate closing");
+    createRequest.setEmployerFeedback("Feedback");
+    createRequest.setStageName("Offer");
+    createRequest.setNextStep("Prepare visa");
+    createRequest.setNextStepDueDate(LocalDate.of(2026, 2, 1));
+    createRequest.setRelocatingBoys(1);
+    createRequest.setRelocatingGirls(2);
+    createRequest.setRelocatingMen(3);
+    createRequest.setRelocatingWomen(4);
+    createRequest.setRelocatingChildren(5);
+    createRequest.setRelocatingAdults(6);
+
+    SalesforceServiceImpl.CandidateOpportunityRequest updateRequest =
+        service.new CandidateOpportunityRequest(
+            null, "Candidate recruitment", candidate, job, false);
+
+    assertAll(
+        () -> assertTrue(createRequest.containsKey("attributes")),
+        () -> assertEquals("Jane(123)-Developer", createRequest.getName()),
+        () -> assertEquals("001PARTNER", createRequest.get("Source_Partner__c")),
+        () -> assertEquals("001EMPLOYER", createRequest.get("AccountId")),
+        () -> assertEquals("003CONTACT", createRequest.get("Candidate_Contact__c")),
+        () -> assertEquals("005OWNER", createRequest.get("OwnerId")),
+        () -> assertEquals("006JOB", createRequest.get("Parent_Opportunity__c")),
+        () -> assertEquals("Offer", createRequest.get("StageName")),
+        () -> assertEquals("2026-02-01", createRequest.get("Next_Step_Due_Date__c")),
+        () -> assertEquals(1, createRequest.get("Relocating_boys__c")),
+        () -> assertEquals(6, createRequest.get("Relocating_adults_gender_other__c")),
+        () -> assertFalse(updateRequest.containsKey("Name")),
+        () -> assertFalse(updateRequest.containsKey("AccountId")),
+        () -> assertFalse(updateRequest.containsKey("attributes"))
+    );
+  }
+
+  @Test
+  void jobOpportunityRequestMapsPartnerAndNullStageBranches() {
+    SalesforceJobOpp job = mock(SalesforceJobOpp.class, RETURNS_DEEP_STUBS);
+    PartnerImpl partner = mock(PartnerImpl.class);
+    when(partner.getSfId()).thenReturn("001RECRUITER");
+    when(job.getId()).thenReturn(99L);
+    when(job.getName()).thenReturn("Software Engineer");
+    when(job.getEmployerEntity().getSfId()).thenReturn("001EMPLOYER");
+    when(job.getClosingComments()).thenReturn("Closing comments");
+    when(job.getStage()).thenReturn(JobOpportunityStage.prospect);
+    when(job.getNextStep()).thenReturn("Next step");
+    when(job.getNextStepDueDate()).thenReturn(LocalDate.of(2026, 1, 15));
+    when(job.getJobCreator()).thenReturn(partner);
+
+    SalesforceServiceImpl.JobOpportunityRequest request =
+        service.new JobOpportunityRequest(
+            new SalesforceServiceImpl.CompositeAttributes("Opportunity"),
+            job
+        );
+
+    SalesforceJobOpp nullOptionals = mock(SalesforceJobOpp.class, RETURNS_DEEP_STUBS);
+    when(nullOptionals.getId()).thenReturn(100L);
+    when(nullOptionals.getName()).thenReturn("Null optionals");
+    when(nullOptionals.getStage()).thenReturn(null);
+    when(nullOptionals.getNextStepDueDate()).thenReturn(null);
+    SalesforceServiceImpl.JobOpportunityRequest nullRequest =
+        service.new JobOpportunityRequest(null, nullOptionals);
+
+    assertAll(
+        () -> assertTrue(request.containsKey("attributes")),
+        () -> assertEquals("001RECRUITER", request.get("Recruiter_Partner__c")),
+        () -> assertEquals("Prospect", request.get("StageName")),
+        () -> assertEquals("2026-01-15", request.get("Next_Step_Due_Date__c")),
+        () -> assertNull(nullRequest.get("StageName")),
+        () -> assertNull(nullRequest.get("Next_Step_Due_Date__c"))
+    );
+  }
+
+  @Test
+  void updateContactRejectsCandidateWithoutSalesforceId() {
+    Candidate candidate = candidateForContact("123", "Other");
+    when(candidate.getSfId()).thenReturn(null);
+    when(candidate.getSflink()).thenReturn("missing-link");
+
+    SalesforceException exception = assertThrows(
+        SalesforceException.class,
+        () -> service.updateContact(candidate)
+    );
+
+    assertTrue(exception.getMessage().contains(
+        "Could not find candidate 123 on Salesforce from sflink missing-link"));
+  }
+
+  @Test
+  void updateContactSendsPatchWhenCandidateHasSalesforceId() throws Exception {
+    when(salesforceTbbAccountsConfig.getOtherAccount()).thenReturn("other-account");
+    try (TestSalesforceServer server = salesforceServer(204, null)) {
+      SalesforceServiceImpl httpService = httpBackedService(server);
+      Candidate candidate = candidateForContact("123", "Other");
+      when(candidate.getSfId()).thenReturn("003CONTACT");
+
+      httpService.updateContact(candidate);
+
+      assertAll(
+          () -> assertEquals("PATCH", server.method()),
+          () -> assertTrue(server.decodedRequestUri().contains(
+              "/services/data/v58.0/sobjects/Contact/003CONTACT")),
+          () -> assertTrue(server.requestBody().contains("\"FirstName\":\"John\""))
+      );
+    }
+  }
+
+  @Test
+  void updateEmployerOpportunityCoversValidAndInvalidSalesforceLinks() throws Exception {
+    UpdateEmployerOpportunityRequest request = mock(UpdateEmployerOpportunityRequest.class);
+    when(request.getSfJoblink()).thenReturn(
+        "https://talentbeyondboundaries.lightning.force.com/lightning/r/Opportunity/"
+            + "006123456789ABC/view/");
+    when(request.getFolderlink()).thenReturn("list-folder");
+    when(request.getFolderjdlink()).thenReturn("jd-folder");
+    when(request.getListlink()).thenReturn("catalog-list");
+    when(request.getJobId()).thenReturn(99L);
+
+    try (TestSalesforceServer server = salesforceServer(204, null)) {
+      SalesforceServiceImpl httpService = httpBackedService(server);
+
+      httpService.updateEmployerOpportunity(request);
+
+      assertAll(
+          () -> assertEquals("PATCH", server.method()),
+          () -> assertTrue(server.decodedRequestUri().contains(
+              "/sobjects/Opportunity/006123456789ABC")),
+          () -> assertTrue(server.requestBody().contains("\"TCid__c\":99"))
+      );
+    }
+
+    when(request.getSfJoblink()).thenReturn("not-a-salesforce-link");
+    service.updateEmployerOpportunity(request);
+  }
+
+  @Test
+  void updateEmployerOpportunityStageMapsAllFields() throws Exception {
+    SalesforceJobOpp job = mock(SalesforceJobOpp.class);
+    when(job.getSfId()).thenReturn("006JOB");
+
+    try (TestSalesforceServer server = salesforceServer(204, null)) {
+      SalesforceServiceImpl httpService = httpBackedService(server);
+
+      httpService.updateEmployerOpportunityStage(
+          job, JobOpportunityStage.prospect, "Call employer", LocalDate.of(2026, 3, 1));
+
+      assertAll(
+          () -> assertEquals("PATCH", server.method()),
+          () -> assertTrue(server.requestBody().contains("\"StageName\":\"Prospect\"")),
+          () -> assertTrue(server.requestBody().contains("\"NextStep\":\"Call employer\"")),
+          () -> assertTrue(server.requestBody().contains(
+              "\"Next_Step_Due_Date__c\":\"2026-03-01\""))
+      );
+    }
+  }
+
+  @Test
+  void createOrUpdateJobOpportunityThrowsWhenSalesforceRejectsUpsert() throws Exception {
+    String body = """
+        {
+          "id": null,
+          "success": false,
+          "created": false,
+          "errors": [
+            {
+              "statusCode": "VALIDATION_ERROR",
+              "message": "Bad job",
+              "fields": ["Name"]
+            }
+          ]
+        }
+        """;
+
+    try (TestSalesforceServer server = salesforceServer(200, body)) {
+      SalesforceServiceImpl httpService = httpBackedService(server);
+
+      SalesforceException exception = assertThrows(
+          SalesforceException.class,
+          () -> httpService.createOrUpdateJobOpportunity(jobOpportunityForUpsert())
+      );
+
+      assertAll(
+          () -> assertTrue(exception.getMessage().contains("Update failed for job 99")),
+          () -> assertTrue(exception.getMessage().contains("Bad job"))
+      );
+    }
+  }
+
+  @Test
+  void missingAccessTokenRequestsJwtBearerTokenBeforeSalesforceQuery() throws Exception {
+    String bearerTokenResponse = """
+        {
+          "access_token":"new-access-token",
+          "scope":"api",
+          "instance_url":"http://localhost",
+          "id":"identity",
+          "token_type":"Bearer"
+        }
+        """;
+    String emptyContactResult = """
+        {"totalSize":0,"done":true,"records":[]}
+        """;
+
+    try (TestSalesforceServer server = salesforceServer(
+        List.of(200, 200), List.of(bearerTokenResponse, emptyContactResult))) {
+      when(salesforceConfig.getBaseClassicUrl()).thenReturn(server.baseUrl());
+      when(salesforceConfig.getBaseLoginUrl()).thenReturn(server.baseUrl());
+      when(salesforceConfig.getPrivatekey()).thenReturn(validPrivateKeyPem());
+      when(salesforceConfig.getConsumerKey()).thenReturn("consumer-key");
+      when(salesforceConfig.getUser()).thenReturn("salesforce-user");
+
+      SalesforceServiceImpl httpService = new SalesforceServiceImpl(
+          emailHelper,
+          salesforceConfig,
+          recordTypeConfig,
+          salesforceTbbAccountsConfig,
+          candidateDependantService,
+          nextStepProcessingService
+      );
+      httpService.afterPropertiesSet();
+
+      List<Contact> contacts = httpService.findContacts("TBBid__c > 0");
+
+      assertAll(
+          () -> assertTrue(contacts.isEmpty()),
+          () -> assertEquals(2, server.requestCount()),
+          () -> assertTrue(server.decodedRequestUri().contains("/query?q="))
+      );
+    }
+  }
+
+  @Test
+  void createCandidateOpportunityAppliesDefaultsAndCompositeUpsert() throws Exception {
+    String emptyQueryResult = """
+        {"totalSize":0,"done":true,"records":[]}
+        """;
+    String successfulUpsert = """
+        [{"id":"006CANDIDATE","success":true,"created":true,"errors":[]}]
+        """;
+
+    try (TestSalesforceServer server = salesforceServer(
+        List.of(200, 200), List.of(emptyQueryResult, successfulUpsert))) {
+      SalesforceServiceImpl httpService = httpBackedService(server);
+      Candidate candidate = feedbackCandidate("123");
+      when(candidate.getSfId()).thenReturn("003CONTACT");
+
+      SalesforceJobOpp job = mock(SalesforceJobOpp.class);
+      when(job.getId()).thenReturn(99L);
+      when(job.getSfId()).thenReturn("006JOB");
+      when(job.getName()).thenReturn("Developer");
+      when(job.getAccountId()).thenReturn("001EMPLOYER");
+      when(job.getCandidateOpportunities()).thenReturn(Set.of());
+      when(nextStepProcessingService.processNextStep(
+          null, "Contact candidate and do intake"))
+          .thenReturn("Processed default next step");
+
+      httpService.createOrUpdateCandidateOpportunities(
+          List.of(candidate), null, job);
+
+      assertAll(
+          () -> assertEquals(2, server.requestCount()),
+          () -> assertTrue(server.requestBody().contains("\"StageName\":\"Prospect\"")),
+          () -> assertTrue(server.requestBody().contains(
+              "\"NextStep\":\"Processed default next step\"")),
+          () -> assertTrue(server.requestBody().contains(
+              "\"TBBCandidateExternalId__c\":\"123-006JOB\""))
+      );
+    }
+  }
+
+  @Test
+  void updateCandidateOpportunityMapsAllProvidedFieldsAndRelocationCounts() throws Exception {
+    String existingOpportunity = opportunityQueryResponse(
+        "006CANDIDATE", "Existing candidate opportunity");
+    String successfulUpsert = """
+        [{"id":"006CANDIDATE","success":true,"created":false,"errors":[]}]
+        """;
+
+    try (TestSalesforceServer server = salesforceServer(
+        List.of(200, 200), List.of(existingOpportunity, successfulUpsert))) {
+      SalesforceServiceImpl httpService = httpBackedService(server);
+      Candidate candidate = feedbackCandidate("123");
+      when(candidate.getId()).thenReturn(1L);
+
+      CandidateOpportunity currentOpportunity = mock(CandidateOpportunity.class);
+      Candidate currentCandidate = mock(Candidate.class);
+      when(currentCandidate.getId()).thenReturn(1L);
+      when(currentOpportunity.getCandidate()).thenReturn(currentCandidate);
+
+      SalesforceJobOpp job = mock(SalesforceJobOpp.class);
+      when(job.getId()).thenReturn(99L);
+      when(job.getSfId()).thenReturn("006JOB");
+      when(job.getCandidateOpportunities()).thenReturn(Set.of(currentOpportunity));
+
+      CandidateOpportunityParams params = mock(CandidateOpportunityParams.class);
+      when(params.getStage()).thenReturn(CandidateOpportunityStage.offer);
+      when(params.getNextStep()).thenReturn("Prepare visa");
+      when(params.getNextStepDueDate()).thenReturn(LocalDate.of(2026, 4, 1));
+      when(params.getClosingComments()).thenReturn("Closing");
+      when(params.getClosingCommentsForCandidate()).thenReturn("Candidate closing");
+      when(params.getEmployerFeedback()).thenReturn("Great candidate");
+      when(params.getRelocationInfo()).thenReturn(Map.of(
+          "relocatingBoys", 1,
+          "relocatingGirls", 2,
+          "relocatingChildren", 3,
+          "relocatingMen", 4,
+          "relocatingWomen", 5,
+          "relocatingAdults", 6
+      ));
+      when(nextStepProcessingService.processNextStep(
+          currentOpportunity, "Prepare visa")).thenReturn("Processed visa step");
+
+      httpService.createOrUpdateCandidateOpportunities(
+          List.of(candidate), params, job);
+
+      String body = server.requestBody();
+      assertAll(
+          () -> assertTrue(body.contains("\"StageName\":\"Offer\"")),
+          () -> assertTrue(body.contains("\"NextStep\":\"Processed visa step\"")),
+          () -> assertTrue(body.contains("\"Next_Step_Due_Date__c\":\"2026-04-01\"")),
+          () -> assertTrue(body.contains("\"Closing_Comments__c\":\"Closing\"")),
+          () -> assertTrue(body.contains(
+              "\"Closing_Comments_For_Candidate__c\":\"Candidate closing\"")),
+          () -> assertTrue(body.contains("\"Employer_Feedback__c\":\"Great candidate\"")),
+          () -> assertTrue(body.contains("\"Relocating_boys__c\":1")),
+          () -> assertTrue(body.contains("\"Relocating_adults_gender_other__c\":6"))
+      );
+    }
+  }
+
+  @Test
+  void updateCandidateOpportunitiesMapsFeedbackDecisionBranches() throws Exception {
+    String existingOpportunities = """
+        {
+          "totalSize": 2,
+          "done": true,
+          "records": [
+            {"Id":"006SECOND","TBBCandidateExternalId__c":"222-006JOB"},
+            {"Id":"006THIRD","TBBCandidateExternalId__c":"333-006JOB"}
+          ]
+        }
+        """;
+    String successfulUpserts = """
+        [
+          {"id":"006FIRST","success":true,"created":true,"errors":[]},
+          {"id":"006SECOND","success":true,"created":false,"errors":[]},
+          {"id":"006THIRD","success":true,"created":false,"errors":[]}
+        ]
+        """;
+
+    try (TestSalesforceServer server = salesforceServer(
+        List.of(200, 200), List.of(existingOpportunities, successfulUpserts))) {
+      SalesforceServiceImpl httpService = httpBackedService(server);
+      Candidate first = feedbackCandidate("111");
+      when(first.getSfId()).thenReturn("003111");
+      Candidate second = feedbackCandidate("222");
+      Candidate third = feedbackCandidate("333");
+      Candidate ignored = mock(Candidate.class);
+      when(ignored.getCandidateNumber()).thenReturn("444");
+
+      EmployerCandidateFeedbackData firstFeedback = mock(EmployerCandidateFeedbackData.class);
+      when(firstFeedback.getCandidate()).thenReturn(first);
+      when(firstFeedback.getEmployerCandidateNotes()).thenReturn("Notes only");
+      when(firstFeedback.getEmployerCandidateDecision()).thenReturn(null);
+
+      EmployerCandidateFeedbackData secondFeedback = mock(EmployerCandidateFeedbackData.class);
+      when(secondFeedback.getCandidate()).thenReturn(second);
+      when(secondFeedback.getEmployerCandidateDecision())
+          .thenReturn(EmployerCandidateDecision.JobOffer);
+
+      EmployerCandidateFeedbackData thirdFeedback = mock(EmployerCandidateFeedbackData.class);
+      when(thirdFeedback.getCandidate()).thenReturn(third);
+      when(thirdFeedback.getEmployerCandidateDecision())
+          .thenReturn(EmployerCandidateDecision.NoJobOffer);
+
+      EmployerCandidateFeedbackData ignoredFeedback = mock(EmployerCandidateFeedbackData.class);
+      when(ignoredFeedback.getCandidate()).thenReturn(ignored);
+
+      SalesforceJobOpp job = mock(SalesforceJobOpp.class);
+      when(job.getId()).thenReturn(99L);
+      when(job.getSfId()).thenReturn("006JOB");
+      when(job.getName()).thenReturn("Developer");
+
+      httpService.updateCandidateOpportunities(
+          List.of(firstFeedback, secondFeedback, thirdFeedback, ignoredFeedback),
+          job
+      );
+
+      String body = server.requestBody();
+      assertAll(
+          () -> assertTrue(body.contains("\"Employer_Feedback__c\":\"Notes only\"")),
+          () -> assertTrue(body.contains("\"StageName\":\"CV review\"")),
+          () -> assertTrue(body.contains("\"StageName\":\"Offer\"")),
+          () -> assertTrue(body.contains("\"StageName\":\"No job offer\"")),
+          () -> assertTrue(!body.contains("444-006JOB"))
+      );
+    }
+  }
+
+  @Test
+  void candidateOpportunityCompositeThrowsForCountMismatchAndFailedResult() throws Exception {
+    Candidate candidate = feedbackCandidate("111");
+    when(candidate.getSfId()).thenReturn("003111");
+    EmployerCandidateFeedbackData feedback = mock(EmployerCandidateFeedbackData.class);
+    when(feedback.getCandidate()).thenReturn(candidate);
+    when(feedback.getEmployerCandidateNotes()).thenReturn("Notes");
+
+    SalesforceJobOpp job = mock(SalesforceJobOpp.class);
+    when(job.getId()).thenReturn(99L);
+    when(job.getSfId()).thenReturn("006JOB");
+    when(job.getName()).thenReturn("Developer");
+
+    String emptyQueryResult = """
+        {"totalSize":0,"done":true,"records":[]}
+        """;
+    try (TestSalesforceServer server = salesforceServer(
+        List.of(200, 200), List.of(emptyQueryResult, "[]"))) {
+      SalesforceServiceImpl httpService = httpBackedService(server);
+
+      SalesforceException exception = assertThrows(
+          SalesforceException.class,
+          () -> httpService.updateCandidateOpportunities(List.of(feedback), job)
+      );
+
+      assertTrue(exception.getMessage().contains(
+          "Number of results (0) did not match number of requests (1)"));
+    }
+
+    String failedUpsert = """
+        [{
+          "id":null,
+          "success":false,
+          "created":false,
+          "errors":[{"statusCode":"ERROR","message":"Rejected","fields":["Name"]}]
+        }]
+        """;
+    try (TestSalesforceServer server = salesforceServer(
+        List.of(200, 200), List.of(emptyQueryResult, failedUpsert))) {
+      SalesforceServiceImpl httpService = httpBackedService(server);
+
+      SalesforceException exception = assertThrows(
+          SalesforceException.class,
+          () -> httpService.updateCandidateOpportunities(List.of(feedback), job)
+      );
+
+      assertTrue(exception.getMessage().contains("Rejected"));
+    }
+  }
+
+  @Test
+  void nullAndNotFoundResponsesCoverEmptyResultBranches() throws Exception {
+    try (TestSalesforceServer server = salesforceServer(204, null)) {
+      SalesforceServiceImpl httpService = httpBackedService(server);
+
+      assertAll(
+          () -> assertTrue(httpService.findContacts("TBBid__c > 0").isEmpty()),
+          () -> assertTrue(httpService.findCandidateOpportunities(null, 0).isEmpty()),
+          () -> assertNull(httpService.findJobOpportunities())
+      );
+    }
+
+    try (TestSalesforceServer server = salesforceServer(404,
+        "[{\"message\":\"missing\",\"errorCode\":\"NOT_FOUND\"}]")) {
+      SalesforceServiceImpl httpService = httpBackedService(server);
+      assertNull(httpService.findAccount("001MISSING"));
+    }
+
+    try (TestSalesforceServer server = salesforceServer(404,
+        "[{\"message\":\"missing\",\"errorCode\":\"NOT_FOUND\"}]")) {
+      SalesforceServiceImpl httpService = httpBackedService(server);
+      assertNull(httpService.findOpportunity("006MISSING"));
+    }
+  }
+
+  private Candidate feedbackCandidate(String candidateNumber) {
+    Candidate candidate = mock(Candidate.class);
+    User user = new User();
+    user.setFirstName("Candidate");
+    when(candidate.getCandidateNumber()).thenReturn(candidateNumber);
+    when(candidate.getUser()).thenReturn(user);
+    return candidate;
+  }
+
+  private String validPrivateKeyPem() throws Exception {
+    KeyPairGenerator generator = KeyPairGenerator.getInstance("RSA");
+    generator.initialize(1024);
+    String encoded = Base64.getEncoder().encodeToString(
+        generator.generateKeyPair().getPrivate().getEncoded());
+    return "-----BEGIN PRIVATE KEY-----" + encoded + "-----END PRIVATE KEY-----";
+  }
+
   private CandidateDependant dependant(LocalDate dob, Gender gender) {
     CandidateDependant dependant = mock(CandidateDependant.class);
     when(dependant.getDob()).thenReturn(dob);
@@ -1053,6 +1672,13 @@ class SalesforceServiceImplTest {
     return server;
   }
 
+  private TestSalesforceServer salesforceServer(
+      List<Integer> statuses, List<String> bodies) throws IOException {
+    TestSalesforceServer server = new TestSalesforceServer(statuses, bodies);
+    server.start();
+    return server;
+  }
+
   private String opportunityQueryResponse(String id, String name) {
     return """
         {
@@ -1073,6 +1699,11 @@ class SalesforceServiceImplTest {
   }
 
   private Candidate candidateForContact(String candidateNumber, String countryName) {
+    return candidateForContact(candidateNumber, countryName, List.of());
+  }
+
+  private Candidate candidateForContact(
+      String candidateNumber, String countryName, List<CandidateLanguage> languages) {
     Candidate candidate = mock(Candidate.class, RETURNS_DEEP_STUBS);
 
     User user = new User();
@@ -1090,7 +1721,7 @@ class SalesforceServiceImplTest {
     when(candidate.getTopLevelIntakeCompleted()).thenReturn("Yes");
     when(candidate.getTopLevelIntakeCompletedDate()).thenReturn("");
     when(candidate.getCreatedDate()).thenReturn(OffsetDateTime.parse("2026-01-01T00:00:00Z"));
-    when(candidate.getCandidateLanguages()).thenReturn(List.of());
+    when(candidate.getCandidateLanguages()).thenReturn(languages);
     when(candidate.getCandidateOccupations()).thenReturn(List.of());
     when(candidate.getMaxEducationLevel().getName()).thenReturn("Bachelor");
 
@@ -1113,8 +1744,8 @@ class SalesforceServiceImplTest {
   }
 
   private static class TestSalesforceServer implements AutoCloseable {
-    private final int status;
-    private final String body;
+    private final List<Integer> statuses;
+    private final List<String> bodies;
     private final AtomicReference<String> requestUri = new AtomicReference<>();
     private final AtomicReference<String> method = new AtomicReference<>();
     private final AtomicReference<String> requestBody = new AtomicReference<>("");
@@ -1122,8 +1753,15 @@ class SalesforceServiceImplTest {
     private HttpServer server;
 
     private TestSalesforceServer(int status, String body) {
-      this.status = status;
-      this.body = body;
+      this(List.of(status), Collections.singletonList(body));
+    }
+
+    private TestSalesforceServer(List<Integer> statuses, List<String> bodies) {
+      if (statuses.size() != bodies.size() || statuses.isEmpty()) {
+        throw new IllegalArgumentException("A status and body are required for every response");
+      }
+      this.statuses = statuses;
+      this.bodies = bodies;
     }
 
     private void start() throws IOException {
@@ -1133,7 +1771,9 @@ class SalesforceServiceImplTest {
     }
 
     private void handle(HttpExchange exchange) throws IOException {
-      requestCount.incrementAndGet();
+      int responseIndex = Math.min(requestCount.getAndIncrement(), statuses.size() - 1);
+      int status = statuses.get(responseIndex);
+      String body = bodies.get(responseIndex);
       method.set(exchange.getRequestMethod());
       requestUri.set(exchange.getRequestURI().toString());
       requestBody.set(new String(exchange.getRequestBody().readAllBytes(), StandardCharsets.UTF_8));
