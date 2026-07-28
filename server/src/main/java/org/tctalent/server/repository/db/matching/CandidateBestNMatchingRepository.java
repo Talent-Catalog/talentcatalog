@@ -74,16 +74,16 @@ public class CandidateBestNMatchingRepository {
             lexical_candidate_scores AS (
             """
                 +
-            //todo This SQL needs to return candidate_id, lexical_score. Confirm that it does.
+            //todo This SQL needs to return id, score. Confirm that it does.
                 lexicalCandidateScoresSql
                 +
             """
             ),
             lexical_candidates AS (
-                SELECT candidate_id, lexical_score,
-                       ROW_NUMBER() OVER (ORDER BY lexical_score DESC, candidate_id) AS lexical_rank
+                SELECT id, score,
+                       ROW_NUMBER() OVER (ORDER BY score DESC, id) AS lexical_rank
                 FROM lexical_candidate_scores
-                ORDER BY lexical_score DESC, candidate_id
+                ORDER BY score DESC, id
                 LIMIT :candidateLimit
             ),
             semantic_pool AS (
