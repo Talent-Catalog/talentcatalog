@@ -154,7 +154,7 @@ public class CandidateReadDto {
     private boolean potentialDuplicate;
     private String publicId;
     @SqlIgnore
-    private Number rank;
+    private Number score;
     private String regoPartnerParam;
     private String regoReferrerParam;
     private String regoUtmCampaign;

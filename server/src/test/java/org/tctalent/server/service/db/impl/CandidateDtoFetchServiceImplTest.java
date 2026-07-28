@@ -41,7 +41,7 @@ import org.tctalent.server.repository.db.read.cache.CandidateVersionDao;
 import org.tctalent.server.repository.db.read.dto.CandidateReadDto;
 import org.tctalent.server.repository.db.read.sql.CandidateJsonDao;
 import org.tctalent.server.util.CandidateSearchUtils;
-import org.tctalent.server.util.textExtract.IdAndRank;
+import org.tctalent.server.util.textExtract.IdAndScore;
 
 @ExtendWith(MockitoExtension.class)
 class CandidateDtoFetchServiceImplTest {
@@ -263,9 +263,9 @@ class CandidateDtoFetchServiceImplTest {
 
     PageRequest pageRequest = PageRequest.of(1, 2);
     List<Object> rawRows = List.of(new Object(), new Object());
-    List<IdAndRank> idAndRanks = List.of(
-        new IdAndRank(2L, 0.75),
-        new IdAndRank(1L, null)
+    List<IdAndScore> idAndScores = List.of(
+        new IdAndScore(2L, 0.75),
+        new IdAndScore(1L, null)
     );
 
     CandidateReadDto dtoOne = mock(CandidateReadDto.class);
@@ -287,9 +287,9 @@ class CandidateDtoFetchServiceImplTest {
 
     try (MockedStatic<CandidateSearchUtils> utilities =
         mockStatic(CandidateSearchUtils.class)) {
-      utilities.when(() -> CandidateSearchUtils.processIdRankSearchResults(
+      utilities.when(() -> CandidateSearchUtils.processIdScoreSearchResults(
               rawRows, pageRequest.getSort()))
-          .thenReturn(idAndRanks);
+          .thenReturn(idAndScores);
 
       Page<CandidateReadDto> result =
           service.fetchPage(fetchIdsSql, countSql, pageRequest);
@@ -299,8 +299,8 @@ class CandidateDtoFetchServiceImplTest {
       assertSame(dtoTwo, result.getContent().get(0));
       assertSame(dtoOne, result.getContent().get(1));
 
-      verify(dtoTwo).setRank(0.75);
-      verify(dtoOne, never()).setRank(any());
+      verify(dtoTwo).setScore(0.75);
+      verify(dtoOne, never()).setScore(any());
       verify(idsQuery).setFirstResult(2);
       verify(idsQuery).setMaxResults(2);
     }

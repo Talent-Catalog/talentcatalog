@@ -138,7 +138,7 @@ import org.tctalent.server.service.db.email.EmailHelper;
 import org.tctalent.server.service.db.email.EmailNotificationLink;
 import org.tctalent.server.util.CandidateSearchUtils;
 import org.tctalent.server.util.PersistenceContextHelper;
-import org.tctalent.server.util.textExtract.IdAndRank;
+import org.tctalent.server.util.textExtract.IdAndScore;
 
 @Service
 @RequiredArgsConstructor
@@ -1658,15 +1658,15 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         start = end;
 
         //Process the results
-        List<IdAndRank> idAndRanks =
-            CandidateSearchUtils.processIdRankSearchResults(results, request.getSort());
+        List<IdAndScore> idAndScores =
+            CandidateSearchUtils.processIdScoreSearchResults(results, request.getSort());
 
         end = System.currentTimeMillis();
         long convertTime = end - start;
         start = end;
 
         //Get ids of sorted candidates
-        List<Long> ids = idAndRanks.stream().map(IdAndRank::id).toList();
+        List<Long> ids = idAndScores.stream().map(IdAndScore::id).toList();
 
         //Retrieve the candidate entities for those ids. They will come back unsorted.
         List<Candidate> candidatesUnsorted = candidateRepository.findByIds(ids);
@@ -1682,14 +1682,14 @@ public class SavedSearchServiceImpl implements SavedSearchService {
 
         //Construct a sorted list of the candidates in the same order as the returned ids.
         List<Candidate> candidatesSorted = new ArrayList<>();
-        for (IdAndRank idAndRank : idAndRanks) {
-            final Candidate candidate = candidatesById.get(idAndRank.id());
+        for (IdAndScore idAndScore : idAndScores) {
+            final Candidate candidate = candidatesById.get(idAndScore.id());
 
             //Optionally update candidate data with any ranking values.
-            final Number rank = idAndRank.rank();
+            final Number score = idAndScore.score();
             //Rank is a transient field so no need to set to null
-            if (rank != null) {
-                candidate.setRank(rank);
+            if (score != null) {
+                candidate.setScore(score);
             }
             candidatesSorted.add(candidate);
         }
