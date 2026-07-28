@@ -932,7 +932,7 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
     return !isSavedSearch(this.candidateSource);
   }
 
-  displayTextMatchRank(): boolean {
+  displayTextMatchScore(): boolean {
     return this.isSavedSearch() && this.isKeywordSearch;
   }
 

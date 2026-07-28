@@ -153,8 +153,8 @@ class SavedSearchServiceImplExtractSqlTest {
     }
 
     @Test
-    @DisplayName("SQL generated from text search request order by rank")
-    void extractFetchSQLFromTextSearchRequestOrderByRank() {
+    @DisplayName("SQL generated from text search request order by score")
+    void extractFetchSQLFromTextSearchRequestOrderByScore() {
         request.setSortFields(new String[] {"text_match"});
         request.setSimpleQueryString("excel java");
         String sql = savedSearchService.extractFetchSQL(

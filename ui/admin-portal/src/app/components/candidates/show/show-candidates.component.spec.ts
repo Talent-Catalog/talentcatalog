@@ -575,7 +575,7 @@ describe('ShowCandidatesComponent', () => {
       expect(component.isSavedSearch()).toBeFalse();
       expect(component.isSwapSelectionSupported()).toBeTrue();
       expect(component.isSelection()).toBeTrue();
-      expect(component.displayTextMatchRank()).toBeFalse();
+      expect(component.displayTextMatchScore()).toBeFalse();
 
       component.candidateSource = savedSearchSource();
       component.isKeywordSearch = true;
@@ -583,7 +583,7 @@ describe('ShowCandidatesComponent', () => {
       expect(component.isSavedList()).toBeFalse();
       expect(component.isSavedSearch()).toBeTrue();
       expect(component.isSwapSelectionSupported()).toBeFalse();
-      expect(component.displayTextMatchRank()).toBeTrue();
+      expect(component.displayTextMatchScore()).toBeTrue();
     });
 
     it('should return empty keyword without a form', () => {
