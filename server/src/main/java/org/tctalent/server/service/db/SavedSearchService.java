@@ -50,6 +50,16 @@ public interface SavedSearchService {
      * Extracts native database query SQL corresponding to the given search request.
      * </p>
      * <p>
+     * DESIGNED TO BE CALLED BY CANDIDATE STATS CODE - not a normal user.
+     * See {@link #extractUserSearchSql(SearchCandidateRequest)} when wanting to generate the SQL
+     * that is executed by a logged-in user, taking into account their user based constraints
+     * and defaulted request fields.
+     * </p>
+     * <p>
+     * It assumes no active user, so there are no user related restrictions and it processes
+     * the SearchCandidateRequest as it is - without implementing any standard defaults.
+     * </p>
+     * <p>
      *     The SQL will always be a "SELECT FROM candidate" statement plus joins to other tables
      *     as needed and a WHERE clause.
      * </p>
@@ -59,6 +69,12 @@ public interface SavedSearchService {
      * @return String containing the SQL
      */
     String extractFetchSQL(SearchCandidateRequest request);
+
+    //TODO JC Doc
+    String extractUserSearchSql(SearchCandidateRequest request);
+
+    //TODO JC Doc
+    String extractJoinAndWhereSQL(SearchCandidateRequest request);
 
     /**
      * Return all SavedSearch's that match the given ids, ordered by name.

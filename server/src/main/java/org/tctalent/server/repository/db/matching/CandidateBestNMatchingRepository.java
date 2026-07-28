@@ -77,6 +77,8 @@ public class CandidateBestNMatchingRepository {
             //todo This SQL needs to return id, score. Confirm that it does.
                 lexicalCandidateScoresSql
                 +
+                " LIMIT :candidateLimit"
+                +
             """
             ),
             lexical_candidates AS (

@@ -19,6 +19,7 @@ import org.tctalent.server.request.candidate.SearchCandidateRequest;
 import org.tctalent.server.request.candidate.matching.CandidateBestNMatchingRequest;
 import org.tctalent.server.service.api.SkillName;
 import org.tctalent.server.service.db.CandidateBestNMatchingService;
+import org.tctalent.server.service.db.SavedSearchService;
 import org.tctalent.server.service.db.SkillsService;
 import org.tctalent.server.service.embedding.TcVectorEmbeddingService;
 import org.tctalent.server.service.embedding.dto.EmbeddingResult;
@@ -31,6 +32,7 @@ public class CandidateBestNMatchingServiceImpl implements CandidateBestNMatching
     private final SkillsService skillsService;
     private final TcVectorEmbeddingService tcVectorEmbeddingService;
     private final VectorEmbeddingModelProperties embeddingProperties;
+    private final SavedSearchService savedSearchService;
 
 
     @Override
@@ -94,15 +96,15 @@ WHERE candidate_occupation.occupation_id in (:occupationId)
             .semanticPoolSize(n*10)
             .build();
 
-        String lexicalCandidateScoresSql = "";  //TODO JC ExtractFetchSQL
-        String constraintJoinsAndWhereSql = "";
+        String lexicalCandidateScoresSql = savedSearchService.extractUserSearchSql(request);
+
+        String constraintJoinsAndWhereSql = savedSearchService.extractJoinAndWhereSQL(request);
 
         List<CandidateBestNMatchingResult> results = candidateBestNMatchingRepository.match(
             matchingRequest, lexicalCandidateScoresSql, constraintJoinsAndWhereSql);
 
-        //TODO JC Fetch candidate Dtos
-
-        //TODO JC Populate ranks and explanations
+        //TODO JC See if I can execute up to here
+        //TODO JC Use CandidateDtoFetchService. It fetches DTos from ids, and populates scores
 
         throw new UnsupportedOperationException("NotImplemented match");
     }

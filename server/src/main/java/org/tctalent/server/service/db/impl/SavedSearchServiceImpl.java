@@ -1555,6 +1555,37 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         return candidates;
     }
 
+    @Override
+    public String extractUserSearchSql(SearchCandidateRequest request) {
+        // Compute the candidates which should be excluded from search
+        Set<Candidate> excludedCandidates =
+            computeCandidatesExcludedFromSearchCandidateRequest(request);
+
+        // Modify request, doing standard defaults
+        addDefaultsToSearchCandidateRequest(request);
+
+        User user = userService.getLoggedInUser();
+
+        return extractFetchSQL(request, user, excludedCandidates, true);
+    }
+
+    public String extractJoinAndWhereSQL(SearchCandidateRequest request) {
+        // Compute the candidates which should be excluded from search
+        Set<Candidate> excludedCandidates =
+            computeCandidatesExcludedFromSearchCandidateRequest(request);
+
+        // Modify request, doing standard defaults
+        addDefaultsToSearchCandidateRequest(request);
+
+        User user = userService.getLoggedInUser();
+
+        Set<Long> excludedSavedSearchIds = new HashSet<>();
+        excludedSavedSearchIds.add(request.getSavedSearchId());
+
+        return extractJoinAndWhereSQL(
+            request, user, excludedCandidates, true, excludedSavedSearchIds);
+    }
+
     private Page<CandidateReadDto> doSearchCandidateDtos(SearchCandidateRequest searchRequest) {
 
         Page<CandidateReadDto> candidates;
