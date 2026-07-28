@@ -49,7 +49,6 @@ public class CandidateBestNMatchingRepository {
         MapSqlParameterSource parameters = new MapSqlParameterSource()
             .addValue("queryText", request.getSimpleQueryString())
             .addValue("queryEmbedding", toVectorLiteral(request.getQueryEmbedding()))
-            .addValue("occupationId", request.getOccupationId())
             .addValue("lexicalWeight", request.getLexicalWeight())
             .addValue("semanticWeight", request.getSemanticWeight())
             .addValue("rrfK", RRF_K)
@@ -172,9 +171,6 @@ public class CandidateBestNMatchingRepository {
         }
         if (request.getSimpleQueryString() == null || request.getSimpleQueryString().isBlank()) {
             throw new IllegalArgumentException("Query text is required");
-        }
-        if (request.getOccupationId() == null) {
-            throw new IllegalArgumentException("Occupation id is required");
         }
         List<Double> embedding = request.getQueryEmbedding();
         if (embedding == null || embedding.isEmpty()) {

@@ -57,17 +57,6 @@ public class CandidateBestNMatchingRequest {
 
     /**
      * <p>
-     * This is an optional occupation ID related to the candidate experience we are looking to
-     * match.
-     * </p>
-     * <p>
-     * For example, we may be looking for Accountants.
-     * </p>
-     */
-    Long occupationId;
-
-    /**
-     * <p>
      * A fraction between 0 and 1. Zero means that lexical matches are ignored.
      * </p>
      * <p>
