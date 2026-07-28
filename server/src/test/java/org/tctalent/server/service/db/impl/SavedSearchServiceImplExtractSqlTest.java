@@ -160,10 +160,10 @@ class SavedSearchServiceImplExtractSqlTest {
         String sql = savedSearchService.extractFetchSQL(
             request, null, null, true);
         assertEquals(ORDERED_SELECT_PREFIX +
-            ",ts_rank(candidate.ts_text,to_tsquery('english','excel | java')) as rank" +
+            ",ts_rank(candidate.ts_text,to_tsquery('english','excel | java')) as score" +
             FROM_CANDIDATE +
             WHERE + "candidate.ts_text @@ to_tsquery('english','excel | java')" +
-            ORDER_BY + "rank DESC,candidate.id " + Direction.DESC, sql);
+            ORDER_BY + "score DESC,candidate.id " + Direction.DESC, sql);
     }
 
     @Test
