@@ -98,7 +98,7 @@ public abstract class CandidateSearchUtils {
                 String propertyName = order.getProperty();
                 String column;
                 if (propertyName.equals("text_match")) {
-                    column = "rank";
+                    column = "score";
                 } else {
                     column = mapPropertyNameToDbField(propertyName);
                 }
@@ -126,7 +126,7 @@ public abstract class CandidateSearchUtils {
                     String s;
                     if (propertyName.equals("text_match")) {
                         s = "ts_rank(" + CANDIDATE_TS_TEXT_FIELD + ","
-                            + buildToTsQueryFunction(textQuery) + ") as rank";
+                            + buildToTsQueryFunction(textQuery) + ") as score";
                     } else {
                         s = mapPropertyNameToDbField(propertyName);
                     }
@@ -169,7 +169,7 @@ public abstract class CandidateSearchUtils {
 
     /**
      * Builds the PostgreSQL to_tsquery function used for candidate text search.
-     *
+     * <p>
      * DeepScan DS-002 context:
      * This method does not allow SQL injection through tsquery operators. User input is placed
      * inside a quoted SQL string literal after single quotes are escaped by buildTsQuerySQL().
@@ -177,7 +177,7 @@ public abstract class CandidateSearchUtils {
      * characters. They may affect the tsquery expression, or cause a tsquery syntax error if
      * the search text is invalid, but they do not break out of the quoted SQL string into the
      * surrounding SQL statement.
-     *
+     * <p>
      * We intentionally use to_tsquery() rather than plainto_tsquery() because candidate search
      * supports boolean / Elasticsearch-style search syntax. Replacing this with plainto_tsquery()
      * would change existing search behavior by treating those operators as plain text.
@@ -347,21 +347,21 @@ public abstract class CandidateSearchUtils {
      */
     public static List<IdAndScore> processIdScoreSearchResults(List<?> results, Sort sort) {
         //Convert results to List of IdAndScore.
-        //Rank will only be populated if the query was sorted by rank.
+        //Score will only be populated if the query was sorted by score.
         final boolean sortedByScore = isSortedByScore(sort);
         return results.stream()
             .map(r -> {
                 long id;
-                Number rank = null;
+                Number score = null;
                 if (r instanceof Object[] arr) {
                     id = ((Number) arr[0]).longValue();
                     if (arr.length > 1 && sortedByScore && arr[1] instanceof Number) {
-                        rank = (Number) arr[1];
+                        score = (Number) arr[1];
                     }
                 } else {
                     id = ((Number) r).longValue();
                 }
-                return new IdAndScore(id, rank);
+                return new IdAndScore(id, score);
             })
             .toList();
     }
