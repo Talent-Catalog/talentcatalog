@@ -326,6 +326,8 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
 
   private initializeQueryStringWithJobSkills(skills: SkillName[]) {
     if (skills && skills.length > 0) {
+      //Construct query string as skill names separated by spaces.
+      //If a skill name is multiple words, then surround it with double quotes.
       let queryString = skills
       .map(
         s => s.name.indexOf(' ') < 0 ? s.name : '"' + s.name + '"'
