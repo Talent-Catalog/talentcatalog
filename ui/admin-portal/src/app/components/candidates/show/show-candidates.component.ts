@@ -124,6 +124,7 @@ import {
   listActionTooltips,
   ServiceList
 } from "../../../model/service-list";
+import {SearchResults} from "../../../model/search-results";
 
 export type CandidatePageSize = 20 | 50 | 100;
 
@@ -503,16 +504,41 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
     request.sortDirection = this.sortDirection;
     request.dtoType = this.searchDetail;
 
-    this.subscription = this.candidateService.search(request, this.useOldFetch).subscribe(
-      results => {
-        this.results = results;
-        this.cacheResults();
-        this.searching = false;
-      },
-      error => {
-        this.error = error;
-        this.searching = false;
-      });
+    //todo Set this to true to demo matching
+    let match = false;  //todo This should depend on populated Requirements field.
+
+    if (match) {
+      this.subscription = this.candidateService.match(request).subscribe(
+        results => {
+          let simSearch: SearchResults<Candidate> = {
+            number: 1,
+            size: 20,
+            totalElements: 20,
+            totalPages: 1,
+            first: true,
+            last: true,
+            content: results
+          }
+          this.results = simSearch;
+          this.cacheResults();
+          this.searching = false;
+        },
+        error => {
+          this.error = error;
+          this.searching = false;
+        });
+    } else {
+      this.subscription = this.candidateService.search(request, this.useOldFetch).subscribe(
+        results => {
+          this.results = results;
+          this.cacheResults();
+          this.searching = false;
+        },
+        error => {
+          this.error = error;
+          this.searching = false;
+        });
+    }
   }
 
   doSearch(refresh: boolean, usePageNumber = true) {

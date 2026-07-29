@@ -50,7 +50,7 @@ public class CandidateBuilderSelector {
     private final Set<String> candidatePublicProperties =
         new HashSet<>(Arrays.asList(
             "id",
-            "rank",
+            "score",
             "status",
             "muted",
             "candidateNumber",
@@ -162,7 +162,7 @@ public class CandidateBuilderSelector {
         DtoPropertyFilter candidatePropertyFilter, DtoPropertyFilter userPropertyFilter, DtoType type) {
         final DtoBuilder builder = new DtoBuilder(candidatePropertyFilter)
             .add("id")
-            .add("rank")
+            .add("score")
             .add("status")
             .add("muted")
             .add("pendingTerms")
