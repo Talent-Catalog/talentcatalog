@@ -82,7 +82,7 @@ public class CandidateBestNMatchingRepository {
             """
             ),
             lexical_candidates AS (
-                SELECT id, score,
+                SELECT id AS candidate_id, score AS lexical_score,
                        ROW_NUMBER() OVER (ORDER BY score DESC, id) AS lexical_rank
                 FROM lexical_candidate_scores
                 ORDER BY score DESC, id

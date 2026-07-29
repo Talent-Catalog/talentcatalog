@@ -22,6 +22,7 @@ import org.tctalent.server.service.db.CandidateBestNMatchingService;
 import org.tctalent.server.service.db.SavedSearchService;
 import org.tctalent.server.service.db.SkillsService;
 import org.tctalent.server.service.embedding.TcVectorEmbeddingService;
+import org.tctalent.server.service.embedding.dto.EmbeddingError;
 import org.tctalent.server.service.embedding.dto.EmbeddingResult;
 import org.tctalent.server.service.embedding.dto.EmbeddingsResponse;
 
@@ -66,7 +67,6 @@ WHERE candidate_occupation.occupation_id in (:occupationId)
         }
 
         //Extract skills from description
-        //TODO JC Should retain any existing simpleQueryString? Concatenate?
         List<SkillName> skillNames =
             skillsService.extractSkillNames(requirementsDescription, "en");
         //Construct the simpleQueryString by concatenating the skills separated by space.
@@ -82,6 +82,15 @@ WHERE candidate_occupation.occupation_id in (:occupationId)
         final EmbeddingsResponse embeddingsResponse = tcVectorEmbeddingService.generateEmbeddings(
             embeddingProperties.getEmbeddingModelKey(), sourceTexts);
         final List<EmbeddingResult> results1 = embeddingsResponse.getResults();
+        if (results1.isEmpty()) {
+            throw new RuntimeException("Embedding failed - no results"); //TODO JC
+        }
+        EmbeddingResult embeddingResult = results1.get(0);
+        if (embeddingResult.getError() != null) {
+            final EmbeddingError error = embeddingResult.getError();
+            throw new RuntimeException(error.getMessage()); //TODO JC
+        }
+
         final List<Double> embedding = results1.get(0).getEmbedding();
 
         //TODO JC These params are fields taken from the search request.
@@ -96,9 +105,16 @@ WHERE candidate_occupation.occupation_id in (:occupationId)
             .semanticPoolSize(n*10)
             .build();
 
-        String lexicalCandidateScoresSql = savedSearchService.extractUserSearchSql(request);
-
         String constraintJoinsAndWhereSql = savedSearchService.extractJoinAndWhereSQL(request);
+
+        //Modify request to generate the right lexical search.
+        //TODO JC Should retain any existing simpleQueryString? Concatenate?
+        request.setSimpleQueryString(simpleQueryString);
+
+        //Force sort by score. This means that score will appear in selected fields.
+        request.setSortFields(new String[]{"text_match"});
+
+        String lexicalCandidateScoresSql = savedSearchService.extractUserSearchSql(request);
 
         List<CandidateBestNMatchingResult> results = candidateBestNMatchingRepository.match(
             matchingRequest, lexicalCandidateScoresSql, constraintJoinsAndWhereSql);
