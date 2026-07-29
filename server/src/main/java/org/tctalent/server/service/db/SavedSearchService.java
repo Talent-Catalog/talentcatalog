@@ -70,10 +70,33 @@ public interface SavedSearchService {
      */
     String extractFetchSQL(SearchCandidateRequest request);
 
-    //TODO JC Doc
+    /**
+     * <p>
+     * Extracts native database query SQL corresponding to the given search request taking into
+     * account the currently logged-in user and also implements standard SearchCandidateRequest
+     * defaults (e.g. around status).
+     * </p>
+     * <p>
+     *     The SQL will always be a "SELECT FROM candidate" statement plus joins to other tables
+     *     as needed and a WHERE clause.
+     * </p>
+     * <p>
+     *     The request will return candidate data without duplicates.
+     * </p>
+     * @param request Search request
+     * @return String containing the SQL
+     */
     String extractUserSearchSql(SearchCandidateRequest request);
 
-    //TODO JC Doc
+    /**
+     * <p>
+     * This just extracts the join and where SQL of database query corresponding to the given
+     * search. This will be a substring of the SQL returned by
+     * {@link #extractUserSearchSql(SearchCandidateRequest)}
+     * </p>
+     * @param request Search request
+     * @return String containing the SQL
+     */
     String extractJoinAndWhereSQL(SearchCandidateRequest request);
 
     /**
