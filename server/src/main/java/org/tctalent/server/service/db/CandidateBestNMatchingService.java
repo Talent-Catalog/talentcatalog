@@ -4,7 +4,6 @@
 package org.tctalent.server.service.db;
 
 import java.util.List;
-import org.springframework.data.domain.Page;
 import org.tctalent.server.repository.db.matching.CandidateBestNMatchingResult;
 import org.tctalent.server.repository.db.read.dto.CandidateReadDto;
 import org.tctalent.server.request.candidate.SearchCandidateRequest;
@@ -49,6 +48,6 @@ public interface CandidateBestNMatchingService {
      * @throws UnsupportedOperationException if the request does not contain a non empty
      * {@link SearchCandidateRequest#getRequirementsDescription()}
      */
-    Page<CandidateReadDto> match(SearchCandidateRequest request);
+    List<CandidateReadDto> match(SearchCandidateRequest request);
 
 }

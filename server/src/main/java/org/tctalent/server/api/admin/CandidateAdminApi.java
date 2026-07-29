@@ -33,7 +33,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.NonNull;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -113,23 +112,35 @@ public class CandidateAdminApi {
     private final CandidateTokenProvider candidateTokenProvider;
     private final CandidateErasureService candidateErasureService;
 
+    @PostMapping("match")
+    public List<Map<String, Object>> match(@RequestBody SearchCandidateRequest request) {
+        List<CandidateReadDto> candidates = candidateBestNMatchingService.match(request);
+
+        long start = System.currentTimeMillis();
+        long end;
+
+        DtoBuilder builder = builderSelector.selectBuilder(request.getDtoType());
+        final List<Map<String, Object>> listOfCandidates = builder.buildList(candidates);
+
+        end = System.currentTimeMillis();
+        long computeDtoTime = end - start;
+
+        LogBuilder.builder(log).action("findCandidates")
+            .message("Timings: computeDto: " + computeDtoTime
+            ).logInfo();
+
+        return listOfCandidates;
+    }
+
     @PostMapping("search")
     public Map<String, Object> search(@RequestBody SearchCandidateRequest request) {
-        Page<CandidateReadDto> candidates;
-        if (StringUtils.hasText(request.getRequirementsDescription())) {
-            //Any text in the requirementsDescription flags a BestN matching.
-            //Note that results of BestN matching can still be paged.
-            candidates = candidateBestNMatchingService.match(request);
-        } else {
-            candidates = savedSearchService.searchCandidateDtos(request);
-        }
+        Page<CandidateReadDto> candidates = savedSearchService.searchCandidateDtos(request);
 
         long start = System.currentTimeMillis();
         long end;
 
         DtoBuilder builder = builderSelector.selectBuilder(request.getDtoType());
         final Map<String, Object> stringObjectMap = builder.buildPage(candidates);
-
 
         end = System.currentTimeMillis();
         long computeDtoTime = end - start;

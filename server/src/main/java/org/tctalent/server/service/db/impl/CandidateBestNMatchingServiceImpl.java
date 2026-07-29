@@ -3,12 +3,12 @@
  */
 package org.tctalent.server.service.db.impl;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.tctalent.server.configuration.properties.VectorEmbeddingModelProperties;
@@ -19,17 +19,20 @@ import org.tctalent.server.request.candidate.SearchCandidateRequest;
 import org.tctalent.server.request.candidate.matching.CandidateBestNMatchingRequest;
 import org.tctalent.server.service.api.SkillName;
 import org.tctalent.server.service.db.CandidateBestNMatchingService;
+import org.tctalent.server.service.db.CandidateDtoFetchService;
 import org.tctalent.server.service.db.SavedSearchService;
 import org.tctalent.server.service.db.SkillsService;
 import org.tctalent.server.service.embedding.TcVectorEmbeddingService;
 import org.tctalent.server.service.embedding.dto.EmbeddingError;
 import org.tctalent.server.service.embedding.dto.EmbeddingResult;
 import org.tctalent.server.service.embedding.dto.EmbeddingsResponse;
+import org.tctalent.server.util.textExtract.IdAndScore;
 
 @Service
 @RequiredArgsConstructor
 public class CandidateBestNMatchingServiceImpl implements CandidateBestNMatchingService {
     private final CandidateBestNMatchingRepository candidateBestNMatchingRepository;
+    private final CandidateDtoFetchService candidateDtoFetchService;
     private final SkillsService skillsService;
     private final TcVectorEmbeddingService tcVectorEmbeddingService;
     private final VectorEmbeddingModelProperties embeddingProperties;
@@ -59,7 +62,7 @@ WHERE candidate_occupation.occupation_id in (:occupationId)
     }
 
     @Override
-    public Page<CandidateReadDto> match(SearchCandidateRequest request) {
+    public List<CandidateReadDto> match(SearchCandidateRequest request) {
 
         final String requirementsDescription = request.getRequirementsDescription();
         if (!StringUtils.hasText(requirementsDescription)) {
@@ -119,9 +122,15 @@ WHERE candidate_occupation.occupation_id in (:occupationId)
         List<CandidateBestNMatchingResult> results = candidateBestNMatchingRepository.match(
             matchingRequest, lexicalCandidateScoresSql, constraintJoinsAndWhereSql);
 
-        //TODO JC See if I can execute up to here
-        //TODO JC Use CandidateDtoFetchService. It fetches DTos from ids, and populates scores
+        //Convert the results to IdAndScore's.
+        List<IdAndScore> idAndScores = convertResults(results);
+        return candidateDtoFetchService.fetchAndSetScores(idAndScores);
+    }
 
-        throw new UnsupportedOperationException("NotImplemented match");
+    private List<IdAndScore> convertResults(List<CandidateBestNMatchingResult> results) {
+        return results.stream()
+            .map(result ->
+                new IdAndScore(result.getCandidateId(), result.getRrfScore()))
+            .collect(Collectors.toCollection(ArrayList::new));
     }
 }

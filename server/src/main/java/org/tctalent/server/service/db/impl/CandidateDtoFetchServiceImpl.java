@@ -103,7 +103,32 @@ public class CandidateDtoFetchServiceImpl implements CandidateDtoFetchService {
 
         end = System.currentTimeMillis();
         long convertTime = end - start;
-        start = end;
+
+        List<CandidateReadDto> candidatesSorted = fetchAndSetScores(idAndScores);
+
+        LogBuilder.builder(log).action("countCandidates")
+            .message("Query: " + countSql).logInfo();
+        start = System.currentTimeMillis();
+        //Compute count
+        long total =  ((Number) entityManager.createNativeQuery(countSql).getSingleResult()).longValue();
+
+        end = System.currentTimeMillis();
+        long countTime = end - start;
+
+        LogBuilder.builder(log).action("findCandidates")
+            .message("Timings: fetchIds: " + fetchIdsTime
+                + " convert: " + convertTime
+                + " count: " + countTime
+            ).logInfo();
+
+        return new PageImpl<>(candidatesSorted, pageRequest, total);
+    }
+
+    public @NonNull List<CandidateReadDto> fetchAndSetScores(List<IdAndScore> idAndScores) {
+        long start;
+        long end;
+
+        start = System.currentTimeMillis();
 
         //Get ids of sorted candidates
         List<Long> ids = idAndScores.stream().map(IdAndScore::id).toList();
@@ -138,25 +163,13 @@ public class CandidateDtoFetchServiceImpl implements CandidateDtoFetchService {
         end = System.currentTimeMillis();
         long sortTime = end - start;
 
-        LogBuilder.builder(log).action("countCandidates")
-            .message("Query: " + countSql).logInfo();
-        start = end;
-        //Compute count
-        long total =  ((Number) entityManager.createNativeQuery(countSql).getSingleResult()).longValue();
-
-        end = System.currentTimeMillis();
-        long countTime = end - start;
-
         LogBuilder.builder(log).action("findCandidates")
-            .message("Timings: fetchIds: " + fetchIdsTime
-                + " convert: " + convertTime
-                + " fetchEntities: " + fetchEntitiesTime
+            .message("Timings: fetchEntities: " + fetchEntitiesTime
                 + " fetchDtos: " + fetchDtosTime
                 + " sort: " + sortTime
-                + " count: " + countTime
             ).logInfo();
 
-        return new PageImpl<>(candidatesSorted, pageRequest, total);
+        return candidatesSorted;
     }
 
     @Override

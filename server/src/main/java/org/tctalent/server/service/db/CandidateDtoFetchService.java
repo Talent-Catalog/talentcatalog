@@ -17,12 +17,14 @@
 package org.tctalent.server.service.db;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.lang.NonNull;
 import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.repository.db.read.dto.CandidateReadDto;
+import org.tctalent.server.util.textExtract.IdAndScore;
 
 /**
  * Service interface for fetching Candidate DTOs from the database.
@@ -61,5 +63,13 @@ public interface CandidateDtoFetchService {
      */
     @NonNull
     Map<Long, CandidateReadDto> fetchByIds(Collection<Long> ids) throws NoSuchObjectException;
+
+    /**
+     * Fetches the candidates in the order specified by the idAndScores and sets their scores.
+     * @param idAndScores Ordered list of candidate ids to be fetched - plus their scores.
+     * @return Ordered list of candidates, enriched with their scores.
+     */
+    @NonNull
+    List<CandidateReadDto> fetchAndSetScores(List<IdAndScore> idAndScores);
 
 }
