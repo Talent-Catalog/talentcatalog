@@ -1637,7 +1637,7 @@ class SalesforceServiceImplTest {
 
   private String validPrivateKeyPem() throws Exception {
     KeyPairGenerator generator = KeyPairGenerator.getInstance("RSA");
-    generator.initialize(1024);
+    generator.initialize(2048);
     String encoded = Base64.getEncoder().encodeToString(
         generator.generateKeyPair().getPrivate().getEncoded());
     return "-----BEGIN PRIVATE KEY-----" + encoded + "-----END PRIVATE KEY-----";
