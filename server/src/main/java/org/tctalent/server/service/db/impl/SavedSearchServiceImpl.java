@@ -1569,6 +1569,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         return extractFetchSQL(request, user, excludedCandidates, true);
     }
 
+    @Override
     public String extractJoinAndWhereSQL(SearchCandidateRequest request) {
         // Compute the candidates which should be excluded from search
         Set<Candidate> excludedCandidates =

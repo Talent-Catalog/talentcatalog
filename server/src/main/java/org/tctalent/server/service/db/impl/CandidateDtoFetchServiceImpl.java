@@ -124,6 +124,7 @@ public class CandidateDtoFetchServiceImpl implements CandidateDtoFetchService {
         return new PageImpl<>(candidatesSorted, pageRequest, total);
     }
 
+    @Override
     public @NonNull List<CandidateReadDto> fetchAndSetScores(List<IdAndScore> idAndScores) {
         long start;
         long end;
