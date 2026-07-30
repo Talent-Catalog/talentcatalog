@@ -14,8 +14,7 @@ public class TcVectorEmbeddingServiceClientConfig {
     @Bean
     public TcVectorEmbeddingServiceClient tcVectorEmbeddingServiceClient(
         RestClient.Builder restClientBuilder,
-        @Value("${tc-vector-embedding-service.apiUrl}") String apiUrl,
-        @Value("${tc-vector-embedding-service.apiKey}") String apiKey
+        @Value("${tc-vector-embedding-service.apiUrl}") String apiUrl
     ) {
         RestClient restClient = restClientBuilder
             .baseUrl(apiUrl)
