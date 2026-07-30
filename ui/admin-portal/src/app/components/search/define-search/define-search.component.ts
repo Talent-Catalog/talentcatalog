@@ -187,7 +187,7 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
     //todo For fixing this deprecation see https://stackoverflow.com/questions/65155217/formbuilder-group-is-deprecated
     this.searchForm = this.fb.group({
       requirementsDescription: [null],
-      lexicalScoreProportion: [0.5],
+      lexicalScoreProportion: [],
       savedSearchId: [null],
       simpleQueryString: [null],
       candidateNumbers: [''],

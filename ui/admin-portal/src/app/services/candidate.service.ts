@@ -62,8 +62,9 @@ export class CandidateService implements IntakeService {
 
   constructor(private http: HttpClient) {}
 
-  match(request): Observable<Candidate[]> {
-    return this.http.post<Candidate[]>(`${this.apiUrl}/match`, request);
+  searchOrMatch(request, match: boolean): Observable<SearchResults<Candidate>> {
+    let suffix = match ? "match" : "search";
+    return this.http.post<SearchResults<Candidate>>(`${this.apiUrl}/${suffix}`, request);
   }
 
   search(request, useOldFetch: boolean): Observable<SearchResults<Candidate>> {

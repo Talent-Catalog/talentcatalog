@@ -28,6 +28,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -112,24 +115,23 @@ public class CandidateAdminApi {
     private final CandidateTokenProvider candidateTokenProvider;
     private final CandidateErasureService candidateErasureService;
 
+    /**
+     * Match always returns a single page of results, sorted by score, the highest score first,
+     * being the best N candidate matches.
+     * @param request Standard search request. Paging info and sort are ignored.
+     * @return N or less matching candidates in a single page
+     */
     @PostMapping("match")
-    public List<Map<String, Object>> match(@RequestBody SearchCandidateRequest request) {
+    public Map<String, Object> match(@RequestBody SearchCandidateRequest request) {
         List<CandidateReadDto> candidates = candidateBestNMatchingService.match(request);
+        int nCandidates = candidates.size();
 
-        long start = System.currentTimeMillis();
-        long end;
+        PageRequest singlePage = PageRequest.of(0, nCandidates, Sort.unsorted());
+        Page<CandidateReadDto> candidateReadDtoPage =
+            new PageImpl<>(candidates, singlePage, nCandidates);
 
         DtoBuilder builder = builderSelector.selectBuilder(request.getDtoType());
-        final List<Map<String, Object>> listOfCandidates = builder.buildList(candidates);
-
-        end = System.currentTimeMillis();
-        long computeDtoTime = end - start;
-
-        LogBuilder.builder(log).action("findCandidates")
-            .message("Timings: computeDto: " + computeDtoTime
-            ).logInfo();
-
-        return listOfCandidates;
+        return builder.buildPage(candidateReadDtoPage);
     }
 
     @PostMapping("search")
