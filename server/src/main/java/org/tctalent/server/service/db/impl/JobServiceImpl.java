@@ -109,8 +109,6 @@ import org.tctalent.server.service.db.SkillsService;
 import org.tctalent.server.service.db.SystemNotificationService;
 import org.tctalent.server.service.db.UserService;
 import org.tctalent.server.service.db.email.EmailHelper;
-import org.tctalent.server.service.embedding.TcVectorEmbeddingService;
-import org.tctalent.server.service.embedding.dto.EmbeddingsResponse;
 import org.tctalent.server.service.policy.ChatPolicy;
 import org.tctalent.server.util.SalesforceHelper;
 import org.tctalent.server.util.filesystem.GoogleFileSystemDrive;
@@ -157,7 +155,6 @@ public class JobServiceImpl implements JobService {
     private final SkillsService skillsService;
     private final JobOppIntakeService jobOppIntakeService;
     private final NextStepProcessingService nextStepProcessingService;
-    private final TcVectorEmbeddingService tcVectorEmbeddingService;
 
     /**
      * Updates the closing logic to say tha when a job is closed in the given stage, then any
@@ -458,14 +455,6 @@ public class JobServiceImpl implements JobService {
             .orElseThrow(() -> new NoSuchObjectException(SalesforceJobOpp.class, id));
 
         String text = extractJobText(jobOpp);
-
-        //TODO JC Hijacked this
-        Map<String, String> texts = new HashMap<>();
-        texts.put("test1", text);
-        texts.put("test2", " ");
-        texts.put("test3", "John was here doing his thing as a Java and Python developer. He was also a great team player and a good communicator.");
-        final EmbeddingsResponse embeddingsResponse = tcVectorEmbeddingService.generateEmbeddings(
-            "MINILM_L6_SPACY_V3", texts);
 
         return skillsService.extractSkillNames(text, lang);
     }
