@@ -58,10 +58,16 @@ describe('TcAccordionComponent', () => {
   it('should replace previously active indexes', () => {
     component.activeIndexes = [0, 1, 2];
 
+    expect(component.activeIndexes).toEqual([0, 1, 2]);
+
     component.activeIndexes = [4, 5];
 
     expect(component.activeIndexes).toEqual([4, 5]);
     expect(component.isOpen(0)).toBeFalse();
+    expect(component.isOpen(1)).toBeFalse();
+    expect(component.isOpen(2)).toBeFalse();
+    expect(component.isOpen(4)).toBeTrue();
+    expect(component.isOpen(5)).toBeTrue();
   });
 
   it('should remove duplicate active indexes', () => {
@@ -73,17 +79,25 @@ describe('TcAccordionComponent', () => {
   it('should clear active indexes when null is supplied', () => {
     component.activeIndexes = [0, 1];
 
+    expect(component.activeIndexes).toEqual([0, 1]);
+
     component.activeIndexes = null;
 
     expect(component.activeIndexes).toEqual([]);
+    expect(component.isOpen(0)).toBeFalse();
+    expect(component.isOpen(1)).toBeFalse();
   });
 
   it('should clear active indexes when undefined is supplied', () => {
     component.activeIndexes = [0, 1];
 
+    expect(component.activeIndexes).toEqual([0, 1]);
+
     component.activeIndexes = undefined;
 
     expect(component.activeIndexes).toEqual([]);
+    expect(component.isOpen(0)).toBeFalse();
+    expect(component.isOpen(1)).toBeFalse();
   });
 
   it('should assign indexes to child items', () => {
