@@ -54,7 +54,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
@@ -63,6 +62,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.tctalent.server.api.dto.CandidateBuilderSelector;
@@ -107,6 +107,7 @@ import org.tctalent.server.request.candidate.opportunity.CandidateOpportunityPar
 import org.tctalent.server.request.chat.FetchCandidatesWithChatRequest;
 import org.tctalent.server.security.CandidateTokenProvider;
 import org.tctalent.server.security.CvClaims;
+import org.tctalent.server.service.db.CandidateBestNMatchingService;
 import org.tctalent.server.service.db.CandidateErasureService;
 import org.tctalent.server.service.db.CandidateOpportunityService;
 import org.tctalent.server.service.db.CandidateSavedListService;
@@ -114,6 +115,7 @@ import org.tctalent.server.service.db.CandidateService;
 import org.tctalent.server.service.db.SavedListService;
 import org.tctalent.server.service.db.SavedSearchService;
 import org.tctalent.server.util.dto.DtoBuilder;
+
 /**
  * Unit tests for Candidate Admin Api endpoints.
  *
@@ -180,6 +182,8 @@ class CandidateAdminApiTest extends ApiTestBase {
 
     @MockitoBean
     CandidateService candidateService;
+    @MockitoBean
+    CandidateBestNMatchingService candidateBestNMatchingService;
     @MockitoBean
     CandidateOpportunityService candidateOpportunityService;
     @MockitoBean
