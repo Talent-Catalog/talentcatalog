@@ -40,7 +40,7 @@ export class CandidateStatusSelectorComponent implements OnInit {
 
     //Filter out the draft option. Users should not be able to set a candidate's status to draft.
     this.candidateStatusOptions =
-      enumOptions(CandidateStatus).filter(option => option.stringValue !== CandidateStatus.draft);
+      enumOptions(CandidateStatus).filter(option => option.key !== toEnumKey(CandidateStatus, CandidateStatus.draft));
 
     // Sometimes the status may be a key from the DB, other times it may come as a string value
     // (e.g. CandidateStatus.active). So I need to convert to a key for the ng-select to bind in the form.
