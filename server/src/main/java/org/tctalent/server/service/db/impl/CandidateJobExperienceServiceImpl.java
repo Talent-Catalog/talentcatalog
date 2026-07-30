@@ -27,6 +27,7 @@ import org.tctalent.server.configuration.properties.VectorEmbeddingModelProperti
 import org.tctalent.server.exception.InvalidCredentialsException;
 import org.tctalent.server.exception.InvalidSessionException;
 import org.tctalent.server.exception.NoSuchObjectException;
+import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.CandidateJobExperience;
 import org.tctalent.server.model.db.CandidateOccupation;
@@ -190,10 +191,25 @@ public class CandidateJobExperienceServiceImpl implements CandidateJobExperience
         final List<EmbeddingResult> results = response.getResults();
         for (EmbeddingResult result : results) {
             if (result.isSuccessful()) {
-                altRepo.upsert(tableName,
-                    Long.parseLong(result.getId()), model.getId(), result.getEmbedding());
+
+                final long candidateJobExperienceId;
+                try {
+                    candidateJobExperienceId = Long.parseLong(result.getId());
+                    altRepo.upsert(tableName,
+                        candidateJobExperienceId, model.getId(), result.getEmbedding());
+                } catch (NumberFormatException e) {
+                    LogBuilder.builder(log)
+                        .action("parseEmbeddingResultId")
+                        .message(String.format("Error non numeric id: '%s'", result.getId()))
+                        .logError(e);
+                }
             } else {
-                log.warn("Error generating embeddings for candidate job experience: {}", result.getError());
+                LogBuilder.builder(log)
+                    .action("parseEmbeddingResultId")
+                    .message(String.format(
+                        "Error generating embeddings for candidate job experience: '%s'",
+                        result.getError()))
+                    .logWarn();
             }
         }
     }
