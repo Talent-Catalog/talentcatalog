@@ -209,6 +209,30 @@ describe('AuthorizationService', () => {
     expect(isSystemAdminOnly).toBeFalse();
   });
 
+  it('should return true for canEraseCandidateData if user is systemadmin and not read-only', () => {
+    const user: User = { id: 1, name: 'System Admin', role: 'systemadmin', readOnly: false } as User;
+    authenticationServiceSpy.getLoggedInUser.and.returnValue(user);
+
+    const canErase = service.canEraseCandidateData();
+    expect(canErase).toBeTrue();
+  });
+
+  it('should return false for canEraseCandidateData if user is systemadmin but read-only', () => {
+    const user: User = { id: 1, name: 'Read Only System Admin', role: 'systemadmin', readOnly: true } as User;
+    authenticationServiceSpy.getLoggedInUser.and.returnValue(user);
+
+    const canErase = service.canEraseCandidateData();
+    expect(canErase).toBeFalse();
+  });
+
+  it('should return false for canEraseCandidateData if user is not systemadmin', () => {
+    const user: User = { id: 1, name: 'Admin', role: 'admin', readOnly: false } as User;
+    authenticationServiceSpy.getLoggedInUser.and.returnValue(user);
+
+    const canErase = service.canEraseCandidateData();
+    expect(canErase).toBeFalse();
+  });
+
   it('should return true for isAdminOrGreater if user is admin or systemadmin', () => {
     const user: User = { id: 1, name: 'System Admin', role: 'systemadmin', readOnly: false } as User;
     authenticationServiceSpy.getLoggedInUser.and.returnValue(user);

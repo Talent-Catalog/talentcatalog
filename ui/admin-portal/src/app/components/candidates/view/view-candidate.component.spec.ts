@@ -20,7 +20,7 @@ import {CandidateService} from "../../../services/candidate.service";
 import {CandidateSavedListService} from "../../../services/candidate-saved-list.service";
 import {SavedListService} from "../../../services/saved-list.service";
 import {ViewCandidateComponent} from "./view-candidate.component";
-import {ComponentFixture, TestBed, waitForAsync} from "@angular/core/testing";
+import {ComponentFixture, fakeAsync, TestBed, tick, waitForAsync} from "@angular/core/testing";
 import {of, Subject, throwError} from "rxjs";
 import {ActivatedRoute, convertToParamMap} from "@angular/router";
 import {MockCandidate} from "../../../MockData/MockCandidate";
@@ -43,12 +43,13 @@ import {
 import {ViewCandidateContactComponent} from "./contact/view-candidate-contact.component";
 import {AutosaveStatusComponent} from "../../util/autosave-status/autosave-status.component";
 import {ViewCandidateNoteComponent} from "./note/view-candidate-note.component";
-import {Candidate} from "../../../model/candidate";
+import {Candidate, CandidateStatus, UpdateCandidateStatusInfo} from "../../../model/candidate";
 import {SavedList} from "../../../model/saved-list";
 import {MockSavedList} from "../../../MockData/MockSavedList";
 import {CUSTOM_ELEMENTS_SCHEMA} from "@angular/core";
 import {LocalStorageService} from "../../../services/local-storage.service";
 import {AuthorizationService} from "../../../services/authorization.service";
+import {EditCandidateStatusComponent} from "./status/edit-candidate-status.component";
 
 describe('ViewCandidateComponent', () => {
   let component: ViewCandidateComponent;
@@ -65,7 +66,7 @@ describe('ViewCandidateComponent', () => {
   mockCandidate.folderlink = 'https://localhost:8080/folder';
 
   beforeEach(waitForAsync(() => {
-    const mockCandidateServiceSpy = jasmine.createSpyObj('CandidateService', ['get','getByNumber', 'generateToken','updateCandidate', 'candidateUpdated']);
+    const mockCandidateServiceSpy = jasmine.createSpyObj('CandidateService', ['get','getByNumber', 'generateToken','updateCandidate', 'candidateUpdated', 'updateStatus']);
     mockSavedListService = jasmine.createSpyObj('SavedListService', ['search']);
     mockCandidateSavedListService = jasmine.createSpyObj('CandidateSavedListService', ['search', 'replace']);
     mockCandidateSavedListService.search.and.returnValue(of([]));
@@ -174,5 +175,78 @@ describe('ViewCandidateComponent', () => {
     const googleDriveIcon = fixture.nativeElement.querySelector('.fa-google-drive');
     expect(googleDriveIcon).toBeTruthy();
   })
+
+  it('should not show Delete candidate option if user is not an admin', () => {
+    authorizationServiceSpy.isAnAdmin.and.returnValue(false);
+    fixture.detectChanges();
+    const deleteIcon = fixture.nativeElement.querySelector('.fa-user-xmark');
+    expect(deleteIcon).toBeNull();
+  })
+
+  it('should show Delete candidate option if user is an admin', () => {
+    authorizationServiceSpy.isAnAdmin.and.returnValue(true);
+    fixture.detectChanges();
+    const deleteIcon = fixture.nativeElement.querySelector('.fa-user-xmark');
+    expect(deleteIcon).toBeTruthy();
+  })
+
+  describe('deleteCandidate', () => {
+    it('should open EditCandidateStatusComponent modal with status set to deleted', () => {
+      mockModalService.open.and.returnValue({
+        componentInstance: {},
+        result: new Promise(() => {})
+      } as any);
+
+      component.deleteCandidate();
+
+      expect(mockModalService.open).toHaveBeenCalledWith(EditCandidateStatusComponent);
+      const modal = mockModalService.open.calls.mostRecent().returnValue;
+      expect(modal.componentInstance.candidateStatus).toEqual(CandidateStatus.deleted);
+    });
+
+    it('should update the candidate status when the modal resolves', fakeAsync(() => {
+      const info: UpdateCandidateStatusInfo = { status: CandidateStatus.deleted } as UpdateCandidateStatusInfo;
+      mockModalService.open.and.returnValue({
+        componentInstance: {},
+        result: Promise.resolve(info)
+      } as any);
+      mockCandidateService.updateStatus.and.returnValue(of(null));
+      mockCandidateService.getByNumber.and.returnValue(of(mockCandidate));
+
+      component.deleteCandidate();
+      tick();
+
+      expect(mockCandidateService.updateStatus).toHaveBeenCalledWith({
+        candidateIds: [mockCandidate.id],
+        info: info
+      });
+    }));
+
+    it('should not throw when the modal is dismissed', fakeAsync(() => {
+      mockModalService.open.and.returnValue({
+        componentInstance: {},
+        result: Promise.reject('dismissed')
+      } as any);
+
+      expect(() => component.deleteCandidate()).not.toThrow();
+      tick();
+    }));
+  });
+
+  describe('editCandidateStatus', () => {
+    it('should open EditCandidateStatusComponent modal with the candidate\'s current status', () => {
+      component.candidate = { ...mockCandidate, status: CandidateStatus.pending };
+      mockModalService.open.and.returnValue({
+        componentInstance: {},
+        result: new Promise(() => {})
+      } as any);
+
+      component.editCandidateStatus();
+
+      expect(mockModalService.open).toHaveBeenCalledWith(EditCandidateStatusComponent);
+      const modal = mockModalService.open.calls.mostRecent().returnValue;
+      expect(modal.componentInstance.candidateStatus).toEqual(CandidateStatus.pending);
+    });
+  });
 
 });
