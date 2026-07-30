@@ -140,7 +140,7 @@
               View tailored CV
             </tc-dropdown-item>
 
-            <tc-dropdown-item *ngIf="isAnAdmin()"
+            <tc-dropdown-item *ngIf="canMarkAsDeleted()"
                               (itemSelect)="deleteCandidate()"
             >
               <tc-icon [color]="'error'"

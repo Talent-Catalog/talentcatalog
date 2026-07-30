@@ -176,15 +176,15 @@ describe('ViewCandidateComponent', () => {
     expect(googleDriveIcon).toBeTruthy();
   })
 
-  it('should not show Delete candidate option if user is not an admin', () => {
-    authorizationServiceSpy.isAnAdmin.and.returnValue(false);
+  it('should not show Delete candidate option if user has not got editable access', () => {
+    authorizationServiceSpy.isEditableCandidate.and.returnValue(false);
     fixture.detectChanges();
     const deleteIcon = fixture.nativeElement.querySelector('.fa-user-xmark');
     expect(deleteIcon).toBeNull();
   })
 
-  it('should show Delete candidate option if user is an admin', () => {
-    authorizationServiceSpy.isAnAdmin.and.returnValue(true);
+  it('should show Delete candidate option if user has editable access', () => {
+    authorizationServiceSpy.isEditableCandidate.and.returnValue(true);
     fixture.detectChanges();
     const deleteIcon = fixture.nativeElement.querySelector('.fa-user-xmark');
     expect(deleteIcon).toBeTruthy();

@@ -535,6 +535,10 @@ export class ViewCandidateComponent extends MainSidePanelBase implements OnInit,
       && this.candidate?.status !== 'deleted';
   }
 
+  canMarkAsDeleted(): boolean {
+    return this.isEditable() && this.candidate?.status !== 'deleted';
+  }
+
   canViewPrivateInfo() {
     return this.authorizationService.canViewPrivateCandidateInfo(this.candidate);
   }
