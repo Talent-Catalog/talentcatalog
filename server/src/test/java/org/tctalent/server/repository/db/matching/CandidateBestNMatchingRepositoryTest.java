@@ -32,6 +32,7 @@ class CandidateBestNMatchingRepositoryTest {
     void setUp() {
         jdbc = mock(NamedParameterJdbcTemplate.class);
         properties = new VectorEmbeddingModelProperties();
+        properties.setEmbeddingTable("job_experience_embedding_minilm_l6_spacy_v3");
         properties.setEmbeddingModelKey("MINILM_L6_SPACY_V3");
         properties.setAlternateEmbeddingModelKey("MINILM_L6_SPACY_V3");
         properties.setAlternateEmbeddingTable("job_experience_embedding_minilm_l6_spacy_v3");

@@ -53,7 +53,7 @@ class CandidateSearchUtilsTest {
 
         s = CandidateSearchUtils.buildOrderByClause(
             Sort.by(Sort.Direction.ASC, "text_match"));
-        Assertions.assertEquals(" order by rank ASC,candidate.id DESC", s);
+        Assertions.assertEquals(" order by score ASC,candidate.id DESC", s);
     }
 
     @Test
@@ -81,7 +81,7 @@ class CandidateSearchUtilsTest {
         String tsQuerySql = CandidateSearchUtils.buildTsQuerySQL(textQuery);
         Assertions.assertEquals("ts_rank("
             + CandidateSearchUtils.CANDIDATE_TS_TEXT_FIELD
-            +",to_tsquery('english','" + tsQuerySql + "')) as rank", s);
+            +",to_tsquery('english','" + tsQuerySql + "')) as score", s);
     }
 
     @Test
