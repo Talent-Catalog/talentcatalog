@@ -346,7 +346,7 @@ class DefaultFileUrlServiceTest {
 
     // The AWS builder only needs to parse the key because CloudFrontUtilities
     // itself is mocked.
-    keyPairGenerator.initialize(1024);
+    keyPairGenerator.initialize(2048);
 
     byte[] privateKeyBytes = keyPairGenerator.generateKeyPair().getPrivate().getEncoded();
 
