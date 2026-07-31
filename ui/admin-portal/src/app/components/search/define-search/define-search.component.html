@@ -146,7 +146,7 @@
             </div>
 
             <!-- Lexical vs Semantic importance -->
-            <div *ngIf="hasRequirements()" class="mb-3 col-md-6">
+            <div *ngIf="hasRequirements()" class="mb-3 col-md-3">
               <tc-label size="sm" class="form-label" for="lexicalScoreProportion">Lexical vs Semantic importance when matching requirements</tc-label>
               <tc-button [type]="'plain'"
                          class="tool-tip-button"
@@ -162,10 +162,26 @@
               <tc-input
                 id="lexicalScoreProportion"
                 type="number"
+                placeholder="0.5"
                 formControlName="lexicalScoreProportion"
               ></tc-input>
             </div>
+
+            <!-- Lexical vs Semantic importance -->
+            <div *ngIf="hasRequirements()" class="mb-3 col-md-3">
+              <tc-label size="sm" class="form-label" for="nMatches">Number of best matches</tc-label>
+              <tc-input
+                id="nMatches"
+                type="number"
+                formControlName="nMatches"
+              ></tc-input>
+            </div>
+
+
           </div>
+
+          <hr class="w-100">
+
           <div class="row">
             <div class="mb-3 col-md-6">
               <!-- providing 'placement' as an empty string makes the tooltip appear over the

@@ -187,7 +187,8 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
     //todo For fixing this deprecation see https://stackoverflow.com/questions/65155217/formbuilder-group-is-deprecated
     this.searchForm = this.fb.group({
       requirementsDescription: [null],
-      lexicalScoreProportion: [],
+      lexicalScoreProportion: [null],
+      nMatches: [null],
       savedSearchId: [null],
       simpleQueryString: [null],
       candidateNumbers: [''],
@@ -245,10 +246,16 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
     }, {validator: this.validateDuplicateSearches('savedSearchId')});
 
     // Subscribe to changes in Keyword Search
-    this.searchForm.get('simpleQueryString')?.statusChanges.subscribe(() => {
-      this.searchIsElastic = this.searchForm.get('simpleQueryString')?.dirty &&
-        this.searchForm.get('simpleQueryString')?.value !== '';
+    this.searchForm.controls.simpleQueryString.statusChanges.subscribe(() => {
+      this.searchIsElastic = this.searchForm.controls.simpleQueryString.dirty &&
+        this.searchForm.controls.simpleQueryString.value !== '';
     });
+
+    //Map changes to nMatches to this.pageSize.
+    this.searchForm.controls.nMatches.valueChanges.subscribe(() => {
+      //If nMatches is undefined, don't change pageSize
+      this.pageSize = this.searchForm.controls.nMatches.value || this.pageSize;
+    })
   }
 
   ngOnInit() {
