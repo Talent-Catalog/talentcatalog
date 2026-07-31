@@ -509,7 +509,8 @@
             <th *ngIf="displayScore()">
               <ng-container (click)="toggleSort('match_score', 'DESC')">
                 <div (click)="toggleSort('match_score', 'DESC')" class="sortable-column-header">
-                  <app-sorted-by [column]="'match_score'" [sortColumn]="sortField"
+                  <app-sorted-by *ngIf="!isMatchingSearch" [column]="'match_score'"
+                                 [sortColumn]="sortField"
                                  [sortDirection]="sortDirection"></app-sorted-by>
                   Score
                 </div>
@@ -521,7 +522,9 @@
               </tc-icon>
             </th>
             <th class="candidate-number-row sortable-column-header" (click)="toggleSort('id', 'DESC')">
-              <app-sorted-by [column]="'id'" [sortColumn]="sortField" [sortDirection]="sortDirection"></app-sorted-by>
+              <app-sorted-by *ngIf="!isMatchingSearch"
+                             [column]="'id'" [sortColumn]="sortField"
+                             [sortDirection]="sortDirection"></app-sorted-by>
               Candidate #
             </th>
             <th *ngIf="isShowStage()">
@@ -535,7 +538,7 @@
                    (click)="toggleSort(field.fieldPath)"
                    class="sortable-column-header"
               >
-                <app-sorted-by [column]="field.fieldPath"
+                <app-sorted-by *ngIf="!isMatchingSearch" [column]="field.fieldPath"
                                [sortColumn]="sortField"
                                [sortDirection]="sortDirection"
                 ></app-sorted-by>

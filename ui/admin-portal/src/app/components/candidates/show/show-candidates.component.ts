@@ -599,8 +599,11 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
   }
 
   toggleSort(column: string, defaultSortDirection: string = 'ASC') {
-    super.toggleSort(column, defaultSortDirection);
-    this.doSearch(true);
+    //Sorting is disabled for matches (because it is hard coded to the matching score)
+    if (!this.isMatchingSearch) {
+      super.toggleSort(column, defaultSortDirection);
+      this.doSearch(true);
+    }
   }
 
   importCandidates() {
