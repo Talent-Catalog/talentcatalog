@@ -427,7 +427,7 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
   onSubmit() {
    //checkSelectionsAndApply
    // If there are candidates selected, run a check before applying search.
-    if (this.selectedCandidates.length > 0) {
+    if (this.selectedCandidates?.length > 0) {
       this.confirmClearSelectionAndApply();
     } else {
       this.apply();
