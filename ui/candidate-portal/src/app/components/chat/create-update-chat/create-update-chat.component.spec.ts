@@ -15,6 +15,7 @@
  */
 
 import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {By} from '@angular/platform-browser';
 
 import {CreateUpdateChatComponent} from './create-update-chat.component';
 
@@ -24,18 +25,28 @@ describe('CreateUpdateChatComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ CreateUpdateChatComponent ]
-    })
-    .compileComponents();
-  });
+      declarations: [CreateUpdateChatComponent]
+    }).compileComponents();
 
-  beforeEach(() => {
     fixture = TestBed.createComponent(CreateUpdateChatComponent);
     component = fixture.componentInstance;
-    fixture.detectChanges();
   });
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('should run ngOnInit without errors', () => {
+    expect(() => component.ngOnInit()).not.toThrow();
+  });
+
+  it('should render the placeholder message', () => {
+    fixture.detectChanges();
+
+    const paragraph = fixture.debugElement.query(By.css('p'));
+
+    expect(paragraph).toBeTruthy();
+    expect(paragraph.nativeElement.textContent.trim())
+    .toBe('create-update-chat works!');
   });
 });
