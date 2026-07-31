@@ -511,7 +511,7 @@
         <thead>
           <tr>
             <th></th>
-            <th *ngIf="displayTextMatchScore()">
+            <th *ngIf="displayScore()">
               <ng-container (click)="toggleSort('text_match', 'DESC')">
                 <div (click)="toggleSort('text_match', 'DESC')" class="sortable-column-header">
                   <app-sorted-by [column]="'text_match'" [sortColumn]="sortField"
@@ -599,7 +599,7 @@
                 </tc-dropdown>
               </div>
             </td>
-            <td *ngIf="displayTextMatchScore()">
+            <td *ngIf="displayScore()">
               {{candidate.score}}
             </td>
             <td *ngIf="isReviewable()">

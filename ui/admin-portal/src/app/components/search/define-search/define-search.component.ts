@@ -318,6 +318,10 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
     });
   }
 
+  get requirementsDescription(): string {
+    return this.searchForm.get('requirementsDescription').value;
+  }
+
   private runSearchWithSkills(skills: SkillName[]) {
     this.clearForm();
     this.initializeQueryStringWithJobSkills(skills);
@@ -982,6 +986,10 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
 
   public isEmptySearchTerms(): boolean {
     return !(this.currentSearchTerms && this.currentSearchTerms.length > 0);
+  }
+
+  public hasRequirements(): boolean {
+    return this.requirementsDescription && this.requirementsDescription.trim().length > 0;
   }
 
   /** Hides/shows the search request and scrolls to top */

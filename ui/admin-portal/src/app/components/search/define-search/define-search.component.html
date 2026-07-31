@@ -146,7 +146,7 @@
             </div>
 
             <!-- Lexical vs Semantic importance -->
-            <div class="mb-3 col-md-6">
+            <div *ngIf="hasRequirements()" class="mb-3 col-md-6">
               <tc-label size="sm" class="form-label" for="lexicalScoreProportion">Lexical vs Semantic importance when matching requirements</tc-label>
               <tc-button [type]="'plain'"
                          class="tool-tip-button"
@@ -959,6 +959,7 @@
 
   <app-show-candidates *ngIf="!error && !loading"
                        [isKeywordSearch]="!isEmptySearchTerms()"
+                       [isMatchingSearch]="hasRequirements()"
                        [candidateSource]="savedSearch"
                        [pageNumber]="pageNumber"
                        [pageSize]="pageSize"

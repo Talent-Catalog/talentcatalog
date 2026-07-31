@@ -144,6 +144,7 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
   @Input() manageScreenSplits: boolean = true;
   @Input() showBreadcrumb: boolean = true;
   @Input() isKeywordSearch: boolean = false;
+  @Input() isMatchingSearch: boolean = false;
   @Input() declare pageNumber: number;
   @Input() declare pageSize: CandidatePageSize;
 
@@ -503,17 +504,17 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
     request.sortDirection = this.sortDirection;
     request.dtoType = this.searchDetail;
 
-    //todo Set this to true to demo matching
-    let match = true;  //todo This should depend on populated Requirements field.
-    this.subscription = this.candidateService.searchOrMatch(request, match).subscribe(
-      results => {
-        this.results = results;
-        this.cacheResults();
-        this.searching = false;
-      },
-      error => {
-        this.error = error;
-        this.searching = false;
+    this.subscription =
+      this.candidateService.searchOrMatch(request, this.isMatchingSearch).subscribe({
+        next: results =>  {
+          this.results = results;
+          this.cacheResults();
+          this.searching = false;
+        },
+        error: error => {
+          this.error = error;
+          this.searching = false;
+        }
       });
   }
 
@@ -934,8 +935,8 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
     return !isSavedSearch(this.candidateSource);
   }
 
-  displayTextMatchScore(): boolean {
-    return this.isSavedSearch() && this.isKeywordSearch;
+  displayScore(): boolean {
+    return this.isSavedSearch() && (this.isKeywordSearch || this.isMatchingSearch);
   }
 
   onSelectionChange(candidate: Candidate, selected: boolean) {
