@@ -30,6 +30,9 @@ ext {
     awsSdkVersion = "2.42.15"
     // Flyway upgrade (Postgres 17.5 compatible)
     set('flyway.version', '11.20.1')
+    //Note that there are breaking changes in jjwt 0.12 and 0.13. Fairly minor though.
+    //If you upgrade you will get some compile errors which should be easy to fix. JC
+    jjwtVersion = "0.11.2"
 }
 
 java {
@@ -162,19 +165,22 @@ dependencies {
     implementation "net.javacrumbs.shedlock:shedlock-spring:5.10.0"
     implementation "net.javacrumbs.shedlock:shedlock-provider-jdbc-template:5.10.0"
 
-    implementation("io.jsonwebtoken:jjwt-api:0.11.2")
+    // JWT support (JSON Web Token) for authentication and authorization.
+    // Public API used by application code.
+    implementation("io.jsonwebtoken:jjwt-api:$jjwtVersion")
+    // Runtime implementation and Jackson JSON support.
+    runtimeOnly("io.jsonwebtoken:jjwt-impl:$jjwtVersion")
+    runtimeOnly("io.jsonwebtoken:jjwt-jackson:$jjwtVersion")
+
     implementation 'com.google.api-client:google-api-client:1.32.1'
     implementation 'com.google.oauth-client:google-oauth-client-jetty:1.32.1'
     implementation 'com.google.apis:google-api-services-drive:v3-rev20210725-1.32.1'
 
     implementation("org.apache.commons:commons-lang3")
     implementation('commons-beanutils:commons-beanutils:1.11.0')
-    implementation("org.xhtmlrenderer:flying-saucer-pdf-itext5:9.7.2")
-    implementation('net.sf.jtidy:jtidy:r938')
+    // Source: https://mvnrepository.com/artifact/com.openhtmltopdf/openhtmltopdf-pdfbox
+    implementation("com.openhtmltopdf:openhtmltopdf-pdfbox:1.0.10")
     implementation('org.jsoup:jsoup:1.15.4')
-
-
-    runtimeOnly("io.jsonwebtoken:jjwt-impl:0.11.2", "io.jsonwebtoken:jjwt-jackson:0.11.2")
 
     // monitoring
     implementation 'org.springframework.boot:spring-boot-starter-actuator'

@@ -62,6 +62,12 @@
             </span>
         </tc-description-item>
       </tc-description-list>
+      <tc-alert *ngIf="selectedTask?.notifyOnAssignment"
+                type="info"
+                [dismissible]="false"
+      >
+        Email notification will be sent to the candidate after this task is assigned.
+      </tc-alert>
       </div>
         <!-- CUSTOM DUE DATE -->
         <tc-field [checkbox]="true">

@@ -37,6 +37,7 @@ export class EditCandidateJobExperienceComponent implements OnInit {
   candidateForm: UntypedFormGroup;
 
   countries = [];
+  extractedSkills: string[];
   years = [];
   error;
   loading: boolean;

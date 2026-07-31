@@ -65,6 +65,26 @@ casi/
       └─ *Repository                 // Spring Data JPA repos
 ```
 
+The following supporting infrastructure lives outside the `casi/` package but is used directly by
+CASI for agreement management:
+
+```text
+model/db/
+├─ Agreement          // candidate agreement instance with explicit lifecycle dates
+├─ Counterparty       // counterparty definition (backed by partner, employer, or service provider)
+├─ CounterpartyType   // MANAGING_SOURCE_PARTNER, DATABASE_PROVIDER, SERVICE_PROVIDER
+├─ TermsInfo          // in-memory registry entry for a specific version of legal terms
+└─ TermsType          // GRN_CANDIDATE_PRIVACY_POLICY, TBB_CANDIDATE_PRIVACY_POLICY,
+                      //   OPC_STANDARD_DATA_PROCESSING_AGREEMENT, REFERENCE_SERVICE_TERMS
+
+service/db/
+├─ AgreementService     // records acceptance, checks whether acceptance is still required
+└─ CounterpartyService  // find-or-create helper for counterparty records
+
+api/portal/
+└─ AgreementPortalApi   // GET /api/portal/agreement/list — returns candidate's agreement history
+```
+
 ### Core Concepts
 
 The CASI module is built around several core concepts:
@@ -88,6 +108,25 @@ The CASI module is built around several core concepts:
   implement.
 - **AbstractCandidateAssistanceService**: base class providing common functionality. Extend it and 
   override `provider()`, `serviceCode()`, `allocator()`, and optionally `importer()`.
+
+CASI agreements management core concepts:
+
+- **Agreement**: a persisted record that a candidate has accepted a specific version of legal terms
+  with a given counterparty. Fields: `candidate`, `counterparty`, `termsInfoId` (version-specific
+  string key), `termsType`, `start` (acceptance timestamp), `end` (null = still active).
+- **Counterparty**: the organisation on the other side of an agreement. Backed by one of: a
+  `PartnerImpl` FK, an `Employer` FK, a `ServiceProvider` enum value, or a plain `name` string.
+  `getDisplayName()` resolves these in that priority order. Classified by `CounterpartyType`
+  (`MANAGING_SOURCE_PARTNER`, `DATABASE_PROVIDER`, `SERVICE_PROVIDER`).
+- **TermsInfo**: an in-memory registry entry for a specific version of legal terms. Has a unique
+  string `id` (e.g. `"OpcDataProcessingAgreementV1"`), `type` (`TermsType`), `pathToContent`,
+  `createdDate`, and `content` (HTML). Multiple versions of the same type can exist; the one with
+  the most recent `createdDate` is "current".
+- **AgreementService**: records candidate acceptance of terms (`recordAgreement`), checks whether
+  acceptance is still required (`needsAcceptance`), and lists all agreements for the logged-in
+  candidate (`listMyAgreements`).
+- **CounterpartyService**: find-or-create helper with three factory methods — by type + name, by
+  type + partner FK, by type + service-provider enum.
 
 ### Add a new backend provider (step-by-step)
 
@@ -257,12 +296,49 @@ public class UdemyEligibilityPolicy implements EligibilityPolicy {
 
 Providers without an explicit `EligibilityPolicy` bean default to eligible for all candidates.
 
-#### 8) Email listener (optional)
+#### 8) Declare service-provider agreement terms (optional)
+
+Override `agreementTermsType()` if your service requires candidates to accept provider-specific
+terms before being assigned. The `ServicesPortalController` enforces this as a hard gate on
+`POST /{provider}/{serviceCode}/assign`.
+
+```java
+@Override
+public Optional<TermsType> agreementTermsType() {
+  return Optional.of(TermsType.REFERENCE_SERVICE_TERMS); // replace with your TermsType
+}
+```
+
+When overriding this method:
+- Add a new `TermsType` enum value for your provider's terms if one does not already exist.
+- Register a corresponding `TermsInfo` entry in the in-memory `TermsInfoService` registry
+  (file path + version id + created date).
+- Implement the two-step agreement UX in your candidate-portal component — see
+  `ReferenceComponent` and the `CasiPortalService` agreement methods for the pattern.
+
+#### 9) Declare OPC DPA acceptance (optional)
+
+Override `opcDpaAcceptedTermsInfoId()` if your service provider has signed OPC's Standard Data
+Processing Agreement. Returning a non-empty value causes the portal to require the candidate to
+acknowledge that DPA before being assigned.
+
+```java
+@Override
+public Optional<String> opcDpaAcceptedTermsInfoId() {
+  return Optional.of("OpcDataProcessingAgreementV1"); // the TermsInfo id of the signed version
+}
+```
+
+The `id` must match an entry already registered in `TermsInfoService`. The portal controller
+resolves the content from that registry and records the candidate's acknowledgement as an
+`Agreement` with `termsType = OPC_STANDARD_DATA_PROCESSING_AGREEMENT`.
+
+#### 10) Email listener (optional)
 
 To send emails on events, add a branch for your provider in the `onAssigned` method of 
 `EmailNotificationListener.java` in `core/listeners/`.
 
-#### 9) Controllers — zero new code
+#### 11) Controllers — zero new code
 
 No new controller code is needed. Both controllers auto-discover your provider via 
 `CandidateServiceRegistry`:
@@ -286,11 +362,23 @@ No new controller code is needed. Both controllers auto-discover your provider v
 |--------|------|-------------|
 | GET | `/{provider}/{serviceCode}/eligibility` | Check candidate eligibility |
 | GET | `/{provider}/{serviceCode}/assignment` | Get current assignment |
-| POST | `/{provider}/{serviceCode}/assign` | Self-assign (candidate claims) |
+| POST | `/{provider}/{serviceCode}/assign` | Self-assign (candidate claims) — enforces OPC DPA and provider agreement gates |
 | PUT | `/{provider}/{serviceCode}/resources/status` | Update resource status |
+| GET | `/{provider}/{serviceCode}/agreement/terms` | Get service-provider terms content |
+| GET | `/{provider}/{serviceCode}/agreement/needs-acceptance` | Check if candidate must accept provider terms |
+| POST | `/{provider}/{serviceCode}/agreement/accept` | Candidate accepts service-provider terms |
+| GET | `/{provider}/{serviceCode}/agreement/opc-dpa/terms` | Get OPC DPA terms content |
+| GET | `/{provider}/{serviceCode}/agreement/opc-dpa/needs-acceptance` | Check if candidate must acknowledge OPC DPA |
+| POST | `/{provider}/{serviceCode}/agreement/opc-dpa/accept` | Candidate acknowledges OPC DPA |
 
 The portal controller derives `candidateId` from the authenticated session — candidates can only 
 access their own data.
+
+**Agreement history endpoint** (`AgreementPortalApi` — `/api/portal/agreement`):
+
+| Method | Path | Description |
+|--------|------|-------------|
+| GET | `/list` | All agreements for the logged-in candidate (newest first), with embedded counterparty and terms content |
 
 ### Assignment lifecycle
 
@@ -474,16 +562,26 @@ CSV import components share logic via `BaseCsvImportComponent` (abstract class) 
 Candidate-facing CASI components live under 
 `ui/candidate-portal/src/app/components/profile/view/tab/services/`.
 
+The candidate's agreement history is shown in a separate sibling tab:
+`ui/candidate-portal/src/app/components/profile/view/tab/agreements/`.
+
 #### Layout
 
 ```text
-services/
-├── services.component.*             // service card grid + tab router
-├── duolingo/                        // Duolingo coupon claim/redeem
-│   └── duolingo-coupon/             // sub-component for individual coupon display
-├── linkedin/                        // LinkedIn premium claim/redeem
-│   └── linkedin-redeemed/           // sub-component for redeemed state
-└── reference/                       // Reference voucher (dev-only)
+tab/
+├── services/                            // service card grid + provider views
+│   ├── services.component.*             // service card grid + tab router
+│   ├── duolingo/                        // Duolingo coupon claim/redeem
+│   │   └── duolingo-coupon/             // sub-component for individual coupon display
+│   ├── linkedin/                        // LinkedIn premium claim/redeem
+│   │   └── linkedin-redeemed/           // sub-component for redeemed state
+│   ├── reference/                       // Reference voucher (dev-only, two-step agreement UX)
+│   └── unhcr/                           // UNHCR support resources
+│
+└── agreements/                          // read-only agreement history ledger (GRN only)
+    ├── candidate-agreements.component.* // lists all agreements; click-through to detail view
+    └── agreement-content/               // renders terms content for a single agreement
+        └── agreement-content.component.*
 ```
 
 #### Generic portal service: `CasiPortalService`
@@ -497,8 +595,27 @@ all candidate-facing CASI operations:
 | `getAssignment(provider, serviceCode)` | `GET /{provider}/{serviceCode}/assignment` |
 | `assign(provider, serviceCode)` | `POST /{provider}/{serviceCode}/assign` |
 | `updateResourceStatus(provider, serviceCode, request)` | `PUT /{provider}/{serviceCode}/resources/status` |
+| `getProviderTerms(provider, serviceCode)` | `GET /{provider}/{serviceCode}/agreement/terms` |
+| `checkNeedsAgreement(provider, serviceCode)` | `GET /{provider}/{serviceCode}/agreement/needs-acceptance` |
+| `acceptProviderTerms(provider, serviceCode)` | `POST /{provider}/{serviceCode}/agreement/accept` |
+| `getOpcDpaTerms(provider, serviceCode)` | `GET /{provider}/{serviceCode}/agreement/opc-dpa/terms` |
+| `checkNeedsOpcDpa(provider, serviceCode)` | `GET /{provider}/{serviceCode}/agreement/opc-dpa/needs-acceptance` |
+| `acceptOpcDpa(provider, serviceCode)` | `POST /{provider}/{serviceCode}/agreement/opc-dpa/accept` |
 
 New providers should use `CasiPortalService` directly.
+
+#### Agreement history service: `AgreementService`
+
+`ui/candidate-portal/src/app/services/agreement.service.ts` provides a dedicated HTTP service for
+the agreements ledger tab:
+
+| Method | Backend endpoint |
+|--------|-----------------|
+| `listMyAgreements()` | `GET /api/portal/agreement/list` |
+
+Returns all `Agreement` objects for the logged-in candidate, newest first. Each agreement includes
+embedded `counterparty` (id, type, displayName) and `termsInfo` (id, type, pathToContent,
+createdDate, content).
 
 #### Frontend model: `services.ts`
 
@@ -509,8 +626,18 @@ mirror the backend domain model:
 - `ServiceCode` (TEST_PROCTORED, TEST_NON_PROCTORED, PREMIUM_MEMBERSHIP, VOUCHER)
 - `ResourceStatus`, `AssignmentStatus`
 - `ServiceAssignment`, `ServiceResource` interfaces
+- `ServiceProviderTermsInfo` — `{ id: string; content: string }` returned by the agreement terms endpoints
 
 When adding a new provider, add the enum values here to match the backend.
+
+#### Frontend model: `agreement.ts`
+
+`ui/candidate-portal/src/app/model/agreement.ts` contains the TypeScript interfaces for the
+agreements ledger:
+
+- `Agreement` — `{ id, start, end, termsInfoId, counterparty, termsInfo }`
+- `AgreementCounterparty` — `{ id, type, displayName }`
+- `AgreementTermsInfo` — `{ id, type, pathToContent, createdDate, content }`
 
 #### Add a new candidate-portal service component (step-by-step)
 
@@ -527,14 +654,28 @@ When adding a new provider, add the enum values here to match the backend.
 
 3. Use `CasiPortalService` for all backend calls (eligibility, assignment, status updates).
 
-4. Wire the component into `services.component.html`:
+4. If your provider declares `agreementTermsType()` or `opcDpaAcceptedTermsInfoId()` on the
+   backend, wire the two-step agreement UX using the agreement methods on `CasiPortalService`:
+
+   - On load, call `checkNeedsOpcDpa()` and `checkNeedsAgreement()` (in parallel with 
+     `getAssignment()`).
+   - If OPC DPA acknowledgement is required, fetch terms with `getOpcDpaTerms()`, show them to
+     the candidate, and call `acceptOpcDpa()` on confirmation. Re-check all state afterwards.
+   - If provider terms acceptance is required, fetch terms with `getProviderTerms()`, show them
+     to the candidate, and call `acceptProviderTerms()` on confirmation. Re-check all state 
+     afterwards.
+   - Only show the assign button when both `needsOpcDpa` and `needsAgreement` are false.
+
+   See `ReferenceComponent` for the reference implementation of this two-step flow.
+
+5. Wire the component into `services.component.html`:
    - Add an `<app-udemy>` entry in the component rendering section.
    - Add a service card in the card grid.
 
-5. In the parent `view-candidate.component.ts`, check eligibility using `CasiPortalService` and
+6. In the parent `view-candidate.component.ts`, check eligibility using `CasiPortalService` and
    pass the result as an observable to `ServicesComponent`.
 
-6. Declare the component in the candidate portal `app.module.ts`.
+7. Declare the component in the candidate portal `app.module.ts`.
 
 ---
 
@@ -547,9 +688,20 @@ zero external dependencies.
 The REFERENCE provider uses an `EligibilityPolicy` bean (`ReferenceEligibilityPolicy` in 
 `application/policy/`) as the reference implementation for service eligibility verification.
 
+It also serves as the reference implementation for **both** agreement hooks:
+
+- **`agreementTermsType()`** returns `TermsType.REFERENCE_SERVICE_TERMS` — the candidate must
+  accept provider-specific service terms before accessing the service.
+- **`opcDpaAcceptedTermsInfoId()`** returns `"OpcDataProcessingAgreementV1"` — the candidate must
+  first acknowledge OPC's standard DPA.
+
+`ReferenceComponent` in the candidate portal demonstrates the full two-step agreement UX driven by
+these hooks: the OPC DPA acknowledgement screen is shown first, followed by the service terms
+acceptance screen, before the assign button becomes available.
+
 - **Backend**: `application/providers/reference/` (ReferenceService + ReferenceVoucherImporter)
 - **Admin UI**: `casi-management/import-reference-vouchers/` (CSV import tab, local-dev-only)
-- **Candidate UI**: `services/reference/` (voucher claim/redeem)
+- **Candidate UI**: `services/reference/` (voucher claim/redeem with two-step agreement flow)
 
 The Reference Vouchers admin tab is only visible when `environment.environmentName === 'local'` 
 (i.e. localhost dev builds). It is hidden in staging and production.

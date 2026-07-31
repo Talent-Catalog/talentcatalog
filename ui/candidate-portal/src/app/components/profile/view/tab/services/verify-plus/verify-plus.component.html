@@ -1,0 +1,74 @@
+<!--
+  ~ Copyright (c) 2026 Talent Catalog.
+  ~
+  ~ This program is free software: you can redistribute it and/or modify it under
+  ~ the terms of the GNU General Public License as published by the Free
+  ~ Software Foundation, either version 3 of the License, or any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful, but WITHOUT
+  ~ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+  ~ FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
+  ~ for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program. If not, see https://www.gnu.org/licenses/.
+  -->
+
+<div class="service-title">
+  <div class="header">
+    <div>
+      <h2>UNHCR Verify+</h2>
+      <p>Scan your UNHCR Verify+ card QR code to capture the encoded payload.</p>
+    </div>
+  </div>
+</div>
+
+<div class="service-content">
+  <app-verify-plus-scanner
+    [hideScanAgain]="true"
+    (scanned)="onScanned($event)"
+    (scannerError)="onScannerError($event)"
+  ></app-verify-plus-scanner>
+
+  <p class="mt-3 text-danger" *ngIf="scannerError">
+    A camera or scanner error occurred. Please refresh and try again.
+  </p>
+
+  <div class="scan-result mt-3" *ngIf="decodedPayload && !submitResult">
+    <h3>Review scanned payload</h3>
+    <pre>{{ formattedPayload }}</pre>
+  </div>
+
+  <p class="mt-3 text-danger" *ngIf="submitError">
+    {{ submitErrorMessage || "We couldn't submit this scan. Please check your connection and try again." }}
+    <br>
+    If this QR code is a valid UNHCR Verify+ code, please rescan.
+  </p>
+
+  <div class="mt-3 d-flex flex-wrap gap-2" *ngIf="decodedPayload && !submitResult">
+    <tc-button [type]="'outline'" [disabled]="submitting" (onClick)="onRescan()">
+      Rescan
+    </tc-button>
+    <tc-button [loading]="submitting" [disabled]="submitting" (onClick)="onConfirm()">
+      Confirm
+    </tc-button>
+  </div>
+
+  <div class="scan-result mt-3" *ngIf="submitResult && !submitResult.duplicate">
+    <h3>Verification submitted</h3>
+    <p>Your UNHCR number was captured successfully: <strong>{{ submitResult.unhcrNumber }}</strong></p>
+  </div>
+
+  <div class="scan-result mt-3" *ngIf="submitResult?.duplicate">
+    <h3>Duplicate UNHCR number found</h3>
+    <p>We submitted your scan, but this UNHCR number already exists on another active candidate: <strong>{{ submitResult.unhcrNumber }}</strong></p>
+    <p>You can rescan if needed.</p>
+  </div>
+
+  <div class="mt-5">
+    <tc-button [type]="'outline'" (onClick)="onBackButtonClicked()">
+      <i class="me-1 fas fa-arrow-left"></i>
+      Back
+    </tc-button>
+  </div>
+</div>

@@ -104,7 +104,10 @@
       </div>
 
       <!-- LOGIN -->
-      <a class="btn btn-link" [routerLink]="['/login']" *ngIf="!(authenticationService.loggedInUser$ | async)" (click)="closeNavbar()">
+      <a class="btn btn-link mobile-menu-link"
+         [routerLink]="['/login']"
+         *ngIf="!(authenticationService.loggedInUser$ | async)"
+         (click)="closeNavbar()">
         {{ 'HEADER.NAV.LOGIN' | translate }}
       </a>
 

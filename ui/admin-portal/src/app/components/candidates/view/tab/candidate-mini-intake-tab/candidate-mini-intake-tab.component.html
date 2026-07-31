@@ -31,9 +31,9 @@
         </p>
       </div>
       <div class="d-flex">
-        <app-export-pdf [candidate]="candidate"
+        <app-print-page [candidate]="candidate"
                         [idToExport]="'MiniIntakeForm'"
-        ></app-export-pdf>
+        ></app-print-page>
       </div>
     </div>
     <div *ngIf="isEditable()" class="d-flex justify-content-between gap-2">
