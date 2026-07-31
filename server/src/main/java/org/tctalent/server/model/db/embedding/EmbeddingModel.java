@@ -23,6 +23,7 @@ import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.lang.Nullable;
 import org.tctalent.server.model.db.AbstractDomainObject;
 
 /**
@@ -95,6 +96,13 @@ public class EmbeddingModel extends AbstractDomainObject<Long> {
      * </p>
      */
     private String modelName;
+
+    /**
+     * Optional link to documentation on the model.
+     * For example <a href="https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2">here</a>.
+     */
+    @Nullable
+    private String modelUrl;
 
     /**
      * The "namespace" of the model. Sometimes it matches the model's provider, e.g. "google" or
