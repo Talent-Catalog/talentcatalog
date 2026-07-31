@@ -108,9 +108,8 @@ WHERE candidate_occupation.occupation_id in (:occupationId)
 
         final List<Double> embedding = results1.get(0).getEmbedding();
 
-        //TODO JC These params are fields taken from the search request.
-        int n = 50;
-        double lexicalWeight = 0.5;
+        int n = request.getPageSize();
+        double lexicalWeight = request.getLexicalScoreProportion();
         CandidateBestNMatchingRequest matchingRequest = CandidateBestNMatchingRequest.builder()
             .simpleQueryString(simpleQueryString)
             .queryEmbedding(embedding)
