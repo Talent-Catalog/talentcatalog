@@ -140,6 +140,9 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
   countries: Country[];
   partners: Partner[];
   languages: Language[];
+
+  //todo This is currently hard coded. It should be uploaded from live EmbeddngModels
+  modelKeys: string[] = ['MINILM_L6_SPACY_V3'];
   educationLevels: EducationLevel[];
   educationMajors: EducationMajor[];
   candidateOccupations: Occupation[];
@@ -188,6 +191,7 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
     this.searchForm = this.fb.group({
       requirementsDescription: [null],
       lexicalScoreProportion: [null],
+      modelKey: [null],
       nMatches: [null],
       savedSearchId: [null],
       simpleQueryString: [null],
@@ -325,8 +329,20 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
     });
   }
 
+  get modelKey(): string {
+    return this.searchForm.controls.modelKey.value;
+  }
+
+  public hasModelKey(): boolean {
+    return !!this.modelKey;
+  }
+
   get requirementsDescription(): string {
-    return this.searchForm.get('requirementsDescription').value;
+    return this.searchForm.controls.requirementsDescription.value;
+  }
+
+  public hasRequirements(): boolean {
+    return this.requirementsDescription && this.requirementsDescription.trim().length > 0;
   }
 
   private runSearchWithSkills(skills: SkillName[]) {
@@ -993,10 +1009,6 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
 
   public isEmptySearchTerms(): boolean {
     return !(this.currentSearchTerms && this.currentSearchTerms.length > 0);
-  }
-
-  public hasRequirements(): boolean {
-    return this.requirementsDescription && this.requirementsDescription.trim().length > 0;
   }
 
   /** Hides/shows the search request and scrolls to top */
