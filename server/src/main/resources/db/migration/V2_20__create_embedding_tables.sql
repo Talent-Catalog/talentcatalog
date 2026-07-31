@@ -3,6 +3,7 @@ create table if not exists embedding_model (
     configuration_version text not null,
     model_name            text not null,
     model_key             text not null unique,
+    model_url             text,
     provider              text not null,
     dimensions            int not null,
     status                text not null
@@ -13,6 +14,7 @@ INSERT INTO embedding_model (
     configuration_version,
     model_name,
     model_key,
+    model_url,
     provider,
     dimensions,
     status
@@ -21,6 +23,7 @@ VALUES (
            'SPACY_PREPROCESSING_V3',
            'sentence-transformers/all-MiniLM-L6-v2',
            'MINILM_L6_SPACY_V3',
+           'https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2',
            'SENTENCE_TRANSFORMERS',
            384,
            'BUILDING'
