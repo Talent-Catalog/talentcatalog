@@ -132,7 +132,7 @@ WHERE candidate_occupation.occupation_id in (:occupationId)
         request.setSimpleQueryString(skillsQueryString);
 
         //Force sort by score. This means that the score will appear in selected fields.
-        request.setSortFields(new String[]{"text_match"});
+        request.setSortFields(new String[]{"match_score"});
 
         String lexicalCandidateScoresSql = savedSearchService.extractUserSearchSql(request);
 

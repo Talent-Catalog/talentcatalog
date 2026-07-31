@@ -97,7 +97,7 @@ public abstract class CandidateSearchUtils {
             .map( order -> {
                 String propertyName = order.getProperty();
                 String column;
-                if (propertyName.equals("text_match")) {
+                if (propertyName.equals("match_score")) {
                     column = "score";
                 } else {
                     column = mapPropertyNameToDbField(propertyName);
@@ -124,7 +124,7 @@ public abstract class CandidateSearchUtils {
                 .filter(property -> !property.equals("id"))
                 .map(propertyName -> {
                     String s;
-                    if (propertyName.equals("text_match")) {
+                    if (propertyName.equals("match_score")) {
                         s = "ts_rank(" + CANDIDATE_TS_TEXT_FIELD + ","
                             + buildToTsQueryFunction(textQuery) + ") as score";
                     } else {
@@ -251,7 +251,7 @@ public abstract class CandidateSearchUtils {
     }
 
     /**
-     * True if the first sorting order is by computed score (eg a "text_match" sort).
+     * True if the first sorting order is by computed score (eg a "match_score" sort).
      * @param sort Sort to be tested
      * @return True if sorted by a computed score.
      */
@@ -260,7 +260,7 @@ public abstract class CandidateSearchUtils {
         if (sort != null && !sort.isUnsorted()) {
             final Optional<Order> firstOrder = sort.stream().findFirst();
             if (firstOrder.isPresent()) {
-                sortedByScore = firstOrder.get().getProperty().equals("text_match");
+                sortedByScore = firstOrder.get().getProperty().equals("match_score");
             }
         }
         return sortedByScore;

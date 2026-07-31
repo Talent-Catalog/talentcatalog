@@ -152,7 +152,7 @@ export class CandidateSourceBaseComponent {
     let defaultSortDirection = 'DESC';
     if (isSavedSearch(this.candidateSource)) {
         if (!isNullOrEmpty(this.candidateSource.simpleQueryString)) {
-          defaultSortField = 'text_match'
+          defaultSortField = 'match_score'
         }
     }
 
