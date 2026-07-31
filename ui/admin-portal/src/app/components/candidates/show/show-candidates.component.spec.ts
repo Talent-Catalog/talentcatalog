@@ -641,14 +641,6 @@ describe('ShowCandidatesComponent', () => {
       expect(component.candidateSelection.emit).toHaveBeenCalledWith(candidate);
     });
 
-    it('should toggle fetch and refresh', () => {
-      component.useOldFetch = false;
-      spyOn(component, 'doSearch');
-      component.toggleFetch();
-      expect(component.useOldFetch).toBeTrue();
-      expect(component.doSearch).toHaveBeenCalledWith(true);
-    });
-
     it('should apply review filter and search without page number', () => {
       component.searchInResultsForm = formBuilder.group({statusesDisplay: [['rejected']]});
       spyOn(component, 'doSearch');
@@ -1075,7 +1067,6 @@ describe('ShowCandidatesComponent', () => {
       component.pageNumber = 2;
       component.pageSize = 50;
       component.reviewStatusFilter = ['verified'];
-      component.useOldFetch = true;
 
       spyOn(component, 'isReviewable').and.returnValue(true);
       spyOn<any>(component, 'cacheResults');

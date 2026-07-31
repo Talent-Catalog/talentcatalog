@@ -56,9 +56,6 @@ export class CandidateSourceBaseComponent {
 
   @Input() candidateSource: CandidateSource;
 
-  //Temporary - todo to be removed when we no longer use old fetching
-  useOldFetch: boolean = false;
-
   selectedFields: CandidateFieldInfo[] = [];
 
   constructor(
@@ -164,7 +161,7 @@ export class CandidateSourceBaseComponent {
     request.dtoType = dtoType;
 
     // Return the observable so the caller can subscribe to it
-    return this.candidateSourceCandidateService.searchPaged(this.candidateSource, request, this.useOldFetch).pipe(
+    return this.candidateSourceCandidateService.searchPaged(this.candidateSource, request).pipe(
       tap(results => {
         this.results = results;
         this.cacheResults();

@@ -598,11 +598,6 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
     this.doSearch(true);
   }
 
-  toggleFetch() {
-    this.useOldFetch = !this.useOldFetch;
-    this.doSearch(true);
-  }
-
   toggleSort(column: string, defaultSortDirection: string = 'ASC') {
     super.toggleSort(column, defaultSortDirection);
     this.doSearch(true);
