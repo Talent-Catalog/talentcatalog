@@ -600,7 +600,7 @@
               </div>
             </td>
             <td *ngIf="displayScore()">
-              {{candidate.score}}
+              {{showScore(candidate)}}
             </td>
             <td *ngIf="isReviewable()">
               <div [ngSwitch]="getReviewStatus(candidate)"

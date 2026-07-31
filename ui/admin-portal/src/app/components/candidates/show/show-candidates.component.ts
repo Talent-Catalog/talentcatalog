@@ -939,6 +939,19 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
     return this.isSavedSearch() && (this.isKeywordSearch || this.isMatchingSearch);
   }
 
+  /**
+   * The raw score is a fraction between 0 and 1. Scale it to a whole number with a modest number of
+   * digits
+   * @param candidate Candidate whose score we want to display
+   */
+  showScore(candidate: Candidate): number {
+    let score = candidate.score;
+    if (score != null) {
+      score = Math.trunc(score * Math.pow(10, 5))
+    }
+    return score;
+  }
+
   onSelectionChange(candidate: Candidate, selected: boolean) {
     //Record change
     candidate.selected = selected;
