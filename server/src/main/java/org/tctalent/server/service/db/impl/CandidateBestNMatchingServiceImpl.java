@@ -86,7 +86,7 @@ WHERE candidate_occupation.occupation_id in (:occupationId)
             skillsService.extractSkillNames(requirementsDescription, "en");
         //Construct the simpleQueryString by concatenating the skills separated by space.
         //If a skill contains spaces, quote in ""
-        String simpleQueryString = skillNames.stream()
+        String skillsQueryString = skillNames.stream()
             .map(SkillName::getName)
             .map(s -> s.contains(" ") ? "\"" + s + "\"" : s)
             .collect(Collectors.joining(" "));
@@ -111,7 +111,7 @@ WHERE candidate_occupation.occupation_id in (:occupationId)
         int n = request.getPageSize();
         double lexicalWeight = request.getLexicalScoreProportion();
         CandidateBestNMatchingRequest matchingRequest = CandidateBestNMatchingRequest.builder()
-            .simpleQueryString(simpleQueryString)
+            .simpleQueryString(skillsQueryString)
             .queryEmbedding(embedding)
             .lexicalWeight(lexicalWeight)
             .resultLimit(n)
@@ -119,13 +119,19 @@ WHERE candidate_occupation.occupation_id in (:occupationId)
             .semanticPoolSize(n*10)
             .build();
 
+        //In this hybrid matching we take over the simpleQueryString text search query - ignoring
+        //anything that has been entered there.
+        //The semantic match does not perform a text search.
+        //The Lexical match is defined by the skills extracted from the requirementsDescription.
+
+        //Ignore any text search constraints for the semantic match.
+        request.setSimpleQueryString(null);
         String constraintJoinsAndWhereSql = savedSearchService.extractJoinAndWhereSQL(request);
 
-        //Modify request to generate the right lexical search.
-        //TODO JC Should retain any existing simpleQueryString? Concatenate?
-        request.setSimpleQueryString(simpleQueryString);
+        //For lexical match, modify the request to use the query string with the extracted skills.
+        request.setSimpleQueryString(skillsQueryString);
 
-        //Force sort by score. This means that score will appear in selected fields.
+        //Force sort by score. This means that the score will appear in selected fields.
         request.setSortFields(new String[]{"text_match"});
 
         String lexicalCandidateScoresSql = savedSearchService.extractUserSearchSql(request);
