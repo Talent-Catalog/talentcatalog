@@ -359,7 +359,7 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
       .map(
         s => s.name.indexOf(' ') < 0 ? s.name : '"' + s.name + '"'
       ).join(' ');
-      this.searchForm.controls['simpleQueryString'].patchValue(queryString);
+      this.searchForm.controls.simpleQueryString.patchValue(queryString);
       this.searchForm.markAsDirty();
     }
   }
