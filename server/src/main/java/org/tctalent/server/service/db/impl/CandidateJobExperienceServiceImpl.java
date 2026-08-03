@@ -34,12 +34,12 @@ import org.tctalent.server.model.db.CandidateOccupation;
 import org.tctalent.server.model.db.Country;
 import org.tctalent.server.model.db.User;
 import org.tctalent.server.model.db.embedding.EmbeddingModel;
-import org.tctalent.server.repository.db.AlternateJobExperienceEmbeddingRepository;
 import org.tctalent.server.repository.db.CandidateJobExperienceRepository;
 import org.tctalent.server.repository.db.CandidateOccupationRepository;
 import org.tctalent.server.repository.db.CandidateRepository;
 import org.tctalent.server.repository.db.CountryRepository;
 import org.tctalent.server.repository.db.EmbeddingModelRepository;
+import org.tctalent.server.repository.db.JobExperienceEmbeddingRepository;
 import org.tctalent.server.request.work.experience.CreateJobExperienceRequest;
 import org.tctalent.server.request.work.experience.SearchJobExperienceRequest;
 import org.tctalent.server.request.work.experience.UpdateJobExperienceRequest;
@@ -58,7 +58,7 @@ import org.tctalent.server.util.text.TextPartsCodec;
 @Slf4j
 public class CandidateJobExperienceServiceImpl implements CandidateJobExperienceService {
 
-    private final AlternateJobExperienceEmbeddingRepository altRepo;
+    private final JobExperienceEmbeddingRepository jobExperienceEmbeddingRepository;
     private final CandidateJobExperienceRepository candidateJobExperienceRepository;
     private final CountryRepository countryRepository;
     private final CandidateRepository candidateRepository;
@@ -195,7 +195,7 @@ public class CandidateJobExperienceServiceImpl implements CandidateJobExperience
                 final long candidateJobExperienceId;
                 try {
                     candidateJobExperienceId = Long.parseLong(result.getId());
-                    altRepo.upsert(tableName,
+                    jobExperienceEmbeddingRepository.upsert(tableName,
                         candidateJobExperienceId, model.getId(), result.getEmbedding());
                 } catch (NumberFormatException e) {
                     LogBuilder.builder(log)
