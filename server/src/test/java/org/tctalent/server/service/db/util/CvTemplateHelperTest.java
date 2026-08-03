@@ -39,6 +39,7 @@ import org.tctalent.server.service.db.impl.TcInstanceService;
 import org.tctalent.server.util.text.CandidateTidiedTextViewFactory;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
+
 @ExtendWith(MockitoExtension.class)
 class CvTemplateHelperTest {
 
