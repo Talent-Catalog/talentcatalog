@@ -73,7 +73,7 @@ jobs:
           aws-region: us-east-1
 
       # --- Deploy to TBB Staging (us-east-1) ---
-      
+
       - name: Deploy to TBB with Jib
         run: ./gradlew jib -Ptest-tc-system -x test
 
