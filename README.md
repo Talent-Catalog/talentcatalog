@@ -1,5 +1,5 @@
 # Talent Catalog #
-[![codecov](https://codecov.io/gh/Talent-Catalog/talentcatalog/branch/ehsan%2Ftc-1342-add-test-coverage-badge-to-github-readme/graph/badge.svg?token=7VD4PDE12R)](https://codecov.io/gh/Talent-Catalog/talentcatalog)
+[![codecov](https://codecov.io/gh/Talent-Catalog/talentcatalog/graph/badge.svg?token=7VD4PDE12R)](https://codecov.io/gh/Talent-Catalog/talentcatalog)
 ## Overview ##
 
 This is the repository for the Talent Catalog (TC), which manages data
