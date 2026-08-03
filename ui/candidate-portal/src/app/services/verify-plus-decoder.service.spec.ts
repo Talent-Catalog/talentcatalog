@@ -31,6 +31,66 @@ describe('VerifyPlusDecoderService', () => {
     expect(service).toBeTruthy();
   });
 
+  it('should have QR-code decoding options configured', () => {
+    expect((service as any).options).toEqual({
+      formats: ['QRCode'],
+      tryHarder: true,
+      tryRotate: true,
+      tryInvert: true,
+      tryDownscale: true,
+      maxNumberOfSymbols: 1
+    });
+  });
+
+  it('should decode the UNHCR sample fixture image', async () => {
+    const imageData = await loadFixtureImageData(
+      '/docs/verify-plus/unhcr-sample.png'
+    );
+
+    const decoded = await service.decode(imageData);
+
+    expect(decoded).toBeTruthy();
+    expect(decoded!.length).toBeGreaterThan(1000);
+  });
+
+  it('should return null when the image contains no QR code', async () => {
+    const blankImage = createBlankImageData(100, 100);
+
+    const decoded = await service.decode(blankImage);
+
+    expect(decoded).toBeNull();
+  });
+
+  it('should cache and reuse the initialized ZXing module', async () => {
+    const blankImage = createBlankImageData(50, 50);
+
+    await service.decode(blankImage);
+
+    const firstModulePromise =
+      (service as any).moduleReady;
+
+    expect(firstModulePromise).toBeTruthy();
+
+    await service.decode(blankImage);
+
+    const secondModulePromise =
+      (service as any).moduleReady;
+
+    expect(secondModulePromise).toBe(
+      firstModulePromise
+    );
+  });
+
+  it('should return an existing cached module from init', () => {
+    const cachedModule = Promise.resolve({});
+
+    (service as any).moduleReady = cachedModule;
+
+    const result = (service as any).init();
+
+    expect(result).toBe(cachedModule);
+  });
+
   it('should decode the UNHCR sample fixture image', async () => {
     const response = await fetch('/base/docs/verify-plus/unhcr-sample.png');
     if (!response.ok) {
@@ -58,6 +118,7 @@ describe('VerifyPlusDecoderService', () => {
     expect(decoded).toBeTruthy();
     expect(decoded!.length).toBeGreaterThan(1000);
   });
+
 });
 
 function loadImage(url: string): Promise<HTMLImageElement> {
@@ -68,3 +129,54 @@ function loadImage(url: string): Promise<HTMLImageElement> {
     image.src = url;
   });
 }
+
+async function loadFixtureImageData(
+  path: string
+): Promise<ImageData> {
+  const image = await loadImage(path);
+
+  const canvas = document.createElement('canvas');
+  canvas.width = image.naturalWidth;
+  canvas.height = image.naturalHeight;
+
+  const context = canvas.getContext('2d');
+
+  if (!context) {
+    throw new Error(
+      'Unable to create 2D canvas context for QR fixture.'
+    );
+  }
+
+  context.drawImage(image, 0, 0);
+
+  return context.getImageData(
+    0,
+    0,
+    canvas.width,
+    canvas.height
+  );
+}
+
+function createBlankImageData(
+  width: number,
+  height: number
+): ImageData {
+  const pixels = new Uint8ClampedArray(
+    width * height * 4
+  );
+
+  // Create a fully opaque white image.
+  for (let index = 0; index < pixels.length; index += 4) {
+    pixels[index] = 255;
+    pixels[index + 1] = 255;
+    pixels[index + 2] = 255;
+    pixels[index + 3] = 255;
+  }
+
+  return new ImageData(
+    pixels,
+    width,
+    height
+  );
+}
+
