@@ -1,5 +1,5 @@
 codecov:
-  branch: staging
+  branch: ehsan/tc-1342-add-test-coverage-badge-to-github-readme
 
 coverage:
   status:
