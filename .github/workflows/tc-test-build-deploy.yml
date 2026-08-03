@@ -54,7 +54,6 @@ jobs:
 
       - name: Run tests and generate coverage
         run: ./gradlew clean :server:test :server:jacocoTestReport --stacktrace --rerun-tasks
-      # --- Deploy to TBB Staging (us-east-1) ---
 
       - name: Upload server coverage to Codecov
         uses: codecov/codecov-action@v5
@@ -73,6 +72,8 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST }}
           aws-region: us-east-1
 
+      # --- Deploy to TBB Staging (us-east-1) ---
+      
       - name: Deploy to TBB with Jib
         run: ./gradlew jib -Ptest-tc-system -x test
 
