@@ -9,16 +9,16 @@ on:
       - 'ui/public-portal/**'
       - '.github/workflows/tc-public-portal-test.yml'
       - '.nvmrc'
+      - 'codecov.yml'
 
   push:
     branches:
-      - '**'
-      - '!staging'
-      - '!master'
+      - staging
     paths:
       - 'ui/public-portal/**'
       - '.github/workflows/tc-public-portal-test.yml'
       - '.nvmrc'
+      - 'codecov.yml'
 
 permissions:
   contents: read
@@ -46,10 +46,20 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Run Angular tests
-        run: npm run test -- --watch=false --browsers=ChromeHeadless
+      - name: Run Public Portal tests with coverage
+        run: npm run test:coverage
         env:
           CI: true
+
+      - name: Upload Public Portal coverage to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: ./ui/public-portal/coverage/lcov.info
+          flags: public-portal
+          name: public-portal-coverage
+          fail_ci_if_error: true
+          disable_search: true
 
       - name: Archive test results
         if: failure()
