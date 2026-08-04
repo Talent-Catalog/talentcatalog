@@ -34,6 +34,9 @@ import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.transaction.PlatformTransactionManager;
 
+//TODO JC I should get rid of this and use the default data source configuration.
+// I think I can do that by using the default naming strategies in the application.properties file.
+// See https://stackoverflow.com/questions/40509395/cant-set-jpa-naming-strategy-after-configuring-multiple-data-sources-spring-1
 /**
  * Based on https://springframework.guru/how-to-configure-multiple-data-sources-in-a-spring-boot-application/
  *

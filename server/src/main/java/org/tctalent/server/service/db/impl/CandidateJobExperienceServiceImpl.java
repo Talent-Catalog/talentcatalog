@@ -23,7 +23,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
-import org.tctalent.server.configuration.properties.VectorEmbeddingModelProperties;
 import org.tctalent.server.exception.InvalidCredentialsException;
 import org.tctalent.server.exception.InvalidSessionException;
 import org.tctalent.server.exception.NoSuchObjectException;
@@ -34,18 +33,18 @@ import org.tctalent.server.model.db.CandidateOccupation;
 import org.tctalent.server.model.db.Country;
 import org.tctalent.server.model.db.User;
 import org.tctalent.server.model.db.embedding.EmbeddingModel;
-import org.tctalent.server.repository.db.AlternateJobExperienceEmbeddingRepository;
 import org.tctalent.server.repository.db.CandidateJobExperienceRepository;
 import org.tctalent.server.repository.db.CandidateOccupationRepository;
 import org.tctalent.server.repository.db.CandidateRepository;
 import org.tctalent.server.repository.db.CountryRepository;
-import org.tctalent.server.repository.db.EmbeddingModelRepository;
+import org.tctalent.server.repository.db.JobExperienceEmbeddingRepository;
 import org.tctalent.server.request.work.experience.CreateJobExperienceRequest;
 import org.tctalent.server.request.work.experience.SearchJobExperienceRequest;
 import org.tctalent.server.request.work.experience.UpdateJobExperienceRequest;
 import org.tctalent.server.security.AuthService;
 import org.tctalent.server.service.db.CandidateJobExperienceService;
 import org.tctalent.server.service.db.CandidateService;
+import org.tctalent.server.service.db.EmbeddingModelService;
 import org.tctalent.server.service.db.SkillsService;
 import org.tctalent.server.service.embedding.TcVectorEmbeddingService;
 import org.tctalent.server.service.embedding.dto.EmbeddingResult;
@@ -58,17 +57,17 @@ import org.tctalent.server.util.text.TextPartsCodec;
 @Slf4j
 public class CandidateJobExperienceServiceImpl implements CandidateJobExperienceService {
 
-    private final AlternateJobExperienceEmbeddingRepository altRepo;
+    private final JobExperienceEmbeddingRepository jobExperienceEmbeddingRepository;
     private final CandidateJobExperienceRepository candidateJobExperienceRepository;
     private final CountryRepository countryRepository;
     private final CandidateRepository candidateRepository;
     private final CandidateService candidateService;
     private final CandidateOccupationRepository candidateOccupationRepository;
-    private final EmbeddingModelRepository embeddingModelRepository;
+
+    private final EmbeddingModelService embeddingModelService;
     private final AuthService authService;
     private final SkillsService skillsService;
     private final TcVectorEmbeddingService tcVectorEmbeddingService;
-    private final VectorEmbeddingModelProperties vectorEmbeddingModelProperties;
 
     @Override
     public Page<CandidateJobExperience> searchCandidateJobExperience(
@@ -176,10 +175,20 @@ public class CandidateJobExperienceServiceImpl implements CandidateJobExperience
     @Override
     public void updateCandidateJobExperienceEmbeddings(List<CandidateJobExperience> experiences) {
 
-        final String tableName = vectorEmbeddingModelProperties.getAlternateEmbeddingTable();
-        final String modelKey = vectorEmbeddingModelProperties.getAlternateEmbeddingModelKey();
-        final EmbeddingModel model = embeddingModelRepository.findByModelKey(
-            modelKey);
+        //TODO JC Kicking off a build procedure.
+
+        // Get the embedding model with status BUILDING
+        final EmbeddingModel model = embeddingModelService.getBuildingModel();
+        if (model == null) {
+            LogBuilder.builder(log)
+                .action("updateCandidateJobExperienceEmbeddings")
+                .message("No embedding model with status BUILDING found")
+                .logWarn();
+            return;
+        }
+        final String modelKey = model.getModelKey();
+        final String tableName = embeddingModelService.getTableNameForModel(model);
+
         Map<String, String> descriptionsById = new HashMap<>();
         experiences.forEach(experience -> {
             descriptionsById.put(experience.getId().toString(), experience.getDescription());
@@ -195,7 +204,7 @@ public class CandidateJobExperienceServiceImpl implements CandidateJobExperience
                 final long candidateJobExperienceId;
                 try {
                     candidateJobExperienceId = Long.parseLong(result.getId());
-                    altRepo.upsert(tableName,
+                    jobExperienceEmbeddingRepository.upsert(tableName,
                         candidateJobExperienceId, model.getId(), result.getEmbedding());
                 } catch (NumberFormatException e) {
                     LogBuilder.builder(log)

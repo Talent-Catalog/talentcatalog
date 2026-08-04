@@ -27,8 +27,8 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import org.tctalent.server.configuration.properties.VectorEmbeddingModelProperties;
 import org.tctalent.server.model.db.embedding.EmbeddingModel;
-import org.tctalent.server.repository.db.EmbeddingModelRepository;
 import org.tctalent.server.request.candidate.matching.CandidateBestNMatchingRequest;
+import org.tctalent.server.service.db.EmbeddingModelService;
 
 /**
  * Executes candidate matching with JDBC because the PostgreSQL-specific CTEs, full-text operators,
@@ -47,12 +47,22 @@ public class CandidateBestNMatchingRepository {
 
     private final NamedParameterJdbcTemplate jdbc;
     private final VectorEmbeddingModelProperties embeddingProperties;
-    private final EmbeddingModelRepository embeddingModelRepository;
+
+    private final EmbeddingModelService embeddingModelService;
 
     public List<CandidateBestNMatchingResult> match(CandidateBestNMatchingRequest request,
     String lexicalCandidateScoresSql, String constraintJoinsAndWhereSql) {
-        String tableName = embeddingProperties.getEmbeddingTable();
-        EmbeddingModel model = configuredModel();
+
+        String modelKey = request.getModelKey();
+        if (modelKey == null || modelKey.isBlank()) {
+            modelKey = embeddingProperties.getDefaultEmbeddingModelKey();
+        }
+        EmbeddingModel model = embeddingModelService.findModelByKey(modelKey);
+        if (model == null) {
+            throw new IllegalArgumentException("No embedding model found for modelKey: " + modelKey);
+        }
+        String tableName = embeddingModelService.getTableNameForModel(model);
+
         validate(request, tableName, model.getDimensions());
 
         MapSqlParameterSource parameters = new MapSqlParameterSource()
@@ -150,15 +160,6 @@ public class CandidateBestNMatchingRepository {
             ORDER BY rrf_score DESC, candidate_id
             LIMIT :resultLimit
             """;
-    }
-
-    private EmbeddingModel configuredModel() {
-        String modelKey = embeddingProperties.getEmbeddingModelKey();
-        EmbeddingModel model = embeddingModelRepository.findByModelKey(modelKey);
-        if (model == null) {
-            throw new IllegalStateException("Configured embedding model not found: " + modelKey);
-        }
-        return model;
     }
 
     private void validate(CandidateBestNMatchingRequest request, String tableName, int dimensions) {
