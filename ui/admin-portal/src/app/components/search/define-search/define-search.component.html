@@ -146,8 +146,8 @@
             </div>
 
             <!-- Lexical vs Semantic importance -->
-            <div *ngIf="hasRequirements()" class="mb-3 col-md-3">
-              <tc-label size="sm" class="form-label" for="lexicalScoreProportion">Lexical vs Semantic importance when matching requirements</tc-label>
+            <div *ngIf="hasRequirements()" class="mb-3 col-md-4">
+              <tc-label size="sm" class="form-label" for="lexicalScoreProportion">Lexical vs Semantic matching</tc-label>
               <tc-button [type]="'plain'"
                          class="tool-tip-button"
                          ngbTooltip="Enter a value between 0 and 1. The default is 0.5 which means that the lexical score is equally important as the semantic score."
@@ -168,8 +168,8 @@
             </div>
 
             <!-- Number of matches requested -->
-            <div *ngIf="hasRequirements()" class="mb-3 col-md-3">
-              <tc-label size="sm" class="form-label" for="nMatches">Number of best matches</tc-label>
+            <div *ngIf="hasRequirements()" class="mb-3 col-md-2">
+              <tc-label size="sm" class="form-label" for="nMatches">Number of matches</tc-label>
               <tc-input
                 id="nMatches"
                 type="number"
@@ -190,18 +190,25 @@
               </ng-select>
             </div>
 
-            <div *ngIf="hasModelKey()" class="col-md-4">
-              <tc-label size="sm" class="form-label" for="modelKey">Model Configuration</tc-label>
+            <div *ngIf="hasModelKey()" class="col-md-3">
+              <tc-label size="sm" class="form-label">Model Configuration</tc-label>
               <div>
                 SPACY_PREPROCESSING_V3
               </div>
             </div>
 
             <div *ngIf="hasModelKey()" class="col-md-4">
-              <tc-label size="sm" class="form-label" for="modelKey">Model Name</tc-label>
+              <tc-label size="sm" class="form-label">Model Name</tc-label>
               <div>
                 <a target="_blank" href="https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2">
                   sentence-transformers/all-MiniLM-L6-v2</a>
+              </div>
+            </div>
+
+            <div *ngIf="hasModelKey()" class="col-md-1">
+              <tc-label size="sm" class="form-label">Dimensions</tc-label>
+              <div>
+                384
               </div>
             </div>
 
