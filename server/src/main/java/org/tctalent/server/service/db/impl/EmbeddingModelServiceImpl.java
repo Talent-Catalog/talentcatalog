@@ -82,4 +82,9 @@ public class EmbeddingModelServiceImpl implements EmbeddingModelService {
 //        }
         return name;
     }
+
+    @Override
+    public EmbeddingModel save(EmbeddingModel model) {
+        return embeddingModelRepository.save(model);
+    }
 }

@@ -49,8 +49,10 @@ public abstract class PagedCandidateJobExperienceBackProcessor implements BackPr
         try {
             pageOfExperiences = candidateJobExperienceService.searchCandidateJobExperience(searchJobExperienceRequest);
 
+            boolean hasMorePages = pageOfExperiences.hasNext();
+
             final List<CandidateJobExperience> content = pageOfExperiences.getContent();
-            processExperiences(candidateJobExperienceService, content);
+            processExperiences(candidateJobExperienceService, content, hasMorePages);
 
             // Log completed page
             LogBuilder.builder(log)
@@ -71,5 +73,6 @@ public abstract class PagedCandidateJobExperienceBackProcessor implements BackPr
 
     abstract protected void processExperiences(
         CandidateJobExperienceService candidateJobExperienceService,
-        List<CandidateJobExperience> experiences);
+        List<CandidateJobExperience> experiences,
+        boolean hasMorePages);
 }

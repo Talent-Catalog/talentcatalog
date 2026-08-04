@@ -53,4 +53,11 @@ public interface EmbeddingModelService {
      * @return String The table name associated with the given embedding model.
      */
     String getTableNameForModel(EmbeddingModel model);
+
+    /**
+     * Saves the given embedding model to the database.
+     * @param model The embedding model to save.
+     * @return EmbeddingModel The saved embedding model.
+     */
+    EmbeddingModel save(EmbeddingModel model);
 }

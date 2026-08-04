@@ -54,14 +54,13 @@ public interface BackgroundProcessingService {
 
   /**
    * Builds the vector embeddings for all candidate job experiences that do not already have
-   * vectors in the alternateEmbeddingTable as defined in
-   * {@link org.tctalent.server.configuration.properties.VectorEmbeddingModelProperties}.
-   * Does nothing if there is no such table defined.
+   * vectors in the embedding table associated with the embedding model whose status is BUILDING.
+   * Does nothing if there is no such model with that status.
    * <p>
-   *     When it completes, it sets the corresponding embedding model to the READY state.
+   *     When it completes, it sets the embedding model to the READY state.
    * </p>
    */
-  void buildAlternateEmbeddings();
+  void buildEmbeddings();
 
   /**
    * Adds publicID to any partner that doesn't have one

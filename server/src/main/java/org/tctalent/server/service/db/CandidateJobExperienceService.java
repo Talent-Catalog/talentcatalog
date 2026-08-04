@@ -33,7 +33,16 @@ public interface CandidateJobExperienceService {
 
     CandidateJobExperience updateCandidateJobExperience(Long candidateId, UpdateJobExperienceRequest request);
 
-    void updateCandidateJobExperienceEmbeddings(List<CandidateJobExperience> experiences);
+    /**
+     * Updates the embeddings for a list of candidate job experiences.
+     * <p>
+     * This method is intended for batch processing of candidate job experiences to update their
+     * embeddings.
+     * @param experiences the list of candidate job experiences to update. If empty, that signals
+     *                    that the batch processing is complete and the currently building model
+     *                    should be set to the status READY.
+     */
+    void batchUpdateCandidateJobExperienceEmbeddings(List<CandidateJobExperience> experiences);
 
     void deleteCandidateJobExperience(Long id);
 }

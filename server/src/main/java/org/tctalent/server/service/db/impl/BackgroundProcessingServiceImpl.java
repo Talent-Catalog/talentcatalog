@@ -28,12 +28,14 @@ import org.springframework.data.domain.Sort;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.CandidateJobExperience;
 import org.tctalent.server.model.db.CandidateStatus;
 import org.tctalent.server.model.db.PartnerImpl;
 import org.tctalent.server.model.db.SavedList;
 import org.tctalent.server.model.db.SavedSearch;
+import org.tctalent.server.model.db.embedding.EmbeddingModel;
 import org.tctalent.server.repository.db.CandidateRepository;
 import org.tctalent.server.request.candidate.SearchCandidateRequest;
 import org.tctalent.server.request.list.SearchSavedListRequest;
@@ -43,6 +45,7 @@ import org.tctalent.server.request.work.experience.SearchJobExperienceRequest;
 import org.tctalent.server.service.db.BackgroundProcessingService;
 import org.tctalent.server.service.db.CandidateJobExperienceService;
 import org.tctalent.server.service.db.CandidateService;
+import org.tctalent.server.service.db.EmbeddingModelService;
 import org.tctalent.server.service.db.PartnerService;
 import org.tctalent.server.service.db.SavedListService;
 import org.tctalent.server.service.db.SavedSearchService;
@@ -67,6 +70,7 @@ public class BackgroundProcessingServiceImpl implements BackgroundProcessingServ
   private final CandidateService candidateService;
   private final CandidateRepository candidateRepository;
   private final CandidateJobExperienceService candidateJobExperienceService;
+  private final EmbeddingModelService embeddingModelService;
   private final PartnerService partnerService;
   private final SavedListService savedListService;
   private final SavedSearchService savedSearchService;
@@ -135,7 +139,15 @@ public class BackgroundProcessingServiceImpl implements BackgroundProcessingServ
   }
 
   @Override
-  public void buildAlternateEmbeddings() {
+  public void buildEmbeddings() {
+    final EmbeddingModel model = embeddingModelService.getBuildingModel();
+    if (model == null) {
+      LogBuilder.builder(log)
+          .action("buildEmbeddings")
+          .message("No embedding model with status BUILDING found")
+          .logWarn();
+      return;
+    }
 
     //Process all experiences except for deleted or withdrawn candidates
     SearchJobExperienceRequest searchRequest = new SearchJobExperienceRequest();
@@ -146,20 +158,25 @@ public class BackgroundProcessingServiceImpl implements BackgroundProcessingServ
 
     //Create the processor, passing in the request and services it needs
     PagedCandidateJobExperienceBackProcessor backProcessor =
-        new PagedCandidateJobExperienceBackProcessor( "buildAlternateEmbeddings",
+        new PagedCandidateJobExperienceBackProcessor( "buildEmbeddings",
             searchRequest, candidateJobExperienceService) {
           @Override
           protected void processExperiences(
               CandidateJobExperienceService candidateJobExperienceService,
-              List<CandidateJobExperience> experiences) {
+              List<CandidateJobExperience> experiences, boolean hasMorePages) {
 
-              candidateJobExperienceService.updateCandidateJobExperienceEmbeddings(experiences);
+              candidateJobExperienceService.batchUpdateCandidateJobExperienceEmbeddings(experiences);
+              if (!hasMorePages) {
+                // Signal completion by passing in empty list to set model status to READY
+                candidateJobExperienceService
+                    .batchUpdateCandidateJobExperienceEmbeddings(new ArrayList<>());
+              }
           }
         };
 
-    //Start the processing - only consuming 20% of the CPU
+    //Start the processing
     PageContextBackRunner runner = new PageContextBackRunner();
-    runner.start(taskScheduler, backProcessor, 100, "Build alternate embeddings");
+    runner.start(taskScheduler, backProcessor, 100, "Build embeddings");
   }
 
   @Override

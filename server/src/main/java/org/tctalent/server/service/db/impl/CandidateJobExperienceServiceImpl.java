@@ -33,6 +33,7 @@ import org.tctalent.server.model.db.CandidateOccupation;
 import org.tctalent.server.model.db.Country;
 import org.tctalent.server.model.db.User;
 import org.tctalent.server.model.db.embedding.EmbeddingModel;
+import org.tctalent.server.model.db.embedding.EmbeddingModelStatus;
 import org.tctalent.server.repository.db.CandidateJobExperienceRepository;
 import org.tctalent.server.repository.db.CandidateOccupationRepository;
 import org.tctalent.server.repository.db.CandidateRepository;
@@ -173,9 +174,7 @@ public class CandidateJobExperienceServiceImpl implements CandidateJobExperience
     }
 
     @Override
-    public void updateCandidateJobExperienceEmbeddings(List<CandidateJobExperience> experiences) {
-
-        //TODO JC Kicking off a build procedure.
+    public void batchUpdateCandidateJobExperienceEmbeddings(List<CandidateJobExperience> experiences) {
 
         // Get the embedding model with status BUILDING
         final EmbeddingModel model = embeddingModelService.getBuildingModel();
@@ -186,6 +185,15 @@ public class CandidateJobExperienceServiceImpl implements CandidateJobExperience
                 .logWarn();
             return;
         }
+
+        //Special processing when there are no more experiences to process.
+        //This means the model is complete and should be set to READY.
+        if (experiences.isEmpty()) {
+            model.setStatus(EmbeddingModelStatus.READY);
+            embeddingModelService.save(model);
+            return;
+        }
+
         final String modelKey = model.getModelKey();
         final String tableName = embeddingModelService.getTableNameForModel(model);
 

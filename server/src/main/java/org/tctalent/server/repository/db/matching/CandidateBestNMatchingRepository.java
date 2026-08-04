@@ -25,7 +25,6 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
-import org.tctalent.server.configuration.properties.VectorEmbeddingModelProperties;
 import org.tctalent.server.model.db.embedding.EmbeddingModel;
 import org.tctalent.server.request.candidate.matching.CandidateBestNMatchingRequest;
 import org.tctalent.server.service.db.EmbeddingModelService;
@@ -46,18 +45,19 @@ public class CandidateBestNMatchingRepository {
     private static final Pattern SAFE_IDENTIFIER = Pattern.compile("[a-z][a-z0-9_]*");
 
     private final NamedParameterJdbcTemplate jdbc;
-    private final VectorEmbeddingModelProperties embeddingProperties;
 
     private final EmbeddingModelService embeddingModelService;
 
     public List<CandidateBestNMatchingResult> match(CandidateBestNMatchingRequest request,
     String lexicalCandidateScoresSql, String constraintJoinsAndWhereSql) {
 
+        EmbeddingModel model;
         String modelKey = request.getModelKey();
         if (modelKey == null || modelKey.isBlank()) {
-            modelKey = embeddingProperties.getDefaultEmbeddingModelKey();
+            model = embeddingModelService.getDefaultModel();
+        } else {
+            model = embeddingModelService.findModelByKey(modelKey);
         }
-        EmbeddingModel model = embeddingModelService.findModelByKey(modelKey);
         if (model == null) {
             throw new IllegalArgumentException("No embedding model found for modelKey: " + modelKey);
         }
