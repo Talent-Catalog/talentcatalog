@@ -16,9 +16,7 @@
 package org.tctalent.server.service.db.impl;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -37,7 +35,6 @@ import org.tctalent.server.service.db.SkillsService;
 import org.tctalent.server.service.embedding.TcVectorEmbeddingService;
 import org.tctalent.server.service.embedding.dto.EmbeddingError;
 import org.tctalent.server.service.embedding.dto.EmbeddingResult;
-import org.tctalent.server.service.embedding.dto.EmbeddingsResponse;
 import org.tctalent.server.util.textExtract.IdAndScore;
 
 @Service
@@ -95,22 +92,17 @@ WHERE candidate_occupation.occupation_id in (:occupationId)
         if (!StringUtils.hasText(modelKey)) {
             modelKey = embeddingProperties.getDefaultEmbeddingModelKey();
         }
-        //TODO JC Need simpler call for getting a single embedding. Returns error or List<Double>
-        Map<String, String> sourceTexts = new HashMap<>();
-        sourceTexts.put("target", requirementsDescription);
-        final EmbeddingsResponse embeddingsResponse =
-            tcVectorEmbeddingService.generateEmbeddings(modelKey, sourceTexts);
-        final List<EmbeddingResult> results1 = embeddingsResponse.getResults();
-        if (results1.isEmpty()) {
-            throw new RuntimeException("Embedding failed - no results"); //TODO JC
-        }
-        EmbeddingResult embeddingResult = results1.get(0);
+
+        boolean queryText = true; //This is a query text, not a document text.
+        EmbeddingResult embeddingResult = tcVectorEmbeddingService.generateEmbedding(
+            modelKey, requirementsDescription, queryText);
+
         if (embeddingResult.getError() != null) {
             final EmbeddingError error = embeddingResult.getError();
             throw new RuntimeException(error.getMessage()); //TODO JC
         }
 
-        final List<Double> embedding = results1.get(0).getEmbedding();
+        final List<Double> embedding = embeddingResult.getEmbedding();
 
         int n = request.getPageSize();
         double lexicalWeight = request.getLexicalScoreProportion();

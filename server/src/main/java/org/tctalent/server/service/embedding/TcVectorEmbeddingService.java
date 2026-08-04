@@ -6,6 +6,7 @@ package org.tctalent.server.service.embedding;
 
 import java.util.Map;
 import org.springframework.lang.NonNull;
+import org.tctalent.server.service.embedding.dto.EmbeddingResult;
 import org.tctalent.server.service.embedding.dto.EmbeddingsResponse;
 
 /**
@@ -26,4 +27,18 @@ public interface TcVectorEmbeddingService {
      */
     @NonNull
     EmbeddingsResponse generateEmbeddings(String modelKey, Map<String, String> sourceTexts);
+
+    /**
+     * Generates an embedding for a single source text using the specified embedding model.
+     *
+     * @param modelKey The key of the embedding model to use.
+     * @param sourceText The source text for which to generate an embedding.
+     * @param isQueryText A flag indicating whether the source text is a query text. Some
+     *                    embedding models may treat query texts differently from other types of
+     *                    texts. For example,
+     *                    <a href="https://huggingface.co/BAAI/bge-base-en-v1.5">BAAI/bge-base-en-v1.5</a>
+     * @return The result containing the generated embedding or any associated error.
+     */
+    @NonNull
+    EmbeddingResult generateEmbedding(String modelKey, String sourceText, boolean isQueryText);
 }

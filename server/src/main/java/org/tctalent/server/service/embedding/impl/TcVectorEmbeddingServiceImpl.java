@@ -1,9 +1,11 @@
 package org.tctalent.server.service.embedding.impl;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.tctalent.server.model.db.embedding.EmbeddingModel;
@@ -12,6 +14,7 @@ import org.tctalent.server.service.embedding.TcVectorEmbeddingService;
 import org.tctalent.server.service.embedding.dto.EmbeddingConfigurationVersion;
 import org.tctalent.server.service.embedding.dto.EmbeddingInput;
 import org.tctalent.server.service.embedding.dto.EmbeddingModelDetails;
+import org.tctalent.server.service.embedding.dto.EmbeddingResult;
 import org.tctalent.server.service.embedding.dto.EmbeddingsRequest;
 import org.tctalent.server.service.embedding.dto.EmbeddingsResponse;
 import org.tctalent.server.service.embedding.dto.TcVectorEmbeddingServiceClient;
@@ -53,5 +56,22 @@ public class TcVectorEmbeddingServiceImpl implements TcVectorEmbeddingService {
             .build();
 
         return tcVectorEmbeddingServiceClient.generateEmbeddings(request);
+    }
+
+    @NotNull
+    @Override
+    public EmbeddingResult generateEmbedding(
+        String modelKey, String sourceText, boolean isQueryText) {
+
+        Map<String, String> sourceTexts = new HashMap<>();
+        sourceTexts.put("target", sourceText);
+
+        final EmbeddingsResponse embeddingsResponse = generateEmbeddings(modelKey, sourceTexts);
+
+        final List<EmbeddingResult> results = embeddingsResponse.getResults();
+        if (results.isEmpty()) {
+            throw new RuntimeException("Embedding failed - no results"); //TODO JC
+        }
+        return results.get(0);
     }
 }
