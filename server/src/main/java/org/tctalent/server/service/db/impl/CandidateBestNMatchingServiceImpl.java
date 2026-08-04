@@ -91,11 +91,15 @@ WHERE candidate_occupation.occupation_id in (:occupationId)
             .map(s -> s.contains(" ") ? "\"" + s + "\"" : s)
             .collect(Collectors.joining(" "));
 
+        String modelKey = request.getModelKey();
+        if (!StringUtils.hasText(modelKey)) {
+            modelKey = embeddingProperties.getDefaultEmbeddingModelKey();
+        }
         //TODO JC Need simpler call for getting a single embedding. Returns error or List<Double>
         Map<String, String> sourceTexts = new HashMap<>();
         sourceTexts.put("target", requirementsDescription);
-        final EmbeddingsResponse embeddingsResponse = tcVectorEmbeddingService.generateEmbeddings(
-            embeddingProperties.getEmbeddingModelKey(), sourceTexts);
+        final EmbeddingsResponse embeddingsResponse =
+            tcVectorEmbeddingService.generateEmbeddings(modelKey, sourceTexts);
         final List<EmbeddingResult> results1 = embeddingsResponse.getResults();
         if (results1.isEmpty()) {
             throw new RuntimeException("Embedding failed - no results"); //TODO JC

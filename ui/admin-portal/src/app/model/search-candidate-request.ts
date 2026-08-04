@@ -19,6 +19,7 @@ import {SavedSearchJoin} from './saved-search';
 export interface SearchCandidateRequest {
   requirementsDescription?: string;
   lexicalScoreProportion?: number;
+  modelKey?: string;
   simpleQueryString?: string;
   keyword?: string;
   gender?: string;

@@ -74,6 +74,11 @@ public class SearchCandidateRequest extends PagedSearchRequest {
     private float lexicalScoreProportion;
 
     /**
+     * The model key to use for vector embeddings. If not specified, the default model will be used.
+     */
+    private String modelKey;
+
+    /**
      * @see SavedSearch#getSimpleQueryString()
      */
     private String simpleQueryString;

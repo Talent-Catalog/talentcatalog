@@ -7,7 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.tctalent.server.model.db.embedding.EmbeddingModel;
-import org.tctalent.server.repository.db.EmbeddingModelRepository;
+import org.tctalent.server.service.db.EmbeddingModelService;
 import org.tctalent.server.service.embedding.TcVectorEmbeddingService;
 import org.tctalent.server.service.embedding.dto.EmbeddingConfigurationVersion;
 import org.tctalent.server.service.embedding.dto.EmbeddingInput;
@@ -22,13 +22,16 @@ import org.tctalent.server.service.embedding.dto.TcVectorEmbeddingServiceClient;
 public class TcVectorEmbeddingServiceImpl implements TcVectorEmbeddingService {
 
     private final TcVectorEmbeddingServiceClient tcVectorEmbeddingServiceClient;
-    private final EmbeddingModelRepository embeddingModelRepository;
+    private final EmbeddingModelService embeddingModelService;
 //    private final EmbeddingModelDetailsMapper embeddingModelDetailsMapper;
 
     @Override
     public @NonNull EmbeddingsResponse generateEmbeddings(
         String modelKey, Map<String, String> sourceTexts) {
-        EmbeddingModel embeddingModel = embeddingModelRepository.findByModelKey(modelKey);
+        EmbeddingModel embeddingModel = embeddingModelService.findModelByKey(modelKey);
+        if (embeddingModel == null) {
+            throw new IllegalArgumentException("No embedding model found for key: " + modelKey);
+        }
 
         EmbeddingModelDetails modelDetails = EmbeddingModelDetails.builder()
             .modelName(embeddingModel.getModelName())
