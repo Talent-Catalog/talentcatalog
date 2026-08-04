@@ -39,6 +39,12 @@ import org.tctalent.server.request.candidate.SearchCandidateRequest;
 public class CandidateBestNMatchingRequest {
 
     /**
+     * The modelKey of the embedding model to use for semantic matching.
+     * This should match a modelKey in an {@link org.tctalent.server.model.db.embedding.EmbeddingModel} entity.
+     */
+    String modelKey;
+
+    /**
      * <p>
      * Candidate-related text is matched against this query.
      * </p>
