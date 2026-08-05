@@ -34,6 +34,7 @@ import org.tctalent.server.service.db.SavedSearchService;
 import org.tctalent.server.service.db.SkillsService;
 import org.tctalent.server.service.embedding.TcVectorEmbeddingService;
 import org.tctalent.server.service.embedding.dto.EmbeddingError;
+import org.tctalent.server.service.embedding.dto.EmbeddingInputType;
 import org.tctalent.server.service.embedding.dto.EmbeddingResult;
 import org.tctalent.server.util.textExtract.IdAndScore;
 
@@ -93,9 +94,8 @@ WHERE candidate_occupation.occupation_id in (:occupationId)
             modelKey = embeddingProperties.getDefaultEmbeddingModelKey();
         }
 
-        boolean queryText = true; //This is a query text, not a document text.
         EmbeddingResult embeddingResult = tcVectorEmbeddingService.generateEmbedding(
-            modelKey, requirementsDescription, queryText);
+            modelKey, null, requirementsDescription, EmbeddingInputType.QUERY);
 
         if (embeddingResult.getError() != null) {
             final EmbeddingError error = embeddingResult.getError();

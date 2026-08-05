@@ -4,8 +4,11 @@
 
 package org.tctalent.server.service.embedding;
 
-import java.util.Map;
+import java.util.List;
 import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
+import org.tctalent.server.service.embedding.dto.EmbeddingInput;
+import org.tctalent.server.service.embedding.dto.EmbeddingInputType;
 import org.tctalent.server.service.embedding.dto.EmbeddingResult;
 import org.tctalent.server.service.embedding.dto.EmbeddingsResponse;
 
@@ -21,24 +24,32 @@ public interface TcVectorEmbeddingService {
      * Generates embeddings for the given source texts using the specified embedding model.
      *
      * @param modelKey The key of the embedding model to use.
-     * @param sourceTexts      A map of source text identifiers to their corresponding text
-     *                         content.
+     * @param inputs A list of EmbeddingInputs containing the data to be embedded.
+     * @param type See {@link #generateEmbedding}
      * @return A response containing the generated embeddings and any associated errors.
      */
     @NonNull
-    EmbeddingsResponse generateEmbeddings(String modelKey, Map<String, String> sourceTexts);
+    EmbeddingsResponse generateEmbeddings(
+        @NonNull String modelKey,
+        @NonNull List<EmbeddingInput> inputs,
+        @NonNull EmbeddingInputType type);
 
     /**
      * Generates an embedding for a single source text using the specified embedding model.
      *
      * @param modelKey The key of the embedding model to use.
-     * @param sourceText The source text for which to generate an embedding.
-     * @param isQueryText A flag indicating whether the source text is a query text. Some
-     *                    embedding models may treat query texts differently from other types of
-     *                    texts. For example,
-     *                    <a href="https://huggingface.co/BAAI/bge-base-en-v1.5">BAAI/bge-base-en-v1.5</a>
+     * @param context The context for which to generate an embedding.
+     *                See {@link org.tctalent.server.service.embedding.dto.EmbeddingInput}
+     * @param text The source text for which to generate an embedding.
+     * @param type Indicates whether the source text is a query.
+     *             Some embedding models may treat query texts differently from other types of text.
+     *             For example,
+     *             <a href="https://huggingface.co/BAAI/bge-base-en-v1.5">BAAI/bge-base-en-v1.5</a>
      * @return The result containing the generated embedding or any associated error.
      */
     @NonNull
-    EmbeddingResult generateEmbedding(String modelKey, String sourceText, boolean isQueryText);
+    EmbeddingResult generateEmbedding(
+        @NonNull String modelKey,
+        @Nullable String context, @Nullable String text,
+        @NonNull EmbeddingInputType type);
 }

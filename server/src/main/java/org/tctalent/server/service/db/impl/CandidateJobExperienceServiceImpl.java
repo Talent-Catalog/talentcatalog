@@ -16,9 +16,8 @@
 
 package org.tctalent.server.service.db.impl;
 
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -31,6 +30,7 @@ import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.CandidateJobExperience;
 import org.tctalent.server.model.db.CandidateOccupation;
 import org.tctalent.server.model.db.Country;
+import org.tctalent.server.model.db.Occupation;
 import org.tctalent.server.model.db.User;
 import org.tctalent.server.model.db.embedding.EmbeddingModel;
 import org.tctalent.server.model.db.embedding.EmbeddingModelStatus;
@@ -48,6 +48,8 @@ import org.tctalent.server.service.db.CandidateService;
 import org.tctalent.server.service.db.EmbeddingModelService;
 import org.tctalent.server.service.db.SkillsService;
 import org.tctalent.server.service.embedding.TcVectorEmbeddingService;
+import org.tctalent.server.service.embedding.dto.EmbeddingInput;
+import org.tctalent.server.service.embedding.dto.EmbeddingInputType;
 import org.tctalent.server.service.embedding.dto.EmbeddingResult;
 import org.tctalent.server.service.embedding.dto.EmbeddingsResponse;
 import org.tctalent.server.util.text.TextParts;
@@ -197,13 +199,20 @@ public class CandidateJobExperienceServiceImpl implements CandidateJobExperience
         final String modelKey = model.getModelKey();
         final String tableName = embeddingModelService.getTableNameForModel(model);
 
-        Map<String, String> descriptionsById = new HashMap<>();
+        List<EmbeddingInput> descriptions = new ArrayList<>();
         experiences.forEach(experience -> {
-            descriptionsById.put(experience.getId().toString(), experience.getDescription());
+            final String id = experience.getId().toString();
+            EmbeddingInput input = EmbeddingInput.builder()
+                .id(id)
+                .context(computeExperienceContext(experience))
+                .text(experience.getDescription())
+                .build();
+            descriptions.add(input);
         });
 
         final EmbeddingsResponse response =
-            tcVectorEmbeddingService.generateEmbeddings(modelKey, descriptionsById);
+            tcVectorEmbeddingService.generateEmbeddings(
+                modelKey, descriptions, EmbeddingInputType.DOCUMENT);
 
         final List<EmbeddingResult> results = response.getResults();
         for (EmbeddingResult result : results) {
@@ -229,6 +238,24 @@ public class CandidateJobExperienceServiceImpl implements CandidateJobExperience
                     .logWarn();
             }
         }
+    }
+
+    @Override
+    public String computeExperienceContext(CandidateJobExperience experience) {
+        String context = "";
+        String role = experience.getRole();
+        if (role != null) {
+            context += "role: " + role.strip();
+        }
+        Occupation occupation = experience.getCandidateOccupation() == null ? null :
+            experience.getCandidateOccupation().getOccupation();
+        if (occupation != null) {
+            if (!context.isEmpty()) {
+                context += "\n";
+            }
+            context += "occupation: " + occupation.getName();
+        }
+        return context.isEmpty() ? null : context;
     }
 
     /**

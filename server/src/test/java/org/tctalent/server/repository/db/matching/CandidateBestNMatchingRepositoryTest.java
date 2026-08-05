@@ -18,29 +18,29 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.tctalent.server.configuration.properties.VectorEmbeddingModelProperties;
 import org.tctalent.server.model.db.embedding.EmbeddingModel;
-import org.tctalent.server.repository.db.EmbeddingModelRepository;
 import org.tctalent.server.request.candidate.matching.CandidateBestNMatchingRequest;
+import org.tctalent.server.service.db.EmbeddingModelService;
 
 class CandidateBestNMatchingRepositoryTest {
 
     private NamedParameterJdbcTemplate jdbc;
     private VectorEmbeddingModelProperties properties;
-    private EmbeddingModelRepository modelRepository;
+    private EmbeddingModelService embeddingModelService;
     private CandidateBestNMatchingRepository repository;
 
     @BeforeEach
     void setUp() {
         jdbc = mock(NamedParameterJdbcTemplate.class);
         properties = new VectorEmbeddingModelProperties();
-        properties.setEmbeddingTable("job_experience_embedding_minilm_l6_spacy_v3");
-        properties.setEmbeddingModelKey("MINILM_L6_SPACY_V3");
-        properties.setAlternateEmbeddingModelKey("MINILM_L6_SPACY_V3");
-        properties.setAlternateEmbeddingTable("job_experience_embedding_minilm_l6_spacy_v3");
-        modelRepository = mock(EmbeddingModelRepository.class);
+        properties.setDefaultEmbeddingModelKey("MINILM_L6_SPACY_V3");
+        embeddingModelService = mock(EmbeddingModelService.class);
         EmbeddingModel model = new EmbeddingModel();
         model.setDimensions(3);
-        when(modelRepository.findByModelKey("MINILM_L6_SPACY_V3")).thenReturn(model);
-        repository = new CandidateBestNMatchingRepository(jdbc, properties, modelRepository);
+        when(embeddingModelService.findModelByKey("MINILM_L6_SPACY_V3")).thenReturn(model);
+        when(embeddingModelService.getDefaultModel()).thenReturn(model);
+        when(embeddingModelService.getTableNameForModel(model))
+            .thenReturn("job_experience_embedding_minilm_l6_spacy_v3");
+        repository = new CandidateBestNMatchingRepository(jdbc, embeddingModelService);
     }
 
     @Test

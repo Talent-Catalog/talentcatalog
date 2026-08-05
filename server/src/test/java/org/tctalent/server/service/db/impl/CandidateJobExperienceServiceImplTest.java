@@ -17,6 +17,7 @@
 package org.tctalent.server.service.db.impl;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.BDDMockito.given;
@@ -47,6 +48,7 @@ import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.CandidateJobExperience;
 import org.tctalent.server.model.db.CandidateOccupation;
 import org.tctalent.server.model.db.Country;
+import org.tctalent.server.model.db.Occupation;
 import org.tctalent.server.model.db.User;
 import org.tctalent.server.repository.db.CandidateJobExperienceRepository;
 import org.tctalent.server.repository.db.CandidateOccupationRepository;
@@ -330,6 +332,58 @@ class CandidateJobExperienceServiceImplTest {
         verifyExperience(experience, ALT_OCCUPATION);
 
         verify(candidateService).save(candidate, true);
+    }
+
+    @Test
+    @DisplayName("should compute experience context from role and occupation")
+    void computeExperienceContext_shouldReturnRoleAndOccupation() {
+        Occupation occupation = new Occupation();
+        occupation.setName("Software Engineer");
+        CandidateOccupation candidateOccupation = new CandidateOccupation();
+        candidateOccupation.setOccupation(occupation);
+        experience.setRole("  Backend Developer  ");
+        experience.setCandidateOccupation(candidateOccupation);
+
+        String context = jobExperienceService.computeExperienceContext(experience);
+
+        assertEquals("role: Backend Developer\noccupation: Software Engineer", context);
+    }
+
+    @Test
+    @DisplayName("should compute experience context when role is null")
+    void computeExperienceContext_shouldReturnOccupation_whenRoleIsNull() {
+        Occupation occupation = new Occupation();
+        occupation.setName("Software Engineer");
+        CandidateOccupation candidateOccupation = new CandidateOccupation();
+        candidateOccupation.setOccupation(occupation);
+        experience.setRole(null);
+        experience.setCandidateOccupation(candidateOccupation);
+
+        String context = jobExperienceService.computeExperienceContext(experience);
+
+        assertEquals("occupation: Software Engineer", context);
+    }
+
+    @Test
+    @DisplayName("should compute experience context when occupation is null")
+    void computeExperienceContext_shouldReturnRole_whenOccupationIsNull() {
+        experience.setRole("  Backend Developer  ");
+        experience.setCandidateOccupation(new CandidateOccupation());
+
+        String context = jobExperienceService.computeExperienceContext(experience);
+
+        assertEquals("role: Backend Developer", context);
+    }
+
+    @Test
+    @DisplayName("should return null experience context when role and occupation are null")
+    void computeExperienceContext_shouldReturnNull_whenRoleAndOccupationAreNull() {
+        experience.setRole(null);
+        experience.setCandidateOccupation(null);
+
+        String context = jobExperienceService.computeExperienceContext(experience);
+
+        assertNull(context);
     }
 
     private static void verifyExperience(

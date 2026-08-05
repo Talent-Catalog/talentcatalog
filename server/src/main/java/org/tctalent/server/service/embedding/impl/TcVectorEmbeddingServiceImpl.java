@@ -1,18 +1,18 @@
 package org.tctalent.server.service.embedding.impl;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.tctalent.server.model.db.embedding.EmbeddingModel;
 import org.tctalent.server.service.db.EmbeddingModelService;
 import org.tctalent.server.service.embedding.TcVectorEmbeddingService;
 import org.tctalent.server.service.embedding.dto.EmbeddingConfigurationVersion;
 import org.tctalent.server.service.embedding.dto.EmbeddingInput;
+import org.tctalent.server.service.embedding.dto.EmbeddingInputType;
 import org.tctalent.server.service.embedding.dto.EmbeddingModelDetails;
 import org.tctalent.server.service.embedding.dto.EmbeddingResult;
 import org.tctalent.server.service.embedding.dto.EmbeddingsRequest;
@@ -26,11 +26,10 @@ public class TcVectorEmbeddingServiceImpl implements TcVectorEmbeddingService {
 
     private final TcVectorEmbeddingServiceClient tcVectorEmbeddingServiceClient;
     private final EmbeddingModelService embeddingModelService;
-//    private final EmbeddingModelDetailsMapper embeddingModelDetailsMapper;
 
     @Override
     public @NonNull EmbeddingsResponse generateEmbeddings(
-        String modelKey, Map<String, String> sourceTexts) {
+        @NonNull String modelKey, @NonNull List<EmbeddingInput> inputs, @NonNull EmbeddingInputType type) {
         EmbeddingModel embeddingModel = embeddingModelService.findModelByKey(modelKey);
         if (embeddingModel == null) {
             throw new IllegalArgumentException("No embedding model found for key: " + modelKey);
@@ -43,13 +42,6 @@ public class TcVectorEmbeddingServiceImpl implements TcVectorEmbeddingService {
             .dimensions(embeddingModel.getDimensions())
             .build();
 
-        List<EmbeddingInput> inputs = sourceTexts.entrySet().stream()
-            .map(entry -> EmbeddingInput.builder()
-                .id(entry.getKey())
-                .text(entry.getValue())
-                .build())
-            .toList();
-
         EmbeddingsRequest request = EmbeddingsRequest.builder()
             .model(modelDetails)
             .inputs(inputs)
@@ -61,12 +53,18 @@ public class TcVectorEmbeddingServiceImpl implements TcVectorEmbeddingService {
     @NotNull
     @Override
     public EmbeddingResult generateEmbedding(
-        String modelKey, String sourceText, boolean isQueryText) {
+        @NotNull String modelKey,
+        @Nullable String context, @Nullable String text,
+        @NotNull EmbeddingInputType type) {
 
-        Map<String, String> sourceTexts = new HashMap<>();
-        sourceTexts.put("target", sourceText);
+        final EmbeddingInput input = EmbeddingInput.builder()
+            .id("target")
+            .context(context)
+            .text(text)
+            .build();
 
-        final EmbeddingsResponse embeddingsResponse = generateEmbeddings(modelKey, sourceTexts);
+        final EmbeddingsResponse embeddingsResponse =
+            generateEmbeddings(modelKey, List.of(input), type);
 
         final List<EmbeddingResult> results = embeddingsResponse.getResults();
         if (results.isEmpty()) {

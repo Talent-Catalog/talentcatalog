@@ -27,6 +27,12 @@ public class EmbeddingsRequest {
     @Valid
     EmbeddingModelDetails model;
 
+    /**
+     * The type of the input text: Query versus documents (i.e., the data being searched for matches)
+     */
+    @NotNull
+    EmbeddingInputType type;
+
     @NotNull
     @Size(min = 1, max = 500)
     @Valid

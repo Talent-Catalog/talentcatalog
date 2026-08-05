@@ -27,6 +27,15 @@ public interface CandidateJobExperienceService {
 
     Page<CandidateJobExperience> searchCandidateJobExperience(SearchJobExperienceRequest request);
 
+    /**
+     * Computes the context string for a given job experience.
+     * <p>
+     * The context string is used for generating embeddings or other processing.
+     * @param experience Job experience
+     * @return Context string.
+     */
+    String computeExperienceContext(CandidateJobExperience experience);
+
     CandidateJobExperience createCandidateJobExperience(CreateJobExperienceRequest request);
 
     CandidateJobExperience updateCandidateJobExperience(UpdateJobExperienceRequest request);

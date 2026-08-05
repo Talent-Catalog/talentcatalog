@@ -8,6 +8,7 @@ import jakarta.validation.constraints.Size;
 import lombok.Builder;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
+import org.springframework.lang.Nullable;
 
 /**
  * Contains one item whose text should be embedded.
@@ -29,7 +30,11 @@ public class EmbeddingInput {
     @Size(min = 1)
     String id;
 
+    /** Optional context to be used when generating the embedding. */
+    @Nullable
+    String context;
+
     /** Text from which an embedding should be generated. */
-    @NotNull
+    @Nullable
     String text;
 }
