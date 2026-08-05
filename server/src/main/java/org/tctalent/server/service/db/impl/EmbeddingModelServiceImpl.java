@@ -16,6 +16,7 @@
 
 package org.tctalent.server.service.db.impl;
 
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.Nullable;
@@ -51,6 +52,11 @@ public class EmbeddingModelServiceImpl implements EmbeddingModelService {
     @Nullable
     public EmbeddingModel getDefaultModel() {
         return findModelByKey(vectorEmbeddingModelProperties.getDefaultEmbeddingModelKey());
+    }
+
+    @Override
+    public List<EmbeddingModel> getReadyModels() {
+        return embeddingModelRepository.findAllByStatus(EmbeddingModelStatus.READY);
     }
 
     @Override

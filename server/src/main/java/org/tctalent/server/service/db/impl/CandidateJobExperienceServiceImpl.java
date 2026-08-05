@@ -304,6 +304,59 @@ public class CandidateJobExperienceServiceImpl implements CandidateJobExperience
         candidateService.save(candidate, true);
     }
 
+    @Override
+    public CandidateJobExperience save(CandidateJobExperience experience, boolean updateEmbeddings) {
+        experience = candidateJobExperienceRepository.save(experience);
+
+        if (updateEmbeddings) {
+            updateEmbedding(experience);
+        }
+
+        return experience;
+    }
+
+    // Generates and upserts the embedding for a single candidate job experience, for every
+    // currently READY embedding model.
+    private void updateEmbedding(CandidateJobExperience experience) {
+        final List<EmbeddingModel> models = embeddingModelService.getReadyModels();
+        if (models.isEmpty()) {
+            LogBuilder.builder(log)
+                .action("updateCandidateJobExperienceEmbedding")
+                .message("No READY embedding models found")
+                .logWarn();
+            return;
+        }
+
+        final String context = computeExperienceContext(experience);
+        for (EmbeddingModel model : models) {
+            updateEmbedding(experience, context, model);
+        }
+    }
+
+    // Generates and upserts the embedding for a single candidate job experience, for the given
+    // embedding model.
+    private void updateEmbedding(
+        CandidateJobExperience experience, String context, EmbeddingModel model) {
+        final String modelKey = model.getModelKey();
+        final String tableName = embeddingModelService.getTableNameForModel(model);
+
+        final EmbeddingResult result = tcVectorEmbeddingService.generateEmbedding(
+            modelKey, context, experience.getDescription(), EmbeddingInputType.DOCUMENT);
+
+        if (result.isSuccessful()) {
+            jobExperienceEmbeddingRepository.upsert(
+                tableName, experience.getId(), model.getId(), result.getEmbedding());
+        } else {
+            LogBuilder.builder(log)
+                .action("updateCandidateJobExperienceEmbedding")
+                .message(String.format(
+                    "Error generating embedding for candidate job experience id %d "
+                        + "using model '%s': '%s'",
+                    experience.getId(), modelKey, result.getError()))
+                .logWarn();
+        }
+    }
+
     // Load the country from the database - throw an exception if not found
     private Country getCountry(Long countryId) {
         return countryRepository.findById(countryId)

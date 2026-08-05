@@ -16,6 +16,7 @@
 
 package org.tctalent.server.service.db;
 
+import java.util.List;
 import org.springframework.lang.Nullable;
 import org.tctalent.server.model.db.embedding.EmbeddingModel;
 
@@ -46,6 +47,12 @@ public interface EmbeddingModelService {
      * @return EmbeddingModel The default embedding model.
      */
     EmbeddingModel getDefaultModel();
+
+    /**
+     * Returns all embedding models that are currently READY - ie available for matching.
+     * @return List of READY embedding models. Empty if there are none.
+     */
+    List<EmbeddingModel> getReadyModels();
 
     /**
      * Returns the table name for the given embedding model.

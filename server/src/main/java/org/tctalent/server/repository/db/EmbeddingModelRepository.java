@@ -16,6 +16,7 @@
 
 package org.tctalent.server.repository.db;
 
+import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.lang.Nullable;
 import org.tctalent.server.model.db.embedding.EmbeddingModel;
@@ -30,4 +31,6 @@ public interface EmbeddingModelRepository extends JpaRepository<EmbeddingModel, 
 
     @Nullable
     EmbeddingModel findByStatus(EmbeddingModelStatus status);
+
+    List<EmbeddingModel> findAllByStatus(EmbeddingModelStatus status);
 }

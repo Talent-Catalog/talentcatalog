@@ -25,7 +25,16 @@ import org.tctalent.server.request.work.experience.UpdateJobExperienceRequest;
 
 public interface CandidateJobExperienceService {
 
-    Page<CandidateJobExperience> searchCandidateJobExperience(SearchJobExperienceRequest request);
+    /**
+     * Updates the embeddings for a list of candidate job experiences.
+     * <p>
+     * This method is intended for batch processing of candidate job experiences to update their
+     * embeddings.
+     * @param experiences the list of candidate job experiences to update. If empty, that signals
+     *                    that the batch processing is complete and the currently building model
+     *                    should be set to the status READY.
+     */
+    void batchUpdateCandidateJobExperienceEmbeddings(List<CandidateJobExperience> experiences);
 
     /**
      * Computes the context string for a given job experience.
@@ -38,20 +47,21 @@ public interface CandidateJobExperienceService {
 
     CandidateJobExperience createCandidateJobExperience(CreateJobExperienceRequest request);
 
+    void deleteCandidateJobExperience(Long id);
+
+    /**
+     * Saves a candidate job experience to the database.
+     * <p>
+     * This method can optionally update the embeddings for the experience if specified.
+     * @param experience the candidate job experience to save
+     * @param updateEmbeddings whether to update the embeddings for the experience
+     * @return the saved candidate job experience
+     */
+    CandidateJobExperience save(CandidateJobExperience experience, boolean updateEmbeddings);
+
+    Page<CandidateJobExperience> searchCandidateJobExperience(SearchJobExperienceRequest request);
+
     CandidateJobExperience updateCandidateJobExperience(UpdateJobExperienceRequest request);
 
     CandidateJobExperience updateCandidateJobExperience(Long candidateId, UpdateJobExperienceRequest request);
-
-    /**
-     * Updates the embeddings for a list of candidate job experiences.
-     * <p>
-     * This method is intended for batch processing of candidate job experiences to update their
-     * embeddings.
-     * @param experiences the list of candidate job experiences to update. If empty, that signals
-     *                    that the batch processing is complete and the currently building model
-     *                    should be set to the status READY.
-     */
-    void batchUpdateCandidateJobExperienceEmbeddings(List<CandidateJobExperience> experiences);
-
-    void deleteCandidateJobExperience(Long id);
 }

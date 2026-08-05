@@ -20,8 +20,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.tctalent.server.data.CandidateTestData.getCandidate;
 import static org.tctalent.server.data.CandidateTestData.getCandidate2;
 import static org.tctalent.server.data.CountryTestData.JORDAN;
@@ -50,16 +54,25 @@ import org.tctalent.server.model.db.CandidateOccupation;
 import org.tctalent.server.model.db.Country;
 import org.tctalent.server.model.db.Occupation;
 import org.tctalent.server.model.db.User;
+import org.tctalent.server.model.db.embedding.EmbeddingModel;
+import org.tctalent.server.model.db.embedding.EmbeddingModelStatus;
 import org.tctalent.server.repository.db.CandidateJobExperienceRepository;
 import org.tctalent.server.repository.db.CandidateOccupationRepository;
 import org.tctalent.server.repository.db.CandidateRepository;
 import org.tctalent.server.repository.db.CountryRepository;
+import org.tctalent.server.repository.db.JobExperienceEmbeddingRepository;
 import org.tctalent.server.request.work.experience.CreateJobExperienceRequest;
 import org.tctalent.server.request.work.experience.SearchJobExperienceRequest;
 import org.tctalent.server.request.work.experience.UpdateJobExperienceRequest;
 import org.tctalent.server.security.AuthService;
 import org.tctalent.server.service.db.CandidateService;
+import org.tctalent.server.service.db.EmbeddingModelService;
 import org.tctalent.server.service.db.SkillsService;
+import org.tctalent.server.service.embedding.TcVectorEmbeddingService;
+import org.tctalent.server.service.embedding.dto.EmbeddingError;
+import org.tctalent.server.service.embedding.dto.EmbeddingErrorCode;
+import org.tctalent.server.service.embedding.dto.EmbeddingInputType;
+import org.tctalent.server.service.embedding.dto.EmbeddingResult;
 
 @ExtendWith(MockitoExtension.class)
 class CandidateJobExperienceServiceImplTest {
@@ -88,6 +101,12 @@ class CandidateJobExperienceServiceImplTest {
     private static final CandidateOccupation OCCUPATION = new CandidateOccupation();
     private static final long ALT_OCCUPATION_ID = 999L;
     private static final CandidateOccupation ALT_OCCUPATION = new CandidateOccupation();
+    private static final long MODEL_ID = 55L;
+    private static final long MODEL_ID_2 = 56L;
+    private static final String MODEL_KEY = "MODEL_KEY";
+    private static final String MODEL_KEY_2 = "MODEL_KEY_2";
+    private static final String TABLE_NAME = "job_experience_embedding_model_key";
+    private static final String TABLE_NAME_2 = "job_experience_embedding_model_key_2";
 
     @Mock private CandidateJobExperienceRepository jobExperienceRepository;
     @Mock private CountryRepository countryRepository;
@@ -96,6 +115,9 @@ class CandidateJobExperienceServiceImplTest {
     @Mock private CandidateOccupationRepository occupationRepository;
     @Mock private SkillsService skillsService;
     @Mock private AuthService authService;
+    @Mock private EmbeddingModelService embeddingModelService;
+    @Mock private TcVectorEmbeddingService tcVectorEmbeddingService;
+    @Mock private JobExperienceEmbeddingRepository jobExperienceEmbeddingRepository;
 
     @Captor private ArgumentCaptor<CandidateJobExperience> jobExperienceCaptor;
 
@@ -483,6 +505,105 @@ class CandidateJobExperienceServiceImplTest {
 
         verify(jobExperienceRepository).delete(experience);
         verify(candidateService).save(candidate, true);
+    }
+
+    @Test
+    @DisplayName("should save experience without updating embeddings when updateEmbeddings is false")
+    void save_shouldSaveOnly_whenUpdateEmbeddingsIsFalse() {
+        given(jobExperienceRepository.save(experience)).willReturn(experience);
+
+        CandidateJobExperience result = jobExperienceService.save(experience, false);
+
+        assertEquals(experience, result);
+        verify(jobExperienceRepository).save(experience);
+        verifyNoInteractions(embeddingModelService, tcVectorEmbeddingService, jobExperienceEmbeddingRepository);
+    }
+
+    @Test
+    @DisplayName("should save experience and skip embedding update when there are no READY models")
+    void save_shouldSkipEmbeddingUpdate_whenNoReadyModels() {
+        given(jobExperienceRepository.save(experience)).willReturn(experience);
+        given(embeddingModelService.getReadyModels()).willReturn(List.of());
+
+        CandidateJobExperience result = jobExperienceService.save(experience, true);
+
+        assertEquals(experience, result);
+        verifyNoInteractions(tcVectorEmbeddingService, jobExperienceEmbeddingRepository);
+    }
+
+    @Test
+    @DisplayName("should generate and upsert embedding for a single READY model")
+    void save_shouldUpsertEmbedding_whenUpdateEmbeddingsIsTrue() {
+        experience.setDescription(DESCRIPTION);
+        EmbeddingModel model = buildReadyModel(MODEL_ID, MODEL_KEY);
+        List<Double> embedding = List.of(0.1, 0.2, 0.3);
+
+        given(jobExperienceRepository.save(experience)).willReturn(experience);
+        given(embeddingModelService.getReadyModels()).willReturn(List.of(model));
+        given(embeddingModelService.getTableNameForModel(model)).willReturn(TABLE_NAME);
+        given(tcVectorEmbeddingService.generateEmbedding(
+            MODEL_KEY, null, DESCRIPTION, EmbeddingInputType.DOCUMENT))
+            .willReturn(EmbeddingResult.builder().id("target").embedding(embedding).build());
+
+        jobExperienceService.save(experience, true);
+
+        verify(jobExperienceEmbeddingRepository).upsert(TABLE_NAME, EXPERIENCE_ID, MODEL_ID, embedding);
+    }
+
+    @Test
+    @DisplayName("should generate and upsert an embedding for every READY model")
+    void save_shouldUpsertEmbedding_forEachReadyModel() {
+        experience.setDescription(DESCRIPTION);
+        EmbeddingModel model1 = buildReadyModel(MODEL_ID, MODEL_KEY);
+        EmbeddingModel model2 = buildReadyModel(MODEL_ID_2, MODEL_KEY_2);
+        List<Double> embedding1 = List.of(0.1, 0.2, 0.3);
+        List<Double> embedding2 = List.of(0.4, 0.5, 0.6);
+
+        given(jobExperienceRepository.save(experience)).willReturn(experience);
+        given(embeddingModelService.getReadyModels()).willReturn(List.of(model1, model2));
+        given(embeddingModelService.getTableNameForModel(model1)).willReturn(TABLE_NAME);
+        given(embeddingModelService.getTableNameForModel(model2)).willReturn(TABLE_NAME_2);
+        given(tcVectorEmbeddingService.generateEmbedding(
+            MODEL_KEY, null, DESCRIPTION, EmbeddingInputType.DOCUMENT))
+            .willReturn(EmbeddingResult.builder().id("target").embedding(embedding1).build());
+        given(tcVectorEmbeddingService.generateEmbedding(
+            MODEL_KEY_2, null, DESCRIPTION, EmbeddingInputType.DOCUMENT))
+            .willReturn(EmbeddingResult.builder().id("target").embedding(embedding2).build());
+
+        jobExperienceService.save(experience, true);
+
+        verify(jobExperienceEmbeddingRepository).upsert(TABLE_NAME, EXPERIENCE_ID, MODEL_ID, embedding1);
+        verify(jobExperienceEmbeddingRepository).upsert(TABLE_NAME_2, EXPERIENCE_ID, MODEL_ID_2, embedding2);
+    }
+
+    @Test
+    @DisplayName("should not upsert when embedding generation fails for a READY model")
+    void save_shouldSkipUpsert_whenEmbeddingGenerationFails() {
+        experience.setDescription(DESCRIPTION);
+        EmbeddingModel model = buildReadyModel(MODEL_ID, MODEL_KEY);
+        EmbeddingError error = EmbeddingError.builder()
+            .code(EmbeddingErrorCode.EMBEDDING_FAILED)
+            .message("Embedding generation failed")
+            .build();
+
+        given(jobExperienceRepository.save(experience)).willReturn(experience);
+        given(embeddingModelService.getReadyModels()).willReturn(List.of(model));
+        given(embeddingModelService.getTableNameForModel(model)).willReturn(TABLE_NAME);
+        given(tcVectorEmbeddingService.generateEmbedding(
+            MODEL_KEY, null, DESCRIPTION, EmbeddingInputType.DOCUMENT))
+            .willReturn(EmbeddingResult.builder().id("target").error(error).build());
+
+        jobExperienceService.save(experience, true);
+
+        verify(jobExperienceEmbeddingRepository, never()).upsert(any(), anyLong(), anyLong(), any());
+    }
+
+    private static EmbeddingModel buildReadyModel(long id, String modelKey) {
+        EmbeddingModel model = new EmbeddingModel();
+        model.setId(id);
+        model.setModelKey(modelKey);
+        model.setStatus(EmbeddingModelStatus.READY);
+        return model;
     }
 
 }
