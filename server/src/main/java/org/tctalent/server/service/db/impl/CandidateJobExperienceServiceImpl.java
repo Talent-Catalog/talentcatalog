@@ -116,7 +116,8 @@ public class CandidateJobExperienceServiceImpl implements CandidateJobExperience
         updateJobExperienceDescription(candidateJobExperience, request.getDescription());
 
         // Save the candidateOccupation
-        final CandidateJobExperience jobExperience = candidateJobExperienceRepository.save(candidateJobExperience);
+        final CandidateJobExperience jobExperience =
+            save(candidateJobExperience, true);
 
         //Save the candidate
         candidateService.save(candidate, true);
@@ -166,7 +167,7 @@ public class CandidateJobExperienceServiceImpl implements CandidateJobExperience
         candidateJobExperience.setCandidateOccupation(candidateOccupation);
 
         // Save the candidate experience
-        candidateJobExperience = candidateJobExperienceRepository.save(candidateJobExperience);
+        candidateJobExperience = save(candidateJobExperience, true);
 
         Candidate candidate = candidateJobExperience.getCandidate();
 
