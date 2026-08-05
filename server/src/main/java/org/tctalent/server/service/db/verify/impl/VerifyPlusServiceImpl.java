@@ -32,9 +32,17 @@ import org.tctalent.server.service.db.verify.VerifyPlusPayload;
 import org.tctalent.server.service.db.verify.VerifyPlusPayloadParser;
 import org.tctalent.server.service.db.verify.VerifyPlusService;
 
-// TODO doco
-// Flow: logged-in candidate -> parse raw payload -> duplicate check across active-like statuses->
-// overwrite candidate.unhcrNumber -> return {unhcrNumber, duplicate}.
+/**
+ * Ingests a Verify+ QR scan for the logged-in candidate.
+ * <p>
+ * Flow: resolve logged-in candidate → parse raw payload → duplicate-check UNHCR ID across
+ * active-like statuses → set {@code unhcrRegistered=Yes} and overwrite {@code unhcrNumber} →
+ * return {@code {unhcrNumber, duplicate}}.
+ * <p>
+ * Used by both the Services tab and the registration wizard scan step.
+ *
+ * @author sadatmalik
+ */
 @Service
 @RequiredArgsConstructor
 public class VerifyPlusServiceImpl implements VerifyPlusService {
@@ -51,11 +59,20 @@ public class VerifyPlusServiceImpl implements VerifyPlusService {
     private final CandidateRepository candidateRepository;
     private final VerifyPlusPayloadParser payloadParser;
 
+    /**
+     * Ingests a Verify+ scan for the currently logged-in candidate.
+     * <p>
+     * Both call sites require an authenticated session: the Services tab (profile) and the
+     * registration wizard scan step, which sits after account creation / contact so the
+     * candidate is already logged in when this method runs.
+     *
+     * @param request raw Verify+ QR payload from the portal
+     * @return ingested UNHCR number and whether it duplicates another active-like candidate
+     * @throws InvalidSessionException if no candidate is logged in
+     */
     @Override
     @Transactional
     public VerifyPlusIngestResult ingestScan(VerifyPlusScanRequest request) {
-        // TODO - SM - ok for testing via Casi service - but for registration flow confirm if the
-        //  candidate will be logged in if the scan is handled as a distinct "step 2"
         Candidate candidate = candidateService.getLoggedInCandidate()
             .orElseThrow(() -> new InvalidSessionException("Not logged in"));
 
