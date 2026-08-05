@@ -23,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.tctalent.server.exception.InvalidSessionException;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.CandidateStatus;
+import org.tctalent.server.model.db.YesNoUnsure;
 import org.tctalent.server.repository.db.CandidateRepository;
 import org.tctalent.server.request.verify.VerifyPlusScanRequest;
 import org.tctalent.server.service.db.CandidateService;
@@ -67,6 +68,7 @@ public class VerifyPlusServiceImpl implements VerifyPlusService {
             candidate.getId()
         ).isEmpty();
 
+        candidate.setUnhcrRegistered(YesNoUnsure.Yes);
         candidate.setUnhcrNumber(unhcrId);
         candidateService.save(candidate);
 
