@@ -34,6 +34,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.tctalent.server.exception.InvalidSessionException;
 import org.tctalent.server.model.db.Candidate;
+import org.tctalent.server.model.db.YesNoUnsure;
 import org.tctalent.server.repository.db.CandidateRepository;
 import org.tctalent.server.request.verify.VerifyPlusScanRequest;
 import org.tctalent.server.service.db.CandidateService;
@@ -82,6 +83,7 @@ class VerifyPlusServiceImplTest {
         VerifyPlusIngestResult result = verifyPlusService.ingestScan(request);
 
         assertEquals("UNHCR-1", candidate.getUnhcrNumber());
+        assertEquals(YesNoUnsure.Yes, candidate.getUnhcrRegistered());
         assertEquals("UNHCR-1", result.getUnhcrNumber());
         assertFalse(result.isDuplicate());
         verify(candidateService).save(candidate);
@@ -108,6 +110,7 @@ class VerifyPlusServiceImplTest {
     @Test
     @DisplayName("Given a candidate with an existing UNHCR number, when ingestScan is called with a new UNHCR number, then the candidate's UNHCR number is overwritten")
     void ingestScan_overwritesUnhcrNumberOnRescan() {
+        candidate.setUnhcrRegistered(YesNoUnsure.Yes);
         candidate.setUnhcrNumber("OLD-UNHCR");
         VerifyPlusPayload parsed = new VerifyPlusPayload("mock-1", request.getRawPayload(), "NEW-UNHCR");
 
@@ -120,6 +123,7 @@ class VerifyPlusServiceImplTest {
         VerifyPlusIngestResult result = verifyPlusService.ingestScan(request);
 
         assertEquals("NEW-UNHCR", candidate.getUnhcrNumber());
+        assertEquals(YesNoUnsure.Yes, candidate.getUnhcrRegistered());
         assertEquals("NEW-UNHCR", result.getUnhcrNumber());
     }
 
