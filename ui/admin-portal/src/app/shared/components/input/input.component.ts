@@ -33,6 +33,8 @@ import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
  * - `readonly: boolean = false` — makes the field non-editable but still focusable
  * - `editable?: boolean` — used by ngbTypeahead to control whether typed text is allowed
  * - `min?: number` — sets the native HTML `min` attribute (for numeric/date types)
+ * - `max?: number` — sets the native HTML `max` attribute (for numeric/date types)
+ * - `step?: number` — sets the native HTML `step` attribute (for numeric/date types)
  * - `ngbTypeahead?: (text$: Observable<string>) => Observable<any[]>`
  * - `resultTemplate?: TemplateRef<any>` — template for typeahead results
  * - `inputFormatter?: (value: any) => string`
@@ -97,6 +99,8 @@ export class InputComponent implements ControlValueAccessor, OnInit {
   @Input() editable: boolean;
   @Input() readonly: boolean = false;
   @Input() min?: number;
+  @Input() max?: number;
+  @Input() step?: number;
   @Input() type:
     | 'text'
     | 'password'
