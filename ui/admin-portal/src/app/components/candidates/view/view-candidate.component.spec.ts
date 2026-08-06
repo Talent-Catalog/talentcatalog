@@ -23,7 +23,7 @@ import {MockCandidate} from '../../../MockData/MockCandidate';
 import {MockSavedList} from '../../../MockData/MockSavedList';
 import {MockUser} from '../../../MockData/MockUser';
 import {JobChatType} from '../../../model/chat';
-import {Candidate} from '../../../model/candidate';
+import {Candidate, CandidateStatus, UpdateCandidateStatusInfo} from '../../../model/candidate';
 import {SavedList} from '../../../model/saved-list';
 import {AuthorizationService} from '../../../services/authorization.service';
 import {AuthenticationService} from '../../../services/authentication.service';
@@ -247,14 +247,19 @@ describe('ViewCandidateComponent', () => {
   });
 
   it('should delete a candidate and navigate home', fakeAsync(() => {
-    const modalRef = createModalRef(Promise.resolve(true));
+    const info: UpdateCandidateStatusInfo =
+      {status: CandidateStatus.deleted} as UpdateCandidateStatusInfo;
+    const modalRef = createModalRef(Promise.resolve(info));
     modalService.open.and.returnValue(modalRef);
 
     component.deleteCandidate();
     flushMicrotasks();
 
-    expect(modalRef.componentInstance.candidate).toBe(candidate);
-    expect(router.navigate).toHaveBeenCalledWith(['/']);
+    expect(modalRef.componentInstance.candidateStatus).toBe(CandidateStatus.deleted);
+    expect(candidateService.updateStatus).toHaveBeenCalledWith({
+      candidateIds: [candidate.id],
+      info
+    });
   }));
 
   it('should erase candidate data and navigate home', fakeAsync(() => {
@@ -274,7 +279,7 @@ describe('ViewCandidateComponent', () => {
     const modalRef = createModalRef(Promise.resolve(info));
     modalService.open.and.returnValue(modalRef);
 
-    component.editCandidate();
+    component.editCandidateStatus();
     flushMicrotasks();
 
     expect(modalRef.componentInstance.candidateStatus).toBe(originalStatus);
@@ -436,6 +441,20 @@ describe('ViewCandidateComponent', () => {
     expect(component.canSeeJobDetails()).toBeTrue();
     expect(component.canViewCandidateName()).toBeTrue();
     expect(component.canViewChats()).toBeTrue();
+  });
+
+  it('should only allow marking a candidate as deleted when editable and not already deleted', () => {
+    authorizationService.isEditableCandidate.and.returnValue(true);
+    candidate.status = 'active';
+    expect(component.canMarkAsDeleted()).toBeTrue();
+
+    authorizationService.isEditableCandidate.and.returnValue(false);
+    candidate.status = 'active';
+    expect(component.canMarkAsDeleted()).toBeFalse();
+
+    authorizationService.isEditableCandidate.and.returnValue(true);
+    candidate.status = 'deleted';
+    expect(component.canMarkAsDeleted()).toBeFalse();
   });
 
   it('should mark the candidate chat as read', () => {
@@ -629,77 +648,5 @@ describe('ViewCandidateComponent', () => {
       result
     } as NgbModalRef;
   }
-  it('should not show Delete candidate option if user has not got editable access', () => {
-    authorizationServiceSpy.isEditableCandidate.and.returnValue(false);
-    fixture.detectChanges();
-    const deleteIcon = fixture.nativeElement.querySelector('.fa-user-xmark');
-    expect(deleteIcon).toBeNull();
-  })
-
-  it('should show Delete candidate option if user has editable access', () => {
-    authorizationServiceSpy.isEditableCandidate.and.returnValue(true);
-    fixture.detectChanges();
-    const deleteIcon = fixture.nativeElement.querySelector('.fa-user-xmark');
-    expect(deleteIcon).toBeTruthy();
-  })
-
-  describe('deleteCandidate', () => {
-    it('should open EditCandidateStatusComponent modal with status set to deleted', () => {
-      mockModalService.open.and.returnValue({
-        componentInstance: {},
-        result: new Promise(() => {})
-      } as any);
-
-      component.deleteCandidate();
-
-      expect(mockModalService.open).toHaveBeenCalledWith(EditCandidateStatusComponent);
-      const modal = mockModalService.open.calls.mostRecent().returnValue;
-      expect(modal.componentInstance.candidateStatus).toEqual(CandidateStatus.deleted);
-    });
-
-    it('should update the candidate status when the modal resolves', fakeAsync(() => {
-      const info: UpdateCandidateStatusInfo = { status: CandidateStatus.deleted } as UpdateCandidateStatusInfo;
-      mockModalService.open.and.returnValue({
-        componentInstance: {},
-        result: Promise.resolve(info)
-      } as any);
-      mockCandidateService.updateStatus.and.returnValue(of(null));
-      mockCandidateService.getByNumber.and.returnValue(of(mockCandidate));
-
-      component.deleteCandidate();
-      tick();
-
-      expect(mockCandidateService.updateStatus).toHaveBeenCalledWith({
-        candidateIds: [mockCandidate.id],
-        info: info
-      });
-    }));
-
-    it('should not throw when the modal is dismissed', fakeAsync(() => {
-      mockModalService.open.and.returnValue({
-        componentInstance: {},
-        result: Promise.reject('dismissed')
-      } as any);
-
-      expect(() => component.deleteCandidate()).not.toThrow();
-      tick();
-    }));
-  });
-
-  describe('editCandidateStatus', () => {
-    it('should open EditCandidateStatusComponent modal with the candidate\'s current status', () => {
-      component.candidate = { ...mockCandidate, status: CandidateStatus.pending };
-      mockModalService.open.and.returnValue({
-        componentInstance: {},
-        result: new Promise(() => {})
-      } as any);
-
-      component.editCandidateStatus();
-
-      expect(mockModalService.open).toHaveBeenCalledWith(EditCandidateStatusComponent);
-      const modal = mockModalService.open.calls.mostRecent().returnValue;
-      expect(modal.componentInstance.candidateStatus).toEqual(CandidateStatus.pending);
-    });
-  });
 
 });
