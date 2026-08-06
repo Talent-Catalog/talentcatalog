@@ -1,0 +1,35 @@
+codecov:
+  branch: staging
+
+coverage:
+  status:
+    project:
+      default:
+        target: auto
+        informational: true
+
+    patch:
+      default:
+        target: auto
+        informational: true
+
+flags:
+  server:
+    paths:
+      - server/
+    carryforward: true
+
+  admin-portal:
+    paths:
+      - ui/admin-portal/
+    carryforward: true
+
+  candidate-portal:
+    paths:
+      - ui/candidate-portal/
+    carryforward: true
+
+  public-portal:
+    paths:
+      - ui/public-portal/
+    carryforward: true

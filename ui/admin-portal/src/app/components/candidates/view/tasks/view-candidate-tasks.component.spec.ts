@@ -14,97 +14,329 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {ComponentFixture, TestBed} from '@angular/core/testing';
-import {ViewCandidateTasksComponent} from './view-candidate-tasks.component';
-import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
+import {fakeAsync, flushMicrotasks, tick} from '@angular/core/testing';
+import {NgbModal, NgbModalRef} from '@ng-bootstrap/ng-bootstrap';
+import {of, throwError} from 'rxjs';
+
+import {MockCandidate} from '../../../../MockData/MockCandidate';
+import {Status} from '../../../../model/base';
+import {CandidateAttachment} from '../../../../model/candidate-attachment';
+import {TaskAssignment} from '../../../../model/task-assignment';
+import {TaskType} from '../../../../model/task';
+import {AuthorizationService} from '../../../../services/authorization.service';
+import {CandidateAttachmentService} from '../../../../services/candidate-attachment.service';
 import {CandidateService} from '../../../../services/candidate.service';
 import {TaskAssignmentService} from '../../../../services/task-assignment.service';
-import {CandidateAttachmentService} from '../../../../services/candidate-attachment.service';
-import {of} from 'rxjs';
-import {NO_ERRORS_SCHEMA} from '@angular/core';
-import {MockCandidate} from "../../../../MockData/MockCandidate";
-import {TaskService} from 'src/app/services/task.service';
-import {DuolingoCouponService} from 'src/app/services/duolingo-coupon.service';
-import {AuthorizationService} from "../../../../services/authorization.service";
+import {
+  AssignTasksCandidateComponent
+} from '../../../tasks/assign-tasks-candidate/assign-tasks-candidate.component';
+import {ConfirmationComponent} from '../../../util/confirm/confirmation.component';
+import {EditTaskAssignmentComponent} from './edit/edit-task-assignment.component';
+import {ViewResponseComponent} from './view-response/view-response.component';
+import {ViewCandidateTasksComponent} from './view-candidate-tasks.component';
 
 describe('ViewCandidateTasksComponent', () => {
   let component: ViewCandidateTasksComponent;
-  let fixture: ComponentFixture<ViewCandidateTasksComponent>;
+  let candidate: MockCandidate;
   let candidateService: jasmine.SpyObj<CandidateService>;
-  let taskAssignmentService: jasmine.SpyObj<TaskAssignmentService>;
-  let authorizationService: jasmine.SpyObj<AuthorizationService>;
   let candidateAttachmentService: jasmine.SpyObj<CandidateAttachmentService>;
-  let candidateTaskService: jasmine.SpyObj<TaskService>;
-  let candidateDuolingoCouponService: jasmine.SpyObj<DuolingoCouponService>;
-
-  const candidate  = new MockCandidate();
-
-  beforeEach(async () => {
-    const candidateServiceSpy = jasmine.createSpyObj('CandidateService', ['get']);
-    const taskAssignmentServiceSpy = jasmine.createSpyObj('TaskAssignmentService', ['removeTaskAssignment']);
-    const candidateAttachmentServiceSpy = jasmine.createSpyObj('CandidateAttachmentService', ['listByType']);
-    const taskServiceSpy = jasmine.createSpyObj('TaskService', ['get']);
-    const authorizationServiceSpy = jasmine.createSpyObj('AuthorizationService', ['isDefaultSourcePartner']);
-    const duolingoCouponServiceSpy = jasmine.createSpyObj('DuolingoCouponService', ['create']);
-
-    await TestBed.configureTestingModule({
-      declarations: [ViewCandidateTasksComponent],
-      providers: [
-        {provide: CandidateService, useValue: candidateServiceSpy},
-        {provide: TaskAssignmentService, useValue: taskAssignmentServiceSpy},
-        {provide: AuthorizationService, useValue: authorizationServiceSpy},
-        {provide: CandidateAttachmentService, useValue: candidateAttachmentServiceSpy},
-        {provide: TaskService, useValue: taskServiceSpy},
-        {provide: DuolingoCouponService, useValue: duolingoCouponServiceSpy},
-        NgbModal
-      ],
-      schemas: [NO_ERRORS_SCHEMA]
-    }).compileComponents();
-
-    candidateService = TestBed.inject(CandidateService) as jasmine.SpyObj<CandidateService>;
-    taskAssignmentService = TestBed.inject(TaskAssignmentService) as jasmine.SpyObj<TaskAssignmentService>;
-    candidateAttachmentService = TestBed.inject(CandidateAttachmentService) as jasmine.SpyObj<CandidateAttachmentService>;
-    candidateTaskService = TestBed.inject(TaskService) as jasmine.SpyObj<TaskService>;
-    candidateDuolingoCouponService = TestBed.inject(DuolingoCouponService) as jasmine.SpyObj<DuolingoCouponService>;
-  });
+  let authorizationService: jasmine.SpyObj<AuthorizationService>;
+  let taskAssignmentService: jasmine.SpyObj<TaskAssignmentService>;
+  let modalService: jasmine.SpyObj<NgbModal>;
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(ViewCandidateTasksComponent);
-    component = fixture.componentInstance;
+    candidateService = jasmine.createSpyObj<CandidateService>(
+      'CandidateService',
+      ['updateCandidate']
+    );
+    candidateAttachmentService =
+      jasmine.createSpyObj<CandidateAttachmentService>(
+        'CandidateAttachmentService',
+        ['listByType']
+      );
+    authorizationService = jasmine.createSpyObj<AuthorizationService>(
+      'AuthorizationService',
+      ['isDefaultSourcePartner']
+    );
+    taskAssignmentService = jasmine.createSpyObj<TaskAssignmentService>(
+      'TaskAssignmentService',
+      ['removeTaskAssignment']
+    );
+    modalService = jasmine.createSpyObj<NgbModal>('NgbModal', ['open']);
+
+    candidate = new MockCandidate();
+    candidate.user = {
+      ...candidate.user,
+      firstName: 'Jane',
+      lastName: 'Doe'
+    };
+
+    component = new ViewCandidateTasksComponent(
+      candidateService,
+      candidateAttachmentService,
+      authorizationService,
+      taskAssignmentService,
+      modalService
+    );
     component.candidate = candidate;
+  });
+
+  it('should initialize today', () => {
+    const before = Date.now();
+
     component.ngOnInit();
-    fixture.detectChanges();
+
+    expect(component.today).toBeDefined();
+    expect(component.today.getTime()).toBeGreaterThanOrEqual(before);
+    expect(component.today.getTime()).toBeLessThanOrEqual(Date.now());
   });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+  it('should filter tasks when the candidate input changes', () => {
+    const filterTasksSpy = spyOn(component, 'filterTasks');
 
-  it('should highlight overdue tasks correctly', () => {
-    component.today = new Date();
-    fixture.detectChanges();
-    const overdueTask1 = component.isOverdue(candidate.taskAssignments[0]);
-    const overdueTask2 = component.isOverdue(candidate.taskAssignments[1]);
-    const notOverdueTask = component.isOverdue(candidate.taskAssignments[2]);
-
-    expect(overdueTask1).toBeTrue();
-    expect(overdueTask2).toBeFalse();
-    expect(notOverdueTask).toBeFalse();
-    candidateService.get.and.returnValue(of(candidate));
-    // Trigger ngOnChanges manually
-    component.ngOnChanges({  candidate: {
-        currentValue: component.candidate,
+    component.ngOnChanges({
+      candidate: {
+        currentValue: candidate,
         previousValue: null,
         firstChange: true,
         isFirstChange: () => true
-      }} );
-    fixture.detectChanges();
-    const taskElements = fixture.nativeElement.querySelectorAll('.set-height p');
-    expect(taskElements[0].classList).toContain('text-danger');
-    expect(taskElements[0].classList).toContain('fw-bolder');
-    expect(taskElements[1].classList).not.toContain('text-danger');
-    expect(taskElements[1].classList).not.toContain('fw-bolder');
-    expect(taskElements[2].classList).not.toContain('text-danger');
-    expect(taskElements[2].classList).not.toContain('fw-bolder');
+      }
+    });
+
+    expect(filterTasksSpy).toHaveBeenCalled();
   });
+
+  it('should separate ongoing, completed, and inactive assignments', () => {
+    const ongoing = createAssignment(1, Status.active);
+    const completed = createAssignment(2, Status.active, {
+      completedDate: new Date('2026-01-01')
+    });
+    const abandoned = createAssignment(3, Status.active, {
+      abandonedDate: new Date('2026-01-02')
+    });
+    const inactive = createAssignment(4, Status.inactive);
+    candidate.taskAssignments = [completed, inactive, ongoing, abandoned];
+
+    component.filterTasks();
+
+    expect(component.ongoingTasks).toEqual([ongoing]);
+    expect(component.completedTasks).toEqual([completed, abandoned]);
+    expect(component.inactiveTasks).toEqual([inactive]);
+  });
+
+  it('should use empty ongoing and completed arrays when assignments are absent', () => {
+    candidate.taskAssignments = undefined;
+
+    component.filterTasks();
+
+    expect(component.ongoingTasks).toEqual([]);
+    expect(component.completedTasks).toEqual([]);
+  });
+
+  it('should identify a required task whose due date has passed as overdue', () => {
+    component.today = new Date('2026-07-27');
+    const assignment = createAssignment(1, Status.active, {
+      dueDate: new Date('2026-07-26')
+    });
+    assignment.task.optional = false;
+
+    expect(component.isOverdue(assignment)).toBeTrue();
+  });
+
+  it('should assign a task, refresh the candidate, and hide the notification', fakeAsync(() => {
+    const assignment = createAssignment(1, Status.active);
+    assignment.task.notifyOnAssignment = true;
+    const modalRef = createModalRef(Promise.resolve(assignment));
+    modalService.open.and.returnValue(modalRef);
+
+    component.assignTask();
+    flushMicrotasks();
+
+    expect(modalService.open).toHaveBeenCalledWith(
+      AssignTasksCandidateComponent,
+      {centered: true, backdrop: 'static'}
+    );
+    expect(modalRef.componentInstance.candidateId).toBe(candidate.id);
+    expect(component.showAssignmentEmailNotification).toBeTrue();
+    expect(candidateService.updateCandidate).toHaveBeenCalled();
+
+    tick(5000);
+    expect(component.showAssignmentEmailNotification).toBeFalse();
+  }));
+
+  it('should store a handled error', () => {
+    const error = new Error('Request failed');
+
+    component.handleError(error);
+
+    expect(component.error).toBe(error);
+  });
+
+  it('should edit an assignment and refresh the candidate', fakeAsync(() => {
+    const assignment = createAssignment(1, Status.active);
+    const modalRef = createModalRef(Promise.resolve(assignment));
+    modalService.open.and.returnValue(modalRef);
+
+    component.editTaskAssignment(assignment);
+    flushMicrotasks();
+
+    expect(modalService.open).toHaveBeenCalledWith(
+      EditTaskAssignmentComponent,
+      {centered: true, backdrop: 'static'}
+    );
+    expect(modalRef.componentInstance.taskAssignment).toBe(assignment);
+    expect(candidateService.updateCandidate).toHaveBeenCalled();
+  }));
+
+  it('should delete an assignment and refresh the candidate', fakeAsync(() => {
+    const assignment = createAssignment(7, Status.active);
+    const modalRef = createModalRef(Promise.resolve(true));
+    modalService.open.and.returnValue(modalRef);
+    taskAssignmentService.removeTaskAssignment.and.returnValue(of(true));
+    component.saving = true;
+
+    component.deleteTaskAssignment(assignment);
+    flushMicrotasks();
+
+    expect(modalService.open).toHaveBeenCalledWith(
+      ConfirmationComponent,
+      {centered: true, backdrop: 'static'}
+    );
+    expect(modalRef.componentInstance.message).toBe(
+      `Are you sure you want to delete the task '${assignment.task.displayName}' ` +
+      'from the tasks assigned to Jane Doe?'
+    );
+    expect(taskAssignmentService.removeTaskAssignment).toHaveBeenCalledWith(7);
+    expect(candidateService.updateCandidate).toHaveBeenCalled();
+    expect(component.saving).toBeFalse();
+  }));
+
+  it('should store an error when deleting an assignment fails', fakeAsync(() => {
+    const assignment = createAssignment(8, Status.active);
+    const error = new Error('Delete failed');
+
+    modalService.open.and.returnValue(
+      createModalRef(Promise.resolve(true))
+    );
+
+    taskAssignmentService.removeTaskAssignment.and.returnValue(
+      throwError(error)
+    );
+
+    component.saving = true;
+
+    component.deleteTaskAssignment(assignment);
+    flushMicrotasks();
+
+    expect(component.error).toBe(error);
+    expect(component.saving).toBeFalse();
+  }));
+
+  it('should request and open uploaded response files', () => {
+    const assignment = createAssignment(1, Status.active);
+    assignment.task.taskType = TaskType.Upload;
+    const attachments = [
+      {url: 'https://example.com/one.pdf'} as CandidateAttachment
+    ];
+    candidateAttachmentService.listByType.and.returnValue(of(attachments));
+    const openFilesSpy = spyOn(component, 'openFiles');
+
+    component.viewResponse(assignment);
+
+    expect(candidateAttachmentService.listByType).toHaveBeenCalledWith({
+      candidateId: candidate.id,
+      uploadType: assignment.task.uploadType
+    });
+    expect(openFilesSpy).toHaveBeenCalledWith(attachments);
+  });
+
+  it('should store an error when uploaded responses cannot be loaded', () => {
+    const assignment = createAssignment(1, Status.active);
+    assignment.task.taskType = TaskType.Upload;
+
+    const error = new Error('Attachment request failed');
+
+    candidateAttachmentService.listByType.and.returnValue(
+      throwError(error)
+    );
+
+    component.viewResponse(assignment);
+
+    expect(component.error).toBe(error);
+  });
+
+  it('should delegate question responses to the question modal', () => {
+    const assignment = createAssignment(1, Status.active);
+    assignment.task.taskType = TaskType.Question;
+    const viewQuestionResponseSpy =
+      spyOn(component, 'viewQuestionResponse');
+
+    component.viewResponse(assignment);
+
+    expect(viewQuestionResponseSpy).toHaveBeenCalledWith(assignment);
+  });
+
+  it('should open every response attachment', () => {
+    const attachments = [
+      {url: 'https://example.com/one.pdf'} as CandidateAttachment,
+      {url: 'https://example.com/two.pdf'} as CandidateAttachment
+    ];
+    const windowOpenSpy = spyOn(window, 'open');
+
+    component.openFiles(attachments);
+
+    expect(windowOpenSpy).toHaveBeenCalledTimes(2);
+    expect(windowOpenSpy.calls.argsFor(0)).toEqual([attachments[0].url]);
+    expect(windowOpenSpy.calls.argsFor(1)).toEqual([attachments[1].url]);
+    expect(component.loadingResponse).toBeFalse();
+  });
+
+  it('should open the question-response modal with the assignment', () => {
+    const assignment = createAssignment(1, Status.active);
+    const modalRef = createModalRef(new Promise(() => undefined));
+    modalService.open.and.returnValue(modalRef);
+
+    component.viewQuestionResponse(assignment);
+
+    expect(modalService.open).toHaveBeenCalledWith(
+      ViewResponseComponent,
+      {centered: true, backdrop: 'static'}
+    );
+    expect(modalRef.componentInstance.taskAssignment).toBe(assignment);
+  });
+
+  it('should return the authorization service source-partner result', () => {
+    authorizationService.isDefaultSourcePartner.and.returnValue(true);
+
+    expect(component.isDefaultSourcePartner()).toBeTrue();
+    expect(authorizationService.isDefaultSourcePartner).toHaveBeenCalled();
+  });
+
+  function createAssignment(
+    id: number,
+    status: Status,
+    overrides: Partial<TaskAssignment> = {}
+  ): TaskAssignment {
+    const template = candidate.taskAssignments[0];
+    return {
+      ...template,
+      id,
+      status,
+      abandonedDate: null,
+      completedDate: null,
+      dueDate: new Date('2026-08-01'),
+      task: {
+        ...template.task,
+        displayName: `Task ${id}`
+      },
+      ...overrides
+    };
+  }
+
+  function createModalRef(result: Promise<unknown>): NgbModalRef {
+    return {
+      componentInstance: {},
+      result
+    } as NgbModalRef;
+  }
 });

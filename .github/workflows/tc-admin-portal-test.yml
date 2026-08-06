@@ -8,15 +8,15 @@ on:
       - 'ui/admin-portal/**'
       - '.github/workflows/tc-admin-portal-test.yml'
       - '.nvmrc'
+      - 'codecov.yml'
   push:
     branches:
-      - '**'
-      - '!staging' #Not execute the workflow on push to staging
-      - '!master'  #Not execute the workflow on push to master
+      - staging
     paths:
       - 'ui/admin-portal/**'
       - '.github/workflows/tc-admin-portal-test.yml'
       - '.nvmrc'
+      - 'codecov.yml'
       
 permissions:
   contents: read
@@ -45,15 +45,30 @@ jobs:
         working-directory: ui/admin-portal
 
       # Step 4: Run Angular tests using Karma
-      - name: Run Angular tests
-        run: npm run test -- --watch=false --browsers=ChromeHeadless
+      - name: Run Admin Portal tests with coverage
+        run: npm run test:coverage
         working-directory: ui/admin-portal
         env:
           CI: true
-      # Step 5: Archive test results if tests fail
+
+      # Step 5: Upload the report to codecov
+      - name: Upload Admin Portal coverage to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: ./ui/admin-portal/coverage/lcov.info
+          flags: admin-portal
+          name: admin-portal-coverage
+          fail_ci_if_error: true
+          disable_search: true
+
+      # Step 6: Archive test results if tests fail
       - name: Archive test results
         if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: test-results
-          path: ui/admin-portal/dist/test-results
+          name: admin-portal-test-results
+          path: |
+            ui/admin-portal/coverage
+            ui/admin-portal/dist/test-results
+          if-no-files-found: ignore
