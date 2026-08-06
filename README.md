@@ -192,7 +192,7 @@ Download and install the latest of the following tools.
       Anthropic account when prompted.
     - **IntelliJ plugin:** since this project uses IntelliJ, install the
       [Claude Code plugin](https://plugins.jetbrains.com/plugin/27310-claude-code-beta-) from the
-      JetBrains Marketplace for IDE integration (diff viewer, sharing your current selection as
+      JetBrains Marketplace for [IDE integration](https://code.claude.com/docs/en/jetbrains) (diff viewer, sharing your current selection as
       context, `@file` reference shortcuts, and inline diagnostics). Install it, then restart
       IntelliJ completely. Run `claude` from IntelliJ's integrated terminal to pick up the
       integration automatically, or run `/ide` from an external terminal to connect an
