@@ -139,14 +139,15 @@ public class BackgroundProcessingServiceImpl implements BackgroundProcessingServ
   }
 
   @Override
-  public void buildEmbeddings() {
+  public String buildEmbeddings() {
     final EmbeddingModel model = embeddingModelService.getBuildingModel();
     if (model == null) {
+      String mess = "There is no embedding model with status BUILDING";
       LogBuilder.builder(log)
           .action("buildEmbeddings")
-          .message("No embedding model with status BUILDING found")
+          .message(mess)
           .logWarn();
-      return;
+      return mess;
     }
 
     //Process all experiences except for deleted or withdrawn candidates
@@ -177,6 +178,7 @@ public class BackgroundProcessingServiceImpl implements BackgroundProcessingServ
     //Start the processing
     PageContextBackRunner runner = new PageContextBackRunner();
     runner.start(taskScheduler, backProcessor, 100, "Build embeddings");
+    return "Embeddings build started";
   }
 
   @Override

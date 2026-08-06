@@ -408,8 +408,9 @@ public class SystemAdminApi {
     }
 
     @PostMapping("build_embeddings")
-    public void buildEmbeddings() {
-        backgroundProcessingService.buildEmbeddings();
+    public ResponseEntity<String> buildEmbeddings() {
+        String message = backgroundProcessingService.buildEmbeddings();
+        return ResponseEntity.ok(message);
     }
 
     @PostMapping("run_api_migration")
