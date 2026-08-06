@@ -58,7 +58,7 @@ public class TcVectorEmbeddingServiceImpl implements TcVectorEmbeddingService {
         @NotNull EmbeddingInputType type) {
 
         final EmbeddingInput input = EmbeddingInput.builder()
-            .id("target")
+            .id("query")
             .context(context)
             .text(text)
             .build();

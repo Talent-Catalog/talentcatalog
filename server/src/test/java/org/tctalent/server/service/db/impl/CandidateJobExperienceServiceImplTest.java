@@ -543,7 +543,7 @@ class CandidateJobExperienceServiceImplTest {
         given(embeddingModelService.getTableNameForModel(model)).willReturn(TABLE_NAME);
         given(tcVectorEmbeddingService.generateEmbedding(
             MODEL_KEY, null, DESCRIPTION, EmbeddingInputType.DOCUMENT))
-            .willReturn(EmbeddingResult.builder().id("target").embedding(embedding).build());
+            .willReturn(EmbeddingResult.builder().id("query").embedding(embedding).build());
 
         jobExperienceService.save(experience, true);
 
@@ -565,10 +565,10 @@ class CandidateJobExperienceServiceImplTest {
         given(embeddingModelService.getTableNameForModel(model2)).willReturn(TABLE_NAME_2);
         given(tcVectorEmbeddingService.generateEmbedding(
             MODEL_KEY, null, DESCRIPTION, EmbeddingInputType.DOCUMENT))
-            .willReturn(EmbeddingResult.builder().id("target").embedding(embedding1).build());
+            .willReturn(EmbeddingResult.builder().id("query").embedding(embedding1).build());
         given(tcVectorEmbeddingService.generateEmbedding(
             MODEL_KEY_2, null, DESCRIPTION, EmbeddingInputType.DOCUMENT))
-            .willReturn(EmbeddingResult.builder().id("target").embedding(embedding2).build());
+            .willReturn(EmbeddingResult.builder().id("query").embedding(embedding2).build());
 
         jobExperienceService.save(experience, true);
 
@@ -591,7 +591,7 @@ class CandidateJobExperienceServiceImplTest {
         given(embeddingModelService.getTableNameForModel(model)).willReturn(TABLE_NAME);
         given(tcVectorEmbeddingService.generateEmbedding(
             MODEL_KEY, null, DESCRIPTION, EmbeddingInputType.DOCUMENT))
-            .willReturn(EmbeddingResult.builder().id("target").error(error).build());
+            .willReturn(EmbeddingResult.builder().id("query").error(error).build());
 
         jobExperienceService.save(experience, true);
 
