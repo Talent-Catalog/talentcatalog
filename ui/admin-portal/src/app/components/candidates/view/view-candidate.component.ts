@@ -531,8 +531,7 @@ export class ViewCandidateComponent extends MainSidePanelBase implements OnInit,
   }
 
   canEraseCandidateData(): boolean {
-    return this.authorizationService.canEraseCandidateData()
-      && this.candidate?.status !== 'deleted';
+    return this.authorizationService.canEraseCandidateData();
   }
 
   canMarkAsDeleted(): boolean {
