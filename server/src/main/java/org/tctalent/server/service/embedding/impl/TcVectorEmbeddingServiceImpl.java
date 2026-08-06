@@ -44,6 +44,7 @@ public class TcVectorEmbeddingServiceImpl implements TcVectorEmbeddingService {
 
         EmbeddingsRequest request = EmbeddingsRequest.builder()
             .model(modelDetails)
+            .type(type)
             .inputs(inputs)
             .build();
 
