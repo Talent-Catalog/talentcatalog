@@ -13,7 +13,10 @@ The system uses vector embeddings to match candidates with job experiences.
 You can have multiple embedding tables in the database: each associated with a different
 embedding model.
 
-Create a Flyway which adds a new record in the EmbeddingModel table for the new model.
+First you need to provide support for loading and using that new model in the Python embedding 
+service.
+
+Then create a Flyway which adds a new record in the EmbeddingModel table for the new model.
 That record should have its status set to BUILDING.
 
 (You can reuse an existing embedding model record if one exists, for example, if the model has 
