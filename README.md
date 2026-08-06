@@ -178,6 +178,30 @@ Download and install the latest of the following tools.
       > Commands in this README use V2 conventions. If you are using V1, you will need to adjust 
         the commands, or upgrade to V2 (see [Docker's Official Guide](https://docs.docker.com/compose/releases/migrate/)).
 
+- Claude Code - [Anthropic's CLI coding agent](https://docs.claude.com/en/docs/claude-code), used to
+  help develop this project from the command line or from within IntelliJ.
+    - Install via Homebrew (recommended, matching the other tools above):
+      ```shell
+      brew install --cask claude-code
+      ```
+      Alternatively, use the native install script:
+      ```shell
+      curl -fsSL https://claude.ai/install.sh | bash
+      ```
+    - Run `claude` from the root of this repository to start a session, then log in with your
+      Anthropic account when prompted.
+    - **IntelliJ plugin:** since this project uses IntelliJ, install the
+      [Claude Code plugin](https://plugins.jetbrains.com/plugin/27310-claude-code-beta-) from the
+      JetBrains Marketplace for IDE integration (diff viewer, sharing your current selection as
+      context, `@file` reference shortcuts, and inline diagnostics). Install it, then restart
+      IntelliJ completely. Run `claude` from IntelliJ's integrated terminal to pick up the
+      integration automatically, or run `/ide` from an external terminal to connect an
+      already-running session to the IDE.
+    - **Project context:** this repo includes a `CLAUDE.md` file, which Claude Code reads
+      automatically at the start of every session. It imports `AGENTS.md` (our shared instructions
+      file for AI coding agents generally), so both stay in sync — update `AGENTS.md` for guidance
+      relevant to any AI agent, and add Claude-specific instructions directly to `CLAUDE.md`.
+
 ### Clone the TC repository from Git ###
 
 - Clone [the repository](https://github.com/Talent-Catalog/talentcatalog.git) to your local system
