@@ -55,6 +55,17 @@ public interface EmbeddingModelService {
     List<EmbeddingModel> getReadyModels();
 
     /**
+     * Returns all embedding models whose stored embeddings should be kept up to date as
+     * candidate data changes - ie those that are READY or still BUILDING.
+     * <p>
+     * BUILDING models are included because they are being populated in the background on their
+     * own database table, and need to reflect any changes made while they are still building, so
+     * that their embeddings are complete and up to date by the time they become READY.
+     * @return List of READY or BUILDING embedding models. Empty if there are none.
+     */
+    List<EmbeddingModel> getReadyOrBuildingModels();
+
+    /**
      * Returns the table name for the given embedding model.
      * @param model The embedding model for which to get the table name.
      * @return String The table name associated with the given embedding model.

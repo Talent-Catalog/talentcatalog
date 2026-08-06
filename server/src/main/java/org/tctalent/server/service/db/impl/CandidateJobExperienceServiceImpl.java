@@ -317,13 +317,13 @@ public class CandidateJobExperienceServiceImpl implements CandidateJobExperience
     }
 
     // Generates and upserts the embedding for a single candidate job experience, for every
-    // currently READY embedding model.
+    // currently READY or BUILDING embedding model.
     private void updateEmbedding(CandidateJobExperience experience) {
-        final List<EmbeddingModel> models = embeddingModelService.getReadyModels();
+        final List<EmbeddingModel> models = embeddingModelService.getReadyOrBuildingModels();
         if (models.isEmpty()) {
             LogBuilder.builder(log)
                 .action("updateCandidateJobExperienceEmbedding")
-                .message("No READY embedding models found")
+                .message("No READY or BUILDING embedding models found")
                 .logWarn();
             return;
         }

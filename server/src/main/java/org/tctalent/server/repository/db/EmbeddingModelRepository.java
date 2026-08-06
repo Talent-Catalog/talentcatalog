@@ -33,4 +33,6 @@ public interface EmbeddingModelRepository extends JpaRepository<EmbeddingModel, 
     EmbeddingModel findByStatus(EmbeddingModelStatus status);
 
     List<EmbeddingModel> findAllByStatus(EmbeddingModelStatus status);
+
+    List<EmbeddingModel> findAllByStatusIn(List<EmbeddingModelStatus> statuses);
 }

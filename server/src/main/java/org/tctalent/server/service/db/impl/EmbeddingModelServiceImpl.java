@@ -60,6 +60,12 @@ public class EmbeddingModelServiceImpl implements EmbeddingModelService {
     }
 
     @Override
+    public List<EmbeddingModel> getReadyOrBuildingModels() {
+        return embeddingModelRepository.findAllByStatusIn(
+            List.of(EmbeddingModelStatus.READY, EmbeddingModelStatus.BUILDING));
+    }
+
+    @Override
     public String getTableNameForModel(EmbeddingModel model) {
         String name = "job_experience_embedding" + "_" + model.getModelKey().toLowerCase();
 

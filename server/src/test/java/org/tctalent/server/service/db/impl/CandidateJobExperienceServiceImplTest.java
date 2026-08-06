@@ -523,7 +523,7 @@ class CandidateJobExperienceServiceImplTest {
     @DisplayName("should save experience and skip embedding update when there are no READY models")
     void save_shouldSkipEmbeddingUpdate_whenNoReadyModels() {
         given(jobExperienceRepository.save(experience)).willReturn(experience);
-        given(embeddingModelService.getReadyModels()).willReturn(List.of());
+        given(embeddingModelService.getReadyOrBuildingModels()).willReturn(List.of());
 
         CandidateJobExperience result = jobExperienceService.save(experience, true);
 
@@ -539,7 +539,7 @@ class CandidateJobExperienceServiceImplTest {
         List<Double> embedding = List.of(0.1, 0.2, 0.3);
 
         given(jobExperienceRepository.save(experience)).willReturn(experience);
-        given(embeddingModelService.getReadyModels()).willReturn(List.of(model));
+        given(embeddingModelService.getReadyOrBuildingModels()).willReturn(List.of(model));
         given(embeddingModelService.getTableNameForModel(model)).willReturn(TABLE_NAME);
         given(tcVectorEmbeddingService.generateEmbedding(
             MODEL_KEY, null, DESCRIPTION, EmbeddingInputType.DOCUMENT))
@@ -560,7 +560,7 @@ class CandidateJobExperienceServiceImplTest {
         List<Double> embedding2 = List.of(0.4, 0.5, 0.6);
 
         given(jobExperienceRepository.save(experience)).willReturn(experience);
-        given(embeddingModelService.getReadyModels()).willReturn(List.of(model1, model2));
+        given(embeddingModelService.getReadyOrBuildingModels()).willReturn(List.of(model1, model2));
         given(embeddingModelService.getTableNameForModel(model1)).willReturn(TABLE_NAME);
         given(embeddingModelService.getTableNameForModel(model2)).willReturn(TABLE_NAME_2);
         given(tcVectorEmbeddingService.generateEmbedding(
@@ -587,7 +587,7 @@ class CandidateJobExperienceServiceImplTest {
             .build();
 
         given(jobExperienceRepository.save(experience)).willReturn(experience);
-        given(embeddingModelService.getReadyModels()).willReturn(List.of(model));
+        given(embeddingModelService.getReadyOrBuildingModels()).willReturn(List.of(model));
         given(embeddingModelService.getTableNameForModel(model)).willReturn(TABLE_NAME);
         given(tcVectorEmbeddingService.generateEmbedding(
             MODEL_KEY, null, DESCRIPTION, EmbeddingInputType.DOCUMENT))
