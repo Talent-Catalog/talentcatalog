@@ -167,9 +167,6 @@ public class CandidateBestNMatchingRepository {
             throw new IllegalArgumentException("Matching request is required");
         }
         validateTableName(tableName);
-        if (request.getSimpleQueryString() == null || request.getSimpleQueryString().isBlank()) {
-            throw new IllegalArgumentException("Query text is required");
-        }
         List<Double> embedding = request.getQueryEmbedding();
         if (embedding == null || embedding.isEmpty()) {
             throw new IllegalArgumentException("Query embedding is required");
