@@ -16,22 +16,30 @@
 
 package org.tctalent.server.service.db.impl;
 
+import java.util.HashMap;
 import java.util.List;
-import org.springframework.beans.factory.annotation.Autowired;
+import java.util.Map;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
+import org.tctalent.server.configuration.properties.VectorEmbeddingModelProperties;
 import org.tctalent.server.exception.InvalidCredentialsException;
 import org.tctalent.server.exception.InvalidSessionException;
 import org.tctalent.server.exception.NoSuchObjectException;
+import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.CandidateJobExperience;
 import org.tctalent.server.model.db.CandidateOccupation;
 import org.tctalent.server.model.db.Country;
 import org.tctalent.server.model.db.User;
+import org.tctalent.server.model.db.embedding.EmbeddingModel;
+import org.tctalent.server.repository.db.AlternateJobExperienceEmbeddingRepository;
 import org.tctalent.server.repository.db.CandidateJobExperienceRepository;
 import org.tctalent.server.repository.db.CandidateOccupationRepository;
 import org.tctalent.server.repository.db.CandidateRepository;
 import org.tctalent.server.repository.db.CountryRepository;
+import org.tctalent.server.repository.db.EmbeddingModelRepository;
 import org.tctalent.server.request.work.experience.CreateJobExperienceRequest;
 import org.tctalent.server.request.work.experience.SearchJobExperienceRequest;
 import org.tctalent.server.request.work.experience.UpdateJobExperienceRequest;
@@ -39,40 +47,35 @@ import org.tctalent.server.security.AuthService;
 import org.tctalent.server.service.db.CandidateJobExperienceService;
 import org.tctalent.server.service.db.CandidateService;
 import org.tctalent.server.service.db.SkillsService;
+import org.tctalent.server.service.embedding.TcVectorEmbeddingService;
+import org.tctalent.server.service.embedding.dto.EmbeddingResult;
+import org.tctalent.server.service.embedding.dto.EmbeddingsResponse;
 import org.tctalent.server.util.text.TextParts;
 import org.tctalent.server.util.text.TextPartsCodec;
 
 @Service
+@RequiredArgsConstructor
+@Slf4j
 public class CandidateJobExperienceServiceImpl implements CandidateJobExperienceService {
 
+    private final AlternateJobExperienceEmbeddingRepository altRepo;
     private final CandidateJobExperienceRepository candidateJobExperienceRepository;
     private final CountryRepository countryRepository;
     private final CandidateRepository candidateRepository;
     private final CandidateService candidateService;
     private final CandidateOccupationRepository candidateOccupationRepository;
+    private final EmbeddingModelRepository embeddingModelRepository;
     private final AuthService authService;
     private final SkillsService skillsService;
-
-    @Autowired
-    public CandidateJobExperienceServiceImpl(CandidateJobExperienceRepository candidateJobExperienceRepository,
-                                      CandidateOccupationRepository candidateOccupationRepository,
-                                      CountryRepository countryRepository,
-                                      CandidateService candidateService,
-                                      CandidateRepository candidateRepository,
-                                      AuthService authService, SkillsService skillsService) {
-        this.candidateJobExperienceRepository = candidateJobExperienceRepository;
-        this.countryRepository = countryRepository;
-        this.candidateRepository = candidateRepository;
-        this.candidateService = candidateService;
-        this.candidateOccupationRepository = candidateOccupationRepository;
-        this.authService = authService;
-        this.skillsService = skillsService;
-    }
+    private final TcVectorEmbeddingService tcVectorEmbeddingService;
+    private final VectorEmbeddingModelProperties vectorEmbeddingModelProperties;
 
     @Override
     public Page<CandidateJobExperience> searchCandidateJobExperience(
         SearchJobExperienceRequest request) {
-        if (request.getCandidateId() != null) {
+        if (request.getActiveCandidate() != null && request.getActiveCandidate()) {
+            return candidateJobExperienceRepository.findByActiveCandidate(request.getPageRequest());
+        } else if (request.getCandidateId() != null) {
             return candidateJobExperienceRepository.findByCandidateId(request.getCandidateId(), request.getPageRequest());
         } else {
             return candidateJobExperienceRepository.findByCandidateOccupationId(request.getCandidateOccupationId(), request.getPageRequest());
@@ -168,6 +171,47 @@ public class CandidateJobExperienceServiceImpl implements CandidateJobExperience
         candidateService.save(candidate, true);
 
         return candidateJobExperience;
+    }
+
+    @Override
+    public void updateCandidateJobExperienceEmbeddings(List<CandidateJobExperience> experiences) {
+
+        final String tableName = vectorEmbeddingModelProperties.getAlternateEmbeddingTable();
+        final String modelKey = vectorEmbeddingModelProperties.getEmbeddingModelKey();
+        final EmbeddingModel model = embeddingModelRepository.findByModelKey(
+            modelKey);
+        Map<String, String> descriptionsById = new HashMap<>();
+        experiences.forEach(experience -> {
+            descriptionsById.put(experience.getId().toString(), experience.getDescription());
+        });
+
+        final EmbeddingsResponse response =
+            tcVectorEmbeddingService.generateEmbeddings(modelKey, descriptionsById);
+
+        final List<EmbeddingResult> results = response.getResults();
+        for (EmbeddingResult result : results) {
+            if (result.isSuccessful()) {
+
+                final long candidateJobExperienceId;
+                try {
+                    candidateJobExperienceId = Long.parseLong(result.getId());
+                    altRepo.upsert(tableName,
+                        candidateJobExperienceId, model.getId(), result.getEmbedding());
+                } catch (NumberFormatException e) {
+                    LogBuilder.builder(log)
+                        .action("parseEmbeddingResultId")
+                        .message(String.format("Error non numeric id: '%s'", result.getId()))
+                        .logError(e);
+                }
+            } else {
+                LogBuilder.builder(log)
+                    .action("parseEmbeddingResultId")
+                    .message(String.format(
+                        "Error generating embeddings for candidate job experience: '%s'",
+                        result.getError()))
+                    .logWarn();
+            }
+        }
     }
 
     /**

@@ -14,21 +14,15 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tctalent.server.request.work.experience;
+package org.tctalent.server.repository.db;
 
-import jakarta.validation.constraints.NotNull;
-import lombok.Getter;
-import lombok.Setter;
-import org.tctalent.server.request.PagedSearchRequest;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.tctalent.server.model.db.embedding.EmbeddingModel;
 
-@Getter
-@Setter
-public class SearchJobExperienceRequest extends PagedSearchRequest {
-
-    @NotNull
-    private Long candidateOccupationId;
-
-    private Long candidateId;
-
-    private Boolean activeCandidate;
+/**
+ * Repository for EmbeddingModel
+ */
+public interface EmbeddingModelRepository extends JpaRepository<EmbeddingModel, Long> {
+    boolean existsByModelKey(String modelKey);
+    EmbeddingModel findByModelKey(String modelKey);
 }

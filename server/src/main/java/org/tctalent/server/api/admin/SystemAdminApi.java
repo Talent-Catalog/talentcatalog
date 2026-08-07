@@ -407,6 +407,11 @@ public class SystemAdminApi {
         backgroundProcessingService.setSavedSearchPublicIds();
     }
 
+    @PostMapping("build_alternate_embeddings")
+    public void buildAlternateEmbeddings() {
+        backgroundProcessingService.buildAlternateEmbeddings();
+    }
+
     @PostMapping("run_api_migration")
     public ResponseEntity<String> runApiMigration() {
         String response = tcApiService.runApiMigration();
