@@ -64,6 +64,75 @@ describe('RegistrationVerifyPlusComponent', () => {
     expect(registrationService.next).toHaveBeenCalled();
   });
 
+  it('should return empty formattedPayload when nothing has been scanned', () => {
+    component.decodedPayload = null;
+
+    expect(component.formattedPayload).toBe('');
+  });
+
+  it('should pretty-print valid JSON in formattedPayload', () => {
+    component.decodedPayload = '{"v":"mock-1","unhcrId":"123-45C67890"}';
+
+    expect(component.formattedPayload).toBe(JSON.stringify({
+      v: 'mock-1',
+      unhcrId: '123-45C67890'
+    }, null, 2));
+  });
+
+  it('should return raw payload when formattedPayload cannot parse JSON', () => {
+    component.decodedPayload = 'not-json';
+
+    expect(component.formattedPayload).toBe('not-json');
+  });
+
+  it('should disable next while submitting', () => {
+    component.submitting = false;
+    expect(component.nextDisabled).toBeFalse();
+
+    component.submitting = true;
+    expect(component.nextDisabled).toBeTrue();
+  });
+
+  it('should store decoded payload and clear previous submit state when scanner emits', () => {
+    component.scannerError = new Error('previous');
+    component.submitResult = {unhcrNumber: 'old', duplicate: false};
+    component.submitError = true;
+    component.submitErrorMessage = 'old error';
+
+    component.onScanned('decoded-qr');
+
+    expect(component.decodedPayload).toBe('decoded-qr');
+    expect(component.scannerError).toBeNull();
+    expect(component.submitResult).toBeNull();
+    expect(component.submitError).toBeFalse();
+    expect(component.submitErrorMessage).toBeNull();
+  });
+
+  it('should store scannerError when scanner fails', () => {
+    const error = new Error('camera denied');
+
+    component.onScannerError(error);
+
+    expect(component.scannerError).toBe(error);
+  });
+
+  it('should not submit when there is no decoded payload', () => {
+    component.decodedPayload = null;
+
+    component.onConfirm();
+
+    expect(verifyPlusService.submitScan).not.toHaveBeenCalled();
+  });
+
+  it('should not submit when already submitting', () => {
+    component.decodedPayload = '{"v":"mock-1","unhcrId":"123-45C67890"}';
+    component.submitting = true;
+
+    component.onConfirm();
+
+    expect(verifyPlusService.submitScan).not.toHaveBeenCalled();
+  });
+
   it('should submit scanned payload and store result on confirm success', () => {
     const payload = '{"v":"mock-1","unhcrId":"123-45C67890"}';
     component.onScanned(payload);
@@ -109,7 +178,20 @@ describe('RegistrationVerifyPlusComponent', () => {
     expect(component.submitErrorMessage).toBe(errorMessage);
   });
 
-  it('should reset submit state when rescanning', () => {
+  it('should set submitError without message when confirm fails with a non-string error', () => {
+    const payload = '{"v":"mock-2","unhcrId":"123-45C67890"}';
+    component.onScanned(payload);
+    verifyPlusService.submitScan.and.returnValue(throwError({status: 500}));
+
+    component.onConfirm();
+
+    expect(component.submitError).toBeTrue();
+    expect(component.submitErrorMessage).toBeNull();
+  });
+
+  it('should reset submit state and restart scanner when rescanning', () => {
+    const startScanning = jasmine.createSpy('startScanning');
+    component.scanner = {startScanning} as any;
     component.decodedPayload = '{"v":"mock-1","unhcrId":"123-45C67890"}';
     component.submitResult = {unhcrNumber: '123-45C67890', duplicate: true};
     component.submitError = true;
@@ -122,6 +204,7 @@ describe('RegistrationVerifyPlusComponent', () => {
     expect(component.submitResult).toBeNull();
     expect(component.submitError).toBeFalse();
     expect(component.submitErrorMessage).toBeNull();
+    expect(startScanning).toHaveBeenCalled();
   });
 
   it('should move to next step when continuing or skipping', () => {
