@@ -22,6 +22,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.tctalent.server.exception.InvalidCredentialsException;
 import org.tctalent.server.exception.InvalidSessionException;
 import org.tctalent.server.exception.NoSuchObjectException;
@@ -33,7 +34,6 @@ import org.tctalent.server.model.db.Country;
 import org.tctalent.server.model.db.Occupation;
 import org.tctalent.server.model.db.User;
 import org.tctalent.server.model.db.embedding.EmbeddingModel;
-import org.tctalent.server.model.db.embedding.EmbeddingModelStatus;
 import org.tctalent.server.repository.db.CandidateJobExperienceRepository;
 import org.tctalent.server.repository.db.CandidateOccupationRepository;
 import org.tctalent.server.repository.db.CandidateRepository;
@@ -52,6 +52,7 @@ import org.tctalent.server.service.embedding.dto.EmbeddingInput;
 import org.tctalent.server.service.embedding.dto.EmbeddingInputType;
 import org.tctalent.server.service.embedding.dto.EmbeddingResult;
 import org.tctalent.server.service.embedding.dto.EmbeddingsResponse;
+import org.tctalent.server.util.background.PageProcessReturn;
 import org.tctalent.server.util.text.TextParts;
 import org.tctalent.server.util.text.TextPartsCodec;
 
@@ -176,26 +177,38 @@ public class CandidateJobExperienceServiceImpl implements CandidateJobExperience
         return candidateJobExperience;
     }
 
+    //Need to make this transactional to keep the persistence context open for the duration of the
+    // processing of the page.
+    //Otherwise, we get a LazyInitializationException when trying to access lazy loaded properties
+    // of the CandidateJobExperience entities.
+    @Transactional
     @Override
-    public void batchUpdateCandidateJobExperienceEmbeddings(List<CandidateJobExperience> experiences) {
+    public PageProcessReturn batchUpdatePageOfCandidateJobExperienceEmbeddings(
+        SearchJobExperienceRequest request) {
+
+        PageProcessReturn pageProcessReturn;
 
         // Get the embedding model with status BUILDING
         final EmbeddingModel model = embeddingModelService.getBuildingModel();
         if (model == null) {
             LogBuilder.builder(log)
-                .action("updateCandidateJobExperienceEmbeddings")
+                .action("batchUpdatePageOfCandidateJobExperienceEmbeddings")
                 .message("No embedding model with status BUILDING found")
                 .logWarn();
-            return;
+            return new PageProcessReturn();
         }
 
-        //Special processing when there are no more experiences to process.
-        //This means the model is complete and should be set to READY.
-        if (experiences.isEmpty()) {
-            model.setStatus(EmbeddingModelStatus.READY);
-            embeddingModelService.save(model);
-            return;
-        }
+        Page<CandidateJobExperience> page = searchCandidateJobExperience(request);
+
+        pageProcessReturn = new PageProcessReturn(page);
+
+        batchUpdateCandidateJobExperienceEmbeddings(model, page.getContent());
+
+        return pageProcessReturn;
+    }
+
+    private void batchUpdateCandidateJobExperienceEmbeddings(
+        EmbeddingModel model, List<CandidateJobExperience> experiences) {
 
         final String modelKey = model.getModelKey();
         final String tableName = embeddingModelService.getTableNameForModel(model);

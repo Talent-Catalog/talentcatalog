@@ -30,12 +30,12 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.model.db.Candidate;
-import org.tctalent.server.model.db.CandidateJobExperience;
 import org.tctalent.server.model.db.CandidateStatus;
 import org.tctalent.server.model.db.PartnerImpl;
 import org.tctalent.server.model.db.SavedList;
 import org.tctalent.server.model.db.SavedSearch;
 import org.tctalent.server.model.db.embedding.EmbeddingModel;
+import org.tctalent.server.model.db.embedding.EmbeddingModelStatus;
 import org.tctalent.server.repository.db.CandidateRepository;
 import org.tctalent.server.request.candidate.SearchCandidateRequest;
 import org.tctalent.server.request.list.SearchSavedListRequest;
@@ -58,6 +58,7 @@ import org.tctalent.server.util.background.BackProcessor;
 import org.tctalent.server.util.background.BackRunner;
 import org.tctalent.server.util.background.PageContext;
 import org.tctalent.server.util.background.PageContextBackRunner;
+import org.tctalent.server.util.background.PageProcessReturn;
 import org.tctalent.server.util.listener.BatchListeningLogger;
 
 /**
@@ -160,21 +161,22 @@ public class BackgroundProcessingServiceImpl implements BackgroundProcessingServ
     //Create the processor, passing in the request and services it needs
     PagedCandidateJobExperienceBackProcessor backProcessor =
         new PagedCandidateJobExperienceBackProcessor( "buildEmbeddings",
-            searchRequest, candidateJobExperienceService) {
+            searchRequest) {
           @Override
-          protected void processExperiences(
-              CandidateJobExperienceService candidateJobExperienceService,
-              List<CandidateJobExperience> experiences, boolean hasMorePages) {
+          protected PageProcessReturn processPageOfExperiences(
+              SearchJobExperienceRequest searchJobExperienceRequest) {
 
-              candidateJobExperienceService.batchUpdateCandidateJobExperienceEmbeddings(experiences);
-              if (!hasMorePages) {
-                // Signal completion by passing in empty list to set model status to READY
-                candidateJobExperienceService
-                    .batchUpdateCandidateJobExperienceEmbeddings(new ArrayList<>());
-              }
+            PageProcessReturn pageProcessReturn = candidateJobExperienceService
+                .batchUpdatePageOfCandidateJobExperienceEmbeddings(searchJobExperienceRequest);
+
+            //Mark the model as ready if there are no more pages to process
+            if (!pageProcessReturn.isMorePages()) {
+              model.setStatus(EmbeddingModelStatus.READY);
+              embeddingModelService.save(model);
+            }
+            return pageProcessReturn;
           }
         };
-
     //Start the processing
     PageContextBackRunner runner = new PageContextBackRunner();
     runner.start(taskScheduler, backProcessor, 100, "Build embeddings");

@@ -16,12 +16,12 @@
 
 package org.tctalent.server.service.db;
 
-import java.util.List;
 import org.springframework.data.domain.Page;
 import org.tctalent.server.model.db.CandidateJobExperience;
 import org.tctalent.server.request.work.experience.CreateJobExperienceRequest;
 import org.tctalent.server.request.work.experience.SearchJobExperienceRequest;
 import org.tctalent.server.request.work.experience.UpdateJobExperienceRequest;
+import org.tctalent.server.util.background.PageProcessReturn;
 
 public interface CandidateJobExperienceService {
 
@@ -30,11 +30,13 @@ public interface CandidateJobExperienceService {
      * <p>
      * This method is intended for batch processing of candidate job experiences to update their
      * embeddings.
-     * @param experiences the list of candidate job experiences to update. If empty, that signals
+     * @param request the request used to return the page of candidate job experiences to update.
+     *                If empty, that signals
      *                    that the batch processing is complete and the currently building model
      *                    should be set to the status READY.
      */
-    void batchUpdateCandidateJobExperienceEmbeddings(List<CandidateJobExperience> experiences);
+    PageProcessReturn batchUpdatePageOfCandidateJobExperienceEmbeddings(
+        SearchJobExperienceRequest request);
 
     /**
      * Computes the context string for a given job experience.
