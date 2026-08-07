@@ -33,7 +33,7 @@ export class RegistrationVerifyPlusComponent implements OnInit {
   @ViewChild(VerifyPlusScannerComponent) scanner?: VerifyPlusScannerComponent;
 
   decodedPayload: string | null = null;
-  scannerError: unknown;
+  scannerError: unknown | null = null;
   submitting = false;
   submitResult: VerifyPlusScanResult | null = null;
   submitError = false;
@@ -106,6 +106,7 @@ export class RegistrationVerifyPlusComponent implements OnInit {
     this.submitResult = null;
     this.submitError = false;
     this.submitErrorMessage = null;
+    this.scannerError = null;
     this.scanner?.startScanning();
   }
 
