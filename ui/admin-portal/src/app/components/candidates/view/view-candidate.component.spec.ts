@@ -23,7 +23,7 @@ import {MockCandidate} from '../../../MockData/MockCandidate';
 import {MockSavedList} from '../../../MockData/MockSavedList';
 import {MockUser} from '../../../MockData/MockUser';
 import {JobChatType} from '../../../model/chat';
-import {Candidate} from '../../../model/candidate';
+import {Candidate, CandidateStatus, UpdateCandidateStatusInfo} from '../../../model/candidate';
 import {SavedList} from '../../../model/saved-list';
 import {AuthorizationService} from '../../../services/authorization.service';
 import {AuthenticationService} from '../../../services/authentication.service';
@@ -247,14 +247,19 @@ describe('ViewCandidateComponent', () => {
   });
 
   it('should delete a candidate and navigate home', fakeAsync(() => {
-    const modalRef = createModalRef(Promise.resolve(true));
+    const info: UpdateCandidateStatusInfo =
+      {status: CandidateStatus.deleted} as UpdateCandidateStatusInfo;
+    const modalRef = createModalRef(Promise.resolve(info));
     modalService.open.and.returnValue(modalRef);
 
     component.deleteCandidate();
     flushMicrotasks();
 
-    expect(modalRef.componentInstance.candidate).toBe(candidate);
-    expect(router.navigate).toHaveBeenCalledWith(['/']);
+    expect(modalRef.componentInstance.candidateStatus).toBe(CandidateStatus.deleted);
+    expect(candidateService.updateStatus).toHaveBeenCalledWith({
+      candidateIds: [candidate.id],
+      info
+    });
   }));
 
   it('should erase candidate data and navigate home', fakeAsync(() => {
@@ -274,7 +279,7 @@ describe('ViewCandidateComponent', () => {
     const modalRef = createModalRef(Promise.resolve(info));
     modalService.open.and.returnValue(modalRef);
 
-    component.editCandidate();
+    component.editCandidateStatus();
     flushMicrotasks();
 
     expect(modalRef.componentInstance.candidateStatus).toBe(originalStatus);
@@ -436,6 +441,20 @@ describe('ViewCandidateComponent', () => {
     expect(component.canSeeJobDetails()).toBeTrue();
     expect(component.canViewCandidateName()).toBeTrue();
     expect(component.canViewChats()).toBeTrue();
+  });
+
+  it('should only allow marking a candidate as deleted when editable and not already deleted', () => {
+    authorizationService.isEditableCandidate.and.returnValue(true);
+    candidate.status = 'active';
+    expect(component.canMarkAsDeleted()).toBeTrue();
+
+    authorizationService.isEditableCandidate.and.returnValue(false);
+    candidate.status = 'active';
+    expect(component.canMarkAsDeleted()).toBeFalse();
+
+    authorizationService.isEditableCandidate.and.returnValue(true);
+    candidate.status = 'deleted';
+    expect(component.canMarkAsDeleted()).toBeFalse();
   });
 
   it('should mark the candidate chat as read', () => {
@@ -629,4 +648,5 @@ describe('ViewCandidateComponent', () => {
       result
     } as NgbModalRef;
   }
+
 });
