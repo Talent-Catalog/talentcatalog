@@ -9,7 +9,11 @@
     "test": "ng test",
     "test:coverage": "ng test candidate-portal --watch=false --code-coverage=true --browsers=ChromeHeadless --source-map=true",
     "lint": "ng lint",
-    "e2e": "ng e2e"
+    "e2e": "playwright test",
+    "e2e:ui": "playwright test --ui",
+    "e2e:headed": "playwright test --headed",
+    "e2e:debug": "playwright test --debug",
+    "e2e:report": "playwright show-report"
   },
   "private": true,
   "engines": {
@@ -58,6 +62,7 @@
     "@angular/cli": "^17.3.17",
     "@angular/compiler-cli": "^17.3.12",
     "@angular/language-service": "^17.3.12",
+    "@playwright/test": "^1.62.1",
     "@types/node": "^20.0.0",
     "codelyzer": "^6.0.2",
     "jasmine-spec-reporter": "^7.0.0",
