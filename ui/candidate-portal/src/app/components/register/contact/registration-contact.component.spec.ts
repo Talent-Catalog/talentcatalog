@@ -288,6 +288,27 @@ describe('RegistrationContactComponent', () => {
   });
 
   // ---------------------------------------------------------------------------
+  // Email sanitization (TC-723)
+  // ---------------------------------------------------------------------------
+
+  describe('email sanitization', () => {
+    it('should strip a Hangul filler character pasted before the email', () => {
+      component.form.get('email').setValue('ㅤuser@example.com');
+      expect(component.email).toBe('user@example.com');
+    });
+
+    it('should strip a zero-width space pasted after the email', () => {
+      component.form.get('email').setValue('user@example.com​');
+      expect(component.email).toBe('user@example.com');
+    });
+
+    it('should leave a clean email unchanged', () => {
+      component.form.get('email').setValue('user@example.com');
+      expect(component.email).toBe('user@example.com');
+    });
+  });
+
+  // ---------------------------------------------------------------------------
   // Form validation
   // ---------------------------------------------------------------------------
 

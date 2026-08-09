@@ -256,6 +256,33 @@ describe('RegistrationCreateAccountComponent', () => {
     });
   });
 
+  // ── username sanitization (TC-723) ──────────────────────────────────────
+
+  describe('username sanitization', () => {
+    beforeEach(async () => configureAndCreate());
+
+    it('should strip a Hangul filler character pasted before the username', () => {
+      component.registrationForm.get('username').setValue('ㅤuser@example.com');
+      expect(component.username).toBe('user@example.com');
+    });
+
+    it('should strip a zero-width space pasted after the username', () => {
+      component.registrationForm.get('username').setValue('user@example.com​');
+      expect(component.username).toBe('user@example.com');
+    });
+
+    it('should leave a clean username unchanged', () => {
+      component.registrationForm.get('username').setValue('user@example.com');
+      expect(component.username).toBe('user@example.com');
+    });
+
+    it('should clear a prior pattern error once the invisible character is sanitized', () => {
+      const control = component.registrationForm.get('username');
+      control.setValue('ㅤuser@example.com');
+      expect(control.errors?.['pattern']).toBeFalsy();
+    });
+  });
+
   // ── register() – success, non-US-Afghan ────────────────────────────────
 
   describe('register() success (non-US-Afghan)', () => {
