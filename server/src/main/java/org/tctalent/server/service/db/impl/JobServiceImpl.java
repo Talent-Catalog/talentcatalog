@@ -455,6 +455,7 @@ public class JobServiceImpl implements JobService {
             .orElseThrow(() -> new NoSuchObjectException(SalesforceJobOpp.class, id));
 
         String text = extractJobText(jobOpp);
+
         return skillsService.extractSkillNames(text, lang);
     }
 
