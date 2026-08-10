@@ -122,8 +122,12 @@
         </ng-template>
 
         <div class="container-fluid">
-          <strong>AI Matching</strong>
-          <div class="row">
+          <strong>
+            AI Matching
+            <span *ngIf="!hasEmbeddingModels()">- currently disabled. Waiting for models to build.</span>
+          </strong>
+
+          <div *ngIf="hasEmbeddingModels()" class="row">
             <div class="mb-3 col-md-6">
               <!-- providing 'placement' as an empty string makes the tooltip appear over the
               element in a suitable direction for the viewport -->

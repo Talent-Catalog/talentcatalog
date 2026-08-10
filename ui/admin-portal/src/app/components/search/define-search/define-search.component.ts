@@ -345,6 +345,10 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
     return !!this.embeddingModel;
   }
 
+  public hasEmbeddingModels(): boolean {
+    return !!this.embeddingModels && this.embeddingModels.length > 0;
+  }
+
   get requirementsDescription(): string {
     return this.searchForm.controls.requirementsDescription.value;
   }
