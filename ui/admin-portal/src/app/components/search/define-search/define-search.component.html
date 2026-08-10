@@ -188,32 +188,34 @@
               <ng-select
                 class="tc-select"
                 id="modelKey"
-                [items]="modelKeys"
+                bindLabel="modelKey"
+                [items]="embeddingModels"
                 [searchable]="false"
                 placeholder="Select"
-                formControlName="modelKey">
+                formControlName="embeddingModel">
               </ng-select>
             </div>
 
-            <div *ngIf="hasModelKey()" class="col-md-3">
+            <div *ngIf="hasEmbeddingModel()" class="col-md-3">
               <tc-label size="sm" class="form-label">Model Configuration</tc-label>
               <div>
-                SPACY_PREPROCESSING_V3
+                {{embeddingModel.configurationVersion}}
               </div>
             </div>
 
-            <div *ngIf="hasModelKey()" class="col-md-4">
+            <div *ngIf="hasEmbeddingModel()" class="col-md-4">
               <tc-label size="sm" class="form-label">Model Name</tc-label>
               <div>
-                <a target="_blank" href="https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2">
-                  sentence-transformers/all-MiniLM-L6-v2</a>
+                <a target="_blank" [href]="embeddingModel.modelUrl">
+                  {{embeddingModel.modelName}}
+                </a>
               </div>
             </div>
 
-            <div *ngIf="hasModelKey()" class="col-md-1">
+            <div *ngIf="hasEmbeddingModel()" class="col-md-1">
               <tc-label size="sm" class="form-label">Dimensions</tc-label>
               <div>
-                384
+                {{embeddingModel.dimensions}}
               </div>
             </div>
 

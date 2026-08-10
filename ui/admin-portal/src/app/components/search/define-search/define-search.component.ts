@@ -50,6 +50,7 @@ import {EducationLevel} from '../../../model/education-level';
 import {EducationLevelService} from '../../../services/education-level.service';
 import {EducationMajor} from '../../../model/education-major';
 import {EducationMajorService} from '../../../services/education-major.service';
+import {EmbeddingModel} from '../../../model/embedding-model';
 import {Occupation} from '../../../model/occupation';
 import {CandidateOccupationService} from '../../../services/candidate-occupation.service';
 import {
@@ -89,6 +90,7 @@ import {first} from "rxjs/operators";
 import {JobService} from "../../../services/job.service";
 import {SkillName} from "../../../model/skill";
 import {CandidateNumberParser} from "../../../util/candidate-number-parser";
+import {EmbeddingModelService} from "../../../services/embedding-model.service";
 
 /**
  * This component contains all the search fields for saved and unsaved searches. It communicates
@@ -136,13 +138,12 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
   sortDirection = 'DESC';
 
   /* DATA - these are all drop down options for each select field*/
+  embeddingModels: EmbeddingModel[];
   nationalities: Country[];
   countries: Country[];
   partners: Partner[];
   languages: Language[];
 
-  //todo This is currently hard coded. It should be uploaded from live EmbeddngModels
-  modelKeys: string[] = ['MINILM_L6_SPACY_V3'];
   educationLevels: EducationLevel[];
   educationMajors: EducationMajor[];
   candidateOccupations: Occupation[];
@@ -171,6 +172,7 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
 
   constructor(private fb: UntypedFormBuilder,
               private countryService: CountryService,
+              private embeddingModelService: EmbeddingModelService,
               private languageService: LanguageService,
               private partnerService: PartnerService,
               private savedSearchService: SavedSearchService,
@@ -191,7 +193,7 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
     this.searchForm = this.fb.group({
       requirementsDescription: [null],
       lexicalScoreProportion: [null],
-      modelKey: [null],
+      embeddingModel: [null],
       nMatches: [null],
       savedSearchId: [null],
       simpleQueryString: [null],
@@ -283,6 +285,7 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
     });
 
     forkJoin({
+      'embeddingModels': this.embeddingModelService.loadReadyModels(),
       'nationalities': this.countryService.listCountries(),
       'countriesRestricted': this.countryService.listCountriesRestricted(),
       'languages': this.languageService.listLanguages(),
@@ -294,6 +297,7 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
       'surveyTypes': this.surveyTypeService.listSurveyTypes()
     }).subscribe(results => {
       this.loading = false;
+      this.embeddingModels = results['embeddingModels'];
       this.nationalities = results['nationalities'];
       this.countries = results['countriesRestricted'];
       this.languages = results['languages'];
@@ -333,12 +337,12 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
     return this.searchForm.controls.lexicalScoreProportion.value;
   }
 
-  get modelKey(): string {
-    return this.searchForm.controls.modelKey.value;
+  get embeddingModel(): EmbeddingModel {
+    return this.searchForm.controls.embeddingModel.value;
   }
 
-  public hasModelKey(): boolean {
-    return !!this.modelKey;
+  public hasEmbeddingModel(): boolean {
+    return !!this.embeddingModel;
   }
 
   get requirementsDescription(): string {
