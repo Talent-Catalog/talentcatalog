@@ -16,10 +16,8 @@
 package org.tctalent.server.service.db;
 
 import java.util.List;
-import org.tctalent.server.repository.db.matching.CandidateBestNMatchingResult;
 import org.tctalent.server.repository.db.read.dto.CandidateReadDto;
 import org.tctalent.server.request.candidate.SearchCandidateRequest;
-import org.tctalent.server.request.candidate.matching.CandidateBestNMatchingRequest;
 
 /**
  * Service for finding the best N candidates matching a candidate set of requirements
@@ -45,13 +43,6 @@ import org.tctalent.server.request.candidate.matching.CandidateBestNMatchingRequ
  * </ul>
  */
 public interface CandidateBestNMatchingService {
-
-    /**
-     * Returns the best candidate matches corresponding to the given request.
-     * @param request Request that candidates are matched against.
-     * @return Sorted results with the best match first.
-     */
-    List<CandidateBestNMatchingResult> match(CandidateBestNMatchingRequest request);
 
     /**
      * Returns the best candidate matches corresponding to the given search request.
