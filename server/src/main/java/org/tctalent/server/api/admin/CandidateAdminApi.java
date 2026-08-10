@@ -123,6 +123,9 @@ public class CandidateAdminApi {
      */
     @PostMapping("match")
     public Map<String, Object> match(@RequestBody SearchCandidateRequest request) {
+        //Possible update of user default saved search
+        savedSearchService.updateUserDefaultSavedSearchIfNeeded(request);
+
         List<CandidateReadDto> candidates = candidateBestNMatchingService.match(request);
         int nCandidates = candidates.size();
 
@@ -136,6 +139,9 @@ public class CandidateAdminApi {
 
     @PostMapping("search")
     public Map<String, Object> search(@RequestBody SearchCandidateRequest request) {
+        //Possible update of user default saved search
+        savedSearchService.updateUserDefaultSavedSearchIfNeeded(request);
+
         Page<CandidateReadDto> candidates = savedSearchService.searchCandidateDtos(request);
 
         long start = System.currentTimeMillis();

@@ -446,31 +446,34 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         if (user == null) {
             candidates = doSearchCandidateDtos(request);
         } else {
-            SavedSearch savedSearch = getSavedSearch(request.getSavedSearchId());
-            // If searching a default search, update the default search with every search (aka Autosave).
-            // Else it is a saved search and those are updated upon 'Update Search' button only.
-            if (savedSearch.getDefaultSearch()) {
-                UpdateSavedSearchRequest updateRequest = new UpdateSavedSearchRequest();
-                updateRequest.setSearchCandidateRequest(request);
-                //Set other fields - no changes there
-                updateRequest.setName(savedSearch.getName());
-                updateRequest.setDefaultSearch(savedSearch.getDefaultSearch());
-                updateRequest.setFixed(savedSearch.getFixed());
-                updateRequest.setReviewable(savedSearch.getReviewable());
-                updateRequest.setSavedSearchType(savedSearch.getSavedSearchType());
-                updateRequest.setSavedSearchSubtype(savedSearch.getSavedSearchSubtype());
-                //todo Need special method which only updates search part. Then don't need the above "no changes there" stuff
-                updateSavedSearch(savedSearch.getId(), updateRequest);
-            }
-
             //Do the search
             candidates = doSearchCandidateDtos(request);
 
             //Add in any selections
-            markUserSelectedCandidateDtos(savedSearch.getId(), candidates);
+            markUserSelectedCandidateDtos(request.getSavedSearchId(), candidates);
         }
 
         return candidates;
+    }
+
+    @Transactional
+    public void updateUserDefaultSavedSearchIfNeeded(@NotNull SearchCandidateRequest request) {
+        final Long savedSearchId = request.getSavedSearchId();
+        SavedSearch savedSearch = getSavedSearch(savedSearchId);
+        // If searching a default search, update the default search with every search (aka Autosave).
+        // Else it is a saved search and those are updated upon 'Update Search' button only.
+        if (savedSearch.getDefaultSearch()) {
+            UpdateSavedSearchRequest updateRequest = new UpdateSavedSearchRequest();
+            updateRequest.setSearchCandidateRequest(request);
+            //Set other fields - no changes there
+            updateRequest.setName(savedSearch.getName());
+            updateRequest.setDefaultSearch(true);
+            updateRequest.setFixed(savedSearch.getFixed());
+            updateRequest.setReviewable(savedSearch.getReviewable());
+            updateRequest.setSavedSearchType(savedSearch.getSavedSearchType());
+            updateRequest.setSavedSearchSubtype(savedSearch.getSavedSearchSubtype());
+            updateSavedSearch(savedSearchId, updateRequest);
+        }
     }
 
     /**

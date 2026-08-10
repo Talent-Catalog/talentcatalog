@@ -225,6 +225,14 @@ public interface SavedSearchService {
 
     SavedSearch updateSavedSearch(long id, UpdateSavedSearchRequest request) throws EntityExistsException;
 
+    /**
+     * User default saved searches automatically save on each request.
+     * This checks if the search associated with the request is a user default search - and, if so,
+     * updates it with the contents of the search request.
+     * @param request Request to do a search
+     */
+    void updateUserDefaultSavedSearchIfNeeded(@NotNull SearchCandidateRequest request);
+
     boolean deleteSavedSearch(long id);
 
     void exportToCsv(long savedSearchId, SavedSearchGetRequest request, PrintWriter writer)
