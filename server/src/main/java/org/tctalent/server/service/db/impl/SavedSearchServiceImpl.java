@@ -1361,6 +1361,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             SavedSearch savedSearch, SearchCandidateRequest request) {
         if (request != null) {
             savedSearch.setSimpleQueryString(request.getSimpleQueryString());
+            savedSearch.setRequirements(request.getRequirements());
             savedSearch.setKeyword(request.getKeyword());
             savedSearch.setCandidateNumbers(getStringListAsString(request.getCandidateNumbers()));
             savedSearch.setStatuses(getStatusListAsString(request.getStatuses()));
@@ -1434,6 +1435,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         SearchCandidateRequest searchCandidateRequest = new SearchCandidateRequest();
         searchCandidateRequest.setSavedSearchId(search.getId());
         searchCandidateRequest.setSimpleQueryString(search.getSimpleQueryString());
+        searchCandidateRequest.setRequirements(search.getRequirements());
         searchCandidateRequest.setKeyword(search.getKeyword());
         searchCandidateRequest.setStatuses(getStatusListFromString(search.getStatuses()));
         searchCandidateRequest.setUnhcrStatuses(getUnhcrStatusListFromString(search.getUnhcrStatuses()));

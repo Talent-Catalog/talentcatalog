@@ -46,10 +46,10 @@ public class SearchCandidateRequest extends PagedSearchRequest {
      * also be used for other purposes. It is a textual representation of the requirements or
      * criteria that the candidates must meet.
      */
-    private String requirementsDescription;
+    private String requirements;
 
     /**
-     * When a {@link #requirementsDescription} is present, it is used to filter the candidates
+     * When a {@link #requirements} is present, it is used to filter the candidates
      * in two ways:
      * <ul>
      *     <li>

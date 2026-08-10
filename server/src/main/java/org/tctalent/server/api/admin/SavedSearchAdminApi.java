@@ -432,6 +432,7 @@ public class SavedSearchAdminApi implements
                 .add("includePendingTermsCandidates")
                 .add("miniIntakeCompleted")
                 .add("fullIntakeCompleted")
+                .add("requirements")
                 .add("sfJobOpp", jobOppIdsDto())
                 .add("watcherUserIds")
                 .add("createdBy", userDto())

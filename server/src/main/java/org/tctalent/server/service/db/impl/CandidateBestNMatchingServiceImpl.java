@@ -73,14 +73,14 @@ WHERE candidate_occupation.occupation_id in (:occupationId)
     @Override
     public List<CandidateReadDto> match(SearchCandidateRequest request) {
 
-        final String requirementsDescription = request.getRequirementsDescription();
-        if (!StringUtils.hasText(requirementsDescription)) {
-            throw new UnsupportedOperationException("RequirementsDescription must be specified");
+        final String requirements = request.getRequirements();
+        if (!StringUtils.hasText(requirements)) {
+            throw new UnsupportedOperationException("Requirements must be specified");
         }
 
         //Extract skills from description
         List<SkillName> skillNames =
-            skillsService.extractSkillNames(requirementsDescription, "en");
+            skillsService.extractSkillNames(requirements, "en");
         //Construct the simpleQueryString by concatenating the skills separated by space.
         //If a skill contains spaces, quote in ""
         String skillsQueryString = skillNames.stream()
@@ -94,7 +94,7 @@ WHERE candidate_occupation.occupation_id in (:occupationId)
         }
 
         EmbeddingResult embeddingResult = tcVectorEmbeddingService.generateEmbedding(
-            modelKey, null, requirementsDescription, EmbeddingInputType.QUERY);
+            modelKey, null, requirements, EmbeddingInputType.QUERY);
 
         if (embeddingResult.getError() != null) {
             final EmbeddingError error = embeddingResult.getError();

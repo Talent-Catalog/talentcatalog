@@ -128,6 +128,11 @@ public class SavedSearch extends AbstractCandidateSource {
 
     private String regoReferrerParam;
 
+    /**
+     * Natural language candidate requirements (e.g. from a job description).
+     */
+    private String requirements;
+
     private String unhcrStatuses;
 
     /**

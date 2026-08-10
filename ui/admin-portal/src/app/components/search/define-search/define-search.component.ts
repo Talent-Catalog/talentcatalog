@@ -191,7 +191,7 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
     /* SET UP FORM */
     //todo For fixing this deprecation see https://stackoverflow.com/questions/65155217/formbuilder-group-is-deprecated
     this.searchForm = this.fb.group({
-      requirementsDescription: [null],
+      requirements: [null],
       lexicalScoreProportion: [null],
       embeddingModel: [null],
       nMatches: [null],
@@ -349,12 +349,12 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
     return !!this.embeddingModels && this.embeddingModels.length > 0;
   }
 
-  get requirementsDescription(): string {
-    return this.searchForm.controls.requirementsDescription.value;
+  get requirements(): string {
+    return this.searchForm.controls.requirements.value;
   }
 
   public hasRequirements(): boolean {
-    return this.requirementsDescription && this.requirementsDescription.trim().length > 0;
+    return this.requirements && this.requirements.trim().length > 0;
   }
 
   private runSearchWithSkills(skills: SkillName[]) {
