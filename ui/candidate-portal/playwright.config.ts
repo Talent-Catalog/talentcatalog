@@ -16,7 +16,7 @@
 
 import {defineConfig, devices} from '@playwright/test';
 import {candidateAuthFile} from './playwright-tests/support/auth-state';
-import {getConfiguredE2EBaseUrl, getE2EBaseUrl} from './playwright-tests/support/e2e-env';
+import {getConfiguredE2EBaseUrl, getE2EBaseUrl,} from './playwright-tests/support/e2e-env';
 
 const authenticationSetupPattern = /.*\.auth\.setup\.ts/;
 
