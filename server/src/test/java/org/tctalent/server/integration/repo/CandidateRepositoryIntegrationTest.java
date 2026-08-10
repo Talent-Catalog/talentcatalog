@@ -22,17 +22,14 @@ import static org.tctalent.server.integration.helper.TestDataFactory.createAndSa
 import static org.tctalent.server.integration.helper.TestDataFactory.createCandidate;
 import static org.tctalent.server.integration.helper.TestDataFactory.createUser;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Set;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.tctalent.server.integration.helper.BaseJpaIntegrationTest;
-import org.tctalent.server.integration.helper.PostgresTestContainer;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.CandidateStatus;
 import org.tctalent.server.model.db.Country;
@@ -63,19 +60,12 @@ public class CandidateRepositoryIntegrationTest extends BaseJpaIntegrationTest {
   private Candidate activeCandidate;
   private Candidate deletedCandidate;
 
-  @BeforeAll
-  public static void setup() throws IOException, InterruptedException {
-    PostgresTestContainer.startContainer();
-  }
-
   /**
    * Creates an active and a deleted candidate sharing the same first/last name and source
    * country, so that name searches can be checked for correct exclusion of the deleted one.
    */
   @BeforeEach
   void setUp() {
-    assertTrue(isContainerInitialised(), "Database container should be initialized");
-
     Country country = createAndSaveCountry(countryRepository);
     sourceCountries = Set.of(country);
 
