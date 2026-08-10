@@ -126,6 +126,14 @@
             AI Matching
             <span *ngIf="!hasEmbeddingModels()">- currently disabled. Waiting for models to build.</span>
           </strong>
+          <p>
+            We use vector embeddings model to match candidates to requirements (like a job description).
+          </p>
+          <p>
+            Vector embeddings are at the heart of all AI. Here is
+            <a target="_blank" href="https://www.tigerdata.com/blog/a-beginners-guide-to-vector-embeddings">
+              a good guide</a>.
+          </p>
 
           <div *ngIf="hasEmbeddingModels()" class="row">
             <div class="mb-3 col-md-6">
@@ -179,6 +187,15 @@
             <!-- Number of matches requested -->
             <div *ngIf="hasRequirements()" class="mb-3 col-md-2">
               <tc-label size="sm" class="form-label" for="nMatches">Number of matches</tc-label>
+              <tc-button type="plain"
+                         class="tool-tip-button"
+                         ngbTooltip="Best N candidates. Defaults to current page size."
+                         triggers="click"
+                         tooltipClass="search-tips keyword"
+                         [stopNativeClickPropagation]="false"
+              >
+                <i class="fa-regular fa-circle-question fa-xs"></i>
+              </tc-button>
               <tc-input
                 id="nMatches"
                 type="number"
@@ -189,6 +206,15 @@
             <!-- Model selection and details -->
             <div *ngIf="hasRequirements()" class="col-md-4">
               <tc-label size="sm" class="form-label" for="modelKey">Model Key</tc-label>
+              <tc-button type="plain"
+                         class="tool-tip-button"
+                         ngbTooltip="Our unique key for a model plus our configuration of the model."
+                         triggers="click"
+                         tooltipClass="search-tips keyword"
+                         [stopNativeClickPropagation]="false"
+              >
+                <i class="fa-regular fa-circle-question fa-xs"></i>
+              </tc-button>
               <ng-select
                 class="tc-select"
                 id="modelKey"
@@ -202,6 +228,15 @@
 
             <div *ngIf="hasEmbeddingModel()" class="col-md-3">
               <tc-label size="sm" class="form-label">Model Configuration</tc-label>
+              <tc-button type="plain"
+                         class="tool-tip-button"
+                         ngbTooltip="Key for our configuration of the standard model."
+                         triggers="click"
+                         tooltipClass="search-tips keyword"
+                         [stopNativeClickPropagation]="false"
+              >
+                <i class="fa-regular fa-circle-question fa-xs"></i>
+              </tc-button>
               <div>
                 {{embeddingModel.configurationVersion}}
               </div>
@@ -209,6 +244,15 @@
 
             <div *ngIf="hasEmbeddingModel()" class="col-md-4">
               <tc-label size="sm" class="form-label">Model Name</tc-label>
+              <tc-button type="plain"
+                         class="tool-tip-button"
+                         ngbTooltip="The name of the standard model being used. Click on the model name for more details."
+                         triggers="click"
+                         tooltipClass="search-tips keyword"
+                         [stopNativeClickPropagation]="false"
+              >
+                <i class="fa-regular fa-circle-question fa-xs"></i>
+              </tc-button>
               <div>
                 <a target="_blank" [href]="embeddingModel.modelUrl">
                   {{embeddingModel.modelName}}
@@ -218,6 +262,15 @@
 
             <div *ngIf="hasEmbeddingModel()" class="col-md-1">
               <tc-label size="sm" class="form-label">Dimensions</tc-label>
+              <tc-button type="plain"
+                         class="tool-tip-button"
+                         ngbTooltip="The number of dimensions in the embedding model."
+                         triggers="click"
+                         tooltipClass="search-tips keyword"
+                         [stopNativeClickPropagation]="false"
+              >
+                <i class="fa-regular fa-circle-question fa-xs"></i>
+              </tc-button>
               <div>
                 {{embeddingModel.dimensions}}
               </div>
