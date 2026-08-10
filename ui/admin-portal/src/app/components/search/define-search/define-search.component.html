@@ -159,12 +159,17 @@
                 <i class="fa-regular fa-circle-question fa-xs"></i>
               </tc-button>
 
-              <tc-input
+              <input
                 id="lexicalScoreProportion"
-                type="number"
-                placeholder="0.5"
+                type="range"
+                min="0"
+                max="1"
+                step="0.1"
                 formControlName="lexicalScoreProportion"
-              ></tc-input>
+              />
+              <div>
+                {{lexicalScoreProportion}}
+              </div>
             </div>
 
             <!-- Number of matches requested -->

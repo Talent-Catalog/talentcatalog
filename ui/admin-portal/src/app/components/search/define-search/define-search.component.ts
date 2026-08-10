@@ -329,6 +329,10 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
     });
   }
 
+  get lexicalScoreProportion(): number {
+    return this.searchForm.controls.lexicalScoreProportion.value;
+  }
+
   get modelKey(): string {
     return this.searchForm.controls.modelKey.value;
   }
@@ -714,6 +718,8 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
     });
 
     /* DEFAULTS */
+    this.searchForm.controls.lexicalScoreProportion.patchValue(0.5);
+
     let searchType = request.countrySearchType;
     if (searchType == null) {
       searchType = 'or';
