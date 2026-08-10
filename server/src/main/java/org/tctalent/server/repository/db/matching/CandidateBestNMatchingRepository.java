@@ -50,11 +50,11 @@ public class CandidateBestNMatchingRepository {
 
     /**
      * This returns the best candidate matches corresponding to the given request.
-     * The request contains the natural language requirements as well as the skills that have been
-     * extracted from those requirements.
+     * The request contains the natural language requirements (and its vector embedding)
+     * as well as the skills that have been extracted from those requirements.
      * <p>
-     * The skills search uses text search. The SQL for that search is passed in
-     * {#lexicalCandidateScoresSql}
+     * The skills search uses text search for the extracted skills.
+     * The SQL for that search is passed in {#lexicalCandidateScoresSql}.
      * <p>
      * The matching is also limited by SQL providing the standard search constraints of
      * a TC search screen - such as candidate gender, status, location, etc.
