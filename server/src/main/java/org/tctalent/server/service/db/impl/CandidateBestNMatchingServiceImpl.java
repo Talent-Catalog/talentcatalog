@@ -66,7 +66,6 @@ order by lexical_score DESC,candidate.id DESC;
 left join candidate_occupation on candidate.id = candidate_occupation.candidate_id
 WHERE candidate_occupation.occupation_id in (:occupationId)
             """;
-        //TODO JC Compute the special sql
         return candidateBestNMatchingRepository.match(
             request, lexicalCandidateScoresSql, constraintJoinsAndWhereSql);
     }
@@ -120,18 +119,27 @@ WHERE candidate_occupation.occupation_id in (:occupationId)
         //The semantic match does not perform a text search.
         //The Lexical match is defined by the skills extracted from the requirementsDescription.
 
+        //Force sort by score.
+        request.setSortFields(new String[]{"match_score"});
+
+        /* **** SEMANTIC SEARCH **** */
         //Ignore any text search constraints for the semantic match.
         request.setSimpleQueryString(null);
         String constraintJoinsAndWhereSql = savedSearchService.extractJoinAndWhereSQL(request);
 
+        /* **** LEXICAL SEARCH **** */
         //For lexical match, modify the request to use the query string with the extracted skills.
         request.setSimpleQueryString(skillsQueryString);
 
-        //Force sort by score. This means that the score will appear in selected fields.
-        request.setSortFields(new String[]{"match_score"});
-
+        //Generate the SQL for a standard Saved Search based on the skills extracted into
+        //the above standard keyword search field.
         String lexicalCandidateScoresSql = savedSearchService.extractUserSearchSql(request);
 
+        /* **** COMBINED SEARCH **** */
+        //This will execute SQL combining the standard keyword text search defined by
+        //the lexicalCandidateScoresSql together with embedding vector matching, with any
+        //additional constraints by standard saved search fields.
+        //Then it will combine the two lots of results into a single combined ranking.
         List<CandidateBestNMatchingResult> results = candidateBestNMatchingRepository.match(
             matchingRequest, lexicalCandidateScoresSql, constraintJoinsAndWhereSql);
 

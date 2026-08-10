@@ -48,6 +48,27 @@ public class CandidateBestNMatchingRepository {
 
     private final EmbeddingModelService embeddingModelService;
 
+    /**
+     * This returns the best candidate matches corresponding to the given request.
+     * The request contains the natural language requirements as well as the skills that have been
+     * extracted from those requirements.
+     * <p>
+     * The skills search uses text search. The SQL for that search is passed in
+     * {#lexicalCandidateScoresSql}
+     * <p>
+     * The matching is also limited by SQL providing the standard search constraints of
+     * a TC search screen - such as candidate gender, status, location, etc.
+     * <p>
+     *
+     * @param request Request that contains the natural language requirements and other information
+     *                controlling the matching process. See {@link CandidateBestNMatchingRequest}
+     *                for details.
+     * @param lexicalCandidateScoresSql This is the SQL that does the text matching
+     * @param constraintJoinsAndWhereSql The embedded vector matching is also constrained by this
+     *                                   SQL generated from the standard search constraints of a
+     *                                   TC search screen.
+     * @return Best combined matches
+     */
     public List<CandidateBestNMatchingResult> match(CandidateBestNMatchingRequest request,
     String lexicalCandidateScoresSql, String constraintJoinsAndWhereSql) {
 
@@ -96,7 +117,6 @@ public class CandidateBestNMatchingRepository {
             lexical_candidate_scores AS (
             """
                 +
-            //todo This SQL needs to return id, score. Confirm that it does.
                 lexicalCandidateScoresSql
                 +
                 " LIMIT :candidateLimit"
