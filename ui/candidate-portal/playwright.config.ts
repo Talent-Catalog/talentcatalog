@@ -15,8 +15,8 @@
  */
 
 import {defineConfig, devices} from '@playwright/test';
-import {candidateAuthFile,} from './playwright-tests/support/auth-state';
-import {getE2EBaseUrl} from './playwright-tests/support/e2e-env';
+import {candidateAuthFile} from './playwright-tests/support/auth-state';
+import {getConfiguredE2EBaseUrl, getE2EBaseUrl} from './playwright-tests/support/e2e-env';
 
 const authenticationSetupPattern = /.*\.auth\.setup\.ts/;
 
@@ -24,6 +24,7 @@ const browserTestIgnorePatterns = [
   authenticationSetupPattern,
 ];
 
+const configuredBaseUrl = getConfiguredE2EBaseUrl();
 const baseURL = getE2EBaseUrl();
 
 /**
@@ -174,7 +175,7 @@ export default defineConfig({
     },
   ],
 
-  webServer: baseURL
+  webServer: configuredBaseUrl
     ? undefined
     : {
       command: 'npm start -- --port 4200',

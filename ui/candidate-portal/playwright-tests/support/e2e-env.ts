@@ -104,3 +104,18 @@ export function getE2EBaseUrl(): string {
     'http://127.0.0.1:4200'
   );
 }
+
+/** Returns the explicitly configured candidate-portal E2E base URL.
+ *
+ * Unlike {@link getE2EBaseUrl}, this function does not provide a local
+ * fallback.
+ * It is useful when code needs to know whether an external E2E
+ * target has actually been configured.
+ * @returns trimmed configured base URL, or undefined when not configured
+ */
+export function getConfiguredE2EBaseUrl(): string | undefined {
+  const value =
+    process.env[E2E_ENVIRONMENT_VARIABLES.baseUrl]?.trim();
+
+  return value || undefined;
+}
