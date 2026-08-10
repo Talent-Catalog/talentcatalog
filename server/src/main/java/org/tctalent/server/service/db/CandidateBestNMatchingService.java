@@ -58,7 +58,7 @@ public interface CandidateBestNMatchingService {
      * @param request Request that candidates are matched against.
      * @return Sorted results with the best match first.
      * @throws UnsupportedOperationException if the request does not contain a non empty
-     * {@link SearchCandidateRequest#getRequirementsDescription()}
+     * {@link SearchCandidateRequest#getRequirements()}
      */
     List<CandidateReadDto> match(SearchCandidateRequest request);
 
