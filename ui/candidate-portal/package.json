@@ -65,6 +65,7 @@
     "@playwright/test": "^1.62.1",
     "@types/node": "^20.0.0",
     "codelyzer": "^6.0.2",
+    "dotenv": "^17.4.2",
     "jasmine-spec-reporter": "^7.0.0",
     "karma": "^6.4.3",
     "karma-coverage": "^2.2.1",
