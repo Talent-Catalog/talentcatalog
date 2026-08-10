@@ -13,7 +13,7 @@ export class EmbeddingModelService {
   constructor(private http: HttpClient) { }
 
   loadReadyModels(): Observable<EmbeddingModel[]> {
-    //Get the restricted countries based on the users source countries
+    //Get the embedding models that are ready for use.
     return this.http.get<EmbeddingModel[]>(`${this.apiUrl}/ready`);
   }
 
