@@ -16,7 +16,7 @@
 
 import {defineConfig, devices} from '@playwright/test';
 import {candidateAuthFile,} from './playwright-tests/support/auth-state';
-import {getE2EBaseUrl} from "./playwright-tests/support/e2e-env";
+import {getE2EBaseUrl} from './playwright-tests/support/e2e-env';
 
 const authenticationSetupPattern = /.*\.auth\.setup\.ts/;
 
@@ -38,7 +38,7 @@ const baseURL = getE2EBaseUrl();
  */
 function getWorkerCount(): number {
   const rawValue = process.env.PLAYWRIGHT_WORKERS ?? '1';
-  const workerCount = Number.parseInt(rawValue, 10);
+  const workerCount = Number(rawValue);
 
   if (!Number.isInteger(workerCount) || workerCount < 1) {
     throw new Error(
@@ -174,7 +174,7 @@ export default defineConfig({
     },
   ],
 
-  webServer: process.env.E2E_BASE_URL
+  webServer: baseURL
     ? undefined
     : {
       command: 'npm start -- --port 4200',

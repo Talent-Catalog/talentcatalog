@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import *as path from 'node:path';
+import * as path from 'node:path';
 
 /**
  * Absolute path to the authenticated candidate browser state.
