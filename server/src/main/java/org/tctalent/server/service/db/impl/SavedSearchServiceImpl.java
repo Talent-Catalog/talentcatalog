@@ -457,6 +457,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
     }
 
     @Transactional
+    @Override
     public void updateUserDefaultSavedSearchIfNeeded(@NotNull SearchCandidateRequest request) {
         final Long savedSearchId = request.getSavedSearchId();
         SavedSearch savedSearch = getSavedSearch(savedSearchId);
