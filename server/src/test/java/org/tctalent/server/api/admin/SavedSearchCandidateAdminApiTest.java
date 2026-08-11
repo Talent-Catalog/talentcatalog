@@ -41,18 +41,20 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.tctalent.server.api.dto.CandidateBuilderSelector;
 import org.tctalent.server.data.SavedListTestData;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.repository.db.read.dto.CandidateReadDto;
 import org.tctalent.server.request.candidate.SavedSearchGetRequest;
+import org.tctalent.server.request.candidate.SearchCandidateRequest;
+import org.tctalent.server.service.db.CandidateBestNMatchingService;
 import org.tctalent.server.service.db.CandidateDtoService;
 import org.tctalent.server.service.db.CandidateService;
 import org.tctalent.server.service.db.SavedSearchService;
@@ -95,6 +97,8 @@ class SavedSearchCandidateAdminApiTest extends ApiTestBase {
   CandidateDtoService candidateDtoService;
   @MockitoBean
   CandidateBuilderSelector candidateBuilderSelector;
+  @MockitoBean
+  CandidateBestNMatchingService candidateBestNMatchingService;
 
   @Autowired
   MockMvc mockMvc;
@@ -128,6 +132,11 @@ class SavedSearchCandidateAdminApiTest extends ApiTestBase {
     given(savedSearchService
         .getSelectionListForLoggedInUser(anyLong()))
         .willReturn(SavedListTestData.getSavedList());
+
+    SearchCandidateRequest searchCandidateRequest = new SearchCandidateRequest();
+    given(savedSearchService
+        .loadSavedSearch(anyLong()))
+        .willReturn(searchCandidateRequest);
 
     mockMvc.perform(post(BASE_PATH + SEARCH_PAGED_PATH.replace("{id}", Long.toString(SAVED_SEARCH_ID)))
             .with(csrf())
