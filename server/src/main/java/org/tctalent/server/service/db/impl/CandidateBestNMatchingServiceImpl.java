@@ -19,6 +19,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.tctalent.server.configuration.properties.VectorEmbeddingModelProperties;
@@ -47,6 +51,15 @@ public class CandidateBestNMatchingServiceImpl implements CandidateBestNMatching
     private final TcVectorEmbeddingService tcVectorEmbeddingService;
     private final VectorEmbeddingModelProperties embeddingProperties;
     private final SavedSearchService savedSearchService;
+
+    @Override
+    public Page<CandidateReadDto> matchAsSinglePage(SearchCandidateRequest request) {
+        List<CandidateReadDto> candidates = match(request);
+        int nCandidates = candidates.size();
+
+        PageRequest singlePage = PageRequest.of(0, nCandidates, Sort.unsorted());
+        return new PageImpl<>(candidates, singlePage, nCandidates);
+    }
 
     @Override
     public List<CandidateReadDto> match(SearchCandidateRequest request) {

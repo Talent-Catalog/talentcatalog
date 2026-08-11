@@ -25,6 +25,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -39,7 +40,9 @@ import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.SavedList;
 import org.tctalent.server.repository.db.read.dto.CandidateReadDto;
 import org.tctalent.server.request.candidate.SavedSearchGetRequest;
+import org.tctalent.server.request.candidate.SearchCandidateRequest;
 import org.tctalent.server.request.list.UpdateSavedListContentsRequest;
+import org.tctalent.server.service.db.CandidateBestNMatchingService;
 import org.tctalent.server.service.db.CandidateDtoService;
 import org.tctalent.server.service.db.SavedSearchService;
 import org.tctalent.server.util.dto.DtoBuilder;
@@ -59,6 +62,7 @@ public class SavedSearchCandidateAdminApi implements
 
     private final CandidateBuilderSelector builderSelector;
     private final CandidateDtoService candidateDtoService;
+    private final CandidateBestNMatchingService candidateBestNMatchingService;
     private final SavedSearchService savedSearchService;
 
     @Override
@@ -66,8 +70,17 @@ public class SavedSearchCandidateAdminApi implements
             long savedSearchId, @Valid SavedSearchGetRequest request)
         throws NoSuchObjectException {
 
-        Page<CandidateReadDto> candidates =
-            savedSearchService.searchCandidateDtos(savedSearchId, request);
+        SearchCandidateRequest searchRequest = savedSearchService.loadSavedSearch(savedSearchId);
+
+        Page<CandidateReadDto> candidates;
+        //Check if this is a match search - ie there is a non empty requirements
+        final String requirements = searchRequest.getRequirements();
+        if (StringUtils.hasText(requirements)) {
+            searchRequest.setPageSize(request.getPageSize());
+            candidates = candidateBestNMatchingService.matchAsSinglePage(searchRequest);
+        } else {
+            candidates = savedSearchService.searchCandidateDtos(savedSearchId, request);
+        }
 
         //The selection list provides context for candidates selected from the search results.
         SavedList selectionList = savedSearchService.getSelectionListForLoggedInUser(savedSearchId);

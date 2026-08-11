@@ -28,9 +28,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -126,12 +123,8 @@ public class CandidateAdminApi {
         //Possible update of user default saved search
         savedSearchService.updateUserDefaultSavedSearchIfNeeded(request);
 
-        List<CandidateReadDto> candidates = candidateBestNMatchingService.match(request);
-        int nCandidates = candidates.size();
-
-        PageRequest singlePage = PageRequest.of(0, nCandidates, Sort.unsorted());
-        Page<CandidateReadDto> candidateReadDtoPage =
-            new PageImpl<>(candidates, singlePage, nCandidates);
+        Page<CandidateReadDto> candidateReadDtoPage
+            = candidateBestNMatchingService.matchAsSinglePage(request);
 
         DtoBuilder builder = builderSelector.selectBuilder(request.getDtoType());
         return builder.buildPage(candidateReadDtoPage);

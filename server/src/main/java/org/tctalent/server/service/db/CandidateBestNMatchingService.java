@@ -16,6 +16,7 @@
 package org.tctalent.server.service.db;
 
 import java.util.List;
+import org.springframework.data.domain.Page;
 import org.tctalent.server.repository.db.read.dto.CandidateReadDto;
 import org.tctalent.server.request.candidate.SearchCandidateRequest;
 
@@ -52,5 +53,11 @@ public interface CandidateBestNMatchingService {
      * {@link SearchCandidateRequest#getRequirements()}
      */
     List<CandidateReadDto> match(SearchCandidateRequest request);
+
+    /**
+     * As for {@link #match(SearchCandidateRequest)} except that it returns a single Page of
+     * results.
+     */
+    Page<CandidateReadDto> matchAsSinglePage(SearchCandidateRequest request);
 
 }
