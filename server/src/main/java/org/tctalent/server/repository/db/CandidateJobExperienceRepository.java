@@ -51,7 +51,7 @@ public interface CandidateJobExperienceRepository extends JpaRepository<Candidat
 
     @Query(" select w from CandidateJobExperience w "
             + " left join w.candidate c "
-            + " where not c.status in (CandidateStatus.deleted, CandidateStatus.withdrawn)"
+            + " where c.status not in (CandidateStatus.deleted, CandidateStatus.withdrawn)"
     )
     Page<CandidateJobExperience> findByActiveCandidate(Pageable request);
 

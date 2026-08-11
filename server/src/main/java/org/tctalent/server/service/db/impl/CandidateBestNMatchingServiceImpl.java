@@ -57,7 +57,8 @@ public class CandidateBestNMatchingServiceImpl implements CandidateBestNMatching
         List<CandidateReadDto> candidates = match(request);
         int nCandidates = candidates.size();
 
-        PageRequest singlePage = PageRequest.of(0, nCandidates, Sort.unsorted());
+        int pageSize = nCandidates == 0 ? 1 : nCandidates;
+        PageRequest singlePage = PageRequest.of(0, pageSize, Sort.unsorted());
         return new PageImpl<>(candidates, singlePage, nCandidates);
     }
 

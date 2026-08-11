@@ -942,7 +942,7 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
    * digits
    * @param candidate Candidate whose score we want to display
    */
-  showScore(candidate: Candidate): number {
+  showScore(candidate: Candidate): number | null {
     let score = candidate.score;
     if (score != null) {
       score = Math.trunc(score * Math.pow(10, 5))

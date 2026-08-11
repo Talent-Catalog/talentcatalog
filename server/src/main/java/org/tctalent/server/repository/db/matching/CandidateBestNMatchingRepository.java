@@ -38,7 +38,7 @@ import org.tctalent.server.service.db.EmbeddingModelService;
 @Transactional(readOnly = true)
 public class CandidateBestNMatchingRepository {
 
-    //This is the most comon standard for K in Reciprocal Rank Fusion.
+    //This is the most common standard for K in Reciprocal Rank Fusion.
     //We will standardize on it.
     private static final int RRF_K = 60;
 
@@ -204,7 +204,7 @@ public class CandidateBestNMatchingRepository {
         }
         if (request.getSemanticPoolSize() < request.getCandidateLimit()) {
             throw new IllegalArgumentException(
-                "Semantic pool size must be greater than result limit"
+                "Semantic pool size must be greater than candidate limit"
             );
         }
         if (request.getCandidateLimit() < request.getResultLimit()) {
