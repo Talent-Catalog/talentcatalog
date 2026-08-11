@@ -337,7 +337,18 @@
       <!-- First Group of Buttons (Left-aligned) -->
       <div class="col-9 d-flex justify-content-start">
         <div class="d-flex flex-wrap gap-2 align-items-center mb-2">
+          <tc-button color="primary"
+                     *ngIf="isMatchingSearch"
+                     [loading]="saving"
+                     (onClick)="saveAll()"
+                     title="Save all candidates to a list"
+                     class="save-selection-btn">
+            All to
+            <i class="fas fa-list"></i>
+          </tc-button>
+
           <tc-button [color]="'primary'"
+                     *ngIf="!isMatchingSearch"
                      [disabled]="!isSelection()"
                      [loading]="savingSelection"
                      (onClick)="saveSelection()"
@@ -401,6 +412,7 @@
           </tc-button>
 
           <tc-button [color]="'primary'"
+                     *ngIf="!isMatchingSearch"
                      [disabled]="!isSelection()"
                      (onClick)="clearSelectionAndDoSearch()"
                      title="Clear selected candidates">

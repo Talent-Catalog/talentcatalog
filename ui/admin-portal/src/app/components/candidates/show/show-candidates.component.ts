@@ -1048,6 +1048,10 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
     }
   }
 
+  saveAll() {
+    this.requestSaveSelection();
+  }
+
   saveSelection() {
     this.error = null;
 
@@ -1144,8 +1148,8 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
     }
 
     modal.result
-    .then((selection: TargetListSelection) => {
-      this.doSaveSelection(selection);
+    .then((targetListSelection: TargetListSelection) => {
+      this.doSaveSelection(targetListSelection);
     })
     .catch(() => { /* Isn't possible */
     });
@@ -1164,14 +1168,21 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
     this.savingSelection = true;
     this.error = null;
 
-    if (isSavedSearch(this.candidateSource)) {
+    if (isSavedSearch(this.candidateSource) && !this.isMatchingSearch) {
 
       const savedSearch = this.candidateSource;
 
       this.saveSavedSearchSelection(savedSearch, targetListSelection);
 
     } else {
-      // LIST
+      // LIST or MatchingSearch
+
+      let candidatesToSave: Candidate[];
+      if (this.isMatchingSearch) {
+        candidatesToSave = this.results.content;
+      } else {
+        candidatesToSave = this.selectedCandidates;
+      }
 
       const savedListId = targetListSelection.savedListId;
       const request: UpdateExplicitSavedListContentsRequest = {
@@ -1179,7 +1190,7 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
         statusUpdateInfo: targetListSelection.statusUpdateInfo,
         updateType: targetListSelection.replace ? ContentUpdateType.replace : ContentUpdateType.add,
         jobId: targetListSelection.jobId,
-        candidateIds: this.selectedCandidates.map(c => c.id),
+        candidateIds: candidatesToSave.map(c => c.id),
         sourceListId: this.candidateSource.id
       };
       // If request has a savedListId, merge or replace. Otherwise create a new list.
