@@ -35,6 +35,7 @@ import {LanguageService} from '../../../services/language.service';
 import {PartnerService} from '../../../services/partner.service';
 import {SurveyTypeService} from '../../../services/survey-type.service';
 import {CandidateStatus, UnhcrStatus} from '../../../model/candidate';
+import {EmbeddingModelService} from "../../../services/embedding-model.service";
 
 describe('DefineSearchComponent', () => {
   let component: DefineSearchComponent;
@@ -47,6 +48,7 @@ describe('DefineSearchComponent', () => {
   let savedSearchService: jasmine.SpyObj<SavedSearchService>;
   let educationLevelService: jasmine.SpyObj<EducationLevelService>;
   let educationMajorService: jasmine.SpyObj<EducationMajorService>;
+  let embeddingModelService: jasmine.SpyObj<EmbeddingModelService>;
   let candidateOccupationService: jasmine.SpyObj<CandidateOccupationService>;
   let surveyTypeService: jasmine.SpyObj<SurveyTypeService>;
   let jobService: jasmine.SpyObj<JobService>;
@@ -105,6 +107,7 @@ describe('DefineSearchComponent', () => {
     educationMajorService.listMajors.and.returnValue(of([majorA]));
     partnerService.listSourcePartners.and.returnValue(of([partnerA]));
     candidateOccupationService.listOccupations.and.returnValue(of([occupationA]));
+    embeddingModelService.loadReadyModels.and.returnValue(of([]));
     surveyTypeService.listSurveyTypes.and.returnValue(of([surveyA]));
   }
 
@@ -120,6 +123,7 @@ describe('DefineSearchComponent', () => {
     educationLevelService = jasmine.createSpyObj('EducationLevelService', ['listEducationLevels']);
     educationMajorService = jasmine.createSpyObj('EducationMajorService', ['listMajors']);
     candidateOccupationService = jasmine.createSpyObj('CandidateOccupationService', ['listOccupations']);
+    embeddingModelService = jasmine.createSpyObj('EmbeddingModelService', ['loadReadyModels']);
     surveyTypeService = jasmine.createSpyObj('SurveyTypeService', ['listSurveyTypes']);
     jobService = jasmine.createSpyObj('JobService', ['getSkills']);
     languageLevelService = jasmine.createSpyObj('LanguageLevelService', ['listLanguageLevels']);
@@ -155,6 +159,7 @@ describe('DefineSearchComponent', () => {
         {provide: EducationLevelService, useValue: educationLevelService},
         {provide: EducationMajorService, useValue: educationMajorService},
         {provide: CandidateOccupationService, useValue: candidateOccupationService},
+        {provide: EmbeddingModelService, useValue: embeddingModelService},
         {provide: SurveyTypeService, useValue: surveyTypeService},
         {provide: JobService, useValue: jobService},
         {provide: LanguageLevelService, useValue: languageLevelService},
