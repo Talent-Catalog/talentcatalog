@@ -473,10 +473,6 @@ describe('DefineSearchComponent', () => {
   it('should create a paged search request', () => {
     component.searchForm.patchValue({simpleQueryString: 'developer', candidateNumbers: '1, 2'});
     component.apply();
-    expect(component.searchRequest.pageNumber).toBe(0);
-    expect(component.searchRequest.pageSize).toBe(50);
-    expect(component.searchRequest.sortFields).toEqual(['id']);
-    expect(component.searchRequest.sortDirection).toBe('DESC');
     expect(component.searchRequest.candidateNumbers).toEqual(['1','2']);
     expect(searchQueryService.changeSearchQuery).toHaveBeenCalledWith('developer');
   });

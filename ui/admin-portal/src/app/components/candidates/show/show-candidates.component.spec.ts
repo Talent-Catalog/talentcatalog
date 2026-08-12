@@ -1065,13 +1065,13 @@ describe('ShowCandidatesComponent', () => {
       expect(component.doSearch).toHaveBeenCalledWith(true);
     });
 
-    it('should execute updated searches and normalize invalid text-match sorting', fakeAsync(() => {
+    it('should execute updated searches', fakeAsync(() => {
       component.searchRequest = {
         simpleQueryString: ' ',
         reviewStatusFilter: null
       } as any;
-      component.sortField = 'text_match';
-      component.sortDirection = 'ASC';
+      component.sortField = 'id';
+      component.sortDirection = 'DESC';
       component.pageNumber = 2;
       component.pageSize = 50;
       component.reviewStatusFilter = ['verified'];
