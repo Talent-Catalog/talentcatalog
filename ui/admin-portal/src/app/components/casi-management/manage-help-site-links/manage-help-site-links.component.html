@@ -1,0 +1,71 @@
+<!--
+  ~ Copyright (c) 2026 Talent Catalog.
+  ~
+  ~ This program is free software: you can redistribute it and/or modify it under
+  ~ the terms of the GNU General Public License as published by the Free
+  ~ Software Foundation, either version 3 of the License, or any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful, but WITHOUT
+  ~ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+  ~ FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
+  ~ for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program. If not, see https://www.gnu.org/licenses/.
+  -->
+
+<h4 class="mb-3">{{ title }}</h4>
+
+<tc-alert type="warning" *ngIf="error">{{ error }}</tc-alert>
+
+<div class="card p-3 mb-4">
+  <div class="row g-2 align-items-end">
+    <div class="col-md-2">
+      <label class="form-label">Country (ISO-2)</label>
+      <input class="form-control text-uppercase" maxlength="2" [(ngModel)]="countryIsoCode" placeholder="AU"/>
+    </div>
+
+    <div class="col-md-8">
+      <label class="form-label">Link URL</label>
+      <input class="form-control" [(ngModel)]="resourceCode" placeholder="https://..."/>
+    </div>
+
+    <div class="col-md-2 d-flex gap-2">
+      <tc-button [loading]="saving" [disabled]="saving" (onClick)="submit()">
+        {{ editingId === null ? 'Add' : 'Update' }}
+      </tc-button>
+      <tc-button *ngIf="editingId !== null" [type]="'outline'" [disabled]="saving" (onClick)="cancelEdit()">
+        Cancel
+      </tc-button>
+    </div>
+  </div>
+</div>
+
+<tc-table [results]="links" [loading]="loading" [clickableRows]="false" [striped]="true">
+  <thead>
+  <tr>
+    <th>Country</th>
+    <th>Link</th>
+    <th>Status</th>
+    <th class="text-end">Actions</th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr *ngFor="let link of links">
+    <td>{{ link.countryIsoCode }}</td>
+    <td><a [href]="link.resourceCode" target="_blank" rel="noopener noreferrer">{{ link.resourceCode }}</a></td>
+    <td>{{ link.status }}</td>
+    <td class="text-end">
+      <tc-button size="small" [type]="'outline'" [disabled]="saving || link.status === 'DISABLED'" (onClick)="edit(link)">
+        Edit
+      </tc-button>
+      <tc-button size="small" [type]="'danger'" [disabled]="saving || link.status === 'DISABLED'" (onClick)="remove(link)">
+        Disable
+      </tc-button>
+    </td>
+  </tr>
+  <tr *ngIf="links.length === 0">
+    <td colspan="4" class="text-muted">No links configured.</td>
+  </tr>
+  </tbody>
+</tc-table>
