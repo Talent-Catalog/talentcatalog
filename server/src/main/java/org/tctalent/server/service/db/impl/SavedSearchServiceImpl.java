@@ -1372,6 +1372,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             savedSearch.setUnhcrStatuses(getUnhcrStatusListAsString(request.getUnhcrStatuses()));
             savedSearch.setGender(request.getGender());
             savedSearch.setOccupationIds(getListAsString(request.getOccupationIds()));
+            savedSearch.setModelKey(request.getModelKey());
             savedSearch.setMinYrs(request.getMinYrs());
             savedSearch.setMaxYrs(request.getMaxYrs());
             savedSearch.setRegoReferrerParam(request.getRegoReferrerParam());
@@ -1387,6 +1388,10 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             savedSearch.setSurveyTypeIds(getListAsString(request.getSurveyTypeIds()));
             savedSearch.setEnglishMinSpokenLevel(request.getEnglishMinSpokenLevel());
             savedSearch.setEnglishMinWrittenLevel(request.getEnglishMinWrittenLevel());
+
+            final Double lexicalWeight = request.getLexicalWeight();
+            savedSearch.setLexicalWeight(lexicalWeight == null ? 0.5 : lexicalWeight);
+
             Optional<Language> language =
                     request.getOtherLanguageId() != null ?
                             languageRepository.findById(
@@ -1445,6 +1450,8 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         searchCandidateRequest.setUnhcrStatuses(getUnhcrStatusListFromString(search.getUnhcrStatuses()));
         searchCandidateRequest.setGender(search.getGender());
         searchCandidateRequest.setOccupationIds(getIdsFromString(search.getOccupationIds()));
+        searchCandidateRequest.setLexicalWeight(search.getLexicalWeight());
+        searchCandidateRequest.setModelKey(search.getModelKey());
         searchCandidateRequest.setMinYrs(search.getMinYrs());
         searchCandidateRequest.setMaxYrs(search.getMaxYrs());
         searchCandidateRequest.setRegoReferrerParam(search.getRegoReferrerParam());

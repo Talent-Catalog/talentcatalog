@@ -192,8 +192,8 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
     //todo For fixing this deprecation see https://stackoverflow.com/questions/65155217/formbuilder-group-is-deprecated
     this.searchForm = this.fb.group({
       requirements: [null],
-      lexicalScoreProportion: [0.5],
-      embeddingModel: [null],
+      lexicalWeight: [0.5],
+      modelKey: [null],
       nMatches: [null],
       savedSearchId: [null],
       simpleQueryString: [null],
@@ -333,12 +333,21 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
     });
   }
 
-  get lexicalScoreProportion(): number {
-    return this.searchForm.controls.lexicalScoreProportion.value;
+  get lexicalWeight(): number {
+    return this.searchForm.controls.lexicalWeight.value;
   }
 
   get embeddingModel(): EmbeddingModel {
-    return this.searchForm.controls.embeddingModel.value;
+    //Look up model from selected modelKey
+    let embeddingModel: EmbeddingModel | null;
+    const modelKey = this.searchForm.controls.modelKey.value;
+    if (modelKey) {
+      embeddingModel = this.embeddingModels.find(model => model.modelKey === modelKey);
+    } else {
+      embeddingModel = null;
+    }
+
+    return embeddingModel;
   }
 
   public hasEmbeddingModel(): boolean {
@@ -724,9 +733,6 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
     Object.keys(this.searchForm.controls).forEach(name => {
       this.searchForm.controls[name].patchValue(request[name]);
     });
-
-    /* DEFAULTS */
-    this.searchForm.controls.lexicalScoreProportion.patchValue(0.5);
 
     let searchType = request.countrySearchType;
     if (searchType == null) {

@@ -96,7 +96,8 @@ public class CandidateBestNMatchingServiceImpl implements CandidateBestNMatching
         final List<Double> embedding = embeddingResult.getEmbedding();
 
         int n = request.getPageSize();
-        double lexicalWeight = request.getLexicalScoreProportion();
+        final Double requestedWeight = request.getLexicalWeight();
+        double lexicalWeight = requestedWeight == null ? 0.5 : requestedWeight;
         CandidateBestNMatchingRequest matchingRequest = CandidateBestNMatchingRequest.builder()
             .simpleQueryString(skillsQueryString)
             .queryEmbedding(embedding)

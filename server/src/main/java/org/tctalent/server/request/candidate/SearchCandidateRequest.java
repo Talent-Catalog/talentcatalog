@@ -26,6 +26,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import org.springframework.data.domain.Sort;
+import org.springframework.lang.Nullable;
 import org.tctalent.server.model.db.CandidateFilterByOpps;
 import org.tctalent.server.model.db.CandidateStatus;
 import org.tctalent.server.model.db.Gender;
@@ -63,15 +64,16 @@ public class SearchCandidateRequest extends PagedSearchRequest {
      *     </li>
      * </ul>
      * <p>
-     *   This lexicalScoreProportion parameter defines how much weight to give to lexical and
+     *   This lexicalWeight parameter defines how much weight to give to lexical and
      *   semantic matches.
      *   It is a float value between 0 and 1, where 0 means that the lexical score will not be used
-     *   at all and 1 means that it will be used completely. The semantic score proportion will be
-     *   1 minus the lexical score proportion.
+     *   at all and 1 means that it will be used completely. The semantic score weight will be
+     *   1 minus the lexical score weight.
      *   So a value of 0.5 means that lexical and semantic scores will be given equal weight.
      * </p>
      */
-    private float lexicalScoreProportion;
+    @Nullable
+    private Double lexicalWeight;
 
     /**
      * The model key to use for vector embeddings. If not specified, the default model will be used.

@@ -159,7 +159,7 @@
 
             <!-- Lexical vs Semantic importance -->
             <div *ngIf="hasRequirements()" class="mb-3 col-md-4">
-              <tc-label size="sm" class="form-label" for="lexicalScoreProportion">Lexical vs Semantic matching</tc-label>
+              <tc-label size="sm" class="form-label" for="lexicalWeight">Lexical vs Semantic matching</tc-label>
               <tc-button [type]="'plain'"
                          class="tool-tip-button"
                          ngbTooltip="Enter a value between 0 and 1. The default is 0.5 which means that the lexical score is equally important as the semantic score."
@@ -172,15 +172,15 @@
               </tc-button>
 
               <input
-                id="lexicalScoreProportion"
+                id="lexicalWeight"
                 type="range"
                 min="0"
                 max="1"
                 step="0.1"
-                formControlName="lexicalScoreProportion"
+                formControlName="lexicalWeight"
               />
               <div>
-                {{lexicalScoreProportion}}
+                {{lexicalWeight}}
               </div>
             </div>
 
@@ -219,10 +219,11 @@
                 class="tc-select"
                 id="modelKey"
                 bindLabel="modelKey"
+                bindValue="modelKey"
                 [items]="embeddingModels"
                 [searchable]="false"
                 placeholder="Select"
-                formControlName="embeddingModel">
+                formControlName="modelKey">
               </ng-select>
             </div>
 

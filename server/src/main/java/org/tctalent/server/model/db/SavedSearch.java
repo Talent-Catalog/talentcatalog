@@ -75,6 +75,8 @@ public class SavedSearch extends AbstractCandidateSource {
 
     private String candidateNumbers;
 
+    private double lexicalWeight = 0.5; //Default lexical weight for search
+
     private String listAllIds;
     @Enumerated(EnumType.STRING)
     private SearchType listAllSearchType;
@@ -82,6 +84,8 @@ public class SavedSearch extends AbstractCandidateSource {
     private String listAnyIds;
     @Enumerated(EnumType.STRING)
     private SearchType listAnySearchType;
+
+    private String modelKey;
 
     private String nationalityIds;
     @Enumerated(EnumType.STRING)
