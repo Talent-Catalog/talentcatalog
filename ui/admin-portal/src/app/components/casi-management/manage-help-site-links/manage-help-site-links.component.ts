@@ -15,7 +15,8 @@
  */
 
 import {Component, Input, OnInit} from '@angular/core';
-import {CasiAdminService, SharedServiceLink} from '../../../services/casi-admin.service';
+import {SharedServiceLink} from '../../../model/shared-service-link';
+import {CasiAdminService} from '../../../services/casi-admin.service';
 
 /**
  * Admin UI for managing shared country help-site links for a CASI provider.
