@@ -50,6 +50,11 @@
         <i *ngIf="!isStarred()" class="far fa-star notstarred" title="Star"></i>
       </tc-icon>
 
+      <tc-icon *ngIf="isSavedList()" (click)="doSearchList()"
+               color="warning" size="xl" >
+        <i class="fas fa-search" title="Search candidates in list"></i>
+      </tc-icon>
+
       <tc-icon *ngIf="isSavedSearch() && !isDefaultSavedSearch()"
                (click)="doToggleWatch()"
                [size]="'xl'"
