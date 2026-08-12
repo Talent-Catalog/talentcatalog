@@ -33,7 +33,7 @@ import org.tctalent.server.request.job.JobIntakeData;
 import org.tctalent.server.request.job.SearchJobRequest;
 import org.tctalent.server.request.job.UpdateJobRequest;
 import org.tctalent.server.request.link.UpdateLinkRequest;
-import org.tctalent.server.service.api.SkillName;
+import org.tctalent.server.service.api.JobMatchingInfo;
 
 /**
  * Service for managing {@link SalesforceJobOpp}
@@ -77,13 +77,13 @@ public interface JobService {
     SalesforceJobOpp getJob(long id) throws NoSuchObjectException;
 
     /**
-     * Get the skills associated with the job with the given id.
+     * Get matching information related to the job with the given id.
      * @param id Job id
      * @param lang Language code for the skill names - eg "en" or "de"
-     * @return List of skill names
+     * @return Information that can be used to match a job to candidates.
      */
     @NonNull
-    List<SkillName> getSkills(long id, @NonNull String lang);
+    JobMatchingInfo getJobMatchingInfo(long id, @NonNull String lang);
 
     /**
      * Creates a suggested saved search for the job with the given id.

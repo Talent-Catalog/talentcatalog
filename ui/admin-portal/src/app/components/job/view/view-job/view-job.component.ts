@@ -342,7 +342,7 @@ export class ViewJobComponent extends MainSidePanelBase implements OnInit, OnCha
     )
   }
 
-  doSearchSkills() {
+  doCandidateSearch() {
     //Route to NewSearch Page with the job id as a parameter.
     this.router.navigate(['/searches'], {queryParams: {tab: 'NewSearch', job: this.job.id}});
   }

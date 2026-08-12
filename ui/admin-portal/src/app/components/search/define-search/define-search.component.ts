@@ -91,6 +91,7 @@ import {JobService} from "../../../services/job.service";
 import {SkillName} from "../../../model/skill";
 import {CandidateNumberParser} from "../../../util/candidate-number-parser";
 import {EmbeddingModelService} from "../../../services/embedding-model.service";
+import {JobMatchingInfo} from "../../../model/JobMatchingInfo";
 
 /**
  * This component contains all the search fields for saved and unsaved searches. It communicates
@@ -120,6 +121,8 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
   @ViewChild('downloadCsvErrorModal', {static: true}) downloadCsvErrorModal;
 
   @Input() jobId: number;
+  jobName: string;  //Populated when JobMatchingInfo is fetched.
+
   @Input() savedSearch: SavedSearch;
   @Input() pageNumber: number;
   @Input() pageSize: number;
@@ -366,10 +369,21 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
     return this.requirements && this.requirements.trim().length > 0;
   }
 
-  private runSearchWithSkills(skills: SkillName[]) {
+  displayJobNameAsSource(): string {
+    return this.jobName ? `(Autopopulated from job: ${this.jobName})` : '';
+  }
+
+  private setUpJobMatch(jobMatchingInfo: JobMatchingInfo) {
     this.clearForm();
-    this.initializeQueryStringWithJobSkills(skills);
+    this.jobName = jobMatchingInfo.jobName;
+    this.initializeRequirementsWithDescription(jobMatchingInfo.description);
+    this.initializeQueryStringWithJobSkills(jobMatchingInfo.skillNames);
     this.onSubmit();
+  }
+
+  private initializeRequirementsWithDescription(description: string) {
+    this.searchForm.controls.requirements.patchValue(description);
+    this.searchForm.markAsDirty();
   }
 
   private initializeQueryStringWithJobSkills(skills: SkillName[]) {
@@ -615,12 +629,12 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
         this.populateFormWithSavedSearch(request);
 
         //If this a new search generated from a job, clear any existing search params and
-        //automatically run a search using the job skills.
+        //automatically run a search using the job matching info.
         //We don't want to keep any previous search details from earlier searches.
         if (this.jobId) {
-          //Load the job skills
-          this.jobService.getSkills(this.jobId).subscribe({
-            next: (skills) => this.runSearchWithSkills(skills),
+          //Load the job-matching info
+          this.jobService.getJobMatchingInfo(this.jobId).subscribe({
+            next: (jobMatchingInfo) => this.setUpJobMatch(jobMatchingInfo),
             error: (error) => this.error = error
           })
         }
