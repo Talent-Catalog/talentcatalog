@@ -370,7 +370,7 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
   }
 
   displayJobNameAsSource(): string {
-    return this.jobName ? `(Autopopulated from job: ${this.jobName})` : '';
+    return this.jobName ? `(Autopopulated from job ${this.jobId}: ${this.jobName})` : '';
   }
 
   private setUpJobMatch(jobMatchingInfo: JobMatchingInfo) {
