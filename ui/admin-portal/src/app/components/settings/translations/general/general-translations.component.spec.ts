@@ -204,6 +204,37 @@ describe('GeneralTranslationsComponent', () => {
     });
   });
 
+  it('should trigger hidden import input click and clear applied summary', () => {
+    const fileInput = document.createElement('input');
+    const clickSpy = spyOn(fileInput, 'click');
+    component.patchAppliedSummary = {status: 'success'};
+
+    component.triggerImport(fileInput);
+
+    expect(clickSpy).toHaveBeenCalled();
+    expect(component.patchAppliedSummary).toBeNull();
+  });
+
+  it('should not trigger import input click when patch is busy', () => {
+    const fileInput = document.createElement('input');
+    const clickSpy = spyOn(fileInput, 'click');
+    component.patchBusy = true;
+
+    component.triggerImport(fileInput);
+
+    expect(clickSpy).not.toHaveBeenCalled();
+  });
+
+  it('should not trigger import input click for non-system admins', () => {
+    const fileInput = document.createElement('input');
+    const clickSpy = spyOn(fileInput, 'click');
+    authService.isSystemAdminOnly.and.returnValue(false);
+
+    component.triggerImport(fileInput);
+
+    expect(clickSpy).not.toHaveBeenCalled();
+  });
+
   it('should apply spacing class on header action buttons', () => {
     fixture.detectChanges();
     const headerActions = fixture.debugElement.query(By.css('.header > div.d-flex.gap-2'));
@@ -225,6 +256,14 @@ describe('GeneralTranslationsComponent', () => {
     expect(component.patchReview).toEqual(dryRunSummary);
     expect(component.pendingPatch).toEqual({version: 1, entries: []});
     expect(component.patchAppliedSummary).toBeFalsy();
+  });
+
+  it('should handle dry-run import error', () => {
+    translationService.importPatch.and.returnValue(throwError('dry-run error'));
+    component.startPatchDryRun({version: 1, entries: []});
+
+    expect(component.patchBusy).toBeFalse();
+    expect(component.patchError).toBe('dry-run error');
   });
 
   it('should run dry-run then apply import patch when confirmed', () => {
@@ -254,6 +293,26 @@ describe('GeneralTranslationsComponent', () => {
     expect(component.patchAppliedSummary).toEqual(applySummary);
   });
 
+  it('should not call apply import when no pending patch', () => {
+    component.pendingPatch = null;
+
+    component.confirmPatchImport();
+
+    expect(translationService.importPatch.calls.count()).toBe(0);
+  });
+
+  it('should handle apply import error', () => {
+    component.pendingPatch = {version: 1, entries: []};
+    component.patchReview = {languages: {}};
+    translationService.importPatch.and.returnValue(throwError('apply error'));
+
+    component.confirmPatchImport();
+
+    expect(component.patchBusy).toBeFalse();
+    expect(component.patchError).toBe('apply error');
+    expect(component.pendingPatch).toEqual({version: 1, entries: []});
+  });
+
   it('should clear review and not apply when canceling import', () => {
     const dryRunSummary = {
       languages: {
@@ -270,5 +329,123 @@ describe('GeneralTranslationsComponent', () => {
     expect(component.patchReview).toBeNull();
     expect(component.pendingPatch).toBeNull();
     expect(component.patchAppliedSummary).toBeFalsy();
+  });
+
+  it('should ignore file selection when no files are provided', () => {
+    const startDryRunSpy = spyOn(component, 'startPatchDryRun');
+    const event = {
+      target: { files: [] }
+    } as unknown as Event;
+
+    component.onPatchFileSelected(event);
+
+    expect(startDryRunSpy).not.toHaveBeenCalled();
+  });
+
+  it('should parse selected patch file and start dry-run', () => {
+    const startDryRunSpy = spyOn(component, 'startPatchDryRun');
+    const readerMock = {
+      result: '{"version":1,"entries":[]}',
+      onload: null as any,
+      onerror: null as any,
+      readAsText: function() {
+        this.onload();
+      }
+    };
+    spyOn(window as any, 'FileReader').and.returnValue(readerMock as unknown as FileReader);
+    const file = new File(['{"version":1}'], 'patch.json', {type: 'application/json'});
+    const input = document.createElement('input');
+    Object.defineProperty(input, 'files', { value: [file] });
+
+    component.onPatchFileSelected({ target: input } as unknown as Event);
+
+    expect(startDryRunSpy).toHaveBeenCalledWith({version: 1, entries: []});
+  });
+
+  it('should set patchError when selected patch file is invalid JSON', () => {
+    const readerMock = {
+      result: 'not-json',
+      onload: null as any,
+      onerror: null as any,
+      readAsText: function() {
+        this.onload();
+      }
+    };
+    spyOn(window as any, 'FileReader').and.returnValue(readerMock as unknown as FileReader);
+    const file = new File(['not-json'], 'patch.json', {type: 'application/json'});
+    const input = document.createElement('input');
+    Object.defineProperty(input, 'files', { value: [file] });
+
+    component.onPatchFileSelected({ target: input } as unknown as Event);
+
+    expect(component.patchError).toBeTruthy();
+  });
+
+  it('should toggle export form and initialize languages when empty', () => {
+    component.showExportForm = false;
+    component.exportLanguages = [];
+    component.languages = [{id:1, language: 'en', label: 'English', rtl:false} as SystemLanguage];
+
+    component.toggleExportForm();
+
+    expect(component.showExportForm).toBeTrue();
+    expect(component.exportLanguages).toEqual(['en']);
+  });
+
+  it('should set export error when no prefixes or keys are provided', () => {
+    component.exportPrefixesText = '';
+    component.exportKeysText = '';
+    component.exportLanguages = ['en'];
+
+    component.exportPatch();
+
+    expect(component.patchError).toBe('Specify at least one prefix or key before export.');
+    expect(translationService.exportPatch).not.toHaveBeenCalled();
+  });
+
+  it('should set export error when no languages are provided', () => {
+    component.exportPrefixesText = 'SERVICES.VERIFY_PLUS';
+    component.exportKeysText = '';
+    component.exportLanguages = [];
+
+    component.exportPatch();
+
+    expect(component.patchError).toBe('Select at least one language before export.');
+    expect(translationService.exportPatch).not.toHaveBeenCalled();
+  });
+
+  it('should handle export patch request errors', () => {
+    component.exportPrefixesText = 'SERVICES.VERIFY_PLUS';
+    component.exportLanguages = ['en'];
+    translationService.exportPatch.and.returnValue(throwError('export error'));
+
+    component.exportPatch();
+
+    expect(component.patchBusy).toBeFalse();
+    expect(component.patchError).toBe('export error');
+  });
+
+  it('should download exported patch file', () => {
+    component.exportPrefixesText = 'SERVICES.VERIFY_PLUS';
+    component.exportLanguages = ['en'];
+    translationService.exportPatch.and.returnValue(of({version: 1, entries: []}));
+    const createSpy = spyOn(window.URL, 'createObjectURL').and.returnValue('blob:test');
+    const revokeSpy = spyOn(window.URL, 'revokeObjectURL');
+    const clickSpy = jasmine.createSpy('click');
+    spyOn(document, 'createElement').and.returnValue({
+      click: clickSpy
+    } as unknown as HTMLAnchorElement);
+
+    component.exportPatch();
+
+    expect(createSpy).toHaveBeenCalled();
+    expect(clickSpy).toHaveBeenCalled();
+    expect(revokeSpy).toHaveBeenCalledWith('blob:test');
+  });
+
+  it('should return language rows and warning state helpers', () => {
+    expect(component.getPatchLanguageRows(null)).toEqual([]);
+    expect(component.hasPatchWarnings({warnings: []})).toBeFalse();
+    expect(component.hasPatchWarnings({warnings: ['warning']})).toBeTrue();
   });
 });
