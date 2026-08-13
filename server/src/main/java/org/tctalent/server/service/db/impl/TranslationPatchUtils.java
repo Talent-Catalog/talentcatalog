@@ -27,11 +27,28 @@ import java.util.regex.Pattern;
 import lombok.NoArgsConstructor;
 import org.springframework.lang.Nullable;
 
+/**
+ * Utility helpers used by translation patch import/export operations.
+ * <p>
+ * Supports patch key validation, conversion between flat dotted key/value structures and nested
+ * map structures, deep merge semantics for import, and scoped flattening for export.
+ * </p>
+ * <p>
+ * Import semantics are additive/overwrite only for provided paths and never delete keys that are
+ * absent from a patch.
+ * </p>
+ * This can be removed when all translations are managed and stored in database.
+ *
+ * @author sadatmalik
+ */
 @NoArgsConstructor
 final class TranslationPatchUtils {
 
     private static final Pattern VALID_KEY_PATTERN = Pattern.compile("^[A-Z0-9_\\-/]+(\\.[A-Z0-9_\\-/]+)+$");
 
+    /**
+     * Checks whether a patch key is a valid dotted uppercase path.
+     */
     static boolean isValidPatchKey(String key) {
         if (key == null) {
             return false;
@@ -39,6 +56,14 @@ final class TranslationPatchUtils {
         return VALID_KEY_PATTERN.matcher(key).matches();
     }
 
+    /**
+     * Deep-merges {@code patch} into {@code target}.
+     * <p>
+     * If both source and patch values are maps they are merged recursively; otherwise the patch
+     * value replaces the target value for that key.
+     * </p>
+     */
+    @SuppressWarnings("unchecked")
     static Map<String, Object> deepMerge(Map<String, Object> target, Map<String, Object> patch) {
         for (Map.Entry<String, Object> entry : patch.entrySet()) {
             String key = entry.getKey();
@@ -58,6 +83,9 @@ final class TranslationPatchUtils {
         return target;
     }
 
+    /**
+     * Builds a nested map tree from flat dotted key/value entries.
+     */
     static Map<String, Object> nestedMapFromFlatEntries(Map<String, String> flatEntries) {
         Map<String, Object> nested = new LinkedHashMap<>();
 
@@ -68,6 +96,11 @@ final class TranslationPatchUtils {
         return nested;
     }
 
+    /**
+     * Writes a leaf string value into a nested map using a dotted path.
+     * Intermediate maps are created as needed.
+     */
+    @SuppressWarnings("unchecked")
     static void setNestedValue(Map<String, Object> root, String dotPath, String value) {
         String[] keys = dotPath.split("\\.");
         Map<String, Object> node = root;
@@ -83,6 +116,10 @@ final class TranslationPatchUtils {
         node.put(keys[keys.length - 1].toUpperCase(Locale.ROOT), value);
     }
 
+    /**
+     * Flattens all leaf string values in the supplied nested map.
+     */
+    @SuppressWarnings("unchecked")
     static void collectFlattened(
         Map<String, Object> source,
         String prefix,
@@ -100,6 +137,10 @@ final class TranslationPatchUtils {
         }
     }
 
+    /**
+     * Flattens only the subtree under the given dotted prefix.
+     */
+    @SuppressWarnings("unchecked")
     static void collectFlattenedAtPrefix(
         Map<String, Object> source,
         String prefix,
@@ -128,6 +169,10 @@ final class TranslationPatchUtils {
         }
     }
 
+    /**
+     * Returns a leaf string value at a dotted path, or null when missing/non-string.
+     */
+    @SuppressWarnings("unchecked")
     @Nullable
     static String getFlattenedValue(Map<String, Object> source, String keyPath) {
         String[] keys = keyPath.toUpperCase(Locale.ROOT).split("\\.");
@@ -144,6 +189,9 @@ final class TranslationPatchUtils {
         return node instanceof String textValue ? textValue : null;
     }
 
+    /**
+     * Returns sorted distinct non-blank values.
+     */
     static List<String> sortedDistinctNonBlank(List<String> values) {
         if (values == null) {
             return List.of();
@@ -161,6 +209,9 @@ final class TranslationPatchUtils {
         return new ArrayList<>(normalized);
     }
 
+    /**
+     * Checks whether at least one language value is non-null.
+     */
     static boolean hasAnyNonNullValues(Map<String, String> valuesByLanguage) {
         return valuesByLanguage != null && valuesByLanguage.values().stream().anyMatch(Objects::nonNull);
     }
