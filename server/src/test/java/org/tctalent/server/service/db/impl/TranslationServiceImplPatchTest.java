@@ -30,6 +30,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -44,6 +45,7 @@ import org.tctalent.server.security.AuthService;
 import org.tctalent.server.storage.S3TranslationStorageService;
 
 @ExtendWith(MockitoExtension.class)
+@DisplayName("TranslationServiceImpl patch import and export")
 class TranslationServiceImplPatchTest {
 
     @Mock
@@ -64,6 +66,7 @@ class TranslationServiceImplPatchTest {
     }
 
     @Test
+    @DisplayName("import dry-run does not write to S3")
     void importPatch_dryRun_doesNotWriteToS3() {
         when(s3TranslationStorageService.getTranslationFile("en")).thenReturn(new LinkedHashMap<>(Map.of(
             "SERVICES", new LinkedHashMap<>(Map.of(
@@ -90,6 +93,7 @@ class TranslationServiceImplPatchTest {
     }
 
     @Test
+    @DisplayName("import apply writes the merged file to S3")
     void importPatch_apply_writesMergedFileToS3() {
         when(s3TranslationStorageService.getTranslationFile("en")).thenReturn(new LinkedHashMap<>(Map.of(
             "SERVICES", new LinkedHashMap<>(Map.of(
@@ -113,6 +117,7 @@ class TranslationServiceImplPatchTest {
     }
 
     @Test
+    @DisplayName("import strictLanguages rejects a missing language value")
     void importPatch_strictLanguages_rejectsMissingLanguageValue() {
         TranslationPatchRequest request = new TranslationPatchRequest();
         request.setVersion(1);
@@ -125,6 +130,7 @@ class TranslationServiceImplPatchTest {
     }
 
     @Test
+    @DisplayName("export returns only requested prefixes and keys")
     void exportPatch_returnsOnlyScopedKeys() {
         Map<String, Object> enFile = new LinkedHashMap<>();
         TranslationPatchUtils.setNestedValue(enFile, "SERVICES.VERIFY_PLUS.TAG", "Verify+");
@@ -157,6 +163,7 @@ class TranslationServiceImplPatchTest {
     }
 
     @Test
+    @DisplayName("export rejects an empty prefix and key scope")
     void exportPatch_rejectsEmptyScope() {
         ExportTranslationPatchRequest request = new ExportTranslationPatchRequest();
         request.setLanguages(List.of("en"));

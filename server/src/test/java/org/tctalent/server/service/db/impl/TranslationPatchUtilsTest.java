@@ -23,11 +23,14 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+@DisplayName("TranslationPatchUtils")
 class TranslationPatchUtilsTest {
 
     @Test
+    @DisplayName("isValidPatchKey accepts dotted uppercase keys")
     void isValidPatchKey_acceptsExpectedFormat() {
         assertTrue(TranslationPatchUtils.isValidPatchKey("SERVICES.VERIFY_PLUS.TAG"));
         assertTrue(TranslationPatchUtils.isValidPatchKey("REGISTRATION.HEADER.TITLE.VERIFYPLUS"));
@@ -38,6 +41,7 @@ class TranslationPatchUtilsTest {
     }
 
     @Test
+    @DisplayName("deepMerge overwrites patched leaves and leaves other keys")
     void deepMerge_mergesOnlyPatchPaths() {
         Map<String, Object> source = new LinkedHashMap<>();
         source.put("SERVICES", new LinkedHashMap<>(Map.of(
@@ -64,6 +68,7 @@ class TranslationPatchUtilsTest {
     }
 
     @Test
+    @DisplayName("nestedMapFromFlatEntries builds nested maps from dotted keys")
     void nestedMapFromFlatEntries_buildsNestedStructure() {
         Map<String, String> flat = Map.of(
             "SERVICES.VERIFY_PLUS.TAG", "Verify+",
@@ -79,6 +84,7 @@ class TranslationPatchUtilsTest {
     }
 
     @Test
+    @DisplayName("collectFlattenedAtPrefix collects only the requested subtree")
     void collectFlattenedAtPrefix_collectsLeafStrings() {
         Map<String, Object> nested = new LinkedHashMap<>();
         TranslationPatchUtils.setNestedValue(nested, "SERVICES.VERIFY_PLUS.TAG", "Verify+");
@@ -94,6 +100,7 @@ class TranslationPatchUtilsTest {
     }
 
     @Test
+    @DisplayName("getFlattenedValue returns null for a missing path")
     void getFlattenedValue_returnsNullForMissingPath() {
         Map<String, Object> nested = new LinkedHashMap<>();
         TranslationPatchUtils.setNestedValue(nested, "SERVICES.VERIFY_PLUS.TAG", "Verify+");
