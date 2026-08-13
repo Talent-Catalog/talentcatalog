@@ -18,9 +18,133 @@
 <div *ngIf="!loading" class="main container">
     <div class="header">
       <h4>General Translations</h4>
-      <div>
+      <div class="d-flex gap-2 header-actions">
         <tc-button id="save-translations" *ngIf="isAnAdmin() && !loggedInUser.readOnly"
                 (onClick)="save()" [disabled]="saving || error || saveError">Save</tc-button>
+        <tc-button id="import-translation-patch" *ngIf="canManagePatch()"
+                   [disabled]="patchBusy"
+                   (onClick)="triggerImport(patchFileInput)">
+          Import patch
+        </tc-button>
+        <tc-button id="toggle-export-translation-patch" *ngIf="canManagePatch()"
+                   [disabled]="patchBusy"
+                   (onClick)="toggleExportForm()">
+          {{showExportForm ? 'Close export' : 'Export patch'}}
+        </tc-button>
+        <input #patchFileInput type="file" accept=".json,application/json"
+               style="display: none" (change)="onPatchFileSelected($event)" />
+      </div>
+    </div>
+    <tc-alert *ngIf="patchError">
+      Sorry, there was an error processing translation patch:
+      <div>
+        {{patchError | json}}
+      </div>
+    </tc-alert>
+    <tc-alert *ngIf="patchAppliedSummary">
+      Translation patch applied.
+    </tc-alert>
+    <div *ngIf="canManagePatch() && patchAppliedSummary" class="border p-3 mb-3">
+      <h5>Applied summary</h5>
+      <p class="mb-2" *ngIf="patchAppliedSummary.description">{{ patchAppliedSummary.description }}</p>
+      <p class="mb-2" *ngIf="patchAppliedSummary.bucket">Bucket: {{ patchAppliedSummary.bucket }}</p>
+      <table class="table table-sm mb-2">
+        <thead>
+        <tr>
+          <th>Language</th>
+          <th>Total</th>
+          <th>Updated</th>
+          <th>Unchanged</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let row of getPatchLanguageRows(patchAppliedSummary)">
+          <td>{{ row.language }}</td>
+          <td>{{ row.totalKeys }}</td>
+          <td>{{ row.updatedKeys }}</td>
+          <td>{{ row.unchangedKeys }}</td>
+        </tr>
+        </tbody>
+      </table>
+      <div *ngIf="hasPatchWarnings(patchAppliedSummary)">
+        <strong>Warnings</strong>
+        <ul class="mb-0">
+          <li *ngFor="let warning of patchAppliedSummary.warnings">{{ warning }}</li>
+        </ul>
+      </div>
+    </div>
+    <div *ngIf="canManagePatch() && patchReview" class="border p-3 mb-3">
+      <h5>Review translation patch (not applied yet)</h5>
+      <p class="mb-2" *ngIf="patchReview.description">{{ patchReview.description }}</p>
+      <p class="mb-2" *ngIf="patchReview.bucket">Bucket: {{ patchReview.bucket }}</p>
+      <table class="table table-sm mb-2">
+        <thead>
+        <tr>
+          <th>Language</th>
+          <th>Total</th>
+          <th>Updated</th>
+          <th>Unchanged</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let row of getPatchLanguageRows(patchReview)">
+          <td>{{ row.language }}</td>
+          <td>{{ row.totalKeys }}</td>
+          <td>{{ row.updatedKeys }}</td>
+          <td>{{ row.unchangedKeys }}</td>
+        </tr>
+        </tbody>
+      </table>
+      <div *ngIf="hasPatchWarnings(patchReview)" class="mb-2">
+        <strong>Warnings</strong>
+        <ul class="mb-0">
+          <li *ngFor="let warning of patchReview.warnings">{{ warning }}</li>
+        </ul>
+      </div>
+      <p class="mb-2" *ngIf="!hasPatchWarnings(patchReview)">No warnings.</p>
+      <div class="d-flex justify-content-end gap-2">
+        <tc-button id="confirm-translation-patch"
+                   [disabled]="patchBusy"
+                   (onClick)="confirmPatchImport()">
+          Confirm
+        </tc-button>
+        <tc-button id="cancel-translation-patch"
+                   [disabled]="patchBusy"
+                   (onClick)="cancelPatchImport()">
+          Cancel
+        </tc-button>
+      </div>
+    </div>
+    <div *ngIf="canManagePatch() && showExportForm" class="border p-3 mb-3">
+      <h5>Export patch</h5>
+      <div class="row">
+        <div class="col-sm-4">
+          <label>Languages</label>
+          <ng-select class="tc-select"
+                     [items]="languages"
+                     bindLabel="label"
+                     bindValue="language"
+                     [multiple]="true"
+                     [closeOnSelect]="false"
+                     [ngModel]="exportLanguages"
+                     (ngModelChange)="exportLanguages = $event">
+          </ng-select>
+        </div>
+        <div class="col-sm-4">
+          <label>Prefixes (one per line)</label>
+          <tc-textarea [(ngModel)]="exportPrefixesText"></tc-textarea>
+        </div>
+        <div class="col-sm-4">
+          <label>Exact keys (one per line)</label>
+          <tc-textarea [(ngModel)]="exportKeysText"></tc-textarea>
+        </div>
+      </div>
+      <div class="mt-2">
+        <tc-button id="export-translation-patch"
+                   [disabled]="patchBusy"
+                   (onClick)="exportPatch()">
+          Download patch
+        </tc-button>
       </div>
     </div>
     <tc-alert *ngIf="saveError">

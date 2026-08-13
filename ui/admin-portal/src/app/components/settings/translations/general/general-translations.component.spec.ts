@@ -35,9 +35,14 @@ describe('GeneralTranslationsComponent', () => {
   const systemLanguage: SystemLanguage = {id:1, language: 'fr', label: 'French',rtl:false };
 
   beforeEach(async () => {
-    const translationSpy = jasmine.createSpyObj('TranslationService', ['loadTranslationsFile', 'updateTranslationFile']);
+    const translationSpy = jasmine.createSpyObj('TranslationService', [
+      'loadTranslationsFile',
+      'updateTranslationFile',
+      'importPatch',
+      'exportPatch'
+    ]);
     const languageSpy = jasmine.createSpyObj('LanguageService', ['listSystemLanguages']);
-    const authSpy = jasmine.createSpyObj('AuthorizationService', ['isAnAdmin']);
+    const authSpy = jasmine.createSpyObj('AuthorizationService', ['isAnAdmin', 'isSystemAdminOnly']);
 
     await TestBed.configureTestingModule({
       imports: [FormsModule,ReactiveFormsModule,NgSelectModule,HttpClientTestingModule],
@@ -58,6 +63,7 @@ describe('GeneralTranslationsComponent', () => {
     languageService.listSystemLanguages.and.returnValue(of([systemLanguage]));
     translationService.loadTranslationsFile.and.returnValue(of({}));
     authService.isAnAdmin.and.returnValue(true);
+    authService.isSystemAdminOnly.and.returnValue(true);
     component.loggedInUser = new MockUser();
     fixture.detectChanges();
   });
@@ -138,6 +144,12 @@ describe('GeneralTranslationsComponent', () => {
     expect(saveButton).toBeTruthy();
   });
 
+  it('should display import and export controls for system admins', () => {
+    fixture.detectChanges();
+    expect(fixture.debugElement.query(By.css('tc-button#import-translation-patch'))).toBeTruthy();
+    expect(fixture.debugElement.query(By.css('tc-button#toggle-export-translation-patch'))).toBeTruthy();
+  });
+
   it('should disable save button if saving or errors exist', () => {
     let saveButton = fixture.debugElement.query(By.css('tc-button#save-translations'));
 
@@ -161,5 +173,102 @@ describe('GeneralTranslationsComponent', () => {
     fixture.detectChanges();
     const saveButton = fixture.debugElement.query(By.css('button.btn-success'));
     expect(saveButton).toBeFalsy();
+  });
+
+  it('should hide import and export controls for non-system admins', () => {
+    authService.isSystemAdminOnly.and.returnValue(false);
+    fixture.detectChanges();
+    expect(fixture.debugElement.query(By.css('tc-button#import-translation-patch'))).toBeFalsy();
+    expect(fixture.debugElement.query(By.css('tc-button#toggle-export-translation-patch'))).toBeFalsy();
+  });
+
+  it('should hide import and export controls for read-only users', () => {
+    component.loggedInUser.readOnly = true;
+    fixture.detectChanges();
+    expect(fixture.debugElement.query(By.css('tc-button#import-translation-patch'))).toBeFalsy();
+    expect(fixture.debugElement.query(By.css('tc-button#toggle-export-translation-patch'))).toBeFalsy();
+  });
+
+  it('should call export patch with parsed prefixes and keys', () => {
+    component.exportPrefixesText = 'SERVICES.VERIFY_PLUS\nSERVICES.UNHCR';
+    component.exportKeysText = 'REGISTRATION.HEADER.TITLE.VERIFYPLUS';
+    component.exportLanguages = ['en', 'ar'];
+    translationService.exportPatch.and.returnValue(of({version: 1, entries: []}));
+
+    component.exportPatch();
+
+    expect(translationService.exportPatch).toHaveBeenCalledWith({
+      prefixes: ['SERVICES.VERIFY_PLUS', 'SERVICES.UNHCR'],
+      keys: ['REGISTRATION.HEADER.TITLE.VERIFYPLUS'],
+      languages: ['en', 'ar']
+    });
+  });
+
+  it('should apply spacing class on header action buttons', () => {
+    fixture.detectChanges();
+    const headerActions = fixture.debugElement.query(By.css('.header > div.d-flex.gap-2'));
+    expect(headerActions).toBeTruthy();
+  });
+
+  it('should show dry-run review in tab after patch import selection', () => {
+    const dryRunSummary = {
+      languages: {
+        en: {totalKeys: 1, updatedKeys: 1, unchangedKeys: 0}
+      },
+      warnings: []
+    };
+    translationService.importPatch.and.returnValue(of(dryRunSummary));
+
+    component.startPatchDryRun({version: 1, entries: []});
+
+    expect(translationService.importPatch).toHaveBeenCalledWith({version: 1, entries: []}, true, false);
+    expect(component.patchReview).toEqual(dryRunSummary);
+    expect(component.pendingPatch).toEqual({version: 1, entries: []});
+    expect(component.patchAppliedSummary).toBeFalsy();
+  });
+
+  it('should run dry-run then apply import patch when confirmed', () => {
+    const dryRunSummary = {
+      languages: {
+        en: {totalKeys: 1, updatedKeys: 1, unchangedKeys: 0}
+      },
+      warnings: []
+    };
+    const applySummary = {
+      languages: {
+        en: {totalKeys: 1, updatedKeys: 1, unchangedKeys: 0}
+      },
+      warnings: []
+    };
+    translationService.importPatch.and.returnValues(of(dryRunSummary), of(applySummary));
+    const refreshSpy = spyOn(component, 'setLanguage').and.callThrough();
+
+    component.startPatchDryRun({version: 1, entries: []});
+    component.confirmPatchImport();
+
+    expect(translationService.importPatch).toHaveBeenCalledWith({version: 1, entries: []}, true, false);
+    expect(translationService.importPatch).toHaveBeenCalledWith({version: 1, entries: []}, false, false);
+    expect(refreshSpy).toHaveBeenCalledWith(systemLanguage);
+    expect(component.patchReview).toBeNull();
+    expect(component.pendingPatch).toBeNull();
+    expect(component.patchAppliedSummary).toEqual(applySummary);
+  });
+
+  it('should clear review and not apply when canceling import', () => {
+    const dryRunSummary = {
+      languages: {
+        en: {totalKeys: 1, updatedKeys: 0, unchangedKeys: 1}
+      },
+      warnings: ['Warning one']
+    };
+    translationService.importPatch.and.returnValue(of(dryRunSummary));
+    component.startPatchDryRun({version: 1, entries: []});
+
+    component.cancelPatchImport();
+
+    expect(translationService.importPatch.calls.count()).toBe(1);
+    expect(component.patchReview).toBeNull();
+    expect(component.pendingPatch).toBeNull();
+    expect(component.patchAppliedSummary).toBeFalsy();
   });
 });

@@ -67,6 +67,16 @@ export class GeneralTranslationsComponent implements OnInit {
   saving: boolean;
   saveError: any;
   error: any;
+  patchBusy: boolean;
+  patchError: any;
+  patchReview: any;
+  patchAppliedSummary: any;
+  pendingPatch: any;
+  patchFileInput: HTMLInputElement;
+  exportPrefixesText: string;
+  exportKeysText: string;
+  exportLanguages: string[];
+  showExportForm: boolean;
 
   constructor(private translationService: TranslationService,
               private languageService: LanguageService,
@@ -86,6 +96,7 @@ export class GeneralTranslationsComponent implements OnInit {
     this.languageService.listSystemLanguages().subscribe(
       (result) => {
         this.languages = result;
+        this.exportLanguages = this.languages.map(language => language.language);
         this.loading = false;
         this.setLanguage(this.languages[0]);
       },
@@ -166,12 +177,184 @@ export class GeneralTranslationsComponent implements OnInit {
     return this.authService.isAnAdmin();
   }
 
+  canManagePatch(): boolean {
+    return this.authService.isSystemAdminOnly() && !this.loggedInUser?.readOnly;
+  }
+
   filterItems($event) {
     if ($event != null) {
       this.fieldsFiltered = this.fields.filter(f => f.path.split('.')[0] === $event.toLowerCase())
     } else {
       this.fieldsFiltered = this.fields;
     }
+  }
+
+  triggerImport(fileInput: HTMLInputElement) {
+    if (!this.canManagePatch() || this.patchBusy) {
+      return;
+    }
+    this.patchAppliedSummary = null;
+    fileInput.click();
+  }
+
+  onPatchFileSelected(event: Event) {
+    const input = event.target as HTMLInputElement;
+    if (!input.files || input.files.length === 0) {
+      return;
+    }
+
+    const file = input.files[0];
+    this.patchFileInput = input;
+    const reader = new FileReader();
+    reader.onload = () => {
+      try {
+        const patch = JSON.parse(String(reader.result));
+        this.startPatchDryRun(patch);
+      } catch (error) {
+        this.patchError = error;
+      }
+    };
+    reader.onerror = (error) => this.patchError = error;
+    reader.readAsText(file);
+  }
+
+  startPatchDryRun(patch) {
+    this.patchBusy = true;
+    this.patchError = null;
+    this.patchReview = null;
+    this.pendingPatch = null;
+    this.patchAppliedSummary = null;
+
+    this.translationService.importPatch(patch, true, false).subscribe(
+      (summary: any) => {
+        this.patchBusy = false;
+        this.pendingPatch = patch;
+        this.patchReview = summary;
+      },
+      (error) => {
+        this.patchBusy = false;
+        this.patchError = error;
+        this.clearPatchFileInput();
+      }
+    );
+  }
+
+  toggleExportForm() {
+    this.patchError = null;
+    this.patchAppliedSummary = null;
+    this.showExportForm = !this.showExportForm;
+    if (this.showExportForm && (!this.exportLanguages || this.exportLanguages.length === 0)) {
+      this.exportLanguages = this.languages.map(language => language.language);
+    }
+  }
+
+  exportPatch() {
+    this.patchAppliedSummary = null;
+    const prefixes = this.parseLines(this.exportPrefixesText);
+    const keys = this.parseLines(this.exportKeysText);
+
+    if (prefixes.length === 0 && keys.length === 0) {
+      this.patchError = 'Specify at least one prefix or key before export.';
+      return;
+    }
+
+    if (!this.exportLanguages || this.exportLanguages.length === 0) {
+      this.patchError = 'Select at least one language before export.';
+      return;
+    }
+
+    this.patchBusy = true;
+    this.patchError = null;
+    this.translationService.exportPatch({
+      prefixes,
+      keys,
+      languages: this.exportLanguages
+    }).subscribe(
+      (patch) => {
+        this.patchBusy = false;
+        this.downloadPatchFile(patch);
+      },
+      (error) => {
+        this.patchBusy = false;
+        this.patchError = error;
+      }
+    );
+  }
+
+  confirmPatchImport() {
+    if (!this.pendingPatch) {
+      return;
+    }
+    this.patchBusy = true;
+    this.patchError = null;
+    this.translationService.importPatch(this.pendingPatch, false, false).subscribe(
+      (appliedSummary: any) => {
+        this.patchAppliedSummary = appliedSummary;
+        this.patchReview = null;
+        this.pendingPatch = null;
+        this.patchBusy = false;
+        this.clearPatchFileInput();
+        if (this.systemLanguage) {
+          this.setLanguage(this.systemLanguage);
+        }
+      },
+      (error) => {
+        this.patchBusy = false;
+        this.patchError = error;
+      }
+    );
+  }
+
+  cancelPatchImport() {
+    this.patchReview = null;
+    this.pendingPatch = null;
+    this.patchBusy = false;
+    this.clearPatchFileInput();
+  }
+
+  getPatchLanguageRows(summary: any): any[] {
+    if (!summary?.languages) {
+      return [];
+    }
+    return Object.entries(summary.languages).map(([language, counts]: [string, any]) => ({
+      language,
+      totalKeys: counts?.totalKeys ?? 0,
+      updatedKeys: counts?.updatedKeys ?? 0,
+      unchangedKeys: counts?.unchangedKeys ?? 0,
+    }));
+  }
+
+  hasPatchWarnings(summary: any): boolean {
+    return !!summary?.warnings?.length;
+  }
+
+  private clearPatchFileInput() {
+    if (this.patchFileInput) {
+      this.patchFileInput.value = '';
+    }
+  }
+
+  private parseLines(input: string): string[] {
+    if (!input) {
+      return [];
+    }
+    return Array.from(new Set(
+      input
+        .split('\n')
+        .map(line => line.trim())
+        .filter(line => line.length > 0)
+    ));
+  }
+
+  private downloadPatchFile(patch) {
+    const output = JSON.stringify(patch, null, 2);
+    const blob = new Blob([output], {type: 'application/json'});
+    const downloadUrl = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = downloadUrl;
+    link.download = `translation-patch-${new Date().toISOString()}.json`;
+    link.click();
+    window.URL.revokeObjectURL(downloadUrl);
   }
 }
 
@@ -383,6 +566,14 @@ const ALL_FIELDS = {
         "NEXT": null,
         "SUBMIT": null,
         "UPDATE": null
+      },
+      "VERIFY_PLUS": {
+        "TITLE": null,
+        "DESCRIPTION": null,
+        "SUCCESS_TITLE": null,
+        "SUCCESS_BODY": null,
+        "DUPLICATE_BODY": null,
+        "SKIP_HINT": null
       },
       "CONTACT": {
         "LABEL": {
@@ -814,6 +1005,59 @@ const ALL_FIELDS = {
         'REPORT_DESCRIPTION': null,
         'REPORT_COMMENT_PLACEHOLDER': null,
       }
+    },
+    'VERIFY_PLUS': {
+      'TAG': null,
+      'TITLE': null,
+      'DESCRIPTION': null,
+      'SCAN_INTRO': null,
+      'SCANNER_ERROR': null,
+      'REVIEW_TITLE': null,
+      'SUBMIT_ERROR_FALLBACK': null,
+      'SUBMIT_ERROR_HINT': null,
+      'RESCAN': null,
+      'CONFIRM': null,
+      'SUCCESS_TITLE': null,
+      'SUCCESS_BODY': null,
+      'DUPLICATE_TITLE': null,
+      'DUPLICATE_BODY': null,
+      'DUPLICATE_RESCAN_HINT': null,
+      'BACK': null,
+      'SCANNER': {
+        'ENABLE_CAMERA': null,
+        'SCAN_AGAIN': null,
+        'PERMISSION_DENIED': null,
+        'TRY_AGAIN': null,
+        'NO_CAMERA': null,
+        'NOT_DETECTED': null
+      }
+    },
+    'UNHCR': {
+      'TAG': null,
+      'TITLE': null,
+      'DESCRIPTION': null,
+      'DETAIL_TITLE': null,
+      'DETAIL_SUBTITLE': null,
+      'HELP_INTRO': null,
+      'BACK': null
+    },
+    'REFERENCE': {
+      'TAG': null,
+      'TITLE': null,
+      'DESCRIPTION': null,
+      'DETAIL_TITLE': null,
+      'DETAIL_DESCRIPTION': null,
+      'OPC_DPA_ALERT': null,
+      'ACKNOWLEDGE_OPC_DPA': null,
+      'TERMS_ALERT': null,
+      'ACCEPT_TERMS': null,
+      'ASSIGN_INTRO': null,
+      'ASSIGN_VOUCHER': null,
+      'VOUCHER_CODE': null,
+      'STATUS': null,
+      'MARK_REDEEMED': null,
+      'NOT_ELIGIBLE': null,
+      'BACK': null
     }
   },
   "TASKS": {
