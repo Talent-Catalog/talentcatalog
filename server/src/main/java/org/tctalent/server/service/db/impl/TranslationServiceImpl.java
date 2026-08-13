@@ -210,7 +210,7 @@ public class TranslationServiceImpl implements TranslationService {
                 }
             }
 
-            if (!dryRun && (updatedCount > 0 || unchangedCount > 0)) {
+            if (!dryRun && updatedCount > 0) {
                 updateTranslationFile(language, merged);
             }
 
@@ -218,7 +218,7 @@ public class TranslationServiceImpl implements TranslationService {
             languageReport.put("totalKeys", flatEntries.size());
             languageReport.put("updatedKeys", updatedCount);
             languageReport.put("unchangedKeys", unchangedCount);
-            languageReport.put("wroteFile", !dryRun && (updatedCount > 0 || unchangedCount > 0));
+            languageReport.put("wroteFile", !dryRun && updatedCount > 0);
             languageReports.put(language, languageReport);
         }
 
