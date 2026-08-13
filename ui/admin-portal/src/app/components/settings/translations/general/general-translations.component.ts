@@ -360,7 +360,8 @@ export class GeneralTranslationsComponent implements OnInit {
     const downloadUrl = window.URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = downloadUrl;
-    link.download = `translation-patch-${new Date().toISOString()}.json`;
+    const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+    link.download = `translation-patch-${timestamp}.json`;
     link.click();
     window.URL.revokeObjectURL(downloadUrl);
   }
