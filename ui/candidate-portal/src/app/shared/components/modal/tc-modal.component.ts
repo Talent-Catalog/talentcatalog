@@ -1,5 +1,8 @@
 import {Component, EventEmitter, Input, Output} from '@angular/core';
+import {CommonModule} from '@angular/common';
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
+import {ButtonComponent} from "../button/button.component";
+import {TcIconComponent} from "../icon-component/tc-icon.component";
 
 /**
  * @component TcModalComponent
@@ -90,7 +93,9 @@ import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 @Component({
   selector: 'tc-modal',
   templateUrl: './tc-modal.component.html',
-  styleUrls: ['./tc-modal.component.scss']
+  styleUrls: ['./tc-modal.component.scss'],
+  standalone: true,
+  imports: [CommonModule, ButtonComponent, TcIconComponent]
 })
 export class TcModalComponent {
   /** Appears as the title of the modal (note: reason the input isn't called title is that the

@@ -15,9 +15,10 @@
  */
 
 import {CommonModule} from '@angular/common';
-import {NO_ERRORS_SCHEMA, QueryList} from '@angular/core';
+import {QueryList} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
+import {RouterTestingModule} from '@angular/router/testing';
 
 import {TcAccordionItemComponent} from './accordion-item/tc-accordion-item.component';
 import {TcAccordionComponent} from './tc-accordion.component';
@@ -256,9 +257,7 @@ describe('TcAccordionComponent template', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [CommonModule],
-      declarations: [TcAccordionComponent],
-      schemas: [NO_ERRORS_SCHEMA]
+      imports: [CommonModule, RouterTestingModule, TcAccordionComponent]
     }).compileComponents();
 
     fixture = TestBed.createComponent(

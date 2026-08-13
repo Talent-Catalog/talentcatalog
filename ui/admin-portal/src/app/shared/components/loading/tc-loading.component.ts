@@ -1,4 +1,5 @@
 import {Component, Input} from '@angular/core';
+import {CommonModule} from '@angular/common';
 
 /**
  * @component LoadingComponent
@@ -36,7 +37,9 @@ import {Component, Input} from '@angular/core';
 @Component({
   selector: 'tc-loading',
   templateUrl: './tc-loading.component.html',
-  styleUrls: ['./tc-loading.component.scss']
+  styleUrls: ['./tc-loading.component.scss'],
+  standalone: true,
+  imports: [CommonModule]
 })
 export class TcLoadingComponent {
   @Input() loading: boolean = false;

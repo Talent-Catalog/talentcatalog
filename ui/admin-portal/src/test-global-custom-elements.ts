@@ -418,7 +418,8 @@ const REAL_COMPONENTS = new Set([
 
 const originalConfigure = TestBed.configureTestingModule.bind(TestBed);
 (TestBed.configureTestingModule as any) = (meta: TestModuleMetadata = {}) => {
-  const hasReal = (meta.declarations ?? []).some(d => REAL_COMPONENTS.has(d?.name));
+  const hasReal = [...(meta.declarations ?? []), ...(meta.imports ?? [])]
+    .some(d => REAL_COMPONENTS.has((d as any)?.name));
   if (!hasReal) {
     meta.imports = [...(meta.imports ?? []), GlobalCustomStubsModule];
   }

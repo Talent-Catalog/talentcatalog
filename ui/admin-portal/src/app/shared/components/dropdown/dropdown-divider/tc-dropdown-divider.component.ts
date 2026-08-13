@@ -37,7 +37,9 @@ import {Component} from '@angular/core';
 @Component({
   selector: 'tc-dropdown-divider',
   templateUrl: './tc-dropdown-divider.component.html',
-  styleUrls: ['./tc-dropdown-divider.component.scss']
+  styleUrls: ['./tc-dropdown-divider.component.scss'],
+  standalone: true,
+  imports: []
 })
 export class TcDropdownDividerComponent {
 

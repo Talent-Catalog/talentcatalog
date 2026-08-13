@@ -8,7 +8,7 @@ describe('TcLoadingComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [TcLoadingComponent]
+      imports: [TcLoadingComponent]
     });
     fixture = TestBed.createComponent(TcLoadingComponent);
     component = fixture.componentInstance;

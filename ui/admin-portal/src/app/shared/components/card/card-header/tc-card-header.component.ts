@@ -50,7 +50,9 @@ import {Component} from '@angular/core';
 @Component({
   selector: 'tc-card-header',
   templateUrl: './tc-card-header.component.html',
-  styleUrls: ['./tc-card-header.component.scss']
+  styleUrls: ['./tc-card-header.component.scss'],
+  standalone: true,
+  imports: []
 })
 export class TcCardHeaderComponent {
 

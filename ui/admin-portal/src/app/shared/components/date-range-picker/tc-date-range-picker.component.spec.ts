@@ -15,9 +15,9 @@
  */
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {NgbDate, NgbDatepickerModule} from '@ng-bootstrap/ng-bootstrap';
-import {NO_ERRORS_SCHEMA} from "@angular/core";
 import {LanguageService} from "../../../services/language.service";
 import {of} from "rxjs";
+import {RouterTestingModule} from "@angular/router/testing";
 
 import {TcDateRangePickerComponent} from './tc-date-range-picker.component';
 
@@ -27,15 +27,17 @@ describe('TcDateRangePickerComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [TcDateRangePickerComponent],
-      imports: [NgbDatepickerModule],
+      imports: [
+        TcDateRangePickerComponent,
+        NgbDatepickerModule,
+        RouterTestingModule
+      ],
       providers: [
         {
           provide: LanguageService,
           useValue: { loadDatePickerLanguageData: () => of(null) }
         }
-      ],
-      schemas: [NO_ERRORS_SCHEMA]
+      ]
     });
     fixture = TestBed.createComponent(TcDateRangePickerComponent);
     component = fixture.componentInstance;

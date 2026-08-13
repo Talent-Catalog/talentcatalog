@@ -1,7 +1,11 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {AbstractControl, UntypedFormControl} from "@angular/forms";
-import {NgbDate, NgbDateStruct} from "@ng-bootstrap/ng-bootstrap";
+import {AbstractControl, FormsModule, UntypedFormControl} from "@angular/forms";
+import {CommonModule} from "@angular/common";
+import {NgbDate, NgbDateStruct, NgbInputDatepicker} from "@ng-bootstrap/ng-bootstrap";
 import {LanguageService} from "../../../services/language.service";
+import {ButtonComponent} from "../button/button.component";
+import {TcIconComponent} from "../icon-component/tc-icon.component";
+import {AlertComponent} from "../alert/alert.component";
 
 /**
  * @component TcDatePickerComponent
@@ -67,7 +71,16 @@ import {LanguageService} from "../../../services/language.service";
 @Component({
   selector: 'tc-date-picker',
   templateUrl: './tc-date-picker.component.html',
-  styleUrls: ['./tc-date-picker.component.scss']
+  styleUrls: ['./tc-date-picker.component.scss'],
+  standalone: true,
+  imports: [
+    CommonModule,
+    FormsModule,
+    NgbInputDatepicker,
+    ButtonComponent,
+    TcIconComponent,
+    AlertComponent
+  ]
 })
 export class TcDatePickerComponent implements OnInit {
   @Input() control: AbstractControl;

@@ -8,7 +8,7 @@ describe('TcIconComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [TcIconComponent]
+      imports: [TcIconComponent]
     });
     fixture = TestBed.createComponent(TcIconComponent);
     component = fixture.componentInstance;

@@ -8,10 +8,11 @@ import {
   ReactiveFormsModule,
   UntypedFormControl
 } from "@angular/forms";
-import {DebugElement, NO_ERRORS_SCHEMA} from "@angular/core";
+import {DebugElement} from "@angular/core";
 import {By} from "@angular/platform-browser";
 import {LanguageService} from "../../../services/language.service";
 import {of} from "rxjs";
+import {RouterTestingModule} from "@angular/router/testing";
 
 describe('TcDatePickerComponent', () => {
   let component: TcDatePickerComponent;
@@ -20,15 +21,19 @@ describe('TcDatePickerComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [TcDatePickerComponent],
-      imports: [FormsModule, ReactiveFormsModule, NgbDatepickerModule],
+      imports: [
+        TcDatePickerComponent,
+        FormsModule,
+        ReactiveFormsModule,
+        NgbDatepickerModule,
+        RouterTestingModule
+      ],
       providers: [
         {
           provide: LanguageService,
           useValue: { loadDatePickerLanguageData: () => of(null) }
         }
-      ],
-      schemas: [NO_ERRORS_SCHEMA]
+      ]
     }).compileComponents();
 
     fixture = TestBed.createComponent(TcDatePickerComponent);
