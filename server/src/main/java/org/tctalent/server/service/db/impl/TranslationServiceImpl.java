@@ -17,7 +17,14 @@
 package org.tctalent.server.service.db.impl;
 
 import java.util.List;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Objects;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import org.apache.commons.collections.CollectionUtils;
@@ -27,12 +34,16 @@ import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tctalent.server.exception.EntityExistsException;
+import org.tctalent.server.exception.InvalidRequestException;
 import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.model.db.AbstractTranslatableDomainObject;
 import org.tctalent.server.model.db.Translation;
 import org.tctalent.server.model.db.User;
 import org.tctalent.server.repository.db.TranslationRepository;
 import org.tctalent.server.request.translation.CreateTranslationRequest;
+import org.tctalent.server.request.translation.ExportTranslationPatchRequest;
+import org.tctalent.server.request.translation.TranslationPatchEntry;
+import org.tctalent.server.request.translation.TranslationPatchRequest;
 import org.tctalent.server.request.translation.UpdateTranslationRequest;
 import org.tctalent.server.security.AuthService;
 import org.tctalent.server.service.db.TranslationService;
@@ -140,6 +151,163 @@ public class TranslationServiceImpl implements TranslationService {
     }
 
     @Override
+    public Map<String, Object> importTranslationPatch(
+        TranslationPatchRequest request, boolean dryRun, boolean strictLanguages) {
+
+        validateImportPatchRequest(request, strictLanguages);
+
+        List<String> configuredLanguages = TranslationPatchUtils.sortedDistinctNonBlank(request.getLanguages());
+        Map<String, Map<String, String>> languageToFlatEntries = new LinkedHashMap<>();
+        List<String> warnings = new ArrayList<>();
+
+        for (TranslationPatchEntry entry : request.getEntries()) {
+            String key = entry.getKey().trim().toUpperCase(Locale.ROOT);
+            for (Map.Entry<String, String> languageValue : entry.getValues().entrySet()) {
+                String language = normalizeLanguageCode(languageValue.getKey());
+                String value = languageValue.getValue();
+                if (language == null || value == null) {
+                    continue;
+                }
+                languageToFlatEntries
+                    .computeIfAbsent(language, ignored -> new LinkedHashMap<>())
+                    .put(key, value);
+            }
+
+            if (!configuredLanguages.isEmpty()) {
+                Set<String> provided = entry.getValues() == null
+                    ? Set.of()
+                    : entry.getValues().entrySet().stream()
+                        .filter(v -> v.getValue() != null)
+                        .map(Map.Entry::getKey)
+                        .map(TranslationServiceImpl::normalizeLanguageCode)
+                        .filter(Objects::nonNull)
+                        .collect(Collectors.toSet());
+                for (String language : configuredLanguages) {
+                    if (!provided.contains(language)) {
+                        warnings.add("Missing value for key " + key + " language " + language);
+                    }
+                }
+            }
+        }
+
+        Map<String, Object> languageReports = new LinkedHashMap<>();
+        for (Map.Entry<String, Map<String, String>> languageEntries : languageToFlatEntries.entrySet()) {
+            String language = languageEntries.getKey();
+            Map<String, String> flatEntries = languageEntries.getValue();
+
+            Map<String, Object> current = new LinkedHashMap<>(getTranslationFile(language));
+            Map<String, Object> patch = TranslationPatchUtils.nestedMapFromFlatEntries(flatEntries);
+            Map<String, Object> merged = TranslationPatchUtils.deepMerge(new LinkedHashMap<>(current), patch);
+
+            int updatedCount = 0;
+            int unchangedCount = 0;
+            for (Map.Entry<String, String> patchEntry : flatEntries.entrySet()) {
+                String oldValue = TranslationPatchUtils.getFlattenedValue(current, patchEntry.getKey());
+                if (Objects.equals(oldValue, patchEntry.getValue())) {
+                    unchangedCount++;
+                } else {
+                    updatedCount++;
+                }
+            }
+
+            if (!dryRun && (updatedCount > 0 || unchangedCount > 0)) {
+                updateTranslationFile(language, merged);
+            }
+
+            Map<String, Object> languageReport = new LinkedHashMap<>();
+            languageReport.put("totalKeys", flatEntries.size());
+            languageReport.put("updatedKeys", updatedCount);
+            languageReport.put("unchangedKeys", unchangedCount);
+            languageReport.put("wroteFile", !dryRun && (updatedCount > 0 || unchangedCount > 0));
+            languageReports.put(language, languageReport);
+        }
+
+        Map<String, Object> result = new LinkedHashMap<>();
+        result.put("status", "success");
+        result.put("version", request.getVersion());
+        result.put("description", request.getDescription());
+        result.put("dryRun", dryRun);
+        result.put("strictLanguages", strictLanguages);
+        result.put("bucket", s3TranslationStorageService.getActiveTranslationsBucket());
+        result.put("languages", languageReports);
+        result.put("warnings", warnings);
+        return result;
+    }
+
+    @Override
+    public Map<String, Object> exportTranslationPatch(ExportTranslationPatchRequest request) {
+        List<String> prefixes = TranslationPatchUtils.sortedDistinctNonBlank(request.getPrefixes()).stream()
+            .map(value -> value.toUpperCase(Locale.ROOT))
+            .toList();
+        List<String> keys = TranslationPatchUtils.sortedDistinctNonBlank(request.getKeys()).stream()
+            .map(value -> value.toUpperCase(Locale.ROOT))
+            .toList();
+        List<String> languages = TranslationPatchUtils.sortedDistinctNonBlank(request.getLanguages()).stream()
+            .map(value -> value.toLowerCase(Locale.ROOT))
+            .toList();
+
+        if (prefixes.isEmpty() && keys.isEmpty()) {
+            throw new InvalidRequestException("At least one of prefixes or keys must be supplied.");
+        }
+        if (languages.isEmpty()) {
+            throw new InvalidRequestException("At least one language must be supplied.");
+        }
+
+        List<String> warnings = new ArrayList<>();
+        Map<String, Map<String, String>> valuesByKey = new HashMap<>();
+        Set<String> discoveredKeys = new TreeSet<>();
+
+        for (String language : languages) {
+            Map<String, Object> translationFile = getTranslationFile(language);
+            Map<String, String> flattenedForLanguage = new LinkedHashMap<>();
+
+            for (String prefix : prefixes) {
+                if (!TranslationPatchUtils.isValidPatchKey(prefix + ".X")) {
+                    throw new InvalidRequestException("Invalid prefix format: " + prefix);
+                }
+                TranslationPatchUtils.collectFlattenedAtPrefix(
+                    translationFile, prefix, flattenedForLanguage);
+            }
+
+            for (String key : keys) {
+                if (!TranslationPatchUtils.isValidPatchKey(key)) {
+                    throw new InvalidRequestException("Invalid key format: " + key);
+                }
+                String value = TranslationPatchUtils.getFlattenedValue(translationFile, key);
+                if (value == null) {
+                    warnings.add("Missing key " + key + " for language " + language);
+                    continue;
+                }
+                flattenedForLanguage.put(key, value);
+            }
+
+            for (Map.Entry<String, String> valueEntry : flattenedForLanguage.entrySet()) {
+                discoveredKeys.add(valueEntry.getKey());
+                valuesByKey
+                    .computeIfAbsent(valueEntry.getKey(), ignored -> new LinkedHashMap<>())
+                    .put(language, valueEntry.getValue());
+            }
+        }
+
+        List<Map<String, Object>> entries = new ArrayList<>();
+        for (String key : discoveredKeys) {
+            Map<String, Object> entry = new LinkedHashMap<>();
+            entry.put("key", key);
+            entry.put("values", valuesByKey.getOrDefault(key, Map.of()));
+            entries.add(entry);
+        }
+
+        Map<String, Object> result = new LinkedHashMap<>();
+        result.put("version", 1);
+        result.put("description", "Exported translation patch");
+        result.put("languages", languages);
+        result.put("entries", entries);
+        result.put("bucket", s3TranslationStorageService.getActiveTranslationsBucket());
+        result.put("warnings", warnings);
+        return result;
+    }
+
+    @Override
     public String translateToEnglish(String... keys) {
       // Skip S3 call in test profile
       if (!List.of(environment.getActiveProfiles()).contains("test") && englishS3Translations == null) {
@@ -166,6 +334,56 @@ public class TranslationServiceImpl implements TranslationService {
         }
 
         return value;
+    }
+
+    private static String normalizeLanguageCode(String code) {
+        if (code == null) {
+            return null;
+        }
+        String normalized = code.trim().toLowerCase(Locale.ROOT);
+        return normalized.isBlank() ? null : normalized;
+    }
+
+    private static void validateImportPatchRequest(TranslationPatchRequest request, boolean strictLanguages) {
+        if (request == null) {
+            throw new InvalidRequestException("Patch request is required.");
+        }
+        if (request.getEntries() == null || request.getEntries().isEmpty()) {
+            throw new InvalidRequestException("Patch entries are required.");
+        }
+
+        List<String> configuredLanguages = TranslationPatchUtils.sortedDistinctNonBlank(request.getLanguages())
+            .stream().map(value -> value.toLowerCase(Locale.ROOT)).toList();
+        for (TranslationPatchEntry entry : request.getEntries()) {
+            if (entry == null || entry.getKey() == null || entry.getKey().isBlank()) {
+                throw new InvalidRequestException("Patch entry key is required.");
+            }
+            String key = entry.getKey().trim().toUpperCase(Locale.ROOT);
+            if (!TranslationPatchUtils.isValidPatchKey(key)) {
+                throw new InvalidRequestException("Invalid patch key format: " + key);
+            }
+            if (entry.getValues() == null || entry.getValues().isEmpty()) {
+                throw new InvalidRequestException("Patch entry values are required for key: " + key);
+            }
+            if (!TranslationPatchUtils.hasAnyNonNullValues(entry.getValues())) {
+                throw new InvalidRequestException("Patch entry has no non-null values for key: " + key);
+            }
+
+            if (strictLanguages && !configuredLanguages.isEmpty()) {
+                Set<String> provided = entry.getValues().entrySet().stream()
+                    .filter(value -> value.getValue() != null)
+                    .map(Map.Entry::getKey)
+                    .map(TranslationServiceImpl::normalizeLanguageCode)
+                    .filter(Objects::nonNull)
+                    .collect(Collectors.toSet());
+                for (String language : configuredLanguages) {
+                    if (!provided.contains(language)) {
+                        throw new InvalidRequestException(
+                            "Missing language " + language + " for key " + key);
+                    }
+                }
+            }
+        }
     }
 
 }
