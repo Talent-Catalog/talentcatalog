@@ -360,6 +360,7 @@ const ALL_FIELDS = {
           "CONTACT": null,
           "CONTACT/ALTERNATE": null,
           "CONTACT/ADDITIONAL": null,
+          "VERIFYPLUS": null,
           "PERSONAL": null,
           "OCCUPATION": null,
           "EXPERIENCE": null,

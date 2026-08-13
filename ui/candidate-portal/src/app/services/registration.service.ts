@@ -38,60 +38,65 @@ export class RegistrationService {
       section: 1
     },
     {
+      key: 'verifyplus',
+      title: 'Scan your UNHCR Verify+ card (optional)',
+      section: 2
+    },
+    {
       key: 'personal',
       title: 'Tell us about yourself',
-      section: 2
+      section: 3
     },
     {
       key: 'occupation',
       title: 'Tell us about your occupation',
-      section: 3
+      section: 4
     },
     {
       key: 'experience',
       title: 'Tell us about your working history',
-      section: 4
+      section: 5
     },
     {
       key: 'education',
       title: 'Tell us about your education',
-      section: 5
+      section: 6
     },
     {
       key: 'language',
       title: 'What languages do you speak?',
-      section: 6
+      section: 7
     },
     {
       key: 'exam',
       title: 'Provide details of your language exams',
-      section: 7
+      section: 8
     },
     {
       key: 'certifications',
       title: 'Do you have any other professional certifications?',
-      section: 8
+      section: 9
     },
     {
       key: 'destinations',
       title: 'Do you have any destination preferences?',
-      section: 8
+      section: 9
     },
     {
       key: 'additional',
       title: 'How did you hear about us?',
-      section: 9
+      section: 10
     },
     {
       key: 'upload',
       title: 'Do you have any files to upload?',
-      section: 10
+      section: 11
     },
     {
       key: 'complete',
       title: '',
       hideHeader: true,
-      section: 10
+      section: 11
     }
   ];
   public totalSections: number = Math.max(...this.steps.map(s => s.section));
