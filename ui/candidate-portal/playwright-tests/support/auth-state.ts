@@ -14,15 +14,19 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {expect, test} from '@playwright/test';
+import * as path from 'node:path';
 
-test('candidate login page loads', async ({ page }) => {
-  await page.goto('/login');
+/**
+ * Absolute path to the authenticated candidate browser state.
+ *
+ * The authentication setup project creates this file before the browser and
+ * device projects run. The file contains cookies and local-storage values,
+ * including the Talent Catalog access token.
+ *
+ * This file must not be committed to source control, so we added to .gitignore.
+ */
+export const candidateAuthFile = path.resolve(
+  process.cwd(),
+  'playwright-tests/.auth/candidate.json',
+);
 
-  await expect(page).toHaveTitle(/Login/i);
-
-  await expect(page.locator('input#username')).toBeVisible();
-  await expect(page.locator('input#password')).toBeVisible();
-
-  await expect(page.locator('form')).toBeVisible();
-});

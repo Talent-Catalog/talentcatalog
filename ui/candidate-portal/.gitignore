@@ -38,3 +38,15 @@ testem.log
 # System Files
 .DS_Store
 Thumbs.db
+
+# Local Playwright E2E configuration and credentials
+.env.e2e.local
+
+# Playwright authenticated browser state
+playwright-tests/.auth/*
+!playwright-tests/.auth/.gitignore
+
+# Playwright output
+playwright-report/
+test-results/
+blob-report/
