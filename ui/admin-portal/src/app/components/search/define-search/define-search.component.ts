@@ -371,7 +371,6 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
     return this.jobName ? `(Autopopulated from job ${this.jobId}: ${this.jobName})` : '';
   }
 
-  private setUpJobMatch(jobMatchingInfo: JobMatchingInfo) {
   private runSearchWithListConstraint(listId: number) {
     this.clearForm();
     this.initializeListConstraint(listId);
