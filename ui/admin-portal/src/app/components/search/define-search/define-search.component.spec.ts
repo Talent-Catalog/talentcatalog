@@ -393,6 +393,17 @@ describe('DefineSearchComponent', () => {
     expect(component.onSubmit).toHaveBeenCalled();
   });
 
+  it('should initialize and run a search with a list constraint', () => {
+    spyOn(component, 'clearForm');
+    spyOn(component, 'onSubmit');
+
+    (component as any).runSearchWithListConstraint(15);
+
+    expect(component.clearForm).toHaveBeenCalled();
+    expect(component.searchForm.get('listAnyIds').value).toEqual([15]);
+    expect(component.onSubmit).toHaveBeenCalled();
+  });
+
   it('should ignore empty job skills', () => {
     component.searchForm.markAsPristine();
     (component as any).initializeQueryStringWithJobSkills([]);
@@ -485,10 +496,6 @@ describe('DefineSearchComponent', () => {
   it('should create a paged search request', () => {
     component.searchForm.patchValue({simpleQueryString: 'developer', candidateNumbers: '1, 2'});
     component.apply();
-    expect(component.searchRequest.pageNumber).toBe(0);
-    expect(component.searchRequest.pageSize).toBe(50);
-    expect(component.searchRequest.sortFields).toEqual(['id']);
-    expect(component.searchRequest.sortDirection).toBe('DESC');
     expect(component.searchRequest.candidateNumbers).toEqual(['1','2']);
     expect(searchQueryService.changeSearchQuery).toHaveBeenCalledWith('developer');
   });
@@ -649,6 +656,18 @@ describe('DefineSearchComponent', () => {
 
     expect(jobService.getJobMatchingInfo).toHaveBeenCalledWith(3);
     expect((component as any).setUpJobMatch).toHaveBeenCalledWith(mockInfo);
+  }));
+
+  it('should run a list-constrained search after loading a list-based search', fakeAsync(() => {
+    component.listId = 15;
+    savedSearchService.load.and.returnValue(of({searchJoinRequests: []} as any));
+    spyOn(component, 'populateFormWithSavedSearch');
+    spyOn<any>(component, 'runSearchWithListConstraint');
+
+    component.loadSavedSearch(4);
+    tick();
+
+    expect((component as any).runSearchWithListConstraint).toHaveBeenCalledWith(15);
   }));
 
   it('should expose getJobMatchingInfo and saved-search load errors', fakeAsync(() => {

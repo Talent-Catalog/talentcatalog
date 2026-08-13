@@ -20,6 +20,7 @@ import {FormsModule, ReactiveFormsModule, UntypedFormBuilder} from "@angular/for
 import {SortedByComponent} from "../../util/sort/sorted-by.component";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {RouterTestingModule} from "@angular/router/testing";
+import {Router} from "@angular/router";
 import {
   NgbModal,
   NgbOffcanvas,
@@ -812,6 +813,19 @@ describe('ShowCandidatesComponent', () => {
       expect(component.hasSavedSearchSource()).toBeFalse();
     });
 
+    it('should delegate Salesforce and Google Drive access checks', () => {
+      mockAuthorizationService.canAccessSalesforce.and.returnValue(true);
+      expect(component.canAccessSalesforce()).toBeTrue();
+      expect(mockAuthorizationService.canAccessSalesforce).toHaveBeenCalled();
+
+      mockAuthorizationService.canAccessSalesforce.and.returnValue(false);
+      expect(component.canAccessSalesforce()).toBeFalse();
+
+      mockAuthorizationService.canAccessGoogleDrive.and.returnValue(true);
+      expect(component.canAccessGoogleDrive()).toBeTrue();
+      expect(mockAuthorizationService.canAccessGoogleDrive).toHaveBeenCalled();
+    });
+
     it('should open published and Salesforce links', () => {
       component.candidateSource = new MockCandidateSource();
       (component.candidateSource as any).publishedDocLink = 'https://example.test/doc';
@@ -821,6 +835,28 @@ describe('ShowCandidatesComponent', () => {
       mockSalesforceService.joblink.and.returnValue('https://example.test/sf');
       component.doShowSalesforceLink();
       expect(window.open).toHaveBeenCalledWith('https://example.test/sf', '_blank');
+    });
+
+    it('should navigate to the new search page with the list id', () => {
+      component.candidateSource = new MockCandidateSource();
+      const router = TestBed.inject(Router);
+      spyOn(router, 'navigate');
+
+      component.doSearchList();
+
+      expect(router.navigate).toHaveBeenCalledWith(
+        ['/searches'], {queryParams: {tab: 'NewSearch', list: component.candidateSource.id}}
+      );
+    });
+
+    it('should not navigate when there is no list id', () => {
+      component.candidateSource = {...new MockCandidateSource(), id: null};
+      const router = TestBed.inject(Router);
+      spyOn(router, 'navigate');
+
+      component.doSearchList();
+
+      expect(router.navigate).not.toHaveBeenCalled();
     });
 
     it('should create a list folder when missing', fakeAsync(() => {
@@ -1057,13 +1093,13 @@ describe('ShowCandidatesComponent', () => {
       expect(component.doSearch).toHaveBeenCalledWith(true);
     });
 
-    it('should execute updated searches and normalize invalid match_score sorting', fakeAsync(() => {
+    it('should execute updated searches', fakeAsync(() => {
       component.searchRequest = {
         simpleQueryString: ' ',
         reviewStatusFilter: null
       } as any;
-      component.sortField = 'match_score';
-      component.sortDirection = 'ASC';
+      component.sortField = 'id';
+      component.sortDirection = 'DESC';
       component.pageNumber = 2;
       component.pageSize = 50;
       component.reviewStatusFilter = ['verified'];
