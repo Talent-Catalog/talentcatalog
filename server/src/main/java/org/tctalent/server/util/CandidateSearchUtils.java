@@ -28,7 +28,7 @@ import org.springframework.data.domain.Sort.Order;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.util.StringUtils;
-import org.tctalent.server.util.textExtract.IdAndRank;
+import org.tctalent.server.util.textExtract.IdAndScore;
 
 /**
  * Helpers for performing Candidate Searches
@@ -97,8 +97,8 @@ public abstract class CandidateSearchUtils {
             .map( order -> {
                 String propertyName = order.getProperty();
                 String column;
-                if (propertyName.equals("text_match")) {
-                    column = "rank";
+                if (propertyName.equals("match_score")) {
+                    column = "score";
                 } else {
                     column = mapPropertyNameToDbField(propertyName);
                 }
@@ -124,9 +124,9 @@ public abstract class CandidateSearchUtils {
                 .filter(property -> !property.equals("id"))
                 .map(propertyName -> {
                     String s;
-                    if (propertyName.equals("text_match")) {
+                    if (propertyName.equals("match_score")) {
                         s = "ts_rank(" + CANDIDATE_TS_TEXT_FIELD + ","
-                            + buildToTsQueryFunction(textQuery) + ") as rank";
+                            + buildToTsQueryFunction(textQuery) + ") as score";
                     } else {
                         s = mapPropertyNameToDbField(propertyName);
                     }
@@ -169,7 +169,7 @@ public abstract class CandidateSearchUtils {
 
     /**
      * Builds the PostgreSQL to_tsquery function used for candidate text search.
-     *
+     * <p>
      * DeepScan DS-002 context:
      * This method does not allow SQL injection through tsquery operators. User input is placed
      * inside a quoted SQL string literal after single quotes are escaped by buildTsQuerySQL().
@@ -177,7 +177,7 @@ public abstract class CandidateSearchUtils {
      * characters. They may affect the tsquery expression, or cause a tsquery syntax error if
      * the search text is invalid, but they do not break out of the quoted SQL string into the
      * surrounding SQL statement.
-     *
+     * <p>
      * We intentionally use to_tsquery() rather than plainto_tsquery() because candidate search
      * supports boolean / Elasticsearch-style search syntax. Replacing this with plainto_tsquery()
      * would change existing search behavior by treating those operators as plain text.
@@ -251,19 +251,19 @@ public abstract class CandidateSearchUtils {
     }
 
     /**
-     * True if the first sorting order is by computed rank (eg a "text_match" sort).
+     * True if the first sorting order is by computed score (eg a "match_score" sort).
      * @param sort Sort to be tested
-     * @return True if sorted by a computed ranking.
+     * @return True if sorted by a computed score.
      */
-    private static boolean isSortedByRank(Sort sort) {
-        boolean sortedByRank = false;
+    private static boolean isSortedByScore(Sort sort) {
+        boolean sortedByScore = false;
         if (sort != null && !sort.isUnsorted()) {
             final Optional<Order> firstOrder = sort.stream().findFirst();
             if (firstOrder.isPresent()) {
-                sortedByRank = firstOrder.get().getProperty().equals("text_match");
+                sortedByScore = firstOrder.get().getProperty().equals("match_score");
             }
         }
-        return sortedByRank;
+        return sortedByScore;
     }
 
     /**
@@ -339,29 +339,29 @@ public abstract class CandidateSearchUtils {
     }
 
     /**
-     * Convert untyped results into the standard form of a List of id and optional rank.
+     * Convert untyped results into the standard form of a List of id and optional score.
      * @param results Untyped results
-     * @param sort The sort associated with the query that the results are associated with. Rank
-     *             will only be decoded if the sort was by rank.
+     * @param sort The sort associated with the query that the results are associated with. Score
+     *             will only be decoded if the sort was by score.
      * @return Decoded results.
      */
-    public static List<IdAndRank> processIdRankSearchResults(List<?> results, Sort sort) {
-        //Convert results to List of IdAndRank.
-        //Rank will only be populated if the query was sorted by rank.
-        final boolean sortedByRank = isSortedByRank(sort);
+    public static List<IdAndScore> processIdScoreSearchResults(List<?> results, Sort sort) {
+        //Convert results to List of IdAndScore.
+        //Score will only be populated if the query was sorted by score.
+        final boolean sortedByScore = isSortedByScore(sort);
         return results.stream()
             .map(r -> {
                 long id;
-                Number rank = null;
+                Number score = null;
                 if (r instanceof Object[] arr) {
                     id = ((Number) arr[0]).longValue();
-                    if (arr.length > 1 && sortedByRank && arr[1] instanceof Number) {
-                        rank = (Number) arr[1];
+                    if (arr.length > 1 && sortedByScore && arr[1] instanceof Number) {
+                        score = (Number) arr[1];
                     }
                 } else {
                     id = ((Number) r).longValue();
                 }
-                return new IdAndRank(id, rank);
+                return new IdAndScore(id, score);
             })
             .toList();
     }

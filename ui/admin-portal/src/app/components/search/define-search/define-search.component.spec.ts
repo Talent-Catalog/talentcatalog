@@ -35,6 +35,8 @@ import {LanguageService} from '../../../services/language.service';
 import {PartnerService} from '../../../services/partner.service';
 import {SurveyTypeService} from '../../../services/survey-type.service';
 import {CandidateStatus, UnhcrStatus} from '../../../model/candidate';
+import {EmbeddingModelService} from "../../../services/embedding-model.service";
+import {JobMatchingInfo} from "../../../model/JobMatchingInfo";
 
 describe('DefineSearchComponent', () => {
   let component: DefineSearchComponent;
@@ -47,6 +49,7 @@ describe('DefineSearchComponent', () => {
   let savedSearchService: jasmine.SpyObj<SavedSearchService>;
   let educationLevelService: jasmine.SpyObj<EducationLevelService>;
   let educationMajorService: jasmine.SpyObj<EducationMajorService>;
+  let embeddingModelService: jasmine.SpyObj<EmbeddingModelService>;
   let candidateOccupationService: jasmine.SpyObj<CandidateOccupationService>;
   let surveyTypeService: jasmine.SpyObj<SurveyTypeService>;
   let jobService: jasmine.SpyObj<JobService>;
@@ -105,6 +108,7 @@ describe('DefineSearchComponent', () => {
     educationMajorService.listMajors.and.returnValue(of([majorA]));
     partnerService.listSourcePartners.and.returnValue(of([partnerA]));
     candidateOccupationService.listOccupations.and.returnValue(of([occupationA]));
+    embeddingModelService.loadReadyModels.and.returnValue(of([]));
     surveyTypeService.listSurveyTypes.and.returnValue(of([surveyA]));
   }
 
@@ -120,8 +124,9 @@ describe('DefineSearchComponent', () => {
     educationLevelService = jasmine.createSpyObj('EducationLevelService', ['listEducationLevels']);
     educationMajorService = jasmine.createSpyObj('EducationMajorService', ['listMajors']);
     candidateOccupationService = jasmine.createSpyObj('CandidateOccupationService', ['listOccupations']);
+    embeddingModelService = jasmine.createSpyObj('EmbeddingModelService', ['loadReadyModels']);
     surveyTypeService = jasmine.createSpyObj('SurveyTypeService', ['listSurveyTypes']);
-    jobService = jasmine.createSpyObj('JobService', ['getSkills']);
+    jobService = jasmine.createSpyObj('JobService', ['getJobMatchingInfo']);
     languageLevelService = jasmine.createSpyObj('LanguageLevelService', ['listLanguageLevels']);
     modalService = jasmine.createSpyObj('NgbModal', ['open']);
     router = jasmine.createSpyObj<Router>('Router', ['navigate']);
@@ -155,6 +160,7 @@ describe('DefineSearchComponent', () => {
         {provide: EducationLevelService, useValue: educationLevelService},
         {provide: EducationMajorService, useValue: educationMajorService},
         {provide: CandidateOccupationService, useValue: candidateOccupationService},
+        {provide: EmbeddingModelService, useValue: embeddingModelService},
         {provide: SurveyTypeService, useValue: surveyTypeService},
         {provide: JobService, useValue: jobService},
         {provide: LanguageLevelService, useValue: languageLevelService},
@@ -365,14 +371,20 @@ describe('DefineSearchComponent', () => {
     expect(component.loading).toBeFalse();
   }));
 
-  it('should initialize and run a job-skill search', () => {
+  it('should initialize and run a job-match search', () => {
     spyOn(component, 'clearForm');
     spyOn(component, 'onSubmit');
 
-    (component as any).runSearchWithSkills([
-      {name: 'Java'},
-      {name: 'Project Management'}
-    ]);
+    let mockInfo: JobMatchingInfo = {
+      description: '',
+      skillNames: [
+        {name: 'Java', lang: 'en'},
+        {name: 'Project Management', lang: 'en'}
+      ],
+      jobName: 'Test job'
+    };
+
+    (component as any).setUpJobMatch(mockInfo);
 
     expect(component.clearForm).toHaveBeenCalled();
     expect(component.searchForm.get('simpleQueryString').value)
@@ -619,28 +631,34 @@ describe('DefineSearchComponent', () => {
     expect(component.loading).toBeFalse();
   }));
 
-  it('should load job skills after loading a job-based search', fakeAsync(() => {
+  it('should load set up the job matching after loading a job-based search', fakeAsync(() => {
     component.jobId = 3;
     savedSearchService.load.and.returnValue(of({searchJoinRequests: []} as any));
-    jobService.getSkills.and.returnValue(of([{name: 'Java'}] as any));
+
+    let mockInfo: JobMatchingInfo = {
+      description: '',
+      skillNames: [{name: 'Java', lang: 'en'}],
+      jobName: 'Test job'
+    }
+    jobService.getJobMatchingInfo.and.returnValue(of(mockInfo as any));
     spyOn(component, 'populateFormWithSavedSearch');
-    spyOn<any>(component, 'runSearchWithSkills');
+    spyOn<any>(component, 'setUpJobMatch');
 
     component.loadSavedSearch(4);
     tick();
 
-    expect(jobService.getSkills).toHaveBeenCalledWith(3);
-    expect((component as any).runSearchWithSkills).toHaveBeenCalledWith([{name: 'Java'}]);
+    expect(jobService.getJobMatchingInfo).toHaveBeenCalledWith(3);
+    expect((component as any).setUpJobMatch).toHaveBeenCalledWith(mockInfo);
   }));
 
-  it('should expose job skill and saved-search load errors', fakeAsync(() => {
+  it('should expose getJobMatchingInfo and saved-search load errors', fakeAsync(() => {
     component.jobId = 3;
     savedSearchService.load.and.returnValue(of({searchJoinRequests: []} as any));
-    jobService.getSkills.and.returnValue(throwError('skills failed'));
+    jobService.getJobMatchingInfo.and.returnValue(throwError('job matching info failed'));
     spyOn(component, 'populateFormWithSavedSearch');
     component.loadSavedSearch(4);
     tick();
-    expect(component.error).toBe('skills failed');
+    expect(component.error).toBe('job matching info failed');
 
     savedSearchService.load.and.returnValue(throwError('load failed'));
     component.loadSavedSearch(4);

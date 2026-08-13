@@ -55,7 +55,8 @@ export class AdminApiComponent implements OnInit {
     { command: 'reassign-candidates/search-{searchId}-to-partner-{partnerId}', description: 'Reassign all candidates in the specified search to the specified partner', method: 'POST' },
     { command: 'move-candidate-drive/{number}', description: 'Move candidate to the current candidate data drive', method: 'POST' },
     { command: 'move-candidates-drive/{listId}', description: 'Move candidates from the given list to the current candidate data drive', method: 'POST' },
-    { command: 'flush_user_cache', description: 'Flush Redis cache for cached users', method: 'POST' }
+    { command: 'flush_user_cache', description: 'Flush Redis cache for cached users', method: 'POST' },
+    { command: 'build_embeddings', description: 'Add embeddings for "building" model', method: 'POST' }
     // Add more general-purpose or maintenance commands here
   ];
 

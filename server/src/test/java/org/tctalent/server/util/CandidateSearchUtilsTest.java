@@ -52,8 +52,8 @@ class CandidateSearchUtilsTest {
         String s;
 
         s = CandidateSearchUtils.buildOrderByClause(
-            Sort.by(Sort.Direction.ASC, "text_match"));
-        Assertions.assertEquals(" order by rank ASC,candidate.id DESC", s);
+            Sort.by(Sort.Direction.ASC, "match_score"));
+        Assertions.assertEquals(" order by score ASC,candidate.id DESC", s);
     }
 
     @Test
@@ -77,11 +77,11 @@ class CandidateSearchUtilsTest {
 
         String textQuery = "accountant + (excel powerpoint)";
         s = CandidateSearchUtils.buildNonIdFieldList(
-            Sort.by("text_match"), textQuery);
+            Sort.by("match_score"), textQuery);
         String tsQuerySql = CandidateSearchUtils.buildTsQuerySQL(textQuery);
         Assertions.assertEquals("ts_rank("
             + CandidateSearchUtils.CANDIDATE_TS_TEXT_FIELD
-            +",to_tsquery('english','" + tsQuerySql + "')) as rank", s);
+            +",to_tsquery('english','" + tsQuerySql + "')) as score", s);
     }
 
     @Test

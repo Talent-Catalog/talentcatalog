@@ -16,16 +16,13 @@
 
 package org.tctalent.server.service.db.util;
 
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
 import org.tctalent.server.logging.LogBuilder;
-import org.tctalent.server.model.db.CandidateJobExperience;
 import org.tctalent.server.request.work.experience.SearchJobExperienceRequest;
-import org.tctalent.server.service.db.CandidateJobExperienceService;
 import org.tctalent.server.util.background.BackProcessor;
 import org.tctalent.server.util.background.PageContext;
+import org.tctalent.server.util.background.PageProcessReturn;
 
 /**
  * Processes candidate job experiences a page at a time
@@ -35,41 +32,43 @@ import org.tctalent.server.util.background.PageContext;
 @Slf4j
 @RequiredArgsConstructor
 public abstract class PagedCandidateJobExperienceBackProcessor implements BackProcessor<PageContext> {
+
     private final String action;
     private final SearchJobExperienceRequest searchJobExperienceRequest;
-    private final CandidateJobExperienceService candidateJobExperienceService;
 
     @Override
     public boolean process(PageContext ctx) {
         int page = ctx.getLastProcessedPage() == null ? 0 : ctx.getLastProcessedPage() + 1;
 
         searchJobExperienceRequest.setPageNumber(page);
-        Page<CandidateJobExperience> pageOfExperiences = null;
 
+        boolean hasMorePages;
         try {
-            pageOfExperiences = candidateJobExperienceService.searchCandidateJobExperience(searchJobExperienceRequest);
+            PageProcessReturn pageProcessReturn =
+                processPageOfExperiences(searchJobExperienceRequest);
+            hasMorePages = pageProcessReturn.isMorePages();
 
-            final List<CandidateJobExperience> content = pageOfExperiences.getContent();
-            processExperiences(candidateJobExperienceService, content);
+            ctx.setLastProcessedPage(page);
 
             // Log completed page
             LogBuilder.builder(log)
                 .action(action)
-                .message("Processed " + content.size() + " items in page " + page + " of " + (pageOfExperiences.getTotalPages()-1))
+                .message("Processed " + pageProcessReturn.getPageSize() + " items in page " + page + " of " + (
+                    pageProcessReturn.getTotalPages() - 1))
                 .logInfo();
         } catch (Exception e) {
+            // If an exception occurs, we log the error and stop processing further pages
+            hasMorePages = false;
             LogBuilder.builder(log)
                 .action(action)
                 .message("Error processing page " + page)
                 .logError(e);
         }
 
-        ctx.setLastProcessedPage(page);
-
-        return pageOfExperiences == null || !pageOfExperiences.hasNext();
+        return !hasMorePages;
     }
 
-    abstract protected void processExperiences(
-        CandidateJobExperienceService candidateJobExperienceService,
-        List<CandidateJobExperience> experiences);
+    abstract protected PageProcessReturn processPageOfExperiences(
+        SearchJobExperienceRequest searchJobExperienceRequest
+    );
 }

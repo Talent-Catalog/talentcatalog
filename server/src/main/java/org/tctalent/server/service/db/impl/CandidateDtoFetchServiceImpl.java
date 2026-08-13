@@ -43,7 +43,7 @@ import org.tctalent.server.repository.db.read.dto.CandidateReadDto;
 import org.tctalent.server.repository.db.read.sql.CandidateJsonDao;
 import org.tctalent.server.service.db.CandidateDtoFetchService;
 import org.tctalent.server.util.CandidateSearchUtils;
-import org.tctalent.server.util.textExtract.IdAndRank;
+import org.tctalent.server.util.textExtract.IdAndScore;
 
 /**
  * Strict read service for CandidateReadDto.
@@ -98,15 +98,41 @@ public class CandidateDtoFetchServiceImpl implements CandidateDtoFetchService {
         start = end;
 
         //Process the results
-        List<IdAndRank> idAndRanks =
-            CandidateSearchUtils.processIdRankSearchResults(results, pageRequest.getSort());
+        List<IdAndScore> idAndScores =
+            CandidateSearchUtils.processIdScoreSearchResults(results, pageRequest.getSort());
 
         end = System.currentTimeMillis();
         long convertTime = end - start;
-        start = end;
+
+        List<CandidateReadDto> candidatesSorted = fetchAndSetScores(idAndScores);
+
+        LogBuilder.builder(log).action("countCandidates")
+            .message("Query: " + countSql).logInfo();
+        start = System.currentTimeMillis();
+        //Compute count
+        long total =  ((Number) entityManager.createNativeQuery(countSql).getSingleResult()).longValue();
+
+        end = System.currentTimeMillis();
+        long countTime = end - start;
+
+        LogBuilder.builder(log).action("findCandidates")
+            .message("Timings: fetchIds: " + fetchIdsTime
+                + " convert: " + convertTime
+                + " count: " + countTime
+            ).logInfo();
+
+        return new PageImpl<>(candidatesSorted, pageRequest, total);
+    }
+
+    @Override
+    public @NonNull List<CandidateReadDto> fetchAndSetScores(List<IdAndScore> idAndScores) {
+        long start;
+        long end;
+
+        start = System.currentTimeMillis();
 
         //Get ids of sorted candidates
-        List<Long> ids = idAndRanks.stream().map(IdAndRank::id).toList();
+        List<Long> ids = idAndScores.stream().map(IdAndScore::id).toList();
 
         end = System.currentTimeMillis();
         long fetchEntitiesTime = end - start;
@@ -123,14 +149,14 @@ public class CandidateDtoFetchServiceImpl implements CandidateDtoFetchService {
 
         //Construct a sorted list of the candidates in the same order as the returned ids.
         List<CandidateReadDto> candidatesSorted = new ArrayList<>();
-        for (IdAndRank idAndRank : idAndRanks) {
-            final CandidateReadDto candidate = candidatesByIdUnsorted.get(idAndRank.id());
+        for (IdAndScore idAndScore : idAndScores) {
+            final CandidateReadDto candidate = candidatesByIdUnsorted.get(idAndScore.id());
 
             //Optionally update candidate data with any ranking values.
-            final Number rank = idAndRank.rank();
+            final Number score = idAndScore.score();
             //Rank is a transient field so no need to set to null
-            if (rank != null) {
-                candidate.setRank(rank);
+            if (score != null) {
+                candidate.setScore(score);
             }
             candidatesSorted.add(candidate);
         }
@@ -138,25 +164,13 @@ public class CandidateDtoFetchServiceImpl implements CandidateDtoFetchService {
         end = System.currentTimeMillis();
         long sortTime = end - start;
 
-        LogBuilder.builder(log).action("countCandidates")
-            .message("Query: " + countSql).logInfo();
-        start = end;
-        //Compute count
-        long total =  ((Number) entityManager.createNativeQuery(countSql).getSingleResult()).longValue();
-
-        end = System.currentTimeMillis();
-        long countTime = end - start;
-
         LogBuilder.builder(log).action("findCandidates")
-            .message("Timings: fetchIds: " + fetchIdsTime
-                + " convert: " + convertTime
-                + " fetchEntities: " + fetchEntitiesTime
+            .message("Timings: fetchEntities: " + fetchEntitiesTime
                 + " fetchDtos: " + fetchDtosTime
                 + " sort: " + sortTime
-                + " count: " + countTime
             ).logInfo();
 
-        return new PageImpl<>(candidatesSorted, pageRequest, total);
+        return candidatesSorted;
     }
 
     @Override

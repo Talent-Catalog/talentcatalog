@@ -138,7 +138,7 @@ import org.tctalent.server.service.db.email.EmailHelper;
 import org.tctalent.server.service.db.email.EmailNotificationLink;
 import org.tctalent.server.util.CandidateSearchUtils;
 import org.tctalent.server.util.PersistenceContextHelper;
-import org.tctalent.server.util.textExtract.IdAndRank;
+import org.tctalent.server.util.textExtract.IdAndScore;
 
 @Service
 @RequiredArgsConstructor
@@ -446,31 +446,35 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         if (user == null) {
             candidates = doSearchCandidateDtos(request);
         } else {
-            SavedSearch savedSearch = getSavedSearch(request.getSavedSearchId());
-            // If searching a default search, update the default search with every search (aka Autosave).
-            // Else it is a saved search and those are updated upon 'Update Search' button only.
-            if (savedSearch.getDefaultSearch()) {
-                UpdateSavedSearchRequest updateRequest = new UpdateSavedSearchRequest();
-                updateRequest.setSearchCandidateRequest(request);
-                //Set other fields - no changes there
-                updateRequest.setName(savedSearch.getName());
-                updateRequest.setDefaultSearch(savedSearch.getDefaultSearch());
-                updateRequest.setFixed(savedSearch.getFixed());
-                updateRequest.setReviewable(savedSearch.getReviewable());
-                updateRequest.setSavedSearchType(savedSearch.getSavedSearchType());
-                updateRequest.setSavedSearchSubtype(savedSearch.getSavedSearchSubtype());
-                //todo Need special method which only updates search part. Then don't need the above "no changes there" stuff
-                updateSavedSearch(savedSearch.getId(), updateRequest);
-            }
-
             //Do the search
             candidates = doSearchCandidateDtos(request);
 
             //Add in any selections
-            markUserSelectedCandidateDtos(savedSearch.getId(), candidates);
+            markUserSelectedCandidateDtos(request.getSavedSearchId(), candidates);
         }
 
         return candidates;
+    }
+
+    @Transactional
+    @Override
+    public void updateUserDefaultSavedSearchIfNeeded(@NotNull SearchCandidateRequest request) {
+        final Long savedSearchId = request.getSavedSearchId();
+        SavedSearch savedSearch = getSavedSearch(savedSearchId);
+        // If searching a default search, update the default search with every search (aka Autosave).
+        // Else it is a saved search and those are updated upon 'Update Search' button only.
+        if (savedSearch.getDefaultSearch()) {
+            UpdateSavedSearchRequest updateRequest = new UpdateSavedSearchRequest();
+            updateRequest.setSearchCandidateRequest(request);
+            //Set other fields - no changes there
+            updateRequest.setName(savedSearch.getName());
+            updateRequest.setDefaultSearch(true);
+            updateRequest.setFixed(savedSearch.getFixed());
+            updateRequest.setReviewable(savedSearch.getReviewable());
+            updateRequest.setSavedSearchType(savedSearch.getSavedSearchType());
+            updateRequest.setSavedSearchSubtype(savedSearch.getSavedSearchSubtype());
+            updateSavedSearch(savedSearchId, updateRequest);
+        }
     }
 
     /**
@@ -1361,12 +1365,14 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             SavedSearch savedSearch, SearchCandidateRequest request) {
         if (request != null) {
             savedSearch.setSimpleQueryString(request.getSimpleQueryString());
+            savedSearch.setRequirements(request.getRequirements());
             savedSearch.setKeyword(request.getKeyword());
             savedSearch.setCandidateNumbers(getStringListAsString(request.getCandidateNumbers()));
             savedSearch.setStatuses(getStatusListAsString(request.getStatuses()));
             savedSearch.setUnhcrStatuses(getUnhcrStatusListAsString(request.getUnhcrStatuses()));
             savedSearch.setGender(request.getGender());
             savedSearch.setOccupationIds(getListAsString(request.getOccupationIds()));
+            savedSearch.setModelKey(request.getModelKey());
             savedSearch.setMinYrs(request.getMinYrs());
             savedSearch.setMaxYrs(request.getMaxYrs());
             savedSearch.setRegoReferrerParam(request.getRegoReferrerParam());
@@ -1382,6 +1388,10 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             savedSearch.setSurveyTypeIds(getListAsString(request.getSurveyTypeIds()));
             savedSearch.setEnglishMinSpokenLevel(request.getEnglishMinSpokenLevel());
             savedSearch.setEnglishMinWrittenLevel(request.getEnglishMinWrittenLevel());
+
+            final Double lexicalWeight = request.getLexicalWeight();
+            savedSearch.setLexicalWeight(lexicalWeight == null ? 0.5 : lexicalWeight);
+
             Optional<Language> language =
                     request.getOtherLanguageId() != null ?
                             languageRepository.findById(
@@ -1434,11 +1444,14 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         SearchCandidateRequest searchCandidateRequest = new SearchCandidateRequest();
         searchCandidateRequest.setSavedSearchId(search.getId());
         searchCandidateRequest.setSimpleQueryString(search.getSimpleQueryString());
+        searchCandidateRequest.setRequirements(search.getRequirements());
         searchCandidateRequest.setKeyword(search.getKeyword());
         searchCandidateRequest.setStatuses(getStatusListFromString(search.getStatuses()));
         searchCandidateRequest.setUnhcrStatuses(getUnhcrStatusListFromString(search.getUnhcrStatuses()));
         searchCandidateRequest.setGender(search.getGender());
         searchCandidateRequest.setOccupationIds(getIdsFromString(search.getOccupationIds()));
+        searchCandidateRequest.setLexicalWeight(search.getLexicalWeight());
+        searchCandidateRequest.setModelKey(search.getModelKey());
         searchCandidateRequest.setMinYrs(search.getMinYrs());
         searchCandidateRequest.setMaxYrs(search.getMaxYrs());
         searchCandidateRequest.setRegoReferrerParam(search.getRegoReferrerParam());
@@ -1555,6 +1568,38 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         return candidates;
     }
 
+    @Override
+    public String extractUserSearchSql(SearchCandidateRequest request) {
+        // Compute the candidates which should be excluded from search
+        Set<Candidate> excludedCandidates =
+            computeCandidatesExcludedFromSearchCandidateRequest(request);
+
+        // Modify request, doing standard defaults
+        addDefaultsToSearchCandidateRequest(request);
+
+        User user = userService.getLoggedInUser();
+
+        return extractFetchSQL(request, user, excludedCandidates, true);
+    }
+
+    @Override
+    public String extractJoinAndWhereSQL(SearchCandidateRequest request) {
+        // Compute the candidates which should be excluded from search
+        Set<Candidate> excludedCandidates =
+            computeCandidatesExcludedFromSearchCandidateRequest(request);
+
+        // Modify request, doing standard defaults
+        addDefaultsToSearchCandidateRequest(request);
+
+        User user = userService.getLoggedInUser();
+
+        Set<Long> excludedSavedSearchIds = new HashSet<>();
+        excludedSavedSearchIds.add(request.getSavedSearchId());
+
+        return extractJoinAndWhereSQL(
+            request, user, excludedCandidates, true, excludedSavedSearchIds);
+    }
+
     private Page<CandidateReadDto> doSearchCandidateDtos(SearchCandidateRequest searchRequest) {
 
         Page<CandidateReadDto> candidates;
@@ -1658,15 +1703,15 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         start = end;
 
         //Process the results
-        List<IdAndRank> idAndRanks =
-            CandidateSearchUtils.processIdRankSearchResults(results, request.getSort());
+        List<IdAndScore> idAndScores =
+            CandidateSearchUtils.processIdScoreSearchResults(results, request.getSort());
 
         end = System.currentTimeMillis();
         long convertTime = end - start;
         start = end;
 
         //Get ids of sorted candidates
-        List<Long> ids = idAndRanks.stream().map(IdAndRank::id).toList();
+        List<Long> ids = idAndScores.stream().map(IdAndScore::id).toList();
 
         //Retrieve the candidate entities for those ids. They will come back unsorted.
         List<Candidate> candidatesUnsorted = candidateRepository.findByIds(ids);
@@ -1682,14 +1727,14 @@ public class SavedSearchServiceImpl implements SavedSearchService {
 
         //Construct a sorted list of the candidates in the same order as the returned ids.
         List<Candidate> candidatesSorted = new ArrayList<>();
-        for (IdAndRank idAndRank : idAndRanks) {
-            final Candidate candidate = candidatesById.get(idAndRank.id());
+        for (IdAndScore idAndScore : idAndScores) {
+            final Candidate candidate = candidatesById.get(idAndScore.id());
 
             //Optionally update candidate data with any ranking values.
-            final Number rank = idAndRank.rank();
+            final Number score = idAndScore.score();
             //Rank is a transient field so no need to set to null
-            if (rank != null) {
-                candidate.setRank(rank);
+            if (score != null) {
+                candidate.setScore(score);
             }
             candidatesSorted.add(candidate);
         }
@@ -1883,26 +1928,26 @@ public class SavedSearchServiceImpl implements SavedSearchService {
 
     /**
      * Builds the dynamic join and where clauses for candidate saved-search SQL.
-     *
+     * <p>
      * DeepScan DS-001 context:
      * This method constructs native SQL because saved-search filtering is highly dynamic:
      * different filters require different joins, nested saved-search clauses, list membership
      * clauses, ranking/order clauses, and user-specific country restrictions.
-     *
+     * <p>
      * Most values added here are not arbitrary SQL text. They are server-side typed values such as:
      * - enum names, for example CandidateStatus, UnhcrStatus, Gender, and SearchType
      * - numeric IDs parsed/stored as Long values
      * - booleans
      * - dates/timestamps generated from LocalDate/OffsetDateTime
-     *
+     * <p>
      * Those values are used only as SQL literal values or numeric IDs, not as SQL identifiers,
      * operators, or raw SQL fragments.
-     *
+     * <p>
      * Free-text filters such as referrer and UTM values should remain constrained to string
      * comparisons only. They must not be used to build SQL structure. If these fields become
      * externally editable without validation/escaping, they should be converted to query
      * parameters or passed through a shared SQL string-literal escaping helper.
-     *
+     * <p>
      * This comment is intended to document the current risk model for DeepScan DS-001; it is not
      * a reason to add new unescaped free-text SQL concatenation in this method.
      */

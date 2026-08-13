@@ -20,11 +20,12 @@ import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 
 /**
- * Used for returning an Id as well as an optional rank - a value that is associated with a
+ * Used for returning an Id as well as an optional score - a value that is associated with a
  * potential sorting order.
  *
  * @author John Cameron
  */
-public record IdAndRank(@NonNull Long id, @Nullable Number rank) {
+public record IdAndScore(@NonNull Long id, @Nullable Number score) {
 
 }
+

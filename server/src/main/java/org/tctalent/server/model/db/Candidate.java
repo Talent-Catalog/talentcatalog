@@ -152,12 +152,12 @@ public class Candidate extends AbstractCandidateDataDomainObject<Long> implement
     private String partnerRef;
 
     /**
-     * This can be set to define an optional ranking associated with the candidate as a result
+     * This can be set to define an optional score associated with the candidate as a result
      * of some kind of sorting logic.
      */
     @Transient
     @Nullable
-    private Number rank;
+    private Number score;
 
     /**
      * If null the candidate registered themselves.
@@ -2037,12 +2037,12 @@ public class Candidate extends AbstractCandidateDataDomainObject<Long> implement
 
     public void setLeftHomeNotes(@Nullable String leftHomeNotes) { this.leftHomeNotes = leftHomeNotes; }
 
-    public @Nullable Number getRank() {
-        return rank;
+    public @Nullable Number getScore() {
+        return score;
     }
 
-    public void setRank(@Nullable Number rank) {
-        this.rank = rank;
+    public void setScore(@Nullable Number score) {
+        this.score = score;
     }
 
     @Nullable

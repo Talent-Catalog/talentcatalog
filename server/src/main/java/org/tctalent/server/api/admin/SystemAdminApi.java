@@ -407,9 +407,10 @@ public class SystemAdminApi {
         backgroundProcessingService.setSavedSearchPublicIds();
     }
 
-    @PostMapping("build_alternate_embeddings")
-    public void buildAlternateEmbeddings() {
-        backgroundProcessingService.buildAlternateEmbeddings();
+    @PostMapping("build_embeddings")
+    public ResponseEntity<String> buildEmbeddings() {
+        String message = backgroundProcessingService.buildEmbeddings();
+        return ResponseEntity.ok(message);
     }
 
     @PostMapping("run_api_migration")

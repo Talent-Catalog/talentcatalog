@@ -48,7 +48,7 @@ export interface ShortCandidate {
 
 export interface Candidate extends HasId {
   id: number;
-  rank?: number;
+  score?: number;
   pendingTerms?: boolean;
   candidateNumber: string;
   publicId?: string;

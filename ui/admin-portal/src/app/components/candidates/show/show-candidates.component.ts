@@ -144,6 +144,7 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
   @Input() manageScreenSplits: boolean = true;
   @Input() showBreadcrumb: boolean = true;
   @Input() isKeywordSearch: boolean = false;
+  @Input() isMatchingSearch: boolean = false;
   @Input() declare pageNumber: number;
   @Input() declare pageSize: CandidatePageSize;
 
@@ -484,7 +485,7 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
     //Guard against the case where we have a text sort where there is no query string.
     let queryString = request.simpleQueryString;
     const haveSimpleQueryString: boolean =  queryString != null && queryString.trim().length > 0;
-    if (!haveSimpleQueryString && this.sortField === "text_match") {
+    if (!haveSimpleQueryString && this.sortField === "match_score") {
       //Text sort when there is no query string does not make sense.
       //So revert to standard id sort.
       this.sortField = "id";
@@ -503,15 +504,17 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
     request.sortDirection = this.sortDirection;
     request.dtoType = this.searchDetail;
 
-    this.subscription = this.candidateService.search(request, this.useOldFetch).subscribe(
-      results => {
-        this.results = results;
-        this.cacheResults();
-        this.searching = false;
-      },
-      error => {
-        this.error = error;
-        this.searching = false;
+    this.subscription =
+      this.candidateService.searchOrMatch(request, this.isMatchingSearch).subscribe({
+        next: results =>  {
+          this.results = results;
+          this.cacheResults();
+          this.searching = false;
+        },
+        error: error => {
+          this.error = error;
+          this.searching = false;
+        }
       });
   }
 
@@ -595,14 +598,12 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
     this.doSearch(true);
   }
 
-  toggleFetch() {
-    this.useOldFetch = !this.useOldFetch;
-    this.doSearch(true);
-  }
-
   toggleSort(column: string, defaultSortDirection: string = 'ASC') {
-    super.toggleSort(column, defaultSortDirection);
-    this.doSearch(true);
+    //Sorting is disabled for matches (because it is hard coded to the matching score)
+    if (!this.isMatchingSearch) {
+      super.toggleSort(column, defaultSortDirection);
+      this.doSearch(true);
+    }
   }
 
   importCandidates() {
@@ -932,8 +933,21 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
     return !isSavedSearch(this.candidateSource);
   }
 
-  displayTextMatchRank(): boolean {
-    return this.isSavedSearch() && this.isKeywordSearch;
+  displayScore(): boolean {
+    return this.isSavedSearch() && (this.isKeywordSearch || this.isMatchingSearch);
+  }
+
+  /**
+   * The raw score is a fraction between 0 and 1. Scale it to a whole number with a modest number of
+   * digits
+   * @param candidate Candidate whose score we want to display
+   */
+  showScore(candidate: Candidate): number | null {
+    let score = candidate.score;
+    if (score != null) {
+      score = Math.trunc(score * Math.pow(10, 5))
+    }
+    return score;
   }
 
   onSelectionChange(candidate: Candidate, selected: boolean) {
@@ -1034,6 +1048,10 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
     }
   }
 
+  saveAll() {
+    this.requestSaveSelection();
+  }
+
   saveSelection() {
     this.error = null;
 
@@ -1130,8 +1148,8 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
     }
 
     modal.result
-    .then((selection: TargetListSelection) => {
-      this.doSaveSelection(selection);
+    .then((targetListSelection: TargetListSelection) => {
+      this.doSaveSelection(targetListSelection);
     })
     .catch(() => { /* Isn't possible */
     });
@@ -1150,14 +1168,21 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
     this.savingSelection = true;
     this.error = null;
 
-    if (isSavedSearch(this.candidateSource)) {
+    if (isSavedSearch(this.candidateSource) && !this.isMatchingSearch) {
 
       const savedSearch = this.candidateSource;
 
       this.saveSavedSearchSelection(savedSearch, targetListSelection);
 
     } else {
-      // LIST
+      // LIST or MatchingSearch
+
+      let candidatesToSave: Candidate[];
+      if (this.isMatchingSearch) {
+        candidatesToSave = this.results.content;
+      } else {
+        candidatesToSave = this.selectedCandidates;
+      }
 
       const savedListId = targetListSelection.savedListId;
       const request: UpdateExplicitSavedListContentsRequest = {
@@ -1165,7 +1190,7 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
         statusUpdateInfo: targetListSelection.statusUpdateInfo,
         updateType: targetListSelection.replace ? ContentUpdateType.replace : ContentUpdateType.add,
         jobId: targetListSelection.jobId,
-        candidateIds: this.selectedCandidates.map(c => c.id),
+        candidateIds: candidatesToSave.map(c => c.id),
         sourceListId: this.candidateSource.id
       };
       // If request has a savedListId, merge or replace. Otherwise create a new list.

@@ -122,11 +122,180 @@
         </ng-template>
 
         <div class="container-fluid">
+          <strong>
+            AI Matching
+            <span *ngIf="!hasEmbeddingModels()">- currently disabled. Waiting for models to build.</span>
+          </strong>
+          <p>
+            We use vector embedding models to match candidates to requirements (like a job description).
+            <br/>
+            Vector embeddings are at the heart of all AI. Here is
+            <a target="_blank" href="https://www.tigerdata.com/blog/a-beginners-guide-to-vector-embeddings">
+              a good guide</a>.
+          </p>
+
+          <div *ngIf="hasEmbeddingModels()" class="row">
+            <div class="mb-3 col-md-6">
+              <!-- providing 'placement' as an empty string makes the tooltip appear over the
+              element in a suitable direction for the viewport -->
+              <tc-label size="sm" class="form-label" for="requirements">Requirements</tc-label>
+              <tc-button [type]="'plain'"
+                         class="tool-tip-button"
+                         ngbTooltip="This is a free text field that allows you to specify the candidate experience you are looking for."
+                         placement="bottom top"
+                         triggers="click"
+                         tooltipClass="search-tips keyword"
+                         [stopNativeClickPropagation]="false"
+              >
+                <i class="fa-regular fa-circle-question fa-xs"></i>
+              </tc-button>
+              <tc-textarea id="requirements"
+                           placeholder='For example, a job description'
+                           formControlName="requirements"
+              ></tc-textarea>
+              <div *ngIf="jobName">
+                <small class="text-muted">
+                  {{displayJobNameAsSource()}}
+                </small>
+              </div>
+
+            </div>
+
+            <!-- Lexical vs Semantic importance -->
+            <div *ngIf="hasRequirements()" class="mb-3 col-md-4">
+              <tc-label size="sm" class="form-label" for="lexicalWeight">Lexical vs Semantic matching</tc-label>
+              <tc-button [type]="'plain'"
+                         class="tool-tip-button"
+                         ngbTooltip="Enter a value between 0 and 1. The default is 0.5 which means that the lexical score is equally important as the semantic score."
+                         triggers="click"
+                         tooltipClass="search-tips"
+                         placement="bottom top"
+                         [stopNativeClickPropagation]="false"
+              >
+                <i class="fa-regular fa-circle-question fa-xs"></i>
+              </tc-button>
+
+              <input
+                id="lexicalWeight"
+                type="range"
+                min="0"
+                max="1"
+                step="0.1"
+                formControlName="lexicalWeight"
+              />
+              <div>
+                {{lexicalWeight}}
+              </div>
+            </div>
+
+            <!-- Number of matches requested -->
+            <div *ngIf="hasRequirements()" class="mb-3 col-md-2">
+              <tc-label size="sm" class="form-label" for="nMatches">Number of matches</tc-label>
+              <tc-button type="plain"
+                         class="tool-tip-button"
+                         ngbTooltip="Best N candidates. Defaults to current page size."
+                         triggers="click"
+                         tooltipClass="search-tips keyword"
+                         [stopNativeClickPropagation]="false"
+              >
+                <i class="fa-regular fa-circle-question fa-xs"></i>
+              </tc-button>
+              <tc-input
+                id="nMatches"
+                type="number"
+                formControlName="nMatches"
+              ></tc-input>
+            </div>
+
+            <!-- Model selection and details -->
+            <div *ngIf="hasRequirements()" class="row">
+
+              <div class="col-md-4">
+                <tc-label size="sm" class="form-label" for="modelKey">Model Key</tc-label>
+                <tc-button type="plain"
+                           class="tool-tip-button"
+                           ngbTooltip="Our unique key for a model plus our configuration of the model."
+                           triggers="click"
+                           tooltipClass="search-tips keyword"
+                           [stopNativeClickPropagation]="false"
+                >
+                  <i class="fa-regular fa-circle-question fa-xs"></i>
+                </tc-button>
+                <ng-select
+                  class="tc-select"
+                  id="modelKey"
+                  bindLabel="modelKey"
+                  bindValue="modelKey"
+                  [items]="embeddingModels"
+                  [searchable]="false"
+                  placeholder="Select"
+                  formControlName="modelKey">
+                </ng-select>
+              </div>
+
+              <div *ngIf="hasEmbeddingModel()" class="col-md-3">
+                <tc-label size="sm" class="form-label">Model Configuration</tc-label>
+                <tc-button type="plain"
+                           class="tool-tip-button"
+                           ngbTooltip="Key for our configuration of the standard model."
+                           triggers="click"
+                           tooltipClass="search-tips keyword"
+                           [stopNativeClickPropagation]="false"
+                >
+                  <i class="fa-regular fa-circle-question fa-xs"></i>
+                </tc-button>
+                <div>
+                  {{embeddingModel.configurationVersion}}
+                </div>
+              </div>
+
+              <div *ngIf="hasEmbeddingModel()" class="col-md-4">
+                <tc-label size="sm" class="form-label">Model Name</tc-label>
+                <tc-button type="plain"
+                           class="tool-tip-button"
+                           ngbTooltip="The name of the standard model being used. Click on the model name for more details."
+                           triggers="click"
+                           tooltipClass="search-tips keyword"
+                           [stopNativeClickPropagation]="false"
+                >
+                  <i class="fa-regular fa-circle-question fa-xs"></i>
+                </tc-button>
+                <div>
+                  <a target="_blank" [href]="embeddingModel.modelUrl">
+                    {{embeddingModel.modelName}}
+                  </a>
+                </div>
+              </div>
+
+              <div *ngIf="hasEmbeddingModel()" class="col-md-1">
+                <tc-label size="sm" class="form-label">Dimensions</tc-label>
+                <tc-button type="plain"
+                           class="tool-tip-button"
+                           ngbTooltip="The number of dimensions in the embedding model."
+                           triggers="click"
+                           tooltipClass="search-tips keyword"
+                           [stopNativeClickPropagation]="false"
+                >
+                  <i class="fa-regular fa-circle-question fa-xs"></i>
+                </tc-button>
+                <div>
+                  {{embeddingModel.dimensions}}
+                </div>
+              </div>
+
+            </div>
+
+          </div>
+
+          <hr class="w-100">
+
           <div class="row">
             <div class="mb-3 col-md-6">
               <!-- providing 'placement' as an empty string makes the tooltip appear over the
               element in a suitable direction for the viewport -->
-              <tc-label size="sm" class="form-label" for="simpleQueryString">Keyword Search</tc-label>
+              <tc-label size="sm" class="form-label" for="simpleQueryString">Keyword Search
+                <span *ngIf="hasRequirements()"> (taken over by AI matching)</span>
+              </tc-label>
               <tc-button [type]="'plain'"
                          class="tool-tip-button"
                          [ngbTooltip]="keywordSearchTip"
@@ -138,12 +307,18 @@
                 <i class="fa-regular fa-circle-question fa-xs"></i>
               </tc-button>
               <tc-input id="simpleQueryString"
+                        [disabled]="hasRequirements()"
                         type="text"
                         placeholder='E.g. welder "diesel mechanic"'
                         aria-label="Keyword Search"
                         formControlName="simpleQueryString"
                         (keyup.enter)="runKeywordSearchOnEnter($event)"
               ></tc-input>
+              <div *ngIf="jobName">
+                <small class="text-muted">
+                  {{displayJobNameAsSource()}}
+                </small>
+              </div>
             </div>
 
             <!-- STATUS -->
@@ -915,6 +1090,7 @@
 
   <app-show-candidates *ngIf="!error && !loading"
                        [isKeywordSearch]="!isEmptySearchTerms()"
+                       [isMatchingSearch]="hasRequirements()"
                        [candidateSource]="savedSearch"
                        [pageNumber]="pageNumber"
                        [pageSize]="pageSize"

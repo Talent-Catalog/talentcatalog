@@ -50,6 +50,16 @@ public interface SavedSearchService {
      * Extracts native database query SQL corresponding to the given search request.
      * </p>
      * <p>
+     * DESIGNED TO BE CALLED BY CANDIDATE STATS CODE - not a normal user.
+     * See {@link #extractUserSearchSql(SearchCandidateRequest)} when wanting to generate the SQL
+     * that is executed by a logged-in user, taking into account their user based constraints
+     * and defaulted request fields.
+     * </p>
+     * <p>
+     * It assumes no active user, so there are no user related restrictions and it processes
+     * the SearchCandidateRequest as it is - without implementing any standard defaults.
+     * </p>
+     * <p>
      *     The SQL will always be a "SELECT FROM candidate" statement plus joins to other tables
      *     as needed and a WHERE clause.
      * </p>
@@ -59,6 +69,35 @@ public interface SavedSearchService {
      * @return String containing the SQL
      */
     String extractFetchSQL(SearchCandidateRequest request);
+
+    /**
+     * <p>
+     * Extracts native database query SQL corresponding to the given search request taking into
+     * account the currently logged-in user and also implements standard SearchCandidateRequest
+     * defaults (e.g. around status).
+     * </p>
+     * <p>
+     *     The SQL will always be a "SELECT FROM candidate" statement plus joins to other tables
+     *     as needed and a WHERE clause.
+     * </p>
+     * <p>
+     *     The request will return candidate data without duplicates.
+     * </p>
+     * @param request Search request
+     * @return String containing the SQL
+     */
+    String extractUserSearchSql(SearchCandidateRequest request);
+
+    /**
+     * <p>
+     * This just extracts the join and where SQL of database query corresponding to the given
+     * search. This will be a substring of the SQL returned by
+     * {@link #extractUserSearchSql(SearchCandidateRequest)}
+     * </p>
+     * @param request Search request
+     * @return String containing the SQL
+     */
+    String extractJoinAndWhereSQL(SearchCandidateRequest request);
 
     /**
      * Return all SavedSearch's that match the given ids, ordered by name.
@@ -185,6 +224,14 @@ public interface SavedSearchService {
     void setPublicIds(List<SavedSearch> savedSearches);
 
     SavedSearch updateSavedSearch(long id, UpdateSavedSearchRequest request) throws EntityExistsException;
+
+    /**
+     * User default saved searches automatically save on each request.
+     * This checks if the search associated with the request is a user default search - and, if so,
+     * updates it with the contents of the search request.
+     * @param request Request to do a search
+     */
+    void updateUserDefaultSavedSearchIfNeeded(@NotNull SearchCandidateRequest request);
 
     boolean deleteSavedSearch(long id);
 

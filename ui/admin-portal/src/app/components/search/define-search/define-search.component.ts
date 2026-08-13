@@ -50,6 +50,7 @@ import {EducationLevel} from '../../../model/education-level';
 import {EducationLevelService} from '../../../services/education-level.service';
 import {EducationMajor} from '../../../model/education-major';
 import {EducationMajorService} from '../../../services/education-major.service';
+import {EmbeddingModel} from '../../../model/embedding-model';
 import {Occupation} from '../../../model/occupation';
 import {CandidateOccupationService} from '../../../services/candidate-occupation.service';
 import {
@@ -89,6 +90,8 @@ import {first} from "rxjs/operators";
 import {JobService} from "../../../services/job.service";
 import {SkillName} from "../../../model/skill";
 import {CandidateNumberParser} from "../../../util/candidate-number-parser";
+import {EmbeddingModelService} from "../../../services/embedding-model.service";
+import {JobMatchingInfo} from "../../../model/JobMatchingInfo";
 
 /**
  * This component contains all the search fields for saved and unsaved searches. It communicates
@@ -118,6 +121,8 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
   @ViewChild('downloadCsvErrorModal', {static: true}) downloadCsvErrorModal;
 
   @Input() jobId: number;
+  jobName: string;  //Populated when JobMatchingInfo is fetched.
+
   @Input() savedSearch: SavedSearch;
   @Input() pageNumber: number;
   @Input() pageSize: number;
@@ -136,10 +141,12 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
   sortDirection = 'DESC';
 
   /* DATA - these are all drop down options for each select field*/
+  embeddingModels: EmbeddingModel[];
   nationalities: Country[];
   countries: Country[];
   partners: Partner[];
   languages: Language[];
+
   educationLevels: EducationLevel[];
   educationMajors: EducationMajor[];
   candidateOccupations: Occupation[];
@@ -168,6 +175,7 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
 
   constructor(private fb: UntypedFormBuilder,
               private countryService: CountryService,
+              private embeddingModelService: EmbeddingModelService,
               private languageService: LanguageService,
               private partnerService: PartnerService,
               private savedSearchService: SavedSearchService,
@@ -186,6 +194,10 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
     /* SET UP FORM */
     //todo For fixing this deprecation see https://stackoverflow.com/questions/65155217/formbuilder-group-is-deprecated
     this.searchForm = this.fb.group({
+      requirements: [null],
+      lexicalWeight: [0.5],
+      modelKey: [null],
+      nMatches: [null],
       savedSearchId: [null],
       simpleQueryString: [null],
       candidateNumbers: [''],
@@ -243,10 +255,16 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
     }, {validator: this.validateDuplicateSearches('savedSearchId')});
 
     // Subscribe to changes in Keyword Search
-    this.searchForm.get('simpleQueryString')?.statusChanges.subscribe(() => {
-      this.searchIsElastic = this.searchForm.get('simpleQueryString')?.dirty &&
-        this.searchForm.get('simpleQueryString')?.value !== '';
+    this.searchForm.controls.simpleQueryString.statusChanges.subscribe(() => {
+      this.searchIsElastic = this.searchForm.controls.simpleQueryString.dirty &&
+        this.searchForm.controls.simpleQueryString.value !== '';
     });
+
+    //Map changes to nMatches to this.pageSize.
+    this.searchForm.controls.nMatches.valueChanges.subscribe(() => {
+      //If nMatches is undefined, don't change pageSize
+      this.pageSize = this.searchForm.controls.nMatches.value || this.pageSize;
+    })
   }
 
   ngOnInit() {
@@ -270,6 +288,7 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
     });
 
     forkJoin({
+      'embeddingModels': this.embeddingModelService.loadReadyModels(),
       'nationalities': this.countryService.listCountries(),
       'countriesRestricted': this.countryService.listCountriesRestricted(),
       'languages': this.languageService.listLanguages(),
@@ -281,6 +300,7 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
       'surveyTypes': this.surveyTypeService.listSurveyTypes()
     }).subscribe(results => {
       this.loading = false;
+      this.embeddingModels = results['embeddingModels'];
       this.nationalities = results['nationalities'];
       this.countries = results['countriesRestricted'];
       this.languages = results['languages'];
@@ -316,19 +336,65 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
     });
   }
 
-  private runSearchWithSkills(skills: SkillName[]) {
+  get lexicalWeight(): number {
+    return this.searchForm.controls.lexicalWeight.value;
+  }
+
+  get embeddingModel(): EmbeddingModel {
+    //Look up model from selected modelKey
+    let embeddingModel: EmbeddingModel | null;
+    const modelKey = this.searchForm.controls.modelKey.value;
+    if (modelKey) {
+      embeddingModel = this.embeddingModels.find(model => model.modelKey === modelKey);
+    } else {
+      embeddingModel = null;
+    }
+
+    return embeddingModel;
+  }
+
+  public hasEmbeddingModel(): boolean {
+    return !!this.embeddingModel;
+  }
+
+  public hasEmbeddingModels(): boolean {
+    return !!this.embeddingModels && this.embeddingModels.length > 0;
+  }
+
+  get requirements(): string {
+    return this.searchForm.controls.requirements.value;
+  }
+
+  public hasRequirements(): boolean {
+    return this.requirements && this.requirements.trim().length > 0;
+  }
+
+  displayJobNameAsSource(): string {
+    return this.jobName ? `(Autopopulated from job ${this.jobId}: ${this.jobName})` : '';
+  }
+
+  private setUpJobMatch(jobMatchingInfo: JobMatchingInfo) {
     this.clearForm();
-    this.initializeQueryStringWithJobSkills(skills);
+    this.jobName = jobMatchingInfo.jobName;
+    this.initializeRequirementsWithDescription(jobMatchingInfo.description);
+    this.initializeQueryStringWithJobSkills(jobMatchingInfo.skillNames);
     this.onSubmit();
+  }
+
+  private initializeRequirementsWithDescription(description: string) {
+    this.searchForm.controls.requirements.patchValue(description);
+    this.searchForm.markAsDirty();
   }
 
   private initializeQueryStringWithJobSkills(skills: SkillName[]) {
     if (skills && skills.length > 0) {
+      //Construct query string as skill names separated by spaces.
+      //If a skill name is multiple words, then surround it with double quotes.
       let queryString = skills
       .map(
         s => s.name.indexOf(' ') < 0 ? s.name : '"' + s.name + '"'
       ).join(' ');
-      this.searchForm.controls['simpleQueryString'].patchValue(queryString);
+      this.searchForm.controls.simpleQueryString.patchValue(queryString);
       this.searchForm.markAsDirty();
     }
   }
@@ -396,7 +462,7 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
   onSubmit() {
    //checkSelectionsAndApply
    // If there are candidates selected, run a check before applying search.
-    if (this.selectedCandidates.length > 0) {
+    if (this.selectedCandidates?.length > 0) {
       this.confirmClearSelectionAndApply();
     } else {
       this.apply();
@@ -563,12 +629,12 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
         this.populateFormWithSavedSearch(request);
 
         //If this a new search generated from a job, clear any existing search params and
-        //automatically run a search using the job skills.
+        //automatically run a search using the job matching info.
         //We don't want to keep any previous search details from earlier searches.
         if (this.jobId) {
-          //Load the job skills
-          this.jobService.getSkills(this.jobId).subscribe({
-            next: (skills) => this.runSearchWithSkills(skills),
+          //Load the job-matching info
+          this.jobService.getJobMatchingInfo(this.jobId).subscribe({
+            next: (jobMatchingInfo) => this.setUpJobMatch(jobMatchingInfo),
             error: (error) => this.error = error
           })
         }
@@ -682,7 +748,6 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
       this.searchForm.controls[name].patchValue(request[name]);
     });
 
-    /* DEFAULTS */
     let searchType = request.countrySearchType;
     if (searchType == null) {
       searchType = 'or';
