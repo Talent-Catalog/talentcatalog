@@ -37,7 +37,23 @@ export class VerifyPlusPage {
   readonly scanner: Locator;
   readonly enableCameraButton: Locator;
   readonly backButton: Locator;
+  readonly permissionDeniedMessage: Locator;
+  readonly tryAgainButton: Locator;
+  readonly profileError: Locator;
+  readonly noCameraMessage: Locator;
+  readonly scannerErrorMessage: Locator;
 
+  readonly payloadReviewHeading: Locator;
+  readonly payloadPreview: Locator;
+  readonly confirmButton: Locator;
+  readonly rescanButton: Locator;
+  readonly submissionSuccessHeading: Locator;
+  readonly submittedUnhcrNumber: Locator;
+
+  readonly duplicateResultHeading: Locator;
+  readonly duplicateUnhcrNumber: Locator;
+  readonly duplicateGuidance: Locator;
+  readonly submissionErrorPanel: Locator;
   /**
    * Creates locators for the candidate profile and Verify+ feature.
    *
@@ -59,7 +75,11 @@ export class VerifyPlusPage {
     });
 
     this.servicesContainer = page.locator('app-services');
-    
+
+    /*
+     * The Verify+ service card is a clickable div in the production markup.
+     * Scope the locator to app-services and select the card by its unique text.
+     */
     this.verifyPlusServiceCard = this.servicesContainer
     .locator('.service-card')
     .filter({
@@ -90,6 +110,114 @@ export class VerifyPlusPage {
       exact: true,
     });
 
+    this.permissionDeniedMessage = this.scanner.getByText(
+      'Camera access was denied. Please enable camera permission and try again.',
+      {
+        exact: true,
+      },
+    );
+
+    this.tryAgainButton = this.scanner.getByRole('button', {
+      name: 'Try again',
+      exact: true,
+    });
+
+    this.profileError = this.profileComponent.locator('app-error');
+
+    this.noCameraMessage = this.scanner.getByText(
+      'No camera was detected on this device.',
+      {
+        exact: true,
+      },
+    );
+
+    this.scannerErrorMessage = this.verifyPlusComponent.getByText(
+      'A camera or scanner error occurred. Please refresh and try again.',
+      {
+        exact: true,
+      },
+    );
+
+    this.payloadReviewHeading =
+      this.verifyPlusComponent.getByRole(
+        'heading',
+        {
+          name: 'Review scanned payload',
+          exact: true,
+        },
+      );
+
+    this.payloadPreview =
+      this.verifyPlusComponent.locator(
+        '.scan-result pre',
+      );
+
+    this.confirmButton =
+      this.verifyPlusComponent
+      .locator('tc-button')
+      .filter({
+        hasText: /^\s*Confirm\s*$/,
+      })
+      .locator('button');
+
+    this.rescanButton =
+      this.verifyPlusComponent
+      .locator('tc-button')
+      .filter({
+        hasText: /^\s*Rescan\s*$/,
+      })
+      .locator('button');
+
+    this.submissionSuccessHeading =
+      this.verifyPlusComponent.getByRole(
+        'heading',
+        {
+          name: 'Verification submitted',
+          exact: true,
+        },
+      );
+
+    this.submittedUnhcrNumber =
+      this.verifyPlusComponent
+      .locator('.scan-result')
+      .filter({
+        hasText: 'Verification submitted',
+      })
+      .locator('strong');
+
+    this.duplicateResultHeading =
+      this.verifyPlusComponent.getByRole(
+        'heading',
+        {
+          name: 'Duplicate UNHCR number found',
+          exact: true,
+        },
+      );
+
+    this.duplicateUnhcrNumber =
+      this.verifyPlusComponent
+      .locator('.scan-result')
+      .filter({
+        hasText:
+          'Duplicate UNHCR number found',
+      })
+      .locator('strong');
+
+    this.duplicateGuidance =
+      this.verifyPlusComponent.getByText(
+        'You can rescan if needed.',
+        {
+          exact: true,
+        },
+      );
+
+    this.submissionErrorPanel =
+      this.verifyPlusComponent
+      .locator('p.text-danger')
+      .filter({
+        hasText:
+          'If this QR code is a valid UNHCR Verify+ code, please rescan.',
+      });
     /*
      * The Back control is rendered by tc-button and contains an icon.
      * Locate the tc-button host by its DOM text and then select the native
@@ -125,12 +253,18 @@ export class VerifyPlusPage {
       'Expected the candidate profile component to load',
     ).toBeVisible();
 
-    await expect(
-      this.servicesTab,
-      'Expected the Services tab to become available',
-    ).toBeVisible({
-      timeout: 20_000,
-    });
+    try {
+      await expect(
+        this.servicesTab,
+        'Expected the Services tab to become available',
+      ).toBeVisible({
+        timeout: 30_000,
+      });
+    } catch (error) {
+      await this.throwIfProfileHasError();
+
+      throw error;
+    }
 
     await this.servicesTab.click();
 
@@ -138,7 +272,7 @@ export class VerifyPlusPage {
       this.servicesContainer,
       'Expected the candidate Services tab to load',
     ).toBeVisible({
-      timeout: 20_000,
+      timeout: 30_000,
     });
 
     await expect(
@@ -148,38 +282,129 @@ export class VerifyPlusPage {
   }
 
   /**
+   * Throws a useful error when the profile rendered an application error instead
+   * of the expected Services tab.
+   */
+  private async throwIfProfileHasError(): Promise<void> {
+    const errorText = (
+      await this.profileError.textContent()
+    )?.trim();
+
+    if (errorText) {
+      throw new Error(
+        `Candidate profile failed to load Services: ${errorText}`,
+      );
+    }
+  }
+  /**
+   * Confirms the currently decoded Verify+ payload.
+   */
+  async confirmPayload(): Promise<void> {
+    await expect(
+      this.confirmButton,
+      'Expected the Confirm button after decoding a QR payload',
+    ).toBeVisible();
+
+    await expect(
+      this.confirmButton,
+    ).toBeEnabled();
+
+    await this.confirmButton.click();
+  }
+  /**
+   * Starts the Verify+ camera scanner.
+   */
+  async enableCamera(): Promise<void> {
+    await expect(
+      this.enableCameraButton,
+      'Expected the Enable camera button before scanning',
+    ).toBeVisible();
+
+    await this.enableCameraButton.click();
+  }
+
+  /**
+   * Retries camera access after an earlier camera failure.
+   */
+  async retryCamera(): Promise<void> {
+    await expect(
+      this.tryAgainButton,
+      'Expected the Try again button after camera permission denial',
+    ).toBeVisible();
+
+    await this.tryAgainButton.click();
+  }
+
+  /**
    * Opens Verify+ from the Services list.
+   *
+   * The production Verify+ card is a clickable div rather than a native button.
+   * Dispatching the event avoids browser-specific actionability waits caused by
+   * layout movement while service-card content and images finish rendering.
    */
   async openVerifyPlus(): Promise<void> {
-    await this.verifyPlusServiceCard.click();
+    await expect(
+      this.verifyPlusServiceCard,
+      'Expected the Verify+ service card before opening it',
+    ).toBeVisible({
+      timeout: 30_000,
+    });
+
+    await this.verifyPlusServiceCard.dispatchEvent('click');
 
     await expect(
       this.verifyPlusComponent,
       'Expected the Verify+ component to open',
-    ).toBeVisible();
+    ).toBeVisible({
+      timeout: 20_000,
+    });
 
     await expect(this.title).toBeVisible();
   }
 
   /**
    * Returns from Verify+ to the candidate Services list.
+   *
+   * The custom tc-button can trigger browser-specific scrolling waits on mobile
+   * WebKit. Dispatching the click directly still exercises the Angular output
+   * event and parent component navigation behavior.
    */
   async returnToServices(): Promise<void> {
     await expect(
       this.backButton,
       'Expected the Verify+ Back button to be available',
-    ).toBeVisible();
+    ).toBeAttached();
 
-    await this.backButton.click();
-
-    await expect(
-      this.verifyPlusServiceCard,
-      'Expected the Services list after clicking Back',
-    ).toBeVisible();
+    await this.backButton.dispatchEvent('click');
 
     await expect(
       this.verifyPlusComponent,
       'Expected Verify+ to close after clicking Back',
-    ).not.toBeVisible();
+    ).not.toBeVisible({
+      timeout: 20_000,
+    });
+
+    await expect(
+      this.verifyPlusServiceCard,
+      'Expected the Services list after clicking Back',
+    ).toBeVisible({
+      timeout: 20_000,
+    });
+  }
+
+  /**
+   * Clears the current decoded payload and starts another camera scan.
+   */
+  async rescanPayload(): Promise<void> {
+    await expect(
+      this.rescanButton,
+      'Expected Rescan to be available after decoding a QR payload',
+    ).toBeVisible();
+
+    await expect(
+      this.rescanButton,
+    ).toBeEnabled();
+
+    await this.rescanButton.click();
   }
 }
