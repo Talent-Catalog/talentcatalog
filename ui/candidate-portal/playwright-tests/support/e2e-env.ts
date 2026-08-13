@@ -37,7 +37,8 @@ export const E2E_ENVIRONMENT_VARIABLES = {
   candidateUsername: 'E2E_CANDIDATE_USERNAME',
   candidatePassword: 'E2E_CANDIDATE_PASSWORD',
   apiBaseUrl: 'E2E_API_BASE_URL',
-  useExternalServer: 'E2E_USE_EXTERNAL_SERVER',
+  verifyPlusBaselineUnhcrId:
+    'E2E_VERIFY_PLUS_BASELINE_UNHCR_ID',
   verifyPlusDuplicateUnhcrId:
     'E2E_VERIFY_PLUS_DUPLICATE_UNHCR_ID',
 } as const;
@@ -158,4 +159,11 @@ export function getE2EVerifyPlusDuplicateUnhcrId():
       ]?.trim();
 
   return value || null;
+}
+
+
+export function getE2EVerifyPlusBaselineUnhcrId(): string {
+  return requireEnvironmentVariable(
+    E2E_ENVIRONMENT_VARIABLES.verifyPlusBaselineUnhcrId,
+  );
 }

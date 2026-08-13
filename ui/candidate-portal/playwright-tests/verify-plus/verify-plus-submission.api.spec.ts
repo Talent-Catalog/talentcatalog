@@ -18,7 +18,10 @@ import {randomInt} from 'node:crypto';
 import {APIRequestContext, APIResponse} from '@playwright/test';
 
 import {expect, test,} from '../fixtures/verify-plus-api.fixture';
-import {getE2EVerifyPlusDuplicateUnhcrId} from "../support/e2e-env";
+import {
+  getE2EVerifyPlusBaselineUnhcrId,
+  getE2EVerifyPlusDuplicateUnhcrId
+} from "../support/e2e-env";
 
 /**
  * Authenticated Verify+ submission endpoint.
@@ -88,6 +91,24 @@ async function submitVerifyPlusPayload(
     },
   );
 }
+
+async function restoreBaselineUnhcrId(
+  api: APIRequestContext,
+): Promise<void> {
+  const baselineUnhcrId =
+    getE2EVerifyPlusBaselineUnhcrId();
+
+  const response =
+    await submitVerifyPlusPayload(
+      api,
+      baselineUnhcrId,
+    );
+
+  expect.soft(
+    response.status(),
+    'Expected Verify+ test cleanup to restore the baseline UNHCR number',
+  ).toBe(200);
+}
 /**
  * Asserts the standard portal response for an invalid Verify+ payload.
  *
@@ -127,24 +148,30 @@ test.describe('Verify+ submission API', () => {
     async ({verifyPlusApi}) => {
       const unhcrId = createUniqueUnhcrId();
 
-      const response =
-        await submitVerifyPlusPayload(
+      try {
+        const response =
+          await submitVerifyPlusPayload(
+            verifyPlusApi,
+            unhcrId,
+          );
+
+        expect(
+          response.status(),
+          `Unexpected response from ${response.url()}`,
+        ).toBe(200);
+
+        const body =
+          await response.json() as VerifyPlusResponse;
+
+        expect(body).toEqual({
+          unhcrNumber: unhcrId,
+          duplicate: false,
+        });
+      } finally {
+        await restoreBaselineUnhcrId(
           verifyPlusApi,
-          unhcrId,
         );
-
-      expect(
-        response.status(),
-        `Unexpected response from ${response.url()}`,
-      ).toBe(200);
-
-      const body =
-        await response.json() as VerifyPlusResponse;
-
-      expect(body).toEqual({
-        unhcrNumber: unhcrId,
-        duplicate: false,
-      });
+      }
     },
   );
 
@@ -157,20 +184,11 @@ test.describe('Verify+ submission API', () => {
       if (!duplicateUnhcrId) {
         test.skip(
           true,
-          'E2E_VERIFY_PLUS_DUPLICATE_UNHCR_ID is not configured. ' +
-          'Seed another active-like candidate and set the environment variable.',
+          'E2E_VERIFY_PLUS_DUPLICATE_UNHCR_ID is not configured.',
         );
 
         return;
       }
-
-      /*
-       * The duplicate submission temporarily updates the authenticated
-       * candidate. Reset it to a unique value afterward so repeated local and CI
-       * runs do not leave both test candidates sharing the fixture value.
-       */
-      const cleanupUnhcrId =
-        createUniqueUnhcrId();
 
       try {
         const response =
@@ -187,24 +205,14 @@ test.describe('Verify+ submission API', () => {
         const body =
           await response.json() as VerifyPlusResponse;
 
-        expect(
-          body,
-          'Expected another active-like candidate to own the configured fixture',
-        ).toEqual({
+        expect(body).toEqual({
           unhcrNumber: duplicateUnhcrId,
           duplicate: true,
         });
       } finally {
-        const cleanupResponse =
-          await submitVerifyPlusPayload(
-            verifyPlusApi,
-            cleanupUnhcrId,
-          );
-
-        expect.soft(
-          cleanupResponse.status(),
-          'Expected duplicate test cleanup to restore a unique UNHCR number',
-        ).toBe(200);
+        await restoreBaselineUnhcrId(
+          verifyPlusApi,
+        );
       }
     },
   );

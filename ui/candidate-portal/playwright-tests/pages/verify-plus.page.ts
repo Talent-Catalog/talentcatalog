@@ -337,10 +337,6 @@ export class VerifyPlusPage {
 
   /**
    * Opens Verify+ from the Services list.
-   *
-   * The production Verify+ card is a clickable div rather than a native button.
-   * Dispatching the event avoids browser-specific actionability waits caused by
-   * layout movement while service-card content and images finish rendering.
    */
   async openVerifyPlus(): Promise<void> {
     await expect(
@@ -350,7 +346,11 @@ export class VerifyPlusPage {
       timeout: 30_000,
     });
 
-    await this.verifyPlusServiceCard.dispatchEvent('click');
+    await this.verifyPlusServiceCard.scrollIntoViewIfNeeded();
+
+    await this.verifyPlusServiceCard.click({
+      timeout: 20_000,
+    });
 
     await expect(
       this.verifyPlusComponent,
@@ -373,9 +373,17 @@ export class VerifyPlusPage {
     await expect(
       this.backButton,
       'Expected the Verify+ Back button to be available',
-    ).toBeAttached();
+    ).toBeVisible({
+      timeout: 20_000,
+    });
 
-    await this.backButton.dispatchEvent('click');
+    await expect(this.backButton).toBeEnabled();
+
+    await this.backButton.scrollIntoViewIfNeeded();
+
+    await this.backButton.click({
+      timeout: 20_000,
+    });
 
     await expect(
       this.verifyPlusComponent,
