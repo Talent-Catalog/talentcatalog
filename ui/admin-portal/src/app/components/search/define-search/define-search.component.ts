@@ -123,6 +123,7 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
   @Input() jobId: number;
   jobName: string;  //Populated when JobMatchingInfo is fetched.
 
+  @Input() listId: number;
   @Input() savedSearch: SavedSearch;
   @Input() pageNumber: number;
   @Input() pageSize: number;
@@ -137,8 +138,6 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
   savedSearchId;
 
   searchRequest: SearchCandidateRequestPaged;
-  sortField = 'id';
-  sortDirection = 'DESC';
 
   /* DATA - these are all drop down options for each select field*/
   embeddingModels: EmbeddingModel[];
@@ -146,7 +145,6 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
   countries: Country[];
   partners: Partner[];
   languages: Language[];
-
   educationLevels: EducationLevel[];
   educationMajors: EducationMajor[];
   candidateOccupations: Occupation[];
@@ -374,6 +372,17 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
   }
 
   private setUpJobMatch(jobMatchingInfo: JobMatchingInfo) {
+  private runSearchWithListConstraint(listId: number) {
+    this.clearForm();
+    this.initializeListConstraint(listId);
+    this.onSubmit();
+  }
+
+  private initializeListConstraint(listId: number) {
+      this.searchForm.controls.listAnyIds.patchValue([listId]);
+  }
+
+  private setUpJobMatch(jobMatchingInfo: JobMatchingInfo) {
     this.clearForm();
     this.jobName = jobMatchingInfo.jobName;
     this.initializeRequirementsWithDescription(jobMatchingInfo.description);
@@ -479,16 +488,11 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
     const request: SearchCandidateRequestPaged =
       this.getIdsMultiSelect(this.searchForm.value)
 
-    //A new search request has to clear page number. Old page number no longer
-    //relevant with new search.
-    request.pageNumber = 0;
-    request.pageSize = this.pageSize;
-    request.sortFields = [this.sortField];
-    request.sortDirection = this.sortDirection;
-
     //Note that just changing searchRequest triggers the display of the results
     //See the html of this component, for which app-show-candidates takes
     //searchRequest as an input.
+    //The receiving code automatically resets the page number to 0 for changed search requests.
+    //See ngOnChanges of ShowCandidatesComponent.
     this.searchRequest = request;
 
     this.searchQueryService.changeSearchQuery(this.searchForm.value.simpleQueryString || '');
@@ -628,16 +632,23 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
       (request) => {
         this.populateFormWithSavedSearch(request);
 
-        //If this a new search generated from a job, clear any existing search params and
-        //automatically run a search using the job matching info.
+        //If this is a new search generated from a job or a list, clear any existing
+        //search params and automatically run a search configured accordingly.
         //We don't want to keep any previous search details from earlier searches.
-        if (this.jobId) {
+        if (this.jobId || this.listId) {
+
+          if (this.jobId) {
           //Load the job-matching info
           this.jobService.getJobMatchingInfo(this.jobId).subscribe({
             next: (jobMatchingInfo) => this.setUpJobMatch(jobMatchingInfo),
-            error: (error) => this.error = error
-          })
+              error: (error) => this.error = error
+            })
+          } else if (this.listId) {
+            //Load the list id into one of the list search fields.
+            this.runSearchWithListConstraint(this.listId);
+          }
         }
+
         this.loading = false;
       },
       error => {

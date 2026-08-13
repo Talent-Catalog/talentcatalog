@@ -49,8 +49,8 @@ export class CandidateSourceBaseComponent {
   pageSize: number;
   results: SearchResults<Candidate>;
   searching: boolean;
-  sortField: string;
-  sortDirection: string;
+  sortField: string = "id";
+  sortDirection: string = "DESC";
   timestamp: number;
   reviewStatusFilter: string[] = defaultReviewStatusFilter;
 

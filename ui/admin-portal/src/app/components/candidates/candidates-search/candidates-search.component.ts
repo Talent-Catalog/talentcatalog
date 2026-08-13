@@ -35,6 +35,7 @@ export class CandidatesSearchComponent implements OnInit, BlockUnsavedChanges {
   savedSearch: SavedSearch;
   private id: number;
   jobId: number;
+  listId: number;
   formDirty: boolean;
 
   constructor(private route: ActivatedRoute,
@@ -48,6 +49,7 @@ export class CandidatesSearchComponent implements OnInit, BlockUnsavedChanges {
     this.route.queryParamMap.subscribe(
       params => {
         this.jobId = +params.get('job');
+        this.listId = +params.get('list');
 
         this.pageNumber = +params.get('pageNumber');
         if (!this.pageNumber) {
