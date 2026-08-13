@@ -296,21 +296,8 @@ export class VerifyPlusPage {
       );
     }
   }
-  /**
-   * Confirms the currently decoded Verify+ payload.
-   */
-  async confirmPayload(): Promise<void> {
-    await expect(
-      this.confirmButton,
-      'Expected the Confirm button after decoding a QR payload',
-    ).toBeVisible();
 
-    await expect(
-      this.confirmButton,
-    ).toBeEnabled();
 
-    await this.confirmButton.click();
-  }
   /**
    * Starts the Verify+ camera scanner.
    */
@@ -364,10 +351,6 @@ export class VerifyPlusPage {
 
   /**
    * Returns from Verify+ to the candidate Services list.
-   *
-   * The custom tc-button can trigger browser-specific scrolling waits on mobile
-   * WebKit. Dispatching the click directly still exercises the Angular output
-   * event and parent component navigation behavior.
    */
   async returnToServices(): Promise<void> {
     await expect(
@@ -400,19 +383,4 @@ export class VerifyPlusPage {
     });
   }
 
-  /**
-   * Clears the current decoded payload and starts another camera scan.
-   */
-  async rescanPayload(): Promise<void> {
-    await expect(
-      this.rescanButton,
-      'Expected Rescan to be available after decoding a QR payload',
-    ).toBeVisible();
-
-    await expect(
-      this.rescanButton,
-    ).toBeEnabled();
-
-    await this.rescanButton.click();
-  }
 }

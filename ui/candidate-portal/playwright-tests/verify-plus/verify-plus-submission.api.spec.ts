@@ -94,10 +94,8 @@ async function submitVerifyPlusPayload(
 
 async function restoreBaselineUnhcrId(
   api: APIRequestContext,
+  baselineUnhcrId: string,
 ): Promise<void> {
-  const baselineUnhcrId =
-    getE2EVerifyPlusBaselineUnhcrId();
-
   const response =
     await submitVerifyPlusPayload(
       api,
@@ -146,6 +144,9 @@ test.describe('Verify+ submission API', () => {
   test(
     'accepts a valid mock-1 payload',
     async ({verifyPlusApi}) => {
+      const baselineUnhcrId =
+        getE2EVerifyPlusBaselineUnhcrId();
+
       const unhcrId = createUniqueUnhcrId();
 
       try {
@@ -170,6 +171,7 @@ test.describe('Verify+ submission API', () => {
       } finally {
         await restoreBaselineUnhcrId(
           verifyPlusApi,
+          baselineUnhcrId,
         );
       }
     },
@@ -180,7 +182,8 @@ test.describe('Verify+ submission API', () => {
     async ({verifyPlusApi}) => {
       const duplicateUnhcrId =
         getE2EVerifyPlusDuplicateUnhcrId();
-
+      const baselineUnhcrId =
+        getE2EVerifyPlusBaselineUnhcrId();
       if (!duplicateUnhcrId) {
         test.skip(
           true,
@@ -205,6 +208,7 @@ test.describe('Verify+ submission API', () => {
         const body =
           await response.json() as VerifyPlusResponse;
 
+
         expect(body).toEqual({
           unhcrNumber: duplicateUnhcrId,
           duplicate: true,
@@ -212,6 +216,7 @@ test.describe('Verify+ submission API', () => {
       } finally {
         await restoreBaselineUnhcrId(
           verifyPlusApi,
+          baselineUnhcrId,
         );
       }
     },
