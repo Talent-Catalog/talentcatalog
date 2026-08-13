@@ -381,6 +381,17 @@ describe('DefineSearchComponent', () => {
     expect(component.onSubmit).toHaveBeenCalled();
   });
 
+  it('should initialize and run a search with a list constraint', () => {
+    spyOn(component, 'clearForm');
+    spyOn(component, 'onSubmit');
+
+    (component as any).runSearchWithListConstraint(15);
+
+    expect(component.clearForm).toHaveBeenCalled();
+    expect(component.searchForm.get('listAnyIds').value).toEqual([15]);
+    expect(component.onSubmit).toHaveBeenCalled();
+  });
+
   it('should ignore empty job skills', () => {
     component.searchForm.markAsPristine();
     (component as any).initializeQueryStringWithJobSkills([]);
@@ -627,6 +638,18 @@ describe('DefineSearchComponent', () => {
 
     expect(jobService.getSkills).toHaveBeenCalledWith(3);
     expect((component as any).runSearchWithSkills).toHaveBeenCalledWith([{name: 'Java'}]);
+  }));
+
+  it('should run a list-constrained search after loading a list-based search', fakeAsync(() => {
+    component.listId = 15;
+    savedSearchService.load.and.returnValue(of({searchJoinRequests: []} as any));
+    spyOn(component, 'populateFormWithSavedSearch');
+    spyOn<any>(component, 'runSearchWithListConstraint');
+
+    component.loadSavedSearch(4);
+    tick();
+
+    expect((component as any).runSearchWithListConstraint).toHaveBeenCalledWith(15);
   }));
 
   it('should expose job skill and saved-search load errors', fakeAsync(() => {
