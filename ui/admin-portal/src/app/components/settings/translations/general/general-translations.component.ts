@@ -212,9 +212,17 @@ export class GeneralTranslationsComponent implements OnInit {
         this.startPatchDryRun(patch);
       } catch (error) {
         this.patchError = error;
+        this.patchReview = null;
+        this.pendingPatch = null;
+        this.clearPatchFileInput();
       }
     };
-    reader.onerror = (error) => this.patchError = error;
+    reader.onerror = (error) => {
+      this.patchError = error;
+      this.patchReview = null;
+      this.pendingPatch = null;
+      this.clearPatchFileInput();
+    };
     reader.readAsText(file);
   }
 
