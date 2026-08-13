@@ -22,11 +22,13 @@
         <tc-button id="save-translations" *ngIf="isAnAdmin() && !loggedInUser.readOnly"
                 (onClick)="save()" [disabled]="saving || error || saveError">Save</tc-button>
         <tc-button id="import-translation-patch" *ngIf="canManagePatch()"
+                   ariaLabel="Import scoped translation patch. Dry-run first, then confirm to apply."
                    [disabled]="patchBusy"
                    (onClick)="triggerImport(patchFileInput)">
           Import patch
         </tc-button>
         <tc-button id="toggle-export-translation-patch" *ngIf="canManagePatch()"
+                   ariaLabel="Export scoped translation patch by prefixes and exact keys."
                    [disabled]="patchBusy"
                    (onClick)="toggleExportForm()">
           {{showExportForm ? 'Close export' : 'Export patch'}}
@@ -35,6 +37,13 @@
                style="display: none" (change)="onPatchFileSelected($event)" />
       </div>
     </div>
+    <p *ngIf="canManagePatch()" class="text-muted small mb-3">
+      <strong>Import patch</strong> applies a scoped JSON patch to this instance using deep-merge
+      (keys outside the patch are unchanged). A dry-run summary is shown first, then
+      <strong>Confirm</strong> applies changes.
+      <strong>Export patch</strong> downloads only the prefixes and/or exact keys you specify
+      (not full language files), so release promotion can safely move just this feature's strings.
+    </p>
     <tc-alert *ngIf="patchError">
       Sorry, there was an error processing translation patch:
       <div>
@@ -129,16 +138,31 @@
                      [ngModel]="exportLanguages"
                      (ngModelChange)="exportLanguages = $event">
           </ng-select>
+          <p class="text-muted small mt-1 mb-0">
+            Choose which language files to include. Default is all system languages.
+          </p>
         </div>
         <div class="col-sm-4">
           <label>Prefixes (one per line)</label>
           <tc-textarea [(ngModel)]="exportPrefixesText"></tc-textarea>
+          <p class="text-muted small mt-1 mb-0">
+            Dotted uppercase subtree paths. Example: <code>SERVICES.VERIFY_PLUS</code>
+            includes all keys under that path.
+          </p>
         </div>
         <div class="col-sm-4">
           <label>Exact keys (one per line)</label>
           <tc-textarea [(ngModel)]="exportKeysText"></tc-textarea>
+          <p class="text-muted small mt-1 mb-0">
+            Full dotted leaf keys for values outside selected prefixes. Example:
+            <code>REGISTRATION.HEADER.TITLE.VERIFYPLUS</code>.
+          </p>
         </div>
       </div>
+      <p class="text-muted small mt-2 mb-0">
+        Provide at least one prefix or exact key. Keep export scoped to release fields only; do
+        not export full files.
+      </p>
       <div class="mt-2">
         <tc-button id="export-translation-patch"
                    [disabled]="patchBusy"
