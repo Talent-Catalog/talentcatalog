@@ -15,10 +15,17 @@
  */
 
 import {ComponentFixture, TestBed} from '@angular/core/testing';
-import {NO_ERRORS_SCHEMA} from "@angular/core";
+import {NO_ERRORS_SCHEMA, Pipe, PipeTransform} from "@angular/core";
 import {of, throwError} from 'rxjs';
 import {UnhcrComponent} from './unhcr.component';
 import {CasiPortalService} from "../../../../../../services/casi-portal.service";
+
+@Pipe({name: 'translate'})
+class MockTranslatePipe implements PipeTransform {
+  transform(value: string): string {
+    return value;
+  }
+}
 
 describe('UnhcrComponent', () => {
   let component: UnhcrComponent;
@@ -33,7 +40,7 @@ describe('UnhcrComponent', () => {
     } as any));
 
     await TestBed.configureTestingModule({
-      declarations: [UnhcrComponent],
+      declarations: [UnhcrComponent, MockTranslatePipe],
       providers: [{provide: CasiPortalService, useValue: mockPortalService}],
       schemas: [NO_ERRORS_SCHEMA]
     }).compileComponents();

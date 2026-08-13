@@ -22,10 +22,17 @@ import {
   TestBed,
   tick
 } from '@angular/core/testing';
-import {NO_ERRORS_SCHEMA} from '@angular/core';
+import {NO_ERRORS_SCHEMA, Pipe, PipeTransform} from '@angular/core';
 
 import {VerifyPlusScannerComponent} from './verify-plus-scanner.component';
 import {VerifyPlusDecoderService} from '../../../services/verify-plus-decoder.service';
+
+@Pipe({name: 'translate'})
+class MockTranslatePipe implements PipeTransform {
+  transform(value: string): string {
+    return value;
+  }
+}
 
 describe('VerifyPlusScannerComponent', () => {
   let component: VerifyPlusScannerComponent;
@@ -58,7 +65,7 @@ describe('VerifyPlusScannerComponent', () => {
     });
 
     TestBed.configureTestingModule({
-      declarations: [VerifyPlusScannerComponent],
+      declarations: [VerifyPlusScannerComponent, MockTranslatePipe],
       providers: [
         {provide: VerifyPlusDecoderService, useValue: decoderService}
       ],

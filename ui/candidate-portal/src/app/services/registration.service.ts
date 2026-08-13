@@ -39,7 +39,8 @@ export class RegistrationService {
     },
     {
       key: 'verifyplus',
-      title: 'Scan your UNHCR Verify+ card (optional)',
+      // Header title is sourced from REGISTRATION.HEADER.TITLE.VERIFYPLUS translations.
+      title: '',
       section: 2
     },
     {
