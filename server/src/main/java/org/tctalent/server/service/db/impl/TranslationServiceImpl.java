@@ -156,7 +156,12 @@ public class TranslationServiceImpl implements TranslationService {
 
         validateImportPatchRequest(request, strictLanguages);
 
-        List<String> configuredLanguages = TranslationPatchUtils.sortedDistinctNonBlank(request.getLanguages());
+        List<String> configuredLanguages = TranslationPatchUtils.sortedDistinctNonBlank(request.getLanguages()).stream()
+            .map(TranslationServiceImpl::normalizeLanguageCode)
+            .filter(Objects::nonNull)
+            .distinct()
+            .sorted()
+            .toList();
         Map<String, Map<String, String>> languageToFlatEntries = new LinkedHashMap<>();
         List<String> warnings = new ArrayList<>();
 
