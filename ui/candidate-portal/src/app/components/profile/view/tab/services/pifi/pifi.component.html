@@ -18,13 +18,14 @@
 <tc-loading [loading]="loading"></tc-loading>
 
 <div class="service-title">
-  <h2>PiFi Property Guidance</h2>
-  <p>Explore relocation housing options and local property insights.</p>
+  <h2>PiFi Property</h2>
+  <p>Helping migrants find a place to call home in Australia.</p>
 </div>
 
 <div class="service-content" *ngIf="!loading">
   <p>
-    Visit PiFi Property for location guidance and property search support relevant to your current relocation context.
+    Finding a home in a new country can feel overwhelming. We’re here to make the search easier—helping you explore
+    rental homes close to the communities, services and everyday essentials that matter to you.
   </p>
 
   <p *ngIf="assignment?.resource?.resourceCode as helpUrl">
