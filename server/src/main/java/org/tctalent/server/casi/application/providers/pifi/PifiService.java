@@ -16,6 +16,7 @@
 
 package org.tctalent.server.casi.application.providers.pifi;
 
+import java.util.Locale;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -87,7 +88,7 @@ public class PifiService extends AbstractCandidateAssistanceService {
     return getAssignmentsForCandidate(candidateId).stream()
         .filter(a -> a.getResource() != null
             && a.getResource().getStatus() == ResourceStatus.AVAILABLE
-            && firstCountry.equals(a.getResource().getCountryIsoCode()))
+            && firstCountry.equals(normalizeIso(a.getResource().getCountryIsoCode())))
         .findFirst()
         .orElse(null);
   }
@@ -103,7 +104,7 @@ public class PifiService extends AbstractCandidateAssistanceService {
     boolean hasSameCountryAssigned = getAssignmentsForCandidate(candidateId).stream()
         .anyMatch(a -> a.getStatus() == AssignmentStatus.ASSIGNED
             && a.getResource() != null
-            && firstCountry.equals(a.getResource().getCountryIsoCode()));
+            && firstCountry.equals(normalizeIso(a.getResource().getCountryIsoCode())));
 
     if (hasSameCountryAssigned) {
       throw new EntityExistsException(AssignmentStatus.ASSIGNED.name() + " " + serviceCode()
@@ -122,5 +123,12 @@ public class PifiService extends AbstractCandidateAssistanceService {
       }
     }
     return null;
+  }
+
+  private String normalizeIso(String isoCode) {
+    if (isoCode == null || isoCode.isBlank()) {
+      return null;
+    }
+    return isoCode.trim().toUpperCase(Locale.ROOT);
   }
 }

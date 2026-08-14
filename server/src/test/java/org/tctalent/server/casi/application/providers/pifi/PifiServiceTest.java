@@ -98,6 +98,21 @@ class PifiServiceTest {
   }
 
   @Test
+  @DisplayName("getCurrentAssignment matches assignment country ISO case-insensitively")
+  void getCurrentAssignmentMatchesCountryIsoCaseInsensitively() {
+    when(countryResolver.resolveCountryIsoCodes(100L)).thenReturn(List.of("AU"));
+    when(resourceRepository.countAvailableByProviderServiceAndCountry(
+        ServiceProvider.PIFI, ServiceCode.HELP_SITE_LINK, "AU")).thenReturn(1L);
+    when(assignmentRepository.findByCandidateAndProviderAndService(
+        100L, ServiceProvider.PIFI, ServiceCode.HELP_SITE_LINK))
+        .thenReturn(List.of(assignmentWithResource(22L, "au")));
+
+    ServiceAssignment current = service.getCurrentAssignment(100L);
+    assertThat(current).isNotNull();
+    assertThat(current.getResource().getCountryIsoCode()).isEqualTo("au");
+  }
+
+  @Test
   @DisplayName("assignToCandidate throws when same-country ASSIGNED exists")
   void assignToCandidateThrowsWhenSameCountryAlreadyAssigned() {
     when(countryResolver.resolveCountryIsoCodes(100L)).thenReturn(List.of("AU"));
@@ -106,6 +121,21 @@ class PifiServiceTest {
     when(assignmentRepository.findByCandidateAndProviderAndService(
         100L, ServiceProvider.PIFI, ServiceCode.HELP_SITE_LINK))
         .thenReturn(List.of(assignmentWithResource(31L, "AU")));
+
+    assertThatThrownBy(() -> service.assignToCandidate(100L, new User()))
+        .isInstanceOf(EntityExistsException.class);
+    verifyNoInteractions(assignmentEngine);
+  }
+
+  @Test
+  @DisplayName("assignToCandidate throws when same-country ASSIGNED exists with different ISO case")
+  void assignToCandidateThrowsWhenSameCountryAlreadyAssignedDifferentCase() {
+    when(countryResolver.resolveCountryIsoCodes(100L)).thenReturn(List.of("AU"));
+    when(resourceRepository.countAvailableByProviderServiceAndCountry(
+        ServiceProvider.PIFI, ServiceCode.HELP_SITE_LINK, "AU")).thenReturn(1L);
+    when(assignmentRepository.findByCandidateAndProviderAndService(
+        100L, ServiceProvider.PIFI, ServiceCode.HELP_SITE_LINK))
+        .thenReturn(List.of(assignmentWithResource(31L, "au")));
 
     assertThatThrownBy(() -> service.assignToCandidate(100L, new User()))
         .isInstanceOf(EntityExistsException.class);
