@@ -109,9 +109,11 @@ export class ManageHelpSiteLinksComponent implements OnInit {
 
   private loadLinks(): void {
     this.loading = true;
+    this.error = null;
     this.casiAdminService.listSharedLinks(this.provider, this.serviceCode).subscribe({
       next: links => {
         this.links = links || [];
+        this.error = null;
         this.loading = false;
       },
       error: () => {
