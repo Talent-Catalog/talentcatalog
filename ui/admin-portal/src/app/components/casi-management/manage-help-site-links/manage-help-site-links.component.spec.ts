@@ -67,5 +67,116 @@ describe('ManageHelpSiteLinksComponent', () => {
     component['loadLinks']();
 
     expect(component.error).toBe('Failed to load shared links.');
+    expect(component.links).toEqual([]);
+    expect(component.loading).toBeFalse();
+  });
+
+  it('should load shared links', () => {
+    const links = [{id: 1, countryIsoCode: 'AU', resourceCode: 'https://example.com'}] as any;
+    casiAdminService.listSharedLinks.and.returnValue(of(links));
+
+    component['loadLinks']();
+
+    expect(component.links).toEqual(links);
+    expect(component.loading).toBeFalse();
+  });
+
+  it('should treat a null link list as empty', () => {
+    casiAdminService.listSharedLinks.and.returnValue(of(null as any));
+
+    component['loadLinks']();
+
+    expect(component.links).toEqual([]);
+    expect(component.loading).toBeFalse();
+  });
+
+  it('should require country and URL before saving', () => {
+    component.countryIsoCode = '  ';
+    component.resourceCode = '';
+
+    component.submit();
+
+    expect(component.error).toBe('Country and link URL are required.');
+    expect(casiAdminService.createSharedLink).not.toHaveBeenCalled();
+    expect(casiAdminService.updateSharedLink).not.toHaveBeenCalled();
+  });
+
+  it('should reset the form after a successful create', () => {
+    component.countryIsoCode = 'au';
+    component.resourceCode = 'https://example.com';
+
+    component.submit();
+
+    expect(component.saving).toBeFalse();
+    expect(component.editingId).toBeNull();
+    expect(component.countryIsoCode).toBe('');
+    expect(component.resourceCode).toBe('');
+    expect(casiAdminService.listSharedLinks).toHaveBeenCalledTimes(2);
+  });
+
+  it('should show error when save fails', () => {
+    component.countryIsoCode = 'AU';
+    component.resourceCode = 'https://example.com';
+    casiAdminService.createSharedLink.and.returnValue(throwError(() => new Error('nope')));
+
+    component.submit();
+
+    expect(component.saving).toBeFalse();
+    expect(component.error).toBe('Failed to save link. Please check country code and URL.');
+  });
+
+  it('should populate the form for edit and cancel edit', () => {
+    component.edit({
+      id: 5,
+      countryIsoCode: 'AU',
+      resourceCode: 'https://example.com'
+    } as any);
+
+    expect(component.editingId).toBe(5);
+    expect(component.countryIsoCode).toBe('AU');
+    expect(component.resourceCode).toBe('https://example.com');
+
+    component.cancelEdit();
+
+    expect(component.editingId).toBeNull();
+    expect(component.countryIsoCode).toBe('');
+    expect(component.resourceCode).toBe('');
+  });
+
+  it('should default missing edit fields to empty strings', () => {
+    component.edit({id: 7} as any);
+
+    expect(component.editingId).toBe(7);
+    expect(component.countryIsoCode).toBe('');
+    expect(component.resourceCode).toBe('');
+  });
+
+  it('should not disable a link when confirm is cancelled', () => {
+    spyOn(window, 'confirm').and.returnValue(false);
+
+    component.remove({id: 1, countryIsoCode: 'AU'} as any);
+
+    expect(casiAdminService.disableSharedLink).not.toHaveBeenCalled();
+  });
+
+  it('should disable a link after confirm', () => {
+    spyOn(window, 'confirm').and.returnValue(true);
+
+    component.remove({id: 9, countryIsoCode: 'AU'} as any);
+
+    expect(casiAdminService.disableSharedLink)
+      .toHaveBeenCalledWith('UNHCR', 'HELP_SITE_LINK', 9);
+    expect(component.saving).toBeFalse();
+    expect(component.editingId).toBeNull();
+  });
+
+  it('should show error when disable fails', () => {
+    spyOn(window, 'confirm').and.returnValue(true);
+    casiAdminService.disableSharedLink.and.returnValue(throwError(() => new Error('fail')));
+
+    component.remove({id: 9, countryIsoCode: 'AU'} as any);
+
+    expect(component.saving).toBeFalse();
+    expect(component.error).toBe('Failed to disable link.');
   });
 });

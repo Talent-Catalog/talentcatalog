@@ -60,5 +60,46 @@ describe('PifiComponent', () => {
     mockPortalService.getAssignment.and.returnValue(throwError(() => new Error('boom')));
     component.ngOnInit();
     expect(component.error).toBeTruthy();
+    expect(component.loading).toBeFalse();
+  });
+
+  it('should use an existing assignment without assigning again', () => {
+    const existing = {
+      id: 9,
+      resource: {resourceCode: 'https://migrants.pifiproperty.com/'}
+    } as any;
+    mockPortalService.getAssignment.and.returnValue(of(existing));
+    mockPortalService.assign.calls.reset();
+
+    component.ngOnInit();
+
+    expect(component.assignment).toEqual(existing);
+    expect(component.loading).toBeFalse();
+    expect(mockPortalService.assign).not.toHaveBeenCalled();
+  });
+
+  it('should surface assign errors', () => {
+    mockPortalService.getAssignment.and.returnValue(of(null as any));
+    mockPortalService.assign.and.returnValue(throwError(() => new Error('assign fail')));
+
+    component.ngOnInit();
+
+    expect(component.error).toBeTruthy();
+    expect(component.loading).toBeFalse();
+  });
+
+  it('should return the candidate country name', () => {
+    expect(component.countryName).toBe('Australia');
+  });
+
+  it('should fall back when the candidate has no country', () => {
+    component.candidate = {id: 1} as any;
+    expect(component.countryName).toBe('your destination');
+  });
+
+  it('should emit when back is clicked', () => {
+    spyOn(component.backButtonClicked, 'emit');
+    component.onBackButtonClicked();
+    expect(component.backButtonClicked.emit).toHaveBeenCalled();
   });
 });
