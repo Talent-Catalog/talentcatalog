@@ -18,8 +18,13 @@
 <tc-loading [loading]="loading"></tc-loading>
 
 <div class="service-title">
-  <h2>PiFi Property</h2>
-  <p>Helping migrants find a place to call home in Australia.</p>
+  <div class="header">
+    <div>
+      <h2>PiFi Property</h2>
+      <p>Helping migrants find a place to call home in Australia.</p>
+    </div>
+    <img src="assets/images/services/pifiLogo.png" alt="PiFi logo"/>
+  </div>
 </div>
 
 <div class="service-content" *ngIf="!loading">
@@ -28,9 +33,12 @@
     rental homes close to the communities, services and everyday essentials that matter to you.
   </p>
 
-  <p *ngIf="assignment?.resource?.resourceCode as helpUrl">
-    <a [href]="helpUrl" target="_blank" rel="noopener noreferrer">{{ helpUrl }}</a>
-  </p>
+  <div class="cta" *ngIf="assignment?.resource?.resourceCode as helpUrl">
+    <tc-button [href]="helpUrl" target="_blank" [size]="'xl'">
+      Visit PiFi Property
+    </tc-button>
+    <p class="cta-url text-muted">{{ helpUrl }}</p>
+  </div>
 
   <div class="mt-5">
     <tc-button [type]="'outline'" (onClick)="onBackButtonClicked()">

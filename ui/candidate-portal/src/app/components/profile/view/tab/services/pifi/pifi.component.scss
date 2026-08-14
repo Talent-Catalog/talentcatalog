@@ -14,19 +14,41 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
+@import "bootstrap/scss/bootstrap.scss";
+
 .service-title {
   padding: 2rem;
   border-bottom-left-radius: 2rem;
   border-bottom-right-radius: 2rem;
-  background-color: #ffffff;
-  border: 1px solid #e5e7eb;
+  background-color: #f3eef9;
 }
 
 .service-content {
   padding: 2rem;
 }
 
-a {
-  font-weight: 600;
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+img {
+  max-width: 205px;
+  margin-left: 1rem;
+
+  @include media-breakpoint-down(sm) {
+    width: 90px;
+    max-height: fit-content;
+  }
+}
+
+.cta {
+  margin-top: 1.5rem;
+}
+
+.cta-url {
+  margin-top: 0.75rem;
+  font-size: 0.875rem;
   word-break: break-word;
 }
