@@ -15,11 +15,18 @@
  */
 
 import {ComponentFixture, TestBed} from '@angular/core/testing';
-import {NO_ERRORS_SCHEMA} from '@angular/core';
+import {NO_ERRORS_SCHEMA, Pipe, PipeTransform} from '@angular/core';
 import {of, throwError} from 'rxjs';
 
 import {VerifyPlusComponent} from './verify-plus.component';
 import {VerifyPlusService} from '../../../../../../services/verify-plus.service';
+
+@Pipe({name: 'translate'})
+class MockTranslatePipe implements PipeTransform {
+  transform(value: string): string {
+    return value;
+  }
+}
 
 describe('VerifyPlusComponent', () => {
   let component: VerifyPlusComponent;
@@ -30,7 +37,7 @@ describe('VerifyPlusComponent', () => {
     verifyPlusService = jasmine.createSpyObj<VerifyPlusService>('VerifyPlusService', ['submitScan']);
 
     TestBed.configureTestingModule({
-      declarations: [VerifyPlusComponent],
+      declarations: [VerifyPlusComponent, MockTranslatePipe],
       providers: [
         {provide: VerifyPlusService, useValue: verifyPlusService}
       ],

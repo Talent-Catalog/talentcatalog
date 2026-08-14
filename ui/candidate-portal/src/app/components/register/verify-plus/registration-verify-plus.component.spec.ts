@@ -15,13 +15,20 @@
  */
 
 import {ComponentFixture, TestBed} from '@angular/core/testing';
-import {NO_ERRORS_SCHEMA} from '@angular/core';
+import {NO_ERRORS_SCHEMA, Pipe, PipeTransform} from '@angular/core';
 import {of, throwError} from 'rxjs';
 
 import {RegistrationVerifyPlusComponent} from './registration-verify-plus.component';
 import {VerifyPlusService} from '../../../services/verify-plus.service';
 import {RegistrationService} from '../../../services/registration.service';
 import {AuthenticationService} from '../../../services/authentication.service';
+
+@Pipe({name: 'translate'})
+class MockTranslatePipe implements PipeTransform {
+  transform(value: string): string {
+    return value;
+  }
+}
 
 describe('RegistrationVerifyPlusComponent', () => {
   let component: RegistrationVerifyPlusComponent;
@@ -37,7 +44,7 @@ describe('RegistrationVerifyPlusComponent', () => {
     authenticationService.isGrnInstance.and.returnValue(true);
 
     TestBed.configureTestingModule({
-      declarations: [RegistrationVerifyPlusComponent],
+      declarations: [RegistrationVerifyPlusComponent, MockTranslatePipe],
       providers: [
         {provide: VerifyPlusService, useValue: verifyPlusService},
         {provide: RegistrationService, useValue: registrationService},
