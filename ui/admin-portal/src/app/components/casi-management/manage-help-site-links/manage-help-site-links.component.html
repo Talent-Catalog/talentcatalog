@@ -56,12 +56,14 @@
     <td><a [href]="link.resourceCode" target="_blank" rel="noopener noreferrer">{{ link.resourceCode }}</a></td>
     <td>{{ link.status }}</td>
     <td class="text-end">
-      <tc-button size="small" [type]="'outline'" [disabled]="saving || link.status === 'DISABLED'" (onClick)="edit(link)">
-        Edit
-      </tc-button>
-      <tc-button size="small" [type]="'danger'" [disabled]="saving || link.status === 'DISABLED'" (onClick)="remove(link)">
-        Disable
-      </tc-button>
+      <div class="d-flex justify-content-end gap-2">
+        <tc-button size="small" [type]="'outline'" [disabled]="saving || link.status === 'DISABLED'" (onClick)="edit(link)">
+          Edit
+        </tc-button>
+        <tc-button size="small" [type]="'danger'" [disabled]="saving || link.status === 'DISABLED'" (onClick)="remove(link)">
+          Disable
+        </tc-button>
+      </div>
     </td>
   </tr>
   <tr *ngIf="links.length === 0">
