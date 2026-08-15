@@ -43,17 +43,6 @@ export class VerifyPlusPage {
   readonly noCameraMessage: Locator;
   readonly scannerErrorMessage: Locator;
 
-  readonly payloadReviewHeading: Locator;
-  readonly payloadPreview: Locator;
-  readonly confirmButton: Locator;
-  readonly rescanButton: Locator;
-  readonly submissionSuccessHeading: Locator;
-  readonly submittedUnhcrNumber: Locator;
-
-  readonly duplicateResultHeading: Locator;
-  readonly duplicateUnhcrNumber: Locator;
-  readonly duplicateGuidance: Locator;
-  readonly submissionErrorPanel: Locator;
   /**
    * Creates locators for the candidate profile and Verify+ feature.
    *
@@ -138,86 +127,6 @@ export class VerifyPlusPage {
       },
     );
 
-    this.payloadReviewHeading =
-      this.verifyPlusComponent.getByRole(
-        'heading',
-        {
-          name: 'Review scanned payload',
-          exact: true,
-        },
-      );
-
-    this.payloadPreview =
-      this.verifyPlusComponent.locator(
-        '.scan-result pre',
-      );
-
-    this.confirmButton =
-      this.verifyPlusComponent
-      .locator('tc-button')
-      .filter({
-        hasText: /^\s*Confirm\s*$/,
-      })
-      .locator('button');
-
-    this.rescanButton =
-      this.verifyPlusComponent
-      .locator('tc-button')
-      .filter({
-        hasText: /^\s*Rescan\s*$/,
-      })
-      .locator('button');
-
-    this.submissionSuccessHeading =
-      this.verifyPlusComponent.getByRole(
-        'heading',
-        {
-          name: 'Verification submitted',
-          exact: true,
-        },
-      );
-
-    this.submittedUnhcrNumber =
-      this.verifyPlusComponent
-      .locator('.scan-result')
-      .filter({
-        hasText: 'Verification submitted',
-      })
-      .locator('strong');
-
-    this.duplicateResultHeading =
-      this.verifyPlusComponent.getByRole(
-        'heading',
-        {
-          name: 'Duplicate UNHCR number found',
-          exact: true,
-        },
-      );
-
-    this.duplicateUnhcrNumber =
-      this.verifyPlusComponent
-      .locator('.scan-result')
-      .filter({
-        hasText:
-          'Duplicate UNHCR number found',
-      })
-      .locator('strong');
-
-    this.duplicateGuidance =
-      this.verifyPlusComponent.getByText(
-        'You can rescan if needed.',
-        {
-          exact: true,
-        },
-      );
-
-    this.submissionErrorPanel =
-      this.verifyPlusComponent
-      .locator('p.text-danger')
-      .filter({
-        hasText:
-          'If this QR code is a valid UNHCR Verify+ code, please rescan.',
-      });
     /*
      * The Back control is rendered by tc-button and contains an icon.
      * Locate the tc-button host by its DOM text and then select the native
