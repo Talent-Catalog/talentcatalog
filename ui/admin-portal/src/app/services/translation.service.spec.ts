@@ -130,4 +130,34 @@ describe('TranslationService', () => {
     req.flush(null);
   });
 
+  it('should import translation patch via POST', () => {
+    const patch = { version: 1, entries: [] };
+
+    service.importPatch(patch, true, false).subscribe((response) => {
+      expect(response).toEqual({ status: 'success' });
+    });
+
+    const req = httpMock.expectOne(`${apiUrl}/patch/import?dryRun=true&strictLanguages=false`);
+    expect(req.request.method).toBe('POST');
+    expect(req.request.body).toEqual(patch);
+    req.flush({ status: 'success' });
+  });
+
+  it('should export translation patch via POST', () => {
+    const request = {
+      prefixes: ['SERVICES.VERIFY_PLUS'],
+      keys: ['REGISTRATION.HEADER.TITLE.VERIFYPLUS'],
+      languages: ['en', 'ar']
+    };
+
+    service.exportPatch(request).subscribe((response) => {
+      expect(response).toEqual({ version: 1, entries: [] });
+    });
+
+    const req = httpMock.expectOne(`${apiUrl}/patch/export`);
+    expect(req.request.method).toBe('POST');
+    expect(req.request.body).toEqual(request);
+    req.flush({ version: 1, entries: [] });
+  });
+
 });

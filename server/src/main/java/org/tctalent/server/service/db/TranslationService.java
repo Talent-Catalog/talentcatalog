@@ -24,11 +24,13 @@ import org.tctalent.server.model.db.Country;
 import org.tctalent.server.model.db.Translation;
 import org.tctalent.server.model.db.User;
 import org.tctalent.server.request.translation.CreateTranslationRequest;
+import org.tctalent.server.request.translation.ExportTranslationPatchRequest;
+import org.tctalent.server.request.translation.TranslationPatchRequest;
 import org.tctalent.server.request.translation.UpdateTranslationRequest;
 import org.tctalent.server.util.dto.DtoBuilder;
 
 /**
- * THere are two different ways of doing translations:
+ * There are two different ways of doing translations:
  * <ol>
  *     <li>Translations of english values stored in the database/entities. These translations are
  *     stored in the translation table/entity - see {@link Translation}</li>
@@ -138,4 +140,24 @@ public interface TranslationService {
      * @param translations Nested key/values
      */
     void updateTranslationFile(String language, Map<String, Object> translations);
+
+    /**
+     * Imports a translation patch into language translation files.
+     * <p>
+     * This merges only keys supplied in the patch and leaves all other translation keys untouched.
+     * </p>
+     * @param request Patch payload
+     * @param dryRun If true, compute and return results without writing to S3
+     * @param strictLanguages If true, fail when entries miss one of the languages listed in request
+     * @return Summary report
+     */
+    Map<String, Object> importTranslationPatch(
+        TranslationPatchRequest request, boolean dryRun, boolean strictLanguages);
+
+    /**
+     * Exports a scoped patch containing only requested prefixes and/or keys for requested languages.
+     * @param request Export request
+     * @return Patch payload
+     */
+    Map<String, Object> exportTranslationPatch(ExportTranslationPatchRequest request);
 }

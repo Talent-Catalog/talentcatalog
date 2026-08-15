@@ -17,21 +17,21 @@
 <div class="verify-plus-scanner">
   <div class="scanner-actions" *ngIf="!scanning && cameraPermission !== false && hasDevices !== false && !(hasScanned && hideScanAgain)">
     <tc-button [type]="'outline'" (onClick)="startScanning()">
-      {{ hasScanned ? 'Scan again' : 'Enable camera' }}
+      {{ hasScanned ? ('SERVICES.VERIFY_PLUS.SCANNER.SCAN_AGAIN' | translate) : ('SERVICES.VERIFY_PLUS.SCANNER.ENABLE_CAMERA' | translate) }}
     </tc-button>
   </div>
 
   <div class="scanner-actions" *ngIf="cameraPermission === false && hasDevices !== false">
     <p class="scanner-message scanner-message-error">
-    Camera access was denied. Please enable camera permission and try again.
+      {{ 'SERVICES.VERIFY_PLUS.SCANNER.PERMISSION_DENIED' | translate }}
     </p>
     <tc-button [type]="'outline'" (onClick)="startScanning()">
-      Try again
+      {{ 'SERVICES.VERIFY_PLUS.SCANNER.TRY_AGAIN' | translate }}
     </tc-button>
   </div>
 
   <p class="scanner-message scanner-message-error" *ngIf="hasDevices === false">
-    No camera was detected on this device.
+    {{ 'SERVICES.VERIFY_PLUS.SCANNER.NO_CAMERA' | translate }}
   </p>
 
   <div class="camera-preview" [hidden]="!(scanning && hasDevices !== false)">
@@ -40,6 +40,6 @@
   </div>
 
   <p class="scanner-message" *ngIf="scanning && invalidScan && cameraPermission !== false && hasDevices !== false">
-    A QR code has not been detected yet. Try moving closer and improving lighting.
+    {{ 'SERVICES.VERIFY_PLUS.SCANNER.NOT_DETECTED' | translate }}
   </p>
 </div>

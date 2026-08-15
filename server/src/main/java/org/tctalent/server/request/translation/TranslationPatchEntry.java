@@ -1,4 +1,4 @@
-/*!
+/*
  * Copyright (c) 2026 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
@@ -13,28 +13,30 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-@import 'src/scss/color-mixins';
-.main {
-  padding: 20px 0;
-}
 
-.header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 1rem;
-  flex-wrap: wrap;
-}
+package org.tctalent.server.request.translation;
 
-.header-actions {
-  margin-bottom: 0.5rem;
-}
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import java.util.Map;
+import lombok.Getter;
+import lombok.Setter;
 
-.filter {
-  margin: 20px 0;
-}
+/**
+ * Represents a translation patch entry, which contains a key and a map of language codes to their
+ * corresponding translation values. This class is used to facilitate the updating of translations
+ * in different languages.
+ *
+ * @author sadatmalik
+ */
+@Setter
+@Getter
+public class TranslationPatchEntry {
 
-tr.is-blank td {
-  @include background-color-red;
-}
+    @NotBlank
+    private String key;
 
+    @NotNull
+    private Map<String, String> values;
+
+}

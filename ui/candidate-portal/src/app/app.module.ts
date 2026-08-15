@@ -37,6 +37,9 @@ import {
   RegistrationContactComponent
 } from './components/register/contact/registration-contact.component';
 import {
+  RegistrationVerifyPlusComponent
+} from './components/register/verify-plus/registration-verify-plus.component';
+import {
   RegistrationPersonalComponent
 } from './components/register/personal/registration-personal.component';
 import {
@@ -266,6 +269,7 @@ export function HttpLoaderFactory(http: HttpClient) {
     HeaderComponent,
     LandingComponent,
     RegistrationContactComponent,
+    RegistrationVerifyPlusComponent,
     RegistrationPersonalComponent,
     RegistrationCandidateOccupationComponent,
     RegistrationWorkExperienceComponent,

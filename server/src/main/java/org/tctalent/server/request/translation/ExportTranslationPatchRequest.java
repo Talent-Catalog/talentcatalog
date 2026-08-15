@@ -1,4 +1,4 @@
-/*!
+/*
  * Copyright (c) 2026 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
@@ -13,28 +13,25 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-@import 'src/scss/color-mixins';
-.main {
-  padding: 20px 0;
-}
 
-.header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 1rem;
-  flex-wrap: wrap;
-}
+package org.tctalent.server.request.translation;
 
-.header-actions {
-  margin-bottom: 0.5rem;
-}
+import java.util.List;
+import lombok.Getter;
+import lombok.Setter;
 
-.filter {
-  margin: 20px 0;
-}
+/**
+ * Request object for exporting translation patches. This class encapsulates the parameters required
+ * to specify which translations to export, including prefixes, keys, and languages.
+ *
+ * @author sadatmalik
+ */
+@Setter
+@Getter
+public class ExportTranslationPatchRequest {
 
-tr.is-blank td {
-  @include background-color-red;
-}
+    private List<String> prefixes;
+    private List<String> keys;
+    private List<String> languages;
 
+}
