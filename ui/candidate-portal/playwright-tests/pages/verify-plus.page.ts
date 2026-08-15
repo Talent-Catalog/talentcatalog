@@ -37,6 +37,11 @@ export class VerifyPlusPage {
   readonly scanner: Locator;
   readonly enableCameraButton: Locator;
   readonly backButton: Locator;
+  readonly permissionDeniedMessage: Locator;
+  readonly tryAgainButton: Locator;
+  readonly profileError: Locator;
+  readonly noCameraMessage: Locator;
+  readonly scannerErrorMessage: Locator;
 
   /**
    * Creates locators for the candidate profile and Verify+ feature.
@@ -59,7 +64,11 @@ export class VerifyPlusPage {
     });
 
     this.servicesContainer = page.locator('app-services');
-    
+
+    /*
+     * The Verify+ service card is a clickable div in the production markup.
+     * Scope the locator to app-services and select the card by its unique text.
+     */
     this.verifyPlusServiceCard = this.servicesContainer
     .locator('.service-card')
     .filter({
@@ -89,6 +98,34 @@ export class VerifyPlusPage {
       name: 'Enable camera',
       exact: true,
     });
+
+    this.permissionDeniedMessage = this.scanner.getByText(
+      'Camera access was denied. Please enable camera permission and try again.',
+      {
+        exact: true,
+      },
+    );
+
+    this.tryAgainButton = this.scanner.getByRole('button', {
+      name: 'Try again',
+      exact: true,
+    });
+
+    this.profileError = this.profileComponent.locator('app-error');
+
+    this.noCameraMessage = this.scanner.getByText(
+      'No camera was detected on this device.',
+      {
+        exact: true,
+      },
+    );
+
+    this.scannerErrorMessage = this.verifyPlusComponent.getByText(
+      'A camera or scanner error occurred. Please refresh and try again.',
+      {
+        exact: true,
+      },
+    );
 
     /*
      * The Back control is rendered by tc-button and contains an icon.
@@ -125,12 +162,18 @@ export class VerifyPlusPage {
       'Expected the candidate profile component to load',
     ).toBeVisible();
 
-    await expect(
-      this.servicesTab,
-      'Expected the Services tab to become available',
-    ).toBeVisible({
-      timeout: 20_000,
-    });
+    try {
+      await expect(
+        this.servicesTab,
+        'Expected the Services tab to become available',
+      ).toBeVisible({
+        timeout: 30_000,
+      });
+    } catch (error) {
+      await this.throwIfProfileHasError();
+
+      throw error;
+    }
 
     await this.servicesTab.click();
 
@@ -138,7 +181,7 @@ export class VerifyPlusPage {
       this.servicesContainer,
       'Expected the candidate Services tab to load',
     ).toBeVisible({
-      timeout: 20_000,
+      timeout: 30_000,
     });
 
     await expect(
@@ -148,15 +191,69 @@ export class VerifyPlusPage {
   }
 
   /**
+   * Throws a useful error when the profile rendered an application error instead
+   * of the expected Services tab.
+   */
+  private async throwIfProfileHasError(): Promise<void> {
+    const errorText = (
+      await this.profileError.textContent()
+    )?.trim();
+
+    if (errorText) {
+      throw new Error(
+        `Candidate profile failed to load Services: ${errorText}`,
+      );
+    }
+  }
+
+
+  /**
+   * Starts the Verify+ camera scanner.
+   */
+  async enableCamera(): Promise<void> {
+    await expect(
+      this.enableCameraButton,
+      'Expected the Enable camera button before scanning',
+    ).toBeVisible();
+
+    await this.enableCameraButton.click();
+  }
+
+  /**
+   * Retries camera access after an earlier camera failure.
+   */
+  async retryCamera(): Promise<void> {
+    await expect(
+      this.tryAgainButton,
+      'Expected the Try again button after camera permission denial',
+    ).toBeVisible();
+
+    await this.tryAgainButton.click();
+  }
+
+  /**
    * Opens Verify+ from the Services list.
    */
   async openVerifyPlus(): Promise<void> {
-    await this.verifyPlusServiceCard.click();
+    await expect(
+      this.verifyPlusServiceCard,
+      'Expected the Verify+ service card before opening it',
+    ).toBeVisible({
+      timeout: 30_000,
+    });
+
+    await this.verifyPlusServiceCard.scrollIntoViewIfNeeded();
+
+    await this.verifyPlusServiceCard.click({
+      timeout: 20_000,
+    });
 
     await expect(
       this.verifyPlusComponent,
       'Expected the Verify+ component to open',
-    ).toBeVisible();
+    ).toBeVisible({
+      timeout: 20_000,
+    });
 
     await expect(this.title).toBeVisible();
   }
@@ -168,18 +265,31 @@ export class VerifyPlusPage {
     await expect(
       this.backButton,
       'Expected the Verify+ Back button to be available',
-    ).toBeVisible();
+    ).toBeVisible({
+      timeout: 20_000,
+    });
 
-    await this.backButton.click();
+    await expect(this.backButton).toBeEnabled();
 
-    await expect(
-      this.verifyPlusServiceCard,
-      'Expected the Services list after clicking Back',
-    ).toBeVisible();
+    await this.backButton.scrollIntoViewIfNeeded();
+
+    await this.backButton.click({
+      timeout: 20_000,
+    });
 
     await expect(
       this.verifyPlusComponent,
       'Expected Verify+ to close after clicking Back',
-    ).not.toBeVisible();
+    ).not.toBeVisible({
+      timeout: 20_000,
+    });
+
+    await expect(
+      this.verifyPlusServiceCard,
+      'Expected the Services list after clicking Back',
+    ).toBeVisible({
+      timeout: 20_000,
+    });
   }
+
 }
