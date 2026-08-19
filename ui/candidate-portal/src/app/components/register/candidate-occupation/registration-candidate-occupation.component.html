@@ -20,45 +20,131 @@
 
   <ng-container *ngIf="!loading">
 
-    <!-- REVIEW -->
-    <div class="card" *ngFor="let occupation of candidateOccupations; let i = index;">
+    <tc-alert class="mb-3" type="warning" [dismissible]="false"
+              *ngIf="principalOccupationRemoved && !hasPrincipal">
+      {{ 'REGISTRATION.OCCUPATION.LABEL.PRINCIPAL_REMOVED_WARNING' | translate }}
+    </tc-alert>
 
-      <app-candidate-occupation-card [candidateOccupation]="occupation"
-                                     [candidateOccupations]="candidateOccupations"
-                                     [occupations]="occupations"
-                                     [disabled]="saving || loading"
-                                     (onDelete)="deleteOccupation(i, occupation.occupationId)">
-      </app-candidate-occupation-card>
-
+    <div class="mb-3 occupation-phase-heading" *ngIf="!candidateOccupations?.length">
+      <div class="fw-bold occupation-phase-title">{{ 'REGISTRATION.OCCUPATION.LABEL.HEADING' | translate }}</div>
+      <p class="text-muted mb-0">{{ 'REGISTRATION.OCCUPATION.LABEL.ADD_SUBHEADING' | translate }}</p>
     </div>
 
-    <!-- CREATE -->
-    <form class="card" [formGroup]="form" *ngIf="!loading && showForm">
+    <!-- Draft form: shared markup, reused both inline (editing an existing row in place)
+         and appended below the list (adding a brand new occupation). Reusing one
+         template keeps the two cases visually/behaviourally identical and avoids
+         the edit form popping up somewhere unrelated to the row being edited. -->
+    <ng-template #draftForm>
+      <form class="card occupation-draft col-12 col-md-9" [formGroup]="form">
 
-      <!-- FIELD -->
-      <div class="mb-3">
-        <tc-label for="occupationId">{{ 'REGISTRATION.OCCUPATION.LABEL.OCCUPATION' | translate }} <sup>*</sup></tc-label>
-        <ng-select class="tc-select" id="occupationId" [formControlName]="'occupationId'" [clearable]="false"
-                   placeholder="{{ 'FORM.PLACEHOLDER.SELECTORTYPE' | translate }}">
-          <ng-option *ngFor="let occupation of filteredOccupations" [value]="occupation.id">{{occupation.name}}</ng-option>
-        </ng-select>
-        <app-form-control-error [control]="form.controls.occupationId"></app-form-control-error>
+        <div class="d-flex align-items-center justify-content-between p-3 pb-0">
+          <span class="text-muted fw-bold text-uppercase occupation-draft-heading">
+            <i class="fas fa-plus me-1"></i>
+            {{ editingIndex != null ? ('REGISTRATION.OCCUPATION.LABEL.EDIT_HEADING' | translate) : ('REGISTRATION.OCCUPATION.LABEL.NEW_HEADING' | translate) }}
+          </span>
+          <tc-button type="outline" color="error" size="sm" ariaLabel="Discard" (onClick)="discardDraft()">
+            <i class="fas fa-xmark"></i>
+          </tc-button>
+        </div>
+
+        <div class="p-3">
+          <!-- FIELD -->
+          <div class="mb-3">
+            <tc-label for="occupationId">{{ 'REGISTRATION.OCCUPATION.LABEL.OCCUPATION' | translate }} <sup>*</sup></tc-label>
+            <ng-select class="tc-select" id="occupationId" [formControlName]="'occupationId'" [clearable]="false"
+                       placeholder="{{ 'FORM.PLACEHOLDER.SELECTORTYPE' | translate }}">
+              <ng-option *ngFor="let occupation of filteredOccupations" [value]="occupation.id">{{occupation.name}}</ng-option>
+            </ng-select>
+            <app-form-control-error [control]="form.controls.occupationId"></app-form-control-error>
+          </div>
+
+          <!-- YEARS OF EXPERIENCE -->
+          <div class="mb-3">
+            <tc-label for="yearsExperience">{{ 'REGISTRATION.OCCUPATION.LABEL.YEARSEXPERIENCE' | translate }}<sup>*</sup></tc-label>
+            <p class="text-muted">{{ 'REGISTRATION.OCCUPATION.LABEL.DISCLAIMER' | translate }}</p>
+            <tc-input type="number" name="yearsExperience" id="yearsExperience" [min]="0" [formControlName]="'yearsExperience'"></tc-input>
+            <app-form-control-error [control]="form.controls.yearsExperience"></app-form-control-error>
+          </div>
+
+          <div class="d-flex justify-content-end">
+            <tc-button color="primary" [disabled]="!form.valid" (onClick)="saveDraft()">
+              {{ 'REGISTRATION.OCCUPATION.BUTTON.SAVE' | translate }}
+            </tc-button>
+          </div>
+        </div>
+
+      </form>
+    </ng-template>
+
+    <!-- SAVED OCCUPATIONS: select principal -->
+    <div class="mb-3" *ngIf="candidateOccupations?.length">
+      <tc-alert class="occupation-added-confirmation mb-2" type="success" [dismissible]="false"
+                *ngIf="justAddedOccupation && !hasPrincipal">
+        {{ 'REGISTRATION.OCCUPATION.LABEL.OCCUPATION_ADDED_CONFIRMATION' | translate }}
+      </tc-alert>
+
+      <div class="mb-3 occupation-phase-heading" #selectPrincipalHeading tabindex="-1">
+        <div class="fw-bold occupation-phase-title">{{ 'REGISTRATION.OCCUPATION.LABEL.SELECT_PRINCIPAL_HEADING' | translate }}</div>
+        <p class="text-muted mb-0">{{ 'REGISTRATION.OCCUPATION.LABEL.SELECT_PRINCIPAL_SUBHEADING' | translate }}</p>
       </div>
 
-      <!-- YEARS OF EXPERIENCE -->
-      <div class="mb-3">
-        <tc-label for="yearsExperience">{{ 'REGISTRATION.OCCUPATION.LABEL.YEARSEXPERIENCE' | translate }}<sup>*</sup></tc-label>
-        <p class="text-muted">{{ 'REGISTRATION.OCCUPATION.LABEL.DISCLAIMER' | translate }}</p>
-        <tc-input type="number" name="yearsExperience" id="yearsExperience" [min]="0" [formControlName]="'yearsExperience'"></tc-input>
-        <app-form-control-error [control]="form.controls.yearsExperience"></app-form-control-error>
-      </div>
+      <div role="radiogroup" class="d-flex flex-column gap-1">
+        <ng-container *ngFor="let occupation of candidateOccupations; let i = index; trackBy: trackByOccupationId">
 
-    </form>
+          <!-- Editing this row: show the draft form in its place, not elsewhere -->
+          <ng-container *ngIf="i === editingIndex; else viewRow">
+            <ng-container *ngTemplateOutlet="draftForm"></ng-container>
+          </ng-container>
+
+          <ng-template #viewRow>
+            <div class="card occupation-row col-12 col-md-9"
+                 [class.occupation-row-selected]="occupation.principal"
+                 (click)="selectPrincipal(occupation)">
+
+              <div class="d-flex align-items-center gap-3 occupation-row-content">
+                <tc-radio [id]="'principal-' + (occupation.id ?? occupation.occupationId)" name="principalOccupation"
+                          [value]="i" [ngModel]="occupation.principal ? i : null"
+                          label="" (change)="selectPrincipal(occupation)">
+                </tc-radio>
+                <div class="flex-grow-1 occupation-row-main">
+                  <div class="d-flex align-items-center gap-2 flex-wrap">
+                    <span class="fw-bold">{{ getOccupationName(occupation.occupationId) }}</span>
+                    <tc-badge *ngIf="occupation.principal" class="occupation-principal-badge" color="blue">
+                      {{ 'REGISTRATION.OCCUPATION.LABEL.PRINCIPAL_BADGE' | translate }}
+                    </tc-badge>
+                  </div>
+                  <div class="text-muted">{{ formatYears(occupation.yearsExperience) }}</div>
+                </div>
+
+                <div class="occupation-row-actions">
+                  <tc-button type="outline" color="info" size="sm" ariaLabel="Edit occupation"
+                             [disabled]="saving || loading || showForm"
+                             (onClick)="editOccupation(i)">
+                    <i class="fas fa-pen"></i>
+                  </tc-button>
+                  <tc-button class="occupation-remove-btn" type="outline" color="error" size="sm" ariaLabel="Remove occupation"
+                             [disabled]="saving || loading"
+                             (onClick)="deleteOccupation(i, occupation.occupationId)">
+                    <i class="fas fa-xmark"></i>
+                  </tc-button>
+                </div>
+              </div>
+            </div>
+          </ng-template>
+
+        </ng-container>
+      </div>
+    </div>
+
+    <!-- Adding a brand new occupation (not editing an existing row) -->
+    <ng-container *ngIf="showForm && editingIndex === null">
+      <ng-container *ngTemplateOutlet="draftForm"></ng-container>
+    </ng-container>
 
     <div class="text-center mt-4">
       <tc-button type="outline"
-              (onClick)="addOccupation()"
-              [disabled]="loading || saving">
+              (onClick)="openAddForm()"
+              [disabled]="loading || saving || showForm">
         {{ 'REGISTRATION.OCCUPATION.BUTTON.ADD' | translate }}
       </tc-button>
     </div>
@@ -66,11 +152,10 @@
 
   <app-error [error]="error"></app-error>
 
-  <app-registration-footer [nextDisabled]="!form.valid && !candidateOccupations?.length"
+  <app-registration-footer [nextDisabled]="nextDisabled"
                            [type]="edit ? 'update' : 'step'"
                            (backClicked)="edit ? cancel() : back()"
                            (nextClicked)="next()">
   </app-registration-footer>
 
 </div>
-

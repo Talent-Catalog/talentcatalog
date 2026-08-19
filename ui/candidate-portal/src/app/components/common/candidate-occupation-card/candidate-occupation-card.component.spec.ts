@@ -100,6 +100,14 @@ class NgOptionStubComponent {
   @Input() value?: unknown;
 }
 
+@Component({
+  selector: 'tc-badge',
+  template: '<ng-content></ng-content>'
+})
+class TcBadgeStubComponent {
+  @Input() color?: string;
+}
+
 function makeOccupation(id: number, name: string): Occupation {
   return {id, name};
 }
@@ -122,6 +130,7 @@ describe('CandidateOccupationCardComponent', () => {
   async function configureAndCreate(options?: {
     preview?: boolean;
     disabled?: boolean;
+    isPrincipal?: boolean;
     candidateOccupation?: CandidateOccupation;
     candidateOccupations?: CandidateOccupation[];
     occupations?: Occupation[];
@@ -135,7 +144,8 @@ describe('CandidateOccupationCardComponent', () => {
         TcDescriptionItemStubComponent,
         TcInputStubComponent,
         NgSelectStubComponent,
-        NgOptionStubComponent
+        NgOptionStubComponent,
+        TcBadgeStubComponent
       ],
       imports: [FormsModule, TranslateModule.forRoot()]
     }).compileComponents();
@@ -144,6 +154,7 @@ describe('CandidateOccupationCardComponent', () => {
     component = fixture.componentInstance;
     component.preview = options?.preview ?? false;
     component.disabled = options?.disabled ?? false;
+    component.isPrincipal = options?.isPrincipal ?? false;
     component.candidateOccupation = options?.candidateOccupation ?? makeCandidateOccupation();
     component.candidateOccupations = options?.candidateOccupations ?? [component.candidateOccupation];
     component.occupations = options?.occupations ?? [
@@ -192,6 +203,22 @@ describe('CandidateOccupationCardComponent', () => {
       expect(labels).toContain('REGISTRATION.OCCUPATION.LABEL.YEARSEXPERIENCE');
       expect(text).toContain('Engineer');
       expect(text).toContain('4');
+    });
+
+    it('should not render the Principal badge when isPrincipal is false', async () => {
+      await configureAndCreate({preview: true, isPrincipal: false});
+      expect(fixture.debugElement.query(By.directive(TcBadgeStubComponent))).toBeFalsy();
+    });
+
+    it('should render the Principal badge next to the occupation name when isPrincipal is true', async () => {
+      await configureAndCreate({preview: true, isPrincipal: true});
+
+      const badge = fixture.debugElement.query(By.directive(TcBadgeStubComponent));
+      const occupationItem = fixture.debugElement.queryAll(By.directive(TcDescriptionItemStubComponent))
+        .find(debugEl => debugEl.componentInstance.label === 'REGISTRATION.OCCUPATION.LABEL.OCCUPATION');
+
+      expect(badge).toBeTruthy();
+      expect(occupationItem.nativeElement.contains(badge.nativeElement)).toBeTrue();
     });
   });
 

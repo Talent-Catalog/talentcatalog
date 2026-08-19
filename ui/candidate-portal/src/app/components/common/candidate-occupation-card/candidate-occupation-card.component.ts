@@ -43,6 +43,9 @@ export class CandidateOccupationCardComponent implements OnChanges {
   @Input() disabled;
   @Output() onDelete = new EventEmitter();
 
+  // True if this occupation is the candidate's principal occupation
+  @Input() isPrincipal = false;
+
   constructor() { }
 
   ngOnChanges(changes: SimpleChanges) {

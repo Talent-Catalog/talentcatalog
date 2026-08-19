@@ -31,7 +31,10 @@
 
     <tc-description-list *ngIf="preview" direction="column" compact size="lg">
       <tc-description-item [label]="'REGISTRATION.OCCUPATION.LABEL.OCCUPATION' | translate">
-        {{getOccupationName(candidateOccupation.occupation)}}
+        <div class="d-flex align-items-center gap-2 flex-wrap">
+          <span>{{getOccupationName(candidateOccupation.occupation)}}</span>
+          <tc-badge *ngIf="isPrincipal" color="blue">{{ 'REGISTRATION.OCCUPATION.LABEL.PRINCIPAL_BADGE' | translate }}</tc-badge>
+        </div>
       </tc-description-item>
     </tc-description-list>
   </div>
