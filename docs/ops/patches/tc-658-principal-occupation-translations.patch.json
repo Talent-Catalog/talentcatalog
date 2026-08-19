@@ -1,0 +1,179 @@
+{
+  "version": 1,
+  "description": "Principal occupation registration step localization (TC-658)",
+  "languages": [
+    "en",
+    "ar",
+    "fa",
+    "ps",
+    "es",
+    "fr",
+    "tr",
+    "ru",
+    "uk",
+    "nl",
+    "pt"
+  ],
+  "entries": [
+    {
+      "key": "REGISTRATION.OCCUPATION.LABEL.HEADING",
+      "values": {
+        "en": "Add your occupations",
+        "ar": "أضف المهن الخاصة بك",
+        "fa": "مشاغل خود را اضافه کنید",
+        "ps": "خپلې دندې اضافه کړئ",
+        "es": "Agrega tus ocupaciones",
+        "fr": "Ajoutez vos professions",
+        "tr": "Mesleklerinizi ekleyin",
+        "ru": "Добавьте свои профессии",
+        "uk": "Додайте свої професії",
+        "nl": "Voeg uw beroepen toe",
+        "pt": "Adicione suas ocupações"
+      }
+    },
+    {
+      "key": "REGISTRATION.OCCUPATION.LABEL.ADD_SUBHEADING",
+      "values": {
+        "en": "Add each occupation you have skills or experience in.",
+        "ar": "أضف كل مهنة تتمتع فيها بمهارات أو خبرة.",
+        "fa": "هر شغلی که در آن مهارت یا تجربه دارید را اضافه کنید.",
+        "ps": "هره هغه دنده اضافه کړئ چې تاسو پکې مهارت یا تجربه لرئ.",
+        "es": "Agrega cada ocupación en la que tengas habilidades o experiencia.",
+        "fr": "Ajoutez chaque profession pour laquelle vous avez des compétences ou de l'expérience.",
+        "tr": "Beceri veya deneyime sahip olduğunuz her mesleği ekleyin.",
+        "ru": "Добавьте каждую профессию, в которой у вас есть навыки или опыт.",
+        "uk": "Додайте кожну професію, у якій у вас є навички чи досвід.",
+        "nl": "Voeg elk beroep toe waarin u vaardigheden of ervaring heeft.",
+        "pt": "Adicione cada ocupação em que você tenha habilidades ou experiência."
+      }
+    },
+    {
+      "key": "REGISTRATION.OCCUPATION.LABEL.EDIT_HEADING",
+      "values": {
+        "en": "Edit occupation",
+        "ar": "تعديل المهنة",
+        "fa": "ویرایش شغل",
+        "ps": "دنده سمول",
+        "es": "Editar ocupación",
+        "fr": "Modifier la profession",
+        "tr": "Mesleği düzenle",
+        "ru": "Изменить профессию",
+        "uk": "Редагувати професію",
+        "nl": "Beroep bewerken",
+        "pt": "Editar ocupação"
+      }
+    },
+    {
+      "key": "REGISTRATION.OCCUPATION.LABEL.NEW_HEADING",
+      "values": {
+        "en": "New occupation",
+        "ar": "مهنة جديدة",
+        "fa": "شغل جدید",
+        "ps": "نوې دنده",
+        "es": "Nueva ocupación",
+        "fr": "Nouvelle profession",
+        "tr": "Yeni meslek",
+        "ru": "Новая профессия",
+        "uk": "Нова професія",
+        "nl": "Nieuw beroep",
+        "pt": "Nova ocupação"
+      }
+    },
+    {
+      "key": "REGISTRATION.OCCUPATION.LABEL.SELECT_PRINCIPAL_HEADING",
+      "values": {
+        "en": "Select your principal occupation",
+        "ar": "حدد مهنتك الأساسية",
+        "fa": "شغل اصلی خود را انتخاب کنید",
+        "ps": "خپله اصلي دنده وټاکئ",
+        "es": "Selecciona tu ocupación principal",
+        "fr": "Sélectionnez votre profession principale",
+        "tr": "Ana mesleğinizi seçin",
+        "ru": "Выберите вашу основную профессию",
+        "uk": "Виберіть свою основну професію",
+        "nl": "Selecteer uw hoofdberoep",
+        "pt": "Selecione sua ocupação principal"
+      }
+    },
+    {
+      "key": "REGISTRATION.OCCUPATION.LABEL.SELECT_PRINCIPAL_SUBHEADING",
+      "values": {
+        "en": "Choose the occupation that best represents your main skill set.",
+        "ar": "اختر المهنة التي تمثل مجموعة مهاراتك الأساسية بشكل أفضل.",
+        "fa": "شغلی را انتخاب کنید که بهترین نمایانگر مجموعه مهارت‌های اصلی شما باشد.",
+        "ps": "هغه دنده وټاکئ چې ستاسو د اصلي مهارتونو ټولګه ښه ښکاره کوي.",
+        "es": "Elige la ocupación que mejor represente tu conjunto principal de habilidades.",
+        "fr": "Choisissez la profession qui représente le mieux votre principal ensemble de compétences.",
+        "tr": "Ana yetenek setinizi en iyi temsil eden mesleği seçin.",
+        "ru": "Выберите профессию, которая наилучшим образом отражает ваш основной набор навыков.",
+        "uk": "Виберіть професію, яка найкраще відображає ваш основний набір навичок.",
+        "nl": "Kies het beroep dat uw belangrijkste vaardigheden het beste weergeeft.",
+        "pt": "Escolha a ocupação que melhor representa seu principal conjunto de habilidades."
+      }
+    },
+    {
+      "key": "REGISTRATION.OCCUPATION.LABEL.PRINCIPAL_BADGE",
+      "values": {
+        "en": "Primary occupation",
+        "ar": "المهنة الأساسية",
+        "fa": "شغل اصلی",
+        "ps": "اصلي دنده",
+        "es": "Ocupación principal",
+        "fr": "Profession principale",
+        "tr": "Ana meslek",
+        "ru": "Основная профессия",
+        "uk": "Основна професія",
+        "nl": "Hoofdberoep",
+        "pt": "Ocupação principal"
+      }
+    },
+    {
+      "key": "REGISTRATION.OCCUPATION.LABEL.OCCUPATION_ADDED_CONFIRMATION",
+      "values": {
+        "en": "Occupation added. Now select your principal occupation.",
+        "ar": "تمت إضافة المهنة. الآن حدد مهنتك الأساسية.",
+        "fa": "شغل اضافه شد. اکنون شغل اصلی خود را انتخاب کنید.",
+        "ps": "دنده اضافه شوه. اوس خپله اصلي دنده وټاکئ.",
+        "es": "Ocupación agregada. Ahora selecciona tu ocupación principal.",
+        "fr": "Profession ajoutée. Sélectionnez maintenant votre profession principale.",
+        "tr": "Meslek eklendi. Şimdi ana mesleğinizi seçin.",
+        "ru": "Профессия добавлена. Теперь выберите вашу основную профессию.",
+        "uk": "Професію додано. Тепер виберіть свою основну професію.",
+        "nl": "Beroep toegevoegd. Selecteer nu uw hoofdberoep.",
+        "pt": "Ocupação adicionada. Agora selecione sua ocupação principal."
+      }
+    },
+    {
+      "key": "REGISTRATION.OCCUPATION.LABEL.PRINCIPAL_REMOVED_WARNING",
+      "values": {
+        "en": "You removed your principal occupation. Please select a new one.",
+        "ar": "لقد أزلت مهنتك الأساسية. يرجى تحديد مهنة جديدة.",
+        "fa": "شغل اصلی خود را حذف کردید. لطفاً یک شغل جدید انتخاب کنید.",
+        "ps": "تاسو خپله اصلي دنده لرې کړه. مهرباني وکړئ نوې دنده وټاکئ.",
+        "es": "Has eliminado tu ocupación principal. Por favor selecciona una nueva.",
+        "fr": "Vous avez supprimé votre profession principale. Veuillez en sélectionner une nouvelle.",
+        "tr": "Ana mesleğinizi kaldırdınız. Lütfen yeni bir meslek seçin.",
+        "ru": "Вы удалили свою основную профессию. Пожалуйста, выберите новую.",
+        "uk": "Ви видалили свою основну професію. Будь ласка, виберіть нову.",
+        "nl": "U heeft uw hoofdberoep verwijderd. Selecteer een nieuw beroep.",
+        "pt": "Você removeu sua ocupação principal. Selecione uma nova."
+      }
+    },
+    {
+      "key": "REGISTRATION.OCCUPATION.BUTTON.SAVE",
+      "values": {
+        "en": "Save",
+        "ar": "حفظ",
+        "fa": "ذخیره",
+        "ps": "خوندي کړه",
+        "es": "Guardar",
+        "fr": "Enregistrer",
+        "tr": "Kaydet",
+        "ru": "Сохранить",
+        "uk": "Зберегти",
+        "nl": "Opslaan",
+        "pt": "Salvar"
+      }
+    }
+  ]
+}
