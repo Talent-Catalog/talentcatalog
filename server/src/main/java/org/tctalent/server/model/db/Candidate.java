@@ -305,6 +305,10 @@ public class Candidate extends AbstractCandidateDataDomainObject<Long> implement
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "candidate", cascade = CascadeType.MERGE)
     private List<CandidateOccupation> candidateOccupations;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "principal_occupation_id")
+    private CandidateOccupation principalOccupation;
+
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "candidate", cascade = CascadeType.MERGE)
     @OrderBy("updatedDate DESC")
     private List<CandidateNote> candidateNotes;
@@ -1369,6 +1373,14 @@ public class Candidate extends AbstractCandidateDataDomainObject<Long> implement
         if (entities != null) {
             entities.forEach(entity -> entity.setCandidate(this));
         }
+    }
+
+    public CandidateOccupation getPrincipalOccupation() {
+        return principalOccupation;
+    }
+
+    public void setPrincipalOccupation(CandidateOccupation principalOccupation) {
+        this.principalOccupation = principalOccupation;
     }
 
     public List<CandidateNote> getCandidateNotes() {
