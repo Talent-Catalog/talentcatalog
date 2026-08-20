@@ -306,6 +306,17 @@ describe('RegistrationContactComponent', () => {
       component.form.get('email').setValue('user@example.com');
       expect(component.email).toBe('user@example.com');
     });
+
+    it('should leave an invisible character embedded in the middle of the email untouched', () => {
+      component.form.get('email').setValue('user@examp​le.com');
+      expect(component.email).toBe('user@examp​le.com');
+    });
+
+    it('should clear a prior pattern error once the invisible character is sanitized', () => {
+      const control = component.form.get('email');
+      control.setValue('ㅤuser@example.com');
+      expect(control.errors?.['pattern']).toBeFalsy();
+    });
   });
 
   // ---------------------------------------------------------------------------

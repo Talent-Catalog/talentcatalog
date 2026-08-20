@@ -281,27 +281,25 @@ export const EMAIL_REGEX: string =
   '(?!.*[@.]{2})[a-zA-Z0-9!#$%&\'*+-/=?^_`{|}~]+[a-zA-Z0-9.!#$%&\'*+-/=?^_`{|}~]*@(?!-)[a-zA-Z0-9-]+(?<!-)(\\.(?!-)[a-zA-Z0-9-]+(?<!-))*$';
 
 /**
- * Matches a single invisible/blank Unicode character (eg zero-width space, non-breaking space,
- * BOM, Hangul filler character) or ordinary whitespace character.
+ * Matches one invisible/blank Unicode character: whitespace, plus the Hangul/Khmer filler
+ * characters that render blank but aren't classified as whitespace.
+ *
+ * Mirrors INVISIBLE_OR_WHITESPACE_CHAR in
+ * server/.../request/candidate/BaseCandidateContactRequest.java - keep both in sync.
  */
-const INVISIBLE_OR_WHITESPACE_CHAR =
-  '[\\s\\u00A0\\u1680\\u180E\\u2000-\\u200F\\u202F\\u205F\\u2060-\\u2064\\u3000\\u3164\\uFEFF\\uFFA0\\u115F\\u1160\\u17B4\\u17B5]';
+const INVISIBLE_OR_WHITESPACE_CHAR = '[\\s\\p{Zs}\\p{Cf}\\u115F\\u1160\\u17B4\\u17B5\\u3164\\uFFA0]';
 
 /**
- * Strips leading/trailing invisible/blank Unicode characters (eg zero-width spaces, non-breaking
- * spaces, BOM, Hangul filler characters) that are often silently included when an email address
- * is copy-pasted. Without this, a visibly-correct pasted email address can fail
- * {@link EMAIL_REGEX} validation - see TC-723.
- *
- * Only leading/trailing characters are stripped - one embedded in the middle of the address is
- * left alone, since that would indicate a genuinely invalid email rather than a paste artifact.
+ * Strips invisible/blank characters from the start and end of a pasted email address - see
+ * TC-723. Leaves anything in the middle untouched, since that would mean the email is
+ * genuinely malformed rather than just messily pasted.
  */
 export function sanitizeEmailInput(value: string): string {
   if (!value) {
     return value;
   }
   const edgeRegex = new RegExp(
-    `^${INVISIBLE_OR_WHITESPACE_CHAR}+|${INVISIBLE_OR_WHITESPACE_CHAR}+$`, 'g'
+    `^${INVISIBLE_OR_WHITESPACE_CHAR}+|${INVISIBLE_OR_WHITESPACE_CHAR}+$`, 'gu'
   );
   return value.replace(edgeRegex, '');
 }
