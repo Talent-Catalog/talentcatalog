@@ -429,6 +429,7 @@ describe('RegistrationCandidateOccupationComponent', () => {
     });
 
     it('should scroll to and focus the "select principal" heading once, after saving the first occupation', () => {
+      spyOn(window, 'matchMedia').and.returnValue({matches: false} as MediaQueryList);
       const scrollIntoViewSpy = jasmine.createSpy('scrollIntoView');
       const focusSpy = jasmine.createSpy('focus');
       component.selectPrincipalHeadingRef = {
@@ -447,6 +448,21 @@ describe('RegistrationCandidateOccupationComponent', () => {
       component.ngAfterViewChecked();
       expect(scrollIntoViewSpy).toHaveBeenCalledTimes(1);
       expect(focusSpy).toHaveBeenCalledTimes(1);
+    });
+
+    it('should scroll instantly (no animation) when the user prefers reduced motion', () => {
+      spyOn(window, 'matchMedia').and.returnValue({matches: true} as MediaQueryList);
+      const scrollIntoViewSpy = jasmine.createSpy('scrollIntoView');
+      const focusSpy = jasmine.createSpy('focus');
+      component.selectPrincipalHeadingRef = {
+        nativeElement: {scrollIntoView: scrollIntoViewSpy, focus: focusSpy}
+      } as any;
+
+      component.form.patchValue({occupationId: 1, yearsExperience: 4});
+      component.saveDraft();
+      component.ngAfterViewChecked();
+
+      expect(scrollIntoViewSpy).toHaveBeenCalledWith({behavior: 'auto', block: 'start'});
     });
 
     it('should not scroll/focus when saving a second occupation (already past the first-save transition)', () => {
