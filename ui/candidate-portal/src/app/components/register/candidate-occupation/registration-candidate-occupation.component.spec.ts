@@ -324,6 +324,31 @@ describe('RegistrationCandidateOccupationComponent', () => {
 
       expect(component.filteredOccupations).toEqual(occupations);
     });
+
+    it('should return all occupations when candidateOccupations is not yet set', async () => {
+      const occupations = [makeOccupation(1, 'Teacher'), makeOccupation(2, 'Engineer')];
+      await configureAndCreate({occupations});
+      component.candidateOccupations = undefined;
+
+      expect(component.filteredOccupations).toEqual(occupations);
+    });
+
+    it('should fall back to occupation.id when a selected candidateOccupation has no occupationId', async () => {
+      const engineer = makeOccupation(2, 'Engineer');
+      await configureAndCreate({
+        occupations: [makeOccupation(1, 'Teacher'), engineer, makeOccupation(0, 'Unknown')]
+      });
+      // Bypass ngOnInit's remap (which always derives occupationId from occ.occupation?.id)
+      // to exercise the getter's own fallback for a record with no occupationId set.
+      component.candidateOccupations = [
+        {id: 1, occupation: engineer, occupationId: null, yearsExperience: 5, principal: false}
+      ];
+
+      const filteredIds = component.filteredOccupations.map(occupation => occupation.id);
+
+      expect(filteredIds).toContain(1);
+      expect(filteredIds).not.toContain(2);
+    });
   });
 
   describe('draft add/edit/save/discard', () => {
@@ -416,6 +441,7 @@ describe('RegistrationCandidateOccupationComponent', () => {
 
       expect(scrollIntoViewSpy).toHaveBeenCalledTimes(1);
       expect(focusSpy).toHaveBeenCalledTimes(1);
+      expect(scrollIntoViewSpy).toHaveBeenCalledWith({behavior: 'smooth', block: 'start'});
 
       // A second view-check with nothing new pending shouldn't repeat the scroll/focus.
       component.ngAfterViewChecked();
@@ -468,6 +494,15 @@ describe('RegistrationCandidateOccupationComponent', () => {
       const occupation = {id: null, occupation: makeOccupation(2, 'Engineer'), occupationId: 2, yearsExperience: 5, principal: false};
 
       expect(component.trackByOccupationId(0, occupation)).toBe(2);
+    });
+
+    it('should use the singular "year" for exactly one year of experience', () => {
+      expect(component.formatYears(1)).toBe('1 year of experience');
+    });
+
+    it('should use the plural "years" for any other value', () => {
+      expect(component.formatYears(0)).toBe('0 years of experience');
+      expect(component.formatYears(5)).toBe('5 years of experience');
     });
   });
 
@@ -570,6 +605,18 @@ describe('RegistrationCandidateOccupationComponent', () => {
     });
   });
 
+  describe('cancel()', () => {
+    it('should emit onSave without saving, for the profile-edit "Cancel" flow', async () => {
+      await configureAndCreate();
+      const onSaveSpy = spyOn(component.onSave, 'emit');
+
+      component.cancel();
+
+      expect(onSaveSpy).toHaveBeenCalled();
+      expect(candidateOccupationServiceSpy.updateCandidateOccupations).not.toHaveBeenCalled();
+    });
+  });
+
   describe('deleteOccupation', () => {
     it('should remove the occupation immediately when no job experiences are linked', async () => {
       await configureAndCreate({
@@ -610,6 +657,33 @@ describe('RegistrationCandidateOccupationComponent', () => {
 
       expect(modalServiceSpy.open).toHaveBeenCalled();
       expect(component.candidateOccupations.length).toBe(1);
+    });
+
+    it('should discard the open draft when deleting the row currently being edited', async () => {
+      await configureAndCreate({
+        candidateOccupations: [makeCandidateOccupation(1, 2, 5), makeCandidateOccupation(2, 1, 3)],
+        jobExperiences: []
+      });
+      component.editOccupation(1);
+
+      component.deleteOccupation(1, 1);
+
+      expect(component.editingIndex).toBeNull();
+      expect(component.showForm).toBeFalse();
+    });
+
+    it('should shift editingIndex down when deleting a row before the one being edited', async () => {
+      await configureAndCreate({
+        candidateOccupations: [
+          makeCandidateOccupation(1, 2, 5), makeCandidateOccupation(2, 1, 3), makeCandidateOccupation(3, 3, 2)
+        ],
+        jobExperiences: []
+      });
+      component.editOccupation(2);
+
+      component.deleteOccupation(0, 2);
+
+      expect(component.editingIndex).toBe(1);
     });
   });
 
