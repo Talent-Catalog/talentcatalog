@@ -42,7 +42,20 @@ export class VerifyPlusPage {
   readonly profileError: Locator;
   readonly noCameraMessage: Locator;
   readonly scannerErrorMessage: Locator;
+  readonly payloadReviewHeading: Locator;
+  readonly payloadPreview: Locator;
+  readonly confirmButton: Locator;
+  readonly rescanButton: Locator;
+  readonly submissionError: Locator;
 
+  readonly successHeading: Locator;
+  readonly successResult: Locator;
+  readonly successBody: Locator;
+
+  readonly duplicateHeading: Locator;
+  readonly duplicateResult: Locator;
+  readonly duplicateBody: Locator;
+  readonly duplicateRescanHint: Locator;
   /**
    * Creates locators for the candidate profile and Verify+ feature.
    *
@@ -127,6 +140,124 @@ export class VerifyPlusPage {
       },
     );
 
+    this.payloadReviewHeading =
+      this.verifyPlusComponent.getByRole(
+        'heading',
+        {
+          name: 'Review scanned payload',
+          exact: true,
+        },
+      );
+
+    this.payloadPreview =
+      this.verifyPlusComponent.locator(
+        '.scan-result pre',
+      );
+
+    this.confirmButton =
+      this.verifyPlusComponent
+      .locator('tc-button')
+      .filter({
+        hasText: /^\s*Confirm\s*$/,
+      })
+      .locator('button');
+
+    this.rescanButton =
+      this.verifyPlusComponent
+      .locator('tc-button')
+      .filter({
+        hasText: /^\s*Rescan\s*$/,
+      })
+      .locator('button');
+
+    /*
+   * Backend/business-validation error shown after Confirm.
+   */
+    this.submissionError =
+      this.verifyPlusComponent
+      .locator(
+        'p.mt-3.text-danger',
+      )
+      .filter({
+        hasText:
+          'If this QR code is a valid UNHCR Verify+ code, please rescan.',
+      });
+
+    /*
+     * Successful Verify+ submission.
+     *
+     * Locate the unique heading first. The surrounding .scan-result is simply
+     * its parent element in the production template.
+     */
+    this.successHeading =
+      this.verifyPlusComponent
+      .getByRole(
+        'heading',
+        {
+          level:
+            3,
+
+          name:
+            'Verification submitted',
+
+          exact:
+            true,
+        },
+      );
+
+    this.successResult =
+      this.successHeading
+      .locator(
+        'xpath=..',
+      );
+
+    this.successBody =
+      this.successResult
+      .locator(
+        'p',
+      );
+
+    /*
+     * Duplicate Verify+ submission.
+     */
+    this.duplicateHeading =
+      this.verifyPlusComponent
+      .getByRole(
+        'heading',
+        {
+          level:
+            3,
+
+          name:
+            'Duplicate UNHCR number found',
+
+          exact:
+            true,
+        },
+      );
+
+    this.duplicateResult =
+      this.duplicateHeading
+      .locator(
+        'xpath=..',
+      );
+
+    this.duplicateBody =
+      this.duplicateResult
+      .locator(
+        'p',
+      )
+      .first();
+
+    this.duplicateRescanHint =
+      this.duplicateResult
+      .getByText(
+        'You can rescan if needed.',
+        {
+          exact:
+            true,
+        },
+      );
     /*
      * The Back control is rendered by tc-button and contains an icon.
      * Locate the tc-button host by its DOM text and then select the native
@@ -292,4 +423,22 @@ export class VerifyPlusPage {
     });
   }
 
+
+  /**
+   * Confirms the currently decoded Verify+ payload.
+   *
+   * Clicking this button triggers the production Verify+ submission request.
+   */
+  async confirmScan(): Promise<void> {
+    await expect(
+      this.confirmButton,
+      'Expected Confirm after QR decoding',
+    ).toBeVisible();
+
+    await expect(
+      this.confirmButton,
+    ).toBeEnabled();
+
+    await this.confirmButton.click();
+  }
 }
