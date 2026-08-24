@@ -70,16 +70,13 @@
 
       </div>
 
-      <div class="row" *ngIf="!isPrincipal" >
+      <div class="row" *ngIf="!isPrincipal">
         <div class="col-12">
-          <tc-field [checkbox]="true"
-                    style="cursor: pointer"
-                    (click)="onPrincipalRowClick($event)"
-          >
-            <tc-input type="checkbox" id="markAsPrincipal" formControlName="markAsPrincipal"></tc-input>
-            <tc-label for="markAsPrincipal">
+          <tc-field [checkbox]="true">
+            <label class="principal-option">
+              <input type="checkbox" formControlName="markAsPrincipal">
               Set this as the candidate's principal occupation
-            </tc-label>
+            </label>
           </tc-field>
         </div>
       </div>

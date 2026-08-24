@@ -87,21 +87,6 @@ export class EditCandidateOccupationComponent implements OnInit {
       });
     }
 
-  // Makes the whole checkbox row clickable - the checkbox glyph itself
-  // already toggles (and fires its own (input) handler) on a direct click,
-  // but a native <label for> click's forwarded toggle isn't reliable enough
-  // to depend on here, so every other click in the row (label text, or the
-  // gap between it and the checkbox) toggles the control directly instead.
-  onPrincipalRowClick(event: MouseEvent) {
-    const target = event.target as HTMLElement;
-    if (target.closest('input')) {
-      return;
-    }
-    event.preventDefault();
-    const control = this.form.get('markAsPrincipal');
-    control.setValue(!control.value);
-  }
-
   closeModal(candidateOccupation: CandidateOccupation) {
     this.activeModal.close(candidateOccupation);
   }
