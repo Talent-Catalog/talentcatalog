@@ -514,6 +514,18 @@ describe('RegistrationCandidateOccupationComponent', () => {
       expect(component.trackByOccupationId(0, occupation)).toBe(2);
     });
 
+    it('should treat a string "1" (as produced by the native number input before a save) as singular', () => {
+      // A freshly-added/edited draft holds yearsExperience as a string until the next
+      // server round-trip, since the native number input's value is always a string.
+      expect(component.isSingularYear('1' as any)).toBeTrue();
+    });
+
+    it('should treat the number 1 as singular and any other value as plural', () => {
+      expect(component.isSingularYear(1)).toBeTrue();
+      expect(component.isSingularYear(0)).toBeFalse();
+      expect(component.isSingularYear(5)).toBeFalse();
+    });
+
   });
 
   describe('save via next()', () => {

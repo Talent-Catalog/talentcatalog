@@ -115,7 +115,7 @@
                     </tc-badge>
                   </div>
                   <div class="text-muted">
-                    {{ occupation.yearsExperience === 1
+                    {{ isSingularYear(occupation.yearsExperience)
                       ? ('REGISTRATION.OCCUPATION.LABEL.YEARS_OF_EXPERIENCE_SINGULAR' | translate)
                       : ('REGISTRATION.OCCUPATION.LABEL.YEARS_OF_EXPERIENCE_PLURAL' | translate: {years: occupation.yearsExperience}) }}
                   </div>

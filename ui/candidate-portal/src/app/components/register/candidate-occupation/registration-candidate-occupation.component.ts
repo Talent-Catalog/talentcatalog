@@ -206,6 +206,16 @@ export class RegistrationCandidateOccupationComponent implements OnInit, OnDestr
   }
 
   /**
+   * Newly-added/edited rows hold yearsExperience as a string until the next
+   * server round-trip (the native number input's value is always a string),
+   * so this must coerce before comparing - otherwise "1" === 1 is false and
+   * the singular case is never picked for an in-progress (unsaved) draft.
+   */
+  isSingularYear(years: number | string): boolean {
+    return Number(years) === 1;
+  }
+
+  /**
    * Without a stable trackBy, Angular treats every row as new on each change
    * detection cycle and destroys/recreates the tc-radio (and its NgModel)
    * inside, which triggers more change detection and can pin the browser in a
