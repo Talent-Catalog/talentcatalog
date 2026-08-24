@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -37,7 +38,9 @@ import org.tctalent.server.repository.db.OccupationRepository;
 import org.tctalent.server.request.candidate.occupation.CreateCandidateOccupationRequest;
 import org.tctalent.server.request.candidate.occupation.UpdateCandidateOccupationRequest;
 import org.tctalent.server.request.candidate.occupation.UpdateCandidateOccupationsRequest;
+import org.tctalent.server.request.note.CreateCandidateNoteRequest;
 import org.tctalent.server.security.AuthService;
+import org.tctalent.server.service.db.CandidateNoteService;
 import org.tctalent.server.service.db.CandidateService;
 import org.tctalent.server.service.db.email.EmailHelper;
 
@@ -61,6 +64,9 @@ class CandidateOccupationServiceImplTest {
 
   @Mock
   private EmailHelper emailHelper;
+
+  @Mock
+  private CandidateNoteService candidateNoteService;
 
   @InjectMocks
   private CandidateOccupationServiceImpl service;
@@ -864,6 +870,109 @@ class CandidateOccupationServiceImplTest {
 
     verify(candidateService).save(candidate);
     verify(candidateOccupationRepository).save(candidateOccupation);
+  }
+
+  @Test
+  void updateCandidateOccupationSetsPrincipalAndCreatesNoteWhenFlagged() {
+    Candidate candidate = candidate(20L);
+    Occupation previousOccupation = occupation(9L, "Old");
+    Occupation newOccupation = occupation(10L, "Teacher");
+    CandidateOccupation candidateOccupation = candidateOccupation(1L, candidate,
+        previousOccupation, 2);
+    UpdateCandidateOccupationRequest request = updateRequest(1L, 10L, 9L);
+    request.setPrincipal(true);
+
+    when(candidateOccupationRepository.findByIdLoadCandidate(1L))
+        .thenReturn(Optional.of(candidateOccupation));
+    when(occupationRepository.findById(10L)).thenReturn(Optional.of(newOccupation));
+    when(candidateOccupationRepository.findByCandidateIdAAndOccupationId(20L, 10L))
+        .thenReturn(null);
+    when(candidateOccupationRepository.save(candidateOccupation)).thenReturn(candidateOccupation);
+
+    CandidateOccupation result = service.updateCandidateOccupation(request);
+
+    assertSame(candidateOccupation, result);
+    assertSame(candidateOccupation, candidate.getPrincipalOccupation());
+    verify(candidateService).save(candidate);
+
+    ArgumentCaptor<CreateCandidateNoteRequest> captor =
+        ArgumentCaptor.forClass(CreateCandidateNoteRequest.class);
+    verify(candidateNoteService).createCandidateNote(captor.capture());
+    CreateCandidateNoteRequest noteRequest = captor.getValue();
+    assertEquals(20L, noteRequest.getCandidateId());
+    assertEquals("Principal occupation updated to 'Teacher'", noteRequest.getTitle());
+  }
+
+  @Test
+  void updateCandidateOccupationPropagatesExceptionWhenNoteCreationFailsSoTransactionCanRollBack() {
+    Candidate candidate = candidate(20L);
+    Occupation occupation = occupation(10L, "Engineer");
+    CandidateOccupation candidateOccupation = candidateOccupation(1L, candidate,
+        occupation, 2);
+    UpdateCandidateOccupationRequest request = updateRequest(1L, 10L, 9L);
+    request.setPrincipal(true);
+
+    when(candidateOccupationRepository.findByIdLoadCandidate(1L))
+        .thenReturn(Optional.of(candidateOccupation));
+    when(occupationRepository.findById(10L)).thenReturn(Optional.of(occupation));
+    when(candidateOccupationRepository.findByCandidateIdAAndOccupationId(20L, 10L))
+        .thenReturn(null);
+    when(candidateOccupationRepository.save(candidateOccupation)).thenReturn(candidateOccupation);
+    doThrow(new RuntimeException("note service unavailable"))
+        .when(candidateNoteService).createCandidateNote(any());
+
+    // The method itself must not swallow this - @Transactional only rolls back the
+    // occupation save and principal switch already applied in this method if the
+    // exception actually propagates out to the transactional proxy.
+    assertThrows(RuntimeException.class, () -> service.updateCandidateOccupation(request));
+
+    verify(candidateService, never()).save(any());
+  }
+
+  @Test
+  void updateCandidateOccupationIsNoOpForPrincipalWhenAlreadyPrincipal() {
+    Candidate candidate = candidate(20L);
+    Occupation occupation = occupation(10L, "Engineer");
+    CandidateOccupation candidateOccupation = candidateOccupation(1L, candidate,
+        occupation, 2);
+    candidate.setPrincipalOccupation(candidateOccupation);
+    UpdateCandidateOccupationRequest request = updateRequest(1L, 10L, 9L);
+    request.setPrincipal(true);
+
+    when(candidateOccupationRepository.findByIdLoadCandidate(1L))
+        .thenReturn(Optional.of(candidateOccupation));
+    when(occupationRepository.findById(10L)).thenReturn(Optional.of(occupation));
+    when(candidateOccupationRepository.findByCandidateIdAAndOccupationId(20L, 10L))
+        .thenReturn(candidateOccupation);
+    when(candidateOccupationRepository.save(candidateOccupation)).thenReturn(candidateOccupation);
+
+    CandidateOccupation result = service.updateCandidateOccupation(request);
+
+    assertSame(candidateOccupation, result);
+    assertSame(candidateOccupation, candidate.getPrincipalOccupation());
+    verify(candidateService).save(candidate);
+    verifyNoInteractions(candidateNoteService);
+  }
+
+  @Test
+  void updateCandidateOccupationDoesNotTouchPrincipalWhenNotFlagged() {
+    Candidate candidate = candidate(20L);
+    Occupation occupation = occupation(10L, "Engineer");
+    CandidateOccupation candidateOccupation = candidateOccupation(1L, candidate,
+        occupation, 2);
+    UpdateCandidateOccupationRequest request = updateRequest(1L, 10L, 9L);
+
+    when(candidateOccupationRepository.findByIdLoadCandidate(1L))
+        .thenReturn(Optional.of(candidateOccupation));
+    when(occupationRepository.findById(10L)).thenReturn(Optional.of(occupation));
+    when(candidateOccupationRepository.findByCandidateIdAAndOccupationId(20L, 10L))
+        .thenReturn(candidateOccupation);
+    when(candidateOccupationRepository.save(candidateOccupation)).thenReturn(candidateOccupation);
+
+    service.updateCandidateOccupation(request);
+
+    assertEquals(null, candidate.getPrincipalOccupation());
+    verifyNoInteractions(candidateNoteService);
   }
 
   private static Candidate candidate(Long id) {

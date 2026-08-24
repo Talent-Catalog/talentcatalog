@@ -252,6 +252,7 @@ public class CandidateBuilderSelector {
                     .add("candidateLanguages", candidateLanguageDto())
                     .add("candidateDestinations", candidateDestinationDto())
                     .add("candidateOccupations", candidateOccupationDto(type))
+                    .add("principalOccupation", principalOccupationDto())
                     .add("candidateJobExperiences", candidateJobExperienceDto(type))
                     .add("candidateSkills", candidateSkillDto())
                     .add("candidateEducations", candidateEducationDto())
@@ -562,6 +563,20 @@ public class CandidateBuilderSelector {
             .add("registeredNotes")
             .add("healthConcern")
             .add("healthNotes")
+            ;
+    }
+
+    /**
+     * Minimal DTO for a candidate's principal occupation - just enough to identify which
+     * occupation it is (for badge display and comparison), without pulling in job experiences
+     * or audit user details the way the full {@link #candidateOccupationDto} does. This field is
+     * included on every candidate in search results, so keeping it small matters for search
+     * performance.
+     */
+    private DtoBuilder principalOccupationDto() {
+        return new DtoBuilder()
+            .add("id")
+            .add("occupation", occupationService.selectBuilder())
             ;
     }
 

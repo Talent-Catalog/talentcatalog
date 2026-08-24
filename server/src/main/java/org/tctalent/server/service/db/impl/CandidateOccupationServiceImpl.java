@@ -25,6 +25,7 @@ import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.tctalent.server.exception.EntityExistsException;
 import org.tctalent.server.exception.InvalidCredentialsException;
 import org.tctalent.server.exception.InvalidRequestException;
@@ -41,7 +42,9 @@ import org.tctalent.server.repository.db.OccupationRepository;
 import org.tctalent.server.request.candidate.occupation.CreateCandidateOccupationRequest;
 import org.tctalent.server.request.candidate.occupation.UpdateCandidateOccupationRequest;
 import org.tctalent.server.request.candidate.occupation.UpdateCandidateOccupationsRequest;
+import org.tctalent.server.request.note.CreateCandidateNoteRequest;
 import org.tctalent.server.security.AuthService;
+import org.tctalent.server.service.db.CandidateNoteService;
 import org.tctalent.server.service.db.CandidateOccupationService;
 import org.tctalent.server.service.db.CandidateService;
 import org.tctalent.server.service.db.email.EmailHelper;
@@ -56,6 +59,7 @@ public class CandidateOccupationServiceImpl implements CandidateOccupationServic
     private final CandidateService candidateService;
     private final AuthService authService;
     private final EmailHelper emailHelper;
+    private final CandidateNoteService candidateNoteService;
 
     @Autowired
     public CandidateOccupationServiceImpl(CandidateOccupationRepository candidateOccupationRepository,
@@ -63,13 +67,15 @@ public class CandidateOccupationServiceImpl implements CandidateOccupationServic
                                           CandidateRepository candidateRepository,
                                           CandidateService candidateService,
                                           AuthService authService,
-                                          EmailHelper emailHelper) {
+                                          EmailHelper emailHelper,
+                                          CandidateNoteService candidateNoteService) {
         this.candidateOccupationRepository = candidateOccupationRepository;
         this.candidateRepository = candidateRepository;
         this.candidateService = candidateService;
         this.occupationRepository = occupationRepository;
         this.authService = authService;
         this.emailHelper = emailHelper;
+        this.candidateNoteService = candidateNoteService;
     }
 
 
@@ -330,6 +336,7 @@ public class CandidateOccupationServiceImpl implements CandidateOccupationServic
     }
 
     @Override
+    @Transactional
     public CandidateOccupation updateCandidateOccupation(UpdateCandidateOccupationRequest request) {
         CandidateOccupation candidateOccupation = candidateOccupationRepository.findByIdLoadCandidate(request.getId())
                 .orElseThrow(() -> new NoSuchObjectException(CandidateOccupation.class, request.getId()));
@@ -347,9 +354,36 @@ public class CandidateOccupationServiceImpl implements CandidateOccupationServic
         candidateOccupation.setOccupation(occupationToBeUpdated);
         candidateOccupation.setYearsExperience(request.getYearsExperience());
 
+        candidateOccupation = candidateOccupationRepository.save(candidateOccupation);
+
+        if (Boolean.TRUE.equals(request.getPrincipal())) {
+            markAsPrincipalOccupation(candidateOccupation);
+        }
+
         candidateService.save(candidateOccupation.getCandidate());
 
-        return candidateOccupationRepository.save(candidateOccupation);
+        return candidateOccupation;
+    }
 
+    /**
+     * Sets the given candidate occupation as its candidate's principal occupation, switching it
+     * from whichever occupation was previously principal (if any). Creates a candidate note
+     * recording the change. A no-op with no note created if the occupation is already principal.
+     * Does not itself save the candidate - the caller is expected to do that.
+     */
+    private void markAsPrincipalOccupation(CandidateOccupation candidateOccupation) {
+        Candidate candidate = candidateOccupation.getCandidate();
+
+        boolean alreadyPrincipal = candidate.getPrincipalOccupation() != null
+            && candidate.getPrincipalOccupation().getId().equals(candidateOccupation.getId());
+        if (alreadyPrincipal) {
+            return;
+        }
+
+        candidate.setPrincipalOccupation(candidateOccupation);
+
+        candidateNoteService.createCandidateNote(new CreateCandidateNoteRequest(candidate.getId(),
+            "Principal occupation updated to '" + candidateOccupation.getOccupation().getName() + "'",
+            null));
     }
 }

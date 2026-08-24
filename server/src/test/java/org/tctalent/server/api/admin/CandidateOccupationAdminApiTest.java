@@ -22,6 +22,7 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
@@ -193,6 +194,34 @@ class CandidateOccupationAdminApiTest extends ApiTestBase {
                 .andExpect(jsonPath("$.yearsExperience", is(10)));
 
         verify(candidateOccupationService).updateCandidateOccupation(any(UpdateCandidateOccupationRequest.class));
+    }
+
+    @Test
+    @DisplayName("update candidate occupation by id with principal flag succeeds")
+    void updateCandidateOccupationByIdWithPrincipalFlagSucceeds() throws Exception {
+        UpdateCandidateOccupationRequest request = new UpdateCandidateOccupationRequest();
+        request.setPrincipal(true);
+
+        given(candidateOccupationService
+                .updateCandidateOccupation(any(UpdateCandidateOccupationRequest.class)))
+                .willReturn(candidateOccupation);
+
+        mockMvc.perform(put(BASE_PATH + "/" + CANDIDATE_ID)
+                        .with(csrf())
+                        .header("Authorization", "Bearer " + "jwt-token")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request))
+                        .accept(MediaType.APPLICATION_JSON))
+
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$", notNullValue()))
+                .andExpect(jsonPath("$.occupation.name", is("Software Engineer")))
+                .andExpect(jsonPath("$.yearsExperience", is(10)));
+
+        verify(candidateOccupationService).updateCandidateOccupation(argThat(
+                r -> Boolean.TRUE.equals(r.getPrincipal())));
     }
 
     @Test

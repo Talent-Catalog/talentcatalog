@@ -32,6 +32,12 @@
       <div><strong>{{error}}</strong></div>
     </tc-alert>
 
+    <tc-alert type="warning"
+              *ngIf="!isPrincipal && hasExistingPrincipalOccupation && form.value.markAsPrincipal"
+              [dismissible]="false">
+      Selecting this will replace the candidate's current principal occupation
+    </tc-alert>
+
     <form [formGroup]="form">
 
       <tc-field class="mb-3">
@@ -64,9 +70,17 @@
 
       </div>
 
-      <div class="row">
+      <div class="row" *ngIf="!isPrincipal" >
         <div class="col-12">
-          <app-updated-by *ngIf="candidateOccupation.updatedDate" [object]="candidateOccupation"></app-updated-by>
+          <tc-field [checkbox]="true"
+                    style="cursor: pointer"
+                    (click)="onPrincipalRowClick($event)"
+          >
+            <tc-input type="checkbox" id="markAsPrincipal" formControlName="markAsPrincipal"></tc-input>
+            <tc-label for="markAsPrincipal">
+              Set this as the candidate's principal occupation
+            </tc-label>
+          </tc-field>
         </div>
       </div>
 

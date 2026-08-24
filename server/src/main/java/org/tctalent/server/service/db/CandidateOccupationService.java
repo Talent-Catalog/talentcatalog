@@ -38,5 +38,14 @@ public interface CandidateOccupationService {
 
     List<CandidateOccupation> updateCandidateOccupations(UpdateCandidateOccupationsRequest request);
 
+    /**
+     * Updates the given candidate occupation's details. If the request's {@code principal} flag is
+     * true, also marks it as its candidate's principal occupation, switching it from whichever
+     * occupation was previously principal (if any) and recording the change as a candidate note.
+     * A no-op with no note created if the occupation is already principal.
+     *
+     * @param request Update request, optionally flagged as principal
+     * @return The updated candidate occupation
+     */
     CandidateOccupation updateCandidateOccupation(UpdateCandidateOccupationRequest request);
 }
