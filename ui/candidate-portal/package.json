@@ -13,7 +13,10 @@
     "e2e:auth": "playwright test --project=auth-setup",
     "e2e:verify-plus": "playwright test playwright-tests/verify-plus",
     "e2e:verify-plus:api": "playwright test --project=verify-plus-api",
-    "e2e:verify-plus:decode": "playwright test playwright-tests/verify-plus/verify-plus-decoding.spec.ts playwright-tests/verify-plus/verify-plus-high-density-decoding.spec.ts --project=webkit-desktop --project=ios-iphone --project=android-pixel",
+    "e2e:verify-plus:decode:browser":
+    "playwright test playwright-tests/verify-plus/verify-plus-decoding.spec.ts playwright-tests/verify-plus/verify-plus-high-density-decoding.spec.ts --project=chromium-desktop --project=firefox-desktop --project=webkit-desktop",
+    "e2e:verify-plus:decode:mobile":
+    "playwright test playwright-tests/verify-plus/verify-plus-decoding.spec.ts playwright-tests/verify-plus/verify-plus-high-density-decoding.spec.ts --project=android-pixel --project=ios-iphone --project=ios-ipad",
     "e2e:verify-plus:validation": "playwright test --project=verify-plus-validation",
     "e2e:install": "playwright install",
     "e2e:ui": "playwright test --ui",
