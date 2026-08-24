@@ -84,11 +84,11 @@
       </tc-alert>
 
       <div class="mb-3 occupation-phase-heading" #selectPrincipalHeading tabindex="-1">
-        <div class="fw-bold occupation-phase-title">{{ 'REGISTRATION.OCCUPATION.LABEL.SELECT_PRINCIPAL_HEADING' | translate }}</div>
+        <div class="fw-bold occupation-phase-title" id="select-principal-heading">{{ 'REGISTRATION.OCCUPATION.LABEL.SELECT_PRINCIPAL_HEADING' | translate }}</div>
         <p class="text-muted mb-0">{{ 'REGISTRATION.OCCUPATION.LABEL.SELECT_PRINCIPAL_SUBHEADING' | translate }}</p>
       </div>
 
-      <div role="radiogroup" class="d-flex flex-column gap-1">
+      <div role="radiogroup" aria-labelledby="select-principal-heading" class="d-flex flex-column gap-1">
         <ng-container *ngFor="let occupation of candidateOccupations; let i = index; trackBy: trackByOccupationId">
 
           <!-- Editing this row: show the draft form in its place, not elsewhere -->
@@ -104,16 +104,21 @@
               <div class="d-flex align-items-center gap-3 occupation-row-content">
                 <tc-radio [id]="'principal-' + (occupation.id ?? occupation.occupationId)" name="principalOccupation"
                           [value]="i" [ngModel]="occupation.principal ? i : null"
-                          label="" (change)="selectPrincipal(occupation)">
+                          label="" [ariaLabelledby]="'occupation-name-' + (occupation.id ?? occupation.occupationId)"
+                          (change)="selectPrincipal(occupation)">
                 </tc-radio>
                 <div class="flex-grow-1 occupation-row-main">
                   <div class="d-flex align-items-center gap-2 flex-wrap">
-                    <span class="fw-bold">{{ getOccupationName(occupation.occupationId) }}</span>
+                    <span class="fw-bold" [id]="'occupation-name-' + (occupation.id ?? occupation.occupationId)">{{ getOccupationName(occupation.occupationId) }}</span>
                     <tc-badge *ngIf="occupation.principal" class="occupation-principal-badge" color="blue">
                       {{ 'REGISTRATION.OCCUPATION.LABEL.PRINCIPAL_BADGE' | translate }}
                     </tc-badge>
                   </div>
-                  <div class="text-muted">{{ formatYears(occupation.yearsExperience) }}</div>
+                  <div class="text-muted">
+                    {{ occupation.yearsExperience === 1
+                      ? ('REGISTRATION.OCCUPATION.LABEL.YEARS_OF_EXPERIENCE_SINGULAR' | translate)
+                      : ('REGISTRATION.OCCUPATION.LABEL.YEARS_OF_EXPERIENCE_PLURAL' | translate: {years: occupation.yearsExperience}) }}
+                  </div>
                 </div>
 
                 <div class="occupation-row-actions">

@@ -205,10 +205,6 @@ export class RegistrationCandidateOccupationComponent implements OnInit, OnDestr
     return this.occupations?.find(occ => occ.id === occupationId)?.name;
   }
 
-  formatYears(years: number): string {
-    return years + (Number(years) === 1 ? ' year' : ' years') + ' of experience';
-  }
-
   /**
    * Without a stable trackBy, Angular treats every row as new on each change
    * detection cycle and destroys/recreates the tc-radio (and its NgModel)

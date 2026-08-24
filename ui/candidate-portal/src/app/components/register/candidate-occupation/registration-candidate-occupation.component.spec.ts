@@ -100,6 +100,8 @@ class TcRadioStubComponent implements ControlValueAccessor {
   @Input() name?: string;
   @Input() value?: unknown;
   @Input() label?: string;
+  @Input() ariaLabel?: string;
+  @Input() ariaLabelledby?: string;
   writeValue(): void {}
   registerOnChange(): void {}
   registerOnTouched(): void {}
@@ -512,14 +514,6 @@ describe('RegistrationCandidateOccupationComponent', () => {
       expect(component.trackByOccupationId(0, occupation)).toBe(2);
     });
 
-    it('should use the singular "year" for exactly one year of experience', () => {
-      expect(component.formatYears(1)).toBe('1 year of experience');
-    });
-
-    it('should use the plural "years" for any other value', () => {
-      expect(component.formatYears(0)).toBe('0 years of experience');
-      expect(component.formatYears(5)).toBe('5 years of experience');
-    });
   });
 
   describe('save via next()', () => {

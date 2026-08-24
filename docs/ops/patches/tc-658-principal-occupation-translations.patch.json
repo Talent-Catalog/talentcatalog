@@ -174,6 +174,38 @@
         "nl": "Opslaan",
         "pt": "Salvar"
       }
+    },
+    {
+      "key": "REGISTRATION.OCCUPATION.LABEL.YEARS_OF_EXPERIENCE_SINGULAR",
+      "values": {
+        "en": "1 year of experience",
+        "ar": "سنة واحدة من الخبرة",
+        "fa": "1 سال سابقه",
+        "ps": "د یو کال تجربه",
+        "es": "1 año de experiencia",
+        "fr": "1 an d'expérience",
+        "tr": "1 yıl deneyim",
+        "ru": "1 год опыта",
+        "uk": "1 рік досвіду",
+        "nl": "1 jaar ervaring",
+        "pt": "1 ano de experiência"
+      }
+    },
+    {
+      "key": "REGISTRATION.OCCUPATION.LABEL.YEARS_OF_EXPERIENCE_PLURAL",
+      "values": {
+        "en": "{{years}} years of experience",
+        "ar": "{{years}} سنوات من الخبرة",
+        "fa": "{{years}} سال سابقه",
+        "ps": "{{years}} کاله تجربه",
+        "es": "{{years}} años de experiencia",
+        "fr": "{{years}} ans d'expérience",
+        "tr": "{{years}} yıl deneyim",
+        "ru": "{{years}} лет опыта",
+        "uk": "{{years}} років досвіду",
+        "nl": "{{years}} jaar ervaring",
+        "pt": "{{years}} anos de experiência"
+      }
     }
   ]
 }

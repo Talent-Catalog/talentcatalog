@@ -140,4 +140,42 @@ describe('TcRadioComponent', () => {
       container.remove();
     }
   });
+
+  it('should not set aria-label on the input by default', () => {
+    const inputEl = fixture.debugElement.query(By.css('input')).nativeElement as HTMLInputElement;
+
+    expect(inputEl.hasAttribute('aria-label')).toBeFalse();
+  });
+
+  it('should expose ariaLabel as the input\'s accessible name, for use when the visible label is empty', () => {
+    component.label = '';
+    component.ariaLabel = 'Select Engineer as your principal occupation';
+    fixture.detectChanges();
+
+    const inputEl = fixture.debugElement.query(By.css('input')).nativeElement as HTMLInputElement;
+
+    expect(inputEl.getAttribute('aria-label')).toBe('Select Engineer as your principal occupation');
+  });
+
+  it('should expose ariaLabelledby as the input\'s accessible name', () => {
+    component.label = '';
+    component.ariaLabelledby = 'occupation-name-1';
+    fixture.detectChanges();
+
+    const inputEl = fixture.debugElement.query(By.css('input')).nativeElement as HTMLInputElement;
+
+    expect(inputEl.getAttribute('aria-labelledby')).toBe('occupation-name-1');
+  });
+
+  it('should prefer ariaLabelledby over ariaLabel when both are set', () => {
+    component.label = '';
+    component.ariaLabel = 'fallback label';
+    component.ariaLabelledby = 'occupation-name-1';
+    fixture.detectChanges();
+
+    const inputEl = fixture.debugElement.query(By.css('input')).nativeElement as HTMLInputElement;
+
+    expect(inputEl.getAttribute('aria-labelledby')).toBe('occupation-name-1');
+    expect(inputEl.hasAttribute('aria-label')).toBeFalse();
+  });
 });
