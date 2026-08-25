@@ -20,12 +20,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import java.time.OffsetDateTime;
 import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -192,6 +194,38 @@ class PifiServiceTest {
 
     assertThatThrownBy(() -> service.assignToCandidate(100L, new User()))
         .isInstanceOf(NoSuchObjectException.class);
+  }
+
+  @Test
+  @DisplayName("disableSharedResource disables related ASSIGNED assignments")
+  void disableSharedResourceDisablesRelatedAssignedAssignments() {
+    ServiceResourceEntity sharedResource = new ServiceResourceEntity();
+    sharedResource.setId(77L);
+    sharedResource.setProvider(ServiceProvider.PIFI);
+    sharedResource.setServiceCode(ServiceCode.HELP_SITE_LINK);
+    sharedResource.setResourceType(ResourceType.SHARED);
+    sharedResource.setStatus(ResourceStatus.AVAILABLE);
+
+    ServiceAssignmentEntity assigned = assignmentWithResource(51L, "AU");
+    assigned.setStatus(AssignmentStatus.ASSIGNED);
+    ServiceAssignmentEntity redeemed = assignmentWithResource(52L, "AU");
+    redeemed.setStatus(AssignmentStatus.REDEEMED);
+
+    when(resourceRepository.findByIdAndProviderAndServiceCodeAndResourceType(
+        77L, ServiceProvider.PIFI, ServiceCode.HELP_SITE_LINK, ResourceType.SHARED))
+        .thenReturn(Optional.of(sharedResource));
+    when(assignmentRepository.findByProviderAndServiceAndResource(
+        ServiceProvider.PIFI, ServiceCode.HELP_SITE_LINK, 77L))
+        .thenReturn(List.of(assigned, redeemed));
+
+    service.disableSharedResource(77L);
+
+    assertThat(sharedResource.getStatus()).isEqualTo(ResourceStatus.DISABLED);
+    assertThat(assigned.getStatus()).isEqualTo(AssignmentStatus.DISABLED);
+    assertThat(redeemed.getStatus()).isEqualTo(AssignmentStatus.REDEEMED);
+    verify(resourceRepository).save(sharedResource);
+    verify(assignmentRepository).save(assigned);
+    verify(assignmentRepository, never()).save(redeemed);
   }
 
   private ServiceAssignmentEntity assignmentWithResource(Long assignmentId, String countryIsoCode) {
