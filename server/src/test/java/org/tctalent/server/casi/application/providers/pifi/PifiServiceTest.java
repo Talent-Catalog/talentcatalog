@@ -20,6 +20,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
@@ -140,6 +141,30 @@ class PifiServiceTest {
     assertThatThrownBy(() -> service.assignToCandidate(100L, new User()))
         .isInstanceOf(EntityExistsException.class);
     verifyNoInteractions(assignmentEngine);
+  }
+
+  @Test
+  @DisplayName("assignToCandidate allows reassignment after disabled link is replaced")
+  void assignToCandidateAllowsReassignmentAfterDisabledLinkReplaced() {
+    when(countryResolver.resolveCountryIsoCodes(100L)).thenReturn(List.of("AU"));
+    when(resourceRepository.countAvailableByProviderServiceAndCountry(
+        ServiceProvider.PIFI, ServiceCode.HELP_SITE_LINK, "AU")).thenReturn(1L);
+
+    ServiceAssignmentEntity disabledAu = assignmentWithResource(31L, "AU");
+    disabledAu.getResource().setStatus(ResourceStatus.DISABLED);
+    when(assignmentRepository.findByCandidateAndProviderAndService(
+        100L, ServiceProvider.PIFI, ServiceCode.HELP_SITE_LINK))
+        .thenReturn(List.of(disabledAu));
+
+    assertThat(service.getCurrentAssignment(100L)).isNull();
+
+    ServiceAssignment replacement = ServiceAssignment.builder().id(99L).build();
+    when(assignmentEngine.assign(eq(allocator), eq(100L), any(User.class)))
+        .thenReturn(replacement);
+
+    ServiceAssignment result = service.assignToCandidate(100L, new User());
+    assertThat(result.getId()).isEqualTo(99L);
+    verify(assignmentEngine).assign(eq(allocator), eq(100L), any(User.class));
   }
 
   @Test
