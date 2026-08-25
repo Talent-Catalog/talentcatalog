@@ -303,6 +303,14 @@ public abstract class AbstractCandidateAssistanceService implements CandidateAss
 
     entity.setStatus(ResourceStatus.DISABLED);
     resourceRepository.save(entity);
+
+    assignmentRepository.findByProviderAndServiceAndResource(provider(), serviceCode(), entity.getId())
+        .stream()
+        .filter(a -> a.getStatus() == AssignmentStatus.ASSIGNED)
+        .forEach(a -> {
+          a.setStatus(AssignmentStatus.DISABLED);
+          assignmentRepository.save(a);
+        });
   }
 
   // Get resource by resource code (e.g., get coupon by coupon code)
