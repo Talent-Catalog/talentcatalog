@@ -12,6 +12,7 @@
     "e2e": "playwright test",
     "e2e:auth": "playwright test --project=auth-setup",
     "e2e:verify-plus": "playwright test playwright-tests/verify-plus",
+    "e2e:verify-plus:api": "playwright test --project=verify-plus-api",
     "e2e:chromium": "playwright test --project=chromium-desktop",
     "e2e:install": "playwright install",
     "e2e:ui": "playwright test --ui",
