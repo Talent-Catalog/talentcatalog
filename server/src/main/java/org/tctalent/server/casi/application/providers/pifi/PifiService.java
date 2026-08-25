@@ -104,6 +104,7 @@ public class PifiService extends AbstractCandidateAssistanceService {
     boolean hasSameCountryAssigned = getAssignmentsForCandidate(candidateId).stream()
         .anyMatch(a -> a.getStatus() == AssignmentStatus.ASSIGNED
             && a.getResource() != null
+            && a.getResource().getStatus() == ResourceStatus.AVAILABLE
             && firstCountry.equals(normalizeIso(a.getResource().getCountryIsoCode())));
 
     if (hasSameCountryAssigned) {
