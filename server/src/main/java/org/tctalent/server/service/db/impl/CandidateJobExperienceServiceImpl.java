@@ -16,6 +16,9 @@
 
 package org.tctalent.server.service.db.impl;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.Query;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -60,6 +63,9 @@ import org.tctalent.server.util.text.TextPartsCodec;
 @RequiredArgsConstructor
 @Slf4j
 public class CandidateJobExperienceServiceImpl implements CandidateJobExperienceService {
+
+    @PersistenceContext
+    private EntityManager entityManager;
 
     private final JobExperienceEmbeddingRepository jobExperienceEmbeddingRepository;
     private final CandidateJobExperienceRepository candidateJobExperienceRepository;
@@ -213,45 +219,74 @@ public class CandidateJobExperienceServiceImpl implements CandidateJobExperience
         final String modelKey = model.getModelKey();
         final String tableName = embeddingModelService.getTableNameForModel(model);
 
-        List<EmbeddingInput> descriptions = new ArrayList<>();
+        List<EmbeddingInput> embeddingInputs = new ArrayList<>();
         experiences.forEach(experience -> {
-            final String id = experience.getId().toString();
-            EmbeddingInput input = EmbeddingInput.builder()
-                .id(id)
-                .context(computeExperienceContext(experience))
-                .text(experience.getDescription())
-                .build();
-            descriptions.add(input);
+            //Skip computing embeddings if they already have them.
+            if (!hasEmbeddedVector(experience, model)) {
+                final String id = experience.getId().toString();
+                EmbeddingInput input = EmbeddingInput.builder()
+                    .id(id)
+                    .context(computeExperienceContext(experience))
+                    .text(experience.getDescription())
+                    .build();
+                embeddingInputs.add(input);
+            }
         });
 
-        final EmbeddingsResponse response =
-            tcVectorEmbeddingService.generateEmbeddings(
-                modelKey, descriptions, EmbeddingInputType.DOCUMENT);
+        //Do nothing if no embeddings need to be computed.
+        if (!embeddingInputs.isEmpty()) {
+            final EmbeddingsResponse response =
+                tcVectorEmbeddingService.generateEmbeddings(
+                    modelKey, embeddingInputs, EmbeddingInputType.DOCUMENT);
 
-        final List<EmbeddingResult> results = response.getResults();
-        for (EmbeddingResult result : results) {
-            if (result.isSuccessful()) {
+            final List<EmbeddingResult> results = response.getResults();
+            for (EmbeddingResult result : results) {
+                if (result.isSuccessful()) {
 
-                final long candidateJobExperienceId;
-                try {
-                    candidateJobExperienceId = Long.parseLong(result.getId());
-                    jobExperienceEmbeddingRepository.upsert(tableName,
-                        candidateJobExperienceId, model.getId(), result.getEmbedding());
-                } catch (NumberFormatException e) {
+                    final long candidateJobExperienceId;
+                    try {
+                        candidateJobExperienceId = Long.parseLong(result.getId());
+                        jobExperienceEmbeddingRepository.upsert(tableName,
+                            candidateJobExperienceId, model.getId(), result.getEmbedding());
+                    } catch (NumberFormatException e) {
+                        LogBuilder.builder(log)
+                            .action("parseEmbeddingResultId")
+                            .message(String.format("Error non numeric id: '%s'", result.getId()))
+                            .logError(e);
+                    }
+                } else {
                     LogBuilder.builder(log)
                         .action("parseEmbeddingResultId")
-                        .message(String.format("Error non numeric id: '%s'", result.getId()))
-                        .logError(e);
+                        .message(String.format(
+                            "Error generating embeddings for candidate job experience: '%s'",
+                            result.getError()))
+                        .logWarn();
                 }
-            } else {
-                LogBuilder.builder(log)
-                    .action("parseEmbeddingResultId")
-                    .message(String.format(
-                        "Error generating embeddings for candidate job experience: '%s'",
-                        result.getError()))
-                    .logWarn();
             }
         }
+    }
+
+    /**
+     * Checks whether the given candidate job experience has an embedding for the given model.
+     * @param experience Job experience
+     * @param model Embedding model
+     * @return True if the experience has an embedding for the given model, false otherwise
+     */
+    private boolean hasEmbeddedVector(CandidateJobExperience experience, EmbeddingModel model) {
+        final String tableName = embeddingModelService.getTableNameForModel(model);
+
+        String sql = """
+            SELECT EXISTS (
+                SELECT 1
+                FROM %s
+                WHERE candidate_job_experience_id = :jobExperienceId
+            )
+            """.formatted(tableName);
+
+        Query query = entityManager.createNativeQuery(sql);
+        query.setParameter("jobExperienceId", experience.getId());
+
+        return (Boolean) query.getSingleResult();
     }
 
     @Override
