@@ -21,6 +21,8 @@ import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.Query;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -219,10 +221,12 @@ public class CandidateJobExperienceServiceImpl implements CandidateJobExperience
         final String modelKey = model.getModelKey();
         final String tableName = embeddingModelService.getTableNameForModel(model);
 
+        final Set<Long> experiencesWithEmbeddings = checkForEmbeddedVectors(experiences, model);
+
         List<EmbeddingInput> embeddingInputs = new ArrayList<>();
         experiences.forEach(experience -> {
             //Skip computing embeddings if they already have them.
-            if (!hasEmbeddedVector(experience, model)) {
+            if (!experiencesWithEmbeddings.contains(experience.getId())) {
                 final String id = experience.getId().toString();
                 EmbeddingInput input = EmbeddingInput.builder()
                     .id(id)
@@ -267,26 +271,48 @@ public class CandidateJobExperienceServiceImpl implements CandidateJobExperience
     }
 
     /**
-     * Checks whether the given candidate job experience has an embedding for the given model.
-     * @param experience Job experience
+     * Checks which of the given job experiences have embeddings for the given model.
+     * @param experiences Job experiences
      * @param model Embedding model
-     * @return True if the experience has an embedding for the given model, false otherwise
+     * @return Set of ids of experiences that have embeddings for the given model.
      */
-    private boolean hasEmbeddedVector(CandidateJobExperience experience, EmbeddingModel model) {
-        final String tableName = embeddingModelService.getTableNameForModel(model);
+    private Set<Long> checkForEmbeddedVectors(List<CandidateJobExperience> experiences, EmbeddingModel model) {
+        final List<Long> experienceIds = experiences.stream()
+            .map(CandidateJobExperience::getId)
+            .toList();
 
+        if (experienceIds.isEmpty()) {
+            return Set.of();
+        }
+
+        final String tableName = embeddingModelService.getTableNameForModel(model);
+        validateTableName(tableName);
+
+        // A SQL bind parameter cannot represent an identifier, so the table name is interpolated
+        // only after validating it against a strict allow-list pattern above.
         String sql = """
-            SELECT EXISTS (
-                SELECT 1
-                FROM %s
-                WHERE candidate_job_experience_id = :jobExperienceId
-            )
+            SELECT candidate_job_experience_id
+            FROM %s
+            WHERE candidate_job_experience_id in (:experienceIds)
             """.formatted(tableName);
 
         Query query = entityManager.createNativeQuery(sql);
-        query.setParameter("jobExperienceId", experience.getId());
+        query.setParameter("experienceIds", experienceIds);
 
-        return (Boolean) query.getSingleResult();
+        @SuppressWarnings("unchecked")
+        List<Number> results = query.getResultList();
+
+        return results.stream()
+            .map(Number::longValue)
+            .collect(Collectors.toSet());
+    }
+
+    // Prevents arbitrary SQL from being supplied as the table name - see
+    // JobExperienceEmbeddingRepository.validateTableName for the same check.
+    private void validateTableName(String tableName) {
+        if (tableName == null || !tableName.matches("[a-z][a-z0-9_]*")) {
+            throw new IllegalArgumentException("Invalid embedding table name: " + tableName);
+        }
     }
 
     @Override
