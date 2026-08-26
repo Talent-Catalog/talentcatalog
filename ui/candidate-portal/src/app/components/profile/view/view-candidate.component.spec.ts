@@ -214,4 +214,26 @@ describe('ViewCandidateComponent', () => {
   it('should not show the chat tab when the user cannot view chats', () => {
     expect(component.canSeeChatTab).toBeFalse();
   });
+
+  it('should expose PiFi eligibility', (done) => {
+    component.pifiEligible$.subscribe(value => {
+      expect(value).toBeFalse();
+      done();
+    });
+  });
+
+  it('should show the services tab when the candidate is eligible for PiFi', (done) => {
+    casiPortalService.checkEligibility.and.callFake((provider: string) => of(provider === 'PIFI'));
+    fixture = TestBed.createComponent(ViewCandidateComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+
+    component.pifiEligible$.subscribe(pifiEligible => {
+      expect(pifiEligible).toBeTrue();
+      component.showServicesTab$.subscribe(showServicesTab => {
+        expect(showServicesTab).toBeTrue();
+        done();
+      });
+    });
+  });
 });

@@ -243,6 +243,7 @@ import {
   ReferenceComponent
 } from './components/profile/view/tab/services/reference/reference.component';
 import {UnhcrComponent} from './components/profile/view/tab/services/unhcr/unhcr.component';
+import {PifiComponent} from './components/profile/view/tab/services/pifi/pifi.component';
 import {VerifyPlusComponent} from './components/profile/view/tab/services/verify-plus/verify-plus.component';
 import {VerifyPlusScannerComponent} from './components/common/verify-plus-scanner/verify-plus-scanner.component';
 import {
@@ -355,6 +356,7 @@ export function HttpLoaderFactory(http: HttpClient) {
     LinkedinRedeemedComponent,
     ReferenceComponent,
     UnhcrComponent,
+    PifiComponent,
     VerifyPlusComponent,
     VerifyPlusScannerComponent,
     CandidateAgreementsComponent,
