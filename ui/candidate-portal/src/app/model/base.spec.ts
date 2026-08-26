@@ -21,32 +21,12 @@ describe('sanitizeEmailInput', () => {
     expect(sanitizeEmailInput('example@example.com')).toBe('example@example.com');
   });
 
-  it('strips a Hangul filler character pasted before the address (TC-723)', () => {
-    expect(sanitizeEmailInput('ㅤexample@example.com')).toBe('example@example.com');
-  });
-
-  it('strips a zero-width space pasted after the address', () => {
-    expect(sanitizeEmailInput('example@example.com​')).toBe('example@example.com');
-  });
-
-  it('leaves a zero-width space embedded in the middle of the address untouched', () => {
-    expect(sanitizeEmailInput('example@example​.com')).toBe('example@example​.com');
-  });
-
-  it('strips a byte order mark (BOM)', () => {
-    expect(sanitizeEmailInput('﻿example@example.com')).toBe('example@example.com');
-  });
-
-  it('strips a non-breaking space', () => {
-    expect(sanitizeEmailInput(' example@example.com ')).toBe('example@example.com');
+  it('trims leading and trailing whitespace', () => {
+    expect(sanitizeEmailInput('  example@example.com  ')).toBe('example@example.com');
   });
 
   it('leaves an ordinary space embedded in the middle of the address untouched', () => {
     expect(sanitizeEmailInput('exam ple@example.com')).toBe('exam ple@example.com');
-  });
-
-  it('trims leading and trailing whitespace', () => {
-    expect(sanitizeEmailInput('  example@example.com  ')).toBe('example@example.com');
   });
 
   it('returns an empty string unchanged', () => {

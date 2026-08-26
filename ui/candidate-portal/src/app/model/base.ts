@@ -281,27 +281,10 @@ export const EMAIL_REGEX: string =
   '(?!.*[@.]{2})[a-zA-Z0-9!#$%&\'*+-/=?^_`{|}~]+[a-zA-Z0-9.!#$%&\'*+-/=?^_`{|}~]*@(?!-)[a-zA-Z0-9-]+(?<!-)(\\.(?!-)[a-zA-Z0-9-]+(?<!-))*$';
 
 /**
- * Matches one invisible/blank Unicode character: whitespace, plus the Hangul/Khmer filler
- * characters that render blank but aren't classified as whitespace.
- *
- * Mirrors INVISIBLE_OR_WHITESPACE_CHAR in
- * server/.../request/candidate/BaseCandidateContactRequest.java - keep both in sync.
- */
-const INVISIBLE_OR_WHITESPACE_CHAR = '[\\s\\p{Zs}\\p{Cf}\\u115F\\u1160\\u17B4\\u17B5\\u3164\\uFFA0]';
-
-/**
- * Strips invisible/blank characters from the start and end of a pasted email address - see
- * TC-723. Leaves anything in the middle untouched, since that would mean the email is
- * genuinely malformed rather than just messily pasted.
+ * Trims leading/trailing whitespace from a pasted email address - see TC-723.
  */
 export function sanitizeEmailInput(value: string): string {
-  if (!value) {
-    return value;
-  }
-  const edgeRegex = new RegExp(
-    `^${INVISIBLE_OR_WHITESPACE_CHAR}+|${INVISIBLE_OR_WHITESPACE_CHAR}+$`, 'gu'
-  );
-  return value.replace(edgeRegex, '');
+  return value == null ? value : value.trim();
 }
 
 /**

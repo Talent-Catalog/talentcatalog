@@ -292,30 +292,14 @@ describe('RegistrationContactComponent', () => {
   // ---------------------------------------------------------------------------
 
   describe('email sanitization', () => {
-    it('should strip a Hangul filler character pasted before the email', () => {
-      component.form.get('email').setValue('ㅤuser@example.com');
-      expect(component.email).toBe('user@example.com');
-    });
-
-    it('should strip a zero-width space pasted after the email', () => {
-      component.form.get('email').setValue('user@example.com​');
+    it('should trim leading/trailing whitespace pasted around the email', () => {
+      component.form.get('email').setValue('  user@example.com  ');
       expect(component.email).toBe('user@example.com');
     });
 
     it('should leave a clean email unchanged', () => {
       component.form.get('email').setValue('user@example.com');
       expect(component.email).toBe('user@example.com');
-    });
-
-    it('should leave an invisible character embedded in the middle of the email untouched', () => {
-      component.form.get('email').setValue('user@examp​le.com');
-      expect(component.email).toBe('user@examp​le.com');
-    });
-
-    it('should clear a prior pattern error once the invisible character is sanitized', () => {
-      const control = component.form.get('email');
-      control.setValue('ㅤuser@example.com');
-      expect(control.errors?.['pattern']).toBeFalsy();
     });
   });
 

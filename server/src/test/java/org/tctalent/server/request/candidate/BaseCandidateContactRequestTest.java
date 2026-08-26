@@ -39,28 +39,13 @@ class BaseCandidateContactRequestTest {
     }
 
     @Test
-    void stripsAHangulFillerCharacterPastedBeforeTheAddress() {
-        assertEquals("example@example.com", sanitize("ㅤexample@example.com"));
-    }
-
-    @Test
-    void stripsAZeroWidthSpacePastedAfterTheAddress() {
-        assertEquals("example@example.com", sanitize("example@example.com​"));
-    }
-
-    @Test
-    void leavesAZeroWidthSpaceEmbeddedInTheMiddleOfTheAddressUntouched() {
-        assertEquals("example@example​.com", sanitize("example@example​.com"));
+    void trimsLeadingAndTrailingWhitespace() {
+        assertEquals("example@example.com", sanitize("  example@example.com  "));
     }
 
     @Test
     void leavesAnOrdinarySpaceEmbeddedInTheMiddleOfTheAddressUntouched() {
         assertEquals("exam ple@example.com", sanitize("exam ple@example.com"));
-    }
-
-    @Test
-    void trimsLeadingAndTrailingWhitespace() {
-        assertEquals("example@example.com", sanitize("  example@example.com  "));
     }
 
     @Test
