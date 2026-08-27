@@ -20,23 +20,26 @@
     <tc-button color="error" [disabled]="disabled" (onClick)="delete()">&times;</tc-button>
   </div>
 
-  <div class="mb-3">
-    <tc-label *ngIf="!preview">{{ 'REGISTRATION.OCCUPATION.LABEL.OCCUPATION' | translate }}</tc-label>
+  <div class="mb-3" *ngIf="!preview">
+    <tc-label>{{ 'REGISTRATION.OCCUPATION.LABEL.OCCUPATION' | translate }}</tc-label>
 
-    <ng-select *ngIf="!preview" id="occupationId" [(ngModel)]="candidateOccupation.occupationId" [clearable]="false"
+    <ng-select id="occupationId" [(ngModel)]="candidateOccupation.occupationId" [clearable]="false"
                class="tc-select"
                placeholder="{{ 'FORM.PLACEHOLDER.SELECTORTYPE' | translate }}">
       <ng-option *ngFor="let occupation of filteredOccupations" [value]="occupation.id">{{occupation.name}}</ng-option>
     </ng-select>
+  </div>
 
-    <tc-description-list *ngIf="preview" direction="column" compact size="lg">
-      <tc-description-item [label]="'REGISTRATION.OCCUPATION.LABEL.OCCUPATION' | translate">
-        <div class="d-flex align-items-center gap-2 flex-wrap">
-          <span>{{getOccupationName(candidateOccupation.occupation)}}</span>
-          <tc-badge *ngIf="isPrincipal" color="blue">{{ 'REGISTRATION.OCCUPATION.LABEL.PRINCIPAL_BADGE' | translate }}</tc-badge>
-        </div>
-      </tc-description-item>
-    </tc-description-list>
+  <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3" *ngIf="preview">
+    <div class="d-flex align-items-center gap-2 flex-wrap">
+      <span class="fw-bold">{{getOccupationName(candidateOccupation.occupation)}}</span>
+      <tc-badge *ngIf="isPrincipal" color="blue">{{ 'REGISTRATION.OCCUPATION.LABEL.PRINCIPAL_BADGE' | translate }}</tc-badge>
+    </div>
+    <span class="text-muted">
+      {{ isSingularYear(candidateOccupation.yearsExperience)
+        ? ('REGISTRATION.OCCUPATION.LABEL.YEARS_OF_EXPERIENCE_SINGULAR' | translate)
+        : ('REGISTRATION.OCCUPATION.LABEL.YEARS_OF_EXPERIENCE_PLURAL' | translate: {years: candidateOccupation.yearsExperience}) }}
+    </span>
   </div>
 
   <div class="mb-3 mb-0" *ngIf="candidateOccupation.occupationId == 0 && candidateOccupation.migrationOccupation">
@@ -50,21 +53,14 @@
   </div>
 
   <!-- YEARS OF EXPERIENCE -->
-  <div class="mb-3">
-    <tc-label *ngIf="!preview">{{ 'REGISTRATION.OCCUPATION.LABEL.YEARSEXPERIENCE' | translate }}</tc-label>
+  <div class="mb-3" *ngIf="!preview">
+    <tc-label>{{ 'REGISTRATION.OCCUPATION.LABEL.YEARSEXPERIENCE' | translate }}</tc-label>
 
-    <p class="text-muted" *ngIf="!preview">{{ 'REGISTRATION.OCCUPATION.LABEL.DISCLAIMER' | translate }}</p>
+    <p class="text-muted">{{ 'REGISTRATION.OCCUPATION.LABEL.DISCLAIMER' | translate }}</p>
     <tc-input id="yearsExperience"
               type="number"
               [min]="0"
-              [(ngModel)]="candidateOccupation.yearsExperience"
-              *ngIf="!preview"></tc-input>
-
-    <tc-description-list *ngIf="preview" direction="column" compact size="lg">
-      <tc-description-item [label]="'REGISTRATION.OCCUPATION.LABEL.YEARSEXPERIENCE' | translate">
-        {{candidateOccupation.yearsExperience}}
-      </tc-description-item>
-    </tc-description-list>
+              [(ngModel)]="candidateOccupation.yearsExperience"></tc-input>
   </div>
 
 </ng-container>

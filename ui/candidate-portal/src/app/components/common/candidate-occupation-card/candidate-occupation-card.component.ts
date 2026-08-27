@@ -83,4 +83,8 @@ export class CandidateOccupationCardComponent implements OnChanges {
   getOccupationName(occupation: Occupation) {
     return this.occupations?.find(o => o.id === occupation.id)?.name;
   }
+
+  isSingularYear(yearsExperience: number | string): boolean {
+    return Number(yearsExperience) === 1;
+  }
 }

@@ -40,24 +40,6 @@ class TcButtonStubComponent {
 class TcLabelStubComponent {}
 
 @Component({
-  selector: 'tc-description-list',
-  template: '<ng-content></ng-content>'
-})
-class TcDescriptionListStubComponent {
-  @Input() direction?: string;
-  @Input() compact?: boolean;
-  @Input() size?: string;
-}
-
-@Component({
-  selector: 'tc-description-item',
-  template: '<ng-content></ng-content>'
-})
-class TcDescriptionItemStubComponent {
-  @Input() label?: string;
-}
-
-@Component({
   selector: 'tc-input',
   template: '',
   providers: [{
@@ -140,8 +122,6 @@ describe('CandidateOccupationCardComponent', () => {
         CandidateOccupationCardComponent,
         TcButtonStubComponent,
         TcLabelStubComponent,
-        TcDescriptionListStubComponent,
-        TcDescriptionItemStubComponent,
         TcInputStubComponent,
         NgSelectStubComponent,
         NgOptionStubComponent,
@@ -189,20 +169,28 @@ describe('CandidateOccupationCardComponent', () => {
       expect(select.componentInstance.id).toBe('occupationId');
       expect(select.nativeElement.classList).toContain('tc-select');
       expect(input.componentInstance.type).toBe('number');
-      expect(nativeElement.querySelectorAll('tc-description-list').length).toBe(0);
+      expect(nativeElement.querySelector('.fw-bold')).toBeFalsy();
     });
 
-    it('should render tc-description-list items in preview mode', async () => {
+    it('should render the occupation name in bold and years experience in muted text in preview mode', async () => {
       await configureAndCreate({preview: true});
 
-      const items = fixture.debugElement.queryAll(By.directive(TcDescriptionItemStubComponent));
-      const labels = items.map(debugEl => debugEl.componentInstance.label);
-      const text = (fixture.nativeElement as HTMLElement).textContent || '';
+      const nativeElement = fixture.nativeElement as HTMLElement;
+      const name = nativeElement.querySelector('.fw-bold');
+      const years = nativeElement.querySelector('.text-muted');
 
-      expect(labels).toContain('REGISTRATION.OCCUPATION.LABEL.OCCUPATION');
-      expect(labels).toContain('REGISTRATION.OCCUPATION.LABEL.YEARSEXPERIENCE');
-      expect(text).toContain('Engineer');
-      expect(text).toContain('4');
+      expect(name?.textContent).toContain('Engineer');
+      expect(years?.textContent).toContain('REGISTRATION.OCCUPATION.LABEL.YEARS_OF_EXPERIENCE_PLURAL');
+      expect(nativeElement.querySelector('ng-select')).toBeFalsy();
+      expect(nativeElement.querySelector('tc-input')).toBeFalsy();
+    });
+
+    it('should use the singular years-experience translation when yearsExperience is 1', async () => {
+      await configureAndCreate({preview: true, candidateOccupation: makeCandidateOccupation({yearsExperience: 1})});
+
+      const years = (fixture.nativeElement as HTMLElement).querySelector('.text-muted');
+
+      expect(years?.textContent).toContain('REGISTRATION.OCCUPATION.LABEL.YEARS_OF_EXPERIENCE_SINGULAR');
     });
 
     it('should not render the Principal badge when isPrincipal is false', async () => {
@@ -214,11 +202,10 @@ describe('CandidateOccupationCardComponent', () => {
       await configureAndCreate({preview: true, isPrincipal: true});
 
       const badge = fixture.debugElement.query(By.directive(TcBadgeStubComponent));
-      const occupationItem = fixture.debugElement.queryAll(By.directive(TcDescriptionItemStubComponent))
-        .find(debugEl => debugEl.componentInstance.label === 'REGISTRATION.OCCUPATION.LABEL.OCCUPATION');
+      const nameContainer = (fixture.nativeElement as HTMLElement).querySelector('.fw-bold')?.parentElement;
 
       expect(badge).toBeTruthy();
-      expect(occupationItem.nativeElement.contains(badge.nativeElement)).toBeTrue();
+      expect(nameContainer.contains(badge.nativeElement)).toBeTrue();
     });
   });
 
@@ -235,6 +222,13 @@ describe('CandidateOccupationCardComponent', () => {
 
     it('should return the matching occupation name', () => {
       expect(component.getOccupationName(makeOccupation(1, 'Ignored'))).toBe('Engineer');
+    });
+
+    it('should identify singular vs plural years of experience', () => {
+      expect(component.isSingularYear(1)).toBeTrue();
+      expect(component.isSingularYear('1')).toBeTrue();
+      expect(component.isSingularYear(0)).toBeFalse();
+      expect(component.isSingularYear(4)).toBeFalse();
     });
 
     it('should filter out already selected occupations and unknown when not current', () => {
