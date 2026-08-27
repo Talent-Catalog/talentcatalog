@@ -51,7 +51,7 @@ test.describe(
 
           await runVerifyPlusQrDecodingScenario(
             page,
-            testInfo.config.testDir,
+            testInfo.project.testDir,
             fixture,
           );
         },
