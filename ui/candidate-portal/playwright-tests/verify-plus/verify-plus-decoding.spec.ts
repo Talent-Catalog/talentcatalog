@@ -50,7 +50,7 @@ test.describe(
 
           await runVerifyPlusQrDecodingScenario(
             page,
-            testInfo.config.rootDir,
+            testInfo.config.testDir,
             fixture,
           );
         },
