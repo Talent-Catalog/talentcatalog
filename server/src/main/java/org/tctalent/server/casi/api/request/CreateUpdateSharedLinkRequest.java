@@ -14,17 +14,24 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tctalent.server.casi.domain.model;
+package org.tctalent.server.casi.api.request;
+
+import jakarta.validation.constraints.NotBlank;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
- * Enumeration of service providers.
+ * Request payload for creating or updating shared country signposting links.
  *
  * @author sadatmalik
  */
-public enum ServiceProvider {
-  DUOLINGO,
-  LINKEDIN,
-  REFERENCE,
-  UNHCR,
-  PIFI
+@Getter
+@Setter
+public class CreateUpdateSharedLinkRequest {
+
+  @NotBlank(message = "Country ISO code must not be blank")
+  private String countryIsoCode;
+
+  @NotBlank(message = "Resource link URL must not be blank")
+  private String resourceCode;
 }

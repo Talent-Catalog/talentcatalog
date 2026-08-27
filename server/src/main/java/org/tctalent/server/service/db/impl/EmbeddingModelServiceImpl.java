@@ -34,8 +34,6 @@ public class EmbeddingModelServiceImpl implements EmbeddingModelService {
     private final EmbeddingModelRepository embeddingModelRepository;
     private final VectorEmbeddingModelProperties vectorEmbeddingModelProperties;
 
-//todo    private static final String DATABASE_SCHEMA = "public";
-
     @Override
     @Nullable
     public EmbeddingModel findModelByKey(String modelKey) {
@@ -67,32 +65,7 @@ public class EmbeddingModelServiceImpl implements EmbeddingModelService {
 
     @Override
     public String getTableNameForModel(EmbeddingModel model) {
-        String name = "job_experience_embedding" + "_" + model.getModelKey().toLowerCase();
-
-        //TODO JC Check that table exists in DB.
-        //TODO commented out until we sort out problem with Databaseconfiration supporting multipl
-        //TODO data sources which seems to cause problem with jdbcTemplate not being available.
-//        Integer tableCount = jdbc.queryForObject(
-//            """
-//            select count(*)
-//            from information_schema.tables
-//            where table_schema = ?
-//              and table_name = ?
-//              and table_type = 'BASE TABLE'
-//            """,
-//            Integer.class,
-//            DATABASE_SCHEMA,
-//            name
-//        );
-//
-//        if (tableCount == null || tableCount == 0) {
-//            log.warn(
-//                "embedding.alternate-embedding-table '%s' is not a table in schema '%s'",
-//                name,
-//                DATABASE_SCHEMA
-//            );
-//        }
-        return name;
+        return "experience_embedding" + "_" + model.getModelKey().toLowerCase();
     }
 
     @Override

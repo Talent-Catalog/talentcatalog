@@ -20,6 +20,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
@@ -142,6 +143,31 @@ class UnhcrServiceTest {
         .hasMessageContaining("ASSIGNED HELP_SITE_LINK resource");
 
     verifyNoInteractions(assignmentEngine);
+  }
+
+  @Test
+  @DisplayName("assignToCandidate allows reassignment after disabled link is replaced")
+  void assignToCandidateAllowsReassignmentAfterDisabledLinkReplaced() {
+    when(candidateService.getCandidate(100L)).thenReturn(candidateWithIso("JO"));
+
+    ServiceAssignmentEntity disabledJo =
+        assignmentWithResource(31L, ResourceStatus.DISABLED, AssignmentStatus.ASSIGNED, "UNHCR-JO-OLD", "JO");
+    when(assignmentRepository.findByCandidateAndProviderAndService(
+        100L, ServiceProvider.UNHCR, ServiceCode.HELP_SITE_LINK))
+        .thenReturn(List.of(disabledJo));
+
+    assertThat(service.getCurrentAssignment(100L)).isNull();
+
+    ServiceAssignment replacement = ServiceAssignment.builder()
+        .id(99L)
+        .provider(ServiceProvider.UNHCR)
+        .serviceCode(ServiceCode.HELP_SITE_LINK)
+        .build();
+    when(assignmentEngine.assign(eq(allocator), eq(100L), any(User.class))).thenReturn(replacement);
+
+    ServiceAssignment result = service.assignToCandidate(100L, new User());
+    assertThat(result.getId()).isEqualTo(99L);
+    verify(assignmentEngine).assign(eq(allocator), eq(100L), any(User.class));
   }
 
   @Test

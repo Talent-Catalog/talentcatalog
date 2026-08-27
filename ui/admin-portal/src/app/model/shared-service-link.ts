@@ -14,17 +14,12 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tctalent.server.casi.domain.model;
-
-/**
- * Enumeration of service providers.
- *
- * @author sadatmalik
- */
-public enum ServiceProvider {
-  DUOLINGO,
-  LINKEDIN,
-  REFERENCE,
-  UNHCR,
-  PIFI
+export interface SharedServiceLink {
+  id: number;
+  provider: string;
+  serviceCode: string;
+  resourceCode: string;
+  countryIsoCode: string;
+  resourceType: string;
+  status: string;
 }

@@ -846,6 +846,9 @@ import {
 import {CasiManagementComponent} from "./components/casi-management/casi-management.component";
 import {CsvPreviewComponent} from "./components/casi-management/csv-preview/csv-preview.component";
 import {
+  ManageHelpSiteLinksComponent
+} from "./components/casi-management/manage-help-site-links/manage-help-site-links.component";
+import {
   EraseCandidateDataComponent
 } from "./components/candidates/view/erase/erase-candidate-data.component";
 import {TextPartsViewComponent} from "./components/util/text-parts-view/text-parts-view.component";
@@ -1199,6 +1202,7 @@ import {
     CandidateCvTextTabComponent,
     CasiManagementComponent,
     CsvPreviewComponent,
+    ManageHelpSiteLinksComponent,
     ImportLinkedinPremiumCouponsComponent,
     ImportReferenceVouchersComponent,
     ViewCandidateAspirationsComponent,
