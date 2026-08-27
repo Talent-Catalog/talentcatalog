@@ -387,7 +387,7 @@ describe('DefineSearchComponent', () => {
     (component as any).setUpJobMatch(mockInfo);
 
     expect(component.clearForm).toHaveBeenCalled();
-    expect(component.searchForm.get('simpleQueryString').value)
+    expect(component.extractedSkills)
     .toBe('Java "Project Management"');
     expect(component.searchForm.dirty).toBeTrue();
     expect(component.onSubmit).toHaveBeenCalled();
@@ -406,7 +406,7 @@ describe('DefineSearchComponent', () => {
 
   it('should ignore empty job skills', () => {
     component.searchForm.markAsPristine();
-    (component as any).initializeQueryStringWithJobSkills([]);
+    (component as any).setExtractedSkills([]);
     expect(component.searchForm.get('simpleQueryString').value).toBeNull();
     expect(component.searchForm.pristine).toBeTrue();
   });
