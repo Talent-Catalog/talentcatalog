@@ -294,7 +294,6 @@
               <!-- providing 'placement' as an empty string makes the tooltip appear over the
               element in a suitable direction for the viewport -->
               <tc-label size="sm" class="form-label" for="simpleQueryString">Keyword Search
-                <span *ngIf="hasRequirements()"> (taken over by AI matching)</span>
               </tc-label>
               <tc-button [type]="'plain'"
                          class="tool-tip-button"
@@ -307,7 +306,6 @@
                 <i class="fa-regular fa-circle-question fa-xs"></i>
               </tc-button>
               <tc-input id="simpleQueryString"
-                        [disabled]="hasRequirements()"
                         type="text"
                         placeholder='E.g. welder "diesel mechanic"'
                         aria-label="Keyword Search"
