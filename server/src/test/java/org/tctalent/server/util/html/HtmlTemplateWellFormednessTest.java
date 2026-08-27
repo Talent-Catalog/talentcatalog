@@ -19,9 +19,11 @@ package org.tctalent.server.util.html;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
@@ -35,6 +37,7 @@ import org.w3c.dom.Document;
 
 class HtmlTemplateWellFormednessTest {
 
+  private static final String XML_DECLARATION = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
   private static final String XHTML_NAMESPACE = "http://www.w3.org/1999/xhtml";
 
   @Test
@@ -46,22 +49,37 @@ class HtmlTemplateWellFormednessTest {
     assertTrue(terms.length > 0, "No terms templates found");
     assertTrue(mail.length > 0, "No mail templates found");
 
-    List<Resource> templates = Stream.concat(Arrays.stream(terms), Arrays.stream(mail))
-        .sorted(Comparator.comparing(Resource::getFilename))
-        .toList();
+    List<TemplateResource> templates =
+        Stream.concat(
+            Arrays.stream(terms).map(resource -> new TemplateResource(resource, true)),
+            Arrays.stream(mail).map(resource -> new TemplateResource(resource, false)))
+            .sorted(Comparator.comparing(template -> template.resource().getFilename()))
+            .toList();
 
     assertAll(templates.stream().map(this::wellFormedXhtmlCheck));
   }
 
-  private Executable wellFormedXhtmlCheck(Resource template) {
-    String filename = template.getFilename();
+  private Executable wellFormedXhtmlCheck(TemplateResource template) {
+    String filename = template.resource().getFilename();
     return () -> {
-      Document document = assertDoesNotThrow(() -> parse(template), filename);
+      String content =
+          assertDoesNotThrow(
+              () -> template.resource().getContentAsString(StandardCharsets.UTF_8), filename);
+      if (template.requiresXmlDeclaration()) {
+        assertTrue(
+            content.startsWith(XML_DECLARATION),
+            filename + " must start with the standard XML declaration");
+      } else {
+        assertFalse(
+            content.startsWith("<?xml"),
+            filename + " must not include an XML declaration");
+      }
+
+      Document document = assertDoesNotThrow(() -> parse(template.resource()), filename);
       assertEquals(
           XHTML_NAMESPACE,
           document.getDocumentElement().getNamespaceURI(),
-          filename + " must declare the XHTML namespace"
-      );
+          filename + " must declare the XHTML namespace");
     };
   }
 
@@ -75,5 +93,8 @@ class HtmlTemplateWellFormednessTest {
     try (InputStream input = template.getInputStream()) {
       return factory.newDocumentBuilder().parse(input);
     }
+  }
+
+  private record TemplateResource(Resource resource, boolean requiresXmlDeclaration) {
   }
 }
