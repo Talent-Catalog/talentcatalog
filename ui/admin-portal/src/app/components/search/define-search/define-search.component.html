@@ -154,6 +154,9 @@
                            formControlName="requirements"
               ></tc-textarea>
               <div *ngIf="jobName">
+                <div>
+                  Extracted skills: {{extractedSkills}}
+                </div>
                 <small class="text-muted">
                   {{displayJobNameAsSource()}}
                 </small>
@@ -312,11 +315,6 @@
                         formControlName="simpleQueryString"
                         (keyup.enter)="runKeywordSearchOnEnter($event)"
               ></tc-input>
-              <div *ngIf="jobName">
-                <small class="text-muted">
-                  {{displayJobNameAsSource()}}
-                </small>
-              </div>
             </div>
 
             <!-- STATUS -->
