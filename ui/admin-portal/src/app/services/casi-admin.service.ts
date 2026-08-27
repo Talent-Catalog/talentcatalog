@@ -19,6 +19,7 @@ import {HttpClient, HttpHeaders} from "@angular/common/http";
 import {Observable} from "rxjs";
 import {environment} from "../../environments/environment";
 import {ListAction, ServiceList} from "../model/service-list";
+import {SharedServiceLink} from "../model/shared-service-link";
 
 
 /**
@@ -114,4 +115,31 @@ export class CasiAdminService {
       null
     );
   }
+
+  listSharedLinks(provider: string, serviceCode: string): Observable<SharedServiceLink[]> {
+    return this.http.get<SharedServiceLink[]>(
+      `${this.apiBaseUrl}/${provider}/${serviceCode}/shared`
+    );
+  }
+
+  createSharedLink(provider: string, serviceCode: string, countryIsoCode: string, resourceCode: string): Observable<SharedServiceLink> {
+    return this.http.post<SharedServiceLink>(
+      `${this.apiBaseUrl}/${provider}/${serviceCode}/shared`,
+      {countryIsoCode, resourceCode}
+    );
+  }
+
+  updateSharedLink(provider: string, serviceCode: string, id: number, countryIsoCode: string, resourceCode: string): Observable<SharedServiceLink> {
+    return this.http.put<SharedServiceLink>(
+      `${this.apiBaseUrl}/${provider}/${serviceCode}/shared/${id}`,
+      {countryIsoCode, resourceCode}
+    );
+  }
+
+  disableSharedLink(provider: string, serviceCode: string, id: number): Observable<void> {
+    return this.http.delete<void>(
+      `${this.apiBaseUrl}/${provider}/${serviceCode}/shared/${id}`
+    );
+  }
+
 }

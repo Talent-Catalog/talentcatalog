@@ -98,6 +98,20 @@ public enum CandidateOpportunityStage {
 
         public boolean isWon() { return won; }
 
+        /**
+         * Returns true if this stage is at or beyond Offer in the progression toward employment.
+         * <p>
+         * Ordinal alone is not enough: several closed-lost stages (e.g. {@code noJobOffer},
+         * {@code candidateRejectsOffer}) are declared after {@code offer} in the enum order, so
+         * {@code ordinal() >= offer.ordinal()} would incorrectly treat them as post-offer.
+         * Those closed stages are excluded unless the opportunity was successfully employed
+         * ({@link #isEmployed()}) or won ({@link #isWon()}).
+         * </p>
+         */
+        public boolean isAtOrBeyondOffer() {
+            return this.ordinal() >= offer.ordinal() && (!this.isClosed() || this.isEmployed() || this.isWon());
+        }
+
         public boolean isAtOrBeyondAcceptance() {
             return this.ordinal() >= acceptance.ordinal();
         }

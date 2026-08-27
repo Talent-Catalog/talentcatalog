@@ -69,6 +69,7 @@ export class ViewCandidateComponent implements OnInit {
   linkedinEligible$: Observable<boolean>;
   referenceEligible$: Observable<boolean>;
   unhcrEligible$: Observable<boolean>;
+  pifiEligible$: Observable<boolean>;
   verifyPlusEligible$: Observable<boolean>;
 
   constructor(
@@ -163,6 +164,7 @@ export class ViewCandidateComponent implements OnInit {
       linkedIn: this.linkedinService.isEligible(this.candidate.id),
       reference: this.casiPortalService.checkEligibility('REFERENCE', 'VOUCHER'),
       unhcr: this.casiPortalService.checkEligibility('UNHCR', 'HELP_SITE_LINK'),
+      pifi: this.casiPortalService.checkEligibility('PIFI', 'HELP_SITE_LINK'),
       // TODO - SM -when eligibility criteria is determined move this to the server as a
       //  checkEligibility test (for example by enrolled/approved country)
       verifyPlus: of(this.authenticationService.isGrnInstance())
@@ -170,7 +172,7 @@ export class ViewCandidateComponent implements OnInit {
     }).pipe(shareReplay(1)); // Avoid re-triggering on multiple subscriptions
 
     this.showServicesTab$ = results$.pipe(
-      map(results => results.linkedIn || (this.isLocalEnv() && results.reference) || results.unhcr || results.verifyPlus || !!this.activeDuolingoTask)
+      map(results => results.linkedIn || (this.isLocalEnv() && results.reference) || results.unhcr || results.pifi || results.verifyPlus || !!this.activeDuolingoTask)
     );
 
     this.linkedinEligible$ = results$.pipe(
@@ -183,6 +185,10 @@ export class ViewCandidateComponent implements OnInit {
 
     this.unhcrEligible$ = results$.pipe(
       map(results => results.unhcr)
+    );
+
+    this.pifiEligible$ = results$.pipe(
+      map(results => results.pifi)
     );
 
     this.verifyPlusEligible$ = results$.pipe(

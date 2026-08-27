@@ -39,6 +39,11 @@
              (backButtonClicked)="onBackButtonClick()"
   ></app-unhcr>
 
+  <app-pifi *ngIf="(showPifi$ | async) && selectedService === Service.PIFI"
+            [candidate]="candidate"
+            (backButtonClicked)="onBackButtonClick()"
+  ></app-pifi>
+
   <app-verify-plus *ngIf="(showVerifyPlus$ | async) && selectedService === Service.VERIFY_PLUS"
                    [candidate]="candidate"
                    (backButtonClicked)="onBackButtonClick()"
@@ -125,6 +130,25 @@
         </p>
       </div>
       <img src="assets/images/services/unhcr.png" alt="UNHCR Logo"/>
+    </div>
+
+    <!-- PiFi -->
+    <div *ngIf="showPifi$ | async"
+         class="service-card pifi"
+         (click)="selectService(Service.PIFI)"
+    >
+      <div>
+        <span class="service-tag pifi">
+          PiFi
+        </span>
+        <h3>
+          PiFi Property
+        </h3>
+        <p>
+          Helping migrants find a place to call home in Australia.
+        </p>
+      </div>
+      <img src="assets/images/services/pifiLogo.png" alt="PiFi logo"/>
     </div>
 
     <!-- Verify+ -->
