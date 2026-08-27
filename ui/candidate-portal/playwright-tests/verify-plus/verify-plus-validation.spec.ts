@@ -184,10 +184,12 @@ async function confirmAndWaitForResponse(
   /*
    * Start listening before clicking Confirm.
    */
-  await verifyPlusPage
-  .confirmScan();
+  const [response] = await Promise.all([
+    responsePromise,
+    verifyPlusPage.confirmScan(),
+  ]);
 
-  return responsePromise;
+  return response;
 }
 
 /**
