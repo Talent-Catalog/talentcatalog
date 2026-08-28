@@ -8,6 +8,7 @@ sass:
 
 Check out the newest features and enhancements.
 
+- [Version 2.6.0](release_notes_v2_6_0.md)
 - [Version 2.5.1](release_notes_v2_5_1.md)
 - [Version 2.5.0](release_notes_v2_5_0.md)
 - [Version 2.4.0](release_notes_v2_4_0.md)
