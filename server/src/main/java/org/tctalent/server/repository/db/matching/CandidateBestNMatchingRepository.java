@@ -30,8 +30,20 @@ import org.tctalent.server.request.candidate.matching.CandidateBestNMatchingRequ
 import org.tctalent.server.service.db.EmbeddingModelService;
 
 /**
- * Executes candidate matching with JDBC because the PostgreSQL-specific CTEs, full-text operators,
+ * Executes candidate matching with JDBC because the PostgreSQL-specific
+ * CTEs (Common Table Expressions), full-text operators,
  * pgvector nearest-neighbour ordering, and dynamic trusted identifier are not a good fit for JPA.
+ * <p>
+ * CTE is syntax like
+ * <pre>
+ *     WITH lexical_candidates AS (
+ *       SELECT id AS candidate_id, score AS lexical_score,
+ *              ROW_NUMBER() OVER (ORDER BY score DESC, id) AS lexical_rank
+ *       FROM lexical_candidate_scores
+ *       ORDER BY score DESC, id
+ *       LIMIT :candidateLimit
+ *     )
+ * </pre>
  */
 @Repository
 @RequiredArgsConstructor

@@ -5,7 +5,19 @@ This document provides an overview of how vector embedding is managed.
                               
 ## Matching Candidates with Embeddings
 
-The system uses vector embeddings to match candidates with job experiences.
+The system uses vector embeddings to match a candidate's job experiences with a job description.
+
+Each CandidateJobExperience can have one or more associated vector embeddings associated with it
+Each vector embedding is associated with an EmbeddingModel.
+
+Vector embeddings associated with an EmbeddingModel are stored in a separate table.
+All vector embeddings in a table are associated with the same EmbeddingModel.
+
+CandidateJobExperience's vector embeddings are stored in a table named as follows:
+`experience_embedding_<embedding_model_key>`. 
+See [EmbeddingModel](./EmbeddingModel.java) for more details.
+
+
    <!-- TODO: TBC -->
 
 ## Adding a New Embedding Model
