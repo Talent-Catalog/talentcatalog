@@ -9,8 +9,8 @@ sass:
 
 <div class="card-image-container">
     <img class="card-image"
-         src="../assets/images/v260/VerifyPlusQrSample.png"
-         alt="Sample UNHCR Verify+ card QR code"
+         src="../assets/images/v260/VerifyPlusServicesCard.png"
+         alt="UNHCR Verify+ card in the Candidate Portal Services tab"
     >
 </div>
 
@@ -22,8 +22,8 @@ ever leaves the device until the candidate chooses to submit it.
 ## 📷 Scan From the Services Tab
 
 A new **Verify+** card in the Candidate Portal's Services tab lets a candidate scan their
-UNHCR Verify+ QR code at any time. The scanner opens the device's back camera, decodes the
-code on-device, and shows the scanned payload for review before anything is submitted.
+UNHCR Verify+ QR code at any time. Selecting it opens the device's back camera; the code is
+decoded on-device, and the scanned payload is shown for review before anything is submitted.
 
 <div class="card-image-container">
     <img class="card-image"
@@ -78,9 +78,17 @@ If a different UNHCR number was already on file, the freshly scanned one takes i
 ## 🔍 Built for Real UNHCR QR Codes
 
 Early testing surfaced a real-world snag: genuine UNHCR Verify+ cards use very high-density
-QR codes that common JavaScript decoding libraries struggled to read reliably. We
-investigated the failure and moved scanning onto a decoder capable of handling that density,
-so a scan succeeds on the first realistic try rather than requiring several attempts.
+QR codes — like the one below — that common JavaScript decoding libraries struggled to read
+reliably. We investigated the failure and moved scanning onto a decoder capable of handling
+that density, so a scan succeeds on the first realistic try rather than requiring several
+attempts.
+
+<div class="card-image-container">
+    <img class="card-image"
+         src="../assets/images/v260/VerifyPlusQrSample.png"
+         alt="Sample UNHCR Verify+ card QR code"
+    >
+</div>
 
 ## 🌐 Available in Your Language
 
