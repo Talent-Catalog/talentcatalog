@@ -99,66 +99,97 @@ them explore rental homes in their new country — starting with Australia.
 
 </div>
 
-# User Guides
-
-TODO — nothing confirmed shipped this release (TC-1450/TC-1451 still in progress). Drop this
-section from the published page if nothing lands before release.
-
 # General Improvements
 
-* TODO — Candidate deletion & erasure permissions (TC-1358, TC-1419, TC-1321, TC-1396, TC-1398)
-* TODO — Submission List filtering and field visibility (TC-1113)
-* TODO — Task email alert feedback and translation fix (TC-1337)
+* Candidate deletion and erasure permissions have been reworked: only system admins can
+  permanently erase a candidate's data, with a new "Delete" action available to other admins
+  that simply marks a candidate's status as deleted. The erase option now stays visible even
+  after a candidate has been marked deleted, error messages are clearer when a candidate is
+  deleted or the candidate number is invalid, deleted candidates no longer wrongly appear in
+  name/ID search results, and a status-dropdown bug that showed some statuses as blank has
+  been fixed.
+* Task email alerts now confirm on-screen when an email has actually been sent, and a broken
+  translation key that showed raw placeholder text has been fixed.
 
 # Data Improvements
 
-* TODO — New TC-identified skills table (TC-1058)
-* TODO — Upgrade/migration note: run `build_embeddings` admin action after deploying to
-  populate AI-matching embeddings for existing data (see 5 new migrations, V2_19–V2_23)
+* Talent Catalog can now hold its own list of TC-identified skills, alongside the standard
+  ESCO/ONet skill sets — useful for job-description acronyms and terms (e.g. PLC, SCADA) that
+  aren't well covered by the standard lists.
+* Upgrade note: this release ships 5 new Flyway migrations (V2_19–V2_23). After deploying,
+  run the `build_embeddings` admin action so existing candidates and experience get AI-matching
+  embeddings — matching has nothing to work with until that's done.
 
 # UI / UX Enhancements
 
-* TODO — TC-1371, TC-1335, TC-1336, TC-1339, TC-1361, TC-1407, TC-1424, TC-1412
-* TODO — TC-723 (email paste validation) — confirm merged before publishing
+* Fixed inconsistent line-height across dropdown items.
+* Removed a duplicated warning triangle icon from the erase-candidate modal.
+* Added a "Mark All as Yes" button to speed up the registration destinations step on mobile.
+* Aligned a help icon with its text on the CV Google Doc download.
+* Fixed the sign-in button not being centered with the language icon on the mobile candidate
+  portal.
+* The `tc-input` component now properly supports `min`, `max`, and `step` for range and
+  number inputs — including a fix so a range slider's endpoints are actually reachable.
+* Removed the legacy "Old fetch" checkbox from the candidate search screen.
+* Fixed email validation incorrectly failing when an address was pasted in with invisible
+  characters attached.
 
 # Performance Improvements
 
-* TODO — Batch embedding rebuild skips records that already have one (TC-1438)
-* TODO — Matching tuning and tidy up (TC-1409)
-
-# Security Updates
-
-TODO — nothing shipped this release (TC-1431 still Todo). Drop this section from the
-published page if nothing changes before release.
+* Rebuilding candidate-experience embeddings skips records that already have one, so a
+  restarted or resumed batch run picks up where it left off instead of starting over.
+* General tuning and clean-up of the AI matching engine based on early testing.
 
 # Bug Fixes
 
-* TODO — TC-1305, TC-1340, TC-1368, TC-1446, TC-1338
+* Intake PDF export was truncating free-text fields; the "Export PDF" action has been
+  replaced with a "Print page" button that renders the full data.
+* Fixed the Data Processing Agreement showing a literal "[Your Organization]" placeholder
+  instead of the actual counterparty name.
+* Hardened JWT authentication against Redis cache failures: a cache outage now falls back to
+  the database instead of silently breaking login for every user.
+* Migrated (legacy) candidate skills are now correctly included in the text used for search
+  and matching.
+* Fixed job-experience description validation and display: empty section titles no longer
+  appear, and the "Original" description field is now properly required.
 
 # Developer Notes
 
-* TODO — TC-1315, TC-1389
+* Updated the CASI developer README with documentation for agreement management.
+* Replaced outdated copyright headers with the standard Talent Catalog
+  license across the codebase.
 
 ## Test Coverage
 
-* TODO — TC-1408, TC-1382, TC-1394, TC-1404, TC-1270, TC-1272, TC-1277, TC-1279, TC-1353,
-  TC-1400, TC-1425, TC-1401, TC-1403 (confirm TC-1404's tests actually pass before publishing)
+Continued the push toward 80% line coverage: new and expanded unit tests across the admin
+portal, candidate portal, and backend service/util/config layers; public-portal test setup
+and CI wiring; database specification and query-builder tests; `SystemAdminApi` coverage; CV
+and DOCX helper test fixes after the CV-generation refactor; and new Playwright end-to-end
+coverage for the Verify+ flow, including reusable candidate-portal authentication for future
+E2E suites.
 
 ## Code Refactoring
 
-* TODO — TC-1341, TC-1372, TC-1440, TC-1323
+* Modernised deprecated Spring test annotations (`@MockBean` → `@MockitoBean`) across the
+  server test suite.
+* Removed the unused partner Data Processing Agreement acceptance code — partner DPAs are
+  handled manually with partner organisations rather than through an in-app flow.
+* Generalised embedding table naming convention so it can support future non-job experience types, 
+  not just job experience.
+* Switched CV generation to native XHTML templates, removing an unnecessary conversion and
+  sanitisation step.
 
 ## Continuous Integration & Deployment
 
-* TODO — TC-1359
-
-## Cloud Enhancements
-
-TODO — nothing found in this release's range. Drop this section from the published page.
+* Added a CI workflow to run Candidate Portal Angular tests, mirroring the existing Admin
+  Portal test workflow.
 
 ## New Tools and Standards
 
-* TODO — TC-1411, TC-1342, TC-1420
+* Added CodeCov test coverage badge to the GitHub README, along with the CI wiring to keep it
+  up to date.
+* Documented how to install and use Claude Code in the IDE, to get new devs setup and actively using 
+  the team Claude subscription.
 
 ---
 
