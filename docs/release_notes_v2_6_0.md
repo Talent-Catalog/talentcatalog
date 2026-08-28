@@ -30,17 +30,19 @@ TODO — intro paragraph. Covers TC-1388 (shipped: skill-aware search icon) and 
 
 ## Verify+
 
-TODO — intro paragraph. Covers TC-1355/1356/1363 (scanning + backend ingest) and TC-1357
-(optional pre-fill during registration). Do not describe photo handling, retention/erasure,
-or consent-gating — none of that has shipped.
+GRN candidates who hold a UNHCR Verify+ card can now scan its QR code straight from their
+phone to capture and verify their UNHCR registration number — either from the Services tab,
+or as an optional step during registration.
 
 <div class="card-container">
 
   <a href="./v260/verify_plus" class="card">
     <img src="./assets/images/v260/VerifyPlus.png" alt="Verify+" class="card-image">
     <div class="card-body">
-      <div class="card-title">TODO</div>
-      <div class="card-description">TODO</div>
+      <div class="card-title">UNHCR Verify+</div>
+      <div class="card-description">
+        Scan your UNHCR Verify+ QR code to capture and verify your UNHCR registration number.
+      </div>
       <div class="card-footer">
         <button class="btn btn-sm">Learn more</button>
       </div>
