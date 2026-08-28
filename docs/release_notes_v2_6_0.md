@@ -84,10 +84,13 @@ them explore rental homes in their new country — starting with Australia.
 <div class="card-container">
 
   <a href="./v260/principal_occupation" class="card">
-    <img src="./assets/images/v260/PrincipalOccupation.png" alt="Principal Occupation" class="card-image">
+    <img src="./assets/images/v260/PrincipalOccupationProfile.png" alt="Principal Occupation" class="card-image">
     <div class="card-body">
-      <div class="card-title">TODO — PENDING MERGE</div>
-      <div class="card-description">TODO — do not publish until TC-658 / TC-1434 merge (PR #3711)</div>
+      <div class="card-title">Principal Occupation</div>
+      <div class="card-description">
+        Candidates can now mark one occupation as their principal one, giving admins and job
+        matching a clearer picture of what a candidate is really looking for.
+      </div>
       <div class="card-footer">
         <button class="btn btn-sm">Learn more</button>
       </div>
