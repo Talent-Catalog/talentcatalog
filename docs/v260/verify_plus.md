@@ -25,6 +25,13 @@ A new **Verify+** card in the Candidate Portal's Services tab lets a candidate s
 UNHCR Verify+ QR code at any time. The scanner opens the device's back camera, decodes the
 code on-device, and shows the scanned payload for review before anything is submitted.
 
+<div class="card-image-container">
+    <img class="card-image"
+         src="../assets/images/v260/VerifyPlusReviewScan.png"
+         alt="Review scanned payload screen with Rescan and Confirm buttons"
+    >
+</div>
+
 If the camera can't start — permission denied, or no camera on the device — the candidate
 sees a clear message rather than a stuck screen. Once a scan succeeds, the camera switches
 off automatically; a **Rescan** option is always available if needed.
@@ -35,13 +42,38 @@ On confirm, the scan is submitted and the candidate sees one of two outcomes:
 - **Duplicate UNHCR number found** — "We submitted your scan, but this UNHCR number already
   exists on another active candidate" — with the option to rescan
 
+<div class="card-image-container">
+    <img class="card-image"
+         src="../assets/images/v260/VerifyPlusDuplicateFound.png"
+         alt="Duplicate UNHCR number found error screen"
+    >
+</div>
+
 ## 📝 Or Scan During Registration
 
 The same scan-and-submit flow is also offered as an optional, skippable step during GRN
 registration — **"Scan your Verify+ card (optional)."** A candidate who scans their card has
-their UNHCR registration number pre-filled automatically; a candidate without a card handy
-can skip the step and continue registering. If a different UNHCR number was already on file,
-the freshly scanned one takes its place.
+their UNHCR registration number pre-filled automatically on the following step; a candidate
+without a card handy can skip the step and continue registering.
+
+<div class="card-image-container">
+    <img class="card-image"
+         src="../assets/images/v260/VerifyPlusRegistrationStep.png"
+         alt="Optional Verify+ scan step during registration"
+    >
+</div>
+
+Only the UNHCR registration number is captured this way — not name, date of birth, or any
+other field. It shows up, already filled in, on the next step:
+
+<div class="card-image-container">
+    <img class="card-image"
+         src="../assets/images/v260/VerifyPlusPrefilledField.png"
+         alt="UNHCR registration number field pre-filled after a scan"
+    >
+</div>
+
+If a different UNHCR number was already on file, the freshly scanned one takes its place.
 
 ## 🔍 Built for Real UNHCR QR Codes
 
@@ -56,12 +88,23 @@ The entire Verify+ flow — scanner prompts, confirmation screens, success and d
 messaging — has been translated across all 11 languages the Candidate Portal supports,
 including Arabic, Farsi, Pashto, and Ukrainian.
 
+## ✅ Your Consent, Clearly Asked
+
+This release also adds a consent step to the scan flow, on both the Services tab and
+registration: before a card is submitted, the candidate must actively confirm they're happy
+for it to be captured and stored — skipping the step means nothing is saved. The confirmation
+screens are also being reworded to be clear about what a verified card actually proves: that
+the card itself is genuine, not the identity of whoever is holding the phone.
+
+## 👀 Coming Into View for Staff
+
+Right after consent, work turns to giving admin-portal staff visibility into what's been
+verified — showing the captured UNHCR ID and verification status on a candidate's profile,
+so staff no longer have to take a candidate's word for it.
+
 ## 🚀 What's Next
 
 - **Availability:** Verify+ is currently available on GRN only.
-- **Consent:** capturing explicit consent before a card is scanned and stored is planned as a
-  follow-up, not yet part of this flow.
 - **Beyond the UNHCR number:** today's release captures and verifies the UNHCR registration
   number only. Parsing and storing additional fields from the card, and photo handling, are
   both still ahead.
-- **Admin visibility:** there's no admin-portal view of Verify+ data yet.
