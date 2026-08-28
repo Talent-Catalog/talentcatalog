@@ -14,12 +14,13 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-package org.tctalent.server.casi.application.providers.unhcr;
+package org.tctalent.server.casi.application.providers.pifi;
 
 import java.util.Locale;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.tctalent.server.casi.application.support.RelevantCountryResolver;
 import org.tctalent.server.casi.core.allocators.ResourceAllocator;
 import org.tctalent.server.casi.core.services.AbstractCandidateAssistanceService;
 import org.tctalent.server.casi.core.services.AssignmentEngine;
@@ -31,37 +32,39 @@ import org.tctalent.server.casi.domain.model.ServiceProvider;
 import org.tctalent.server.casi.domain.persistence.ServiceAssignmentRepository;
 import org.tctalent.server.casi.domain.persistence.ServiceResourceRepository;
 import org.tctalent.server.exception.EntityExistsException;
-import org.tctalent.server.model.db.Candidate;
+import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.model.db.User;
-import org.tctalent.server.service.db.CandidateService;
 import org.tctalent.server.service.db.SavedListService;
 
 /**
- * CASI service for country-specific UNHCR help site links.
+ * CASI service for PiFi country signposting links ({@code PIFI::HELP_SITE_LINK}).
+ * <p>
+ * Currently uses first-country match only (adequate while we support a single country).
+ * May later be extended to multiple country matches if needed.
  *
  * @author sadatmalik
  */
 @Service
-public class UnhcrService extends AbstractCandidateAssistanceService {
+public class PifiService extends AbstractCandidateAssistanceService {
 
-  private final ResourceAllocator unhcrAllocator;
-  private final CandidateService candidateService;
+  private final ResourceAllocator pifiAllocator;
+  private final RelevantCountryResolver countryResolver;
 
-  public UnhcrService(
+  public PifiService(
       ServiceAssignmentRepository assignmentRepo,
       ServiceResourceRepository resourceRepo,
       AssignmentEngine assignmentEngine,
       SavedListService savedListService,
-      CandidateService candidateService,
-      @Qualifier("unhcrHelpSiteLinkAllocator") ResourceAllocator allocator) {
+      RelevantCountryResolver countryResolver,
+      @Qualifier("pifiHelpSiteLinkAllocator") ResourceAllocator allocator) {
     super(assignmentRepo, resourceRepo, assignmentEngine, savedListService);
-    this.unhcrAllocator = allocator;
-    this.candidateService = candidateService;
+    this.countryResolver = countryResolver;
+    this.pifiAllocator = allocator;
   }
 
   @Override
   public ServiceProvider provider() {
-    return ServiceProvider.UNHCR;
+    return ServiceProvider.PIFI;
   }
 
   @Override
@@ -71,40 +74,38 @@ public class UnhcrService extends AbstractCandidateAssistanceService {
 
   @Override
   protected ResourceAllocator allocator() {
-    return unhcrAllocator;
+    return pifiAllocator;
   }
 
-  // UNHCR links are country-specific shared resources; only return the assignment
-  // that matches the candidate's current country.
   @Override
   @Transactional(readOnly = true)
   public ServiceAssignment getCurrentAssignment(Long candidateId) {
-    String candidateCountryIsoCode = candidateCountryIsoCode(candidateId);
-    if (candidateCountryIsoCode == null) {
+    String firstCountry = firstCountryWithConfiguredLink(candidateId);
+    if (firstCountry == null) {
       return null;
     }
 
     return getAssignmentsForCandidate(candidateId).stream()
         .filter(a -> a.getResource() != null
             && a.getResource().getStatus() == ResourceStatus.AVAILABLE
-            && candidateCountryIsoCode.equals(normalizeIso(a.getResource().getCountryIsoCode())))
+            && firstCountry.equals(normalizeIso(a.getResource().getCountryIsoCode())))
         .findFirst()
         .orElse(null);
   }
 
-  // Assign UNHCR link if not already ASSIGNED for the candidate's current country.
-  // The assignment allows tracking the assigned resource.
   @Override
   @Transactional
   public ServiceAssignment assignToCandidate(Long candidateId, User user) {
-    String candidateCountryIsoCode = candidateCountryIsoCode(candidateId);
+    String firstCountry = firstCountryWithConfiguredLink(candidateId);
+    if (firstCountry == null) {
+      throw new NoSuchObjectException("No HELP_SITE_LINK resources are configured for this candidate.");
+    }
 
     boolean hasSameCountryAssigned = getAssignmentsForCandidate(candidateId).stream()
         .anyMatch(a -> a.getStatus() == AssignmentStatus.ASSIGNED
             && a.getResource() != null
             && a.getResource().getStatus() == ResourceStatus.AVAILABLE
-            && candidateCountryIsoCode != null
-            && candidateCountryIsoCode.equals(normalizeIso(a.getResource().getCountryIsoCode())));
+            && firstCountry.equals(normalizeIso(a.getResource().getCountryIsoCode())));
 
     if (hasSameCountryAssigned) {
       throw new EntityExistsException(AssignmentStatus.ASSIGNED.name() + " " + serviceCode()
@@ -114,9 +115,15 @@ public class UnhcrService extends AbstractCandidateAssistanceService {
     return assignmentEngine.assign(allocator(), candidateId, user);
   }
 
-  private String candidateCountryIsoCode(Long candidateId) {
-    Candidate candidate = candidateService.getCandidate(candidateId);
-    return normalizeIso(candidate.getCountry() == null ? null : candidate.getCountry().getIsoCode());
+  // First matching relevant country with an AVAILABLE PiFi link.
+  // Multi-country matching can be added later if required.
+  private String firstCountryWithConfiguredLink(Long candidateId) {
+    for (String isoCode : countryResolver.resolveCountryIsoCodes(candidateId)) {
+      if (resourceRepository.countAvailableByProviderServiceAndCountry(provider(), serviceCode(), isoCode) > 0) {
+        return isoCode;
+      }
+    }
+    return null;
   }
 
   private String normalizeIso(String isoCode) {

@@ -92,4 +92,43 @@ describe('CasiAdminService', () => {
     });
     req.flush(null);
   });
+
+
+  it('should list shared links', () => {
+    service.listSharedLinks('UNHCR', 'HELP_SITE_LINK').subscribe(response => {
+      expect(response.length).toBe(1);
+      expect(response[0].countryIsoCode).toBe('PK');
+    });
+
+    const req = httpMock.expectOne(`${environment.apiUrl}/services/UNHCR/HELP_SITE_LINK/shared`);
+    expect(req.request.method).toBe('GET');
+    req.flush([{id: 1, countryIsoCode: 'PK', resourceCode: 'https://help.example.com'}]);
+  });
+
+  it('should create a shared link', () => {
+    service.createSharedLink('UNHCR', 'HELP_SITE_LINK', 'JO', 'https://help.example.com/jo').subscribe();
+
+    const req = httpMock.expectOne(`${environment.apiUrl}/services/UNHCR/HELP_SITE_LINK/shared`);
+    expect(req.request.method).toBe('POST');
+    expect(req.request.body).toEqual({countryIsoCode: 'JO', resourceCode: 'https://help.example.com/jo'});
+    req.flush({id: 2});
+  });
+
+  it('should update a shared link', () => {
+    service.updateSharedLink('UNHCR', 'HELP_SITE_LINK', 9, 'AU', 'https://example.com/au').subscribe();
+
+    const req = httpMock.expectOne(`${environment.apiUrl}/services/UNHCR/HELP_SITE_LINK/shared/9`);
+    expect(req.request.method).toBe('PUT');
+    expect(req.request.body).toEqual({countryIsoCode: 'AU', resourceCode: 'https://example.com/au'});
+    req.flush({id: 9});
+  });
+
+  it('should disable a shared link', () => {
+    service.disableSharedLink('UNHCR', 'HELP_SITE_LINK', 10).subscribe();
+
+    const req = httpMock.expectOne(`${environment.apiUrl}/services/UNHCR/HELP_SITE_LINK/shared/10`);
+    expect(req.request.method).toBe('DELETE');
+    req.flush(null);
+  });
+
 });
