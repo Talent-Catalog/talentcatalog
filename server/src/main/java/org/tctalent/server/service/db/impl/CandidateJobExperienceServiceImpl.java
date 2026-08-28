@@ -16,13 +16,9 @@
 
 package org.tctalent.server.service.db.impl;
 
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
-import jakarta.persistence.Query;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -65,9 +61,6 @@ import org.tctalent.server.util.text.TextPartsCodec;
 @RequiredArgsConstructor
 @Slf4j
 public class CandidateJobExperienceServiceImpl implements CandidateJobExperienceService {
-
-    @PersistenceContext
-    private EntityManager entityManager;
 
     private final JobExperienceEmbeddingRepository jobExperienceEmbeddingRepository;
     private final CandidateJobExperienceRepository candidateJobExperienceRepository;
@@ -286,33 +279,8 @@ public class CandidateJobExperienceServiceImpl implements CandidateJobExperience
         }
 
         final String tableName = embeddingModelService.getTableNameForModel(model);
-        validateTableName(tableName);
 
-        // A SQL bind parameter cannot represent an identifier, so the table name is interpolated
-        // only after validating it against a strict allow-list pattern above.
-        String sql = """
-            SELECT candidate_job_experience_id
-            FROM %s
-            WHERE candidate_job_experience_id in (:experienceIds)
-            """.formatted(tableName);
-
-        Query query = entityManager.createNativeQuery(sql);
-        query.setParameter("experienceIds", experienceIds);
-
-        @SuppressWarnings("unchecked")
-        List<Number> results = query.getResultList();
-
-        return results.stream()
-            .map(Number::longValue)
-            .collect(Collectors.toSet());
-    }
-
-    // Prevents arbitrary SQL from being supplied as the table name - see
-    // JobExperienceEmbeddingRepository.validateTableName for the same check.
-    private void validateTableName(String tableName) {
-        if (tableName == null || !tableName.matches("[a-z][a-z0-9_]*")) {
-            throw new IllegalArgumentException("Invalid embedding table name: " + tableName);
-        }
+        return jobExperienceEmbeddingRepository.findEmbeddedExperienceIds(tableName, experienceIds);
     }
 
     @Override
