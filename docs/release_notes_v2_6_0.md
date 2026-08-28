@@ -12,8 +12,8 @@ sass:
 
 Talent Catalog now runs a hybrid matching engine behind the scenes, combining traditional
 text search with AI-generated vector embeddings. This release brings the first user-facing
-pieces of that engine online — skill-aware search from a job description, and keyword
-filtering alongside AI matches.
+pieces of that engine online — skill-aware search from a job description, search scoped to
+any list, and keyword filtering alongside AI matches.
 
 <div class="card-container">
 
@@ -23,7 +23,8 @@ filtering alongside AI matches.
       <div class="card-title">AI Job Matching</div>
       <div class="card-description">
         The first pieces of AI-powered candidate matching have landed — skill-aware search
-        from a job description, and keyword filtering alongside AI matches.
+        from a job description, search scoped to any list, and keyword filtering alongside
+        AI matches.
       </div>
       <div class="card-footer">
         <button class="btn btn-sm">Learn more</button>
@@ -116,9 +117,6 @@ them explore rental homes in their new country — starting with Australia.
 * Talent Catalog can now hold its own list of TC-identified skills, alongside the standard
   ESCO/ONet skill sets — useful for job-description acronyms and terms (e.g. PLC, SCADA) that
   aren't well covered by the standard lists.
-* Upgrade note: this release ships 5 new Flyway migrations (V2_19–V2_23). After deploying,
-  run the `build_embeddings` admin action so existing candidates and experience get AI-matching
-  embeddings — matching has nothing to work with until that's done.
 
 # UI / UX Enhancements
 
@@ -128,8 +126,8 @@ them explore rental homes in their new country — starting with Australia.
 * Aligned a help icon with its text on the CV Google Doc download.
 * Fixed the sign-in button not being centered with the language icon on the mobile candidate
   portal.
-* The `tc-input` component now properly supports `min`, `max`, and `step` for range and
-  number inputs — including a fix so a range slider's endpoints are actually reachable.
+* Number and range inputs now properly respect their configured minimum, maximum, and step
+  values — including a fix so a range slider's endpoints are actually reachable.
 * Removed the legacy "Old fetch" checkbox from the candidate search screen.
 * Fixed email validation incorrectly failing when an address was pasted in with invisible
   characters attached.
@@ -158,6 +156,9 @@ them explore rental homes in their new country — starting with Australia.
 * Updated the CASI developer README with documentation for agreement management.
 * Replaced outdated copyright headers with the standard Talent Catalog
   license across the codebase.
+* Upgrade note: this release ships 5 new Flyway migrations (V2_19–V2_23). After deploying,
+  run the `build_embeddings` admin action so existing candidates and experience get AI-matching
+  embeddings — matching has nothing to work with until that's done.
 
 ## Test Coverage
 
