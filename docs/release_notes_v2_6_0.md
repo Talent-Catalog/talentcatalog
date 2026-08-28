@@ -53,16 +53,19 @@ or as an optional step during registration.
 
 ## PiFi Casi Integration
 
-TODO — intro paragraph. TC-1427: referral-only signposting to PiFi's property search.
-No authentication or account linking in this phase.
+GRN candidates now have a new CASI service card signposting them to PiFi Property, helping
+them explore rental homes in their new country — starting with Australia.
 
 <div class="card-container">
 
   <a href="./v260/pifi_signposting" class="card">
-    <img src="./assets/images/v260/PiFiSignposting.png" alt="PiFi Signposting" class="card-image">
+    <img src="./assets/images/v260/PiFiServicesTab.png" alt="PiFi Signposting" class="card-image">
     <div class="card-body">
-      <div class="card-title">TODO</div>
-      <div class="card-description">TODO</div>
+      <div class="card-title">PiFi Property</div>
+      <div class="card-description">
+        Helping migrants find a place to call home — signposting to PiFi's property search,
+        right from the Services tab.
+      </div>
       <div class="card-footer">
         <button class="btn btn-sm">Learn more</button>
       </div>
