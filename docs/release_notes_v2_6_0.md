@@ -10,16 +10,21 @@ sass:
 
 ## AI Job Matching
 
-TODO — intro paragraph. Covers TC-1388 (shipped: skill-aware search icon) and TC-1439
-(PENDING MERGE: AI-generated match results UI — do not publish this half until merged).
+Talent Catalog now runs a hybrid matching engine behind the scenes, combining traditional
+text search with AI-generated vector embeddings. This release brings the first user-facing
+pieces of that engine online — skill-aware search from a job description, and keyword
+filtering alongside AI matches.
 
 <div class="card-container">
 
   <a href="./v260/ai_job_matching" class="card">
     <img src="./assets/images/v260/AiJobMatching.png" alt="AI Job Matching" class="card-image">
     <div class="card-body">
-      <div class="card-title">TODO</div>
-      <div class="card-description">TODO</div>
+      <div class="card-title">AI Job Matching</div>
+      <div class="card-description">
+        The first pieces of AI-powered candidate matching have landed — skill-aware search
+        from a job description, and keyword filtering alongside AI matches.
+      </div>
       <div class="card-footer">
         <button class="btn btn-sm">Learn more</button>
       </div>
