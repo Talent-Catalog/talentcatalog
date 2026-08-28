@@ -37,7 +37,7 @@ or as an optional step during registration.
 <div class="card-container">
 
   <a href="./v260/verify_plus" class="card">
-    <img src="./assets/images/v260/VerifyPlus.png" alt="Verify+" class="card-image">
+    <img src="./assets/images/v260/VerifyPlusServicesCard.png" alt="Verify+" class="card-image">
     <div class="card-body">
       <div class="card-title">UNHCR Verify+</div>
       <div class="card-description">
