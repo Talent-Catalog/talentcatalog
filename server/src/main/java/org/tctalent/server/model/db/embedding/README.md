@@ -47,6 +47,7 @@ You may then just need to update the record's status from RETIRED to BUILDING.)
 
 In the Flyway, you should also create a new table which will hold the new embeddings.
 The table's name should match the existing naming convention for embedding tables.
+(See `EmbeddingModelService#getTableNameForModel`)
 
 Then start the build process using the SystemAdminApi `build_embeddings` command.
 
