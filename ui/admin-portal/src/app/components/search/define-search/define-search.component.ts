@@ -426,6 +426,8 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
         s => s.name.indexOf(' ') < 0 ? s.name : '"' + s.name + '"'
       ).join(' ');
       this.extractedSkills = queryString;
+    } else {
+      this.extractedSkills = "";
     }
   }
 
