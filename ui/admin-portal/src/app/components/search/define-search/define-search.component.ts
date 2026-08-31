@@ -86,12 +86,13 @@ import {Partner} from "../../../model/partner";
 import {PartnerService} from "../../../services/partner.service";
 import {AuthenticationService} from "../../../services/authentication.service";
 import {SearchQueryService} from "../../../services/search-query.service";
-import {first} from "rxjs/operators";
+import {debounceTime, first} from "rxjs/operators";
 import {JobService} from "../../../services/job.service";
 import {SkillName} from "../../../model/skill";
 import {CandidateNumberParser} from "../../../util/candidate-number-parser";
 import {EmbeddingModelService} from "../../../services/embedding-model.service";
 import {JobMatchingInfo} from "../../../model/JobMatchingInfo";
+import {ExtractSkillsRequest, SkillsService} from "../../../services/skills.service";
 
 /**
  * This component contains all the search fields for saved and unsaved searches. It communicates
@@ -191,6 +192,7 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
               private languageLevelService: LanguageLevelService,
               private modalService: NgbModal,
               private router: Router,
+              private skillsService: SkillsService,
               private authorizationService: AuthorizationService,
               private authenticationService: AuthenticationService,
               private searchQueryService: SearchQueryService
@@ -277,6 +279,13 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
     ).subscribe(() => {
       this.hasEverHadRequirementsInput = true;
     });
+
+    //Extract skills when requirements change after a short delay.
+    this.searchForm.controls.requirements.valueChanges.pipe(
+      debounceTime(3000),
+    ).subscribe(
+      () => this.extractSkills()
+    )
   }
 
   ngOnInit() {
@@ -1012,6 +1021,16 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
     this.selectedBaseJoin = null;
     this.searchForm.controls['searchJoinRequests'].markAsDirty();
     this.onFormChange.emit(this.searchForm.dirty);
+  }
+
+  extractSkills(): void {
+    const request: ExtractSkillsRequest = {
+      lang: "en",
+      text: this.requirements
+    }
+    this.skillsService.extractSkills(request).subscribe({
+      next: value => this.setExtractedSkills(value)
+    })
   }
 
   canChangeSearchRequest(): boolean {
