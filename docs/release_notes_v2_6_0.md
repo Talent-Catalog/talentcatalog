@@ -91,17 +91,18 @@ them explore rental homes in their new country — starting with Australia.
 
 </div>
 
-## Other New Features
+## Submission List Filtering & More
 
 <div class="card-container">
 
-  <a href="./v260/principal_occupation" class="card">
-    <img src="./assets/images/v260/PrincipalOccupationProfile.png" alt="Principal Occupation" class="card-image">
+  <a href="./v260/other_highlights" class="card">
+    <img src="./assets/images/v260/SubmissionListFiltering.png" alt="Submission List Filtering & More" class="card-image">
     <div class="card-body">
-      <div class="card-title">Principal Occupation</div>
+      <div class="card-title">Submission List Filtering & More</div>
       <div class="card-description">
-        Candidates can now mark one occupation as their principal one, giving admins and job
-        matching a clearer picture of what a candidate is really looking for.
+        Filter any submission list down to just the candidates that matter, tighter permissions
+        and clearer messaging for candidate deletion, and a principal occupation field giving
+        admins and job matching a clearer picture of what a candidate is really looking for.
       </div>
       <div class="card-footer">
         <button class="btn btn-sm">Learn more</button>
