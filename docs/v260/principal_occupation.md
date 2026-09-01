@@ -5,9 +5,6 @@ sass:
   style: compressed
 ---
 
-<!-- PENDING MERGE: TC-658 / TC-1434, both riding on PR #3711, still "In Review" as of
-     writing. Confirm merged before publishing this page. -->
-
 # Principal Occupation: A Clearer Picture of What Candidates Are Looking For
 
 Candidates often have more than one occupation on file — years-old experience alongside
@@ -18,19 +15,24 @@ there's a clear, single answer to "what is this person actually looking for?"
 
 ## ⭐ Choose Your Principal Occupation
 
+<!-- TODO(images): PrincipalOccupationProfile.png shows the badge text as "Principle
+     Occupation" (should be "Main" as agreed in team meeting. SM -->
+
 <div class="card-image-container">
     <img class="card-image"
          src="../assets/images/v260/PrincipalOccupationProfile.png"
-         alt="Candidate profile showing an occupation marked as Principal Occupation"
+         alt="Candidate profile showing an occupation marked as Main"
     >
 </div>
 
-A candidate with occupations on file selects one as their principal occupation; selecting a
+A candidate with multiple occupations on file selects one as their main occupation; selecting a
 different one replaces the previous choice. Once a candidate has any occupations recorded,
-choosing a principal one is required — nothing is picked automatically on their behalf. The
-choice can be updated at any time.
+choosing a principal one is required — the choice can be updated at any time.
 
 ## 👀 Visible to Admins, Editable Too
+
+<!-- TODO(images): admin-portal screenshot showing the principal occupation on a
+     candidate's profile in the admin portal, with the change-note/audit trail. SM -->
 
 The principal occupation is shown clearly on a candidate's profile in the admin portal, so
 staff no longer have to guess which of several occupations actually matters most. Admins can
