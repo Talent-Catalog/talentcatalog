@@ -134,9 +134,6 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
   loading: boolean;
   searchForm: UntypedFormGroup;
   showSearchRequest: boolean = false;
-  //Once the user has typed any requirements text, the AI input's highlight animation
-  //stops - even if they later clear the field back to empty.
-  hasEverHadRequirementsInput: boolean = false;
   results: SearchResults<Candidate>;
   savedSearchId;
 
@@ -269,14 +266,6 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
       //If nMatches is undefined, don't change pageSize
       this.pageSize = this.searchForm.controls.nMatches.value || this.pageSize;
     })
-
-    //Once requirements has held any text, stop treating the field as "empty" for
-    //highlighting purposes - even if the user clears it again afterwards.
-    this.searchForm.controls.requirements.valueChanges.pipe(
-      first(value => !!value?.trim())
-    ).subscribe(() => {
-      this.hasEverHadRequirementsInput = true;
-    });
   }
 
   ngOnInit() {
