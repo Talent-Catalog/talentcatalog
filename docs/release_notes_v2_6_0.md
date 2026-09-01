@@ -10,25 +10,21 @@ sass:
 
 ## AI Matching
 
+<div class="card-container">
+
 <!-- TODO(images): AiMatching.png does not exist yet. A screenshot of the New Search
      screen's Requirements panel (Requirements field + Lexical vs Semantic slider + Model Key)
      could work well here — it's the clearest single shot of what's new. -->
-
-Talent Catalog now runs a hybrid matching engine behind the scenes, combining traditional
-text search with AI-generated vector embeddings. This release brings the first user-facing
-pieces of that engine online — skill-aware search from a job description, search scoped to
-any list, and keyword filtering alongside AI matches.
-
-<div class="card-container">
 
   <a href="./v260/ai_job_matching" class="card">
     <img src="./assets/images/v260/AiMatching.png" alt="AI Job Matching" class="card-image">
     <div class="card-body">
       <div class="card-title">AI Job Matching</div>
       <div class="card-description">
-        The first user-facing pieces of AI-powered candidate matching have landed — skill-aware 
-        search from a job description, search scoped to any list, and traditional text search 
-        alongside AI matches.
+        Talent Catalog now runs a hybrid matching engine behind the scenes, combining traditional
+        text search with AI-generated vector embeddings. This release brings the first user-facing
+        pieces of that engine online — skill-aware search from a job description, search scoped to
+        any list, and keyword filtering alongside AI matches.
       </div>
       <div class="card-footer">
         <button class="btn btn-sm">Learn more</button>
@@ -40,9 +36,6 @@ any list, and keyword filtering alongside AI matches.
 
 ## UNHCR ID Card Scanning
 
-GRN candidates who hold a UNHCR ID card can now scan its QR code straight from their
-phone to capture and verify their UNHCR registration number and personal details — either from the 
-Services tab, or as an optional step during registration.
 
 <!-- TODO(images): VerifyPlusServicesCard.png exist but a better front screen image would be 
      great. At your discretion Hiba. -->
@@ -52,10 +45,11 @@ Services tab, or as an optional step during registration.
   <a href="./v260/verify_plus" class="card">
     <img src="./assets/images/v260/VerifyPlusServicesCard.png" alt="Verify+" class="card-image">
     <div class="card-body">
-      <div class="card-title">UNHCR Verify+</div>
+      <div class="card-title">UNHCR ID Card Scan</div>
       <div class="card-description">
-        Scan your UNHCR ID card QR code to capture and verify your UNHCR registration number and
-        personal information.
+        GRN candidates who hold a UNHCR ID card can now scan its QR code straight from their
+        phone to capture and verify their UNHCR registration number and personal details — either from the 
+        Services tab, or as an optional step during registration.
       </div>
       <div class="card-footer">
         <button class="btn btn-sm">Learn more</button>
@@ -67,21 +61,18 @@ Services tab, or as an optional step during registration.
 
 ## PiFi Casi Integration
 
-GRN candidates now have a new CASI service card signposting them to PiFi Property, helping
-them explore rental homes in their new country — starting with Australia.
+<div class="card-container">
 
 <!-- TODO(images): PiFiServicesTab.png exists but a better front screen image would be 
      great. At your discretion please Hiba. -->
-
-<div class="card-container">
 
   <a href="./v260/pifi_signposting" class="card">
     <img src="./assets/images/v260/PiFiServicesTab.png" alt="PiFi Signposting" class="card-image">
     <div class="card-body">
       <div class="card-title">PiFi Property</div>
       <div class="card-description">
-        Helping migrants find a place to call home — signposting to PiFi's property search,
-        right from the Services tab.
+        GRN candidates now have a new CASI service card signposting them to PiFi Property, helping
+        them explore rental homes in their new country — starting with Australia.
       </div>
       <div class="card-footer">
         <button class="btn btn-sm">Learn more</button>
@@ -112,24 +103,6 @@ them explore rental homes in their new country — starting with Australia.
 
 </div>
 
-# General Improvements
-
-* Candidate deletion and erasure permissions have been reworked: only system admins can
-  permanently erase a candidate's data, with a new "Delete" action available to other admins
-  that simply marks a candidate's status as deleted. The erase option now stays visible even
-  after a candidate has been marked deleted, error messages are clearer when a candidate is
-  deleted or the candidate number is invalid, deleted candidates no longer wrongly appear in
-  name/ID search results, and a status-dropdown bug that showed some statuses as blank has
-  been fixed.
-* Task email alerts now confirm on-screen when an email has actually been sent, and a broken
-  translation key that showed raw placeholder text has been fixed.
-
-# Data Improvements
-
-* Talent Catalog can now hold its own list of TC-identified skills, alongside the standard
-  ESCO/ONet skill sets — useful for job-description acronyms and terms (e.g. PLC, SCADA) that
-  aren't well covered by the standard lists.
-
 # UI / UX Enhancements
 
 * Fixed inconsistent line-height across dropdown items.
@@ -143,6 +116,17 @@ them explore rental homes in their new country — starting with Australia.
 * Removed the legacy "Old fetch" checkbox from the candidate search screen.
 * Fixed email validation incorrectly failing when an address was pasted in with invisible
   characters attached.
+
+# General Improvements
+
+* Task email alerts now confirm on-screen when an email has actually been sent, and a broken
+  translation key that showed raw placeholder text has been fixed.
+
+# Data Improvements
+
+* Talent Catalog can now hold its own list of TC-identified skills, alongside the standard
+  ESCO/ONet skill sets — useful for job-description acronyms and terms (e.g. PLC, SCADA) that
+  aren't well covered by the standard lists.
 
 # Performance Improvements
 
