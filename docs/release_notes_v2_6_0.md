@@ -48,6 +48,10 @@ sass:
     </div>
   </a>
 
+</div>
+
+<div class="card-container">
+
 <!-- TODO(images): PiFiServicesTab.png exists but a better front screen image would be 
      great. At your discretion please Hiba. -->
 
