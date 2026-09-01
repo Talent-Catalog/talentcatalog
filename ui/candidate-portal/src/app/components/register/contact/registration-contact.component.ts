@@ -20,7 +20,7 @@ import {CandidateService} from "../../../services/candidate.service";
 import {Candidate} from "../../../model/candidate";
 import {RegistrationService} from "../../../services/registration.service";
 import {AuthenticationService} from "../../../services/authentication.service";
-import {EMAIL_REGEX} from "../../../model/base";
+import {EMAIL_REGEX, sanitizeEmailInput} from "../../../model/base";
 import {CountryService} from "../../../services/country.service";
 import {Country} from "../../../model/country";
 
@@ -64,6 +64,15 @@ export class RegistrationContactComponent implements OnInit {
       email: ['', Validators.required],
       phone: [''],
       whatsapp: [''],
+    });
+
+    // Strip invisible characters (eg zero-width spaces) that copy-paste can silently add to an
+    // otherwise valid email address, causing pattern validation to fail - see TC-723.
+    this.form.get('email').valueChanges.subscribe((value: string) => {
+      const sanitized = sanitizeEmailInput(value);
+      if (sanitized !== value) {
+        this.form.get('email').setValue(sanitized, {emitEvent: false});
+      }
     });
 
     if (this.authenticationService.isAuthenticated()) {
