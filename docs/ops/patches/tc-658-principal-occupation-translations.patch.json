@@ -114,17 +114,17 @@
     {
       "key": "REGISTRATION.OCCUPATION.LABEL.PRINCIPAL_BADGE",
       "values": {
-        "en": "Primary occupation",
-        "ar": "المهنة الأساسية",
-        "fa": "شغل اصلی",
-        "ps": "اصلي دنده",
-        "es": "Ocupación principal",
-        "fr": "Profession principale",
-        "tr": "Ana meslek",
-        "ru": "Основная профессия",
-        "uk": "Основна професія",
-        "nl": "Hoofdberoep",
-        "pt": "Ocupação principal"
+        "en": "Main",
+        "ar": "الأساسية",
+        "fa": "اصلی",
+        "ps": "اصلي",
+        "es": "Principal",
+        "fr": "Principale",
+        "tr": "Ana",
+        "ru": "Основная",
+        "uk": "Основна",
+        "nl": "Primair",
+        "pt": "Principal"
       }
     },
     {
