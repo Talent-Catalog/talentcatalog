@@ -8,7 +8,11 @@ sass:
 
 # New Features
 
-## AI Job Matching
+## AI Matching
+
+<!-- TODO(images): AiMatching.png does not exist yet. A screenshot of the New Search
+     screen's Requirements panel (Requirements field + Lexical vs Semantic slider + Model Key)
+     could work well here — it's the clearest single shot of what's new. -->
 
 Talent Catalog now runs a hybrid matching engine behind the scenes, combining traditional
 text search with AI-generated vector embeddings. This release brings the first user-facing
@@ -18,13 +22,13 @@ any list, and keyword filtering alongside AI matches.
 <div class="card-container">
 
   <a href="./v260/ai_job_matching" class="card">
-    <img src="./assets/images/v260/AiJobMatching.png" alt="AI Job Matching" class="card-image">
+    <img src="./assets/images/v260/AiMatching.png" alt="AI Job Matching" class="card-image">
     <div class="card-body">
       <div class="card-title">AI Job Matching</div>
       <div class="card-description">
-        The first pieces of AI-powered candidate matching have landed — skill-aware search
-        from a job description, search scoped to any list, and keyword filtering alongside
-        AI matches.
+        The first user-facing pieces of AI-powered candidate matching have landed — skill-aware 
+        search from a job description, search scoped to any list, and traditional text search 
+        alongside AI matches.
       </div>
       <div class="card-footer">
         <button class="btn btn-sm">Learn more</button>
@@ -34,11 +38,14 @@ any list, and keyword filtering alongside AI matches.
 
 </div>
 
-## Verify+
+## UNHCR ID Card Scanning
 
-GRN candidates who hold a UNHCR Verify+ card can now scan its QR code straight from their
-phone to capture and verify their UNHCR registration number — either from the Services tab,
-or as an optional step during registration.
+GRN candidates who hold a UNHCR ID card can now scan its QR code straight from their
+phone to capture and verify their UNHCR registration number and personal details — either from the 
+Services tab, or as an optional step during registration.
+
+<!-- TODO(images): VerifyPlusServicesCard.png exist but a better front screen image would be 
+     great. At your discretion Hiba. -->
 
 <div class="card-container">
 
@@ -47,7 +54,8 @@ or as an optional step during registration.
     <div class="card-body">
       <div class="card-title">UNHCR Verify+</div>
       <div class="card-description">
-        Scan your UNHCR Verify+ QR code to capture and verify your UNHCR registration number.
+        Scan your UNHCR ID card QR code to capture and verify your UNHCR registration number and
+        personal information.
       </div>
       <div class="card-footer">
         <button class="btn btn-sm">Learn more</button>
@@ -61,6 +69,9 @@ or as an optional step during registration.
 
 GRN candidates now have a new CASI service card signposting them to PiFi Property, helping
 them explore rental homes in their new country — starting with Australia.
+
+<!-- TODO(images): PiFiServicesTab.png exists but a better front screen image would be 
+     great. At your discretion please Hiba. -->
 
 <div class="card-container">
 
