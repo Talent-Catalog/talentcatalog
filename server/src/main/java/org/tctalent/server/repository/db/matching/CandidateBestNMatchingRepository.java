@@ -63,7 +63,9 @@ public class CandidateBestNMatchingRepository {
      * @param request Request that contains the natural language requirements and other information
      *                controlling the matching process. See {@link CandidateBestNMatchingRequest}
      *                for details.
-     * @param lexicalCandidateScoresSql This is the SQL that does the text matching
+     * @param lexicalCandidateScoresSql This is the SQL that does the text matching.
+     *                                  Note that this SQL will also contain the same constraints
+     *                                  expressed in constraintJoinsAndWhereSql.
      * @param constraintJoinsAndWhereSql The embedded vector matching is also constrained by this
      *                                   SQL generated from the standard search constraints of a
      *                                   TC search screen.
@@ -117,6 +119,10 @@ public class CandidateBestNMatchingRepository {
             lexical_candidate_scores AS (
             """
                 +
+                //Note that this SQL contains the same constraints described in
+                //constraintJoinsAndWhereSql.
+                //So lexical_candidate_scores and semantic_candidate_scores contain the same
+                //constraints.
                 lexicalCandidateScoresSql
                 +
                 " LIMIT :candidateLimit"

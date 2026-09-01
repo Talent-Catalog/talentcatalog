@@ -35,7 +35,12 @@ dotenv.config({
 export const E2E_ENVIRONMENT_VARIABLES = {
   baseUrl: 'E2E_BASE_URL',
   candidateUsername: 'E2E_CANDIDATE_USERNAME',
-  candidatePassword: 'E2E_CANDIDATE_PASSWORD'
+  candidatePassword: 'E2E_CANDIDATE_PASSWORD',
+  apiBaseUrl: 'E2E_API_BASE_URL',
+  verifyPlusBaselineUnhcrId:
+    'E2E_VERIFY_PLUS_BASELINE_UNHCR_ID',
+  verifyPlusDuplicateUnhcrId:
+    'E2E_VERIFY_PLUS_DUPLICATE_UNHCR_ID',
 } as const;
 
 /**
@@ -117,4 +122,48 @@ export function getConfiguredE2EBaseUrl(): string | undefined {
     process.env[E2E_ENVIRONMENT_VARIABLES.baseUrl]?.trim();
 
   return value || undefined;
+}
+/**
+ * Returns the candidate-portal backend origin.
+ *
+ * API tests provide the full endpoint path separately, preventing URL
+ * resolution from accidentally removing path segments.
+ *
+ * @returns configured or default backend origin
+ */
+export function getE2EApiBaseUrl(): string {
+  return (
+    process.env[
+      E2E_ENVIRONMENT_VARIABLES.apiBaseUrl
+      ]?.trim() ||
+    'http://localhost:8080'
+  );
+}
+
+
+/**
+ * Returns the UNHCR number owned by another active-like candidate.
+ *
+ * This fixture is optional for developer environments that have not prepared
+ * duplicate test data. The duplicate API test reports itself as skipped when
+ * no value is configured.
+ *
+ * @returns seeded duplicate UNHCR number, or null when not configured
+ */
+export function getE2EVerifyPlusDuplicateUnhcrId():
+  string | null {
+  const value =
+    process.env[
+      E2E_ENVIRONMENT_VARIABLES
+        .verifyPlusDuplicateUnhcrId
+      ]?.trim();
+
+  return value || null;
+}
+
+
+export function getE2EVerifyPlusBaselineUnhcrId(): string {
+  return requireEnvironmentVariable(
+    E2E_ENVIRONMENT_VARIABLES.verifyPlusBaselineUnhcrId,
+  );
 }

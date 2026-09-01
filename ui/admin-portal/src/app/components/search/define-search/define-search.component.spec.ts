@@ -326,6 +326,16 @@ describe('DefineSearchComponent', () => {
     expect(component.searchIsElastic).toBeFalse();
   });
 
+  it('should mark requirements as having received input once, even after clearing', () => {
+    expect(component.hasEverHadRequirementsInput).toBeFalse();
+
+    component.searchForm.get('requirements').patchValue('some job description');
+    expect(component.hasEverHadRequirementsInput).toBeTrue();
+
+    component.searchForm.get('requirements').patchValue('');
+    expect(component.hasEverHadRequirementsInput).toBeTrue();
+  });
+
   it('should initialize lookup data, models, user and form change output', fakeAsync(() => {
     spyOn(component.onFormChange, 'emit');
 
@@ -387,7 +397,7 @@ describe('DefineSearchComponent', () => {
     (component as any).setUpJobMatch(mockInfo);
 
     expect(component.clearForm).toHaveBeenCalled();
-    expect(component.searchForm.get('simpleQueryString').value)
+    expect(component.extractedSkills)
     .toBe('Java "Project Management"');
     expect(component.searchForm.dirty).toBeTrue();
     expect(component.onSubmit).toHaveBeenCalled();
@@ -406,7 +416,7 @@ describe('DefineSearchComponent', () => {
 
   it('should ignore empty job skills', () => {
     component.searchForm.markAsPristine();
-    (component as any).initializeQueryStringWithJobSkills([]);
+    (component as any).setExtractedSkills([]);
     expect(component.searchForm.get('simpleQueryString').value).toBeNull();
     expect(component.searchForm.pristine).toBeTrue();
   });

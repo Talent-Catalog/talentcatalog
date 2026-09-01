@@ -102,6 +102,7 @@ public class UnhcrService extends AbstractCandidateAssistanceService {
     boolean hasSameCountryAssigned = getAssignmentsForCandidate(candidateId).stream()
         .anyMatch(a -> a.getStatus() == AssignmentStatus.ASSIGNED
             && a.getResource() != null
+            && a.getResource().getStatus() == ResourceStatus.AVAILABLE
             && candidateCountryIsoCode != null
             && candidateCountryIsoCode.equals(normalizeIso(a.getResource().getCountryIsoCode())));
 

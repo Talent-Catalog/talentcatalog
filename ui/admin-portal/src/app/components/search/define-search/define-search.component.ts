@@ -134,6 +134,9 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
   loading: boolean;
   searchForm: UntypedFormGroup;
   showSearchRequest: boolean = false;
+  //Once the user has typed any requirements text, the AI input's highlight animation
+  //stops - even if they later clear the field back to empty.
+  hasEverHadRequirementsInput: boolean = false;
   results: SearchResults<Candidate>;
   savedSearchId;
 
@@ -162,6 +165,9 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
   otherLanguageModel: LanguageLevelFormControlModel;
   loggedInUser: User;
   unhcrStatusOptions: EnumOption[] = enumOptions(UnhcrStatus);
+
+  //Used to store (and display) skills extracted from a job description (when jobName is specified).
+  extractedSkills: string;
 
   selectedBaseJoin;
   storedBaseJoin;
@@ -263,6 +269,14 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
       //If nMatches is undefined, don't change pageSize
       this.pageSize = this.searchForm.controls.nMatches.value || this.pageSize;
     })
+
+    //Once requirements has held any text, stop treating the field as "empty" for
+    //highlighting purposes - even if the user clears it again afterwards.
+    this.searchForm.controls.requirements.valueChanges.pipe(
+      first(value => !!value?.trim())
+    ).subscribe(() => {
+      this.hasEverHadRequirementsInput = true;
+    });
   }
 
   ngOnInit() {
@@ -385,7 +399,7 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
     this.clearForm();
     this.jobName = jobMatchingInfo.jobName;
     this.initializeRequirementsWithDescription(jobMatchingInfo.description);
-    this.initializeQueryStringWithJobSkills(jobMatchingInfo.skillNames);
+    this.setExtractedSkills(jobMatchingInfo.skillNames);
     this.onSubmit();
   }
 
@@ -394,7 +408,7 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
     this.searchForm.markAsDirty();
   }
 
-  private initializeQueryStringWithJobSkills(skills: SkillName[]) {
+  private setExtractedSkills(skills: SkillName[]) {
     if (skills && skills.length > 0) {
       //Construct query string as skill names separated by spaces.
       //If a skill name is multiple words, then surround it with double quotes.
@@ -402,8 +416,7 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
       .map(
         s => s.name.indexOf(' ') < 0 ? s.name : '"' + s.name + '"'
       ).join(' ');
-      this.searchForm.controls.simpleQueryString.patchValue(queryString);
-      this.searchForm.markAsDirty();
+      this.extractedSkills = queryString;
     }
   }
 

@@ -19,9 +19,15 @@ import {candidateAuthFile} from './playwright-tests/support/auth-state';
 import {getConfiguredE2EBaseUrl, getE2EBaseUrl,} from './playwright-tests/support/e2e-env';
 
 const authenticationSetupPattern = /.*\.auth\.setup\.ts/;
+const verifyPlusApiPattern = /.*\.api\.spec\.ts/;
+
+const verifyPlusValidationPattern =
+  /.*verify-plus-validation\.spec\.ts/;
 
 const browserTestIgnorePatterns = [
   authenticationSetupPattern,
+  verifyPlusApiPattern,
+  verifyPlusValidationPattern,
 ];
 
 const configuredBaseUrl = getConfiguredE2EBaseUrl();
@@ -112,6 +118,37 @@ export default defineConfig({
       use: {
         ...devices['Desktop Chrome'],
       },
+    },
+
+    {
+      name:
+        'verify-plus-validation',
+
+      testMatch:
+      verifyPlusValidationPattern,
+
+      dependencies: [
+        'auth-setup',
+      ],
+
+      use: {
+        ...devices[
+          'Desktop Chrome'
+          ],
+
+        storageState:
+        candidateAuthFile,
+      },
+    },
+
+    {
+      name: 'verify-plus-api',
+
+      testMatch: verifyPlusApiPattern,
+
+      dependencies: [
+        'auth-setup',
+      ],
     },
 
     {
