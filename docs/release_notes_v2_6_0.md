@@ -8,8 +8,6 @@ sass:
 
 # New Features
 
-## AI Matching
-
 <div class="card-container">
 
 <!-- TODO(images): AiMatching.png does not exist yet. A screenshot of the New Search
@@ -19,7 +17,7 @@ sass:
   <a href="./v260/ai_job_matching" class="card">
     <img src="./assets/images/v260/AiMatching.png" alt="AI Job Matching" class="card-image">
     <div class="card-body">
-      <div class="card-title">AI Job Matching</div>
+      <div class="card-title">AI Matching</div>
       <div class="card-description">
         Talent Catalog now runs a hybrid matching engine behind the scenes, combining traditional
         text search with AI-generated vector embeddings. This release brings the first user-facing
@@ -32,20 +30,13 @@ sass:
     </div>
   </a>
 
-</div>
-
-## UNHCR ID Card Scanning
-
-
 <!-- TODO(images): VerifyPlusServicesCard.png exist but a better front screen image would be 
      great. At your discretion Hiba. -->
-
-<div class="card-container">
 
   <a href="./v260/verify_plus" class="card">
     <img src="./assets/images/v260/VerifyPlusServicesCard.png" alt="Verify+" class="card-image">
     <div class="card-body">
-      <div class="card-title">UNHCR ID Card Scan</div>
+      <div class="card-title">UNHCR ID Card Scanning</div>
       <div class="card-description">
         GRN candidates who hold a UNHCR ID card can now scan its QR code straight from their
         phone to capture and verify their UNHCR registration number and personal details — either from the 
@@ -57,19 +48,13 @@ sass:
     </div>
   </a>
 
-</div>
-
-## PiFi Casi Integration
-
-<div class="card-container">
-
 <!-- TODO(images): PiFiServicesTab.png exists but a better front screen image would be 
      great. At your discretion please Hiba. -->
 
   <a href="./v260/pifi_signposting" class="card">
     <img src="./assets/images/v260/PiFiServicesTab.png" alt="PiFi Signposting" class="card-image">
     <div class="card-body">
-      <div class="card-title">PiFi Property</div>
+      <div class="card-title">PiFi Property Casi Integration</div>
       <div class="card-description">
         GRN candidates now have a new CASI service card signposting them to PiFi Property, helping
         them explore rental homes in their new country — starting with Australia.
@@ -79,12 +64,6 @@ sass:
       </div>
     </div>
   </a>
-
-</div>
-
-## Submission List Filtering & More
-
-<div class="card-container">
 
   <a href="./v260/other_highlights" class="card">
     <img src="./assets/images/v260/SubmissionListFiltering.png" alt="Submission List Filtering & More" class="card-image">
