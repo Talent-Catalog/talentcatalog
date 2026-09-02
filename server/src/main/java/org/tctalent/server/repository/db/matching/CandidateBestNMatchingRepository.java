@@ -30,8 +30,20 @@ import org.tctalent.server.request.candidate.matching.CandidateBestNMatchingRequ
 import org.tctalent.server.service.db.EmbeddingModelService;
 
 /**
- * Executes candidate matching with JDBC because the PostgreSQL-specific CTEs, full-text operators,
+ * Executes candidate matching with JDBC because the PostgreSQL-specific
+ * CTEs (Common Table Expressions), full-text operators,
  * pgvector nearest-neighbour ordering, and dynamic trusted identifier are not a good fit for JPA.
+ * <p>
+ * CTE is syntax like
+ * <pre>
+ *     WITH lexical_candidates AS (
+ *       SELECT id AS candidate_id, score AS lexical_score,
+ *              ROW_NUMBER() OVER (ORDER BY score DESC, id) AS lexical_rank
+ *       FROM lexical_candidate_scores
+ *       ORDER BY score DESC, id
+ *       LIMIT :candidateLimit
+ *     )
+ * </pre>
  */
 @Repository
 @RequiredArgsConstructor
@@ -88,8 +100,8 @@ public class CandidateBestNMatchingRepository {
 
         validate(request, tableName, model.getDimensions());
 
+        //These parameters are used in the SQL query in buildSql below.
         MapSqlParameterSource parameters = new MapSqlParameterSource()
-            .addValue("queryText", request.getSimpleQueryString())
             .addValue("queryEmbedding", toVectorLiteral(request.getQueryEmbedding()))
             .addValue("lexicalWeight", request.getLexicalWeight())
             .addValue("semanticWeight", 1-request.getLexicalWeight())
@@ -110,13 +122,10 @@ public class CandidateBestNMatchingRepository {
             throw new IllegalArgumentException("Embedding dimensions must be positive");
         }
 
-        // A SQL bind parameter cannot represent an identifier. The table name is interpolated
-        // only after syntax and configured-model allow-list validation.
+        // A SQL bind parameter cannot represent an identifier.
+        // The table name is inserted into the string using the String.formatted method call below.
         return """
-            WITH parameters AS (
-                SELECT to_tsquery('english', :queryText) AS text_query
-            ),
-            lexical_candidate_scores AS (
+            WITH lexical_candidate_scores AS (
             """
                 +
                 //Note that this SQL contains the same constraints described in
