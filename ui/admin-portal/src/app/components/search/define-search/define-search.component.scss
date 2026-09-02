@@ -287,9 +287,9 @@ $candidate-card-width: 375px;
 .ai-matching-controls {
   margin-top: 1rem;
   display: grid;
-  grid-template-columns: 2.2fr 0.8fr auto;
+  grid-template-columns: 2.2fr 0.5fr auto;
   align-items: start;
-  column-gap: 1.25rem;
+  column-gap: 2rem;
   row-gap: 0.125rem;
   padding: 1rem 1.25rem;
   border-radius: 0.75rem;
@@ -298,6 +298,11 @@ $candidate-card-width: 375px;
 
 .ai-match-style-control {
   min-width: 16rem;
+}
+
+.ai-control-label {
+  display: flex;
+  align-items: center;
 }
 
 .ai-match-slider-row {
@@ -309,8 +314,8 @@ $candidate-card-width: 375px;
   > span {
     @include paragraph-xs;
     @include text-color-secondary;
-    max-width: 5.5rem;
     white-space: normal;
+    flex-shrink: 1;
   }
 
 }
@@ -335,7 +340,6 @@ $candidate-card-width: 375px;
 }
 
 .ai-candidates-control {
-  min-width: 8rem;
 
   .form-label {
     white-space: nowrap;
@@ -347,7 +351,7 @@ $candidate-card-width: 375px;
 }
 
 .ai-model-control {
-  width: 12rem;
+  width: 18rem;
 }
 
 .ai-model-summary-row {

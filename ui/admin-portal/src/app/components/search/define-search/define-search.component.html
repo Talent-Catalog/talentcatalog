@@ -156,9 +156,9 @@
             </p>
           </div>
 
-          <div *ngIf="hasEmbeddingModels()" class="col-md-8 mt-3">
+          <div *ngIf="hasEmbeddingModels()" class="col-md-12 mt-3">
             <div>
-              <div class="ai-input" [class.ai-input--highlighted]="!hasEverHadRequirementsInput">
+              <div class="ai-input" [class.ai-input--highlighted]="!hasRequirements()">
                 <img class="ai-input-sparkle ai-input-sparkle-start"
                      src="assets/images/sparkle-primary.svg"
                      alt=""
@@ -192,17 +192,19 @@
             <div *ngIf="hasRequirements()" class="ai-matching-controls">
             <!-- Lexical vs Semantic importance -->
             <div class="ai-match-style-control">
-              <tc-label size="sm" class="form-label" for="lexicalWeight">How should AI match candidates?</tc-label>
-              <tc-button [type]="'plain'"
-                         class="tool-tip-button"
-                         ngbTooltip="Lexical vs Semantic matching. Enter a value between 0 and 1. The default is 0.5, which is Balanced and means that the lexical score is equally important as the semantic score. Exact requirements gives more weight to lexical matching. Related experience gives more weight to semantic matching."
-                         triggers="click"
-                         tooltipClass="search-tips"
-                         placement="bottom top"
-                         [stopNativeClickPropagation]="false"
-              >
-                <i class="fa-regular fa-circle-question fa-xs"></i>
-              </tc-button>
+              <div class="ai-control-label">
+                <tc-label size="sm" class="form-label" for="lexicalWeight">How should AI match candidates?</tc-label>
+                <tc-button [type]="'plain'"
+                           class="tool-tip-button"
+                           ngbTooltip="Lexical vs Semantic matching. Enter a value between 0 and 1. The default is 0.5, which is Balanced and means that the lexical score is equally important as the semantic score. Exact requirements gives more weight to lexical matching. Related experience gives more weight to semantic matching."
+                           triggers="click"
+                           tooltipClass="search-tips"
+                           placement="bottom top"
+                           [stopNativeClickPropagation]="false"
+                >
+                  <i class="fa-regular fa-circle-question fa-xs"></i>
+                </tc-button>
+              </div>
 
               <div class="ai-match-slider-row">
                 <span>Related experience</span>
@@ -223,16 +225,18 @@
 
             <!-- Number of matches requested -->
             <div class="ai-candidates-control">
-              <tc-label size="sm" class="form-label" for="nMatches">Number of matches</tc-label>
-              <tc-button type="plain"
-                         class="tool-tip-button"
-                         ngbTooltip="Best N candidates. Defaults to current page size."
-                         triggers="click"
-                         tooltipClass="search-tips keyword"
-                         [stopNativeClickPropagation]="false"
-              >
-                <i class="fa-regular fa-circle-question fa-xs"></i>
-              </tc-button>
+              <div class="ai-control-label">
+                <tc-label size="sm" class="form-label" for="nMatches">Number of matches</tc-label>
+                <tc-button type="plain"
+                           class="tool-tip-button"
+                           ngbTooltip="Best N candidates. Defaults to current page size."
+                           triggers="click"
+                           tooltipClass="search-tips keyword"
+                           [stopNativeClickPropagation]="false"
+                >
+                  <i class="fa-regular fa-circle-question fa-xs"></i>
+                </tc-button>
+              </div>
               <tc-input
                 id="nMatches"
                 type="number"
@@ -242,8 +246,7 @@
 
             <!-- Model selection and details -->
             <div class="ai-model-control">
-
-              <div>
+              <div class="ai-control-label">
                 <tc-label size="sm" class="form-label" for="modelKey">Model Key</tc-label>
                 <tc-button type="plain"
                            class="tool-tip-button"
@@ -254,18 +257,17 @@
                 >
                   <i class="fa-regular fa-circle-question fa-xs"></i>
                 </tc-button>
-                <ng-select
-                  class="tc-select"
-                  id="modelKey"
-                  bindLabel="modelKey"
-                  bindValue="modelKey"
-                  [items]="embeddingModels"
-                  [searchable]="false"
-                  placeholder="Select"
-                  formControlName="modelKey">
-                </ng-select>
               </div>
-
+              <ng-select
+                class="tc-select"
+                id="modelKey"
+                bindLabel="modelKey"
+                bindValue="modelKey"
+                [items]="embeddingModels"
+                [searchable]="false"
+                placeholder="Select"
+                formControlName="modelKey">
+              </ng-select>
             </div>
 
             <div *ngIf="hasEmbeddingModel()" class="ai-model-summary-row">
