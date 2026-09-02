@@ -40,24 +40,6 @@ class TcButtonStubComponent {
 class TcLabelStubComponent {}
 
 @Component({
-  selector: 'tc-description-list',
-  template: '<ng-content></ng-content>'
-})
-class TcDescriptionListStubComponent {
-  @Input() direction?: string;
-  @Input() compact?: boolean;
-  @Input() size?: string;
-}
-
-@Component({
-  selector: 'tc-description-item',
-  template: '<ng-content></ng-content>'
-})
-class TcDescriptionItemStubComponent {
-  @Input() label?: string;
-}
-
-@Component({
   selector: 'tc-input',
   template: '',
   providers: [{
@@ -100,6 +82,14 @@ class NgOptionStubComponent {
   @Input() value?: unknown;
 }
 
+@Component({
+  selector: 'tc-badge',
+  template: '<ng-content></ng-content>'
+})
+class TcBadgeStubComponent {
+  @Input() color?: string;
+}
+
 function makeOccupation(id: number, name: string): Occupation {
   return {id, name};
 }
@@ -122,6 +112,7 @@ describe('CandidateOccupationCardComponent', () => {
   async function configureAndCreate(options?: {
     preview?: boolean;
     disabled?: boolean;
+    isPrincipal?: boolean;
     candidateOccupation?: CandidateOccupation;
     candidateOccupations?: CandidateOccupation[];
     occupations?: Occupation[];
@@ -131,11 +122,10 @@ describe('CandidateOccupationCardComponent', () => {
         CandidateOccupationCardComponent,
         TcButtonStubComponent,
         TcLabelStubComponent,
-        TcDescriptionListStubComponent,
-        TcDescriptionItemStubComponent,
         TcInputStubComponent,
         NgSelectStubComponent,
-        NgOptionStubComponent
+        NgOptionStubComponent,
+        TcBadgeStubComponent
       ],
       imports: [FormsModule, TranslateModule.forRoot()]
     }).compileComponents();
@@ -144,6 +134,7 @@ describe('CandidateOccupationCardComponent', () => {
     component = fixture.componentInstance;
     component.preview = options?.preview ?? false;
     component.disabled = options?.disabled ?? false;
+    component.isPrincipal = options?.isPrincipal ?? false;
     component.candidateOccupation = options?.candidateOccupation ?? makeCandidateOccupation();
     component.candidateOccupations = options?.candidateOccupations ?? [component.candidateOccupation];
     component.occupations = options?.occupations ?? [
@@ -178,20 +169,43 @@ describe('CandidateOccupationCardComponent', () => {
       expect(select.componentInstance.id).toBe('occupationId');
       expect(select.nativeElement.classList).toContain('tc-select');
       expect(input.componentInstance.type).toBe('number');
-      expect(nativeElement.querySelectorAll('tc-description-list').length).toBe(0);
+      expect(nativeElement.querySelector('.fw-bold')).toBeFalsy();
     });
 
-    it('should render tc-description-list items in preview mode', async () => {
+    it('should render the occupation name in bold and years experience in muted text in preview mode', async () => {
       await configureAndCreate({preview: true});
 
-      const items = fixture.debugElement.queryAll(By.directive(TcDescriptionItemStubComponent));
-      const labels = items.map(debugEl => debugEl.componentInstance.label);
-      const text = (fixture.nativeElement as HTMLElement).textContent || '';
+      const nativeElement = fixture.nativeElement as HTMLElement;
+      const name = nativeElement.querySelector('.fw-bold');
+      const years = nativeElement.querySelector('.text-muted');
 
-      expect(labels).toContain('REGISTRATION.OCCUPATION.LABEL.OCCUPATION');
-      expect(labels).toContain('REGISTRATION.OCCUPATION.LABEL.YEARSEXPERIENCE');
-      expect(text).toContain('Engineer');
-      expect(text).toContain('4');
+      expect(name?.textContent).toContain('Engineer');
+      expect(years?.textContent).toContain('REGISTRATION.OCCUPATION.LABEL.YEARS_OF_EXPERIENCE_PLURAL');
+      expect(nativeElement.querySelector('ng-select')).toBeFalsy();
+      expect(nativeElement.querySelector('tc-input')).toBeFalsy();
+    });
+
+    it('should use the singular years-experience translation when yearsExperience is 1', async () => {
+      await configureAndCreate({preview: true, candidateOccupation: makeCandidateOccupation({yearsExperience: 1})});
+
+      const years = (fixture.nativeElement as HTMLElement).querySelector('.text-muted');
+
+      expect(years?.textContent).toContain('REGISTRATION.OCCUPATION.LABEL.YEARS_OF_EXPERIENCE_SINGULAR');
+    });
+
+    it('should not render the Principal badge when isPrincipal is false', async () => {
+      await configureAndCreate({preview: true, isPrincipal: false});
+      expect(fixture.debugElement.query(By.directive(TcBadgeStubComponent))).toBeFalsy();
+    });
+
+    it('should render the Principal badge next to the occupation name when isPrincipal is true', async () => {
+      await configureAndCreate({preview: true, isPrincipal: true});
+
+      const badge = fixture.debugElement.query(By.directive(TcBadgeStubComponent));
+      const nameContainer = (fixture.nativeElement as HTMLElement).querySelector('.fw-bold')?.parentElement;
+
+      expect(badge).toBeTruthy();
+      expect(nameContainer.contains(badge.nativeElement)).toBeTrue();
     });
   });
 
@@ -208,6 +222,13 @@ describe('CandidateOccupationCardComponent', () => {
 
     it('should return the matching occupation name', () => {
       expect(component.getOccupationName(makeOccupation(1, 'Ignored'))).toBe('Engineer');
+    });
+
+    it('should identify singular vs plural years of experience', () => {
+      expect(component.isSingularYear(1)).toBeTrue();
+      expect(component.isSingularYear('1')).toBeTrue();
+      expect(component.isSingularYear(0)).toBeFalse();
+      expect(component.isSingularYear(4)).toBeFalse();
     });
 
     it('should filter out already selected occupations and unknown when not current', () => {

@@ -27,4 +27,9 @@ public class UpdateCandidateOccupationRequest {
     private Long occupationId;
     private Long yearsExperience;
 
+    /**
+     * True if this occupation should become (or remain) the candidate's principal occupation.
+     */
+    private Boolean principal;
+
 }

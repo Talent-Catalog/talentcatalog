@@ -152,6 +152,8 @@ public class CandidateReadDto {
     private boolean pendingTerms;
     private String phone;
     private boolean potentialDuplicate;
+    @JsonOneToOne(joinColumn = "principal_occupation_id")
+    private PrincipalOccupationReadDto principalOccupation;
     private String publicId;
     @SqlIgnore
     private Number score;
