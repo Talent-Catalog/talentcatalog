@@ -281,7 +281,7 @@ export class VerifyPlusPage {
    * avoids a race between the query parameter and ng-bootstrap navigation.
    */
   async gotoServices(): Promise<void> {
-    await this.page.goto('/profile');
+    await this.page.goto('./profile');
 
     await expect(
       this.page,
