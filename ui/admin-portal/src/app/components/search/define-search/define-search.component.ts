@@ -1033,6 +1033,13 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit, 
   }
 
   extractSkills(): void {
+    //Nothing to extract from - and no point showing skills left over from a previous,
+    //since-cleared description.
+    if (!this.hasRequirements()) {
+      this.setExtractedSkills([]);
+      return;
+    }
+
     const request: ExtractSkillsRequest = {
       lang: "en",
       text: this.requirements

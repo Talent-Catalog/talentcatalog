@@ -419,6 +419,53 @@ describe('DefineSearchComponent', () => {
     expect(component.searchForm.pristine).toBeTrue();
   });
 
+  it('should request skill extraction for the current requirements text and update extractedSkills', () => {
+    component.searchForm.controls.requirements.patchValue('Senior welder with diesel experience');
+    skillsService.extractSkills.and.returnValue(of([
+      {name: 'Welding', lang: 'en'},
+      {name: 'Diesel Mechanics', lang: 'en'}
+    ]));
+
+    component.extractSkills();
+
+    expect(skillsService.extractSkills).toHaveBeenCalledWith({
+      lang: 'en',
+      text: 'Senior welder with diesel experience'
+    });
+    expect(component.extractedSkills).toBe('Welding "Diesel Mechanics"');
+  });
+
+  it('should clear extractedSkills when a non-empty requirements text yields no skills', () => {
+    component.searchForm.controls.requirements.patchValue('some text');
+    component.extractedSkills = 'stale skills';
+    skillsService.extractSkills.and.returnValue(of([]));
+
+    component.extractSkills();
+
+    expect(skillsService.extractSkills).toHaveBeenCalledWith({lang: 'en', text: 'some text'});
+    expect(component.extractedSkills).toBe('');
+  });
+
+  it('should clear extractedSkills without calling the service when requirements is empty', () => {
+    component.searchForm.controls.requirements.patchValue('');
+    component.extractedSkills = 'stale skills';
+
+    component.extractSkills();
+
+    expect(skillsService.extractSkills).not.toHaveBeenCalled();
+    expect(component.extractedSkills).toBe('');
+  });
+
+  it('should clear extractedSkills without calling the service when requirements is only whitespace', () => {
+    component.searchForm.controls.requirements.patchValue('   ');
+    component.extractedSkills = 'stale skills';
+
+    component.extractSkills();
+
+    expect(skillsService.extractSkills).not.toHaveBeenCalled();
+    expect(component.extractedSkills).toBe('');
+  });
+
   it('should prevent Enter defaults after view initialization', () => {
     const input = document.createElement('input');
     document.body.appendChild(input);
