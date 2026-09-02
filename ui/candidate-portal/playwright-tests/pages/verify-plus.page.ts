@@ -84,7 +84,7 @@ export class VerifyPlusPage {
     });
 
     this.description = this.verifyPlusComponent.getByText(
-      'Scan your UNHCR Verify+ card QR code to capture the encoded payload.',
+      'Scan your UNHCR Verify+ card QR code. A valid scan shows the card is genuine. It does not prove that you are the person named on the card.',
       {
         exact: true,
       },
