@@ -16,6 +16,7 @@
 
 @import "src/scss/variables";
 @import "src/scss/color-mixins";
+@import "src/scss/typography-mixins";
 
 :host {
   ::ng-deep .dropdown-btn {
@@ -177,4 +178,205 @@ $candidate-card-width: 375px;
 // To make example search queries more visible
 .search-tips-content code {
   color: #0cd5e4;
+}
+
+.ai-matching-title-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.ai-input {
+  position: relative;
+  overflow: hidden;
+  background:
+    linear-gradient(color(core, white), color(core, white)) padding-box,
+    linear-gradient(110deg, color(primary, 500), color(secondary, 500)) border-box;
+  border: 1.5px solid transparent;
+  border-radius: 0.75rem;
+  box-shadow:
+    0 4px 12px rgba(color(gray, 900), 0.06),
+    0 0 0 3px rgba(color(primary, 500), 0.06),
+    0 0 18px rgba(color(secondary, 500), 0.09);
+  transition: box-shadow 0.2s ease-in-out;
+
+  &:focus-within {
+    box-shadow:
+      0 6px 16px rgba(color(gray, 900), 0.08),
+      0 0 0 3px rgba(color(primary, 500), 0.12),
+      0 0 24px rgba(color(secondary, 500), 0.14);
+  }
+
+  // Only draw attention with the sweeping highlight while the field is still empty.
+  &.ai-input--highlighted {
+    background:
+      linear-gradient(color(core, white), color(core, white)) padding-box,
+      linear-gradient(
+        100deg,
+        color(primary, 500) 0%,
+        color(secondary, 500) 18%,
+        color(core, white) 32%,
+        color(secondary, 500) 46%,
+        color(primary, 500) 64%,
+        color(primary, 500) 100%
+      ) border-box;
+    background-size: 100% 100%, 400% 100%;
+    animation: ai-input-highlight-sweep 9s linear infinite;
+
+    @media (prefers-reduced-motion: reduce) {
+      animation: none;
+    }
+  }
+}
+
+@keyframes ai-input-highlight-sweep {
+  0% {
+    background-position: 0 0, 100% 0;
+  }
+  100% {
+    background-position: 0 0, -300% 0;
+  }
+}
+
+.ai-input-sparkle {
+  position: absolute;
+  z-index: 2;
+  width: 2.5rem;
+  height: 2.5rem;
+  pointer-events: none;
+}
+
+.ai-input-sparkle-start {
+  top: 0.75rem;
+  left: 0.75rem;
+}
+
+.ai-input-sparkle-end {
+  right: 0.75rem;
+  bottom: 0.75rem;
+}
+
+.ai-extracted-info {
+  margin: 0.75rem 0 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+}
+
+.ai-extracted-skills {
+  @include paragraph-sm;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.375rem;
+}
+
+.ai-extracted-skills-label {
+  @include label-sm;
+  @include text-color-body;
+}
+
+.ai-extracted-skills-value {
+  @include text-color-secondary;
+}
+
+.ai-source-note {
+  @include text-color-caption;
+}
+
+.ai-matching-controls {
+  margin-top: 1rem;
+  display: grid;
+  grid-template-columns: 2.2fr 0.5fr auto;
+  align-items: start;
+  column-gap: 2rem;
+  row-gap: 0.125rem;
+  padding: 1rem 1.25rem;
+  border-radius: 0.75rem;
+  @include background-color-soft;
+}
+
+.ai-match-style-control {
+  min-width: 16rem;
+}
+
+.ai-control-label {
+  display: flex;
+  align-items: center;
+}
+
+.ai-match-slider-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  min-height: 2.5rem;
+
+  > span {
+    @include paragraph-xs;
+    @include text-color-secondary;
+    white-space: normal;
+    flex-shrink: 1;
+  }
+
+}
+
+.ai-match-slider-control {
+  display: flex;
+  flex: 1 1 auto;
+  min-width: 8rem;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+
+  input {
+    width: 100%;
+  }
+}
+
+.ai-match-balanced {
+  @include paragraph-xs;
+  @include text-color-secondary;
+  text-align: center;
+}
+
+.ai-candidates-control {
+
+  .form-label {
+    white-space: nowrap;
+  }
+
+  ::ng-deep .form-input {
+    max-width: 6rem;
+  }
+}
+
+.ai-model-control {
+  width: 18rem;
+}
+
+.ai-model-summary-row {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.ai-model-summary {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 0.25rem;
+  @include paragraph-xs;
+  @include text-color-caption;
+}
+
+@media (max-width: 900px) {
+  .ai-matching-controls {
+    grid-template-columns: 1fr;
+    align-items: stretch;
+  }
+
+  .ai-match-slider-row {
+    flex-wrap: wrap;
+  }
 }

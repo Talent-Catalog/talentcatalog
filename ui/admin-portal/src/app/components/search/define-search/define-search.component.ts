@@ -163,6 +163,9 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
   loggedInUser: User;
   unhcrStatusOptions: EnumOption[] = enumOptions(UnhcrStatus);
 
+  //Used to store (and display) skills extracted from a job description (when jobName is specified).
+  extractedSkills: string;
+
   selectedBaseJoin;
   storedBaseJoin;
   /**
@@ -385,7 +388,7 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
     this.clearForm();
     this.jobName = jobMatchingInfo.jobName;
     this.initializeRequirementsWithDescription(jobMatchingInfo.description);
-    this.initializeQueryStringWithJobSkills(jobMatchingInfo.skillNames);
+    this.setExtractedSkills(jobMatchingInfo.skillNames);
     this.onSubmit();
   }
 
@@ -394,7 +397,7 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
     this.searchForm.markAsDirty();
   }
 
-  private initializeQueryStringWithJobSkills(skills: SkillName[]) {
+  private setExtractedSkills(skills: SkillName[]) {
     if (skills && skills.length > 0) {
       //Construct query string as skill names separated by spaces.
       //If a skill name is multiple words, then surround it with double quotes.
@@ -402,8 +405,7 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
       .map(
         s => s.name.indexOf(' ') < 0 ? s.name : '"' + s.name + '"'
       ).join(' ');
-      this.searchForm.controls.simpleQueryString.patchValue(queryString);
-      this.searchForm.markAsDirty();
+      this.extractedSkills = queryString;
     }
   }
 

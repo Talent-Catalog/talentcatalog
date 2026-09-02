@@ -2688,7 +2688,11 @@ public class Candidate extends AbstractCandidateDataDomainObject<Long> implement
             .map(CandidateAttachment::getTextExtract)
             .collect(Collectors.joining(" || "));
         String notesText = getShareableNotes();
-        this.text = Stream.of(combinedJobText, combinedCvText, notesText)
+        String combinedMigratedSkillsText = getCandidateSkills().stream()
+            .map(CandidateSkill::getSkill)
+            .collect(Collectors.joining(","));
+        this.text = Stream.of(
+            combinedJobText, combinedCvText, notesText, combinedMigratedSkillsText)
             .filter(s -> s != null && !s.isBlank())
             .collect(Collectors.joining(" || "));
     }

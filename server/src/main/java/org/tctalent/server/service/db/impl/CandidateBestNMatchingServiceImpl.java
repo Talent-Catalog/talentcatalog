@@ -116,13 +116,19 @@ public class CandidateBestNMatchingServiceImpl implements CandidateBestNMatching
         request.setSortFields(new String[]{"match_score"});
 
         /* **** SEMANTIC SEARCH **** */
-        //Ignore any text search constraints for the semantic match.
-        request.setSimpleQueryString(null);
+        //Note that this same constraint is built into the SQL generated for lexical search.
         String constraintJoinsAndWhereSql = savedSearchService.extractJoinAndWhereSQL(request);
 
         /* **** LEXICAL SEARCH **** */
-        //For lexical match, modify the request to use the query string with the extracted skills.
-        request.setSimpleQueryString(skillsQueryString);
+        //Capture any additional keyword filtering. This will be ANDed into the lexical search
+        //to provide additional filtering on the standard text search for extracted skills.
+        final String extraFilteringKeywords = request.getSimpleQueryString();
+
+        //For lexical match, modify the request to use the query string with the extracted skills
+        //ANDed with any additional keyword filtering.
+        final String filteredSkillsQuery = computeFilteredSkillsQuery(
+            skillsQueryString, extraFilteringKeywords);
+        request.setSimpleQueryString(filteredSkillsQuery);
 
         //Generate the SQL for a standard Saved Search based on the skills extracted into
         //the above standard keyword search field.
@@ -139,6 +145,22 @@ public class CandidateBestNMatchingServiceImpl implements CandidateBestNMatching
         //Convert the results to IdAndScore's.
         List<IdAndScore> idAndScores = convertResults(results);
         return candidateDtoFetchService.fetchAndSetScores(idAndScores);
+    }
+
+    /**
+     * Computes a filtered skills query by ANDing the skillsQueryString with the
+     * extraFilteringKeywords if it is not empty.
+     * @param skillsQueryString The skills query string.
+     * @param extraFilteringKeywords The extra filtering keywords.
+     * @return The filtered skills query.
+     */
+    private String computeFilteredSkillsQuery(
+        String skillsQueryString, String extraFilteringKeywords) {
+        if (StringUtils.hasText(extraFilteringKeywords)) {
+            return "(" + skillsQueryString + ") + (" + extraFilteringKeywords + ")";
+        } else {
+            return skillsQueryString;
+        }
     }
 
     private List<IdAndScore> convertResults(List<CandidateBestNMatchingResult> results) {

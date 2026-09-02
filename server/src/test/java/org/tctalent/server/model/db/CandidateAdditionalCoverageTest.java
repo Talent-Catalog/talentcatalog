@@ -389,14 +389,22 @@ class CandidateAdditionalCoverageTest {
     when(cvAttachment.getTextExtract()).thenReturn("CV text extract");
     when(nonCvAttachment.isCv()).thenReturn(false);
 
+    CandidateSkill skill1 = mock(CandidateSkill.class);
+    CandidateSkill skill2 = mock(CandidateSkill.class);
+
+    when(skill1.getSkill()).thenReturn("Bottle washer");
+    when(skill2.getSkill()).thenReturn("Head rattler");
+
     candidate.setCandidateJobExperiences(List.of(javaJob, qaJob));
     candidate.setCandidateAttachments(List.of(cvAttachment, nonCvAttachment));
+    candidate.setCandidateSkills(List.of(skill1, skill2));
     candidate.setShareableNotes("Strong communication skills");
 
     candidate.updateText();
 
     assertEquals(
-        "Java developer || QA tester || CV text extract || Strong communication skills",
+        "Java developer || QA tester || CV text extract || Strong communication skills || "
+            + "Bottle washer,Head rattler",
         candidate.getText()
     );
   }
