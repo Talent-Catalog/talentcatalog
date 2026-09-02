@@ -1,0 +1,37 @@
+{
+  "version": 1,
+  "description": "Verify+ 4.1 consent and trust wording (#3722)",
+  "languages": [
+    "en",
+    "ar",
+    "fa",
+    "ps",
+    "es",
+    "fr",
+    "tr",
+    "ru",
+    "uk",
+    "nl",
+    "pt"
+  ],
+  "entries": [
+    {
+      "key": "REGISTRATION.VERIFY_PLUS.DESCRIPTION",
+      "values": {
+        "en": "Scan your Verify+ card now to pre-fill your UNHCR registration number. A valid scan shows the card is genuine. It does not prove that you are the person named on the card."
+      }
+    },
+    {
+      "key": "SERVICES.VERIFY_PLUS.SCAN_INTRO",
+      "values": {
+        "en": "Scan your UNHCR Verify+ card QR code. A valid scan shows the card is genuine. It does not prove that you are the person named on the card."
+      }
+    },
+    {
+      "key": "SERVICES.VERIFY_PLUS.CONSENT_LABEL",
+      "values": {
+        "en": "I agree that GRN may store the data from this card on my profile."
+      }
+    }
+  ]
+}
