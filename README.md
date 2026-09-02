@@ -10,8 +10,9 @@ engineering team was made possible by the philanthropic support of the
 [Cameron Foundation](https://cameronfoundation.org/), which remains an active, primary funder
 of the project.
 
-Talent Catalog is now shared, open-source software, used by TBB and by other labour mobility
-partners, including the Global Refugee Network (GRN).
+Talent Catalog is now shared, open-source software, used by TBB and other labour mobility
+partners, as well as by the Global Refugee Network (GRN), a broader global network serving
+refugees more generally.
 
 This GitHub repository is currently maintained by
 [Open Pathway Collective](https://openpathwaycollective.org/) (OPC), which is the primary
