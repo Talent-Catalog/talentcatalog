@@ -44,6 +44,7 @@ export class VerifyPlusPage {
   readonly scannerErrorMessage: Locator;
   readonly payloadReviewHeading: Locator;
   readonly payloadPreview: Locator;
+  readonly consentCheckbox: Locator;
   readonly confirmButton: Locator;
   readonly rescanButton: Locator;
   readonly submissionError: Locator;
@@ -152,6 +153,11 @@ export class VerifyPlusPage {
     this.payloadPreview =
       this.verifyPlusComponent.locator(
         '.scan-result pre',
+      );
+
+    this.consentCheckbox =
+      this.verifyPlusComponent.locator(
+        '#verifyPlusConsent',
       );
 
     this.confirmButton =
@@ -425,11 +431,28 @@ export class VerifyPlusPage {
 
 
   /**
+   * Ticks the Verify+ consent checkbox on the review screen.
+   *
+   * Confirm stays disabled until this checkbox is checked.
+   */
+  async acceptConsent(): Promise<void> {
+    await expect(
+      this.consentCheckbox,
+      'Expected the Verify+ consent checkbox after QR decoding',
+    ).toBeVisible();
+
+    await this.consentCheckbox.check();
+  }
+
+  /**
    * Confirms the currently decoded Verify+ payload.
    *
-   * Clicking this button triggers the production Verify+ submission request.
+   * Records consent first, then clicks Confirm. That click triggers the
+   * production Verify+ submission request.
    */
   async confirmScan(): Promise<void> {
+    await this.acceptConsent();
+
     await expect(
       this.confirmButton,
       'Expected Confirm after QR decoding',
