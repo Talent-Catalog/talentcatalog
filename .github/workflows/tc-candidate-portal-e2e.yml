@@ -13,7 +13,6 @@ on:
   push:
     branches:
       - staging
-      - ehsan/tc-1402-run-verify-e2e-tests-across-browsers-in-ci
 
   workflow_dispatch:
 
