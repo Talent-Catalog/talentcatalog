@@ -1,0 +1,78 @@
+name: Candidate Portal E2E
+
+on:
+  pull_request:
+    branches:
+      - staging
+      - master
+    paths:
+      - 'ui/candidate-portal/**'
+      - '.github/workflows/tc-candidate-portal-e2e.yml'
+      - '.nvmrc'
+
+  push:
+    branches:
+      - staging
+      - ehsan/tc-1402-run-verify-e2e-tests-across-browsers-in-ci
+
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: candidate-portal-e2e
+  cancel-in-progress: false
+
+jobs:
+  e2e:
+    name: Playwright E2E
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    defaults:
+      run:
+        working-directory: ui/candidate-portal
+
+    env:
+      CI: true
+
+      E2E_BASE_URL: ${{ vars.E2E_BASE_URL }}
+      E2E_API_BASE_URL: ${{ vars.E2E_API_BASE_URL }}
+
+      E2E_CANDIDATE_USERNAME: ${{ secrets.E2E_CANDIDATE_USERNAME }}
+      E2E_CANDIDATE_PASSWORD: ${{ secrets.E2E_CANDIDATE_PASSWORD }}
+
+      E2E_VERIFY_PLUS_BASELINE_UNHCR_ID: ${{ secrets.E2E_VERIFY_PLUS_BASELINE_UNHCR_ID }}
+      E2E_VERIFY_PLUS_DUPLICATE_UNHCR_ID: ${{ secrets.E2E_VERIFY_PLUS_DUPLICATE_UNHCR_ID }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+          cache: npm
+          cache-dependency-path: ui/candidate-portal/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps
+
+      - name: Run Playwright E2E tests
+        run: npm run e2e
+
+      - name: Upload Playwright artifacts
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: candidate-portal-playwright-${{ github.run_id }}
+          path: |
+            ui/candidate-portal/playwright-report
+            ui/candidate-portal/test-results
+          if-no-files-found: ignore
+          retention-days: 7
