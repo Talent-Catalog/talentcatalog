@@ -37,11 +37,23 @@
     {{ submitErrorMessage || ('SERVICES.VERIFY_PLUS.SUBMIT_ERROR_FALLBACK' | translate) }}
   </p>
 
+  <div class="form-check mt-3" *ngIf="decodedPayload && !submitResult">
+    <input
+      class="form-check-input"
+      type="checkbox"
+      id="verifyPlusRegistrationConsent"
+      [(ngModel)]="consentGiven"
+    >
+    <label class="form-check-label" for="verifyPlusRegistrationConsent">
+      {{ 'SERVICES.VERIFY_PLUS.CONSENT_LABEL' | translate }}
+    </label>
+  </div>
+
   <div class="mt-3 d-flex flex-wrap gap-2" *ngIf="decodedPayload && !submitResult">
     <tc-button [type]="'outline'" [disabled]="submitting" (onClick)="onRescan()">
       {{ 'SERVICES.VERIFY_PLUS.RESCAN' | translate }}
     </tc-button>
-    <tc-button [loading]="submitting" [disabled]="submitting" (onClick)="onConfirm()">
+    <tc-button [loading]="submitting" [disabled]="submitting || !consentGiven" (onClick)="onConfirm()">
       {{ 'SERVICES.VERIFY_PLUS.CONFIRM' | translate }}
     </tc-button>
   </div>
