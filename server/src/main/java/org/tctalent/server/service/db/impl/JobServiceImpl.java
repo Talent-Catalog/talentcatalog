@@ -490,8 +490,7 @@ public class JobServiceImpl implements JobService {
     private void appendJobText(@NonNull StringBuilder sb, @Nullable String text) {
         if (StringUtils.hasText(text)) {
             sb.append(text);
-            //We want whitespace surrounding delimiter so that word boundaries are detected.
-            sb.append("\n||\n");
+            sb.append("\n\n");
         }
     }
 
