@@ -6,8 +6,9 @@
 
 Talent Catalog was created by [Talent Beyond Boundaries](https://talentbeyondboundaries.org)
 (TBB), which remains a core partner and operator of the platform. The original software
-engineering team was made possible by the philanthropic support of the Cameron Foundation,
-which remains an active, primary funder of the project.
+engineering team was made possible by the philanthropic support of the
+[Cameron Foundation](https://cameronfoundation.org/), which remains an active, primary funder
+of the project.
 
 Talent Catalog is now shared, open-source software, used by TBB and by other labour mobility
 partners, including the Global Refugee Network (GRN).
