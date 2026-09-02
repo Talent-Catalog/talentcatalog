@@ -17,9 +17,11 @@ package org.tctalent.server.service.db.verify.impl;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -32,6 +34,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.tctalent.server.exception.InvalidRequestException;
 import org.tctalent.server.exception.InvalidSessionException;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.YesNoUnsure;
@@ -68,6 +71,7 @@ class VerifyPlusServiceImplTest {
 
         request = new VerifyPlusScanRequest();
         request.setRawPayload("{\"v\":\"mock-1\",\"unhcrId\":\"UNHCR-1\"}");
+        request.setConsented(true);
     }
 
     @Test
@@ -84,6 +88,8 @@ class VerifyPlusServiceImplTest {
 
         assertEquals("UNHCR-1", candidate.getUnhcrNumber());
         assertEquals(YesNoUnsure.Yes, candidate.getUnhcrRegistered());
+        assertTrue(candidate.getVerifyPlusConsented());
+        assertNotNull(candidate.getVerifyPlusConsentedAt());
         assertEquals("UNHCR-1", result.getUnhcrNumber());
         assertFalse(result.isDuplicate());
         verify(candidateService).save(candidate);
@@ -104,6 +110,8 @@ class VerifyPlusServiceImplTest {
 
         VerifyPlusIngestResult result = verifyPlusService.ingestScan(request);
 
+        assertTrue(candidate.getVerifyPlusConsented());
+        assertNotNull(candidate.getVerifyPlusConsentedAt());
         assertTrue(result.isDuplicate());
     }
 
@@ -124,6 +132,8 @@ class VerifyPlusServiceImplTest {
 
         assertEquals("NEW-UNHCR", candidate.getUnhcrNumber());
         assertEquals(YesNoUnsure.Yes, candidate.getUnhcrRegistered());
+        assertTrue(candidate.getVerifyPlusConsented());
+        assertNotNull(candidate.getVerifyPlusConsentedAt());
         assertEquals("NEW-UNHCR", result.getUnhcrNumber());
     }
 
@@ -133,5 +143,27 @@ class VerifyPlusServiceImplTest {
         when(candidateService.getLoggedInCandidate()).thenReturn(Optional.empty());
 
         assertThrows(InvalidSessionException.class, () -> verifyPlusService.ingestScan(request));
+    }
+
+    @Test
+    @DisplayName("Given consent is null, when ingestScan is called, then an InvalidRequestException is thrown and candidate is not saved")
+    void ingestScan_nullConsent_throwsInvalidRequestException() {
+        request.setConsented(null);
+        when(candidateService.getLoggedInCandidate()).thenReturn(Optional.of(candidate));
+
+        assertThrows(InvalidRequestException.class, () -> verifyPlusService.ingestScan(request));
+
+        verify(candidateService, never()).save(any(Candidate.class));
+    }
+
+    @Test
+    @DisplayName("Given consent is false, when ingestScan is called, then an InvalidRequestException is thrown and candidate is not saved")
+    void ingestScan_falseConsent_throwsInvalidRequestException() {
+        request.setConsented(false);
+        when(candidateService.getLoggedInCandidate()).thenReturn(Optional.of(candidate));
+
+        assertThrows(InvalidRequestException.class, () -> verifyPlusService.ingestScan(request));
+
+        verify(candidateService, never()).save(any(Candidate.class));
     }
 }

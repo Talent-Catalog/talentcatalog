@@ -16,10 +16,12 @@
 
 package org.tctalent.server.service.db.verify.impl;
 
+import java.time.OffsetDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.tctalent.server.exception.InvalidRequestException;
 import org.tctalent.server.exception.InvalidSessionException;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.CandidateStatus;
@@ -76,6 +78,10 @@ public class VerifyPlusServiceImpl implements VerifyPlusService {
         Candidate candidate = candidateService.getLoggedInCandidate()
             .orElseThrow(() -> new InvalidSessionException("Not logged in"));
 
+        if (!Boolean.TRUE.equals(request.getConsented())) {
+            throw new InvalidRequestException("Consent is required to store Verify+ data");
+        }
+
         VerifyPlusPayload payload = payloadParser.parse(request.getRawPayload());
         String unhcrId = payload.getUnhcrId();
 
@@ -87,6 +93,8 @@ public class VerifyPlusServiceImpl implements VerifyPlusService {
 
         candidate.setUnhcrRegistered(YesNoUnsure.Yes);
         candidate.setUnhcrNumber(unhcrId);
+        candidate.setVerifyPlusConsented(true);
+        candidate.setVerifyPlusConsentedAt(OffsetDateTime.now());
         candidateService.save(candidate);
 
         return new VerifyPlusIngestResult(unhcrId, duplicate);
