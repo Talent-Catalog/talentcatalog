@@ -466,6 +466,30 @@ describe('DefineSearchComponent', () => {
     expect(component.extractedSkills).toBe('');
   });
 
+  it('should call extractSkills once requirements changes have settled for 3 seconds', fakeAsync(() => {
+    spyOn(component, 'extractSkills');
+
+    component.searchForm.controls.requirements.patchValue('Java developer needed');
+    tick(2999);
+    expect(component.extractSkills).not.toHaveBeenCalled();
+
+    tick(1);
+    expect(component.extractSkills).toHaveBeenCalledTimes(1);
+  }));
+
+  it('should restart the 3 second delay whenever requirements changes again before it settles', fakeAsync(() => {
+    spyOn(component, 'extractSkills');
+
+    component.searchForm.controls.requirements.patchValue('Java d');
+    tick(2999);
+    component.searchForm.controls.requirements.patchValue('Java developer needed');
+    tick(2999);
+    expect(component.extractSkills).not.toHaveBeenCalled();
+
+    tick(1);
+    expect(component.extractSkills).toHaveBeenCalledTimes(1);
+  }));
+
   it('should prevent Enter defaults after view initialization', () => {
     const input = document.createElement('input');
     document.body.appendChild(input);
