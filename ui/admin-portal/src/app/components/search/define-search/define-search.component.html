@@ -159,21 +159,23 @@
           <div *ngIf="hasEmbeddingModels()" class="col-md-12 mt-3">
             <div>
               <div class="ai-input" [class.ai-input--highlighted]="!hasRequirements()">
-                <img class="ai-input-sparkle ai-input-sparkle-start"
-                     src="assets/images/sparkle-primary.svg"
-                     alt=""
-                     aria-hidden="true"
-                />
-                <tc-textarea id="requirements"
-                             placeholder="Paste a job description, or outline key skills, responsibilities, and qualifications you're looking for…"
-                             formControlName="requirements"
-                             variant="ai"
-                ></tc-textarea>
-                <img class="ai-input-sparkle ai-input-sparkle-end"
-                     src="assets/images/sparkle-secondary.svg"
-                     alt=""
-                     aria-hidden="true"
-                />
+<!--todo removed until Hiba can get this working-->
+                <!--                <img class="ai-input-sparkle ai-input-sparkle-start"-->
+<!--                     src="assets/images/sparkle-primary.svg"-->
+<!--                     alt=""-->
+<!--                     aria-hidden="true"-->
+<!--                />-->
+                <ngx-wig id="requirements"
+                         placeholder="Paste a job description, or outline key skills, responsibilities, and qualifications you're looking for…"
+                         formControlName="requirements"
+                         buttons=""
+                ></ngx-wig>
+                <!--todo removed until Hiba can get this working-->
+<!--                <img class="ai-input-sparkle ai-input-sparkle-end"-->
+<!--                     src="assets/images/sparkle-secondary.svg"-->
+<!--                     alt=""-->
+<!--                     aria-hidden="true"-->
+<!--                />-->
               </div>
               <div *ngIf="jobName" class="ai-extracted-info">
                 <div class="ai-extracted-skills">
