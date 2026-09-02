@@ -96,12 +96,10 @@ export class VerifyPlusPage {
       exact: true,
     });
 
-    this.description = this.verifyPlusComponent.getByText(
-      'Scan your UNHCR Verify+ card QR code to capture the encoded payload.',
-      {
-        exact: true,
-      },
+    this.description = this.verifyPlusComponent.locator(
+      '.service-title p',
     );
+    
 
     this.scanner = this.verifyPlusComponent.locator(
       'app-verify-plus-scanner',

@@ -36,7 +36,7 @@ jobs:
 
     env:
       CI: true
-
+      PLAYWRIGHT_WORKERS: 6
       E2E_BASE_URL: ${{ vars.E2E_BASE_URL }}
       E2E_API_BASE_URL: ${{ vars.E2E_API_BASE_URL }}
 
