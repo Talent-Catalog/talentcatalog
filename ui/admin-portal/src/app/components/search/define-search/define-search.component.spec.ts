@@ -21,7 +21,7 @@ import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {SavedSearchService} from "../../../services/saved-search.service";
 import {AuthorizationService} from "../../../services/authorization.service";
 import {ElementRef, NO_ERRORS_SCHEMA, SimpleChange} from '@angular/core';
-import {ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
+import {ComponentFixture, discardPeriodicTasks, fakeAsync, TestBed, tick} from '@angular/core/testing';
 import {Router} from '@angular/router';
 import {BehaviorSubject, of, throwError} from 'rxjs';
 
@@ -37,6 +37,7 @@ import {SurveyTypeService} from '../../../services/survey-type.service';
 import {CandidateStatus, UnhcrStatus} from '../../../model/candidate';
 import {EmbeddingModelService} from "../../../services/embedding-model.service";
 import {JobMatchingInfo} from "../../../model/JobMatchingInfo";
+import {SkillsService} from "../../../services/skills.service";
 
 describe('DefineSearchComponent', () => {
   let component: DefineSearchComponent;
@@ -47,6 +48,7 @@ describe('DefineSearchComponent', () => {
   let languageService: jasmine.SpyObj<LanguageService>;
   let partnerService: jasmine.SpyObj<PartnerService>;
   let savedSearchService: jasmine.SpyObj<SavedSearchService>;
+  let skillsService: jasmine.SpyObj<SkillsService>;
   let educationLevelService: jasmine.SpyObj<EducationLevelService>;
   let educationMajorService: jasmine.SpyObj<EducationMajorService>;
   let embeddingModelService: jasmine.SpyObj<EmbeddingModelService>;
@@ -156,6 +158,7 @@ describe('DefineSearchComponent', () => {
         {provide: CountryService, useValue: countryService},
         {provide: LanguageService, useValue: languageService},
         {provide: PartnerService, useValue: partnerService},
+        {provide: SkillsService, useValue: skillsService},
         {provide: SavedSearchService, useValue: savedSearchService},
         {provide: EducationLevelService, useValue: educationLevelService},
         {provide: EducationMajorService, useValue: educationMajorService},
@@ -860,6 +863,12 @@ describe('DefineSearchComponent', () => {
     expect(component.formWrapper.nativeElement.click).toHaveBeenCalled();
     expect(component.searchForm.pristine).toBeTrue();
     expect(component.onFormChange.emit).toHaveBeenCalledWith(false);
+
+    // Patching 'requirements' above (as part of the blanket patch of all form
+    // controls) triggers the debounced extractSkills() subscription, which
+    // schedules a pending timer via rxjs' debounceTime. Discard it rather than
+    // letting it fire, since we're not testing skill extraction here.
+    discardPeriodicTasks();
   }));
 
   it('should populate empty optional collections without failing', () => {
