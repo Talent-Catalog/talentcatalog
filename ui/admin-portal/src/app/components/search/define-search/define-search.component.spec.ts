@@ -123,6 +123,7 @@ describe('DefineSearchComponent', () => {
     savedSearchService = jasmine.createSpyObj('SavedSearchService', [
       'load', 'clearSelection', 'getSavedSearchTypeInfos', 'delete', 'get'
     ]);
+    skillsService = jasmine.createSpyObj('SkillsService', ['extractSkills']);
     educationLevelService = jasmine.createSpyObj('EducationLevelService', ['listEducationLevels']);
     educationMajorService = jasmine.createSpyObj('EducationMajorService', ['listMajors']);
     candidateOccupationService = jasmine.createSpyObj('CandidateOccupationService', ['listOccupations']);
@@ -148,6 +149,10 @@ describe('DefineSearchComponent', () => {
     authorizationService.isEmployerPartner.and.returnValue(false);
     authorizationService.canEditCandidateSource.and.returnValue(true);
     savedSearchService.getSavedSearchTypeInfos.and.returnValue([]);
+    // The 'requirements' control's debounced valueChanges subscription (real, non-fakeAsync
+    // timer) can fire well after a test completes - see the note by discardPeriodicTasks()
+    // below. Stub a harmless response so that doesn't crash if it lands during another test.
+    skillsService.extractSkills.and.returnValue(of([]));
     setSuccessfulLookupResponses();
 
     await TestBed.configureTestingModule({
