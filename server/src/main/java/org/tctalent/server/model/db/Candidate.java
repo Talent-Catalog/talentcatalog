@@ -827,6 +827,18 @@ public class Candidate extends AbstractCandidateDataDomainObject<Long> implement
      */
     private boolean contactConsentPartners = true;
 
+    /**
+     * Consent evidence for Verify+ scan ingestion.
+     * This is distinct from {@link #unhcrConsent}, which is consent to share with UNHCR.
+     */
+    private boolean verifyPlusConsented;
+
+    /**
+     * The last time the candidate consented to storing Verify+ scan data.
+     */
+    @Nullable
+    private OffsetDateTime verifyPlusConsentedAt;
+
     @Nullable
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "mini_intake_completed_by")
@@ -2433,6 +2445,23 @@ public class Candidate extends AbstractCandidateDataDomainObject<Long> implement
 
     public void setContactConsentPartners(boolean emailConsentPartners) {
         this.contactConsentPartners = emailConsentPartners;
+    }
+
+    public boolean getVerifyPlusConsented() {
+        return verifyPlusConsented;
+    }
+
+    public void setVerifyPlusConsented(boolean verifyPlusConsented) {
+        this.verifyPlusConsented = verifyPlusConsented;
+    }
+
+    @Nullable
+    public OffsetDateTime getVerifyPlusConsentedAt() {
+        return verifyPlusConsentedAt;
+    }
+
+    public void setVerifyPlusConsentedAt(@Nullable OffsetDateTime verifyPlusConsentedAt) {
+        this.verifyPlusConsentedAt = verifyPlusConsentedAt;
     }
 
     @Nullable
