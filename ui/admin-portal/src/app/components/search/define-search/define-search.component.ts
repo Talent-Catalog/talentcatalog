@@ -21,6 +21,7 @@ import {
   EventEmitter,
   Input,
   OnChanges,
+  OnDestroy,
   OnInit,
   Output,
   SimpleChanges,
@@ -44,7 +45,7 @@ import {
 import {SearchSavedSearchesComponent} from '../load-search/search-saved-searches.component';
 import {CreateUpdateSearchComponent} from '../create-update/create-update-search.component';
 import {SavedSearchService} from '../../../services/saved-search.service';
-import {forkJoin} from 'rxjs';
+import {forkJoin, Subject} from 'rxjs';
 import {JoinSavedSearchComponent} from '../join-search/join-saved-search.component';
 import {EducationLevel} from '../../../model/education-level';
 import {EducationLevelService} from '../../../services/education-level.service';
@@ -86,12 +87,13 @@ import {Partner} from "../../../model/partner";
 import {PartnerService} from "../../../services/partner.service";
 import {AuthenticationService} from "../../../services/authentication.service";
 import {SearchQueryService} from "../../../services/search-query.service";
-import {first} from "rxjs/operators";
+import {debounceTime, first, takeUntil} from "rxjs/operators";
 import {JobService} from "../../../services/job.service";
 import {SkillName} from "../../../model/skill";
 import {CandidateNumberParser} from "../../../util/candidate-number-parser";
 import {EmbeddingModelService} from "../../../services/embedding-model.service";
 import {JobMatchingInfo} from "../../../model/JobMatchingInfo";
+import {ExtractSkillsRequest, SkillsService} from "../../../services/skills.service";
 
 /**
  * This component contains all the search fields for saved and unsaved searches. It communicates
@@ -113,7 +115,7 @@ import {JobMatchingInfo} from "../../../model/JobMatchingInfo";
   templateUrl: './define-search.component.html',
   styleUrls: ['./define-search.component.scss']
 })
-export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
+export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit, OnDestroy {
   @ViewChild('modifiedDate', {static: true}) modifiedDatePicker: DateRangePickerComponent;
   @ViewChild('englishLanguage', {static: true}) englishLanguagePicker: LanguageLevelFormControlComponent;
   @ViewChild('otherLanguage', {static: true}) otherLanguagePicker: LanguageLevelFormControlComponent;
@@ -174,6 +176,9 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
    */
   searchIsElastic: boolean = false;
 
+  //Used to unsubscribe from long-lived subscriptions (form/service listeners) on destroy.
+  private destroy$ = new Subject<void>();
+
   constructor(private fb: UntypedFormBuilder,
               private countryService: CountryService,
               private embeddingModelService: EmbeddingModelService,
@@ -188,6 +193,7 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
               private languageLevelService: LanguageLevelService,
               private modalService: NgbModal,
               private router: Router,
+              private skillsService: SkillsService,
               private authorizationService: AuthorizationService,
               private authenticationService: AuthenticationService,
               private searchQueryService: SearchQueryService
@@ -256,16 +262,28 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
     }, {validator: this.validateDuplicateSearches('savedSearchId')});
 
     // Subscribe to changes in Keyword Search
-    this.searchForm.controls.simpleQueryString.statusChanges.subscribe(() => {
+    this.searchForm.controls.simpleQueryString.statusChanges.pipe(
+      takeUntil(this.destroy$)
+    ).subscribe(() => {
       this.searchIsElastic = this.searchForm.controls.simpleQueryString.dirty &&
         this.searchForm.controls.simpleQueryString.value !== '';
     });
 
     //Map changes to nMatches to this.pageSize.
-    this.searchForm.controls.nMatches.valueChanges.subscribe(() => {
+    this.searchForm.controls.nMatches.valueChanges.pipe(
+      takeUntil(this.destroy$)
+    ).subscribe(() => {
       //If nMatches is undefined, don't change pageSize
       this.pageSize = this.searchForm.controls.nMatches.value || this.pageSize;
     })
+
+    //Extract skills when requirements change after a short delay.
+    this.searchForm.controls.requirements.valueChanges.pipe(
+      debounceTime(3000),
+      takeUntil(this.destroy$)
+    ).subscribe(
+      () => this.extractSkills()
+    )
   }
 
   ngOnInit() {
@@ -278,7 +296,9 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
     this.loading = true;
     this.error = null;
 
-    this.searchQueryService.currentSearchTerms$.subscribe(searchTerms => {
+    this.searchQueryService.currentSearchTerms$.pipe(
+      takeUntil(this.destroy$)
+    ).subscribe(searchTerms => {
       this.currentSearchTerms = searchTerms;
     })
 
@@ -332,9 +352,16 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
     // The unsaved changes guard is implemented on the saved search route, see app-routing.module.ts.
     // This guard will throw confirmation modal if navigating away with unsaved search fields, which
     // is determined if the form is dirty or not.
-    this.searchForm.valueChanges.subscribe(() => {
+    this.searchForm.valueChanges.pipe(
+      takeUntil(this.destroy$)
+    ).subscribe(() => {
       this.onFormChange.emit(this.searchForm.dirty);
     });
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   get lexicalWeight(): number {
@@ -406,6 +433,8 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
         s => s.name.indexOf(' ') < 0 ? s.name : '"' + s.name + '"'
       ).join(' ');
       this.extractedSkills = queryString;
+    } else {
+      this.extractedSkills = "";
     }
   }
 
@@ -1001,6 +1030,23 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
     this.selectedBaseJoin = null;
     this.searchForm.controls['searchJoinRequests'].markAsDirty();
     this.onFormChange.emit(this.searchForm.dirty);
+  }
+
+  extractSkills(): void {
+    //Nothing to extract from - and no point showing skills left over from a previous,
+    //since-cleared description.
+    if (!this.hasRequirements()) {
+      this.setExtractedSkills([]);
+      return;
+    }
+
+    const request: ExtractSkillsRequest = {
+      lang: "en",
+      text: this.requirements
+    }
+    this.skillsService.extractSkills(request).subscribe({
+      next: value => this.setExtractedSkills(value)
+    })
   }
 
   canChangeSearchRequest(): boolean {
