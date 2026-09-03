@@ -13,6 +13,10 @@ on:
   push:
     branches:
       - staging
+    paths:
+      - 'ui/candidate-portal/**'
+      - '.github/workflows/tc-candidate-portal-e2e.yml'
+      - '.nvmrc'
 
   workflow_dispatch:
 
@@ -20,8 +24,8 @@ permissions:
   contents: read
 
 concurrency:
-  group: candidate-portal-e2e
-  cancel-in-progress: false
+  group: candidate-portal-e2e-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
 
 jobs:
   e2e:
