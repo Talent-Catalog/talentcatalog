@@ -1038,6 +1038,7 @@ const ALL_FIELDS = {
       'SUBMIT_ERROR_HINT': null,
       'RESCAN': null,
       'CONFIRM': null,
+      'CONSENT_LABEL': null,
       'SUCCESS_TITLE': null,
       'SUCCESS_BODY': null,
       'DUPLICATE_TITLE': null,

@@ -35,6 +35,7 @@ export class RegistrationVerifyPlusComponent implements OnInit {
   decodedPayload: string | null = null;
   scannerError: unknown | null = null;
   submitting = false;
+  consentGiven = false;
   submitResult: VerifyPlusScanResult | null = null;
   submitError = false;
   submitErrorMessage: string | null = null;
@@ -70,6 +71,7 @@ export class RegistrationVerifyPlusComponent implements OnInit {
   onScanned(payload: string): void {
     this.decodedPayload = payload;
     this.scannerError = null;
+    this.consentGiven = false;
     this.submitResult = null;
     this.submitError = false;
     this.submitErrorMessage = null;
@@ -80,7 +82,7 @@ export class RegistrationVerifyPlusComponent implements OnInit {
   }
 
   onConfirm(): void {
-    if (!this.decodedPayload || this.submitting) {
+    if (!this.decodedPayload || this.submitting || !this.consentGiven) {
       return;
     }
 
@@ -88,7 +90,7 @@ export class RegistrationVerifyPlusComponent implements OnInit {
     this.submitErrorMessage = null;
     this.submitting = true;
 
-    this.verifyPlusService.submitScan(this.decodedPayload)
+    this.verifyPlusService.submitScan(this.decodedPayload, this.consentGiven)
       .pipe(finalize(() => this.submitting = false))
       .subscribe({
         next: (result) => {
@@ -107,6 +109,7 @@ export class RegistrationVerifyPlusComponent implements OnInit {
     this.submitError = false;
     this.submitErrorMessage = null;
     this.scannerError = null;
+    this.consentGiven = false;
     this.scanner?.startScanning();
   }
 

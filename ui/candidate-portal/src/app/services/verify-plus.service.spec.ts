@@ -29,25 +29,27 @@ describe('VerifyPlusService', () => {
 
   it('should submit scan payload with POST', () => {
     const rawPayload = '{"v":"mock-1","unhcrId":"123-45C67890"}';
+    const consented = true;
     const response: VerifyPlusScanResult = {
       unhcrNumber: '123-45C67890',
       duplicate: false
     };
 
-    service.submitScan(rawPayload).subscribe(result => {
+    service.submitScan(rawPayload, consented).subscribe(result => {
       expect(result).toEqual(response);
     });
 
     const req = httpMock.expectOne(BASE_URL);
     expect(req.request.method).toBe('POST');
-    expect(req.request.body).toEqual({rawPayload});
+    expect(req.request.body).toEqual({rawPayload, consented});
     req.flush(response);
   });
 
   it('should surface http errors from submit endpoint', () => {
     const rawPayload = '{"v":"mock-2","unhcrId":"bad"}';
+    const consented = true;
 
-    service.submitScan(rawPayload).subscribe({
+    service.submitScan(rawPayload, consented).subscribe({
       next: () => fail('Expected an error response'),
       error: (error) => {
         expect(error.status).toBe(400);

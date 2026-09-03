@@ -101,6 +101,7 @@ describe('RegistrationVerifyPlusComponent', () => {
   });
 
   it('should store decoded payload and clear previous submit state when scanner emits', () => {
+    component.consentGiven = true;
     component.scannerError = new Error('previous');
     component.submitResult = {unhcrNumber: 'old', duplicate: false};
     component.submitError = true;
@@ -109,6 +110,7 @@ describe('RegistrationVerifyPlusComponent', () => {
     component.onScanned('decoded-qr');
 
     expect(component.decodedPayload).toBe('decoded-qr');
+    expect(component.consentGiven).toBeFalse();
     expect(component.scannerError).toBeNull();
     expect(component.submitResult).toBeNull();
     expect(component.submitError).toBeFalse();
@@ -133,7 +135,17 @@ describe('RegistrationVerifyPlusComponent', () => {
 
   it('should not submit when already submitting', () => {
     component.decodedPayload = '{"v":"mock-1","unhcrId":"123-45C67890"}';
+    component.consentGiven = true;
     component.submitting = true;
+
+    component.onConfirm();
+
+    expect(verifyPlusService.submitScan).not.toHaveBeenCalled();
+  });
+
+  it('should not submit when consent has not been given', () => {
+    component.decodedPayload = '{"v":"mock-1","unhcrId":"123-45C67890"}';
+    component.consentGiven = false;
 
     component.onConfirm();
 
@@ -143,6 +155,7 @@ describe('RegistrationVerifyPlusComponent', () => {
   it('should submit scanned payload and store result on confirm success', () => {
     const payload = '{"v":"mock-1","unhcrId":"123-45C67890"}';
     component.onScanned(payload);
+    component.consentGiven = true;
     verifyPlusService.submitScan.and.returnValue(of({
       unhcrNumber: '123-45C67890',
       duplicate: false
@@ -150,7 +163,7 @@ describe('RegistrationVerifyPlusComponent', () => {
 
     component.onConfirm();
 
-    expect(verifyPlusService.submitScan).toHaveBeenCalledWith(payload);
+    expect(verifyPlusService.submitScan).toHaveBeenCalledWith(payload, true);
     expect(component.submitResult).toEqual({
       unhcrNumber: '123-45C67890',
       duplicate: false
@@ -162,6 +175,7 @@ describe('RegistrationVerifyPlusComponent', () => {
   it('should capture duplicate result on confirm success', () => {
     const payload = '{"v":"mock-1","unhcrId":"999-00A11111"}';
     component.onScanned(payload);
+    component.consentGiven = true;
     verifyPlusService.submitScan.and.returnValue(of({
       unhcrNumber: '999-00A11111',
       duplicate: true
@@ -176,11 +190,12 @@ describe('RegistrationVerifyPlusComponent', () => {
     const payload = '{"v":"mock-2","unhcrId":"123-45C67890"}';
     const errorMessage = 'Unsupported Verify+ payload version: mock-2';
     component.onScanned(payload);
+    component.consentGiven = true;
     verifyPlusService.submitScan.and.returnValue(throwError(errorMessage));
 
     component.onConfirm();
 
-    expect(verifyPlusService.submitScan).toHaveBeenCalledWith(payload);
+    expect(verifyPlusService.submitScan).toHaveBeenCalledWith(payload, true);
     expect(component.submitError).toBeTrue();
     expect(component.submitErrorMessage).toBe(errorMessage);
   });
@@ -188,6 +203,7 @@ describe('RegistrationVerifyPlusComponent', () => {
   it('should set submitError without message when confirm fails with a non-string error', () => {
     const payload = '{"v":"mock-2","unhcrId":"123-45C67890"}';
     component.onScanned(payload);
+    component.consentGiven = true;
     verifyPlusService.submitScan.and.returnValue(throwError({status: 500}));
 
     component.onConfirm();
@@ -200,6 +216,7 @@ describe('RegistrationVerifyPlusComponent', () => {
     const startScanning = jasmine.createSpy('startScanning');
     component.scanner = {startScanning} as any;
     component.decodedPayload = '{"v":"mock-1","unhcrId":"123-45C67890"}';
+    component.consentGiven = true;
     component.submitResult = {unhcrNumber: '123-45C67890', duplicate: true};
     component.submitError = true;
     component.submitErrorMessage = 'Unsupported Verify+ payload version: mock-2';
@@ -208,6 +225,7 @@ describe('RegistrationVerifyPlusComponent', () => {
     component.onRescan();
 
     expect(component.decodedPayload).toBeNull();
+    expect(component.consentGiven).toBeFalse();
     expect(component.submitResult).toBeNull();
     expect(component.submitError).toBeFalse();
     expect(component.submitErrorMessage).toBeNull();

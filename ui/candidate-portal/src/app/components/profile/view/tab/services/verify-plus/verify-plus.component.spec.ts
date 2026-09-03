@@ -55,9 +55,11 @@ describe('VerifyPlusComponent', () => {
   });
 
   it('should store decoded payload when scanner emits', () => {
+    component.consentGiven = true;
     component.onScanned('decoded-qr');
 
     expect(component.decodedPayload).toBe('decoded-qr');
+    expect(component.consentGiven).toBeFalse();
     expect(component.scannerError).toBeNull();
   });
 
@@ -69,9 +71,18 @@ describe('VerifyPlusComponent', () => {
     expect(component.backButtonClicked.emit).toHaveBeenCalled();
   });
 
+  it('should not submit scanned payload when consent has not been given', () => {
+    component.onScanned('{"v":"mock-1","unhcrId":"123-45C67890"}');
+
+    component.onConfirm();
+
+    expect(verifyPlusService.submitScan).not.toHaveBeenCalled();
+  });
+
   it('should submit scanned payload and store result on confirm success', () => {
     const payload = '{"v":"mock-1","unhcrId":"123-45C67890"}';
     component.onScanned(payload);
+    component.consentGiven = true;
     verifyPlusService.submitScan.and.returnValue(of({
       unhcrNumber: '123-45C67890',
       duplicate: false
@@ -79,7 +90,7 @@ describe('VerifyPlusComponent', () => {
 
     component.onConfirm();
 
-    expect(verifyPlusService.submitScan).toHaveBeenCalledWith(payload);
+    expect(verifyPlusService.submitScan).toHaveBeenCalledWith(payload, true);
     expect(component.submitResult).toEqual({
       unhcrNumber: '123-45C67890',
       duplicate: false
@@ -93,6 +104,7 @@ describe('VerifyPlusComponent', () => {
     const errorMessage = 'Unsupported Verify+ payload version: mock-2';
 
     component.onScanned(payload);
+    component.consentGiven = true;
 
     verifyPlusService.submitScan.and.returnValue(
       throwError(errorMessage)
@@ -100,7 +112,7 @@ describe('VerifyPlusComponent', () => {
 
     component.onConfirm();
 
-    expect(verifyPlusService.submitScan).toHaveBeenCalledWith(payload);
+    expect(verifyPlusService.submitScan).toHaveBeenCalledWith(payload, true);
     expect(component.submitError).toBeTrue();
     expect(component.submitErrorMessage).toBe(errorMessage);
     expect(component.submitting).toBeFalse();
@@ -108,6 +120,7 @@ describe('VerifyPlusComponent', () => {
 
   it('should reset submit state when rescanning', () => {
     component.decodedPayload = '{"v":"mock-1","unhcrId":"123-45C67890"}';
+    component.consentGiven = true;
     component.submitResult = {unhcrNumber: '123-45C67890', duplicate: true};
     component.submitError = true;
     component.submitErrorMessage = 'Unsupported Verify+ payload version: mock-2';
@@ -116,6 +129,7 @@ describe('VerifyPlusComponent', () => {
     component.onRescan();
 
     expect(component.decodedPayload).toBeNull();
+    expect(component.consentGiven).toBeFalse();
     expect(component.submitResult).toBeNull();
     expect(component.submitError).toBeFalse();
     expect(component.submitErrorMessage).toBeNull();

@@ -235,6 +235,8 @@ class CandidateErasureServiceImplTest {
     candidate.setVideolink("video");
     candidate.setContactConsentRegistration(true);
     candidate.setContactConsentPartners(true);
+    candidate.setVerifyPlusConsented(true);
+    candidate.setVerifyPlusConsentedAt(OffsetDateTime.now());
     candidate.setPotentialDuplicate(true);
 
     request = new EraseCandidateRequest();
@@ -368,6 +370,8 @@ class CandidateErasureServiceImplTest {
     assertNull(candidate.getExternalIdSource());
     assertFalse(candidate.getContactConsentRegistration());
     assertFalse(candidate.getContactConsentPartners());
+    assertFalse(candidate.getVerifyPlusConsented());
+    assertNull(candidate.getVerifyPlusConsentedAt());
     assertFalse(candidate.getPotentialDuplicate());
 
     assertEquals(actor, candidate.getDeletedBy());

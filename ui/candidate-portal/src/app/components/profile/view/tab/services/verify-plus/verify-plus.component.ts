@@ -42,6 +42,7 @@ export class VerifyPlusComponent {
   decodedPayload: string | null = null;
   scannerError: unknown;
   submitting = false;
+  consentGiven = false;
   submitResult: VerifyPlusScanResult | null = null;
   submitError = false;
   submitErrorMessage: string | null = null;
@@ -64,6 +65,7 @@ export class VerifyPlusComponent {
   onScanned(payload: string) {
     this.decodedPayload = payload;
     this.scannerError = null;
+    this.consentGiven = false;
     this.submitResult = null;
     this.submitError = false;
     this.submitErrorMessage = null;
@@ -74,7 +76,7 @@ export class VerifyPlusComponent {
   }
 
   onConfirm() {
-    if (!this.decodedPayload || this.submitting) {
+    if (!this.decodedPayload || this.submitting || !this.consentGiven) {
       return;
     }
 
@@ -82,7 +84,7 @@ export class VerifyPlusComponent {
     this.submitErrorMessage = null;
     this.submitting = true;
 
-    this.verifyPlusService.submitScan(this.decodedPayload)
+    this.verifyPlusService.submitScan(this.decodedPayload, this.consentGiven)
       .pipe(finalize(() => this.submitting = false))
       .subscribe({
         next: (result) => {
@@ -100,6 +102,7 @@ export class VerifyPlusComponent {
     this.submitResult = null;
     this.submitError = false;
     this.submitErrorMessage = null;
+    this.consentGiven = false;
     this.scanner?.startScanning();
   }
 

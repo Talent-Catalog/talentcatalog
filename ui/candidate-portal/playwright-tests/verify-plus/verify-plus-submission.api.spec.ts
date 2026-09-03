@@ -87,6 +87,7 @@ async function submitVerifyPlusPayload(
     {
       data: {
         rawPayload,
+        consented: true,
       },
     },
   );
@@ -229,6 +230,7 @@ test.describe('Verify+ submission API', () => {
         await verifyPlusApi.post(VERIFY_PLUS_ENDPOINT, {
           data: {
             rawPayload: '   ',
+            consented: true,
           },
         });
 
@@ -256,6 +258,7 @@ test.describe('Verify+ submission API', () => {
           data: {
             rawPayload:
               'this is not a JSON payload',
+            consented: true,
           },
         });
 
@@ -278,6 +281,7 @@ test.describe('Verify+ submission API', () => {
         await verifyPlusApi.post(VERIFY_PLUS_ENDPOINT, {
           data: {
             rawPayload,
+            consented: true,
           },
         });
 
