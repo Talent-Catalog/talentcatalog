@@ -13,6 +13,7 @@ on:
   push:
     branches:
       - staging
+      - ehsan/tc-1402-run-verify-e2e-tests-across-browsers-in-ci
     paths:
       - 'ui/candidate-portal/**'
       - '.github/workflows/tc-candidate-portal-e2e.yml'
