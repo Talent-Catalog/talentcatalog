@@ -2,6 +2,26 @@
 
 [![codecov](https://codecov.io/gh/Talent-Catalog/talentcatalog/graph/badge.svg?token=7VD4PDE12R)](https://codecov.io/gh/Talent-Catalog/talentcatalog)
 
+## Origin and Maintainers ##
+
+Talent Catalog was created by [Talent Beyond Boundaries](https://talentbeyondboundaries.org)
+(TBB), which remains a core partner and operator of the platform. The original software
+engineering team was made possible by the philanthropic support of the
+[Cameron Foundation](https://cameronfoundation.org/), which remains an active, primary funder
+of the project.
+
+Talent Catalog is now shared, open-source software, used by TBB and other labour mobility
+partners, as well as by the Global Refugee Network (GRN), a broader global network serving
+refugees more generally.
+
+This GitHub repository is currently maintained by
+[Open Pathway Collective](https://openpathwaycollective.org/) (OPC), which is the primary
+active contributor to the codebase.
+
+For questions about this repository, contact OPC at
+[support@talentcatalog.net](mailto:support@talentcatalog.net) or via
+[openpathwaycollective.org](https://openpathwaycollective.org/).
+
 ## Overview ##
 
 This is the repository for the Talent Catalog (TC), which manages data
