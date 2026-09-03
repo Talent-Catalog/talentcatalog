@@ -7,15 +7,7 @@ sass:
 
 # AI Job Matching: The First Steps Toward Smarter Candidate Search
 
-<!-- TODO(images): a timeline graphic for the top of this page, showing the evolution of TC
-     matching by month/year — standard database search (origin) → Elasticsearch live (Jul 2020)
-     → ChatGPT released / Gen AI age begins (late 2022) → Beamery & Deloitte AI matching
-     collaboration begins (Apr 2025) → TC Postgres vector embeddings added (Aug 2025) → v2.4.0:
-     Postgres text search replaces Elasticsearch, ranked results, ESCO/O*Net skill extraction
-     (Nov 2025) → v2.5.0: major matching performance improvement (Apr 2026) → this release:
-     full hybrid lexical + semantic AI matching. Over to our designer. 
-     (See: https://linear.app/open-pathway-collective/project/ai-job-matching-b9d545893358/overview) 
-     -- SM -->
+![The evolution of matching in Talent Catalog](../assets/images/v260/AiMatchingTimeline.png)
 
 ## A Brief History of Matching in Talent Catalog
 
@@ -46,9 +38,7 @@ matching capability. This release brings the first user-facing pieces of that en
 
 ## 🔍 One Click From a Job Description to a Skill-Aware Search
 
-<!-- TODO(images): a shot of a job's search icon (view-job screen), or better, the New Search
-     screen right after clicking it — Requirements field populated with the job's skills and
-     the "extracted from <job name>" note visible underneath. SM -->
+![From job description to skill-aware search](../assets/images/v260/AiMatchingJobToSearch.png)
 
 Clicking the search icon on a job pulls the skills mentioned in that job's description and
 pre-populates the Requirements field on the New Search screen with them, along with a note
@@ -60,9 +50,7 @@ explicit click.
 
 ## 🎛️ Tuning a Requirements Search
 
-<!-- TODO(images): a screenshot of the full Requirements panel — Lexical vs Semantic slider,
-     Number of matches, and Model Key with its configuration version/name/dimensions showing. 
-     SM -->
+![Tune your requirements search](../assets/images/v260/AiMatchingTuneRequirements.png)
 
 Whenever at least one embedding model is available, the New Search screen shows a
 Requirements field: free text describing the candidate experience being looked for — a job
@@ -77,8 +65,7 @@ description, or anything similar. Once it's filled in, three more controls appea
 
 ## 📋 Search Within Any List
 
-<!-- TODO(images): a shot of the search icon next to a list name in the lists view — with 
-     a single arrow/circle callout. SM -->
+![Search within any list](../assets/images/v260/AiMatchingSearchWithinList.png)
 
 The same search icon now appears next to every list name. Clicking it opens the standard
 search screen pre-populated to show only candidates from that list — and from there, any
@@ -86,7 +73,7 @@ other filter can be layered on top, including requirements based AI matching.
 
 ## 🎯 Keyword Search Alongside AI Matching
 
-<!-- TODO(images): a results table screenshot with a keyword filter also visible. SM -->
+![Keyword search alongside AI matching](../assets/images/v260/AiMatchingKeywordSearch.png)
 
 A keyword search can be applied as an additional filter on top of an AI requirements-match, so
 the two aren't an either/or choice.

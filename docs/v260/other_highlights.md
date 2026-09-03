@@ -7,16 +7,17 @@ sass:
 
 # Submission List Filtering & More
 
-<!-- TODO(images): SubmissionListFiltering.png — a results-table screenshot showing a
-     list-scoped search with a Status and/or Partner filter applied. This is also the
-     landing-page card image, so it should read well small. Different from the "search icon on
-     a list" screenshot already planned for the AI Job Matching page — this one should show the
-     *filtered results*, not the click. SM -->
-
 <div class="card-image-container">
     <img class="card-image"
          src="../assets/images/v260/SubmissionListFiltering.png"
          alt="Filtered results within a submission list"
+    >
+</div>
+
+<div class="card-image-container">
+    <img class="card-image"
+         src="../assets/images/v260/SubmissionListFilteringOption2.png"
+         alt="Applying filters within a submission list"
     >
 </div>
 
@@ -45,9 +46,6 @@ Job-stage and IELTS-score filters weren't part of this pass — see What's Next 
 
 This builds on <a href="../v251/full_candidate_deletion">full candidate deletion</a> from
 2.5.1, tightening permissions and cleaning up a handful of rough edges found since.
-
-<!-- TODO(images): DeleteCandidateAction.png — the candidate view's drop down action menu showing 
-     the new "Delete candidate" item. SM -->
 
 <div class="card-image-container">
     <img class="card-image"
@@ -78,9 +76,6 @@ someone's brief stint as a barista ends up counted the same as eight years as a 
 developer. This release lets a candidate mark one occupation as their principal one, so
 there's a clear, single answer to "what is this person actually looking for?"
 
-<!-- TODO(images): PrincipalOccupationProfile.png shows the badge text as "Principle
-     Occupation" (should be "Main" as agreed in team meeting. SM -->
-
 <div class="card-image-container">
     <img class="card-image"
          src="../assets/images/v260/PrincipalOccupationProfile.png"
@@ -92,8 +87,12 @@ A candidate with multiple occupations on file selects one as their main occupati
 different one replaces the previous choice. Once a candidate has any occupations recorded,
 choosing a principal one is required — the choice can be updated at any time.
 
-<!-- TODO(images): admin-portal screenshot showing the principal occupation on a
-     candidate's profile in the admin portal, with the change-note/audit trail. SM -->
+<div class="card-image-container">
+    <img class="card-image"
+         src="../assets/images/v260/PrincipalOccupationAdminPortal.png"
+         alt="Admin portal showing a candidate's principal occupation and its audit trail note"
+    >
+</div>
 
 The principal occupation is shown clearly on a candidate's profile in the admin portal, so
 staff no longer have to guess which of several occupations actually matters most. Admins can

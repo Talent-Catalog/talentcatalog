@@ -90,7 +90,12 @@ The entire UNHCR Verify+ flow — scanner prompts, confirmation screens, success
 messaging — has been translated across all 11 languages the Candidate Portal currently supports,
 including Arabic, Farsi, Pashto, and Ukrainian.
 
-<!-- TODO(images): Add a multi-language image.  SM -->
+<div class="card-image-container">
+    <img class="card-image"
+         src="../assets/images/v260/VerifyPlusMultiLanguage.png"
+         alt="UNHCR Verify+ scan screen shown in multiple languages"
+    >
+</div>
 
 ## ✅ Your Consent, Clearly Asked
 
