@@ -42,23 +42,23 @@ matching capability. This release brings the first user-facing pieces of that en
 ![From job description to skill-aware search](../assets/images/v260/AiMatchingJobToSearch.png)
 
 Clicking the search icon on a job pulls the skills mentioned in that job's description and
-pre-populates the Requirements field on the New Search screen with them, along with a note
-showing which job they were extracted from. From there it's an ordinary search that can be
+pre-populates the AI match requirements field on the New Search screen with them, along with a 
+note showing which job they were extracted from. From there it's an ordinary search that can be
 refined like any other — providing a powerful and general AI search capability, without
 taking away any existing search functionality. Eventually this kind of extraction is expected
 to happen automatically as part of the everyday job search flow, rather than needing the
 explicit click.
 
-## 🎛️ Tuning a Requirements Search
+## 🎛️ Tuning an AI Search
 
 ![Tune your requirements search](../assets/images/v260/AiMatchingTuneRequirements.png)
 
-Whenever at least one embedding model is available, the New Search screen shows a
-Requirements field: free text describing the candidate experience being looked for — a job
+Whenever at least one embedding model is available, the New Search screen shows an AI match
+requirements field: free text describing the candidate experience being looked for — a job
 description, or anything similar. Once it's filled in, three more controls appear:
 
 - **Lexical vs Semantic matching** — a slider from 0 to 1 controlling how much weight is
-  given to keyword matches in the Requirements text versus semantic similarity from vector
+  given to keyword matches in the AI match requirements text versus semantic similarity from vector
   embeddings. It defaults to 0.5, weighting the two equally.
 - **Number of matches** — how many candidates to return, defaulting to the current page size.
 - **Model Key** — which registered embedding model to match against, with its configuration
@@ -72,12 +72,12 @@ The same search icon now appears next to every list name. Clicking it opens the 
 search screen pre-populated to show only candidates from that list — and from there, any
 other filter can be layered on top, including requirements based AI matching.
 
-## 🎯 Keyword Search Alongside AI Matching
+## 🎯 Full Search Filters Alongside AI Matching
 
 ![Keyword search alongside AI matching](../assets/images/v260/AiMatchingKeywordSearch.png)
 
-A keyword search can be applied as an additional filter on top of an AI requirements-match, so
-the two aren't an either/or choice.
+All the previous search and keyword filters, that you're already used to using, can be applied as 
+an additional filter on top of AI match requirements, so the two aren't an either/or choice.
 
 ## ⚙️ Under the Hood: A Hybrid Matching Engine
 
@@ -96,6 +96,7 @@ Google, OpenAI, and Anthropic — as they prove out.
 ## 🔗 Useful Links
 
 [A Beginner's Guide to Vector Embeddings](https://www.tigerdata.com/blog/a-beginners-guide-to-vector-embeddings)
+
 [A Guide to Cosine Similarity](https://www.tigerdata.com/learn/understanding-cosine-similarity)
 
 ## 🚀 What's Next
