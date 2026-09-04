@@ -28,6 +28,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -306,7 +307,7 @@ class CandidateBuilderSelectorTest {
 
     var b = selector.selectBuilder(DtoType.API);
 
-    Map<String, Object> src = Map.of(
+    Map<String, Object> src = new HashMap<>(Map.of(
         "country", country("PK", "Pakistan"),
         "nationality", country("GB", "United Kingdom"),
         "candidateDestinations", List.of(
@@ -339,12 +340,16 @@ class CandidateBuilderSelectorTest {
         ),
         "relocatedCountry", country("SE", "Sweden"),
         "partnerOccupation", occupation(222L, "Architect")
-    );
+    ));
+    src.put("verifyPlusConsented", true);
+    src.put("verifyPlusConsentedAt", "2026-09-04T11:05:00Z");
 
     Map<String, Object> out = b.build(src);
 
     // spot-check a few extended/API structures
     assertMapEquals(country("PK", "Pakistan"), out.get("country"));
+    assertEquals(true, out.get("verifyPlusConsented"));
+    assertEquals("2026-09-04T11:05:00Z", out.get("verifyPlusConsentedAt"));
 
     var dests = listOfMaps(out.get("candidateDestinations"));
     assertMapEquals(country("DE", "Germany"), dests.get(0).get("country"));
