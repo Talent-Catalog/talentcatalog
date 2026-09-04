@@ -206,28 +206,7 @@ ngx-wig.ai-matching-editor {
   display: block;
 
   .nw-toolbar {
-    padding: 0.5rem;
-    background: transparent;
-    border: 0;
-    border-bottom: 1px solid color(gray, 200) !important;
-    border-radius: 0;
-  }
-
-  .nw-toolbar__item {
-    margin-right: 0.5rem;
-    border-right: 0;
-  }
-
-  .nw-button {
-    width: 2rem;
-    height: 2rem;
-    opacity: 0.65;
-
-    &:hover,
-    &:focus {
-      background: color(gray, 100);
-      opacity: 1;
-    }
+    display: none;
   }
 
   .nw-editor-container {
