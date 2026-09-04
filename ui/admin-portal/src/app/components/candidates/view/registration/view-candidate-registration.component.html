@@ -83,7 +83,7 @@
         ></span>
         <tc-badge *ngIf="candidate.verifyPlusConsented"
                   color="blue"
-                  [ngbTooltip]="'Verify+ card scanned on ' + (candidate.verifyPlusConsentedAt | date: 'customDateTime')"
+                  [ngbTooltip]="verifyPlusScanTooltip"
                   container="body"
         >
           Verify+ scan
