@@ -149,18 +149,24 @@ public class CandidateBestNMatchingServiceImpl implements CandidateBestNMatching
 
     /**
      * Computes a filtered skills query by ANDing the skillsQueryString with the
-     * extraFilteringKeywords if it is not empty.
+     * extraFilteringKeywords if they are both not empty.
      * @param skillsQueryString The skills query string.
      * @param extraFilteringKeywords The extra filtering keywords.
      * @return The filtered skills query.
      */
     private String computeFilteredSkillsQuery(
         String skillsQueryString, String extraFilteringKeywords) {
-        if (StringUtils.hasText(extraFilteringKeywords)) {
-            return "(" + skillsQueryString + ") + (" + extraFilteringKeywords + ")";
+        String query;
+        if (StringUtils.hasText(skillsQueryString) && StringUtils.hasText(extraFilteringKeywords)) {
+            query = "(" + skillsQueryString.strip() + ") + (" + extraFilteringKeywords.strip() + ")";
+        } else if (StringUtils.hasText(skillsQueryString)) {
+            query = skillsQueryString.strip();
+        } else if (StringUtils.hasText(extraFilteringKeywords)) {
+            query = extraFilteringKeywords.strip();
         } else {
-            return skillsQueryString;
+            query = "";
         }
+        return query;
     }
 
     private List<IdAndScore> convertResults(List<CandidateBestNMatchingResult> results) {

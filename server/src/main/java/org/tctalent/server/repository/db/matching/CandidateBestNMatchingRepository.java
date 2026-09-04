@@ -124,6 +124,13 @@ public class CandidateBestNMatchingRepository {
 
         // A SQL bind parameter cannot represent an identifier.
         // The table name is inserted into the string using the String.formatted method call below.
+
+        // Note that there is deliberately no join or occupation predicate associated with
+        // computing the semantic pool.
+        // That could prevent PostgreSQL from making the best use of`the special HNSW index
+        // generated for vector embeddings.
+        // The semantic pool is computed first, and then the constraints are applied to the
+        // semantic candidates.
         return """
             WITH lexical_candidate_scores AS (
             """
@@ -146,8 +153,6 @@ public class CandidateBestNMatchingRepository {
                 LIMIT :candidateLimit
             ),
             semantic_pool AS (
-                -- Deliberately no join or occupation predicate here: this exact nearest-neighbour
-                -- ORDER BY/LIMIT shape gives PostgreSQL the best opportunity to use the HNSW index.
                 SELECT candidate_job_experience_id,
                        embedding <=> CAST(:queryEmbedding AS vector(%d)) AS distance
                 FROM %s
