@@ -1,4 +1,6 @@
 import {Component, EventEmitter, Input, Output} from '@angular/core';
+import {CommonModule} from '@angular/common';
+import {NgbAlert} from '@ng-bootstrap/ng-bootstrap';
 
 /**
  * @component AlertComponent
@@ -77,6 +79,8 @@ import {Component, EventEmitter, Input, Output} from '@angular/core';
   selector: 'tc-alert',
   templateUrl: './alert.component.html',
   styleUrls: ['./alert.component.scss'],
+  standalone: true,
+  imports: [CommonModule, NgbAlert]
 })
 export class AlertComponent {
   @Input() type: 'success' | 'info' | 'warning' | 'danger' | 'primary' | 'secondary' | 'light' | 'dark' = 'warning';

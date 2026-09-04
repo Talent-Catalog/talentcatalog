@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ButtonComponent } from './button.component';
 import { By } from '@angular/platform-browser';
+import { RouterTestingModule } from '@angular/router/testing';
 
 describe('ButtonComponent', () => {
   let component: ButtonComponent;
@@ -8,7 +9,7 @@ describe('ButtonComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [ButtonComponent]
+      imports: [ButtonComponent, RouterTestingModule]
     });
     fixture = TestBed.createComponent(ButtonComponent);
     component = fixture.componentInstance;

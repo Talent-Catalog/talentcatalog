@@ -1,4 +1,5 @@
 import {Component, Input} from '@angular/core';
+import {CommonModule} from '@angular/common';
 
 /**
  * @component BadgeComponent
@@ -52,7 +53,9 @@ export type BadgeColor = 'red' | 'orange' | 'yellow' | 'green' | 'blue' | 'purpl
 @Component({
   selector: 'tc-badge',
   templateUrl: './badge.component.html',
-  styleUrls: ['./badge.component.scss']
+  styleUrls: ['./badge.component.scss'],
+  standalone: true,
+  imports: [CommonModule]
 })
 export class BadgeComponent {
   @Input() color: BadgeColor = 'gray';

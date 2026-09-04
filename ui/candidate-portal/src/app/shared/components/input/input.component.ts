@@ -10,7 +10,7 @@ import {
   ViewChild
 } from '@angular/core';
 import {Observable} from "rxjs";
-import {NgbTypeaheadSelectItemEvent} from "@ng-bootstrap/ng-bootstrap";
+import {NgbTypeahead, NgbTypeaheadSelectItemEvent} from "@ng-bootstrap/ng-bootstrap";
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
 
 /**
@@ -75,6 +75,8 @@ import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
   selector: 'tc-input',
   templateUrl: './input.component.html',
   styleUrls: ['./input.component.scss'],
+  standalone: true,
+  imports: [NgbTypeahead],
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,

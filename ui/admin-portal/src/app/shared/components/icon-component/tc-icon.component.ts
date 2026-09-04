@@ -1,4 +1,6 @@
 import {Component, Input} from '@angular/core';
+import {CommonModule} from '@angular/common';
+import {RouterLink} from '@angular/router';
 
 /**
  * @component IconComponent
@@ -72,7 +74,9 @@ import {Component, Input} from '@angular/core';
 @Component({
   selector: 'tc-icon',
   templateUrl: './tc-icon.component.html',
-  styleUrls: ['./tc-icon.component.scss']
+  styleUrls: ['./tc-icon.component.scss'],
+  standalone: true,
+  imports: [CommonModule, RouterLink]
 })
 export class TcIconComponent {
   @Input() size: 'sm' | 'md' | 'lg' | 'xl' | 'inherit' = 'inherit';

@@ -15,16 +15,7 @@
  */
 
 import {NgModule} from '@angular/core';
-import {CommonModule} from '@angular/common';
 import {ButtonComponent} from './components/button/button.component';
-import {
-  NgbAlert,
-  NgbDropdownModule,
-  NgbInputDatepicker,
-  NgbNavModule,
-  NgbPaginationModule,
-  NgbTypeahead
-} from "@ng-bootstrap/ng-bootstrap";
 import {TcTableComponent} from "./components/table/tc-table.component";
 import {TcPaginationComponent} from './components/pagination/tc-pagination.component';
 import {TcTabsComponent} from './components/tabs/tc-tabs.component';
@@ -61,7 +52,6 @@ import {
 import {
   TcDropdownDividerComponent
 } from './components/dropdown/dropdown-divider/tc-dropdown-divider.component';
-import {RouterLink} from "@angular/router";
 import {
   TcDateRangePickerComponent
 } from './components/date-range-picker/tc-date-range-picker.component'
@@ -74,17 +64,16 @@ import {TcCardComponent} from './components/card/tc-card.component';
 import {TcCardHeaderComponent} from './components/card/card-header/tc-card-header.component';
 import {TcLoadingComponent} from './components/loading/tc-loading.component';
 import {TcDatePickerComponent} from './components/date-picker/tc-date-picker.component';
-import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {TcRadioComponent} from "./components/radio/tc-radio.component";
 
 @NgModule({
-  declarations: [
+  imports: [
     ButtonComponent,
     TcTableComponent,
     TcPaginationComponent,
     InputComponent,
-    FieldsetComponent,
     FieldComponent,
+    FieldsetComponent,
     LabelComponent,
     DescriptionComponent,
     ErrorMessageComponent,
@@ -112,19 +101,6 @@ import {TcRadioComponent} from "./components/radio/tc-radio.component";
     TcLoadingComponent,
     TcDatePickerComponent,
     TcRadioComponent
-  ],
-  imports: [
-    CommonModule,
-    NgbPaginationModule,
-    NgbNavModule,
-    NgbAlert,
-    NgbDropdownModule,
-    RouterLink,
-    NgbInputDatepicker,
-    ReactiveFormsModule,
-    FormsModule,
-    NgbInputDatepicker,
-    NgbTypeahead
   ],
   exports: [
     ButtonComponent,
