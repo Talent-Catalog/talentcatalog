@@ -25,11 +25,12 @@ pointing in directions in multidimensional space. Two pieces of text with simila
 a job description and a candidate's job experience — translate into vectors pointing in roughly 
 the same direction, and can be compared using a technique called cosine matching.
 
-In November 2025, v2.4.0 moved matching off Elasticsearch entirely and onto Postgres text
-search, which also let us rank matches for the first time. That release also introduced
-automatic skill extraction from job descriptions, built on the world's two largest skills
-databases, ESCO and O*Net. April 2026's v2.5.0 then delivered a major performance improvement
-across all matching.
+In November 2025, [v2.4.0](https://talent-catalog.github.io/talentcatalog/v240) moved 
+matching off Elasticsearch entirely and onto Postgres text search, which also let us rank matches 
+for the first time. That release also introduced automatic skill extraction from job descriptions, 
+built on the world's two largest skills databases, ESCO and O*Net. April 2026's 
+[v2.5.0](https://talent-catalog.github.io/talentcatalog/v250) then delivered a major performance 
+improvement across all matching.
 
 Behind the scenes, Talent Catalog now runs a hybrid matching engine that combines that lexical                                                                                                                            
 skills matching with "Beamery style" AI natural-language semantic matching — integrating with                                                                                                                             
@@ -91,6 +92,11 @@ We're starting with one of the most popular open-source models,
 [all-MiniLM-L6-v2](https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2), but
 the architecture is designed to add and compare proprietary models too — from providers like
 Google, OpenAI, and Anthropic — as they prove out.
+
+## 🔗 Useful Links
+
+[A Beginner's Guide to Vector Embeddings](https://www.tigerdata.com/blog/a-beginners-guide-to-vector-embeddings)
+[A Guide to Cosine Similarity](https://www.tigerdata.com/learn/understanding-cosine-similarity)
 
 ## 🚀 What's Next
 
