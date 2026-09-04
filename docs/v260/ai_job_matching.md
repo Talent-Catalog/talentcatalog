@@ -83,8 +83,10 @@ an additional filter on top of AI match requirements, so the two aren't an eithe
 
 This release also lays the backend groundwork for AI matching: a Postgres schema storing
 vector embeddings for candidate job experience, a process for building those embeddings
-for existing candidates, and query logic that blends lexical and semantic scores according to
-the user's configured weighting. Embedding models are pluggable — more than one can be registered,
+for existing candidates, and query logic that blends lexical and semantic rankings according to
+the user's configured weighting using the industry standard Reciprocal Rank Fusion 
+(see notes below on RRF). 
+Embedding models are pluggable — more than one can be registered,
 each with its own vector dimensionality — so the matching engine isn't locked to a single 
 provider or model going forward. 
 
@@ -98,6 +100,8 @@ Google, OpenAI, and Anthropic — as they prove out.
 [A Beginner's Guide to Vector Embeddings](https://www.tigerdata.com/blog/a-beginners-guide-to-vector-embeddings)
 
 [A Guide to Cosine Similarity](https://www.tigerdata.com/learn/understanding-cosine-similarity)
+
+[Introducing Reciprocal Rank Fusion for hybrid search](https://opensearch.org/blog/introducing-reciprocal-rank-fusion-hybrid-search/)
 
 ## 🚀 What's Next
 
