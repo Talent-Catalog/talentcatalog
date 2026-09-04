@@ -60,13 +60,13 @@ sass:
   </a>
 
   <a href="./v260/other_highlights" class="card">
-    <img src="./assets/images/v260/SubmissionListFiltering.png" alt="Submission List Filtering & More" class="card-image">
+    <img src="./assets/images/v260/SubmissionListFiltering.png" alt="Full List Filtering & More" class="card-image">
     <div class="card-body">
-      <div class="card-title">Submission List Filtering & More</div>
+      <div class="card-title">Full List Filtering & More</div>
       <div class="card-description">
-        Filter any submission list down to just the candidates that matter, tighter permissions
-        and clearer messaging for candidate deletion, and a principal occupation field giving
-        admins and job matching a clearer picture of what a candidate is really looking for.
+        Filter any list down to just the candidates that matter, tighter permissions and clearer 
+        messaging for candidate deletion, and a principal occupation field giving admins and job 
+        matching a clearer picture of what a candidate is really looking for.
       </div>
       <div class="card-footer">
         <button class="btn btn-sm">Learn more</button>

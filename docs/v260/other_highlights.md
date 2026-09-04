@@ -1,11 +1,11 @@
 ---
-title: Submission List Filtering & More
-description: Filter any submission list on the fly, tighter candidate deletion controls, and a principal occupation field on the way
+title: Full List Filtering & More
+description: Filter any list on the fly, tighter candidate deletion controls, and principal occupations
 sass:
   style: compressed
 ---
 
-# Submission List Filtering & More
+# Full List Filtering & More
 
 <div class="card-image-container">
     <img class="card-image"
@@ -21,12 +21,12 @@ sass:
     >
 </div>
 
-This release bundles three practical improvements: submission lists that can be
-filtered instead of scrolled through by hand, clearer and safer controls around deleting a
-candidate's record, and a principal occupation field on its way to giving job matching a
-sharper read on what a candidate is really looking for.
+This release bundles three practical improvements: lists that can be filtered instead of scrolled 
+through by hand, clearer and safer controls around deleting a candidate's record, and a principal 
+occupation field on its way to giving job matching a sharper read on what a candidate is really 
+looking for.
 
-## 🔎 Filter Any Submission List
+## 🔎 Filter Any  List
 
 Submission lists tied to a hiring commitment can run to hundreds of candidates — one recent cohort 
 case reached 700, against a commitment of 20 hires. Scrolling through a list that size by hand
