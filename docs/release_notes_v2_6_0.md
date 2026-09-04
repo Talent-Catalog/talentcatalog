@@ -10,10 +10,6 @@ sass:
 
 <div class="card-container">
 
-<!-- TODO(images): AiMatching.png does not exist yet. A screenshot of the New Search
-     screen's Requirements panel (Requirements field + Lexical vs Semantic slider + Model Key)
-     could work well here — it's the clearest single shot of what's new. -->
-
   <a href="./v260/ai_job_matching" class="card">
     <img src="./assets/images/v260/AiMatching.png" alt="AI Matching" class="card-image">
     <div class="card-body">
@@ -29,9 +25,6 @@ sass:
       </div>
     </div>
   </a>
-
-<!-- TODO(images): VerifyPlusServicesCard.png exist but a better front screen image would be 
-     great. At your discretion Hiba. -->
 
   <a href="./v260/verify_plus" class="card">
     <img src="./assets/images/v260/VerifyPlusServicesCard.png" alt="Verify+" class="card-image">
@@ -51,9 +44,6 @@ sass:
 </div>
 
 <div class="card-container">
-
-<!-- TODO(images): PiFiServicesTab.png exists but a better front screen image would be 
-     great. At your discretion please Hiba. -->
 
   <a href="./v260/pifi_signposting" class="card">
     <img src="./assets/images/v260/PiFiServicesTab.png" alt="PiFi Signposting" class="card-image">
