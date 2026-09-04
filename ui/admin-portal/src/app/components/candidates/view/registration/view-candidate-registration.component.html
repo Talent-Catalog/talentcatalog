@@ -75,11 +75,20 @@
     <tc-description-item [label]="'UNHCR Registered'"
                          [icon]="'far fa-registered'"
     >
-      <span>{{candidate.unhcrRegistered}}</span>
-      <span *ngIf="candidate.unhcrNumber && candidate.unhcrRegistered === 'Yes'"
-            [innerHtml]="' - #' + candidate.unhcrNumber"
-            appHighlightSearch
-      ></span>
+      <div class="unhcr-registered-details">
+        <span>{{candidate.unhcrRegistered}}</span>
+        <span *ngIf="candidate.unhcrNumber && candidate.unhcrRegistered === 'Yes'"
+              [innerHtml]="' - #' + candidate.unhcrNumber"
+              appHighlightSearch
+        ></span>
+        <tc-badge *ngIf="candidate.verifyPlusConsented"
+                  color="blue"
+                  [ngbTooltip]="verifyPlusScanTooltip"
+                  container="body"
+        >
+          Verify+ scan
+        </tc-badge>
+      </div>
     </tc-description-item>
 
     <tc-description-item [label]="'UNRWA Registered'"
