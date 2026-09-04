@@ -32,9 +32,9 @@ built on the world's two largest skills databases, ESCO and O*Net. April 2026's
 [v2.5.0](https://talent-catalog.github.io/talentcatalog/v250) then delivered a major performance 
 improvement across all matching.
 
-Behind the scenes, Talent Catalog now runs a hybrid matching engine that combines that lexical                                                                                                                            
-skills matching with "Beamery style" AI natural-language semantic matching — integrating with                                                                                                                             
-all of our existing traditional search capabilities into a flexible, fast, and economical hybrid                                                                                                                          
+Behind the scenes, Talent Catalog now runs a hybrid matching engine that combines that lexical 
+skills matching with "Beamery style" AI natural-language semantic matching — integrating with 
+all of our existing traditional search capabilities into a flexible, fast, and economical hybrid 
 matching capability. This release brings the first user-facing pieces of that engine online.
 
 ## 🔍 One Click From a Job Description to a Skill-Aware Search
