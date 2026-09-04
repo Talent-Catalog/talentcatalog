@@ -16,7 +16,9 @@
 
 package org.tctalent.server.request.verify;
 
+import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
@@ -37,4 +39,8 @@ public class VerifyPlusScanRequest {
     @NotBlank(message = "Raw payload is required")
     @Size(max = 8192, message = "Raw payload exceeds maximum allowed length")
     private String rawPayload;
+
+    @NotNull(message = "Consent is required to store Verify+ data")
+    @AssertTrue(message = "Consent is required to store Verify+ data")
+    private Boolean consented;
 }

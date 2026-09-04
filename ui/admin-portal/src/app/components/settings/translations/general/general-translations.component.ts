@@ -627,13 +627,25 @@ const ALL_FIELDS = {
       },
       "OCCUPATION": {
         "LABEL": {
+          "HEADING": null,
+          "ADD_SUBHEADING": null,
+          "EDIT_HEADING": null,
+          "NEW_HEADING": null,
+          "SELECT_PRINCIPAL_HEADING": null,
+          "SELECT_PRINCIPAL_SUBHEADING": null,
           "OCCUPATION": null,
           "YEARSEXPERIENCE": null,
           "DISCLAIMER": null,
-          "MIGRATED_OCCUPATION": null
+          "MIGRATED_OCCUPATION": null,
+          "PRINCIPAL_BADGE": null,
+          "OCCUPATION_ADDED_CONFIRMATION": null,
+          "PRINCIPAL_REMOVED_WARNING": null,
+          "YEARS_OF_EXPERIENCE_SINGULAR": null,
+          "YEARS_OF_EXPERIENCE_PLURAL": null
         },
         "BUTTON": {
-          "ADD": null
+          "ADD": null,
+          "SAVE": null
         },
         "DELETE": {
           "TITLE": null,
@@ -1026,6 +1038,7 @@ const ALL_FIELDS = {
       'SUBMIT_ERROR_HINT': null,
       'RESCAN': null,
       'CONFIRM': null,
+      'CONSENT_LABEL': null,
       'SUCCESS_TITLE': null,
       'SUCCESS_BODY': null,
       'DUPLICATE_TITLE': null,

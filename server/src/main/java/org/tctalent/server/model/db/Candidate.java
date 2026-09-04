@@ -305,6 +305,10 @@ public class Candidate extends AbstractCandidateDataDomainObject<Long> implement
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "candidate", cascade = CascadeType.MERGE)
     private List<CandidateOccupation> candidateOccupations;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "principal_occupation_id")
+    private CandidateOccupation principalOccupation;
+
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "candidate", cascade = CascadeType.MERGE)
     @OrderBy("updatedDate DESC")
     private List<CandidateNote> candidateNotes;
@@ -826,6 +830,18 @@ public class Candidate extends AbstractCandidateDataDomainObject<Long> implement
      * terms cover this consent to contact candidates about any opportunities.
      */
     private boolean contactConsentPartners = true;
+
+    /**
+     * Consent evidence for Verify+ scan ingestion.
+     * This is distinct from {@link #unhcrConsent}, which is consent to share with UNHCR.
+     */
+    private boolean verifyPlusConsented;
+
+    /**
+     * The last time the candidate consented to storing Verify+ scan data.
+     */
+    @Nullable
+    private OffsetDateTime verifyPlusConsentedAt;
 
     @Nullable
     @ManyToOne(fetch = FetchType.LAZY)
@@ -1369,6 +1385,14 @@ public class Candidate extends AbstractCandidateDataDomainObject<Long> implement
         if (entities != null) {
             entities.forEach(entity -> entity.setCandidate(this));
         }
+    }
+
+    public CandidateOccupation getPrincipalOccupation() {
+        return principalOccupation;
+    }
+
+    public void setPrincipalOccupation(CandidateOccupation principalOccupation) {
+        this.principalOccupation = principalOccupation;
     }
 
     public List<CandidateNote> getCandidateNotes() {
@@ -2433,6 +2457,23 @@ public class Candidate extends AbstractCandidateDataDomainObject<Long> implement
 
     public void setContactConsentPartners(boolean emailConsentPartners) {
         this.contactConsentPartners = emailConsentPartners;
+    }
+
+    public boolean getVerifyPlusConsented() {
+        return verifyPlusConsented;
+    }
+
+    public void setVerifyPlusConsented(boolean verifyPlusConsented) {
+        this.verifyPlusConsented = verifyPlusConsented;
+    }
+
+    @Nullable
+    public OffsetDateTime getVerifyPlusConsentedAt() {
+        return verifyPlusConsentedAt;
+    }
+
+    public void setVerifyPlusConsentedAt(@Nullable OffsetDateTime verifyPlusConsentedAt) {
+        this.verifyPlusConsentedAt = verifyPlusConsentedAt;
     }
 
     @Nullable

@@ -2,6 +2,14 @@
 
 First of all, thank you for considering contributing to the Talent Catalog. 
 
+Talent Catalog was created by Talent Beyond Boundaries (TBB), with the original engineering
+team's work made possible by philanthropic funding from the Cameron Foundation, a continuing
+primary funder. TC is now shared, open-source software used by TBB and other labour mobility
+partners, as well as by the Global Refugee Network (GRN), a broader global network serving
+refugees more generally. This GitHub repository is currently
+maintained by Open Pathway Collective (OPC) — see
+[Origin and Maintainers](README.md#origin-and-maintainers) in the README for more.
+
 [Please read and abide by our Code of Conduct](CODE_OF_CONDUCT.md).
 
 ## Code Style ##

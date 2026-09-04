@@ -158,13 +158,18 @@ export async function runVerifyPlusQrDecodingScenario(
     async () => {
       await expect(
         verifyPlusPage
+          .consentCheckbox,
+      ).toBeVisible();
+
+      await expect(
+        verifyPlusPage
           .confirmButton,
       ).toBeVisible();
 
       await expect(
         verifyPlusPage
           .confirmButton,
-      ).toBeEnabled();
+      ).toBeDisabled();
 
       await expect(
         verifyPlusPage
@@ -312,13 +317,18 @@ export async function scanVerifyPlusQrFixtureToReview(
 
       await expect(
         verifyPlusPage
+          .consentCheckbox,
+      ).toBeVisible();
+
+      await expect(
+        verifyPlusPage
           .confirmButton,
       ).toBeVisible();
 
       await expect(
         verifyPlusPage
           .confirmButton,
-      ).toBeEnabled();
+      ).toBeDisabled();
     },
   );
 

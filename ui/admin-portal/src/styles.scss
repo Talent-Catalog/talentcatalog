@@ -201,6 +201,33 @@ ngx-wig {
   }
 }
 
+// AI matching uses a compact, borderless editor inside its own decorated container.
+ngx-wig.ai-matching-editor {
+  display: block;
+
+  .nw-toolbar {
+    display: none;
+  }
+
+  .nw-editor-container {
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  .nw-editor {
+    height: 10rem;
+    min-height: 10rem;
+    padding: 0;
+    overflow-x: hidden;
+  }
+
+  .nw-editor__placeholder,
+  .nw-editor__res {
+    padding: 1rem 4rem;
+  }
+}
+
 .custom-side-profile {
   overflow: scroll;
 }

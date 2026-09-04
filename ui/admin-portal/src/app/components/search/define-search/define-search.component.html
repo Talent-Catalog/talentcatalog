@@ -135,7 +135,7 @@
 
           <div>
             <div class="ai-matching-title-row">
-              <h2 class="heading-xs text-color-body mb-0">AI Candidate Matching</h2>
+              <h2 class="heading-xs text-color-body mb-0">AI Matching</h2>
               <tc-badge color="blue">BETA</tc-badge>
               <tc-button [type]="'plain'"
                          [ngbTooltip]="aiMatchingHelp"
@@ -151,8 +151,8 @@
               </tc-button>
             </div>
             <p class="paragraph-lg text-color-secondary mt-2 mb-0">
-              Describe your ideal hire in plain English to find top talent.
-              <span *ngIf="!hasEmbeddingModels()">- currently disabled. Waiting for models to build.</span>
+              <span *ngIf="!hasEmbeddingModels()">Currently disabled. Waiting for models to build.</span>
+              <span *ngIf="hasEmbeddingModels()">Describe your ideal hire in plain English to find top talent.</span>
             </p>
           </div>
 
@@ -164,22 +164,25 @@
                      alt=""
                      aria-hidden="true"
                 />
-                <tc-textarea id="requirements"
-                             placeholder="Paste a job description, or outline key skills, responsibilities, and qualifications you're looking for…"
-                             formControlName="requirements"
-                             variant="ai"
-                ></tc-textarea>
+                <ngx-wig id="requirements"
+                         class="ai-matching-editor"
+                         placeholder="Paste a job description, or outline key skills, responsibilities, and qualifications you're looking for…"
+                         formControlName="requirements"
+                         buttons=""
+                ></ngx-wig>
                 <img class="ai-input-sparkle ai-input-sparkle-end"
                      src="assets/images/sparkle-secondary.svg"
                      alt=""
                      aria-hidden="true"
                 />
               </div>
-              <div *ngIf="jobName" class="ai-extracted-info">
+              <div *ngIf="hasRequirements()">
                 <div class="ai-extracted-skills">
                   <span class="ai-extracted-skills-label">Extracted skills:</span>
                   <span class="ai-extracted-skills-value">{{extractedSkills}}</span>
                 </div>
+              </div>
+              <div *ngIf="jobName" class="ai-extracted-info">
                 <small class="ai-source-note">
                   {{displayJobNameAsSource()}}
                 </small>

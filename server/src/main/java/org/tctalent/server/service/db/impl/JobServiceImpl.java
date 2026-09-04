@@ -491,7 +491,7 @@ public class JobServiceImpl implements JobService {
         if (StringUtils.hasText(text)) {
             sb.append(text);
             //We want whitespace surrounding delimiter so that word boundaries are detected.
-            sb.append("\n||\n");
+            sb.append("\n...\n");
         }
     }
 

@@ -67,3 +67,9 @@
     color: color(blue, 400);
   }
 }
+// When this alert is the first child of its parent (e.g. the leading element
+// in a modal body), drop its own top margin - the parent already provides
+// its own spacing (padding/gap), so the two stack into an oversized gap.
+:host(:first-child) .tc-alert {
+  margin-top: 0;
+}

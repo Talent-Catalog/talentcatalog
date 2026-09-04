@@ -43,6 +43,11 @@
 .form-input[type='checkbox'] {
   position: relative;
   top: 0.05rem;
+  cursor: pointer;
+
+  &:disabled {
+    cursor: not-allowed;
+  }
 }
 
 // Override shared text-input styles so range inputs retain their native appearance, see TC-1424.
