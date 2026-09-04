@@ -5,7 +5,7 @@ sass:
   style: compressed
 ---
 
-# AI Job Matching: The First Steps Toward Smarter Candidate Search
+# AI Matching: The First Steps Toward Smarter Candidate Search
 
 <!-- TODO(images): a timeline graphic for the top of this page, showing the evolution of TC
      matching by month/year — standard database search (origin) → Elasticsearch live (Jul 2020)
@@ -53,7 +53,7 @@ matching capability. This release brings the first user-facing pieces of that en
 Clicking the search icon on a job pulls the skills mentioned in that job's description and
 pre-populates the Requirements field on the New Search screen with them, along with a note
 showing which job they were extracted from. From there it's an ordinary search that can be
-refined like any other — providing a powerful and general AI job search capability, without
+refined like any other — providing a powerful and general AI search capability, without
 taking away any existing search functionality. Eventually this kind of extraction is expected
 to happen automatically as part of the everyday job search flow, rather than needing the
 explicit click.

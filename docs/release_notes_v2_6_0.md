@@ -15,7 +15,7 @@ sass:
      could work well here — it's the clearest single shot of what's new. -->
 
   <a href="./v260/ai_job_matching" class="card">
-    <img src="./assets/images/v260/AiMatching.png" alt="AI Job Matching" class="card-image">
+    <img src="./assets/images/v260/AiMatching.png" alt="AI Matching" class="card-image">
     <div class="card-body">
       <div class="card-title">AI Matching</div>
       <div class="card-description">
