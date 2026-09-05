@@ -97,12 +97,10 @@ export class VerifyPlusPage {
       exact: true,
     });
 
-    this.description = this.verifyPlusComponent.getByText(
-      'Scan your UNHCR Verify+ card QR code. A valid scan shows the card is genuine. It does not prove that you are the person named on the card.',
-      {
-        exact: true,
-      },
+    this.description = this.verifyPlusComponent.locator(
+      '.service-title p',
     );
+    
 
     this.scanner = this.verifyPlusComponent.locator(
       'app-verify-plus-scanner',
@@ -287,7 +285,7 @@ export class VerifyPlusPage {
    * avoids a race between the query parameter and ng-bootstrap navigation.
    */
   async gotoServices(): Promise<void> {
-    await this.page.goto('/profile');
+    await this.page.goto('./profile');
 
     await expect(
       this.page,

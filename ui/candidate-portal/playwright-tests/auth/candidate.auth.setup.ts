@@ -41,7 +41,7 @@ setup('authenticate dedicated GRN candidate', async ({page}) => {
   });
 
   await page.goto(
-    '/login?returnUrl=%2Fprofile',
+    './login?returnUrl=%2Fprofile',
   );
 
   const loginForm = page.locator('app-login form');

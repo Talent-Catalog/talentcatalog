@@ -50,6 +50,7 @@ export async function submitVerifyPlusMockPayload(
     {
       data: {
         rawPayload,
+        consented: true,
       },
     },
   );

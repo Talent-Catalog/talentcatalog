@@ -1,0 +1,81 @@
+name: Candidate Portal E2E
+
+on:
+  pull_request:
+    branches:
+      - staging
+      - master
+    paths:
+      - 'ui/candidate-portal/**'
+      - '.github/workflows/tc-candidate-portal-e2e.yml'
+      - '.nvmrc'
+
+  push:
+    branches:
+      - staging
+    paths:
+      - 'ui/candidate-portal/**'
+      - '.github/workflows/tc-candidate-portal-e2e.yml'
+      - '.nvmrc'
+
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: candidate-portal-e2e-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  e2e:
+    name: Playwright E2E
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    defaults:
+      run:
+        working-directory: ui/candidate-portal
+
+    env:
+      CI: true
+      PLAYWRIGHT_WORKERS: 6
+      E2E_BASE_URL: ${{ vars.E2E_BASE_URL }}
+      E2E_API_BASE_URL: ${{ vars.E2E_API_BASE_URL }}
+
+      E2E_CANDIDATE_USERNAME: ${{ secrets.E2E_CANDIDATE_USERNAME }}
+      E2E_CANDIDATE_PASSWORD: ${{ secrets.E2E_CANDIDATE_PASSWORD }}
+
+      E2E_VERIFY_PLUS_BASELINE_UNHCR_ID: ${{ secrets.E2E_VERIFY_PLUS_BASELINE_UNHCR_ID }}
+      E2E_VERIFY_PLUS_DUPLICATE_UNHCR_ID: ${{ secrets.E2E_VERIFY_PLUS_DUPLICATE_UNHCR_ID }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+          cache: npm
+          cache-dependency-path: ui/candidate-portal/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps
+
+      - name: Run Playwright E2E tests
+        run: npm run e2e
+
+      - name: Upload Playwright artifacts
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: candidate-portal-playwright-${{ github.run_id }}
+          path: |
+            ui/candidate-portal/playwright-report
+            ui/candidate-portal/test-results
+          if-no-files-found: ignore
+          retention-days: 7
