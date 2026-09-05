@@ -14,11 +14,6 @@ sass:
     >
 </div>
 
-<div class="card-image-container">
-    <img class="card-image"
-         src="../assets/images/v260/SubmissionListFilteringOption2.png"
-         alt="Applying filters within a submission list"
-    >
 </div>
 
 This release bundles three practical improvements: lists that can be filtered instead of scrolled 
