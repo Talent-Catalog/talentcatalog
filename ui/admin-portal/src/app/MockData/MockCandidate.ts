@@ -62,6 +62,8 @@ export class MockCandidate implements Candidate {
   unhcrRegistered: YesNoUnsure = YesNoUnsure.Yes;
   unhcrNumber: string = "UNHCR123";
   unhcrConsent: YesNo = YesNo.Yes;
+  verifyPlusConsented: boolean = false;
+  verifyPlusConsentedAt: string = null;
   unrwaRegistered: YesNoUnsure = YesNoUnsure.No;
   unrwaNumber: string = "123";
   user: any = mockUser;

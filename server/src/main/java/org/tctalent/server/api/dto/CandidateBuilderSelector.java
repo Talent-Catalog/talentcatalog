@@ -183,6 +183,8 @@ public class CandidateBuilderSelector {
             .add("unhcrNumber")
             .add("unhcrStatus")
             .add("unhcrConsent")
+            .add("verifyPlusConsented")
+            .add("verifyPlusConsentedAt")
             .add("unrwaRegistered")
             .add("unrwaNumber")
             .add("mediaWillingness")
