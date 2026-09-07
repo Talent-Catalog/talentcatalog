@@ -274,11 +274,12 @@ module "tc-plus-prod" {
   spring_db_pool_min                    = "20"
   spring_servlet_max_file_size          = "10MB"
   spring_servlet_max_request_size       = "10MB"
-  tc_api_url                            = "https://api.plus.tctalent.org"               # todo: set TC API URL
-  tc_cors_urls                          = "https://tctalent.org"                        # todo: set prod CORS URLs
-  tc_db_copy_config                     = "data.sharing/tcCopies.xml"                   # todo: can this be retired?
+  tc_api_url                            = "https://api.plus.tctalent.org"                                                                     # todo: set TC API URL
+  tc_cors_urls                          = "https://tctalent.org"                                                                              # todo: set prod CORS URLs
+  tc_db_copy_config                     = "data.sharing/tcCopies.xml"                                                                         # todo: can this be retired?
   tc_destinations                       = "Australia,Belgium,Canada,France,Germany,Ireland,Italy,Slovakia,Spain,United Kingdom,United States" # todo: set TC destinations
-  tc_skills_extraction_api_url          = "https://skills.plus.tctalent.org"            # todo: confirm prod URL
+  tc_skills_extraction_api_url          = "https://skills.plus.tctalent.org"                                                                  # todo: confirm prod URL
+  tc_vector_embedding_api_url           = "https://skills.plus.tctalent.org"                                                                  # todo: confirm prod URL
   web_admin                             = "https://plus.tctalent.org/admin-portal"
   web_portal                            = "https://plus.tctalent.org/candidate-portal"
   tc_instance_type                      = "TBB"
