@@ -23,6 +23,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.tctalent.server.configuration.properties.VectorEmbeddingModelProperties;
@@ -114,6 +115,7 @@ public class CandidateBestNMatchingServiceImpl implements CandidateBestNMatching
 
         //Force sort by score.
         request.setSortFields(new String[]{"match_score"});
+        request.setSortDirection(Direction.DESC);
 
         /* **** SEMANTIC SEARCH **** */
         //Note that this same constraint is built into the SQL generated for lexical search.

@@ -131,6 +131,10 @@ public class CandidateBestNMatchingRepository {
         // generated for vector embeddings.
         // The semantic pool is computed first, and then the constraints are applied to the
         // semantic candidates.
+
+        // Note also that raw scores appear in fused_candidates as diagnostics only.
+        // Weighted RRF combines ranks, not scores.
+
         return """
             WITH lexical_candidate_scores AS (
             """
@@ -186,7 +190,6 @@ public class CandidateBestNMatchingRepository {
                        sc.semantic_rank,
                        lc.lexical_score,
                        sc.semantic_score,
-                       -- Raw scores are diagnostics only. Weighted RRF combines ranks, not scores.
                        COALESCE(:lexicalWeight /
                            (:rrfK + lc.lexical_rank), 0.0)
                        + COALESCE(:semanticWeight /
