@@ -18,7 +18,7 @@ sass:
         Talent Catalog now runs a hybrid matching engine behind the scenes, combining traditional
         text search with AI-generated vector embeddings. This release brings the first user-facing
         pieces of that engine online — skill-aware search from a job description, search scoped to
-        any list, and keyword filtering alongside AI matches.
+        any list, and full search filters alongside AI-powered matches.
       </div>
       <div class="card-footer">
         <button class="btn btn-sm">Learn more</button>
