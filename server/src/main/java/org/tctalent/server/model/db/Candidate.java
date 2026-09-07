@@ -267,6 +267,14 @@ public class Candidate extends AbstractCandidateDataDomainObject<Long> implement
     private String text;
 
     /**
+     * Date and time when the text field was last updated.
+     * <p/>
+     * Updated in {@link #updateText}
+     */
+    @Nullable
+    private OffsetDateTime textUpdatedAt;
+
+    /**
      * Even though we would prefer CascadeType.ALL with 'orphanRemoval' so that
      * removing from the candidateSavedLists collection would automatically
      * cascade down to delete the corresponding entry in the
@@ -2689,6 +2697,16 @@ public class Candidate extends AbstractCandidateDataDomainObject<Long> implement
 
     public void setText(String text) {
         this.text = text;
+        setTextUpdatedAt(OffsetDateTime.now());
+    }
+
+    @Nullable
+    public OffsetDateTime getTextUpdatedAt() {
+        return textUpdatedAt;
+    }
+
+    public void setTextUpdatedAt(@Nullable OffsetDateTime textUpdatedAt) {
+        this.textUpdatedAt = textUpdatedAt;
     }
 
     public void updateText() {
@@ -2703,9 +2721,9 @@ public class Candidate extends AbstractCandidateDataDomainObject<Long> implement
         String combinedMigratedSkillsText = getCandidateSkills().stream()
             .map(CandidateSkill::getSkill)
             .collect(Collectors.joining(","));
-        this.text = Stream.of(
+        setText(Stream.of(
             combinedJobText, combinedCvText, notesText, combinedMigratedSkillsText)
             .filter(s -> s != null && !s.isBlank())
-            .collect(Collectors.joining(" || "));
+            .collect(Collectors.joining(" || ")));
     }
 }

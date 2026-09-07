@@ -55,6 +55,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.Nullable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -340,33 +341,45 @@ public class SystemAdminApi {
     }
 
 
-    @PostMapping("set_candidate_text/cpu-{cpu}")
+    @PostMapping("set_candidate_text/cpu-{cpu}-since-{since}")
     public ResponseEntity<String> setCandidateText(
-        @PathVariable("cpu") int cpu) throws Exception {
-        return setCandidateTextCommon("", 0, cpu);
+        @PathVariable("cpu") int cpu,
+        @PathVariable("since") Long since) throws Exception {
+        return setCandidateTextCommon("", 0, cpu, since);
     }
 
     @PostMapping("set_candidate_text/search-{sourceId}-cpu-{cpu}")
     public ResponseEntity<String> setCandidateTextBySearch(
         @PathVariable("sourceId") int sourceId,
         @PathVariable("cpu") int cpu) throws Exception {
-        return setCandidateTextCommon("search", sourceId, cpu);
+        return setCandidateTextCommon("search", sourceId, cpu, null);
     }
 
     @PostMapping("set_candidate_text/list-{sourceId}-cpu-{cpu}")
     public ResponseEntity<String> setCandidateTextByList(
         @PathVariable("sourceId") int sourceId,
         @PathVariable("cpu") int cpu) throws Exception {
-        return setCandidateTextCommon("list", sourceId, cpu);
+        return setCandidateTextCommon("list", sourceId, cpu, null);
     }
 
     private ResponseEntity<String> setCandidateTextCommon(
-        @PathVariable("candidateSource") String candidateSource,
-        @PathVariable("sourceId") int sourceId,
-        @PathVariable("cpu") int cpu) throws Exception {
+        String candidateSource,
+        int sourceId,
+        int cpu,
+        @Nullable Long sinceHours
+    ) throws Exception {
 
         ItemProcessor<Candidate, Candidate> candidateUpdateTextProcessor =
             candidate -> {
+                // If sinceHours is specified, skip candidates that have been updated within that
+                // time frame
+                if (sinceHours != null) {
+                    final OffsetDateTime textUpdatedAt = candidate.getTextUpdatedAt();
+                    if (textUpdatedAt != null &&
+                        textUpdatedAt.isAfter(OffsetDateTime.now().minusHours(sinceHours))) {
+                      return null;
+                    }
+                }
                 candidate.updateText();
                 return candidate;
             };
