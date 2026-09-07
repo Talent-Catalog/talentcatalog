@@ -222,7 +222,7 @@ module "grn_prod" {
   db_public_access        = true # just for initial setup and testing; will switch to private after deployment is complete
   db_multi_az             = true
   db_instance_class       = "db.m6g.large"
-  db_engine_version       = "17.5"
+  db_engine_version       = "17"
   db_family               = "postgres17"
   db_major_engine_version = "17"
   db_name                 = "grn"

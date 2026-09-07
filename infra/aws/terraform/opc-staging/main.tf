@@ -228,7 +228,7 @@ module "tc-plus-staging" {
   db_public_access        = false
   db_multi_az             = false
   db_instance_class       = "db.t3.medium"
-  db_engine_version       = "17.5"
+  db_engine_version       = "17"
   db_family               = "postgres17"
   db_major_engine_version = "17"
   db_name                 = "tcplus"
