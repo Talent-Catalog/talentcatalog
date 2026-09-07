@@ -369,6 +369,11 @@ variable "tc_skills_extraction_api_url" {
   description = "TC skills extraction API URL"
 }
 
+variable "tc_vector_embedding_api_url" {
+  type        = string
+  description = "TC vector embedding API URL"
+}
+
 variable "web_admin" {
   type        = string
   description = "Web admin portal URL"
