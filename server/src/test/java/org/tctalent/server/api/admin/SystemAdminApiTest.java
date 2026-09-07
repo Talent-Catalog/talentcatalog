@@ -809,7 +809,7 @@ class SystemAdminApiTest {
     when(candidateBatchJobBuilder.build()).thenReturn(batchJob);
     when(batchJobService.launchJob(batchJob, false)).thenReturn("started");
 
-    ResponseEntity<String> response = systemAdminApi.setCandidateText(75);
+    ResponseEntity<String> response = systemAdminApi.setCandidateText(75, null);
 
     assertEquals(HttpStatus.OK, response.getStatusCode());
     assertEquals("started", response.getBody());

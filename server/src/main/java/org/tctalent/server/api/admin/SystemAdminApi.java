@@ -344,7 +344,7 @@ public class SystemAdminApi {
     @PostMapping("set_candidate_text/cpu-{cpu}-since-{since}")
     public ResponseEntity<String> setCandidateText(
         @PathVariable("cpu") int cpu,
-        @PathVariable("since") Long since) throws Exception {
+        @Nullable @PathVariable("since") Long since) throws Exception {
         return setCandidateTextCommon("", 0, cpu, since);
     }
 
@@ -405,6 +405,7 @@ public class SystemAdminApi {
         }
 
         Job candidateUpdateTextJob= jobBuilder
+            .chunkSize(1000)
             .percentageOfCpu(cpu)
             .build();
 
