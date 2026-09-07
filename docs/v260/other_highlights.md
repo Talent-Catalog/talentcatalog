@@ -14,8 +14,6 @@ sass:
     >
 </div>
 
-</div>
-
 This release bundles three practical improvements: lists that can be filtered instead of scrolled 
 through by hand, clearer and safer controls around deleting a candidate's record, and a principal 
 occupation field on its way to giving job matching a sharper read on what a candidate is really 
