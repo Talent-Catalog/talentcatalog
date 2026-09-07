@@ -48,7 +48,7 @@ export class AdminApiComponent implements OnInit {
 
   // List of general admin commands
   readonly adminCommands: AdminCommand[] = [
-    { command: 'set_candidate_text/cpu-{percentage}-since-{hours}', description: 'Update text of all candidates that have not been updated in the last since hours and are not deleted or withdrawn status limiting cpu percentage', method: 'POST' },
+    { command: 'set_candidate_text/cpu-{percentage}-before-{hours}', description: 'If hours is not specified, update text of all candidates (not deleted or withdrawn). If hours specified update only those last updated before {hours} ago (eg when new code went into production). Limit cpu percentage', method: 'POST' },
     { command: 'set_candidate_text/list-{listId}-cpu-{percentage}', description: 'Update text of all candidates in the specified list limiting cpu percentage', method: 'POST' },
     { command: 'set_candidate_text/search-{searchId}-cpu-{percentage}', description: 'Update text of all candidates in the specified search limiting cpu percentage', method: 'POST' },
     { command: 'reassign-candidates/list-{listId}-to-partner-{partnerId}', description: 'Reassign all candidates in the specified list to the specified partner', method: 'POST' },

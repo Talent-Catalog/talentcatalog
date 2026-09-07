@@ -341,11 +341,11 @@ public class SystemAdminApi {
     }
 
 
-    @PostMapping("set_candidate_text/cpu-{cpu}-since-{since}")
+    @PostMapping("set_candidate_text/cpu-{cpu}-before-{before}")
     public ResponseEntity<String> setCandidateText(
         @PathVariable("cpu") int cpu,
-        @Nullable @PathVariable("since") Long since) throws Exception {
-        return setCandidateTextCommon("", 0, cpu, since);
+        @Nullable @PathVariable("before") Long before) throws Exception {
+        return setCandidateTextCommon("", 0, cpu, before);
     }
 
     @PostMapping("set_candidate_text/search-{sourceId}-cpu-{cpu}")
@@ -366,17 +366,17 @@ public class SystemAdminApi {
         String candidateSource,
         int sourceId,
         int cpu,
-        @Nullable Long sinceHours
+        @Nullable Long beforeHours
     ) throws Exception {
 
         ItemProcessor<Candidate, Candidate> candidateUpdateTextProcessor =
             candidate -> {
-                // If sinceHours is specified, skip candidates that have been updated within that
-                // time frame
-                if (sinceHours != null) {
+                // If beforeHours is specified, skip candidates that have been updated since then.
+                // This allows for incremental updates without reprocessing all candidates.
+                if (beforeHours != null) {
                     final OffsetDateTime textUpdatedAt = candidate.getTextUpdatedAt();
                     if (textUpdatedAt != null &&
-                        textUpdatedAt.isAfter(OffsetDateTime.now().minusHours(sinceHours))) {
+                        textUpdatedAt.isAfter(OffsetDateTime.now().minusHours(beforeHours))) {
                       return null;
                     }
                 }
