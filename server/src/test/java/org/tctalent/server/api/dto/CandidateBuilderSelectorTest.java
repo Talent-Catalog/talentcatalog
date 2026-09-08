@@ -17,6 +17,7 @@
 package org.tctalent.server.api.dto;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.any;
@@ -34,11 +35,14 @@ import java.util.Map;
 import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.tctalent.server.model.db.Role;
 import org.tctalent.server.model.db.User;
+import org.tctalent.server.repository.db.read.dto.CandidateReadDto;
 import org.tctalent.server.service.db.CandidateOpportunityService;
 import org.tctalent.server.service.db.CountryService;
 import org.tctalent.server.service.db.OccupationService;
@@ -384,6 +388,20 @@ class CandidateBuilderSelectorTest {
     verify(candidateOpportunityService, times(1)).findFullyVisibleUserIds(any());
     verify(countryService, atLeastOnce()).selectBuilder();
     verify(occupationService, atLeastOnce()).selectBuilder();
+  }
+
+  @ParameterizedTest
+  @EnumSource(value = DtoType.class, names = {"PREVIEW", "FULL", "EXTENDED"})
+  void candidateBuilders_resolveEveryProperty_onCandidateReadDto(DtoType type) {
+    var admin = mock(User.class);
+    when(admin.getRole()).thenReturn(Role.systemadmin);
+    when(userService.getLoggedInUser()).thenReturn(admin);
+    when(candidateOpportunityService.findFullyVisibleCandidateIds(any())).thenReturn(Set.of());
+    when(candidateOpportunityService.findFullyVisibleUserIds(any())).thenReturn(Set.of());
+
+    DtoBuilder builder = selector.selectBuilder(type);
+
+    assertDoesNotThrow(() -> builder.build(CandidateReadDto.builder().build()));
   }
 
   // Helper methods
