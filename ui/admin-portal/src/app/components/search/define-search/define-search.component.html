@@ -197,7 +197,7 @@
                 <tc-label size="sm" class="form-label" for="lexicalWeight">How should AI match candidates?</tc-label>
                 <tc-button [type]="'plain'"
                            class="tool-tip-button"
-                           ngbTooltip="Lexical vs Semantic matching. Enter a value between 0 and 1. The default is 0.5, which is Balanced and means that the lexical score is equally important as the semantic score. Exact requirements gives more weight to lexical matching. Related experience gives more weight to semantic matching."
+                           ngbTooltip="Lexical vs Semantic matching. Enter a value between 0 and 1. The default is 0.5, which is Balanced and means that the lexical ranking is equally important as the semantic ranking. Exact requirements gives more weight to lexical matching. Related experience gives more weight to semantic matching. Weighting uses industry standard Reciprocal Ranking Fusion (RRF)."
                            triggers="click"
                            tooltipClass="search-tips"
                            placement="bottom top"

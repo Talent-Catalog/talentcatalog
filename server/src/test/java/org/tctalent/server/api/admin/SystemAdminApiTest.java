@@ -806,10 +806,11 @@ class SystemAdminApiTest {
         eq("candidateTextJob"), any(SearchCandidateRequest.class), any(ItemProcessor.class)))
         .thenReturn(candidateBatchJobBuilder);
     when(candidateBatchJobBuilder.percentageOfCpu(75)).thenReturn(candidateBatchJobBuilder);
+    when(candidateBatchJobBuilder.chunkSize(anyInt())).thenReturn(candidateBatchJobBuilder);
     when(candidateBatchJobBuilder.build()).thenReturn(batchJob);
     when(batchJobService.launchJob(batchJob, false)).thenReturn("started");
 
-    ResponseEntity<String> response = systemAdminApi.setCandidateText(75);
+    ResponseEntity<String> response = systemAdminApi.setCandidateText(75, null);
 
     assertEquals(HttpStatus.OK, response.getStatusCode());
     assertEquals("started", response.getBody());
@@ -829,6 +830,7 @@ class SystemAdminApiTest {
         eq("candidateTextJob"), eq(savedList), any(ItemProcessor.class)))
         .thenReturn(candidateBatchJobBuilder);
     when(candidateBatchJobBuilder.percentageOfCpu(20)).thenReturn(candidateBatchJobBuilder);
+    when(candidateBatchJobBuilder.chunkSize(anyInt())).thenReturn(candidateBatchJobBuilder);
     when(candidateBatchJobBuilder.build()).thenReturn(batchJob);
     when(batchJobService.launchJob(batchJob, false)).thenReturn("list-started");
 
@@ -846,6 +848,7 @@ class SystemAdminApiTest {
         eq("candidateTextJob"), eq(savedSearch), any(ItemProcessor.class)))
         .thenReturn(candidateBatchJobBuilder);
     when(candidateBatchJobBuilder.percentageOfCpu(15)).thenReturn(candidateBatchJobBuilder);
+    when(candidateBatchJobBuilder.chunkSize(anyInt())).thenReturn(candidateBatchJobBuilder);
     when(candidateBatchJobBuilder.build()).thenReturn(batchJob);
     when(batchJobService.launchJob(batchJob, false)).thenReturn("search-started");
 
