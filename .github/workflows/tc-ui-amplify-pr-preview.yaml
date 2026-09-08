@@ -16,7 +16,7 @@ jobs:
           sleep 90
       - name: Get Amplify preview URLs from comments
         id: get-preview-urls
-        uses: actions/github-script@v6
+        uses: actions/github-script@v9
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
