@@ -29,11 +29,13 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
+import java.time.OffsetDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
@@ -69,6 +71,7 @@ class CandidateBuilderSelectorTest {
   }
 
   @Test
+  @DisplayName("PUBLIC_ID_ONLY builder returns only publicId")
   void publicIdOnly_buildsExpectedUserShape_andDoesNotTouchServices() {
     var b = selector.selectBuilder(DtoType.PUBLIC_ID_ONLY);
 
@@ -86,6 +89,7 @@ class CandidateBuilderSelectorTest {
   }
 
   @Test
+  @DisplayName("MINIMAL builder returns basic candidate and user fields")
   void minimalOnly_buildsExpectedUserShape_andDoesNotTouchServices() {
     var b = selector.selectBuilder(DtoType.MINIMAL);
 
@@ -124,6 +128,7 @@ class CandidateBuilderSelectorTest {
   }
 
   @Test
+  @DisplayName("PREVIEW builder omits non-preview fields and occupation service")
   void previewOnly_buildsExpectedUserShape_andDoesNotUseOccupationService() {
     when(candidateOpportunityService.findFullyVisibleCandidateIds(any())).thenReturn(Set.of());
     when(candidateOpportunityService.findFullyVisibleUserIds(any())).thenReturn(Set.of());
@@ -194,6 +199,7 @@ class CandidateBuilderSelectorTest {
   }
 
   @Test
+  @DisplayName("FULL builder includes core nested fields without occupation service")
   void full_buildsExpectedUserShape_andDoesNotUseOccupationService() {
     when(userService.getLoggedInUser()).thenReturn(null);
     when(candidateOpportunityService.findFullyVisibleCandidateIds(any())).thenReturn(Set.of());
@@ -241,6 +247,7 @@ class CandidateBuilderSelectorTest {
   }
 
   @Test
+  @DisplayName("EXTENDED builder returns nested destination, occupation, and education data")
   void extended_buildsExpectedUserShape_andUsesAllServices() {
     when(candidateOpportunityService.findFullyVisibleCandidateIds(any())).thenReturn(Set.of());
     when(candidateOpportunityService.findFullyVisibleUserIds(any())).thenReturn(Set.of());
@@ -297,6 +304,7 @@ class CandidateBuilderSelectorTest {
   }
 
   @Test
+  @DisplayName("API builder returns API-specific nested structures")
   void api_buildsExpectedUserShape_andUsesAllServices() {
     // Arrange visibility + nested builders
     var admin = mock(User.class);
@@ -392,6 +400,7 @@ class CandidateBuilderSelectorTest {
 
   @ParameterizedTest
   @EnumSource(value = DtoType.class, names = {"PREVIEW", "FULL", "EXTENDED"})
+  @DisplayName("Projection-backed DTO types resolve all mapped properties on CandidateReadDto")
   void candidateBuilders_resolveEveryProperty_onCandidateReadDto(DtoType type) {
     var admin = mock(User.class);
     when(admin.getRole()).thenReturn(Role.systemadmin);
@@ -402,6 +411,27 @@ class CandidateBuilderSelectorTest {
     DtoBuilder builder = selector.selectBuilder(type);
 
     assertDoesNotThrow(() -> builder.build(CandidateReadDto.builder().build()));
+  }
+
+  @Test
+  @DisplayName("EXTENDED builder exposes Verify+ scan fields from CandidateReadDto")
+  void extendedBuilder_exposesVerifyPlusScanFields_fromCandidateReadDto() {
+    var admin = mock(User.class);
+    when(admin.getRole()).thenReturn(Role.systemadmin);
+    when(userService.getLoggedInUser()).thenReturn(admin);
+    when(candidateOpportunityService.findFullyVisibleCandidateIds(any())).thenReturn(Set.of());
+    when(candidateOpportunityService.findFullyVisibleUserIds(any())).thenReturn(Set.of());
+
+    OffsetDateTime scannedAt = OffsetDateTime.parse("2026-09-04T11:05:00Z");
+    CandidateReadDto dto = CandidateReadDto.builder()
+        .verifyPlusConsented(true)
+        .verifyPlusConsentedAt(scannedAt)
+        .build();
+
+    Map<String, Object> out = selector.selectBuilder(DtoType.EXTENDED).build(dto);
+
+    assertEquals(true, out.get("verifyPlusConsented"));
+    assertEquals(scannedAt, out.get("verifyPlusConsentedAt"));
   }
 
   // Helper methods
