@@ -24,7 +24,7 @@ describe('InputComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [InputComponent]
+      declarations: [InputComponent,HostComponent]
     });
     fixture = TestBed.createComponent(InputComponent);
     component = fixture.componentInstance;
