@@ -63,7 +63,7 @@ jobs:
           done
           echo "::set-output name=broken_ids::${broken_urls[@]}"
       - name: Delete or notify if any preview link is broken
-        uses: actions/github-script@v6
+        uses: actions/github-script@v9
         if: steps.check-links.outputs.broken_ids != ''
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
