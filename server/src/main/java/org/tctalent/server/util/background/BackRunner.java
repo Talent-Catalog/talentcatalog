@@ -43,7 +43,12 @@ import org.tctalent.server.util.listener.BatchListener;
  * again by the scheduler after a certain delay.
  * When the task has finished all processing, it can return true from the process method. That
  * will cancel the scheduling so that process is not called again.
- *
+ * <p>
+ *     Note that we now have another way of doing this background processing using Spring's
+ *     standard batch support. See CandidateJobFactory for an example of how to use that.
+ *     Eventually we should probably move all of our background processing to use Spring's batch
+ *     support and remove this class and associated classes. - John Cameron 7 Sep 2026
+ * </p>
  *
  * @author John Cameron
  */
