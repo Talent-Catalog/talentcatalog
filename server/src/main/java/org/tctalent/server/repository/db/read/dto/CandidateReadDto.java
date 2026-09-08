@@ -202,6 +202,8 @@ public class CandidateReadDto {
 
     @JsonOneToOne(joinColumn = "user_id")
     private UserReadDto user;
+    private boolean verifyPlusConsented;
+    private OffsetDateTime verifyPlusConsentedAt;
     private String videolink;
     private String whatsapp;
 
