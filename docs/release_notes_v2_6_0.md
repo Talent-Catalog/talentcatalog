@@ -34,7 +34,7 @@ sass:
         GRN candidates who hold a UNHCR ID card can now scan its QR code straight from their
         phone to capture and verify their UNHCR registration number and personal details — either from the 
         Services tab, or as an optional step during registration.
-        In this release, scanning UNHCR Verify Plus cards is disabled in GRN. While the capability 
+        In this release, scanning UNHCR Verify Plus cards is disabled. While the capability 
         to scan cards exists, enabling functionality awaits agreement permissions with UNHCR.
       </div>
       <div class="card-footer">
