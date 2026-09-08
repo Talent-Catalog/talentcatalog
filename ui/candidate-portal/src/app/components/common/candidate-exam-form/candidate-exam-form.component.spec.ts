@@ -245,7 +245,7 @@ describe('CandidateExamFormComponent', () => {
       component.form.patchValue({exam: 'Other'});
       fixture.detectChanges();
 
-      expect((fixture.nativeElement as HTMLElement).querySelector('tc-input[id="otherExam"]')).toBeTruthy();
+      expect((fixture.nativeElement as HTMLElement).querySelector('tc-input input[id="otherExam"]')).toBeTruthy();
     });
   });
 
