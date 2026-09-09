@@ -112,4 +112,41 @@ describe('RegistrationService', () => {
 
     expect(service.currentStepKey).toBe('personal');
   });
+
+  it('should keep contiguous section numbers when verifyplus is included', () => {
+    environment.environmentName = 'staging';
+    isAuthenticated = true;
+    isGrnInstance = true;
+    service.start();
+    service.openStep('contact');
+
+    expect(service.currentStep.section).toBe(1);
+    expect(service.totalSections).toBe(11);
+
+    service.openStep('verifyplus');
+    expect(service.currentStep.section).toBe(2);
+
+    service.openStep('personal');
+    expect(service.currentStep.section).toBe(3);
+  });
+
+  it('should compact section numbers when verifyplus is omitted', () => {
+    environment.environmentName = 'local';
+    isAuthenticated = true;
+    isGrnInstance = false;
+    service.start();
+    service.openStep('contact');
+
+    expect(service.currentStep.section).toBe(1);
+    expect(service.totalSections).toBe(10);
+    expect(service.sectionProgress.length).toBe(10);
+
+    service.openStep('personal');
+    expect(service.currentStep.section).toBe(2);
+    expect(service.totalSections).toBe(10);
+
+    const certifications = service.steps.find(step => step.key === 'certifications');
+    const destinations = service.steps.find(step => step.key === 'destinations');
+    expect(certifications?.section).toBe(destinations?.section);
+  });
 });
