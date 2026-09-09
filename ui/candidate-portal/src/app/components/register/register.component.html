@@ -36,8 +36,8 @@
   </div>
 
   <div class="step-progress">
-    <div class="step-progress-bar" *ngFor="let section of registrationService?.sectionProgress; let i = index;"
-         [class.selected]="registrationService?.currentStep?.section === i + 1"></div>
+    <div class="step-progress-bar" *ngFor="let section of registrationService?.sectionProgress"
+         [class.selected]="registrationService?.currentStep?.section === section"></div>
   </div>
 
 
