@@ -4,6 +4,16 @@ This folder is reserved for mock, non-production QR images used to manually test
 
 No official UNHCR sample QR is available yet, so these fixtures are intentionally synthetic.
 
+## Visibility Gate (7.1)
+
+Verify+ candidate UI surfaces are intentionally visible only for GRN instances in local and staging environments.
+
+- Services card visibility: GRN and (`local` or `staging`)
+- Registration optional scan step visibility: GRN and (`local` or `staging`)
+- Production (`prod`) hides both surfaces until a later UNHCR-ready release
+
+The backend ingest endpoint remains unchanged in this slice.
+
 ## Payload Contract
 
 The current backend mock parser accepts JSON payloads with this structure:
