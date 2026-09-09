@@ -106,6 +106,7 @@ export class RegistrationService {
   ];
   public steps: RegistrationStep[] = [];
   public totalSections: number = 0;
+  public sectionProgress: number[] = [];
   public currentStepKey: string;
   public currentStep: RegistrationStep;
   public currentStepIndex: number;
@@ -183,7 +184,11 @@ export class RegistrationService {
   private syncSteps() {
     const previousStepKey = this.currentStepKey;
     this.steps = this.buildSteps();
-    this.totalSections = Math.max(...this.steps.map(s => s.section));
+    this.totalSections = Math.max(0, ...this.steps.map(s => s.section));
+    this.sectionProgress = Array.from(
+      {length: this.totalSections},
+      (_, index) => index + 1
+    );
 
     if (previousStepKey == null) {
       return;
@@ -201,7 +206,7 @@ export class RegistrationService {
   }
 
   private buildSteps(): RegistrationStep[] {
-    return this.allSteps
+    const visibleSteps = this.allSteps
       .filter(step => {
         if (step.key !== RegistrationService.VERIFY_PLUS_STEP_KEY) {
           return true;
@@ -209,6 +214,32 @@ export class RegistrationService {
         return this.shouldIncludeVerifyPlusStep();
       })
       .map(step => ({...step}));
+
+    return this.compactSections(visibleSteps);
+  }
+
+  /**
+   * Renumbers remaining steps so section labels stay contiguous when a step is
+   * omitted. Steps that originally shared a section number keep sharing one.
+   */
+  private compactSections(steps: RegistrationStep[]): RegistrationStep[] {
+    let nextSection = 0;
+    let previousOriginalSection: number | null = null;
+
+    return steps.map(step => {
+      if (step.section === 0) {
+        previousOriginalSection = 0;
+        return {...step, section: 0};
+      }
+
+      if (previousOriginalSection === step.section) {
+        return {...step, section: nextSection};
+      }
+
+      previousOriginalSection = step.section;
+      nextSection += 1;
+      return {...step, section: nextSection};
+    });
   }
 
   private shouldIncludeVerifyPlusStep(): boolean {
