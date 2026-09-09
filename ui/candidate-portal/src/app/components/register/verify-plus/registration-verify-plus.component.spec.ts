@@ -22,6 +22,7 @@ import {RegistrationVerifyPlusComponent} from './registration-verify-plus.compon
 import {VerifyPlusService} from '../../../services/verify-plus.service';
 import {RegistrationService} from '../../../services/registration.service';
 import {AuthenticationService} from '../../../services/authentication.service';
+import {environment} from '../../../../environments/environment';
 
 @Pipe({name: 'translate'})
 class MockTranslatePipe implements PipeTransform {
@@ -36,8 +37,10 @@ describe('RegistrationVerifyPlusComponent', () => {
   let verifyPlusService: jasmine.SpyObj<VerifyPlusService>;
   let registrationService: jasmine.SpyObj<RegistrationService>;
   let authenticationService: jasmine.SpyObj<AuthenticationService>;
+  let originalEnvironmentName: string;
 
   beforeEach(() => {
+    originalEnvironmentName = environment.environmentName;
     verifyPlusService = jasmine.createSpyObj<VerifyPlusService>('VerifyPlusService', ['submitScan']);
     registrationService = jasmine.createSpyObj<RegistrationService>('RegistrationService', ['next', 'back']);
     authenticationService = jasmine.createSpyObj<AuthenticationService>('AuthenticationService', ['isGrnInstance']);
@@ -58,12 +61,27 @@ describe('RegistrationVerifyPlusComponent', () => {
     fixture.detectChanges();
   });
 
+  afterEach(() => {
+    environment.environmentName = originalEnvironmentName;
+  });
+
   it('should create', () => {
     expect(component).toBeTruthy();
   });
 
   it('should auto-skip step for non-GRN instances', () => {
+    environment.environmentName = 'local';
     authenticationService.isGrnInstance.and.returnValue(false);
+
+    const skippedFixture = TestBed.createComponent(RegistrationVerifyPlusComponent);
+    skippedFixture.detectChanges();
+
+    expect(registrationService.next).toHaveBeenCalled();
+  });
+
+  it('should auto-skip step for GRN prod instances', () => {
+    environment.environmentName = 'prod';
+    authenticationService.isGrnInstance.and.returnValue(true);
 
     const skippedFixture = TestBed.createComponent(RegistrationVerifyPlusComponent);
     skippedFixture.detectChanges();
