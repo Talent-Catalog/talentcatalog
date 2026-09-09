@@ -9,7 +9,9 @@ No official UNHCR sample QR is available yet, so these fixtures are intentionall
 Verify+ candidate UI surfaces are intentionally visible only for GRN instances in local and staging environments.
 
 - Services card visibility: GRN and (`local` or `staging`)
-- Registration optional scan step visibility: GRN and (`local` or `staging`)
+- Registration optional scan: shown only to GRN in local/staging.
+  On local/staging the step stays in the wizard until login/register reveals instance type; 
+  TBB then omits it (no scan screen).
 - Production (`prod`) hides both surfaces until a later UNHCR-ready release
 
 The backend ingest endpoint remains unchanged in this slice.
