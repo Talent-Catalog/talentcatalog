@@ -18,15 +18,19 @@ import {Injectable} from '@angular/core';
 import {RegistrationStep} from '../components/register/registration-step';
 import {ActivatedRoute, Router} from '@angular/router';
 import {Subscription} from 'rxjs';
+import {AuthenticationService} from './authentication.service';
+import {isLocalOrStaging, isVerifyPlusUiEnabled} from '../util/verify-plus-ui';
 
 @Injectable({
   providedIn: 'root'
 })
 export class RegistrationService {
 
+  private static readonly VERIFY_PLUS_STEP_KEY = 'verifyplus';
+
   private subscription: Subscription;
 
-  public steps: RegistrationStep[] = [
+  private readonly allSteps: RegistrationStep[] = [
     {
       key: 'account',
       title: 'Welcome to Talent Catalog!',
@@ -100,17 +104,22 @@ export class RegistrationService {
       section: 11
     }
   ];
-  public totalSections: number = Math.max(...this.steps.map(s => s.section));
+  public steps: RegistrationStep[] = [];
+  public totalSections: number = 0;
   public currentStepKey: string;
   public currentStep: RegistrationStep;
   public currentStepIndex: number;
   registering: boolean = false;
 
   constructor(private router: Router,
-              private route: ActivatedRoute) { }
+              private route: ActivatedRoute,
+              private authenticationService: AuthenticationService) {
+    this.syncSteps();
+  }
 
   // Observe the query params in the url to determine which step to display
   start() {
+    this.syncSteps();
     // Set step back to 0 before starting a new registration.
     this.currentStepIndex = 0;
     this.currentStep = this.steps[this.currentStepIndex];
@@ -138,6 +147,7 @@ export class RegistrationService {
   }
 
   openStep(stepKey: string) {
+    this.syncSteps();
     stepKey = stepKey || 'landing';
     this.currentStepIndex = this.steps.findIndex(step => step.key === stepKey);
     this.setStep();
@@ -145,12 +155,14 @@ export class RegistrationService {
 
   back() {
     if (!this.registering) {return;}
+    this.syncSteps();
     this.currentStepIndex--;
     this.setStep();
   }
 
   next() {
     if (!this.registering) {return;}
+    this.syncSteps();
     this.currentStepIndex++;
     this.setStep();
   }
@@ -166,5 +178,48 @@ export class RegistrationService {
 
   routeToStep(key: string) {
     this.router.navigate([], {queryParams: {step: key}, queryParamsHandling: "merge"});
+  }
+
+  private syncSteps() {
+    const previousStepKey = this.currentStepKey;
+    this.steps = this.buildSteps();
+    this.totalSections = Math.max(...this.steps.map(s => s.section));
+
+    if (previousStepKey == null) {
+      return;
+    }
+
+    const nextIndex = this.steps.findIndex(step => step.key === previousStepKey);
+    if (nextIndex >= 0) {
+      this.currentStepIndex = nextIndex;
+      return;
+    }
+
+    if (this.currentStepIndex != null && this.currentStepIndex >= this.steps.length) {
+      this.currentStepIndex = this.steps.length - 1;
+    }
+  }
+
+  private buildSteps(): RegistrationStep[] {
+    return this.allSteps
+      .filter(step => {
+        if (step.key !== RegistrationService.VERIFY_PLUS_STEP_KEY) {
+          return true;
+        }
+        return this.shouldIncludeVerifyPlusStep();
+      })
+      .map(step => ({...step}));
+  }
+
+  private shouldIncludeVerifyPlusStep(): boolean {
+    if (!isLocalOrStaging()) {
+      return false;
+    }
+
+    if (!this.authenticationService.isAuthenticated()) {
+      return true;
+    }
+
+    return isVerifyPlusUiEnabled(this.authenticationService.isGrnInstance());
   }
 }
