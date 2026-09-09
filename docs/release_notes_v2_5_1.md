@@ -1,5 +1,5 @@
 ---
-title: Release Notes 2.5.1
+title: V2.5.1 - 19 Jun 26
 description: What's new in this release
 permalink: v251
 sass:

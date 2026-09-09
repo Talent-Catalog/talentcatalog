@@ -1,5 +1,5 @@
 ---
-title: Release Notes 2.6.0
+title: V2.6.0 - 11 Sep 26
 description: What's new in this release
 permalink: v260
 sass:
