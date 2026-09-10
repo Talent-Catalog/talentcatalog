@@ -281,6 +281,13 @@ export const EMAIL_REGEX: string =
   '(?!.*[@.]{2})[a-zA-Z0-9!#$%&\'*+-/=?^_`{|}~]+[a-zA-Z0-9.!#$%&\'*+-/=?^_`{|}~]*@(?!-)[a-zA-Z0-9-]+(?<!-)(\\.(?!-)[a-zA-Z0-9-]+(?<!-))*$';
 
 /**
+ * Trims leading/trailing whitespace from a pasted email address - see TC-723.
+ */
+export function sanitizeEmailInput(value: string): string {
+  return value == null ? value : value.trim();
+}
+
+/**
  * URL validation, also accepting 'mailto:' links, from
  * <a href="https://regex101.com/library/4hNOPu">regex101</a>
  */

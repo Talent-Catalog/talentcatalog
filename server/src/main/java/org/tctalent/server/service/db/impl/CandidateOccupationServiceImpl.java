@@ -19,13 +19,16 @@ package org.tctalent.server.service.db.impl;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.tctalent.server.exception.EntityExistsException;
 import org.tctalent.server.exception.InvalidCredentialsException;
+import org.tctalent.server.exception.InvalidRequestException;
 import org.tctalent.server.exception.InvalidSessionException;
 import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.logging.LogBuilder;
@@ -39,7 +42,9 @@ import org.tctalent.server.repository.db.OccupationRepository;
 import org.tctalent.server.request.candidate.occupation.CreateCandidateOccupationRequest;
 import org.tctalent.server.request.candidate.occupation.UpdateCandidateOccupationRequest;
 import org.tctalent.server.request.candidate.occupation.UpdateCandidateOccupationsRequest;
+import org.tctalent.server.request.note.CreateCandidateNoteRequest;
 import org.tctalent.server.security.AuthService;
+import org.tctalent.server.service.db.CandidateNoteService;
 import org.tctalent.server.service.db.CandidateOccupationService;
 import org.tctalent.server.service.db.CandidateService;
 import org.tctalent.server.service.db.email.EmailHelper;
@@ -54,6 +59,7 @@ public class CandidateOccupationServiceImpl implements CandidateOccupationServic
     private final CandidateService candidateService;
     private final AuthService authService;
     private final EmailHelper emailHelper;
+    private final CandidateNoteService candidateNoteService;
 
     @Autowired
     public CandidateOccupationServiceImpl(CandidateOccupationRepository candidateOccupationRepository,
@@ -61,13 +67,15 @@ public class CandidateOccupationServiceImpl implements CandidateOccupationServic
                                           CandidateRepository candidateRepository,
                                           CandidateService candidateService,
                                           AuthService authService,
-                                          EmailHelper emailHelper) {
+                                          EmailHelper emailHelper,
+                                          CandidateNoteService candidateNoteService) {
         this.candidateOccupationRepository = candidateOccupationRepository;
         this.candidateRepository = candidateRepository;
         this.candidateService = candidateService;
         this.occupationRepository = occupationRepository;
         this.authService = authService;
         this.emailHelper = emailHelper;
+        this.candidateNoteService = candidateNoteService;
     }
 
 
@@ -138,7 +146,30 @@ public class CandidateOccupationServiceImpl implements CandidateOccupationServic
             }
         }
 
+        boolean wasPrincipal = candidate.getPrincipalOccupation() != null
+            && candidate.getPrincipalOccupation().getId().equals(id);
+
+        // Deleting the principal occupation must not leave other occupations behind
+        // with no principal - that would violate the same invariant enforced in
+        // updateCandidateOccupations. Deleting the candidate's only occupation is
+        // fine (an empty list has no principal by definition); deleting the
+        // principal while others remain requires picking a new principal first.
+        if (wasPrincipal) {
+            long remainingCount = candidateOccupationRepository.findByCandidateId(candidate.getId()).stream()
+                .filter(occ -> !occ.getId().equals(id))
+                .count();
+            if (remainingCount > 0) {
+                throw new InvalidRequestException(
+                    "Cannot delete the principal occupation while other occupations remain. "
+                        + "Select a new principal occupation first.");
+            }
+        }
+
         candidateOccupationRepository.delete(candidateOccupation);
+
+        if (wasPrincipal) {
+            candidate.setPrincipalOccupation(null);
+        }
 
         candidateService.save(candidate);
     }
@@ -163,12 +194,35 @@ public class CandidateOccupationServiceImpl implements CandidateOccupationServic
 
     @Override
     public List<CandidateOccupation> updateCandidateOccupations(UpdateCandidateOccupationsRequest request) {
+        // Validate the principal-occupation invariant up front, before any occupation
+        // is created/updated/deleted below, so a malformed request can't partially
+        // mutate data: an empty list has no principal, but a non-empty list must have
+        // exactly one.
+        if (request.getUpdates() == null) {
+            throw new InvalidRequestException("Updates list must not be null");
+        }
+        if (request.getUpdates().stream().anyMatch(Objects::isNull)) {
+            throw new InvalidRequestException("Updates list must not contain null entries");
+        }
+        if (!request.getUpdates().isEmpty()) {
+            long principalCount = request.getUpdates().stream()
+                .filter(update -> Boolean.TRUE.equals(update.getPrincipal()))
+                .count();
+            if (principalCount == 0) {
+                throw new InvalidRequestException("Exactly one occupation must be marked as principal");
+            }
+            if (principalCount > 1) {
+                throw new InvalidRequestException("Only one occupation can be marked as principal");
+            }
+        }
+
         // Fetch updated candidate object from the DB to collect all data updates that may have been made since logging in.
         Candidate candidate = candidateService.getLoggedInCandidate()
             .orElseThrow(() -> new InvalidSessionException("Not logged in"));
 
         List<CandidateOccupation> updatedOccupations = new ArrayList<>();
         List<Long> updatedOccupationIds = new ArrayList<>();
+        CandidateOccupation principalOccupation = null;
 
         List<CandidateOccupation> candidateOccupations = candidateOccupationRepository.findByCandidateId(candidate.getId());
         Map<Long, CandidateOccupation> map = candidateOccupations.stream().collect( Collectors.toMap(CandidateOccupation::getId,
@@ -244,7 +298,8 @@ public class CandidateOccupationServiceImpl implements CandidateOccupationServic
                 }
 
             }
-            updatedOccupations.add(candidateOccupationRepository.save(candidateOccupation));
+            candidateOccupation = candidateOccupationRepository.save(candidateOccupation);
+            updatedOccupations.add(candidateOccupation);
 
             LogBuilder.builder(log)
                 .user(authService.getLoggedInUser())
@@ -253,7 +308,20 @@ public class CandidateOccupationServiceImpl implements CandidateOccupationServic
                 .logInfo();
 
             updatedOccupationIds.add(candidateOccupation.getId());
+
+            if (Boolean.TRUE.equals(update.getPrincipal())) {
+                principalOccupation = candidateOccupation;
+            }
         }
+
+        // The whole occupation list is replaced on every save, so this also covers
+        // switching principal occupation and clearing it if it was removed. This must
+        // happen - and be flushed - before any removed occupations are deleted below,
+        // otherwise deleting a candidate's current principal occupation would violate
+        // the principal_occupation_id foreign key on candidate.
+        candidate.setPrincipalOccupation(principalOccupation);
+        candidateService.save(candidate);
+        candidateOccupationRepository.flush();
 
         for (Long existingCandidateOccupationId : map.keySet()) {
             /* Check if the candidate occupation has been removed */
@@ -264,12 +332,11 @@ public class CandidateOccupationServiceImpl implements CandidateOccupationServic
             }
         }
 
-        candidateService.save(candidate);
-
-        return candidateOccupations;
+        return updatedOccupations;
     }
 
     @Override
+    @Transactional
     public CandidateOccupation updateCandidateOccupation(UpdateCandidateOccupationRequest request) {
         CandidateOccupation candidateOccupation = candidateOccupationRepository.findByIdLoadCandidate(request.getId())
                 .orElseThrow(() -> new NoSuchObjectException(CandidateOccupation.class, request.getId()));
@@ -287,9 +354,36 @@ public class CandidateOccupationServiceImpl implements CandidateOccupationServic
         candidateOccupation.setOccupation(occupationToBeUpdated);
         candidateOccupation.setYearsExperience(request.getYearsExperience());
 
+        candidateOccupation = candidateOccupationRepository.save(candidateOccupation);
+
+        if (Boolean.TRUE.equals(request.getPrincipal())) {
+            markAsPrincipalOccupation(candidateOccupation);
+        }
+
         candidateService.save(candidateOccupation.getCandidate());
 
-        return candidateOccupationRepository.save(candidateOccupation);
+        return candidateOccupation;
+    }
 
+    /**
+     * Sets the given candidate occupation as its candidate's principal occupation, switching it
+     * from whichever occupation was previously principal (if any). Creates a candidate note
+     * recording the change. A no-op with no note created if the occupation is already principal.
+     * Does not itself save the candidate - the caller is expected to do that.
+     */
+    private void markAsPrincipalOccupation(CandidateOccupation candidateOccupation) {
+        Candidate candidate = candidateOccupation.getCandidate();
+
+        boolean alreadyPrincipal = candidate.getPrincipalOccupation() != null
+            && candidate.getPrincipalOccupation().getId().equals(candidateOccupation.getId());
+        if (alreadyPrincipal) {
+            return;
+        }
+
+        candidate.setPrincipalOccupation(candidateOccupation);
+
+        candidateNoteService.createCandidateNote(new CreateCandidateNoteRequest(candidate.getId(),
+            "Principal occupation updated to '" + candidateOccupation.getOccupation().getName() + "'",
+            null));
     }
 }

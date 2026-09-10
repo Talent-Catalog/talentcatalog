@@ -14,80 +14,269 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {By} from '@angular/platform-browser';
-import {CandidateColumnSelectorComponent} from "./candidate-column-selector.component";
-import {ComponentFixture, TestBed} from "@angular/core/testing";
-import {CandidateFieldService} from "../../../services/candidate-field.service";
-import {CandidateSourceService} from "../../../services/candidate-source.service";
-import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
-import {DragulaModule, DragulaService} from "ng2-dragula";
+import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
+import {DragulaService} from 'ng2-dragula';
+import {of, throwError} from 'rxjs';
 
+import {CandidateSource} from '../../../model/base';
+import {CandidateFieldInfo} from '../../../model/candidate-field-info';
+import {CandidateFieldService} from '../../../services/candidate-field.service';
+import {CandidateSourceService} from '../../../services/candidate-source.service';
+import {CandidateColumnSelectorComponent} from './candidate-column-selector.component';
 
 describe('CandidateColumnSelectorComponent', () => {
   let component: CandidateColumnSelectorComponent;
-  let fixture: ComponentFixture<CandidateColumnSelectorComponent>;
   let candidateFieldService: jasmine.SpyObj<CandidateFieldService>;
   let candidateSourceService: jasmine.SpyObj<CandidateSourceService>;
+  let dragulaService: jasmine.SpyObj<DragulaService>;
   let activeModal: jasmine.SpyObj<NgbActiveModal>;
+  let source: CandidateSource;
 
-  beforeEach(async () => {
-    const candidateFieldServiceSpy = jasmine.createSpyObj('CandidateFieldService', ['getCandidateSourceFields', 'displayableFieldsMap']);
-    const candidateSourceServiceSpy = jasmine.createSpyObj('CandidateSourceService', ['updateDisplayedFieldPaths']);
-    const activeModalSpy = jasmine.createSpyObj('NgbActiveModal', ['close', 'dismiss']);
+  const firstNameField = {
+    fieldPath: 'user.firstName',
+    displayName: 'First name'
+  } as CandidateFieldInfo;
 
-    await TestBed.configureTestingModule({
-      imports: [DragulaModule],
-      declarations: [CandidateColumnSelectorComponent],
-      providers: [
-        { provide: DragulaService, useValue: new DragulaService(null) },
-        { provide: CandidateFieldService, useValue: candidateFieldServiceSpy },
-        { provide: CandidateSourceService, useValue: candidateSourceServiceSpy },
-        { provide: NgbActiveModal, useValue: activeModalSpy }
-      ]
-    }).compileComponents();
+  const countryField = {
+    fieldPath: 'country.name',
+    displayName: 'Country'
+  } as CandidateFieldInfo;
 
-    candidateFieldService = TestBed.inject(CandidateFieldService) as jasmine.SpyObj<CandidateFieldService>;
-    candidateSourceService = TestBed.inject(CandidateSourceService) as jasmine.SpyObj<CandidateSourceService>;
-    activeModal = TestBed.inject(NgbActiveModal) as jasmine.SpyObj<NgbActiveModal>;
-  });
+  const emailField = {
+    fieldPath: 'user.email',
+    displayName: 'Email'
+  } as CandidateFieldInfo;
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(CandidateColumnSelectorComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
+    candidateFieldService =
+      jasmine.createSpyObj<CandidateFieldService>(
+        'CandidateFieldService',
+        [
+          'getCandidateSourceFields',
+          'getDisplayableFieldsMap',
+          'getDefaultDisplayableFieldsLong',
+          'getDefaultDisplayableFieldsShort'
+        ]
+      );
+
+    candidateSourceService =
+      jasmine.createSpyObj<CandidateSourceService>(
+        'CandidateSourceService',
+        ['updateDisplayedFieldPaths']
+      );
+
+    dragulaService = jasmine.createSpyObj<DragulaService>(
+      'DragulaService',
+      ['find', 'createGroup']
+    );
+
+    activeModal = jasmine.createSpyObj<NgbActiveModal>(
+      'NgbActiveModal',
+      ['close', 'dismiss']
+    );
+
+    source = {
+      id: 1,
+      name: 'Test source',
+      fixed: false,
+      global: false,
+      displayedFieldsLong: [],
+      displayedFieldsShort: []
+    } as CandidateSource;
+
+    candidateFieldService.getCandidateSourceFields.and.returnValue(
+      [firstNameField]
+    );
+
+    candidateFieldService.getDisplayableFieldsMap.and.returnValue(
+      new Map<string, CandidateFieldInfo>([
+        [firstNameField.fieldPath, firstNameField],
+        [emailField.fieldPath, emailField],
+        [countryField.fieldPath, countryField]
+      ])
+    );
+
+    candidateFieldService
+    .getDefaultDisplayableFieldsLong
+    .and.returnValue([firstNameField, emailField]);
+
+    candidateFieldService
+    .getDefaultDisplayableFieldsShort
+    .and.returnValue([countryField]);
+
+    candidateSourceService
+    .updateDisplayedFieldPaths
+    .and.returnValue(of(null));
+
+    component = new CandidateColumnSelectorComponent(
+      candidateFieldService,
+      candidateSourceService,
+      dragulaService,
+      activeModal
+    );
   });
 
   it('should create', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should display an error message if error is set', () => {
-    component.error = 'An error occurred';
-    fixture.detectChanges();
+  it('should create the Dragula group when it does not exist', () => {
+    dragulaService.find.and.returnValue(null);
 
-    const errorMessage = fixture.debugElement.query(By.css('.alert-danger'));
-    expect(errorMessage.nativeElement.textContent).toContain('An error occurred');
+    component.ngOnInit();
+
+    expect(dragulaService.find)
+    .toHaveBeenCalledWith(component.dragulaGroupName);
+
+    expect(dragulaService.createGroup)
+    .toHaveBeenCalledWith(component.dragulaGroupName, {});
   });
 
-  it('should display updating spinner when updating is true', () => {
-    component.updating = true;
-    fixture.detectChanges();
+  it('should not create the Dragula group when it already exists', () => {
+    dragulaService.find.and.returnValue({} as any);
 
-    const updatingSpinner = fixture.debugElement.query(By.css('.fa-spinner'));
-    expect(updatingSpinner).toBeTruthy();
+    component.ngOnInit();
+
+    expect(dragulaService.find)
+    .toHaveBeenCalledWith(component.dragulaGroupName);
+
+    expect(dragulaService.createGroup).not.toHaveBeenCalled();
   });
 
-  it('should call dismiss on activeModal when dismiss is called', () => {
+  it('should initialize source, format and selected fields', () => {
+    component.setSourceAndFormat(source, true);
+
+    expect(candidateFieldService.getCandidateSourceFields)
+    .toHaveBeenCalledWith(source, true);
+
+    expect(component.selectedFields).toEqual([firstNameField]);
+  });
+
+  it('should calculate and sort available fields', () => {
+    component.setSourceAndFormat(source, true);
+
+    expect(component.availableFields).toEqual([
+      countryField,
+      emailField
+    ]);
+  });
+
+  it('should return selected fields from the getter', () => {
+    component.setSourceAndFormat(source, true);
+
+    expect(component.selectedFields).toEqual([firstNameField]);
+  });
+
+  it('should dismiss the modal', () => {
     component.dismiss();
+
     expect(activeModal.dismiss).toHaveBeenCalledWith(false);
   });
 
-  it('should initialize dragula group if not already present', () => {
-    const dragulaService = TestBed.inject(DragulaService);
-    spyOn(dragulaService, 'find').and.returnValue(null);
-    spyOn(dragulaService, 'createGroup');
+  it('should save long-format fields and close the modal', () => {
+    component.setSourceAndFormat(source, true);
+    component.selectedFields = [
+      firstNameField,
+      emailField
+    ];
 
-    component.ngOnInit();
-    expect(dragulaService.createGroup).toHaveBeenCalledWith(component.dragulaGroupName, {});
+    component.close();
+
+    expect(source.displayedFieldsLong).toEqual([
+      firstNameField.fieldPath,
+      emailField.fieldPath
+    ]);
+
+    expect(candidateSourceService.updateDisplayedFieldPaths)
+    .toHaveBeenCalledWith(source, {
+      displayedFieldsLong: [
+        firstNameField.fieldPath,
+        emailField.fieldPath
+      ]
+    });
+
+    expect(component.error).toBeNull();
+    expect(component.updating).toBeFalse();
+    expect(activeModal.close).toHaveBeenCalled();
+  });
+
+  it('should save short-format fields and close the modal', () => {
+    component.setSourceAndFormat(source, false);
+    component.selectedFields = [countryField];
+
+    component.close();
+
+    expect(source.displayedFieldsShort).toEqual([
+      countryField.fieldPath
+    ]);
+
+    expect(candidateSourceService.updateDisplayedFieldPaths)
+    .toHaveBeenCalledWith(source, {
+      displayedFieldsShort: [
+        countryField.fieldPath
+      ]
+    });
+
+    expect(component.updating).toBeFalse();
+    expect(activeModal.close).toHaveBeenCalled();
+  });
+
+  it('should save an empty field-path array', () => {
+    component.setSourceAndFormat(source, true);
+    component.selectedFields = [];
+
+    component.close();
+
+    expect(candidateSourceService.updateDisplayedFieldPaths)
+    .toHaveBeenCalledWith(source, {
+      displayedFieldsLong: []
+    });
+
+    expect(activeModal.close).toHaveBeenCalled();
+  });
+
+  it('should store an error when saving fields fails', () => {
+    const error = new Error('Update failed');
+
+    candidateSourceService
+    .updateDisplayedFieldPaths
+    .and.returnValue(throwError(error));
+
+    component.setSourceAndFormat(source, true);
+
+    component.close();
+
+    expect(component.error).toBe(error as any);
+    expect(component.updating).toBeFalse();
+    expect(activeModal.close).not.toHaveBeenCalled();
+  });
+
+  it('should restore long-format default fields', () => {
+    component.setSourceAndFormat(source, true);
+
+    component.default(source);
+
+    expect(
+      candidateFieldService.getDefaultDisplayableFieldsLong
+    ).toHaveBeenCalledWith(source);
+
+    expect(component.selectedFields).toEqual([
+      firstNameField,
+      emailField
+    ]);
+  });
+
+  it('should restore short-format default fields', () => {
+    component.setSourceAndFormat(source, false);
+
+    component.default(source);
+
+    expect(
+      candidateFieldService.getDefaultDisplayableFieldsShort
+    ).toHaveBeenCalledWith(source);
+
+    expect(component.selectedFields).toEqual([
+      countryField
+    ]);
   });
 });

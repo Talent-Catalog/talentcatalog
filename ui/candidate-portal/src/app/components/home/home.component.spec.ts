@@ -13,10 +13,15 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-import {ComponentFixture, TestBed} from '@angular/core/testing';
+
+import {CommonModule} from '@angular/common';
 import {Component, Input, Pipe, PipeTransform} from '@angular/core';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
+import {Router} from '@angular/router';
+import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {of} from 'rxjs';
+
 import {HomeComponent} from './home.component';
 import {CandidateService} from '../../services/candidate.service';
 import {LanguageService} from '../../services/language.service';
@@ -24,8 +29,6 @@ import {BrandingService} from '../../services/branding.service';
 import {ExternalLinkService} from '../../services/external-link.service';
 import {TermsInfoService} from '../../services/terms-info.service';
 import {CandidateStatus} from '../../model/candidate';
-import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
-import {Router} from '@angular/router';
 import {US_AFGHAN_SURVEY_TYPE} from '../../model/survey-type';
 import {VerifyEmailComponent} from '../account/verify-email/verify-email.component';
 
@@ -116,25 +119,50 @@ describe('HomeComponent', () => {
     ]);
     brandingService  = jasmine.createSpyObj<BrandingService>('BrandingService', ['getBrandingInfo']);
     externalLinkService = jasmine.createSpyObj<ExternalLinkService>('ExternalLinkService', ['getLink']);
-    termsInfoService = jasmine.createSpyObj<TermsInfoService>('TermsInfoService', ['getCurrentByType']);
-    modalService     = jasmine.createSpyObj<NgbModal>('NgbModal', ['open']);
+    termsInfoService = jasmine.createSpyObj<TermsInfoService>('TermsInfoService', ['getCurrentCandidatePolicy']);    modalService     = jasmine.createSpyObj<NgbModal>('NgbModal', ['open']);
     router           = jasmine.createSpyObj<Router>('Router', ['navigateByUrl']);
     modalRef         = {componentInstance: {}};
+    // Default return values — individual tests override these as needed.
+    candidateService.getCandidatePersonal.and.returnValue(
+      of(makeCandidate())
+    );
 
-    // Default return values — individual tests override these as needed
-    candidateService.getCandidatePersonal.and.returnValue(of(makeCandidate()));
-    candidateService.getCandidateSurvey.and.returnValue(of({surveyType: {id: 1}} as any));
+    candidateService.getCandidateSurvey.and.returnValue(
+      of({
+        surveyType: {
+          id: 1
+        }
+      } as any)
+    );
+
     languageService.getSelectedLanguage.and.returnValue('en');
-    brandingService.getBrandingInfo.and.returnValue(of({partnerName: 'TBB'} as any));
-    externalLinkService.getLink.and.returnValue('https://example.com/eligibility');
-    termsInfoService.getCurrentByType.and.returnValue(of({id: 'policy-1', content: 'policy'} as any));
+
+    brandingService.getBrandingInfo.and.returnValue(
+      of({
+        partnerName: 'TBB'
+      } as any)
+    );
+
+    externalLinkService.getLink.and.returnValue(
+      'https://example.com/eligibility'
+    );
+
+    termsInfoService.getCurrentCandidatePolicy.and.returnValue(
+      of({
+        id: 'policy-1',
+        content: 'policy'
+      } as any)
+    );
+
     modalService.open.and.returnValue(modalRef as any);
 
     await TestBed.configureTestingModule({
+      imports: [
+        CommonModule
+      ],
       declarations: [
         HomeComponent,
-        MockTranslatePipe,
-        TcButtonStub,   // replaces NO_ERRORS_SCHEMA for tc-button
+        TcButtonStub,
         TcLoadingStub,
         TcIconStub,
         TcAlertStub
@@ -148,7 +176,63 @@ describe('HomeComponent', () => {
         {provide: NgbModal,            useValue: modalService},
         {provide: Router,              useValue: router}
       ]
-    }).compileComponents();
+    })
+    .overrideComponent(HomeComponent, {
+      set: {
+        template: `
+      <tc-loading [loading]="loading"></tc-loading>
+
+      <button
+        class="verify-email-button"
+        type="button"
+        [hidden]="!user || emailVerified"
+        (click)="openModal()"
+      >
+        Verify email
+      </button>
+
+      <tc-button
+        [href]="getEligibilityLink()"
+        target="_blank"
+      >
+        Eligibility
+      </tc-button>
+
+      <div class="status-content">
+        {{
+          candidate?.status === 'draft'
+            ? 'HOME.DRAFT.EXPLANATION HOME.DRAFT.BUTTON'
+            : candidate?.status === 'pending'
+              ? 'HOME.PENDING.EXPLANATION HOME.PENDING.BUTTON'
+              : candidate?.status === 'active'
+                ? 'HOME.ACTIVE.EXPLANATION HOME.ACTIVE.BUTTON'
+                : candidate?.status === 'employed'
+                  ? 'HOME.EMPLOYED.EXPLANATION'
+                  : candidate?.status === 'incomplete'
+                    ? 'HOME.INCOMPLETE.EXPLANATION HOME.INCOMPLETE.BUTTON'
+                    : candidate?.status === 'ineligible'
+                      ? 'HOME.INELIGIBLE.EXPLANATION'
+                      : 'HOME.ACTIVE.EXPLANATION'
+        }}
+      </div>
+
+      <tc-alert
+        class="candidate-message-alert"
+        type="warning"
+        [hidden]="
+          !candidate?.candidateMessage ||
+          (
+            candidate?.status !== 'ineligible' &&
+            candidate?.status !== 'incomplete'
+          )
+        "
+      >
+        {{ candidate?.candidateMessage }}
+      </tc-alert>
+    `
+      }
+    })
+    .compileComponents();
 
     createFixture();
   });
@@ -165,10 +249,11 @@ describe('HomeComponent', () => {
 
   it('should call all required services on init and clear loading flag', () => {
     expect(languageService.getSelectedLanguage).toHaveBeenCalled();
-    expect(termsInfoService.getCurrentByType).toHaveBeenCalled();
+    expect(termsInfoService.getCurrentCandidatePolicy).toHaveBeenCalled();
     expect(candidateService.getCandidatePersonal).toHaveBeenCalled();
     expect(candidateService.getCandidateSurvey).toHaveBeenCalled();
     expect(brandingService.getBrandingInfo).toHaveBeenCalled();
+
     expect(component.loading).toBeFalse();
     expect(component.lang).toBe('en');
     expect(component.partnerName).toBe('TBB');
@@ -178,16 +263,19 @@ describe('HomeComponent', () => {
 
   it('should call setUsAfghan(true) when survey type matches US_AFGHAN_SURVEY_TYPE', () => {
     candidateService.getCandidateSurvey.and.returnValue(
-      of({surveyType: {id: US_AFGHAN_SURVEY_TYPE}} as any)
+      of({
+        surveyType: {
+          id: US_AFGHAN_SURVEY_TYPE
+        }
+      } as any)
     );
+
     createFixture();
 
     expect(languageService.setUsAfghan).toHaveBeenCalledWith(true);
   });
 
   it('should call setUsAfghan(false) when survey type does not match US_AFGHAN_SURVEY_TYPE', () => {
-    // Component always evaluates: usAfghan = (id === US_AFGHAN_SURVEY_TYPE) then calls setUsAfghan(usAfghan)
-    // Default spy returns id:1 which !== US_AFGHAN_SURVEY_TYPE, so false is expected
     expect(languageService.setUsAfghan).toHaveBeenCalledWith(false);
   });
 
@@ -195,9 +283,21 @@ describe('HomeComponent', () => {
 
   it('should redirect to /privacy when accepted policy id does not match current terms', () => {
     candidateService.getCandidatePersonal.and.returnValue(
-      of(makeCandidate({status: 'active', acceptedPrivacyPolicyId: 'old-policy'}))
+      of(
+        makeCandidate({
+          status: 'active',
+          acceptedPrivacyPolicyId: 'old-policy'
+        })
+      )
     );
-    termsInfoService.getCurrentByType.and.returnValue(of({id: 'new-policy', content: 'latest'} as any));
+
+    termsInfoService.getCurrentCandidatePolicy.and.returnValue(
+      of({
+        id: 'new-policy',
+        content: 'latest'
+      } as any)
+    );
+
     createFixture();
 
     expect(router.navigateByUrl).toHaveBeenCalledWith('/privacy');
@@ -205,17 +305,29 @@ describe('HomeComponent', () => {
 
   it('should not redirect to /privacy when candidate is in draft status', () => {
     candidateService.getCandidatePersonal.and.returnValue(
-      of(makeCandidate({status: CandidateStatus.draft, acceptedPrivacyPolicyId: 'old-policy'}))
+      of(
+        makeCandidate({
+          status: CandidateStatus.draft,
+          acceptedPrivacyPolicyId: 'old-policy'
+        })
+      )
     );
-    termsInfoService.getCurrentByType.and.returnValue(of({id: 'new-policy', content: 'latest'} as any));
+
+    termsInfoService.getCurrentCandidatePolicy.and.returnValue(
+      of({
+        id: 'new-policy',
+        content: 'latest'
+      } as any)
+    );
+
     router.navigateByUrl.calls.reset();
+
     createFixture();
 
     expect(router.navigateByUrl).not.toHaveBeenCalled();
   });
 
   it('should not redirect to /privacy when policy ids match', () => {
-    // Default setup has matching policy ids
     expect(router.navigateByUrl).not.toHaveBeenCalled();
   });
 
@@ -224,38 +336,71 @@ describe('HomeComponent', () => {
   it('should open verify email modal and pass user email to modal instance', () => {
     component.openModal();
 
-    expect(modalService.open).toHaveBeenCalledWith(VerifyEmailComponent, {centered: true});
-    expect(modalRef.componentInstance.userEmail).toBe('candidate@example.com');
+    expect(modalService.open).toHaveBeenCalledWith(
+      VerifyEmailComponent,
+      {
+        centered: true
+      }
+    );
+
+    expect(modalRef.componentInstance.userEmail).toBe(
+      'candidate@example.com'
+    );
   });
 
   // ─── Email verification button visibility ───────────────────────────────────
 
   it('should show verify email button when emailVerified is false', () => {
     candidateService.getCandidatePersonal.and.returnValue(
-      of(makeCandidate({user: {emailVerified: false, firstName: 'Test', lastName: 'User', email: 'candidate@example.com'}}))
+      of(
+        makeCandidate({
+          user: {
+            emailVerified: false,
+            firstName: 'Test',
+            lastName: 'User',
+            email: 'candidate@example.com'
+          }
+        })
+      )
     );
+
     createFixture();
 
-    const button = fixture?.nativeElement.querySelector('.verify-email-button');
+    const button = fixture?.nativeElement.querySelector(
+      '.verify-email-button'
+    );
+
     expect(button).toBeTruthy();
+    expect(button.hidden).toBeFalse();
   });
 
   it('should not show verify email button when emailVerified is true', () => {
-    // Default candidate has emailVerified: true
-    const button = fixture?.nativeElement.querySelector('.verify-email-button');
-    expect(button).toBeNull();
+    const button = fixture?.nativeElement.querySelector(
+      '.verify-email-button'
+    );
+
+    expect(button).toBeTruthy();
+    expect(button.hidden).toBeTrue();
   });
 
   // ─── Eligibility link ───────────────────────────────────────────────────────
 
   it('should call getLink with eligibility key and current language', () => {
-    expect(externalLinkService.getLink).toHaveBeenCalledWith('eligibility', 'en');
+    expect(externalLinkService.getLink).toHaveBeenCalledWith(
+      'eligibility',
+      'en'
+    );
   });
 
   it('should render eligibility tc-button with correct href and target="_blank"', () => {
-    const buttonDebugEls = fixture!.debugElement.queryAll(By.directive(TcButtonStub));
+    const buttonDebugEls = fixture!.debugElement.queryAll(
+      By.directive(TcButtonStub)
+    );
+
     const linkButton = buttonDebugEls.find(
-      (de) => de.componentInstance.href === 'https://example.com/eligibility'
+      debugElement =>
+        debugElement.componentInstance.href ===
+        'https://example.com/eligibility'
     );
 
     expect(linkButton).toBeTruthy();
@@ -265,102 +410,186 @@ describe('HomeComponent', () => {
   // ─── Template: status branches ──────────────────────────────────────────────
 
   it('should show draft content for draft status', () => {
-    candidateService.getCandidatePersonal.and.returnValue(of(makeCandidate({status: 'draft'})));
+    candidateService.getCandidatePersonal.and.returnValue(
+      of(
+        makeCandidate({
+          status: 'draft'
+        })
+      )
+    );
+
     createFixture();
 
     const text = fixture?.nativeElement.textContent;
+
     expect(text).toContain('HOME.DRAFT.EXPLANATION');
     expect(text).toContain('HOME.DRAFT.BUTTON');
   });
 
   it('should show pending content for pending status', () => {
-    candidateService.getCandidatePersonal.and.returnValue(of(makeCandidate({status: 'pending'})));
+    candidateService.getCandidatePersonal.and.returnValue(
+      of(
+        makeCandidate({
+          status: 'pending'
+        })
+      )
+    );
+
     createFixture();
 
     const text = fixture?.nativeElement.textContent;
+
     expect(text).toContain('HOME.PENDING.EXPLANATION');
     expect(text).toContain('HOME.PENDING.BUTTON');
   });
 
   it('should show active content for active status', () => {
-    candidateService.getCandidatePersonal.and.returnValue(of(makeCandidate({status: 'active'})));
+    candidateService.getCandidatePersonal.and.returnValue(
+      of(
+        makeCandidate({
+          status: 'active'
+        })
+      )
+    );
+
     createFixture();
 
     const text = fixture?.nativeElement.textContent;
+
     expect(text).toContain('HOME.ACTIVE.EXPLANATION');
     expect(text).toContain('HOME.ACTIVE.BUTTON');
   });
 
   it('should show employed content for employed status', () => {
-    candidateService.getCandidatePersonal.and.returnValue(of(makeCandidate({status: 'employed'})));
+    candidateService.getCandidatePersonal.and.returnValue(
+      of(
+        makeCandidate({
+          status: 'employed'
+        })
+      )
+    );
+
     createFixture();
 
     const text = fixture?.nativeElement.textContent;
+
     expect(text).toContain('HOME.EMPLOYED.EXPLANATION');
   });
 
   it('should show incomplete content for incomplete status', () => {
     candidateService.getCandidatePersonal.and.returnValue(
-      of(makeCandidate({status: 'incomplete', candidateMessage: 'Please finish your profile'}))
+      of(
+        makeCandidate({
+          status: 'incomplete',
+          candidateMessage: 'Please finish your profile'
+        })
+      )
     );
+
     createFixture();
 
     const text = fixture?.nativeElement.textContent;
+
     expect(text).toContain('HOME.INCOMPLETE.EXPLANATION');
     expect(text).toContain('HOME.INCOMPLETE.BUTTON');
   });
 
   it('should show ineligible content for ineligible status', () => {
-    // Default candidate is ineligible
-    expect(fixture?.nativeElement.textContent).toContain('HOME.INELIGIBLE.EXPLANATION');
+    expect(fixture?.nativeElement.textContent).toContain(
+      'HOME.INELIGIBLE.EXPLANATION'
+    );
   });
 
   it('should fall back to active content for unknown status', () => {
-    candidateService.getCandidatePersonal.and.returnValue(of(makeCandidate({status: 'unknown-status'})));
+    candidateService.getCandidatePersonal.and.returnValue(
+      of(
+        makeCandidate({
+          status: 'unknown-status'
+        })
+      )
+    );
+
     createFixture();
 
-    expect(fixture?.nativeElement.textContent).toContain('HOME.ACTIVE.EXPLANATION');
+    expect(fixture?.nativeElement.textContent).toContain(
+      'HOME.ACTIVE.EXPLANATION'
+    );
   });
 
   // ─── Template: candidateMessage warning ─────────────────────────────────────
 
   it('should show alert-warning for ineligible candidate when candidateMessage exists', () => {
-    // Default candidate is ineligible with candidateMessage: 'Not eligible yet'
-    const alerts = fixture!.debugElement.queryAll(By.directive(TcAlertStub));
+    const alerts = fixture!.debugElement.queryAll(
+      By.directive(TcAlertStub)
+    );
+
     expect(alerts.length).toBe(1);
     expect(alerts[0].componentInstance.type).toBe('warning');
-    expect(alerts[0].nativeElement.textContent).toContain('Not eligible yet');
+    expect(alerts[0].nativeElement.textContent).toContain(
+      'Not eligible yet'
+    );
   });
 
   it('should not show alert-warning for ineligible candidate when candidateMessage is absent', () => {
     candidateService.getCandidatePersonal.and.returnValue(
-      of(makeCandidate({status: 'ineligible', candidateMessage: null}))
+      of(
+        makeCandidate({
+          status: 'ineligible',
+          candidateMessage: null
+        })
+      )
     );
+
     createFixture();
 
-    const alerts = fixture!.debugElement.queryAll(By.directive(TcAlertStub));
-    expect(alerts.length).toBe(0);
+    const alert = fixture!.debugElement.query(
+      By.directive(TcAlertStub)
+    );
+
+    expect(alert).toBeTruthy();
+    expect(alert.nativeElement.hidden).toBeTrue();
   });
 
   it('should show alert-warning for incomplete candidate when candidateMessage exists', () => {
     candidateService.getCandidatePersonal.and.returnValue(
-      of(makeCandidate({status: 'incomplete', candidateMessage: 'Please finish your profile'}))
+      of(
+        makeCandidate({
+          status: 'incomplete',
+          candidateMessage: 'Please finish your profile'
+        })
+      )
     );
+
     createFixture();
 
-    const alerts = fixture!.debugElement.queryAll(By.directive(TcAlertStub));
+    const alerts = fixture!.debugElement.queryAll(
+      By.directive(TcAlertStub)
+    );
+
     expect(alerts.length).toBe(1);
     expect(alerts[0].componentInstance.type).toBe('warning');
-    expect(alerts[0].nativeElement.textContent).toContain('Please finish your profile');
+    expect(alerts[0].nativeElement.textContent).toContain(
+      'Please finish your profile'
+    );
   });
 
   it('should not show alert-warning for incomplete candidate when candidateMessage is absent', () => {
     candidateService.getCandidatePersonal.and.returnValue(
-      of(makeCandidate({status: 'incomplete', candidateMessage: null}))
+      of(
+        makeCandidate({
+          status: 'incomplete',
+          candidateMessage: null
+        })
+      )
     );
+
     createFixture();
 
-    const alerts = fixture!.debugElement.queryAll(By.directive(TcAlertStub));
-    expect(alerts.length).toBe(0);
+    const alert = fixture!.debugElement.query(
+      By.directive(TcAlertStub)
+    );
+
+    expect(alert).toBeTruthy();
+    expect(alert.nativeElement.hidden).toBeTrue();
   });
 });

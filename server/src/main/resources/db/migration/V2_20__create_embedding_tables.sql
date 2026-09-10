@@ -1,0 +1,51 @@
+create table if not exists embedding_model (
+    id bigserial PRIMARY KEY,
+    configuration_version text not null,
+    model_name            text not null,
+    model_key             text not null unique,
+    model_url             text,
+    provider              text not null,
+    dimensions            int not null,
+    status                text not null
+);
+
+-- Create the initial embedding model
+INSERT INTO embedding_model (
+    configuration_version,
+    model_name,
+    model_key,
+    model_url,
+    provider,
+    dimensions,
+    status
+)
+VALUES (
+           'SPACY_PREPROCESSING_V3',
+           'sentence-transformers/all-MiniLM-L6-v2',
+           'MINILM_L6_SPACY_V3',
+           'https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2',
+           'SENTENCE_TRANSFORMERS',
+           384,
+           'BUILDING'
+       );
+
+-- Create the initial table used for matching candidates by job experiences
+CREATE TABLE job_experience_embedding_minilm_l6_spacy_v3 (
+      id bigserial PRIMARY KEY,
+
+      candidate_job_experience_id bigint NOT NULL
+          REFERENCES candidate_job_experience(id)
+              ON DELETE CASCADE,
+      embedding_model_id bigint NOT NULL
+          REFERENCES embedding_model(id),
+      embedding vector(384) NOT NULL,
+      updated_at timestamptz NOT NULL DEFAULT now(),
+
+      CONSTRAINT uq_job_experience_embedding_384
+          UNIQUE (candidate_job_experience_id, embedding_model_id)
+);
+
+CREATE INDEX idx_job_experience_embedding_minilm_l6_spacy_v3
+    ON job_experience_embedding_minilm_l6_spacy_v3
+        USING hnsw (embedding vector_cosine_ops);
+

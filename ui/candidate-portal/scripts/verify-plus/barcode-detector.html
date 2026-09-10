@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Verify+ BarcodeDetector Diagnostic</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      margin: 24px;
+    }
+
+    img {
+      max-width: 480px;
+      display: block;
+      margin-top: 12px;
+      border: 1px solid #ddd;
+    }
+
+    pre {
+      margin-top: 12px;
+      padding: 12px;
+      background: #f5f5f5;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+  </style>
+</head>
+<body>
+<h1>Verify+ BarcodeDetector Diagnostic</h1>
+
+<p>Select an image manually or allow the default sample to load.</p>
+<input id="file" type="file" accept="image/*">
+<img id="img" alt="barcode sample">
+<pre id="out"></pre>
+
+<script>
+  const out = document.getElementById('out');
+  const img = document.getElementById('img');
+  const picker = document.getElementById('file');
+
+  const params = new URLSearchParams(window.location.search);
+  const defaultImage = params.get('img') || '/docs/verify-plus/unhcr-sample.png';
+
+  function log(...parts) {
+    out.textContent += parts.join(' ') + '\n';
+  }
+
+  async function detect(source) {
+    out.textContent = '';
+    log('BarcodeDetector in window:', 'BarcodeDetector' in window);
+
+    if (!('BarcodeDetector' in window)) {
+      log('Not supported in this browser.');
+      return;
+    }
+
+    const supportedFormats = await BarcodeDetector.getSupportedFormats();
+    log('supported formats:', supportedFormats.join(', '));
+
+    const detector = new BarcodeDetector({formats: ['qr_code']});
+    img.src = source;
+    await img.decode();
+
+    log('image:', `${img.naturalWidth}x${img.naturalHeight}`);
+    const codes = await detector.detect(img);
+    log('detected:', String(codes.length));
+
+    codes.forEach((code, index) => {
+      const rawValue = code.rawValue || '';
+      log(`#${index} len=${rawValue.length}`, rawValue.slice(0, 120));
+    });
+  }
+
+  picker.addEventListener('change', event => {
+    const file = event.target.files && event.target.files[0];
+    if (file) {
+      detect(URL.createObjectURL(file)).catch(error => {
+        log('error:', error && error.message ? error.message : String(error));
+      });
+    }
+  });
+
+  detect(defaultImage).catch(error => {
+    log('error:', error && error.message ? error.message : String(error));
+  });
+</script>
+</body>
+</html>

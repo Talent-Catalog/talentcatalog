@@ -90,6 +90,7 @@ import org.tctalent.server.request.list.UpdateSavedListInfoRequest;
 import org.tctalent.server.request.search.UpdateSavedSearchRequest;
 import org.tctalent.server.security.AuthService;
 import org.tctalent.server.security.TcUserDetails;
+import org.tctalent.server.service.api.JobMatchingInfo;
 import org.tctalent.server.service.api.SkillName;
 import org.tctalent.server.service.db.CandidateOpportunityService;
 import org.tctalent.server.service.db.CandidateSavedListService;
@@ -450,12 +451,20 @@ public class JobServiceImpl implements JobService {
     }
 
     @Override
-    public @NonNull List<SkillName> getSkills(long id, @NonNull String lang) {
+    public @NonNull JobMatchingInfo getJobMatchingInfo(long id, @NonNull String lang) {
         SalesforceJobOpp jobOpp = salesforceJobOppRepository.findById(id)
             .orElseThrow(() -> new NoSuchObjectException(SalesforceJobOpp.class, id));
 
         String text = extractJobText(jobOpp);
-        return skillsService.extractSkillNames(text, lang);
+
+        List<SkillName> skillNames = skillsService.extractSkillNames(text, lang);
+
+        JobMatchingInfo jobMatchingInfo = new JobMatchingInfo();
+        jobMatchingInfo.setJobName(jobOpp.getName());
+        jobMatchingInfo.setSkillNames(skillNames);
+        jobMatchingInfo.setDescription(text);
+
+        return jobMatchingInfo;
     }
 
     private String extractJobText(SalesforceJobOpp jobOpp) {
@@ -482,7 +491,7 @@ public class JobServiceImpl implements JobService {
         if (StringUtils.hasText(text)) {
             sb.append(text);
             //We want whitespace surrounding delimiter so that word boundaries are detected.
-            sb.append("\n||\n");
+            sb.append("\n...\n");
         }
     }
 

@@ -196,6 +196,14 @@ export class CandidateSourceComponent implements OnInit, OnChanges, OnDestroy {
     showReport.componentInstance.message = "Paste the link (" + text + ") where you want";
 
   }
+  
+  doSearchList() {
+    //Route to NewSearch Page with the job id as a parameter.
+    let listId = this.candidateSource?.id;
+    if (listId) {
+      this.router.navigate(['/searches'], {queryParams: {tab: 'NewSearch', list: listId}});
+    }
+  }
 
   doSelectColumns() {
     this.selectColumns.emit(this.candidateSource);

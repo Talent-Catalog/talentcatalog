@@ -29,6 +29,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.lang.Nullable;
 import org.springframework.util.CollectionUtils;
 import org.tctalent.server.service.db.ExportColumnsService;
@@ -49,6 +51,8 @@ import org.tctalent.server.service.db.ExportColumnsService;
  *
  * @author John Cameron
  */
+@Getter
+@Setter
 @MappedSuperclass
 public abstract class AbstractCandidateSource extends AbstractAuditableDomainObject<Long>
     implements HasPublicId {
@@ -188,26 +192,10 @@ public abstract class AbstractCandidateSource extends AbstractAuditableDomainObj
         this.displayedFieldsShort = displayedFieldsShort;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public Boolean getFixed() {
-        return fixed;
-    }
-
     public void setFixed(Boolean fixed) {
         if (fixed != null) {
             this.fixed = fixed;
         }
-    }
-
-    public Boolean getGlobal() {
-        return global;
     }
 
     public void setGlobal(Boolean global) {
@@ -235,20 +223,8 @@ public abstract class AbstractCandidateSource extends AbstractAuditableDomainObj
         this.sfJobOpp = sfJobOpp;
     }
 
-    public Status getStatus() {
-        return status;
-    }
-
-    public void setStatus(Status status) {
-        this.status = status;
-    }
-
 
     //Support for watchers
-
-    public String getWatcherIds() {
-        return watcherIds;
-    }
 
     public void setWatcherIds(@Nullable String watcherIds) {
         this.watcherIds = watcherIds;

@@ -41,7 +41,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -80,9 +80,9 @@ class CandidateOpportunityAdminApiTest extends ApiTestBase {
                     1
             );
 
-    @MockBean CandidateOpportunityService candidateOpportunityService;
-    @MockBean CountryService countryService;
-    @MockBean SalesforceService salesforceService;
+    @MockitoBean CandidateOpportunityService candidateOpportunityService;
+    @MockitoBean CountryService countryService;
+    @MockitoBean SalesforceService salesforceService;
 
     @Autowired MockMvc mockMvc;
     @Autowired ObjectMapper objectMapper;

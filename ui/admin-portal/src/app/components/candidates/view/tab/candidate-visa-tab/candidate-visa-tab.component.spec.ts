@@ -31,7 +31,7 @@ import {of} from "rxjs";
 import {MockJob} from "../../../../../MockData/MockJob";
 import {CandidateVisa} from "../../../../../model/candidate";
 import {Country} from "../../../../../model/country";
-import {ExportPdfComponent} from "../../../../util/export-pdf/export-pdf.component";
+import {PrintPageComponent} from "../../../../util/export-pdf/print-page.component";
 
 describe('CandidateVisaTabComponent', () => {
   let component: CandidateVisaTabComponent;
@@ -51,7 +51,7 @@ describe('CandidateVisaTabComponent', () => {
 
     await TestBed.configureTestingModule({
       imports: [HttpClientTestingModule,FormsModule,ReactiveFormsModule, NgSelectModule],
-      declarations: [CandidateVisaTabComponent,ExportPdfComponent, HasNameSelectorComponent],
+      declarations: [CandidateVisaTabComponent,PrintPageComponent, HasNameSelectorComponent],
       providers: [
         UntypedFormBuilder,
         { provide: CandidateService, useValue: candidateServiceMock },

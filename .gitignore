@@ -365,3 +365,9 @@ server/src/test/resources/dump.sql
 /infra/aws/terraform/opc-prod/ssm-parameters.sh
 performance-tests/src/gatling/resources/users.csv
 /.idea
+
+# Playwright generated artifacts
+/ui/candidate-portal/playwright-report/
+/ui/candidate-portal/test-results/
+/ui/candidate-portal/blob-report/
+/ui/candidate-portal/playwright/.cache/

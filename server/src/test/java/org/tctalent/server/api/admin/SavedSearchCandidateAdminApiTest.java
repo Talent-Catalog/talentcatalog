@@ -41,18 +41,20 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.tctalent.server.api.dto.CandidateBuilderSelector;
 import org.tctalent.server.data.SavedListTestData;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.repository.db.read.dto.CandidateReadDto;
 import org.tctalent.server.request.candidate.SavedSearchGetRequest;
+import org.tctalent.server.request.candidate.SearchCandidateRequest;
+import org.tctalent.server.service.db.CandidateBestNMatchingService;
 import org.tctalent.server.service.db.CandidateDtoService;
 import org.tctalent.server.service.db.CandidateService;
 import org.tctalent.server.service.db.SavedSearchService;
@@ -72,7 +74,7 @@ class SavedSearchCandidateAdminApiTest extends ApiTestBase {
   private static final String EXPORT_CSV_PATH = "/{id}/export/csv";
   private static final String SEARCH_PAGED_PATH = "/{id}/search-paged";
   private static final Long SAVED_SEARCH_ID = 123L;
-
+  private static final String SEARCH_PAGED_OLD_FETCH_PATH = "/{id}/search-paged-old-fetch";
   private final Page<Candidate> candidatePage =
       new PageImpl<>(
           getListOfCandidates(),
@@ -87,14 +89,16 @@ class SavedSearchCandidateAdminApiTest extends ApiTestBase {
           1
       );
 
-  @MockBean
+  @MockitoBean
   SavedSearchService savedSearchService;
-  @MockBean
+  @MockitoBean
   CandidateService candidateService;
-  @MockBean
+  @MockitoBean
   CandidateDtoService candidateDtoService;
-  @MockBean
+  @MockitoBean
   CandidateBuilderSelector candidateBuilderSelector;
+  @MockitoBean
+  CandidateBestNMatchingService candidateBestNMatchingService;
 
   @Autowired
   MockMvc mockMvc;
@@ -128,6 +132,11 @@ class SavedSearchCandidateAdminApiTest extends ApiTestBase {
     given(savedSearchService
         .getSelectionListForLoggedInUser(anyLong()))
         .willReturn(SavedListTestData.getSavedList());
+
+    SearchCandidateRequest searchCandidateRequest = new SearchCandidateRequest();
+    given(savedSearchService
+        .loadSavedSearch(anyLong()))
+        .willReturn(searchCandidateRequest);
 
     mockMvc.perform(post(BASE_PATH + SEARCH_PAGED_PATH.replace("{id}", Long.toString(SAVED_SEARCH_ID)))
             .with(csrf())
@@ -189,4 +198,35 @@ class SavedSearchCandidateAdminApiTest extends ApiTestBase {
       any(PrintWriter.class));
   }
 
+  @Test
+  @DisplayName("saved search candidate search paged old fetch succeeds")
+  void savedSearchCandidateSearchPagedOldFetchSucceeds() throws Exception {
+    SavedSearchGetRequest request = new SavedSearchGetRequest();
+
+    given(savedSearchService.searchCandidates(anyLong(), any(SavedSearchGetRequest.class)))
+        .willReturn(candidatePage);
+
+    mockMvc.perform(post(BASE_PATH + SEARCH_PAGED_OLD_FETCH_PATH
+            .replace("{id}", Long.toString(SAVED_SEARCH_ID)))
+            .with(csrf())
+            .header("Authorization", "Bearer " + "jwt-token")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(request))
+            .accept(MediaType.APPLICATION_JSON))
+
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(jsonPath("$.number", is(0)))
+        .andExpect(jsonPath("$.numberOfElements", is(3)))
+        .andExpect(jsonPath("$.totalPages", is(1)))
+        .andExpect(jsonPath("$.hasPrevious", is(false)))
+        .andExpect(jsonPath("$.hasNext", is(false)))
+        .andExpect(jsonPath("$.content", notNullValue()))
+        .andExpect(jsonPath("$.content[0].selected", is(false)))
+        .andExpect(jsonPath("$.content[0].status", is("draft")));
+
+    verify(savedSearchService).searchCandidates(anyLong(), any(SavedSearchGetRequest.class));
+    verify(savedSearchService).setCandidateContext(anyLong(), any(Page.class));
+  }
 }

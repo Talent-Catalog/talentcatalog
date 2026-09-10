@@ -13,39 +13,80 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-import {CandidateTaskTabComponent} from "./candidate-task-tab.component";
-import {ComponentFixture, TestBed} from "@angular/core/testing";
-import {ViewCandidateTasksComponent} from "../../tasks/view-candidate-tasks.component";
-import {MockCandidate} from "../../../../../MockData/MockCandidate";
-import {HttpClientTestingModule} from "@angular/common/http/testing";
-import {FormsModule, ReactiveFormsModule} from "@angular/forms";
-import {NgSelectModule} from "@ng-select/ng-select";
-import {NgbPopoverModule} from "@ng-bootstrap/ng-bootstrap";
+
+import {Component, Input} from '@angular/core';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {By} from '@angular/platform-browser';
+
+import {MockCandidate} from '../../../../../MockData/MockCandidate';
+import {Candidate} from '../../../../../model/candidate';
+import {CandidateTaskTabComponent} from './candidate-task-tab.component';
+
+@Component({
+  selector: 'app-view-candidate-tasks',
+  template: ''
+})
+class MockViewCandidateTasksComponent {
+  @Input() candidate: Candidate;
+  @Input() editable: boolean;
+}
 
 describe('CandidateTaskTabComponent', () => {
   let component: CandidateTaskTabComponent;
   let fixture: ComponentFixture<CandidateTaskTabComponent>;
-  const mockCandidate = new MockCandidate();
+  let mockCandidate: Candidate;
+
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule,FormsModule,ReactiveFormsModule, NgSelectModule, NgbPopoverModule],
       declarations: [
         CandidateTaskTabComponent,
-        ViewCandidateTasksComponent
+        MockViewCandidateTasksComponent
       ]
-    })
-    .compileComponents();
-  });
+    }).compileComponents();
 
-  beforeEach(() => {
     fixture = TestBed.createComponent(CandidateTaskTabComponent);
     component = fixture.componentInstance;
-    component.candidate = mockCandidate;
-    fixture.detectChanges();
+    mockCandidate = new MockCandidate();
   });
 
   it('should create', () => {
+    component.candidate = mockCandidate;
+
+    fixture.detectChanges();
+
     expect(component).toBeTruthy();
+  });
+
+  it('should initialize without changing its inputs', () => {
+    component.candidate = mockCandidate;
+    component.editable = true;
+
+    component.ngOnInit();
+
+    expect(component.candidate).toBe(mockCandidate);
+    expect(component.editable).toBeTrue();
+  });
+
+  it('should pass the candidate and editable=true to the task view', () => {
+    component.candidate = mockCandidate;
+    component.editable = true;
+
+    fixture.detectChanges();
+
+    const taskView = getTaskView();
+    expect(taskView.candidate).toBe(mockCandidate);
+    expect(taskView.editable).toBeTrue();
+  });
+
+  it('should pass editable=false to the task view', () => {
+    component.candidate = mockCandidate;
+    component.editable = false;
+
+    fixture.detectChanges();
+
+    const taskView = getTaskView();
+    expect(taskView.candidate).toBe(mockCandidate);
+    expect(taskView.editable).toBeFalse();
   });
 
   it('should display tasks correctly based on candidate data', () => {
@@ -58,4 +99,11 @@ describe('CandidateTaskTabComponent', () => {
     expect(mockViewCandidateTasksComponent.candidate).toBe(candidateData);
     expect(mockViewCandidateTasksComponent.editable).toBeTrue();
   });
+
+
+  function getTaskView(): MockViewCandidateTasksComponent {
+    return fixture.debugElement
+    .query(By.directive(MockViewCandidateTasksComponent))
+      .componentInstance;
+  }
 });

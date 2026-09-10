@@ -163,13 +163,6 @@ public interface CandidateRepository extends CacheEvictingRepository<Candidate, 
     String sourceCountryRestriction = " and c.country in (:userSourceCountries)";
     String excludeDeleted = " and c.status <> 'deleted'";
 
-    @Query(" select distinct c from Candidate c "
-            + " where lower(c.candidateNumber) like lower(:number)"
-            + excludeDeleted
-            + sourceCountryRestriction)
-    Optional<Candidate> findByCandidateNumberRestricted(@Param("number") String number,
-                                              @Param("userSourceCountries") Set<Country> userSourceCountries);
-
     @Query(" select distinct c from Candidate c left join c.user u "
             + " where lower(u.email) like lower(:candidateEmail) "
             + excludeDeleted
@@ -180,13 +173,13 @@ public interface CandidateRepository extends CacheEvictingRepository<Candidate, 
                                          Pageable pageable);
 
     @Query("""
-      select distinct c 
-      from Candidate c 
-      left join c.user u 
-      where lower(u.firstName) like lower(:candidateName)
-         or lower(u.lastName) like lower(:candidateName) 
+      select distinct c
+      from Candidate c
+      left join c.user u
+      where (lower(u.firstName) like lower(:candidateName)
+         or lower(u.lastName) like lower(:candidateName)
          or lower(concat(u.firstName, ' ', u.lastName)) like lower(:candidateName)
-         or lower(concat(u.lastName, ' ', u.firstName)) like lower(:candidateName)
+         or lower(concat(u.lastName, ' ', u.firstName)) like lower(:candidateName))
       """ + excludeDeleted + sourceCountryRestriction)
     Page<Candidate> searchCandidateName(@Param("candidateName") String candidateName,
         @Param("userSourceCountries") Set<Country> userSourceCountries,
@@ -969,6 +962,19 @@ public interface CandidateRepository extends CacheEvictingRepository<Candidate, 
         @Param("dob") LocalDate dob,
         @Param("lastName") String lastName,
         @Param("firstName") String firstName,
+        @Param("id") long id
+    );
+
+    @Query(
+        """
+        SELECT c FROM Candidate c
+        WHERE c.status IN :statuses
+          AND c.unhcrNumber = :unhcrNumber
+          AND c.id != :id
+        """)
+    List<Candidate> findOthersByUnhcrNumber(
+        @Param("statuses") List<CandidateStatus> statuses,
+        @Param("unhcrNumber") String unhcrNumber,
         @Param("id") long id
     );
 

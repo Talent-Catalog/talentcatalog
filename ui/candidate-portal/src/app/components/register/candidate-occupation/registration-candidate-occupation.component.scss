@@ -13,3 +13,121 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
+
+@import "../../../../scss/color-mixins";
+
+.occupation-row-content {
+  padding: 0.5rem 0.75rem;
+  min-height: 72px;
+}
+
+.occupation-row {
+  cursor: pointer;
+}
+
+.occupation-principal-badge {
+  display: inline-block;
+}
+
+@media (max-width: 767.98px) {
+  // The row is already tight for space on mobile (icon-only actions pinned to
+  // the corner); the badge is redundant there since the radio + selected-row
+  // highlight already show which occupation is principal.
+  .occupation-principal-badge {
+    display: none;
+  }
+}
+
+// Single inline row (radio | title+years | icon-only actions) at every size,
+// rather than reflowing into a separate actions row on mobile.
+.occupation-row-actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+// tc-input/ng-select read their height/padding from CSS custom properties (with
+// their normal sizing as the fallback), so this just sets smaller values on the
+// card - real inheritance, not an ::ng-deep override fighting specificity.
+.occupation-draft {
+  --tc-select-height: 32px;
+  --tc-input-padding-y: 0.3rem;
+  --tc-input-padding-x: 0.625rem;
+
+  @media (min-width: 768px) {
+    .tc-select,
+    tc-input {
+      display: block;
+      width: 75%;
+    }
+  }
+}
+
+.occupation-row.occupation-row-selected {
+  border-width: 2px;
+  @include border-color-primary;
+}
+
+// tc-button's outline/error styling is shared app-wide, but "Remove" here should
+// read as a quiet, low-emphasis action until the user actually reaches for it -
+// only then does it commit to the full destructive red. (Legible at rest, just
+// not competing with the primary selection/edit actions until hovered.)
+::ng-deep .occupation-remove-btn .btn-outline.btn-error {
+  color: color(red, 400);
+  border-color: color(red, 300);
+
+  &:hover, &:focus-visible {
+    color: color(red, 500);
+    border-color: color(red, 500);
+    background-color: color(red, 50);
+  }
+}
+
+.occupation-draft-heading {
+  font-size: 0.8rem;
+  letter-spacing: 0.03em;
+}
+
+.occupation-phase-title {
+  font-size: 1.25rem;
+  margin-bottom: 0.25rem;
+}
+
+.occupation-added-confirmation {
+  // tc-alert supplies its own success styling/icon; just carry over the same
+  // entrance motion as the phase headings so it doesn't look bolted on.
+  display: block;
+  animation: occupation-phase-heading-in 220ms ease-out;
+}
+
+// Plays whenever this heading is freshly inserted into the DOM - both when the
+// initial "Add your occupations" phase renders and when it's swapped out for
+// "Select your principal occupation" after the first save. Plain CSS rather
+// than Angular's animations API, since BrowserAnimationsModule isn't wired up
+// in this app and this doesn't need anything more than an entrance animation.
+.occupation-phase-heading {
+  animation: occupation-phase-heading-in 220ms ease-out;
+
+  &:focus-visible {
+    outline: 2px solid color(primary, 500);
+    outline-offset: 4px;
+  }
+}
+
+@keyframes occupation-phase-heading-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .occupation-phase-heading,
+  .occupation-added-confirmation {
+    animation: none;
+  }
+}

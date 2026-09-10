@@ -18,7 +18,7 @@ package org.tctalent.server.casi.api;
 
 import java.util.Locale;
 import java.util.Optional;
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -52,6 +52,8 @@ import org.tctalent.server.service.db.CandidateService;
 import org.tctalent.server.service.db.CounterpartyService;
 import org.tctalent.server.service.db.TermsInfoService;
 import org.tctalent.server.service.db.UserService;
+import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.context.Context;
 
 /**
  * Candidate-facing generic CASI endpoints.
@@ -61,7 +63,6 @@ import org.tctalent.server.service.db.UserService;
  */
 @RestController
 @RequestMapping("/api/portal/services")
-@RequiredArgsConstructor
 @PreAuthorize("hasRole('USER')")
 public class ServicesPortalController {
 
@@ -73,6 +74,32 @@ public class ServicesPortalController {
   private final CounterpartyService counterpartyService;
   private final CandidateService candidateService;
   private final TermsInfoService termsInfoService;
+  private final TemplateEngine termsTemplateEngine;
+
+  /**
+   * Note - we can't use Lombok RequiredArgsConstructor because currently Lombok doesn't copy
+   * the @Qualifier annotation to the constructor.
+   */
+  public ServicesPortalController(
+      AuthService authService,
+      UserService userService,
+      CandidateServiceRegistry services,
+      EligibilityPolicyRegistry eligibilityPolicies,
+      AgreementService agreementService,
+      CounterpartyService counterpartyService,
+      CandidateService candidateService,
+      TermsInfoService termsInfoService,
+      @Qualifier("termsTemplateEngine") TemplateEngine termsTemplateEngine) {
+    this.authService = authService;
+    this.userService = userService;
+    this.services = services;
+    this.eligibilityPolicies = eligibilityPolicies;
+    this.agreementService = agreementService;
+    this.counterpartyService = counterpartyService;
+    this.candidateService = candidateService;
+    this.termsInfoService = termsInfoService;
+    this.termsTemplateEngine = termsTemplateEngine;
+  }
 
   @GetMapping("/{provider}/{serviceCode}/eligibility")
   public boolean isEligible(@PathVariable String provider, @PathVariable String serviceCode) {
@@ -116,7 +143,9 @@ public class ServicesPortalController {
     }
 
     TermsInfo termsInfo = termsInfoService.getCurrentByType(termsType.get());
-    return ResponseEntity.ok(new ServiceProviderTermsDto(termsInfo.getId(), termsInfo.getContent()));
+    Counterparty counterparty = getServiceProviderCounterparty(providerFor(provider, serviceCode));
+    String renderedContent = renderTermsContent(termsInfo.getContent(), counterparty.getDisplayName());
+    return ResponseEntity.ok(new ServiceProviderTermsDto(termsInfo.getId(), renderedContent));
   }
 
   @GetMapping("/{provider}/{serviceCode}/agreement/needs-acceptance")
@@ -154,7 +183,9 @@ public class ServicesPortalController {
     }
 
     TermsInfo termsInfo = termsInfoService.get(termsInfoId.get());
-    return ResponseEntity.ok(new ServiceProviderTermsDto(termsInfo.getId(), termsInfo.getContent()));
+    Counterparty counterparty = getServiceProviderCounterparty(providerFor(provider, serviceCode));
+    String renderedContent = renderTermsContent(termsInfo.getContent(), counterparty.getDisplayName());
+    return ResponseEntity.ok(new ServiceProviderTermsDto(termsInfo.getId(), renderedContent));
   }
 
   @GetMapping("/{provider}/{serviceCode}/agreement/opc-dpa/needs-acceptance")
@@ -201,6 +232,12 @@ public class ServicesPortalController {
 
   private CandidateAssistanceService serviceFor(String provider, String serviceCode) {
     return services.forProviderAndServiceCode(provider, serviceCode);
+  }
+
+  private String renderTermsContent(String content, String companyName) {
+    Context context = new Context();
+    context.setVariable("companyName", companyName);
+    return termsTemplateEngine.process(content, context);
   }
 
   private void enforceAgreementAcceptanceIfRequired(CandidateAssistanceService service,

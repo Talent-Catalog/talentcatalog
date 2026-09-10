@@ -289,6 +289,7 @@ public class CandidatePortalApi {
     private DtoBuilder candidateWithCandidateOccupationsDto() {
         return new DtoBuilder()
                 .add("candidateOccupations", candidateOccupationDto())
+                .add("principalOccupation", candidateOccupationDto())
                 ;
     }
 
@@ -497,6 +498,7 @@ public class CandidatePortalApi {
                 .add("relocatedCountry", countryService.selectBuilder())
                 /* OCCUPATIONS */
                 .add("candidateOccupations", candidateOccupationDto())
+                .add("principalOccupation", candidateOccupationDto())
                 /* JOB EXPERIENCE */
                 .add("candidateJobExperiences", jobExperienceDto())
                 /* EDUCATIONS */

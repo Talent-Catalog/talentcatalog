@@ -46,6 +46,10 @@ export class TcRadioComponent implements
   @Input() name: string;
   @Input() value: string | number | boolean;
   @Input() label: string;
+  /** Optional accessible name applied to the native radio input. */
+  @Input() ariaLabel?: string;
+  /** Optional id (or space-separated ids) of element(s) whose text is the native radio input's accessible name. Takes precedence over ariaLabel when both are set. */
+  @Input() ariaLabelledby?: string;
 
   /** Emits whenever the user changes the selection */
   @Output() change = new EventEmitter<string | number | boolean>();

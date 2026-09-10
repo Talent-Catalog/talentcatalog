@@ -222,7 +222,7 @@ module "grn_staging" {
   db_public_access        = true
   db_multi_az             = false
   db_instance_class       = "db.t3.medium"
-  db_engine_version       = "17.5"
+  db_engine_version       = "17"
   db_family               = "postgres17"
   db_major_engine_version = "17"
   db_name                 = "tcplus"
@@ -276,6 +276,7 @@ module "grn_staging" {
   tc_db_copy_config               = "data.sharing/tcCopies.xml"
   tc_destinations                 = "Australia,Belgium,Canada,France,Germany,Ireland,Italy,Slovakia,Spain,United Kingdom,United States"
   tc_skills_extraction_api_url    = "https://test.skills.globalrefugee.net"
+  tc_vector_embedding_api_url     = "https://test.skills.globalrefugee.net"
   web_admin                       = "https://test.globalrefugee.net/admin-portal"
   web_portal                      = "https://test.globalrefugee.net/candidate-portal"
   tc_instance_type                = "GRN"

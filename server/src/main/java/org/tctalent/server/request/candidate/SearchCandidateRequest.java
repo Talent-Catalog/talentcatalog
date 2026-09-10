@@ -26,10 +26,12 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import org.springframework.data.domain.Sort;
+import org.springframework.lang.Nullable;
 import org.tctalent.server.model.db.CandidateFilterByOpps;
 import org.tctalent.server.model.db.CandidateStatus;
 import org.tctalent.server.model.db.Gender;
 import org.tctalent.server.model.db.ReviewStatus;
+import org.tctalent.server.model.db.SavedSearch;
 import org.tctalent.server.model.db.SearchType;
 import org.tctalent.server.model.db.UnhcrStatus;
 import org.tctalent.server.request.PagedSearchRequest;
@@ -39,7 +41,50 @@ import org.tctalent.server.request.PagedSearchRequest;
 @ToString(callSuper = true)
 public class SearchCandidateRequest extends PagedSearchRequest {
 
+    /**
+     * This is text that describes in natural language the candidates that we are looking for.
+     * In the context of job matching, it would correspond to the job description, but it could
+     * also be used for other purposes. It is a textual representation of the requirements or
+     * criteria that the candidates must meet.
+     */
+    private String requirements;
+
+    /**
+     * When a {@link #requirements} is present, it is used to filter the candidates
+     * in two ways:
+     * <ul>
+     *     <li>
+     *         Lexically: based on matched keywords in the description, in particular required
+     *         skills, with each candidate's skills as they appear in their job experiences.
+     *     </li>
+     *     <li>
+     *         Semantically: based on semantic similarity between the description
+     *         and each candidate's various job experiences. Vector embeddings are used to detect
+     *         that semantic similarity.
+     *     </li>
+     * </ul>
+     * <p>
+     *   This lexicalWeight parameter defines how much weight to give to lexical and
+     *   semantic matches.
+     *   It is a float value between 0 and 1, where 0 means that the lexical score will not be used
+     *   at all and 1 means that it will be used completely. The semantic score weight will be
+     *   1 minus the lexical score weight.
+     *   So a value of 0.5 means that lexical and semantic scores will be given equal weight.
+     * </p>
+     */
+    @Nullable
+    private Double lexicalWeight;
+
+    /**
+     * The model key to use for vector embeddings. If not specified, the default model will be used.
+     */
+    private String modelKey;
+
+    /**
+     * @see SavedSearch#getSimpleQueryString()
+     */
     private String simpleQueryString;
+
     @NotNull
     private Long savedSearchId;
     private String keyword;

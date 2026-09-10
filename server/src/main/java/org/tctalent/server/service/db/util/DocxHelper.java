@@ -18,7 +18,6 @@ package org.tctalent.server.service.db.util;
 
 import static org.tctalent.server.service.db.util.DocxFormatterHelper.DOCX_GENERATION_ERROR_MESSAGE;
 
-import java.net.URL;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.ByteArrayResource;
@@ -43,8 +42,6 @@ import org.tctalent.server.model.db.Candidate;
 @Slf4j
 public class DocxHelper {
 
-  private static final String PDF_RESOURCE_BASE_PATH = "/pdf/";
-
   private final CvTemplateHelper cvTemplateHelper;
   private final DocxFormatterHelper docxFormatterHelper;
 
@@ -60,9 +57,7 @@ public class DocxHelper {
   public Resource generateDocx(Candidate candidate, Boolean showName, Boolean showContact) {
     try {
       String xhtml = cvTemplateHelper.renderCvXhtml(candidate, showName, showContact);
-      String resourceBaseUrl = getResourceBaseUrl();
-
-      byte[] docxBytes = docxFormatterHelper.formatXhtmlAsDocx(xhtml, resourceBaseUrl);
+      byte[] docxBytes = docxFormatterHelper.formatXhtmlAsDocx(xhtml, cvTemplateHelper.getResourceBaseUrl());
 
       return new ByteArrayResource(docxBytes);
     } catch (CvGenerationException e) {
@@ -80,29 +75,5 @@ public class DocxHelper {
 
       throw new CvGenerationException(DOCX_GENERATION_ERROR_MESSAGE, e);
     }
-  }
-
-  /**
-   * Returns the base URL used by docx4j to resolve relative resources in the rendered CV XHTML.
-   *
-   * <p>The existing CV template uses resources under {@code classpath:pdf/}. docx4j needs a real
-   * URL string instead of Spring's {@code classpath:} prefix, so this method resolves the classpath
-   * location to a URL.</p>
-   *
-   * @return external URL string for the PDF/CV template resource directory
-   */
-  private String getResourceBaseUrl() {
-    URL resource = getClass().getResource(PDF_RESOURCE_BASE_PATH);
-
-    if (resource == null) {
-      LogBuilder.builder(log)
-          .action("getResourceBaseUrl")
-          .message("PDF resource base path was not found. DOCX images/styles may not resolve.")
-          .logWarn();
-
-      return "";
-    }
-
-    return resource.toExternalForm();
   }
 }

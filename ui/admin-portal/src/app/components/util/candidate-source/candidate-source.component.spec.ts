@@ -22,6 +22,7 @@ import {AuthorizationService} from "../../../services/authorization.service";
 import {AuthenticationService} from "../../../services/authentication.service";
 import {SalesforceService} from "../../../services/salesforce.service";
 import {Router} from "@angular/router";
+import {Location} from "@angular/common";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {CandidateSource, DtoType} from "../../../model/base";
 import {MockCandidateSource} from "../../../MockData/MockCandidateSource";
@@ -53,8 +54,8 @@ describe('CandidateSourceComponent', () => {
       ['canAccessSalesforce','isCandidateSourceMine','isStarredByMe']);
     const authServiceSpy = jasmine.createSpyObj('AuthenticationService', ['getLoggedInUser']);
     const salesforceSpy = jasmine.createSpyObj('SalesforceService', ['joblink']);
-    const routerSpy = jasmine.createSpyObj('Router', ['navigate']);
-    const locationSpy = jasmine.createSpyObj('Location', ['path']);
+    const routerSpy = jasmine.createSpyObj('Router', ['navigate', 'createUrlTree', 'serializeUrl']);
+    const locationSpy = jasmine.createSpyObj('Location', ['path', 'prepareExternalUrl']);
     const modalSpy = jasmine.createSpyObj('NgbModal', ['open']);
     const localStorageServiceSpy = jasmine.createSpyObj('LocalStorageService', ['set', 'get', 'remove']);
 
@@ -195,6 +196,44 @@ describe('CandidateSourceComponent', () => {
       },
     });
     expect(component.error).toBe('Error');
+  });
+
+  it('should copy the external link and show a confirmation modal', () => {
+    router.createUrlTree.and.returnValue({} as any);
+    router.serializeUrl.and.returnValue('/list/1');
+    location.prepareExternalUrl.and.returnValue('/list/1');
+    const modalRef: any = {componentInstance: {}};
+    modalService.open.and.returnValue(modalRef);
+    spyOn(document, 'execCommand');
+
+    component.doCopyLink();
+
+    const expectedText = document.location.origin + '/list/1';
+    expect(document.execCommand).toHaveBeenCalledWith('copy');
+    expect(modalService.open).toHaveBeenCalled();
+    expect(modalRef.componentInstance.title).toBe('Copied link to clipboard');
+    expect(modalRef.componentInstance.showCancel).toBeFalse();
+    expect(modalRef.componentInstance.message).toContain(expectedText);
+  });
+
+  it('should navigate to the new search page with the list id', () => {
+    component.candidateSource = new MockCandidateSource();
+    router.navigate.calls.reset();
+
+    component.doSearchList();
+
+    expect(router.navigate).toHaveBeenCalledWith(
+      ['/searches'], {queryParams: {tab: 'NewSearch', list: component.candidateSource.id}}
+    );
+  });
+
+  it('should not navigate when there is no list id', () => {
+    component.candidateSource = {...new MockCandidateSource(), id: null};
+    router.navigate.calls.reset();
+
+    component.doSearchList();
+
+    expect(router.navigate).not.toHaveBeenCalled();
   });
 
   it('should run stats', () => {

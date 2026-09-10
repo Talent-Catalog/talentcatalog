@@ -26,31 +26,36 @@
 
   <tc-card-header>
 
-    {{candidateOccupation.occupation.name}} ({{candidateOccupation.yearsExperience}} years)
+    <div class="d-flex align-items-center justify-content-between w-100">
+      <span class="d-flex align-items-center gap-2">
+        {{candidateOccupation.occupation.name}} ({{candidateOccupation.yearsExperience}} years)
+        <tc-badge *ngIf="isPrincipal" color="orange">Principal</tc-badge>
+      </span>
 
-    <div class="d-flex gap-2 justify-content-end" *ngIf="editable">
-      <tc-button (onClick)="createCandidateJobExperience()"
-                 [type]="'solid'"
-                 [size]="'sm'"
-                 [color]="'primary'"
-      >
-        <i class="fas fa-plus"></i>
-      </tc-button>
-      <tc-button (onClick)="editOccupation()"
-                 [type]="'outline'"
-                 [size]="'sm'"
-                 [color]="'primary'"
-      >
-        <i class="fas fa-edit"></i>
-      </tc-button>
-      <tc-button *ngIf="adminUser"
-                 (onClick)="deleteCandidateOccupation()"
-                 [type]="'outline'"
-                 [size]="'sm'"
-                 [color]="'primary'"
-      >
-        <i class="fas fa-trash"></i>
-      </tc-button>
+      <div class="d-flex gap-2" *ngIf="editable">
+        <tc-button (onClick)="createCandidateJobExperience()"
+                   [type]="'solid'"
+                   [size]="'sm'"
+                   [color]="'primary'"
+        >
+          <i class="fas fa-plus"></i>
+        </tc-button>
+        <tc-button (onClick)="editOccupation()"
+                   [type]="'outline'"
+                   [size]="'sm'"
+                   [color]="'primary'"
+        >
+          <i class="fas fa-edit"></i>
+        </tc-button>
+        <tc-button *ngIf="adminUser"
+                   (onClick)="deleteCandidateOccupation()"
+                   [type]="'outline'"
+                   [size]="'sm'"
+                   [color]="'primary'"
+        >
+          <i class="fas fa-trash"></i>
+        </tc-button>
+      </div>
     </div>
 
     <div *ngIf="candidateOccupation.migrationOccupation" class="col-sm-12">

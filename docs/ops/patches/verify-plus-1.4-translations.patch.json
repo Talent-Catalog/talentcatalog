@@ -1,0 +1,841 @@
+{
+  "version": 1,
+  "description": "Verify+ 1.4 localization (#3618)",
+  "languages": [
+    "en",
+    "ar",
+    "fa",
+    "ps",
+    "es",
+    "fr",
+    "tr",
+    "ru",
+    "uk",
+    "nl",
+    "pt"
+  ],
+  "entries": [
+    {
+      "key": "REGISTRATION.HEADER.TITLE.VERIFYPLUS",
+      "values": {
+        "en": "Scan your Verify+ card (optional)"
+      }
+    },
+    {
+      "key": "REGISTRATION.VERIFY_PLUS.DESCRIPTION",
+      "values": {
+        "en": "Scan your Verify+ card now to pre-fill your UNHCR registration number.",
+        "ar": "قم بمسح بطاقة Verify+ ضوئيًا الآن لملء رقم التسجيل UNHCR الخاص بك مسبقًا.",
+        "fa": "اکنون کارت Verify+ خود را اسکن کنید تا شماره ثبت نام UNHCR خود را از قبل پر کنید.",
+        "ps": "همدا اوس خپل Verify+ کارت سکین کړئ ترڅو خپل UNHCR د ثبت شمیره دمخه ډک کړئ.",
+        "es": "Escanee su tarjeta Verify+ ahora para completar previamente su número de registro UNHCR.",
+        "fr": "Scannez dès maintenant votre carte Verify+ pour pré-remplir votre numéro d'enregistrement UNHCR.",
+        "tr": "UNHCR kayıt numaranızı önceden doldurmak için Verify+ kartınızı şimdi tarayın.",
+        "ru": "Отсканируйте свою карту Verify+ сейчас, чтобы предварительно заполнить свой регистрационный номер UNHCR.",
+        "uk": "Відскануйте картку Verify+ зараз, щоб попередньо заповнити реєстраційний номер UNHCR.",
+        "nl": "Scan nu uw Verify+-kaart om uw UNHCR-registratienummer vooraf in te vullen.",
+        "pt": "Digitalize seu cartão Verify+ agora para preencher previamente seu número de registro UNHCR."
+      }
+    },
+    {
+      "key": "REGISTRATION.VERIFY_PLUS.DUPLICATE_BODY",
+      "values": {
+        "en": "We submitted your scan, but this UNHCR number already exists on another active candidate:",
+        "ar": "لقد أرسلنا الفحص الخاص بك، ولكن هذا الرقم UNHCR موجود بالفعل على مرشح نشط آخر:",
+        "fa": "ما اسکن شما را ارسال کردیم، اما این شماره UNHCR از قبل در یک نامزد فعال دیگر وجود دارد:",
+        "ps": "موږ ستاسو سکین سپارلی، مګر دا UNHCR شمیره دمخه په بل فعال نوماند کې شتون لري:",
+        "es": "Enviamos su escaneo, pero este número UNHCR ya existe en otro candidato activo:",
+        "fr": "Nous avons soumis votre scan, mais ce numéro UNHCR existe déjà sur un autre candidat actif :",
+        "tr": "Taramanızı gönderdik ancak bu UNHCR numarası başka bir aktif adayda zaten mevcut:",
+        "ru": "Мы отправили ваш скан, но этот номер UNHCR уже существует у другого активного кандидата:",
+        "uk": "Ми надіслали ваш скан, але цей номер UNHCR вже існує на іншому активному кандидаті:",
+        "nl": "We hebben uw scan ingediend, maar dit UNHCR-nummer bestaat al op een andere actieve kandidaat:",
+        "pt": "Enviamos sua digitalização, mas este número UNHCR já existe em outro candidato ativo:"
+      }
+    },
+    {
+      "key": "REGISTRATION.VERIFY_PLUS.SKIP_HINT",
+      "values": {
+        "en": "You can skip this step for now and continue registration.",
+        "ar": "يمكنك تخطي هذه الخطوة في الوقت الحالي ومتابعة التسجيل.",
+        "fa": "می توانید فعلا از این مرحله صرف نظر کرده و ثبت نام را ادامه دهید.",
+        "ps": "تاسو کولی شئ دا مرحله د اوس لپاره پریږدئ او راجسټریشن ته دوام ورکړئ.",
+        "es": "Puede omitir este paso por ahora y continuar con el registro.",
+        "fr": "Vous pouvez ignorer cette étape pour le moment et poursuivre l'inscription.",
+        "tr": "Şimdilik bu adımı atlayıp kayıt işlemine devam edebilirsiniz.",
+        "ru": "Вы можете пока пропустить этот шаг и продолжить регистрацию.",
+        "uk": "Ви можете поки що пропустити цей крок і продовжити реєстрацію.",
+        "nl": "U kunt deze stap voorlopig overslaan en doorgaan met de registratie.",
+        "pt": "Você pode pular esta etapa por enquanto e continuar o registro."
+      }
+    },
+    {
+      "key": "REGISTRATION.VERIFY_PLUS.SUCCESS_BODY",
+      "values": {
+        "en": "Your scan was submitted successfully:",
+        "ar": "تم إرسال الفحص الخاص بك بنجاح:",
+        "fa": "اسکن شما با موفقیت ارسال شد:",
+        "ps": "ستاسو سکین په بریالیتوب سره سپارل شوی:",
+        "es": "Su escaneo fue enviado exitosamente:",
+        "fr": "Votre analyse a été soumise avec succès :",
+        "tr": "Taramanız başarıyla gönderildi:",
+        "ru": "Ваш скан успешно отправлен:",
+        "uk": "Ваше сканування успішно надіслано:",
+        "nl": "Uw scan is succesvol verzonden:",
+        "pt": "Sua verificação foi enviada com sucesso:"
+      }
+    },
+    {
+      "key": "REGISTRATION.VERIFY_PLUS.SUCCESS_TITLE",
+      "values": {
+        "en": "UNHCR number captured",
+        "ar": "UNHCR الرقم الذي تم التقاطه",
+        "fa": "شماره UNHCR گرفته شد",
+        "ps": "UNHCR شمیره نیول شوې",
+        "es": "UNHCR número capturado",
+        "fr": "Numéro UNHCR capturé",
+        "tr": "UNHCR numara yakalandı",
+        "ru": "Номер UNHCR захвачен",
+        "uk": "UNHCR номер захоплено",
+        "nl": "UNHCR nummer vastgelegd",
+        "pt": "UNHCR número capturado"
+      }
+    },
+    {
+      "key": "REGISTRATION.VERIFY_PLUS.TITLE",
+      "values": {
+        "en": "UNHCR Verify+ (optional)",
+        "ar": "UNHCR Verify+ (اختياري)",
+        "fa": "UNHCR Verify+ (اختیاری)",
+        "ps": "UNHCR Verify+ (اختیاري)",
+        "es": "UNHCR Verify+ (opcional)",
+        "fr": "UNHCR Verify+ (facultatif)",
+        "tr": "UNHCR Verify+ (isteğe bağlı)",
+        "ru": "UNHCR Verify+ (необязательный)",
+        "uk": "UNHCR Verify+ (необов'язковий)",
+        "nl": "UNHCR Verify+ (optioneel)",
+        "pt": "UNHCR Verify+ (opcional)"
+      }
+    },
+    {
+      "key": "SERVICES.REFERENCE.ACCEPT_TERMS",
+      "values": {
+        "en": "Accept Terms",
+        "ar": "قبول الشروط",
+        "fa": "شرایط را بپذیرید",
+        "ps": "شرایط ومنئ",
+        "es": "Aceptar términos",
+        "fr": "Accepter les conditions",
+        "tr": "Şartları Kabul Et",
+        "ru": "Принять Условия",
+        "uk": "Прийняти умови",
+        "nl": "Accepteer voorwaarden",
+        "pt": "Aceitar os Termos"
+      }
+    },
+    {
+      "key": "SERVICES.REFERENCE.ACKNOWLEDGE_OPC_DPA",
+      "values": {
+        "en": "Acknowledge OPC DPA",
+        "ar": "شكر وتقدير OPC DPA",
+        "fa": "تصدیق OPC DPA",
+        "ps": "اعتراف OPC DPA",
+        "es": "Reconocer OPC DPA",
+        "fr": "Reconnaître OPC DPA",
+        "tr": "Teşekkür ederim OPC DPA",
+        "ru": "Подтвердить OPC DPA",
+        "uk": "Підтвердити OPC DPA",
+        "nl": "Erken OPC DPA",
+        "pt": "Reconhecer OPC DPA"
+      }
+    },
+    {
+      "key": "SERVICES.REFERENCE.ASSIGN_INTRO",
+      "values": {
+        "en": "Assign your reference voucher to start the flow.",
+        "ar": "قم بتعيين قسيمتك المرجعية لبدء التدفق.",
+        "fa": "کوپن مرجع خود را برای شروع جریان اختصاص دهید.",
+        "ps": "د جریان پیل کولو لپاره خپل د حوالې واؤچر وټاکئ.",
+        "es": "Asigna tu bono de referencia para iniciar el flujo.",
+        "fr": "Attribuez votre bon de référence pour démarrer le flux.",
+        "tr": "Akışı başlatmak için referans kuponunuzu atayın.",
+        "ru": "Назначьте свой справочный ваучер, чтобы начать поток.",
+        "uk": "Призначте свій довідковий ваучер, щоб розпочати потік.",
+        "nl": "Wijs uw referentievoucher toe om de stroom op gang te brengen.",
+        "pt": "Atribua o seu voucher de referência para iniciar o fluxo."
+      }
+    },
+    {
+      "key": "SERVICES.REFERENCE.ASSIGN_VOUCHER",
+      "values": {
+        "en": "Assign Voucher",
+        "ar": "تعيين قسيمة",
+        "fa": "کوپن اختصاص دهید",
+        "ps": "واؤچر واستوئ",
+        "es": "Asignar comprobante",
+        "fr": "Attribuer un bon",
+        "tr": "Kupon Ata",
+        "ru": "Назначить ваучер",
+        "uk": "Призначити ваучер",
+        "nl": "Voucher toewijzen",
+        "pt": "Atribuir voucher"
+      }
+    },
+    {
+      "key": "SERVICES.REFERENCE.BACK",
+      "values": {
+        "en": "Back",
+        "ar": "خلف",
+        "fa": "برگشت",
+        "ps": "شاته",
+        "es": "Atrás",
+        "fr": "Dos",
+        "tr": "Geri",
+        "ru": "Назад",
+        "uk": "Назад",
+        "nl": "Rug",
+        "pt": "Voltar"
+      }
+    },
+    {
+      "key": "SERVICES.REFERENCE.DESCRIPTION",
+      "values": {
+        "en": "Minimal CASI lifecycle test service.",
+        "ar": "الحد الأدنى من خدمة اختبار دورة الحياة CASI.",
+        "fa": "سرویس تست چرخه عمر حداقل CASI.",
+        "ps": "لږترلږه CASI د ژوند دورې ازموینې خدمت.",
+        "es": "Servicio mínimo de prueba de ciclo de vida CASI.",
+        "fr": "Service de test de cycle de vie minimal CASI.",
+        "tr": "Minimum CASI yaşam döngüsü testi hizmeti.",
+        "ru": "Минимальная услуга по тестированию жизненного цикла CASI.",
+        "uk": "Мінімальна послуга тестування життєвого циклу CASI.",
+        "nl": "Minimale CASI levenscyclustestservice.",
+        "pt": "Serviço mínimo de teste de ciclo de vida CASI."
+      }
+    },
+    {
+      "key": "SERVICES.REFERENCE.DETAIL_DESCRIPTION",
+      "values": {
+        "en": "Canonical CASI reference provider for voucher assignment.",
+        "ar": "مزود مرجعي CASI Canonical لتعيين القسيمة.",
+        "fa": "ارائه دهنده مرجع CASI متعارف برای تخصیص کوپن.",
+        "ps": "د واؤچر دندې لپاره کینونیکي CASI حواله ورکوونکی.",
+        "es": "Proveedor de referencia canónico CASI para la asignación de cupones.",
+        "fr": "Fournisseur de référence canonique CASI pour l'attribution des bons.",
+        "tr": "Kupon ataması için Canonical CASI referans sağlayıcısı.",
+        "ru": "Справочный поставщик Canonical CASI для назначения ваучеров.",
+        "uk": "Canonical CASI довідковий постачальник для призначення ваучерів.",
+        "nl": "Canonieke CASI referentieprovider voor vouchertoewijzing.",
+        "pt": "Provedor de referência canônico CASI para atribuição de vouchers."
+      }
+    },
+    {
+      "key": "SERVICES.REFERENCE.DETAIL_TITLE",
+      "values": {
+        "en": "Reference Service",
+        "ar": "الخدمة المرجعية",
+        "fa": "خدمات مرجع",
+        "ps": "د حوالې خدمت",
+        "es": "Servicio de referencia",
+        "fr": "Service de référence",
+        "tr": "Referans Hizmeti",
+        "ru": "Справочная служба",
+        "uk": "Довідкова служба",
+        "nl": "Referentiedienst",
+        "pt": "Serviço de referência"
+      }
+    },
+    {
+      "key": "SERVICES.REFERENCE.MARK_REDEEMED",
+      "values": {
+        "en": "Mark Redeemed",
+        "ar": "مارك خلاص",
+        "fa": "مارک ریدیمد",
+        "ps": "مارک خلاص شو",
+        "es": "Marca canjeada",
+        "fr": "Marque rachetée",
+        "tr": "Kullanıldı Olarak İşaretle",
+        "ru": "Марк искуплен",
+        "uk": "Марк Викуплений",
+        "nl": "Markeer verlost",
+        "pt": "Marca resgatada"
+      }
+    },
+    {
+      "key": "SERVICES.REFERENCE.NOT_ELIGIBLE",
+      "values": {
+        "en": "You are not currently eligible for this service.",
+        "ar": "أنت غير مؤهل حاليًا لهذه الخدمة.",
+        "fa": "شما در حال حاضر واجد شرایط این سرویس نیستید.",
+        "ps": "تاسو اوس مهال د دې خدمت وړ نه یاست.",
+        "es": "Actualmente no eres elegible para este servicio.",
+        "fr": "Vous n'êtes actuellement pas éligible à ce service.",
+        "tr": "Şu anda bu hizmetten yararlanmaya uygun değilsiniz.",
+        "ru": "В настоящее время вы не имеете права на эту услугу.",
+        "uk": "Зараз ви не маєте права на цю послугу.",
+        "nl": "U komt momenteel niet in aanmerking voor deze service.",
+        "pt": "No momento, você não está qualificado para este serviço."
+      }
+    },
+    {
+      "key": "SERVICES.REFERENCE.OPC_DPA_ALERT",
+      "values": {
+        "en": "Please review and acknowledge the OPC Data Processing Agreement before using this service.",
+        "ar": "يرجى مراجعة اتفاقية معالجة البيانات OPC والإقرار بها قبل استخدام هذه الخدمة.",
+        "fa": "لطفاً قبل از استفاده از این سرویس، قرارداد پردازش داده OPC را بررسی کرده و تأیید کنید.",
+        "ps": "مهرباني وکړئ د دې خدمت کارولو دمخه د OPC ډیټا پروسس کولو تړون بیاکتنه او اعتراف وکړئ.",
+        "es": "Revise y reconozca el Acuerdo de procesamiento de datos OPC antes de utilizar este servicio.",
+        "fr": "Veuillez lire et accepter l'accord de traitement des données OPC avant d'utiliser ce service.",
+        "tr": "Lütfen bu hizmeti kullanmadan önce OPC Veri İşleme Sözleşmesini inceleyin ve kabul edin.",
+        "ru": "Пожалуйста, ознакомьтесь и подтвердите Соглашение об обработке данных OPC перед использованием этой услуги.",
+        "uk": "Перед використанням цієї послуги перегляньте та підтвердьте Угоду про обробку даних OPC.",
+        "nl": "Lees en accepteer de OPC Gegevensverwerkingsovereenkomst voordat u deze service gebruikt.",
+        "pt": "Revise e confirme o Contrato de Processamento de Dados OPC antes de usar este serviço."
+      }
+    },
+    {
+      "key": "SERVICES.REFERENCE.STATUS",
+      "values": {
+        "en": "Status:",
+        "ar": "حالة:",
+        "fa": "وضعیت:",
+        "ps": "حالت:",
+        "es": "Estado:",
+        "fr": "Statut:",
+        "tr": "Durum:",
+        "ru": "Статус:",
+        "uk": "Статус:",
+        "nl": "Status:",
+        "pt": "Status:"
+      }
+    },
+    {
+      "key": "SERVICES.REFERENCE.TAG",
+      "values": {
+        "en": "Reference",
+        "ar": "مرجع",
+        "fa": "مرجع",
+        "ps": "حواله",
+        "es": "Referencia",
+        "fr": "Référence",
+        "tr": "Referans",
+        "ru": "Ссылка",
+        "uk": "довідка",
+        "nl": "Referentie",
+        "pt": "Referência"
+      }
+    },
+    {
+      "key": "SERVICES.REFERENCE.TERMS_ALERT",
+      "values": {
+        "en": "Please review and accept the latest terms before using this service.",
+        "ar": "يرجى مراجعة وقبول أحدث الشروط قبل استخدام هذه الخدمة.",
+        "fa": "لطفاً قبل از استفاده از این سرویس آخرین شرایط را بررسی کرده و بپذیرید.",
+        "ps": "مهرباني وکړئ د دې خدمت کارولو دمخه وروستي شرایط بیاکتنه او ومنئ.",
+        "es": "Revise y acepte los términos más recientes antes de utilizar este servicio.",
+        "fr": "Veuillez lire et accepter les dernières conditions avant d'utiliser ce service.",
+        "tr": "Lütfen bu hizmeti kullanmadan önce en son şartları inceleyin ve kabul edin.",
+        "ru": "Пожалуйста, просмотрите и примите последние условия перед использованием этой услуги.",
+        "uk": "Будь ласка, перегляньте та прийміть останні умови перед використанням цієї послуги.",
+        "nl": "Lees en accepteer de nieuwste voorwaarden voordat u deze service gebruikt.",
+        "pt": "Revise e aceite os termos mais recentes antes de usar este serviço."
+      }
+    },
+    {
+      "key": "SERVICES.REFERENCE.TITLE",
+      "values": {
+        "en": "Reference Service",
+        "ar": "الخدمة المرجعية",
+        "fa": "خدمات مرجع",
+        "ps": "د حوالې خدمت",
+        "es": "Servicio de referencia",
+        "fr": "Service de référence",
+        "tr": "Referans Hizmeti",
+        "ru": "Справочная служба",
+        "uk": "Довідкова служба",
+        "nl": "Referentiedienst",
+        "pt": "Serviço de referência"
+      }
+    },
+    {
+      "key": "SERVICES.REFERENCE.VOUCHER_CODE",
+      "values": {
+        "en": "Voucher code:",
+        "ar": "رمز القسيمة:",
+        "fa": "کد کوپن:",
+        "ps": "واؤچر کوډ:",
+        "es": "Código de cupón:",
+        "fr": "Code du bon :",
+        "tr": "Kupon kodu:",
+        "ru": "Код ваучера:",
+        "uk": "Код ваучера:",
+        "nl": "Vouchercode:",
+        "pt": "Código do voucher:"
+      }
+    },
+    {
+      "key": "SERVICES.UNHCR.BACK",
+      "values": {
+        "en": "Back",
+        "ar": "خلف",
+        "fa": "برگشت",
+        "ps": "شاته",
+        "es": "Atrás",
+        "fr": "Dos",
+        "tr": "Geri",
+        "ru": "Назад",
+        "uk": "Назад",
+        "nl": "Rug",
+        "pt": "Voltar"
+      }
+    },
+    {
+      "key": "SERVICES.UNHCR.DESCRIPTION",
+      "values": {
+        "en": "Country-specific refugee support resources from UNHCR.",
+        "ar": "موارد دعم اللاجئين الخاصة بكل بلد من UNHCR.",
+        "fa": "منابع حمایت از پناهندگان خاص کشور از UNHCR.",
+        "ps": "د UNHCR څخه د هیواد ځانګړي کډوال مالتړ سرچینې.",
+        "es": "Recursos de apoyo a refugiados específicos de cada país de UNHCR.",
+        "fr": "Ressources de soutien aux réfugiés spécifiques à chaque pays de UNHCR.",
+        "tr": "UNHCR'dan ülkeye özgü mülteci destek kaynakları.",
+        "ru": "Ресурсы поддержки беженцев для конкретных стран из UNHCR.",
+        "uk": "Ресурси підтримки біженців для окремих країн від UNHCR.",
+        "nl": "Landspecifieke hulpmiddelen voor vluchtelingenondersteuning uit UNHCR.",
+        "pt": "Recursos de apoio a refugiados específicos do país de UNHCR."
+      }
+    },
+    {
+      "key": "SERVICES.UNHCR.DETAIL_SUBTITLE",
+      "values": {
+        "en": "Official refugee help resources for {{countryName}}.",
+        "ar": "موارد مساعدة اللاجئين الرسمية لـ {{countryName}}.",
+        "fa": "منابع رسمی کمک به پناهندگان برای {{countryName}}.",
+        "ps": "د {{countryName}} لپاره د کډوالو رسمي مرستې سرچینې.",
+        "es": "Recursos oficiales de ayuda a refugiados para {{countryName}}.",
+        "fr": "Ressources officielles d'aide aux réfugiés pour {{countryName}}.",
+        "tr": "{{countryName}} için resmi mülteci yardım kaynakları.",
+        "ru": "Официальные ресурсы помощи беженцам для {{countryName}}.",
+        "uk": "Офіційні ресурси допомоги біженцям для {{countryName}}.",
+        "nl": "Officiële hulpbronnen voor vluchtelingen voor {{countryName}}.",
+        "pt": "Recursos oficiais de ajuda aos refugiados para {{countryName}}."
+      }
+    },
+    {
+      "key": "SERVICES.UNHCR.DETAIL_TITLE",
+      "values": {
+        "en": "UNHCR {{countryName}}",
+        "ar": "UNHCR {{countryName}}",
+        "fa": "UNHCR {{countryName}}",
+        "ps": "UNHCR {{countryName}}",
+        "es": "UNHCR {{countryName}}",
+        "fr": "UNHCR {{countryName}}",
+        "tr": "UNHCR {{countryName}}",
+        "ru": "UNHCR {{countryName}}",
+        "uk": "UNHCR {{countryName}}",
+        "nl": "UNHCR {{countryName}}",
+        "pt": "UNHCR {{countryName}}"
+      }
+    },
+    {
+      "key": "SERVICES.UNHCR.HELP_INTRO",
+      "values": {
+        "en": "Visit UNHCR Help for up-to-date guidance and support information specific to {{countryName}}.",
+        "ar": "تفضل بزيارة UNHCR مساعدة للحصول على إرشادات محدثة ومعلومات الدعم الخاصة بـ {{countryName}}.",
+        "fa": "برای راهنمایی به روز و اطلاعات پشتیبانی مخصوص {{countryName}} از راهنمای UNHCR دیدن کنید.",
+        "ps": "UNHCR ته مراجعه وکړئ د تازه لارښوونې او مالتړ معلوماتو لپاره ځانګړي {{countryName}} لپاره مرسته.",
+        "es": "Visite UNHCR Ayuda para obtener orientación actualizada e información de soporte específica para {{countryName}}.",
+        "fr": "Consultez l'aide UNHCR pour obtenir des conseils à jour et des informations d'assistance spécifiques à {{countryName}}.",
+        "tr": "{{countryName}}'ye özel güncel rehberlik ve destek bilgileri için UNHCR Yardım'ı ziyaret edin.",
+        "ru": "Посетите раздел «Справка» UNHCR для получения актуальных рекомендаций и вспомогательной информации, относящейся к {{countryName}}.",
+        "uk": "Відвідайте довідку UNHCR, щоб отримати актуальні вказівки та інформацію щодо підтримки, що стосується {{countryName}}.",
+        "nl": "Bezoek UNHCR Help voor actuele begeleiding en ondersteuningsinformatie specifiek voor {{countryName}}.",
+        "pt": "Visite a Ajuda do UNHCR para obter orientações atualizadas e informações de suporte específicas para {{countryName}}."
+      }
+    },
+    {
+      "key": "SERVICES.UNHCR.TAG",
+      "values": {
+        "en": "UNHCR",
+        "ar": "UNHCR",
+        "fa": "UNHCR",
+        "ps": "UNHCR",
+        "es": "UNHCR",
+        "fr": "UNHCR",
+        "tr": "UNHCR",
+        "ru": "UNHCR",
+        "uk": "UNHCR",
+        "nl": "UNHCR",
+        "pt": "UNHCR"
+      }
+    },
+    {
+      "key": "SERVICES.UNHCR.TITLE",
+      "values": {
+        "en": "UNHCR Help",
+        "ar": "UNHCR مساعدة",
+        "fa": "UNHCR کمک کنید",
+        "ps": "UNHCR مرسته",
+        "es": "UNHCR Ayuda",
+        "fr": "UNHCR Aide",
+        "tr": "UNHCR Yardım",
+        "ru": "UNHCR Помощь",
+        "uk": "UNHCR Довідка",
+        "nl": "UNHCR Hulp",
+        "pt": "UNHCR Ajuda"
+      }
+    },
+    {
+      "key": "SERVICES.VERIFY_PLUS.BACK",
+      "values": {
+        "en": "Back",
+        "ar": "خلف",
+        "fa": "برگشت",
+        "ps": "شاته",
+        "es": "Atrás",
+        "fr": "Dos",
+        "tr": "Geri",
+        "ru": "Назад",
+        "uk": "Назад",
+        "nl": "Rug",
+        "pt": "Voltar"
+      }
+    },
+    {
+      "key": "SERVICES.VERIFY_PLUS.CONFIRM",
+      "values": {
+        "en": "Confirm",
+        "ar": "يتأكد",
+        "fa": "تایید کنید",
+        "ps": "تایید کړه",
+        "es": "Confirmar",
+        "fr": "Confirmer",
+        "tr": "Onaylamak",
+        "ru": "Подтверждать",
+        "uk": "Підтвердити",
+        "nl": "Bevestigen",
+        "pt": "Confirmar"
+      }
+    },
+    {
+      "key": "SERVICES.VERIFY_PLUS.DESCRIPTION",
+      "values": {
+        "en": "Scan your UNHCR Verify+ QR code to capture data from your card.",
+        "ar": "قم بمسح الرمز UNHCR Verify+ QR لالتقاط البيانات من بطاقتك.",
+        "fa": "کد UNHCR Verify+ QR خود را اسکن کنید تا داده ها را از کارت خود بگیرید.",
+        "ps": "خپل UNHCR Verify+ QR کوډ سکین کړئ ترڅو له خپل کارت څخه ډیټا ترلاسه کړئ.",
+        "es": "Escanee su código UNHCR Verify+ QR para capturar datos de su tarjeta.",
+        "fr": "Scannez votre code UNHCR Verify+ QR pour capturer les données de votre carte.",
+        "tr": "Kartınızdan veri yakalamak için UNHCR Verify+ QR kodunuzu tarayın.",
+        "ru": "Отсканируйте свой код UNHCR Verify+ QR, чтобы получить данные с вашей карты.",
+        "uk": "Відскануйте свій код UNHCR Verify+ QR, щоб отримати дані з вашої картки.",
+        "nl": "Scan uw UNHCR Verify+ QR code om gegevens van uw kaart vast te leggen.",
+        "pt": "Digitalize seu código UNHCR Verify+ QR para capturar dados do seu cartão."
+      }
+    },
+    {
+      "key": "SERVICES.VERIFY_PLUS.DUPLICATE_BODY",
+      "values": {
+        "en": "We submitted your scan, but this UNHCR number already exists on another active candidate:",
+        "ar": "لقد أرسلنا الفحص الخاص بك، ولكن هذا الرقم UNHCR موجود بالفعل على مرشح نشط آخر:",
+        "fa": "ما اسکن شما را ارسال کردیم، اما این شماره UNHCR از قبل در یک نامزد فعال دیگر وجود دارد:",
+        "ps": "موږ ستاسو سکین سپارلی، مګر دا UNHCR شمیره دمخه په بل فعال نوماند کې شتون لري:",
+        "es": "Enviamos su escaneo, pero este número UNHCR ya existe en otro candidato activo:",
+        "fr": "Nous avons soumis votre scan, mais ce numéro UNHCR existe déjà sur un autre candidat actif :",
+        "tr": "Taramanızı gönderdik ancak bu UNHCR numarası başka bir aktif adayda zaten mevcut:",
+        "ru": "Мы отправили ваш скан, но этот номер UNHCR уже существует у другого активного кандидата:",
+        "uk": "Ми надіслали ваш скан, але цей номер UNHCR вже існує на іншому активному кандидаті:",
+        "nl": "We hebben uw scan ingediend, maar dit UNHCR-nummer bestaat al op een andere actieve kandidaat:",
+        "pt": "Enviamos sua digitalização, mas este número UNHCR já existe em outro candidato ativo:"
+      }
+    },
+    {
+      "key": "SERVICES.VERIFY_PLUS.DUPLICATE_RESCAN_HINT",
+      "values": {
+        "en": "You can rescan if needed.",
+        "ar": "يمكنك إعادة المسح إذا لزم الأمر.",
+        "fa": "در صورت نیاز می توانید دوباره اسکن کنید.",
+        "ps": "د اړتیا په صورت کې تاسو بیا سکین کولی شئ.",
+        "es": "Puede volver a escanear si es necesario.",
+        "fr": "Vous pouvez réanalyser si nécessaire.",
+        "tr": "Gerekirse yeniden tarayabilirsiniz.",
+        "ru": "При необходимости можно выполнить повторное сканирование.",
+        "uk": "За потреби можна повторно сканувати.",
+        "nl": "Indien nodig kunt u opnieuw scannen.",
+        "pt": "Você pode digitalizar novamente, se necessário."
+      }
+    },
+    {
+      "key": "SERVICES.VERIFY_PLUS.DUPLICATE_TITLE",
+      "values": {
+        "en": "Duplicate UNHCR number found",
+        "ar": "تم العثور على رقم UNHCR مكرر",
+        "fa": "شماره تکراری UNHCR پیدا شد",
+        "ps": "نقل UNHCR شمیره وموندل شوه",
+        "es": "Número duplicado UNHCR encontrado",
+        "fr": "Numéro UNHCR en double trouvé",
+        "tr": "Yinelenen UNHCR numarası bulundu",
+        "ru": "Обнаружен повторяющийся номер UNHCR.",
+        "uk": "Знайдено повторюваний номер UNHCR",
+        "nl": "Dubbel UNHCR nummer gevonden",
+        "pt": "Número UNHCR duplicado encontrado"
+      }
+    },
+    {
+      "key": "SERVICES.VERIFY_PLUS.RESCAN",
+      "values": {
+        "en": "Rescan",
+        "ar": "إعادة المسح",
+        "fa": "اسکن مجدد",
+        "ps": "بیا سکین",
+        "es": "Volver a escanear",
+        "fr": "Nouvelle analyse",
+        "tr": "Yeniden tara",
+        "ru": "Повторное сканирование",
+        "uk": "Повторне сканування",
+        "nl": "Opnieuw scannen",
+        "pt": "Digitalizar novamente"
+      }
+    },
+    {
+      "key": "SERVICES.VERIFY_PLUS.REVIEW_TITLE",
+      "values": {
+        "en": "Review scanned payload",
+        "ar": "مراجعة الحمولة الممسوحة ضوئيًا",
+        "fa": "محموله اسکن شده را مرور کنید",
+        "ps": "د سکین شوي تادیاتو بیاکتنه",
+        "es": "Revisar la carga útil escaneada",
+        "fr": "Examiner la charge utile numérisée",
+        "tr": "Taranan veriyi inceleyin",
+        "ru": "Просмотрите отсканированную полезную нагрузку",
+        "uk": "Перегляньте скановане корисне навантаження",
+        "nl": "Gescande lading bekijken",
+        "pt": "Revise a carga verificada"
+      }
+    },
+    {
+      "key": "SERVICES.VERIFY_PLUS.SCANNER.ENABLE_CAMERA",
+      "values": {
+        "en": "Enable camera",
+        "ar": "تمكين الكاميرا",
+        "fa": "دوربین را فعال کنید",
+        "ps": "کیمره فعاله کړئ",
+        "es": "Habilitar cámara",
+        "fr": "Activer la caméra",
+        "tr": "Kamerayı etkinleştir",
+        "ru": "Включить камеру",
+        "uk": "Увімкнути камеру",
+        "nl": "Camera inschakelen",
+        "pt": "Ativar câmera"
+      }
+    },
+    {
+      "key": "SERVICES.VERIFY_PLUS.SCANNER.NOT_DETECTED",
+      "values": {
+        "en": "A QR code has not been detected yet. Try moving closer and improving lighting.",
+        "ar": "لم يتم اكتشاف رمز QR بعد. حاول الاقتراب وتحسين الإضاءة.",
+        "fa": "کد QR هنوز شناسایی نشده است. سعی کنید نزدیک تر شوید و نور را بهبود بخشید.",
+        "ps": "A QR کوډ تراوسه ندی موندل شوی. هڅه وکړئ نږدې حرکت وکړئ او روښنايي ښه کړئ.",
+        "es": "Aún no se ha detectado un código QR. Intente acercarse y mejorar la iluminación.",
+        "fr": "Un code QR n'a pas encore été détecté. Essayez de vous rapprocher et d’améliorer l’éclairage.",
+        "tr": "Henüz QR kodu tespit edilmedi. Yaklaşmaya ve aydınlatmayı iyileştirmeye çalışın.",
+        "ru": "Код QR пока не обнаружен. Попробуйте подойти ближе и улучшить освещение.",
+        "uk": "Код QR ще не виявлено. Спробуйте підійти ближче та покращити освітлення.",
+        "nl": "Er is nog geen QR-code gedetecteerd. Probeer dichterbij te komen en de verlichting te verbeteren.",
+        "pt": "Um código QR ainda não foi detectado. Tente se aproximar e melhorar a iluminação."
+      }
+    },
+    {
+      "key": "SERVICES.VERIFY_PLUS.SCANNER.NO_CAMERA",
+      "values": {
+        "en": "No camera was detected on this device.",
+        "ar": "لم يتم اكتشاف أي كاميرا على هذا الجهاز.",
+        "fa": "هیچ دوربینی در این دستگاه شناسایی نشد.",
+        "ps": "په دې وسیله هیڅ کیمره ونه موندل شوه.",
+        "es": "No se detectó ninguna cámara en este dispositivo.",
+        "fr": "Aucune caméra n'a été détectée sur cet appareil.",
+        "tr": "Bu cihazda kamera algılanmadı.",
+        "ru": "На этом устройстве не обнаружена камера.",
+        "uk": "На цьому пристрої не виявлено жодної камери.",
+        "nl": "Er is geen camera gedetecteerd op dit apparaat.",
+        "pt": "Nenhuma câmera foi detectada neste dispositivo."
+      }
+    },
+    {
+      "key": "SERVICES.VERIFY_PLUS.SCANNER.PERMISSION_DENIED",
+      "values": {
+        "en": "Camera access was denied. Please enable camera permission and try again.",
+        "ar": "تم رفض الوصول إلى الكاميرا. يرجى تمكين إذن الكاميرا والمحاولة مرة أخرى.",
+        "fa": "دسترسی به دوربین ممنوع شد. لطفاً مجوز دوربین را فعال کنید و دوباره امتحان کنید.",
+        "ps": "کیمرې ته لاسرسی رد شو. مهرباني وکړئ د کیمرې اجازه فعاله کړئ او بیا هڅه وکړئ.",
+        "es": "Se negó el acceso a la cámara. Habilite el permiso de la cámara e inténtelo nuevamente.",
+        "fr": "L'accès à la caméra a été refusé. Veuillez activer l'autorisation de la caméra et réessayer.",
+        "tr": "Kamera erişimi reddedildi. Lütfen kamera iznini etkinleştirin ve tekrar deneyin.",
+        "ru": "Доступ к камере запрещен. Пожалуйста, включите разрешение камеры и повторите попытку.",
+        "uk": "У доступі до камери відмовлено. Увімкніть дозвіл камери та повторіть спробу.",
+        "nl": "Toegang tot de camera is geweigerd. Schakel cameratoestemming in en probeer het opnieuw.",
+        "pt": "O acesso à câmera foi negado. Ative a permissão da câmera e tente novamente."
+      }
+    },
+    {
+      "key": "SERVICES.VERIFY_PLUS.SCANNER.SCAN_AGAIN",
+      "values": {
+        "en": "Scan again",
+        "ar": "مسح مرة أخرى",
+        "fa": "دوباره اسکن کنید",
+        "ps": "بیا سکین کړئ",
+        "es": "Escanear de nuevo",
+        "fr": "Scannez à nouveau",
+        "tr": "Tekrar tarayın",
+        "ru": "Сканировать еще раз",
+        "uk": "Повторне сканування",
+        "nl": "Opnieuw scannen",
+        "pt": "Digitalize novamente"
+      }
+    },
+    {
+      "key": "SERVICES.VERIFY_PLUS.SCANNER.TRY_AGAIN",
+      "values": {
+        "en": "Try again",
+        "ar": "حاول ثانية",
+        "fa": "دوباره امتحان کنید",
+        "ps": "بیا هڅه وکړئ",
+        "es": "Intentar otra vez",
+        "fr": "Essayer à nouveau",
+        "tr": "Tekrar deneyin",
+        "ru": "Попробуйте еще раз",
+        "uk": "Спробуйте знову",
+        "nl": "Probeer het opnieuw",
+        "pt": "Tente novamente"
+      }
+    },
+    {
+      "key": "SERVICES.VERIFY_PLUS.SCANNER_ERROR",
+      "values": {
+        "en": "A camera or scanner error occurred. Please refresh and try again.",
+        "ar": "حدث خطأ في الكاميرا أو الماسح الضوئي. يرجى التحديث والمحاولة مرة أخرى.",
+        "fa": "یک خطای دوربین یا اسکنر رخ داده است. لطفاً بازخوانی کنید و دوباره امتحان کنید.",
+        "ps": "د کیمرې یا سکینر تېروتنه رامنځته شوه. مهرباني وکړئ تازه کړئ او بیا هڅه وکړئ.",
+        "es": "Se produjo un error de cámara o escáner. Actualice e inténtelo de nuevo.",
+        "fr": "Une erreur d'appareil photo ou de scanner s'est produite. Veuillez actualiser et réessayer.",
+        "tr": "Bir kamera veya tarayıcı hatası oluştu. Lütfen yenileyin ve tekrar deneyin.",
+        "ru": "Произошла ошибка камеры или сканера. Пожалуйста, обновите и повторите попытку.",
+        "uk": "Сталася помилка камери або сканера. Оновіть і повторіть спробу.",
+        "nl": "Er is een camera- of scannerfout opgetreden. Vernieuw de pagina en probeer het opnieuw.",
+        "pt": "Ocorreu um erro na câmera ou no scanner. Atualize e tente novamente."
+      }
+    },
+    {
+      "key": "SERVICES.VERIFY_PLUS.SCAN_INTRO",
+      "values": {
+        "en": "Scan your UNHCR Verify+ card QR code to capture the encoded payload.",
+        "ar": "امسح رمز UNHCR Verify+ الخاص ببطاقة QR لالتقاط الحمولة المشفرة.",
+        "fa": "کد UNHCR Verify+ کارت QR خود را اسکن کنید تا محموله رمزگذاری شده را بگیرید.",
+        "ps": "خپل UNHCR Verify+ کارت QR کوډ سکین کړئ ترڅو د کوډ شوي تادیې ترلاسه کولو لپاره.",
+        "es": "Escanee el código QR de su tarjeta UNHCR Verify+ para capturar la carga útil codificada.",
+        "fr": "Scannez le code UNHCR Verify+ de votre carte QR pour capturer la charge utile encodée.",
+        "tr": "Kodlanmış veriyi yakalamak için UNHCR Verify+ kartı QR kodunuzu tarayın.",
+        "ru": "Отсканируйте код UNHCR Verify+ карты QR, чтобы получить закодированную полезную нагрузку.",
+        "uk": "Відскануйте код своєї картки UNHCR Verify+ QR, щоб отримати закодований корисний вміст.",
+        "nl": "Scan uw UNHCR Verify+ kaart QR code om de gecodeerde lading vast te leggen.",
+        "pt": "Digitalize o código UNHCR Verify+ do cartão QR para capturar a carga útil codificada."
+      }
+    },
+    {
+      "key": "SERVICES.VERIFY_PLUS.SUBMIT_ERROR_FALLBACK",
+      "values": {
+        "en": "We couldn't submit this scan. Please check your connection and try again.",
+        "ar": "لم نتمكن من إرسال هذا الفحص. يرجى التحقق من اتصالك والمحاولة مرة أخرى.",
+        "fa": "ما نتوانستیم این اسکن را ارسال کنیم. لطفاً اتصال خود را بررسی کنید و دوباره امتحان کنید.",
+        "ps": "موږ نشو کولی دا سکین وسپاري. مهرباني وکړئ خپل پیوستون وګورئ او بیا هڅه وکړئ.",
+        "es": "No pudimos enviar este escaneo. Por favor verifique su conexión e inténtelo nuevamente.",
+        "fr": "Nous n'avons pas pu soumettre cette analyse. Veuillez vérifier votre connexion et réessayer.",
+        "tr": "Bu taramayı gönderemedik. Lütfen bağlantınızı kontrol edip tekrar deneyin.",
+        "ru": "Мы не смогли отправить это сканирование. Пожалуйста, проверьте подключение и повторите попытку.",
+        "uk": "Не вдалося надіслати цей скан. Перевірте підключення та повторіть спробу.",
+        "nl": "We konden deze scan niet verzenden. Controleer uw verbinding en probeer het opnieuw.",
+        "pt": "Não foi possível enviar esta verificação. Verifique sua conexão e tente novamente."
+      }
+    },
+    {
+      "key": "SERVICES.VERIFY_PLUS.SUBMIT_ERROR_HINT",
+      "values": {
+        "en": "If this QR code is a valid UNHCR Verify+ code, please rescan.",
+        "ar": "إذا كان رمز QR هذا رمز UNHCR Verify+ صالحًا، فيرجى إعادة المسح ضوئيًا.",
+        "fa": "اگر این کد QR یک کد UNHCR Verify+ معتبر است، لطفاً دوباره اسکن کنید.",
+        "ps": "که دا QR کوډ د اعتبار وړ UNHCR Verify+ کوډ وي، مهرباني وکړئ بیا سکین کړئ.",
+        "es": "Si este código QR es un código UNHCR Verify+ válido, vuelva a escanearlo.",
+        "fr": "Si ce code QR est un code UNHCR Verify+ valide, veuillez effectuer une nouvelle analyse.",
+        "tr": "Bu QR kodu geçerli bir UNHCR Verify+ koduysa lütfen yeniden tarayın.",
+        "ru": "Если этот код QR является действительным кодом UNHCR Verify+, повторите сканирование.",
+        "uk": "Якщо цей код QR є дійсним кодом UNHCR Verify+, повторіть сканування.",
+        "nl": "Als deze QR-code een geldige UNHCR Verify+-code is, scan dan opnieuw.",
+        "pt": "Se este código QR for um código UNHCR Verify+ válido, verifique novamente."
+      }
+    },
+    {
+      "key": "SERVICES.VERIFY_PLUS.SUCCESS_BODY",
+      "values": {
+        "en": "Your UNHCR number was captured successfully:",
+        "ar": "تم التقاط رقم UNHCR الخاص بك بنجاح:",
+        "fa": "شماره UNHCR شما با موفقیت ثبت شد:",
+        "ps": "ستاسو UNHCR شمیره په بریالیتوب سره ونیول شوه:",
+        "es": "Su número UNHCR fue capturado exitosamente:",
+        "fr": "Votre numéro UNHCR a été capturé avec succès :",
+        "tr": "UNHCR numaranız başarıyla alındı:",
+        "ru": "Ваш номер UNHCR успешно захвачен:",
+        "uk": "Ваш номер UNHCR було успішно захоплено:",
+        "nl": "Uw UNHCR-nummer is succesvol vastgelegd:",
+        "pt": "Seu número UNHCR foi capturado com sucesso:"
+      }
+    },
+    {
+      "key": "SERVICES.VERIFY_PLUS.SUCCESS_TITLE",
+      "values": {
+        "en": "Verification submitted",
+        "ar": "تم إرسال التحقق",
+        "fa": "تأیید ارسال شد",
+        "ps": "تایید سپارل شوی",
+        "es": "Verificación enviada",
+        "fr": "Vérification soumise",
+        "tr": "Doğrulama gönderildi",
+        "ru": "Подтверждение отправлено",
+        "uk": "Підтвердження надіслано",
+        "nl": "Verificatie ingediend",
+        "pt": "Verificação enviada"
+      }
+    },
+    {
+      "key": "SERVICES.VERIFY_PLUS.TAG",
+      "values": {
+        "en": "Verify+",
+        "ar": "Verify+",
+        "fa": "Verify+",
+        "ps": "Verify+",
+        "es": "Verify+",
+        "fr": "Verify+",
+        "tr": "Verify+",
+        "ru": "Verify+",
+        "uk": "Verify+",
+        "nl": "Verify+",
+        "pt": "Verify+"
+      }
+    },
+    {
+      "key": "SERVICES.VERIFY_PLUS.TITLE",
+      "values": {
+        "en": "UNHCR Verify+",
+        "ar": "UNHCR Verify+",
+        "fa": "UNHCR Verify+",
+        "ps": "UNHCR Verify+",
+        "es": "UNHCR Verify+",
+        "fr": "UNHCR Verify+",
+        "tr": "UNHCR Verify+",
+        "ru": "UNHCR Verify+",
+        "uk": "UNHCR Verify+",
+        "nl": "UNHCR Verify+",
+        "pt": "UNHCR Verify+"
+      }
+    }
+  ]
+}

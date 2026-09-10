@@ -38,6 +38,28 @@
       </tc-tab-content>
     </tc-tab>
 
+    <tc-tab id="unhcr-help-links">
+      <tc-tab-header>UNHCR Help Links</tc-tab-header>
+      <tc-tab-content>
+        <app-manage-help-site-links
+          [provider]="'UNHCR'"
+          [serviceCode]="'HELP_SITE_LINK'"
+          [title]="'UNHCR Help Links'"
+        ></app-manage-help-site-links>
+      </tc-tab-content>
+    </tc-tab>
+
+    <tc-tab id="pifi-help-links">
+      <tc-tab-header>PiFi Links</tc-tab-header>
+      <tc-tab-content>
+        <app-manage-help-site-links
+          [provider]="'PIFI'"
+          [serviceCode]="'HELP_SITE_LINK'"
+          [title]="'PiFi Help Links'"
+        ></app-manage-help-site-links>
+      </tc-tab-content>
+    </tc-tab>
+
     <tc-tab id="ota">
       <tc-tab-header>Offers To Assist</tc-tab-header>
       <tc-tab-content>

@@ -23,7 +23,8 @@ import {
   enumStringValues,
   getOrdinal,
   isEnumOption,
-  isEnumOptionArray
+  isEnumOptionArray,
+  toEnumKey
 } from "./enum";
 
 enum CandidateStatus {
@@ -121,6 +122,28 @@ describe('Enum Utilities', () => {
     it('should return -1 for a non-existent key', () => {
       const result = getOrdinal(candidateStatusEnum, 'nonExistent');
       expect(result).toBe(-1);
+    });
+  });
+
+  describe('toEnumKey', () => {
+    it('should return the same value if it is already a key', () => {
+      const result = toEnumKey(candidateStatusEnum, 'draft');
+      expect(result).toBe('draft');
+    });
+
+    it('should return the key for a given string value', () => {
+      const result = toEnumKey(candidateStatusEnum, 'draft (inactive)');
+      expect(result).toBe('draft');
+    });
+
+    it('should return the key when the string value matches its own key name', () => {
+      const result = toEnumKey(candidateStatusEnum, 'active');
+      expect(result).toBe('active');
+    });
+
+    it('should return undefined if the value is neither a key nor a string value', () => {
+      const result = toEnumKey(candidateStatusEnum, 'nonExistent');
+      expect(result).toBeUndefined();
     });
   });
 });

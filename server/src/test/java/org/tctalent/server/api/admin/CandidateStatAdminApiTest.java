@@ -60,7 +60,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.tctalent.server.model.db.Country;
@@ -88,13 +88,13 @@ class CandidateStatAdminApiTest extends ApiTestBase {
 
   private static final String ALL_STATS_PATH = "/all";
 
-  @MockBean CandidateService candidateService;
-  @MockBean CandidateStatsService candidateStatsService;
-  @MockBean CountryRepository countryRepository;
-  @MockBean SavedListService savedListService;
-  @MockBean SavedSearchService savedSearchService;
-  @MockBean AuthService authService;
-  @MockBean EntityManager entityManager;
+  @MockitoBean CandidateService candidateService;
+  @MockitoBean CandidateStatsService candidateStatsService;
+  @MockitoBean CountryRepository countryRepository;
+  @MockitoBean SavedListService savedListService;
+  @MockitoBean SavedSearchService savedSearchService;
+  @MockitoBean AuthService authService;
+  @MockitoBean EntityManager entityManager;
 
   @Autowired MockMvc mockMvc;
   @Autowired ObjectMapper objectMapper;

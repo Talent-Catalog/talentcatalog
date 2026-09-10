@@ -1,10 +1,11 @@
 ---
-title: What's New in Talent Catalog
+title: V2.1.0 - 29 Sep 23
+description: What's new in this release
 sass:
   style: compressed
 ---
 
-## Version 2.1.0 (September 29, 2023)
+## Version 2.1.0
 
 Check out the newest features and enhancements.
 

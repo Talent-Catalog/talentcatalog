@@ -49,15 +49,12 @@ export class CandidateSourceBaseComponent {
   pageSize: number;
   results: SearchResults<Candidate>;
   searching: boolean;
-  sortField: string;
-  sortDirection: string;
+  sortField: string = "id";
+  sortDirection: string = "DESC";
   timestamp: number;
   reviewStatusFilter: string[] = defaultReviewStatusFilter;
 
   @Input() candidateSource: CandidateSource;
-
-  //Temporary - todo to be removed when we no longer use old fetching
-  useOldFetch: boolean = false;
 
   selectedFields: CandidateFieldInfo[] = [];
 
@@ -152,7 +149,7 @@ export class CandidateSourceBaseComponent {
     let defaultSortDirection = 'DESC';
     if (isSavedSearch(this.candidateSource)) {
         if (!isNullOrEmpty(this.candidateSource.simpleQueryString)) {
-          defaultSortField = 'text_match'
+          defaultSortField = 'match_score'
         }
     }
 
@@ -164,7 +161,7 @@ export class CandidateSourceBaseComponent {
     request.dtoType = dtoType;
 
     // Return the observable so the caller can subscribe to it
-    return this.candidateSourceCandidateService.searchPaged(this.candidateSource, request, this.useOldFetch).pipe(
+    return this.candidateSourceCandidateService.searchPaged(this.candidateSource, request).pipe(
       tap(results => {
         this.results = results;
         this.cacheResults();

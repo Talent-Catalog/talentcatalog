@@ -7,8 +7,22 @@
     "start": "ng serve --host=127.0.0.1",
     "build": "ng build",
     "test": "ng test",
+    "test:coverage": "ng test candidate-portal --watch=false --code-coverage=true --browsers=ChromeHeadless --source-map=true",
     "lint": "ng lint",
-    "e2e": "ng e2e"
+    "e2e": "playwright test",
+    "e2e:auth": "playwright test --project=auth-setup",
+    "e2e:verify-plus": "playwright test playwright-tests/verify-plus",
+    "e2e:verify-plus:api": "playwright test --project=verify-plus-api",
+    "e2e:verify-plus:decode:browser":
+    "playwright test playwright-tests/verify-plus/verify-plus-decoding.spec.ts playwright-tests/verify-plus/verify-plus-high-density-decoding.spec.ts --project=chromium-desktop --project=firefox-desktop --project=webkit-desktop",
+    "e2e:verify-plus:decode:mobile":
+    "playwright test playwright-tests/verify-plus/verify-plus-decoding.spec.ts playwright-tests/verify-plus/verify-plus-high-density-decoding.spec.ts --project=android-pixel --project=ios-iphone --project=ios-ipad",
+    "e2e:verify-plus:validation": "playwright test --project=verify-plus-validation",
+    "e2e:install": "playwright install",
+    "e2e:ui": "playwright test --ui",
+    "e2e:headed": "playwright test --headed",
+    "e2e:debug": "playwright test --debug",
+    "e2e:report": "playwright show-report"
   },
   "private": true,
   "engines": {
@@ -49,17 +63,21 @@
     "quill": "^1.3.7",
     "rxjs": "^6.5.5",
     "tslib": "^2.4.0",
-    "zone.js": "^0.14.10"
+    "zone.js": "^0.14.10",
+    "zxing-wasm": "^3.1.2"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "^17.3.17",
     "@angular/cli": "^17.3.17",
     "@angular/compiler-cli": "^17.3.12",
     "@angular/language-service": "^17.3.12",
+    "@playwright/test": "^1.62.1",
     "@types/node": "^20.0.0",
     "codelyzer": "^6.0.2",
+    "dotenv": "^17.4.2",
     "jasmine-spec-reporter": "^7.0.0",
     "karma": "^6.4.3",
+    "karma-coverage": "^2.2.1",
     "karma-jasmine": "^5.1.0",
     "protractor": "~7.0.0",
     "ts-node": "~8.4.1",

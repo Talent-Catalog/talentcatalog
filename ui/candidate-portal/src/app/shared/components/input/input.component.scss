@@ -45,6 +45,19 @@
   top: 0.05rem;
 }
 
+// Override shared text-input styles so range inputs retain their native appearance, see TC-1424.
+.form-input[type='range'] {
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+
+  &:focus {
+    outline: revert;
+    box-shadow: none;
+  }
+}
+
 // NgbTypeAhead dropdown, which Angular renders as a sibling of the input:
 ::ng-deep {
   @include dropdown-styles;

@@ -152,9 +152,11 @@ public class CandidateReadDto {
     private boolean pendingTerms;
     private String phone;
     private boolean potentialDuplicate;
+    @JsonOneToOne(joinColumn = "principal_occupation_id")
+    private PrincipalOccupationReadDto principalOccupation;
     private String publicId;
     @SqlIgnore
-    private Number rank;
+    private Number score;
     private String regoPartnerParam;
     private String regoReferrerParam;
     private String regoUtmCampaign;
@@ -200,6 +202,8 @@ public class CandidateReadDto {
 
     @JsonOneToOne(joinColumn = "user_id")
     private UserReadDto user;
+    private boolean verifyPlusConsented;
+    private OffsetDateTime verifyPlusConsentedAt;
     private String videolink;
     private String whatsapp;
 

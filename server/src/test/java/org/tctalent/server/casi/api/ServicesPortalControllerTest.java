@@ -40,7 +40,7 @@ import org.mockito.ArgumentMatchers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.tctalent.server.api.admin.ApiTestBase;
@@ -66,6 +66,8 @@ import org.tctalent.server.service.db.CandidateService;
 import org.tctalent.server.service.db.CounterpartyService;
 import org.tctalent.server.service.db.TermsInfoService;
 import org.tctalent.server.service.db.UserService;
+import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.context.Context;
 
 @WebMvcTest(ServicesPortalController.class)
 @AutoConfigureMockMvc
@@ -79,15 +81,17 @@ class ServicesPortalControllerTest extends ApiTestBase {
   private static final String TERMS_ID = "ReferenceServiceTermsV1";
   private static final String OPC_DPA_TERMS_ID = "OpcDataProcessingAgreementV1";
 
-  @MockBean private AuthService authService;
-  @MockBean private UserService userService;
-  @MockBean private CandidateServiceRegistry candidateServiceRegistry;
-  @MockBean private EligibilityPolicyRegistry eligibilityPolicyRegistry;
-  @MockBean private CandidateAssistanceService candidateAssistanceService;
-  @MockBean private AgreementService agreementService;
-  @MockBean private CounterpartyService counterpartyService;
-  @MockBean private CandidateService candidateService;
-  @MockBean private TermsInfoService termsInfoService;
+  @MockitoBean private AuthService authService;
+  @MockitoBean private UserService userService;
+  @MockitoBean private CandidateServiceRegistry candidateServiceRegistry;
+  @MockitoBean private EligibilityPolicyRegistry eligibilityPolicyRegistry;
+  @MockitoBean private CandidateAssistanceService candidateAssistanceService;
+  @MockitoBean private AgreementService agreementService;
+  @MockitoBean private CounterpartyService counterpartyService;
+  @MockitoBean private CandidateService candidateService;
+  @MockitoBean private TermsInfoService termsInfoService;
+  @MockitoBean(name = "termsTemplateEngine")
+  private TemplateEngine termsTemplateEngine;
 
   @Autowired private MockMvc mockMvc;
   @Autowired private ObjectMapper objectMapper;
@@ -266,12 +270,17 @@ class ServicesPortalControllerTest extends ApiTestBase {
   void getOpcDpaTermsReturnsConfiguredTerms() throws Exception {
     given(candidateAssistanceService.opcDpaAcceptedTermsInfoId()).willReturn(Optional.of(OPC_DPA_TERMS_ID));
     given(termsInfoService.get(OPC_DPA_TERMS_ID)).willReturn(opcDpaTermsInfo);
+    given(counterpartyService.findOrCreateByTypeAndServiceProvider(
+        CounterpartyType.SERVICE_PROVIDER, ServiceProvider.LINKEDIN)).willReturn(counterparty);
+    given(termsTemplateEngine.process(ArgumentMatchers.eq(opcDpaTermsInfo.getContent()),
+        ArgumentMatchers.any(Context.class)))
+        .willReturn("<p>Rendered OPC DPA</p>");
 
     mockMvc.perform(get(BASE_PATH + "/" + PROVIDER + "/" + SERVICE_CODE + "/agreement/opc-dpa/terms")
             .header("Authorization", "Bearer jwt-token"))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.id", is(OPC_DPA_TERMS_ID)))
-        .andExpect(jsonPath("$.content", is("<p>OPC DPA</p>")));
+        .andExpect(jsonPath("$.content", is("<p>Rendered OPC DPA</p>")));
   }
 
   @Test
@@ -322,12 +331,17 @@ class ServicesPortalControllerTest extends ApiTestBase {
     given(candidateAssistanceService.agreementTermsType())
         .willReturn(Optional.of(TermsType.REFERENCE_SERVICE_TERMS));
     given(termsInfoService.getCurrentByType(TermsType.REFERENCE_SERVICE_TERMS)).willReturn(termsInfo);
+    given(counterpartyService.findOrCreateByTypeAndServiceProvider(
+        CounterpartyType.SERVICE_PROVIDER, ServiceProvider.LINKEDIN)).willReturn(counterparty);
+    given(termsTemplateEngine.process(ArgumentMatchers.eq(termsInfo.getContent()),
+        ArgumentMatchers.any(Context.class)))
+        .willReturn("<p>Rendered Terms</p>");
 
     mockMvc.perform(get(BASE_PATH + "/" + PROVIDER + "/" + SERVICE_CODE + "/agreement/terms")
             .header("Authorization", "Bearer jwt-token"))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.id", is(TERMS_ID)))
-        .andExpect(jsonPath("$.content", is("<p>Terms</p>")));
+        .andExpect(jsonPath("$.content", is("<p>Rendered Terms</p>")));
   }
 
   @Test

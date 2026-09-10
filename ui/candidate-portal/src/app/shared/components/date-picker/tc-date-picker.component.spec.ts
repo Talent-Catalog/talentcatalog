@@ -104,8 +104,14 @@ describe('TcDatePickerComponent', () => {
   it('should display error message if error is present', () => {
     component.error = 'Test error message';
     fixture.detectChanges();
-    const errorMessage: DebugElement = fixture.debugElement.query(By.css('.alert-danger'));
-    expect(errorMessage.nativeElement.textContent).toContain('Test error message');
+
+    const errorAlert = fixture.debugElement.query(
+      By.css('tc-alert')
+    );
+
+    expect(errorAlert).toBeTruthy();
+    expect(errorAlert.nativeElement.textContent)
+    .toContain('Test error message');
   });
 
   it('should call update method when date changes', () => {
@@ -124,7 +130,7 @@ describe('TcDatePickerComponent', () => {
 
     clearButton.triggerEventHandler('onClick', {});
     fixture.detectChanges();
-    
+
     expect(component.clear).toHaveBeenCalled();
   });
 });

@@ -34,16 +34,16 @@ describe('CreateCandidateAttachmentComponent', () => {
   let modalSpy: jasmine.SpyObj<NgbActiveModal>;
 
   beforeEach(async () => {
-    const candidateAttachmentServiceMock = jasmine.createSpyObj('CandidateAttachmentService', ['createAttachment']);
+    const candidateAttachmentServiceMock = jasmine.createSpyObj('CandidateAttachmentService', ['createAttachment', 'uploadAttachment']);
     const modalMock = jasmine.createSpyObj('NgbActiveModal', ['close']);
 
     await TestBed.configureTestingModule({
-      declarations: [ CreateCandidateAttachmentComponent ],
-      imports: [HttpClientTestingModule,FormsModule,ReactiveFormsModule, NgSelectModule],
+      declarations: [CreateCandidateAttachmentComponent],
+      imports: [HttpClientTestingModule, FormsModule, ReactiveFormsModule, NgSelectModule],
       providers: [
         UntypedFormBuilder,
-        { provide: CandidateAttachmentService, useValue: candidateAttachmentServiceMock },
-        { provide: NgbActiveModal, useValue: modalMock }
+        {provide: CandidateAttachmentService, useValue: candidateAttachmentServiceMock},
+        {provide: NgbActiveModal, useValue: modalMock}
       ]
     })
     .compileComponents();
@@ -104,4 +104,135 @@ describe('CreateCandidateAttachmentComponent', () => {
     expect(component.error).toBe('Error saving attachment');
     expect(modalSpy.close).not.toHaveBeenCalled();
   });
+
+  it('should initialize attachments and form values', () => {
+    component.candidateId = 99;
+    component.type = 'file';
+
+    component.ngOnInit();
+
+    expect(component.attachments).toEqual([]);
+    expect(component.form.value).toEqual({
+      candidateId: 99,
+      type: 'file',
+      url: '',
+      name: '',
+      cv: false
+    });
+  });
+
+  it('should close modal when cancel is called', () => {
+    component.cancel();
+
+    expect(modalSpy.close).toHaveBeenCalled();
+  });
+
+  it('should close modal when close is called', () => {
+    component.close();
+
+    expect(modalSpy.close).toHaveBeenCalled();
+  });
+
+  it('should upload multiple files successfully', () => {
+    const firstFile = new File(['one'], 'one.txt');
+    const secondFile = new File(['two'], 'two.txt');
+
+    const firstAttachment = {
+      id: 1,
+      name: 'one.txt'
+    } as any;
+
+    const secondAttachment = {
+      id: 2,
+      name: 'two.txt'
+    } as any;
+
+    component.form.controls['cv'].setValue(true);
+
+    candidateAttachmentServiceSpy.uploadAttachment
+    .and.returnValues(
+      of(firstAttachment),
+      of(secondAttachment)
+    );
+
+    component.startServerUpload([firstFile, secondFile]);
+
+    expect(component.error).toBeNull();
+    expect(component.uploading).toBeFalse();
+    expect(component.attachments).toEqual([
+      firstAttachment,
+      secondAttachment
+    ]);
+
+    expect(
+      candidateAttachmentServiceSpy.uploadAttachment.calls.count()
+    ).toBe(2);
+
+    expect(
+      candidateAttachmentServiceSpy.uploadAttachment.calls.argsFor(0)[0]
+    ).toBe(component.candidateId);
+    expect(
+      candidateAttachmentServiceSpy.uploadAttachment.calls.argsFor(0)[1]
+    ).toBeTrue();
+    expect(
+      candidateAttachmentServiceSpy.uploadAttachment.calls.argsFor(0)[2]
+    ).toEqual(jasmine.any(FormData));
+
+    expect(
+      candidateAttachmentServiceSpy.uploadAttachment.calls.argsFor(1)[0]
+    ).toBe(component.candidateId);
+    expect(
+      candidateAttachmentServiceSpy.uploadAttachment.calls.argsFor(1)[1]
+    ).toBeTrue();
+    expect(
+      candidateAttachmentServiceSpy.uploadAttachment.calls.argsFor(1)[2]
+    ).toEqual(jasmine.any(FormData));
+  });
+
+  it('should handle upload failure', () => {
+    const file = new File(['one'], 'one.txt');
+    const error = 'upload failed';
+
+    component.form.controls['cv'].setValue(false);
+
+    candidateAttachmentServiceSpy.uploadAttachment
+    .and.returnValue(throwError(error));
+
+    component.startServerUpload([file]);
+
+    expect(component.error).toBe(error);
+    expect(component.uploading).toBeFalse();
+    expect(component.attachments).toEqual([]);
+  });
+
+  it('should clear existing attachments before uploading', () => {
+    const file = new File(['one'], 'one.txt');
+    const uploadedAttachment = {
+      id: 1,
+      name: 'one.txt'
+    } as any;
+
+    component.attachments = [
+      {
+        id: 999,
+        name: 'old.txt'
+      } as any
+    ];
+
+    candidateAttachmentServiceSpy.uploadAttachment
+    .and.returnValue(of(uploadedAttachment));
+
+    component.startServerUpload([file]);
+
+    expect(component.attachments).toEqual([
+      uploadedAttachment
+    ]);
+  });
+
+  it('should set an error from the file upload component', () => {
+    component.onError('Invalid file');
+
+    expect(component.error).toBe('Invalid file');
+  });
+
 });

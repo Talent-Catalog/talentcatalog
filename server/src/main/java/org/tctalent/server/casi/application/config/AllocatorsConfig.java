@@ -18,6 +18,8 @@ package org.tctalent.server.casi.application.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.tctalent.server.casi.application.support.RelevantCountryResolver;
+import org.tctalent.server.casi.core.allocators.FirstRelevantCountrySharedResourceAllocator;
 import org.tctalent.server.casi.core.allocators.InventoryAllocator;
 import org.tctalent.server.casi.core.allocators.ResourceAllocator;
 import org.tctalent.server.casi.core.allocators.SharedCountryResourceAllocator;
@@ -58,6 +60,13 @@ public class AllocatorsConfig {
   @Bean("unhcrHelpSiteLinkAllocator")
   public ResourceAllocator unhcrHelpSiteLinkAllocator(ServiceResourceRepository repo) {
     return new SharedCountryResourceAllocator(repo, ServiceProvider.UNHCR, ServiceCode.HELP_SITE_LINK);
+  }
+
+  @Bean("pifiHelpSiteLinkAllocator")
+  public ResourceAllocator pifiHelpSiteLinkAllocator(ServiceResourceRepository repo,
+      RelevantCountryResolver countryResolver) {
+    return new FirstRelevantCountrySharedResourceAllocator(repo, countryResolver, ServiceProvider.PIFI,
+        ServiceCode.HELP_SITE_LINK);
   }
 
   // Add more providers by instantiating InventoryAllocator or other implementation of ResourceAllocator

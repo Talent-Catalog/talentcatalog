@@ -22,6 +22,7 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
@@ -45,7 +46,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.tctalent.server.model.db.CandidateOccupation;
@@ -75,8 +76,8 @@ class CandidateOccupationAdminApiTest extends ApiTestBase {
     private static final CandidateOccupation candidateOccupation = getCandidateOccupation();
     private static final List<CandidateOccupation> candidateOccupationsList = getListOfCandidateOccupations();
 
-    @MockBean OccupationService occupationService;
-    @MockBean CandidateOccupationService candidateOccupationService;
+    @MockitoBean OccupationService occupationService;
+    @MockitoBean CandidateOccupationService candidateOccupationService;
 
     @Autowired MockMvc mockMvc;
     @Autowired ObjectMapper objectMapper;
@@ -193,6 +194,34 @@ class CandidateOccupationAdminApiTest extends ApiTestBase {
                 .andExpect(jsonPath("$.yearsExperience", is(10)));
 
         verify(candidateOccupationService).updateCandidateOccupation(any(UpdateCandidateOccupationRequest.class));
+    }
+
+    @Test
+    @DisplayName("update candidate occupation by id with principal flag succeeds")
+    void updateCandidateOccupationByIdWithPrincipalFlagSucceeds() throws Exception {
+        UpdateCandidateOccupationRequest request = new UpdateCandidateOccupationRequest();
+        request.setPrincipal(true);
+
+        given(candidateOccupationService
+                .updateCandidateOccupation(any(UpdateCandidateOccupationRequest.class)))
+                .willReturn(candidateOccupation);
+
+        mockMvc.perform(put(BASE_PATH + "/" + CANDIDATE_ID)
+                        .with(csrf())
+                        .header("Authorization", "Bearer " + "jwt-token")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request))
+                        .accept(MediaType.APPLICATION_JSON))
+
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$", notNullValue()))
+                .andExpect(jsonPath("$.occupation.name", is("Software Engineer")))
+                .andExpect(jsonPath("$.yearsExperience", is(10)));
+
+        verify(candidateOccupationService).updateCandidateOccupation(argThat(
+                r -> Boolean.TRUE.equals(r.getPrincipal())));
     }
 
     @Test

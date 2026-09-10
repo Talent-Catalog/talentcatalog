@@ -17,3 +17,9 @@
 .destination-card:last-child hr {
   display: none;
 }
+
+.destination-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 1rem;
+}

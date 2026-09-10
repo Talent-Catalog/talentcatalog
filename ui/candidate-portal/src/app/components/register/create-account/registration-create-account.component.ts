@@ -24,7 +24,7 @@ import {RegistrationService} from "../../../services/registration.service";
 import {LanguageService} from "../../../services/language.service";
 import {RegisterCandidateRequest} from "../../../model/candidate";
 import {US_AFGHAN_SURVEY_TYPE} from "../../../model/survey-type";
-import {EMAIL_REGEX} from "../../../model/base";
+import {EMAIL_REGEX, sanitizeEmailInput} from "../../../model/base";
 
 @Component({
   selector: 'app-registration-create-account',
@@ -68,6 +68,15 @@ export class RegistrationCreateAccountComponent implements OnInit {
       username: ['', Validators.required],
       password: ['', Validators.required],
       passwordConfirmation: ['', Validators.required]
+    });
+
+    // Strip invisible characters (eg zero-width spaces) that copy-paste can silently add to an
+    // otherwise valid email address, causing pattern validation to fail - see TC-723.
+    this.registrationForm.get('username').valueChanges.subscribe((value: string) => {
+      const sanitized = sanitizeEmailInput(value);
+      if (sanitized !== value) {
+        this.registrationForm.get('username').setValue(sanitized, {emitEvent: false});
+      }
     });
 
     if (this.authenticationService.isAuthenticated()) {

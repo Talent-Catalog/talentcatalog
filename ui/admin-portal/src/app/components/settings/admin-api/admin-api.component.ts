@@ -48,14 +48,15 @@ export class AdminApiComponent implements OnInit {
 
   // List of general admin commands
   readonly adminCommands: AdminCommand[] = [
-    { command: 'set_candidate_text/cpu-{percentage}', description: 'Update text of all candidates that are not deleted or withdrawn status limiting cpu percentage', method: 'POST' },
+    { command: 'set_candidate_text/cpu-{percentage}-before-{hours}', description: 'If hours is not specified, update text of all candidates (not deleted or withdrawn). If hours specified update only those last updated before {hours} ago (eg when new code went into production). Limit cpu percentage', method: 'POST' },
     { command: 'set_candidate_text/list-{listId}-cpu-{percentage}', description: 'Update text of all candidates in the specified list limiting cpu percentage', method: 'POST' },
     { command: 'set_candidate_text/search-{searchId}-cpu-{percentage}', description: 'Update text of all candidates in the specified search limiting cpu percentage', method: 'POST' },
     { command: 'reassign-candidates/list-{listId}-to-partner-{partnerId}', description: 'Reassign all candidates in the specified list to the specified partner', method: 'POST' },
     { command: 'reassign-candidates/search-{searchId}-to-partner-{partnerId}', description: 'Reassign all candidates in the specified search to the specified partner', method: 'POST' },
     { command: 'move-candidate-drive/{number}', description: 'Move candidate to the current candidate data drive', method: 'POST' },
     { command: 'move-candidates-drive/{listId}', description: 'Move candidates from the given list to the current candidate data drive', method: 'POST' },
-    { command: 'flush_user_cache', description: 'Flush Redis cache for cached users', method: 'POST' }
+    { command: 'flush_user_cache', description: 'Flush Redis cache for cached users', method: 'POST' },
+    { command: 'build_embeddings', description: 'Add embeddings for "building" model', method: 'POST' }
     // Add more general-purpose or maintenance commands here
   ];
 

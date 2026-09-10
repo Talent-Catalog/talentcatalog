@@ -20,8 +20,8 @@
 <div class="service-title">
   <div class="header">
     <div>
-      <h2>UNHCR {{ countryName }}</h2>
-      <p>Official refugee help resources for {{ countryName }}.</p>
+      <h2>{{ 'SERVICES.UNHCR.DETAIL_TITLE' | translate:{ countryName: countryName } }}</h2>
+      <p>{{ 'SERVICES.UNHCR.DETAIL_SUBTITLE' | translate:{ countryName: countryName } }}</p>
     </div>
     <span class="flag-icon" aria-hidden="true">{{ countryFlag }}</span>
   </div>
@@ -29,7 +29,7 @@
 
 <div class="service-content" *ngIf="!loading">
   <p>
-    Visit UNHCR Help for up-to-date guidance and support information specific to {{ countryName }}.
+    {{ 'SERVICES.UNHCR.HELP_INTRO' | translate:{ countryName: countryName } }}
   </p>
 
   <p *ngIf="assignment?.resource?.resourceCode as helpUrl">
@@ -39,7 +39,7 @@
   <div class="mt-5">
     <tc-button [type]="'outline'" (onClick)="onBackButtonClicked()">
       <i class="me-1 fas fa-arrow-left"></i>
-      Back
+      {{ 'SERVICES.UNHCR.BACK' | translate }}
     </tc-button>
   </div>
 </div>

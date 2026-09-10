@@ -1,0 +1,67 @@
+{
+  "version": 1,
+  "description": "Verify+ 4.1 consent and trust wording (#3722)",
+  "languages": [
+    "en",
+    "ar",
+    "fa",
+    "ps",
+    "es",
+    "fr",
+    "tr",
+    "ru",
+    "uk",
+    "nl",
+    "pt"
+  ],
+  "entries": [
+    {
+      "key": "REGISTRATION.VERIFY_PLUS.DESCRIPTION",
+      "values": {
+        "en": "Scan your Verify+ card now to pre-fill your UNHCR registration number. A valid scan shows the card is genuine. It does not prove that you are the person named on the card.",
+        "ar": "قم بمسح بطاقة Verify+ ضوئيًا الآن لملء رقم التسجيل UNHCR الخاص بك مسبقًا. يظهر الفحص الصالح أن البطاقة أصلية. ولا يثبت أنك الشخص المذكور على البطاقة.",
+        "fa": "اکنون کارت Verify+ خود را اسکن کنید تا شماره ثبت نام UNHCR خود را از قبل پر کنید. یک اسکن معتبر نشان می‌دهد که کارت اصیل است. این ثابت نمی‌کند که شما شخص نام‌برده روی کارت هستید.",
+        "ps": "همدا اوس خپل Verify+ کارت سکین کړئ ترڅو خپل UNHCR د ثبت شمیره دمخه ډک کړئ. یو باوري سکین ښيي چې کارت اصلي دی. دا ثابت نه کوي چې تاسو هغه شخص یاست چې په کارت کې نومول شوی.",
+        "es": "Escanee su tarjeta Verify+ ahora para completar previamente su número de registro UNHCR. Un escaneo válido muestra que la tarjeta es auténtica. No prueba que usted sea la persona nombrada en la tarjeta.",
+        "fr": "Scannez dès maintenant votre carte Verify+ pour pré-remplir votre numéro d'enregistrement UNHCR. Un scan valide montre que la carte est authentique. Il ne prouve pas que vous êtes la personne nommée sur la carte.",
+        "tr": "UNHCR kayıt numaranızı önceden doldurmak için Verify+ kartınızı şimdi tarayın. Geçerli bir tarama, kartın gerçek olduğunu gösterir. Kartta adı geçen kişi olduğunuzu kanıtlamaz.",
+        "ru": "Отсканируйте свою карту Verify+ сейчас, чтобы предварительно заполнить свой регистрационный номер UNHCR. Действительное сканирование показывает, что карта подлинная. Это не доказывает, что вы — человек, указанный на карте.",
+        "uk": "Відскануйте картку Verify+ зараз, щоб попередньо заповнити реєстраційний номер UNHCR. Дійсне сканування показує, що картка справжня. Це не доводить, що ви є особою, зазначеною на картці.",
+        "nl": "Scan nu uw Verify+-kaart om uw UNHCR-registratienummer vooraf in te vullen. Een geldige scan toont aan dat de kaart echt is. Het bewijst niet dat u de persoon bent die op de kaart staat.",
+        "pt": "Digitalize seu cartão Verify+ agora para preencher previamente seu número de registro UNHCR. Uma digitalização válida mostra que o cartão é genuíno. Não prova que você é a pessoa nomeada no cartão."
+      }
+    },
+    {
+      "key": "SERVICES.VERIFY_PLUS.SCAN_INTRO",
+      "values": {
+        "en": "Scan your UNHCR Verify+ card QR code. A valid scan shows the card is genuine. It does not prove that you are the person named on the card.",
+        "ar": "امسح رمز QR لبطاقة UNHCR Verify+. يظهر الفحص الصالح أن البطاقة أصلية. ولا يثبت أنك الشخص المذكور على البطاقة.",
+        "fa": "کد QR کارت UNHCR Verify+ خود را اسکن کنید. یک اسکن معتبر نشان می‌دهد که کارت اصیل است. این ثابت نمی‌کند که شما شخص نام‌برده روی کارت هستید.",
+        "ps": "د خپل UNHCR Verify+ کارت QR کوډ سکین کړئ. یو باوري سکین ښيي چې کارت اصلي دی. دا ثابت نه کوي چې تاسو هغه شخص یاست چې په کارت کې نومول شوی.",
+        "es": "Escanee el código QR de su tarjeta UNHCR Verify+. Un escaneo válido muestra que la tarjeta es auténtica. No prueba que usted sea la persona nombrada en la tarjeta.",
+        "fr": "Scannez le code QR de votre carte UNHCR Verify+. Un scan valide montre que la carte est authentique. Il ne prouve pas que vous êtes la personne nommée sur la carte.",
+        "tr": "UNHCR Verify+ kartınızın QR kodunu tarayın. Geçerli bir tarama, kartın gerçek olduğunu gösterir. Kartta adı geçen kişi olduğunuzu kanıtlamaz.",
+        "ru": "Отсканируйте QR-код вашей карты UNHCR Verify+. Действительное сканирование показывает, что карта подлинная. Это не доказывает, что вы — человек, указанный на карте.",
+        "uk": "Відскануйте QR-код картки UNHCR Verify+. Дійсне сканування показує, що картка справжня. Це не доводить, що ви є особою, зазначеною на картці.",
+        "nl": "Scan de QR-code van uw UNHCR Verify+-kaart. Een geldige scan toont aan dat de kaart echt is. Het bewijst niet dat u de persoon bent die op de kaart staat.",
+        "pt": "Digitalize o código QR do seu cartão UNHCR Verify+. Uma digitalização válida mostra que o cartão é genuíno. Não prova que você é a pessoa nomeada no cartão."
+      }
+    },
+    {
+      "key": "SERVICES.VERIFY_PLUS.CONSENT_LABEL",
+      "values": {
+        "en": "I agree that GRN may store the data from this card on my profile.",
+        "ar": "أوافق على أن تقوم GRN بتخزين بيانات هذه البطاقة في ملفي الشخصي.",
+        "fa": "موافقم که GRN داده‌های این کارت را در نمایه من ذخیره کند.",
+        "ps": "زه موافق یم چې GRN د دې کارت معلومات زما په پروفایل کې ذخیره کړي.",
+        "es": "Acepto que GRN almacene los datos de esta tarjeta en mi perfil.",
+        "fr": "J'accepte que GRN stocke les données de cette carte sur mon profil.",
+        "tr": "GRN'nin bu karttaki verileri profilimde saklamasına izin veriyorum.",
+        "ru": "Я соглашаюсь, чтобы GRN сохранила данные с этой карты в моём профиле.",
+        "uk": "Я погоджуюся, щоб GRN зберігала дані з цієї картки у моєму профілі.",
+        "nl": "Ik ga ermee akkoord dat GRN de gegevens van deze kaart op mijn profiel opslaat.",
+        "pt": "Concordo que a GRN armazene os dados deste cartão no meu perfil."
+      }
+    }
+  ]
+}

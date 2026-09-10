@@ -25,5 +25,6 @@ public enum ServiceProvider {
   DUOLINGO,
   LINKEDIN,
   REFERENCE,
-  UNHCR
+  UNHCR,
+  PIFI
 }

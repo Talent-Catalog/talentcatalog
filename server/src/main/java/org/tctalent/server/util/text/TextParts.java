@@ -49,7 +49,7 @@ public class TextParts {
     private String tidied;
 
     /**
-     * Keywords extracted from the original text.
+     * Keywords associated with the original text.
      */
     private List<String> keywords = new ArrayList<>();
 

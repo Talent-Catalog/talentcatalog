@@ -53,6 +53,17 @@ public interface BackgroundProcessingService {
   void setCandidatePublicIds();
 
   /**
+   * Builds the vector embeddings for all candidate job experiences that do not already have
+   * vectors in the embedding table associated with the embedding model whose status is BUILDING.
+   * Does nothing if there is no such model with that status.
+   * <p>
+   *     When it completes, it sets the embedding model to the READY state.
+   * </p>
+   * @return a string indicating the result of the operation
+   */
+  String buildEmbeddings();
+
+  /**
    * Adds publicID to any partner that doesn't have one
    */
   void setPartnerPublicIds();

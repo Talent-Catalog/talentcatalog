@@ -30,6 +30,8 @@ import {OccupationService} from "../../../../../services/occupation.service";
 export class EditCandidateOccupationComponent implements OnInit {
 
   candidateOccupation: CandidateOccupation;
+  isPrincipal: boolean;
+  hasExistingPrincipalOccupation: boolean;
 
   form: UntypedFormGroup;
 
@@ -50,6 +52,7 @@ export class EditCandidateOccupationComponent implements OnInit {
     this.form = this.fb.group({
       occupationId: [this.candidateOccupation.occupation.id, Validators.required],
       yearsExperience: [this.candidateOccupation.yearsExperience, [Validators.required, Validators.min(0)]],
+      markAsPrincipal: [false],
     });
 
     /* LOAD OCCUPATIONS */
@@ -68,10 +71,15 @@ export class EditCandidateOccupationComponent implements OnInit {
 
   onSave() {
     this.saving = true;
-    this.candidateOccupationService.update(this.candidateOccupation.id, this.form.value).subscribe(
+    const request = {
+      occupationId: this.form.value.occupationId,
+      yearsExperience: this.form.value.yearsExperience,
+      principal: this.form.value.markAsPrincipal,
+    };
+    this.candidateOccupationService.update(this.candidateOccupation.id, request).subscribe(
       (candidateOccupation) => {
-        this.closeModal(candidateOccupation);
         this.saving = false;
+        this.closeModal(candidateOccupation);
       },
       (error) => {
         this.error = error;

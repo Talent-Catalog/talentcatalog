@@ -1,6 +1,7 @@
 <tc-modal
   [heading]="'Erase candidate data'"
   [icon]="'fas fa-triangle-exclamation'"
+  [iconSize]="'xl'"
   [isError]="true"
   [showClose]="!erasing"
   [showCancel]="!erasing && step === 1"
@@ -18,12 +19,6 @@
 
   <!-- STEP 1: WARNING -->
   <div *ngIf="step === 1 && !erasing">
-    <div class="erase-warning-icon">
-      <tc-icon size="xl" color="error" ariaLabel="Warning">
-        <i class="fas fa-triangle-exclamation"></i>
-      </tc-icon>
-    </div>
-
     <h5 class="mb-3">This is a permanent erasure action</h5>
 
     <p>

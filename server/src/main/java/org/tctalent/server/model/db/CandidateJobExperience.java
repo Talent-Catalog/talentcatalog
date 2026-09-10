@@ -86,5 +86,4 @@ public class CandidateJobExperience extends AbstractCandidateDataDomainObject<Lo
         this.endDate = endDate;
         this.description = description;
     }
-
 }

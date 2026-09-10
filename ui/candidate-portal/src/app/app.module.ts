@@ -37,6 +37,9 @@ import {
   RegistrationContactComponent
 } from './components/register/contact/registration-contact.component';
 import {
+  RegistrationVerifyPlusComponent
+} from './components/register/verify-plus/registration-verify-plus.component';
+import {
   RegistrationPersonalComponent
 } from './components/register/personal/registration-personal.component';
 import {
@@ -240,6 +243,9 @@ import {
   ReferenceComponent
 } from './components/profile/view/tab/services/reference/reference.component';
 import {UnhcrComponent} from './components/profile/view/tab/services/unhcr/unhcr.component';
+import {PifiComponent} from './components/profile/view/tab/services/pifi/pifi.component';
+import {VerifyPlusComponent} from './components/profile/view/tab/services/verify-plus/verify-plus.component';
+import {VerifyPlusScannerComponent} from './components/common/verify-plus-scanner/verify-plus-scanner.component';
 import {
   CandidateAgreementsComponent
 } from './components/profile/view/tab/agreements/candidate-agreements.component';
@@ -264,6 +270,7 @@ export function HttpLoaderFactory(http: HttpClient) {
     HeaderComponent,
     LandingComponent,
     RegistrationContactComponent,
+    RegistrationVerifyPlusComponent,
     RegistrationPersonalComponent,
     RegistrationCandidateOccupationComponent,
     RegistrationWorkExperienceComponent,
@@ -349,6 +356,9 @@ export function HttpLoaderFactory(http: HttpClient) {
     LinkedinRedeemedComponent,
     ReferenceComponent,
     UnhcrComponent,
+    PifiComponent,
+    VerifyPlusComponent,
+    VerifyPlusScannerComponent,
     CandidateAgreementsComponent,
     AgreementContentComponent
   ],

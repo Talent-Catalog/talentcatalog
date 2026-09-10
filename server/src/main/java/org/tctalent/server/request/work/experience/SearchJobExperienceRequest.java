@@ -30,4 +30,5 @@ public class SearchJobExperienceRequest extends PagedSearchRequest {
 
     private Long candidateId;
 
+    private Boolean activeCandidate;
 }

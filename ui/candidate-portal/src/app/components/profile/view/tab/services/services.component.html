@@ -39,6 +39,16 @@
              (backButtonClicked)="onBackButtonClick()"
   ></app-unhcr>
 
+  <app-pifi *ngIf="(showPifi$ | async) && selectedService === Service.PIFI"
+            [candidate]="candidate"
+            (backButtonClicked)="onBackButtonClick()"
+  ></app-pifi>
+
+  <app-verify-plus *ngIf="(showVerifyPlus$ | async) && selectedService === Service.VERIFY_PLUS"
+                   [candidate]="candidate"
+                   (backButtonClicked)="onBackButtonClick()"
+  ></app-verify-plus>
+
   <ng-container *ngIf="!loading && !selectedService">
 
     <app-tab-header>
@@ -91,13 +101,13 @@
     >
       <div>
         <span class="service-tag">
-          Reference
+          {{ 'SERVICES.REFERENCE.TAG' | translate }}
         </span>
         <h3>
-          Reference Service
+          {{ 'SERVICES.REFERENCE.TITLE' | translate }}
         </h3>
         <p>
-          Minimal CASI lifecycle test service.
+          {{ 'SERVICES.REFERENCE.DESCRIPTION' | translate }}
         </p>
       </div>
       <img src="assets/images/services/opcLogo.svg" alt="Reference Voucher (placeholder)"/>
@@ -110,16 +120,54 @@
     >
       <div>
         <span class="service-tag unhcr">
-          UNHCR
+          {{ 'SERVICES.UNHCR.TAG' | translate }}
         </span>
         <h3>
-          UNHCR Help
+          {{ 'SERVICES.UNHCR.TITLE' | translate }}
         </h3>
         <p>
-          Country-specific refugee support resources from UNHCR.
+          {{ 'SERVICES.UNHCR.DESCRIPTION' | translate }}
         </p>
       </div>
       <img src="assets/images/services/unhcr.png" alt="UNHCR Logo"/>
+    </div>
+
+    <!-- PiFi -->
+    <div *ngIf="showPifi$ | async"
+         class="service-card pifi"
+         (click)="selectService(Service.PIFI)"
+    >
+      <div>
+        <span class="service-tag pifi">
+          PiFi
+        </span>
+        <h3>
+          PiFi Property
+        </h3>
+        <p>
+          Helping migrants find a place to call home in Australia.
+        </p>
+      </div>
+      <img src="assets/images/services/pifiLogo.png" alt="PiFi logo"/>
+    </div>
+
+    <!-- Verify+ -->
+    <div *ngIf="showVerifyPlus$ | async"
+         class="service-card unhcr"
+         (click)="selectService(Service.VERIFY_PLUS)"
+    >
+      <div>
+        <span class="service-tag unhcr">
+          {{ 'SERVICES.VERIFY_PLUS.TAG' | translate }}
+        </span>
+        <h3>
+          {{ 'SERVICES.VERIFY_PLUS.TITLE' | translate }}
+        </h3>
+        <p>
+          {{ 'SERVICES.VERIFY_PLUS.DESCRIPTION' | translate }}
+        </p>
+      </div>
+      <img src="assets/images/services/unhcr.png" alt="UNHCR Verify+ Logo"/>
     </div>
 
   </ng-container>

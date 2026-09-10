@@ -123,5 +123,23 @@ export function getOrdinal(enumeration: any, key: string ): number {
   return Object.keys(enumeration).indexOf(key);
 }
 
+/**
+ * Takes any enum input (key or string value) and returns the key value.
+ * Sometimes an enum might be a key (e.g., from DB), and sometimes it will come from angular
+ * (e.g., Status.draft). So this makes sure an input is always returned as a key for processing.
+ * @param enumeration
+ * @param valueOrKey
+ */
+export function toEnumKey(enumeration: any, valueOrKey: string): string | undefined {
+  // Already a key
+  if (valueOrKey in enumeration) {
+    return valueOrKey;
+  }
+
+  // Find the key for the string value
+  return Object.keys(enumeration)
+    .find(key => enumeration[key] === valueOrKey);
+}
+
 
 

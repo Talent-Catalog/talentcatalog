@@ -926,6 +926,8 @@ public class CandidateErasureServiceImpl implements CandidateErasureService {
     candidate.setMediaWillingness(null);
     candidate.setContactConsentRegistration(false);
     candidate.setContactConsentPartners(false);
+    candidate.setVerifyPlusConsented(false);
+    candidate.setVerifyPlusConsentedAt(null);
     candidate.setMiniIntakeCompletedBy(null);
     candidate.setMiniIntakeCompletedDate(null);
     candidate.setFullIntakeCompletedBy(null);

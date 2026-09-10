@@ -32,18 +32,23 @@ import org.tctalent.server.util.listener.BatchListener;
  * This is intended to run long tasks in the background without consuming too much CPU.
  * It does this by using Spring's scheduling to do a bit of work on a task, then wait a while,
  * then do more work, until the task is complete.
- * <p/>
+ * <p>
  * Tasks to be completed must implement {@link BackProcessor} - which just needs to implement a
  * single method called "process" which takes a single parameter defining the CONTEXT.
  * CONTEXT is used by the task to keep track of where it is up to in its processing.
  * The task does some processing, then updates the context object recording where it got up to.
  * The next time the process method is called it can continue where it left off.
- * <p/>
+ * <p>
  * The "process" returns false if there is still processing to do, in which case it will be called
  * again by the scheduler after a certain delay.
  * When the task has finished all processing, it can return true from the process method. That
  * will cancel the scheduling so that process is not called again.
- *
+ * <p>
+ *     Note that we now have another way of doing this background processing using Spring's
+ *     standard batch support. See CandidateJobFactory for an example of how to use that.
+ *     Eventually we should probably move all of our background processing to use Spring's batch
+ *     support and remove this class and associated classes. - John Cameron 7 Sep 2026
+ * </p>
  *
  * @author John Cameron
  */

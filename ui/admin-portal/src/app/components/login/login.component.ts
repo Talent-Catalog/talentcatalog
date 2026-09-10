@@ -106,8 +106,6 @@ export class LoginComponent implements OnInit {
     this.authenticationService.login(req)
     .subscribe(() => {
       this.loading = false;
-      // todo: temporary disabled the DPA
-      // this.checkMfaAndDpa();
       this.checkMfaSetup();
     }, error => {
       // console.log(error);
@@ -142,27 +140,6 @@ export class LoginComponent implements OnInit {
     })
     .catch(() => {
       this.router.navigateByUrl(this.returnUrl);
-    });
-  }
-
-  private checkMfaAndDpa() {
-    if (!this.authorizationService.isSourcePartner()) {
-      // Non-partner users skip DPA check and proceed to MFA
-      this.checkMfaSetup();
-      return;
-    }
-    this.partnerService.requiresDpaAcceptance().subscribe({
-      next: (requiresDpa: boolean) => {
-        if (requiresDpa) {
-          this.router.navigateByUrl('/dpa');
-        } else {
-          this.checkMfaSetup();
-        }
-      },
-      error: error => {
-        this.error = error;
-        this.loading = false;
-      }
     });
   }
 }

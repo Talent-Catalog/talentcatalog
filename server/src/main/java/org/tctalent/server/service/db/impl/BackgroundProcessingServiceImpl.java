@@ -28,22 +28,29 @@ import org.springframework.data.domain.Sort;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.CandidateStatus;
 import org.tctalent.server.model.db.PartnerImpl;
 import org.tctalent.server.model.db.SavedList;
 import org.tctalent.server.model.db.SavedSearch;
+import org.tctalent.server.model.db.embedding.EmbeddingModel;
+import org.tctalent.server.model.db.embedding.EmbeddingModelStatus;
 import org.tctalent.server.repository.db.CandidateRepository;
 import org.tctalent.server.request.candidate.SearchCandidateRequest;
 import org.tctalent.server.request.list.SearchSavedListRequest;
 import org.tctalent.server.request.partner.SearchPartnerRequest;
 import org.tctalent.server.request.search.SearchSavedSearchRequest;
+import org.tctalent.server.request.work.experience.SearchJobExperienceRequest;
 import org.tctalent.server.service.db.BackgroundProcessingService;
+import org.tctalent.server.service.db.CandidateJobExperienceService;
 import org.tctalent.server.service.db.CandidateService;
+import org.tctalent.server.service.db.EmbeddingModelService;
 import org.tctalent.server.service.db.PartnerService;
 import org.tctalent.server.service.db.SavedListService;
 import org.tctalent.server.service.db.SavedSearchService;
 import org.tctalent.server.service.db.util.PagedCandidateBackProcessor;
+import org.tctalent.server.service.db.util.PagedCandidateJobExperienceBackProcessor;
 import org.tctalent.server.service.db.util.PagedPartnerBackProcessor;
 import org.tctalent.server.service.db.util.PagedSavedListBackProcessor;
 import org.tctalent.server.service.db.util.PagedSavedSearchBackProcessor;
@@ -51,6 +58,7 @@ import org.tctalent.server.util.background.BackProcessor;
 import org.tctalent.server.util.background.BackRunner;
 import org.tctalent.server.util.background.PageContext;
 import org.tctalent.server.util.background.PageContextBackRunner;
+import org.tctalent.server.util.background.PageProcessReturn;
 import org.tctalent.server.util.listener.BatchListeningLogger;
 
 /**
@@ -62,6 +70,8 @@ import org.tctalent.server.util.listener.BatchListeningLogger;
 public class BackgroundProcessingServiceImpl implements BackgroundProcessingService {
   private final CandidateService candidateService;
   private final CandidateRepository candidateRepository;
+  private final CandidateJobExperienceService candidateJobExperienceService;
+  private final EmbeddingModelService embeddingModelService;
   private final PartnerService partnerService;
   private final SavedListService savedListService;
   private final SavedSearchService savedSearchService;
@@ -127,6 +137,50 @@ public class BackgroundProcessingServiceImpl implements BackgroundProcessingServ
         20,
         "Potential duplicate candidate processing"
     );
+  }
+
+  @Override
+  public String buildEmbeddings() {
+    final EmbeddingModel model = embeddingModelService.getBuildingModel();
+    if (model == null) {
+      String mess = "There is no embedding model with status BUILDING";
+      LogBuilder.builder(log)
+          .action("buildEmbeddings")
+          .message(mess)
+          .logWarn();
+      return mess;
+    }
+
+    //Process all experiences except for deleted or withdrawn candidates
+    SearchJobExperienceRequest searchRequest = new SearchJobExperienceRequest();
+    searchRequest.setActiveCandidate(true);
+
+    //Set page size
+    searchRequest.setPageSize(100);
+
+    //Create the processor, passing in the request and services it needs
+    PagedCandidateJobExperienceBackProcessor backProcessor =
+        new PagedCandidateJobExperienceBackProcessor( "buildEmbeddings",
+            searchRequest) {
+          @Override
+          protected PageProcessReturn processPageOfExperiences(
+              SearchJobExperienceRequest searchJobExperienceRequest) {
+
+            PageProcessReturn pageProcessReturn = candidateJobExperienceService
+                .batchUpdatePageOfCandidateJobExperienceEmbeddings(searchJobExperienceRequest);
+
+            //Mark the model as ready if there are no more pages to process
+            if (!pageProcessReturn.isMorePages()) {
+              model.setStatus(EmbeddingModelStatus.READY);
+              embeddingModelService.save(model);
+            }
+            return pageProcessReturn;
+          }
+        };
+    //Start the processing
+    PageContextBackRunner runner = new PageContextBackRunner();
+    runner.start(taskScheduler, backProcessor, 100, "Build embeddings");
+    return "Embeddings build started";
   }
 
   @Override

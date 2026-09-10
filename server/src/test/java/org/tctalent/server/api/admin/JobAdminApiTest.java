@@ -46,7 +46,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -102,8 +102,8 @@ class JobAdminApiTest extends ApiTestBase {
                     1
             );
 
-    @MockBean CountryService countryService;
-    @MockBean JobService jobService;
+    @MockitoBean CountryService countryService;
+    @MockitoBean JobService jobService;
 
     @Autowired MockMvc mockMvc;
     @Autowired ObjectMapper objectMapper;

@@ -45,6 +45,7 @@ import org.tctalent.server.request.job.JobIntakeData;
 import org.tctalent.server.request.job.SearchJobRequest;
 import org.tctalent.server.request.job.UpdateJobRequest;
 import org.tctalent.server.request.link.UpdateLinkRequest;
+import org.tctalent.server.service.api.JobMatchingInfo;
 import org.tctalent.server.service.api.SkillName;
 import org.tctalent.server.service.db.CountryService;
 import org.tctalent.server.service.db.JobService;
@@ -74,12 +75,37 @@ public class JobAdminApi implements
         return jobDto().build(job);
     }
 
+    /**
+     * Get the skills associated with the job with the given id.
+     * @param id Job id
+     * @param lang Language code for the skill names - eg "en" or "de"
+     * @return List of skill names
+     *
+     * @deprecated Use {@link #getJobMatchingInfo(long, String)} instead.
+     * {@link JobMatchingInfo} contains the same information as {@link List<SkillName>}.
+     */
+    @Deprecated(since = "2.5.2", forRemoval = true)
     @GetMapping("{id}/skills")
     public @NotNull List<SkillName> getSkills(
         @PathVariable("id") long id,
         @RequestParam(value = "lang", defaultValue="en") String lang
     ) throws NoSuchObjectException {
-        return jobService.getSkills(id, lang);
+        JobMatchingInfo info = jobService.getJobMatchingInfo(id, lang);
+        return info.getSkillNames();
+    }
+
+    /**
+     * Get the skills associated with the job with the given id.
+     * @param id Job id
+     * @param lang Language code for the skill names - eg "en" or "de"
+     * @return List of skill names
+     */
+    @GetMapping("{id}/job-matching-info")
+    public @NotNull JobMatchingInfo getJobMatchingInfo(
+        @PathVariable("id") long id,
+        @RequestParam(value = "lang", defaultValue="en") String lang
+    ) throws NoSuchObjectException {
+        return jobService.getJobMatchingInfo(id, lang);
     }
 
     @PostMapping("{id}/create-search")

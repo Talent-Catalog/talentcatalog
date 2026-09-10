@@ -48,7 +48,7 @@ export interface ShortCandidate {
 
 export interface Candidate extends HasId {
   id: number;
-  rank?: number;
+  score?: number;
   pendingTerms?: boolean;
   candidateNumber: string;
   publicId?: string;
@@ -70,6 +70,8 @@ export interface Candidate extends HasId {
   unhcrRegistered: YesNoUnsure;
   unhcrNumber: string;
   unhcrConsent: YesNo;
+  verifyPlusConsented?: boolean;
+  verifyPlusConsentedAt?: string;
   unrwaRegistered: YesNoUnsure;
   unrwaNumber: string;
   user: User;
@@ -127,6 +129,7 @@ export interface Candidate extends HasId {
   candidateJobExperiences?: CandidateJobExperience[];
   candidateLanguages?: CandidateLanguage[];
   candidateOccupations?: CandidateOccupation[];
+  principalOccupation?: CandidateOccupation;
   candidateDestinations?: CandidateDestination[];
   candidateSkills?: CandidateSkill[];
   candidateNotes?: CandidateNote[];

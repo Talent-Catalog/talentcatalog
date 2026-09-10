@@ -40,6 +40,8 @@ import {EditCandidateOccupationComponent} from '../edit/edit-candidate-occupatio
 import {ConfirmationComponent} from "../../../../util/confirm/confirmation.component";
 import {isHtml} from "../../../../../util/string";
 import {CandidateService} from "../../../../../services/candidate.service";
+import {SkillsService} from "../../../../../services/skills.service";
+import {TextPartsCodec} from "../../../../../util/text-parts/text-parts";
 
 @Component({
   selector: 'app-view-candidate-job-experience',
@@ -52,6 +54,7 @@ export class ViewCandidateJobExperienceComponent implements OnInit, OnChanges {
   @Input() editable: boolean;
   @Input() adminUser: boolean;
   @Input() candidateOccupation: CandidateOccupation;
+  @Input() isPrincipal: boolean;
   @Output() deleteOccupation = new EventEmitter<CandidateOccupation>();
 
   candidateJobExperienceForm: UntypedFormGroup;
@@ -63,7 +66,8 @@ export class ViewCandidateJobExperienceComponent implements OnInit, OnChanges {
 
   constructor(private candidateJobExperienceService: CandidateJobExperienceService,
               private modalService: NgbModal,
-              private candidateService: CandidateService) {
+              private candidateService: CandidateService,
+              private skillService: SkillsService) {
   }
 
   ngOnInit() {
@@ -81,6 +85,8 @@ export class ViewCandidateJobExperienceComponent implements OnInit, OnChanges {
     });
 
     modal.componentInstance.candidateOccupation = this.candidateOccupation;
+    modal.componentInstance.isPrincipal = this.isPrincipal;
+    modal.componentInstance.hasExistingPrincipalOccupation = !!this.candidate?.principalOccupation;
 
     modal.result
       .then((candidateOccupation) => this.candidateService.updateCandidate())
@@ -113,6 +119,16 @@ export class ViewCandidateJobExperienceComponent implements OnInit, OnChanges {
     });
 
     editCandidateJobExperienceModal.componentInstance.candidateJobExperience = candidateJobExperience;
+
+    //Fetch skills
+    //Unpack the text parts and combine them into a single string for skill extraction
+    const parts = TextPartsCodec.read(candidateJobExperience.description);
+    const s = parts.original + ' ' + parts.tidied + ' ' + parts.keywords.join(' ');
+    this.skillService.extractSkills({ lang: 'en', text: s })
+      .subscribe((skills) => {
+        const skillStrings: string[] = skills.map(skill => skill.name);
+        editCandidateJobExperienceModal.componentInstance.extractedSkills = skillStrings;
+      });
 
     editCandidateJobExperienceModal.result
       .then((candidateJobExperience) => this.candidateService.updateCandidate())

@@ -40,7 +40,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.tctalent.server.model.db.CandidateReviewStatusItem;
@@ -64,7 +64,7 @@ class CandidateReviewStatusAdminApiTest extends ApiTestBase {
 
     private static final CandidateReviewStatusItem reviewStatusItem = getCandidateReviewStatusItem();
 
-    @MockBean CandidateReviewStatusService candidateReviewStatusService;
+    @MockitoBean CandidateReviewStatusService candidateReviewStatusService;
 
     @Autowired MockMvc mockMvc;
     @Autowired ObjectMapper objectMapper;

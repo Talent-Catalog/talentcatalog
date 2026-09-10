@@ -188,28 +188,6 @@
           [formControlName]="'redirectPartnerId'">
         </ng-select>
       </tc-field>
-      <!-- New DPA Status Section (only shown when updating) -->
-      <div *ngIf="!isCreate()" class="mb-3">
-        <h5>Data Processing Agreement Status</h5>
-        <tc-field>
-          <tc-label for="acceptedDataProcessingAgreementId">Accepted DPA ID</tc-label>
-          <tc-input id="acceptedDataProcessingAgreementId"
-                    formControlName="acceptedDataProcessingAgreementId"
-                    [readonly]="true">
-          </tc-input>
-          <tc-error-message *ngIf="!form.get('acceptedDataProcessingAgreementId')?.value">
-            Not yet accepted by partner.
-          </tc-error-message>
-        </tc-field>
-        <tc-field>
-          <tc-label for="acceptedDataProcessingAgreementDate">Acceptance Date</tc-label>
-          <tc-input id="acceptedDataProcessingAgreementDate"
-                    formControlName="acceptedDataProcessingAgreementDate"
-                    [readonly]="true">
-          </tc-input>
-          <tc-description>Partner will be prompted to accept/re-accept upon login if needed.</tc-description>
-        </tc-field>
-      </div>
     </tc-fieldset>
   </form>
 </tc-modal>

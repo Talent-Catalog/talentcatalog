@@ -22,6 +22,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -36,6 +37,7 @@ import org.tctalent.server.casi.api.dto.ImportResponseDto;
 import org.tctalent.server.casi.api.dto.ServiceAssignmentDto;
 import org.tctalent.server.casi.api.dto.ServiceListDto;
 import org.tctalent.server.casi.api.dto.ServiceResourceDto;
+import org.tctalent.server.casi.api.request.CreateUpdateSharedLinkRequest;
 import org.tctalent.server.casi.api.request.ServiceListActionRequest;
 import org.tctalent.server.casi.api.request.UpdateServiceResourceStatusRequest;
 import org.tctalent.server.casi.core.services.CandidateAssistanceService;
@@ -152,6 +154,47 @@ public class ServicesAdminController {
         .getAvailableResources()
         .stream().map(ServiceResourceMapper::toDto)
         .toList();
+  }
+
+
+  // Endpoint to list all shared links for a specific service
+  @GetMapping("/{provider}/{serviceCode}/shared")
+  public List<ServiceResourceDto> listSharedLinks(@PathVariable String provider,
+      @PathVariable String serviceCode) {
+    return serviceFor(provider, serviceCode)
+        .getSharedResources()
+        .stream().map(ServiceResourceMapper::toDto)
+        .toList();
+  }
+
+  // Endpoint to create a shared link for a specific service
+  @PreAuthorize(ADMIN_ONLY)
+  @PostMapping("/{provider}/{serviceCode}/shared")
+  public ServiceResourceDto createSharedLink(@PathVariable String provider,
+      @PathVariable String serviceCode,
+      @Valid @RequestBody CreateUpdateSharedLinkRequest request) {
+    return ServiceResourceMapper.toDto(serviceFor(provider, serviceCode)
+        .createSharedResource(request.getCountryIsoCode(), request.getResourceCode()));
+  }
+
+  // Endpoint to update a shared link for a specific service
+  @PreAuthorize(ADMIN_ONLY)
+  @PutMapping("/{provider}/{serviceCode}/shared/{id}")
+  public ServiceResourceDto updateSharedLink(@PathVariable String provider,
+      @PathVariable String serviceCode,
+      @PathVariable Long id,
+      @Valid @RequestBody CreateUpdateSharedLinkRequest request) {
+    return ServiceResourceMapper.toDto(serviceFor(provider, serviceCode)
+        .updateSharedResource(id, request.getCountryIsoCode(), request.getResourceCode()));
+  }
+
+  // Endpoint to soft-delete a shared link for a specific service
+  @PreAuthorize(ADMIN_ONLY)
+  @DeleteMapping("/{provider}/{serviceCode}/shared/{id}")
+  public void disableSharedLink(@PathVariable String provider,
+      @PathVariable String serviceCode,
+      @PathVariable Long id) {
+    serviceFor(provider, serviceCode).disableSharedResource(id);
   }
 
   // Endpoint to get a single resource by its code for a specific service

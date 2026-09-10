@@ -152,12 +152,12 @@ public class Candidate extends AbstractCandidateDataDomainObject<Long> implement
     private String partnerRef;
 
     /**
-     * This can be set to define an optional ranking associated with the candidate as a result
+     * This can be set to define an optional score associated with the candidate as a result
      * of some kind of sorting logic.
      */
     @Transient
     @Nullable
-    private Number rank;
+    private Number score;
 
     /**
      * If null the candidate registered themselves.
@@ -267,6 +267,14 @@ public class Candidate extends AbstractCandidateDataDomainObject<Long> implement
     private String text;
 
     /**
+     * Date and time when the text field was last updated.
+     * <p/>
+     * Updated in {@link #updateText}
+     */
+    @Nullable
+    private OffsetDateTime textUpdatedAt;
+
+    /**
      * Even though we would prefer CascadeType.ALL with 'orphanRemoval' so that
      * removing from the candidateSavedLists collection would automatically
      * cascade down to delete the corresponding entry in the
@@ -304,6 +312,10 @@ public class Candidate extends AbstractCandidateDataDomainObject<Long> implement
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "candidate", cascade = CascadeType.MERGE)
     private List<CandidateOccupation> candidateOccupations;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "principal_occupation_id")
+    private CandidateOccupation principalOccupation;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "candidate", cascade = CascadeType.MERGE)
     @OrderBy("updatedDate DESC")
@@ -826,6 +838,18 @@ public class Candidate extends AbstractCandidateDataDomainObject<Long> implement
      * terms cover this consent to contact candidates about any opportunities.
      */
     private boolean contactConsentPartners = true;
+
+    /**
+     * Consent evidence for Verify+ scan ingestion.
+     * This is distinct from {@link #unhcrConsent}, which is consent to share with UNHCR.
+     */
+    private boolean verifyPlusConsented;
+
+    /**
+     * The last time the candidate consented to storing Verify+ scan data.
+     */
+    @Nullable
+    private OffsetDateTime verifyPlusConsentedAt;
 
     @Nullable
     @ManyToOne(fetch = FetchType.LAZY)
@@ -1369,6 +1393,14 @@ public class Candidate extends AbstractCandidateDataDomainObject<Long> implement
         if (entities != null) {
             entities.forEach(entity -> entity.setCandidate(this));
         }
+    }
+
+    public CandidateOccupation getPrincipalOccupation() {
+        return principalOccupation;
+    }
+
+    public void setPrincipalOccupation(CandidateOccupation principalOccupation) {
+        this.principalOccupation = principalOccupation;
     }
 
     public List<CandidateNote> getCandidateNotes() {
@@ -2037,12 +2069,12 @@ public class Candidate extends AbstractCandidateDataDomainObject<Long> implement
 
     public void setLeftHomeNotes(@Nullable String leftHomeNotes) { this.leftHomeNotes = leftHomeNotes; }
 
-    public @Nullable Number getRank() {
-        return rank;
+    public @Nullable Number getScore() {
+        return score;
     }
 
-    public void setRank(@Nullable Number rank) {
-        this.rank = rank;
+    public void setScore(@Nullable Number score) {
+        this.score = score;
     }
 
     @Nullable
@@ -2435,6 +2467,23 @@ public class Candidate extends AbstractCandidateDataDomainObject<Long> implement
         this.contactConsentPartners = emailConsentPartners;
     }
 
+    public boolean getVerifyPlusConsented() {
+        return verifyPlusConsented;
+    }
+
+    public void setVerifyPlusConsented(boolean verifyPlusConsented) {
+        this.verifyPlusConsented = verifyPlusConsented;
+    }
+
+    @Nullable
+    public OffsetDateTime getVerifyPlusConsentedAt() {
+        return verifyPlusConsentedAt;
+    }
+
+    public void setVerifyPlusConsentedAt(@Nullable OffsetDateTime verifyPlusConsentedAt) {
+        this.verifyPlusConsentedAt = verifyPlusConsentedAt;
+    }
+
     @Nullable
     public User getMiniIntakeCompletedBy() {
         return miniIntakeCompletedBy;
@@ -2648,6 +2697,16 @@ public class Candidate extends AbstractCandidateDataDomainObject<Long> implement
 
     public void setText(String text) {
         this.text = text;
+        setTextUpdatedAt(OffsetDateTime.now());
+    }
+
+    @Nullable
+    public OffsetDateTime getTextUpdatedAt() {
+        return textUpdatedAt;
+    }
+
+    public void setTextUpdatedAt(@Nullable OffsetDateTime textUpdatedAt) {
+        this.textUpdatedAt = textUpdatedAt;
     }
 
     public void updateText() {
@@ -2659,8 +2718,12 @@ public class Candidate extends AbstractCandidateDataDomainObject<Long> implement
             .map(CandidateAttachment::getTextExtract)
             .collect(Collectors.joining(" || "));
         String notesText = getShareableNotes();
-        this.text = Stream.of(combinedJobText, combinedCvText, notesText)
+        String combinedMigratedSkillsText = getCandidateSkills().stream()
+            .map(CandidateSkill::getSkill)
+            .collect(Collectors.joining(","));
+        setText(Stream.of(
+            combinedJobText, combinedCvText, notesText, combinedMigratedSkillsText)
             .filter(s -> s != null && !s.isBlank())
-            .collect(Collectors.joining(" || "));
+            .collect(Collectors.joining(" || ")));
     }
 }

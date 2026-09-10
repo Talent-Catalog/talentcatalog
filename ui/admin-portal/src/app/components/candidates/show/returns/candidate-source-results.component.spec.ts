@@ -23,65 +23,268 @@ import {
 } from "../../../../services/candidate-source-candidate.service";
 import {AuthorizationService} from "../../../../services/authorization.service";
 import {CandidateFieldService} from "../../../../services/candidate-field.service";
-import {CandidateService} from "../../../../services/candidate.service";
-import {SavedSearchService} from "../../../../services/saved-search.service";
-import {NgbModal, NgbPaginationModule} from "@ng-bootstrap/ng-bootstrap";
+import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {Router} from "@angular/router";
-import {HttpClientTestingModule} from "@angular/common/http/testing";
-import {ReactiveFormsModule} from "@angular/forms";
-
+import {NO_ERRORS_SCHEMA, SimpleChange} from '@angular/core';
+import {of} from 'rxjs';
+import {DtoType} from '../../../../model/base';
 
 describe('CandidateSourceResultsComponent', () => {
   let component: CandidateSourceResultsComponent;
   let fixture: ComponentFixture<CandidateSourceResultsComponent>;
+
+  let router: jasmine.SpyObj<Router>;
+  let authorizationService: jasmine.SpyObj<AuthorizationService>;
+  let cacheService: jasmine.SpyObj<CandidateSourceResultsCacheService>;
+  let sourceCandidateService: jasmine.SpyObj<CandidateSourceCandidateService>;
+  let candidateFieldService: jasmine.SpyObj<CandidateFieldService>;
+  let modalService: jasmine.SpyObj<NgbModal>;
+
+  const savedSearch = {
+    id: 10,
+    name: 'Test search',
+    savedSearchType: 2,
+    reviewable: false,
+    users: []
+  } as any;
+
+  const savedList = {
+    id: 20,
+    name: 'Test list',
+    users: []
+  } as any;
+
   beforeEach(async () => {
-    const candidateServiceMock = jasmine.createSpyObj('CandidateService', ['']);
-    const savedSearchServiceMock = jasmine.createSpyObj('SavedSearchService', ['']);
-    const candidateSourceResultsCacheServiceMock = jasmine.createSpyObj('CandidateSourceResultsCacheService', ['getFromCache', 'cache']);
-    const candidateSourceCandidateServiceMock = jasmine.createSpyObj('CandidateSourceCandidateService', ['searchPaged']);
-    const authorizationServiceMock = jasmine.createSpyObj('AuthorizationService', ['canViewCandidateName', 'canViewCandidateCountry', 'canAccessSalesforce']);
-    const candidateFieldServiceMock = jasmine.createSpyObj('CandidateFieldService', ['getCandidateSourceFields']);
-    const ngbModalMock = jasmine.createSpyObj('NgbModal', ['open']);
-    const routerMock = jasmine.createSpyObj('Router', ['navigate']);
+    router = jasmine.createSpyObj<Router>('Router', ['navigate']);
+
+    authorizationService = jasmine.createSpyObj<AuthorizationService>(
+      'AuthorizationService',
+      [
+        'canViewCandidateName',
+        'canViewCandidateCountry',
+        'canAccessSalesforce',
+        'canAccessGoogleDrive'
+      ]
+    );
+
+    cacheService = jasmine.createSpyObj<CandidateSourceResultsCacheService>(
+      'CandidateSourceResultsCacheService',
+      ['getFromCache', 'cache']
+    );
+
+    sourceCandidateService =
+      jasmine.createSpyObj<CandidateSourceCandidateService>(
+        'CandidateSourceCandidateService',
+        ['searchPaged']
+      );
+
+    candidateFieldService = jasmine.createSpyObj<CandidateFieldService>(
+      'CandidateFieldService',
+      ['getCandidateSourceFields']
+    );
+
+    modalService = jasmine.createSpyObj<NgbModal>('NgbModal', ['open']);
+
+    candidateFieldService.getCandidateSourceFields.and.returnValue([]);
+    sourceCandidateService.searchPaged.and.returnValue(
+      of({
+        content: [],
+        totalElements: 0
+      } as any)
+    );
 
     await TestBed.configureTestingModule({
       declarations: [CandidateSourceResultsComponent],
-      imports: [
-        HttpClientTestingModule,
-        ReactiveFormsModule ,
-        NgbPaginationModule
-      ],
       providers: [
-        { provide: CandidateService, useValue: candidateServiceMock },
-        { provide: SavedSearchService, useValue: savedSearchServiceMock },
-        { provide: CandidateSourceResultsCacheService, useValue: candidateSourceResultsCacheServiceMock },
-        { provide: CandidateSourceCandidateService, useValue: candidateSourceCandidateServiceMock },
-        { provide: AuthorizationService, useValue: authorizationServiceMock },
-        { provide: CandidateFieldService, useValue: candidateFieldServiceMock },
-        { provide: NgbModal, useValue: ngbModalMock },
-        { provide: Router, useValue: routerMock }
-      ]
-    }).compileComponents();
-  });
+        {provide: Router, useValue: router},
+        {provide: AuthorizationService, useValue: authorizationService},
+        {provide: CandidateSourceResultsCacheService, useValue: cacheService},
+        {provide: CandidateSourceCandidateService, useValue: sourceCandidateService},
+        {provide: CandidateFieldService, useValue: candidateFieldService},
+        {provide: NgbModal, useValue: modalService}
+      ],
+      schemas: [NO_ERRORS_SCHEMA]
+    })
+    .overrideTemplate(CandidateSourceResultsComponent, '')
+    .compileComponents();
 
-  beforeEach(() => {
     fixture = TestBed.createComponent(CandidateSourceResultsComponent);
     component = fixture.componentInstance;
+    component.candidateSource = savedSearch;
+
     fixture.detectChanges();
   });
 
-  it('should initialize with the correct initial state', () => {
-    expect(component.error).toBeNull();
-    expect(component.pageNumber).toBeUndefined();
-    expect(component.pageSize).toBeUndefined();
-    expect(component.results).toBeUndefined();
-    expect(component.candidateSource).toBeUndefined();
-    expect(component.showSourceDetails).toBeTrue();
-    expect(component.searching).toBeUndefined();
-    expect(component.selectedFields).toEqual([]);
-    expect(component.sortField).toBeUndefined();
-    expect(component.sortDirection).toBeUndefined();
-    expect(component.timestamp).toBeUndefined();
+  
+  it('should create and initialize short format', () => {
+    component.longFormat = true;
+
+    component.ngOnInit();
+
+    expect(component).toBeTruthy();
+    expect(component.longFormat).toBeFalse();
   });
 
+  describe('ngOnChanges', () => {
+    it('should load fields and search when candidate source changes', () => {
+      const loadFieldsSpy = spyOn<any>(component, 'loadSelectedFields');
+      const searchSpy = spyOn(component, 'search');
+
+      component.ngOnChanges({
+        candidateSource: new SimpleChange(savedList, savedSearch, false)
+      });
+
+      expect(loadFieldsSpy).toHaveBeenCalledTimes(1);
+      expect(searchSpy).toHaveBeenCalledOnceWith(false);
+    });
+
+    it('should do nothing when candidate source change is absent', () => {
+      const loadFieldsSpy = spyOn<any>(component, 'loadSelectedFields');
+      const searchSpy = spyOn(component, 'search');
+
+      component.ngOnChanges({});
+
+      expect(loadFieldsSpy).not.toHaveBeenCalled();
+      expect(searchSpy).not.toHaveBeenCalled();
+    });
+
+    it('should do nothing when previous and current values are identical', () => {
+      const loadFieldsSpy = spyOn<any>(component, 'loadSelectedFields');
+      const searchSpy = spyOn(component, 'search');
+
+      component.ngOnChanges({
+        candidateSource: new SimpleChange(savedSearch, savedSearch, false)
+      });
+
+      expect(loadFieldsSpy).not.toHaveBeenCalled();
+      expect(searchSpy).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('onOpenSource', () => {
+    it('should navigate without query parameters from page one', () => {
+      component.pageNumber = 1;
+      component.candidateSource = savedSearch;
+
+      component.onOpenSource();
+
+      expect(router.navigate).toHaveBeenCalledWith(
+        ['search', savedSearch.id],
+        {}
+      );
+    });
+
+    it('should preserve the current page number after page one', () => {
+      component.pageNumber = 4;
+      component.candidateSource = savedList;
+
+      component.onOpenSource();
+
+      expect(router.navigate).toHaveBeenCalledWith(
+        ['list', savedList.id],
+        {
+          queryParams: {
+            pageNumber: 4
+          }
+        }
+      );
+    });
+  });
+
+  describe('search', () => {
+    it('should stop when cached results are available', () => {
+      const checkCacheSpy = spyOn<any>(component, 'checkCache')
+      .and.returnValue(true);
+      const performSearchSpy = spyOn<any>(component, 'performSearch')
+      .and.returnValue(of({}));
+
+      component.search(false);
+
+      expect(checkCacheSpy).toHaveBeenCalledWith(false, false);
+      expect(performSearchSpy).not.toHaveBeenCalled();
+    });
+
+    it('should perform a preview search when cache is unavailable', () => {
+      const checkCacheSpy = spyOn<any>(component, 'checkCache')
+      .and.returnValue(false);
+      const performSearchSpy = spyOn<any>(component, 'performSearch')
+      .and.returnValue(of({}));
+
+      component.search(true);
+
+      expect(checkCacheSpy).toHaveBeenCalledWith(true, false);
+      expect(performSearchSpy).toHaveBeenCalledWith(
+        12,
+        DtoType.PREVIEW
+      );
+    });
+  });
+
+  it('should toggle sorting and refresh the search', () => {
+    component.sortField = 'name';
+    component.sortDirection = 'ASC';
+
+    const searchSpy = spyOn(component, 'search');
+
+    component.toggleSort('name');
+
+    expect(component.sortDirection).toBe('DESC');
+    expect(searchSpy).toHaveBeenCalledOnceWith(true);
+  });
+
+  it('should emit toggleStarred', () => {
+    const emitSpy = spyOn(component.toggleStarred, 'emit');
+
+    component.onToggleStarred(savedSearch);
+
+    expect(emitSpy).toHaveBeenCalledOnceWith(savedSearch);
+  });
+
+  it('should emit toggleWatch', () => {
+    const emitSpy = spyOn(component.toggleWatch, 'emit');
+
+    component.onToggleWatch(savedSearch);
+
+    expect(emitSpy).toHaveBeenCalledOnceWith(savedSearch);
+  });
+
+  it('should emit deleteSource', () => {
+    const emitSpy = spyOn(component.deleteSource, 'emit');
+
+    component.onDeleteSource(savedSearch);
+
+    expect(emitSpy).toHaveBeenCalledOnceWith(savedSearch);
+  });
+
+  it('should emit editSource', () => {
+    const emitSpy = spyOn(component.editSource, 'emit');
+
+    component.onEditSource(savedSearch);
+
+    expect(emitSpy).toHaveBeenCalledOnceWith(savedSearch);
+  });
+
+  it('should emit copySource', () => {
+    const emitSpy = spyOn(component.copySource, 'emit');
+
+    component.onCopySource(savedSearch);
+
+    expect(emitSpy).toHaveBeenCalledOnceWith(savedSearch);
+  });
+
+  it('should refresh after a page change', () => {
+    const searchSpy = spyOn(component, 'search');
+
+    component.onPageChange();
+
+    expect(searchSpy).toHaveBeenCalledOnceWith(true);
+  });
+
+  it('should refresh when refresh is requested', () => {
+    const searchSpy = spyOn(component, 'search');
+
+    component.onRefreshRequest();
+
+    expect(searchSpy).toHaveBeenCalledOnceWith(true);
+  });
 });

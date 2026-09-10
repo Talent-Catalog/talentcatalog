@@ -43,7 +43,7 @@ import {RuralComponent} from "../../../intake/rural/rural.component";
 import {ConfirmContactComponent} from "../../../intake/confirm-contact/confirm-contact.component";
 import {AutosaveStatusComponent} from "../../../../util/autosave-status/autosave-status.component";
 import {FixedInputComponent} from "../../../../util/intake/fixed-input/fixed-input.component";
-import {ExportPdfComponent} from "../../../../util/export-pdf/export-pdf.component";
+import {PrintPageComponent} from "../../../../util/export-pdf/print-page.component";
 import {
   AvailImmediateReason,
   CandidateCitizenship,
@@ -185,7 +185,7 @@ describe('CandidateIntakeTabComponent', () => {
         MilitaryServiceComponent,FamilyComponent,MaritalStatusComponent,RegistrationUnhcrComponent,HostChallengesComponent,
         HomeLocationComponent,ResettlementThirdComponent,HostEntryComponent,
         DatePickerComponent,WorkAbroadComponent,NclcScoreValidationComponent,IeltsScoreValidationComponent,DetScoreValidationComponent,
-        AutosaveStatusComponent,FixedInputComponent,ExportPdfComponent],
+        AutosaveStatusComponent,FixedInputComponent,PrintPageComponent],
       imports: [HttpClientTestingModule,NgbDatepickerModule,NgbTooltipModule,FormsModule,ReactiveFormsModule, NgSelectModule,NgbAccordionModule, DirectiveModule],
       providers: [
         { provide: CandidateService, useValue: candidateSpy },

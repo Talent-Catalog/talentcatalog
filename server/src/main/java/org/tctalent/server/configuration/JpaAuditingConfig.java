@@ -29,6 +29,9 @@ import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
  * {@link EnableJpaAuditing} turns on auditing support so entities annotated with
  * {@code @CreatedBy}, {@code @CreatedDate}, {@code @LastModifiedBy}, and
  * {@code @LastModifiedDate} can be auto-populated by {@code AuditingEntityListener}.
+ * Classes that want to use auditing should be annotated with
+ * <p>
+ * {@code @EntityListeners(AuditingEntityListener.class)}.
  * <p>
  * The {@code auditorAwareRef} points to {@code auditorProvider}
  * ({@link org.tctalent.server.security.SpringSecurityAuditorAware}) to resolve the current

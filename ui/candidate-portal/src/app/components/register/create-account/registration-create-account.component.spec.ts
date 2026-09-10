@@ -256,6 +256,22 @@ describe('RegistrationCreateAccountComponent', () => {
     });
   });
 
+  // ── username sanitization (TC-723) ──────────────────────────────────────
+
+  describe('username sanitization', () => {
+    beforeEach(async () => configureAndCreate());
+
+    it('should trim leading/trailing whitespace pasted around the username', () => {
+      component.registrationForm.get('username').setValue('  user@example.com  ');
+      expect(component.username).toBe('user@example.com');
+    });
+
+    it('should leave a clean username unchanged', () => {
+      component.registrationForm.get('username').setValue('user@example.com');
+      expect(component.username).toBe('user@example.com');
+    });
+  });
+
   // ── register() – success, non-US-Afghan ────────────────────────────────
 
   describe('register() success (non-US-Afghan)', () => {

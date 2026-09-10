@@ -21,6 +21,7 @@ import {
   EventEmitter,
   Input,
   OnChanges,
+  OnDestroy,
   OnInit,
   Output,
   SimpleChanges,
@@ -44,12 +45,13 @@ import {
 import {SearchSavedSearchesComponent} from '../load-search/search-saved-searches.component';
 import {CreateUpdateSearchComponent} from '../create-update/create-update-search.component';
 import {SavedSearchService} from '../../../services/saved-search.service';
-import {forkJoin} from 'rxjs';
+import {forkJoin, Subject} from 'rxjs';
 import {JoinSavedSearchComponent} from '../join-search/join-saved-search.component';
 import {EducationLevel} from '../../../model/education-level';
 import {EducationLevelService} from '../../../services/education-level.service';
 import {EducationMajor} from '../../../model/education-major';
 import {EducationMajorService} from '../../../services/education-major.service';
+import {EmbeddingModel} from '../../../model/embedding-model';
 import {Occupation} from '../../../model/occupation';
 import {CandidateOccupationService} from '../../../services/candidate-occupation.service';
 import {
@@ -85,10 +87,13 @@ import {Partner} from "../../../model/partner";
 import {PartnerService} from "../../../services/partner.service";
 import {AuthenticationService} from "../../../services/authentication.service";
 import {SearchQueryService} from "../../../services/search-query.service";
-import {first} from "rxjs/operators";
+import {debounceTime, first, takeUntil} from "rxjs/operators";
 import {JobService} from "../../../services/job.service";
 import {SkillName} from "../../../model/skill";
 import {CandidateNumberParser} from "../../../util/candidate-number-parser";
+import {EmbeddingModelService} from "../../../services/embedding-model.service";
+import {JobMatchingInfo} from "../../../model/JobMatchingInfo";
+import {ExtractSkillsRequest, SkillsService} from "../../../services/skills.service";
 
 /**
  * This component contains all the search fields for saved and unsaved searches. It communicates
@@ -110,7 +115,7 @@ import {CandidateNumberParser} from "../../../util/candidate-number-parser";
   templateUrl: './define-search.component.html',
   styleUrls: ['./define-search.component.scss']
 })
-export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
+export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit, OnDestroy {
   @ViewChild('modifiedDate', {static: true}) modifiedDatePicker: DateRangePickerComponent;
   @ViewChild('englishLanguage', {static: true}) englishLanguagePicker: LanguageLevelFormControlComponent;
   @ViewChild('otherLanguage', {static: true}) otherLanguagePicker: LanguageLevelFormControlComponent;
@@ -118,6 +123,9 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
   @ViewChild('downloadCsvErrorModal', {static: true}) downloadCsvErrorModal;
 
   @Input() jobId: number;
+  jobName: string;  //Populated when JobMatchingInfo is fetched.
+
+  @Input() listId: number;
   @Input() savedSearch: SavedSearch;
   @Input() pageNumber: number;
   @Input() pageSize: number;
@@ -132,10 +140,9 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
   savedSearchId;
 
   searchRequest: SearchCandidateRequestPaged;
-  sortField = 'id';
-  sortDirection = 'DESC';
 
   /* DATA - these are all drop down options for each select field*/
+  embeddingModels: EmbeddingModel[];
   nationalities: Country[];
   countries: Country[];
   partners: Partner[];
@@ -158,6 +165,9 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
   loggedInUser: User;
   unhcrStatusOptions: EnumOption[] = enumOptions(UnhcrStatus);
 
+  //Used to store (and display) skills extracted from a job description (when jobName is specified).
+  extractedSkills: string;
+
   selectedBaseJoin;
   storedBaseJoin;
   /**
@@ -166,8 +176,12 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
    */
   searchIsElastic: boolean = false;
 
+  //Used to unsubscribe from long-lived subscriptions (form/service listeners) on destroy.
+  private destroy$ = new Subject<void>();
+
   constructor(private fb: UntypedFormBuilder,
               private countryService: CountryService,
+              private embeddingModelService: EmbeddingModelService,
               private languageService: LanguageService,
               private partnerService: PartnerService,
               private savedSearchService: SavedSearchService,
@@ -179,6 +193,7 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
               private languageLevelService: LanguageLevelService,
               private modalService: NgbModal,
               private router: Router,
+              private skillsService: SkillsService,
               private authorizationService: AuthorizationService,
               private authenticationService: AuthenticationService,
               private searchQueryService: SearchQueryService
@@ -186,6 +201,10 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
     /* SET UP FORM */
     //todo For fixing this deprecation see https://stackoverflow.com/questions/65155217/formbuilder-group-is-deprecated
     this.searchForm = this.fb.group({
+      requirements: [null],
+      lexicalWeight: [0.5],
+      modelKey: [null],
+      nMatches: [null],
       savedSearchId: [null],
       simpleQueryString: [null],
       candidateNumbers: [''],
@@ -243,10 +262,28 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
     }, {validator: this.validateDuplicateSearches('savedSearchId')});
 
     // Subscribe to changes in Keyword Search
-    this.searchForm.get('simpleQueryString')?.statusChanges.subscribe(() => {
-      this.searchIsElastic = this.searchForm.get('simpleQueryString')?.dirty &&
-        this.searchForm.get('simpleQueryString')?.value !== '';
+    this.searchForm.controls.simpleQueryString.statusChanges.pipe(
+      takeUntil(this.destroy$)
+    ).subscribe(() => {
+      this.searchIsElastic = this.searchForm.controls.simpleQueryString.dirty &&
+        this.searchForm.controls.simpleQueryString.value !== '';
     });
+
+    //Map changes to nMatches to this.pageSize.
+    this.searchForm.controls.nMatches.valueChanges.pipe(
+      takeUntil(this.destroy$)
+    ).subscribe(() => {
+      //If nMatches is undefined, don't change pageSize
+      this.pageSize = this.searchForm.controls.nMatches.value || this.pageSize;
+    })
+
+    //Extract skills when requirements change after a short delay.
+    this.searchForm.controls.requirements.valueChanges.pipe(
+      debounceTime(3000),
+      takeUntil(this.destroy$)
+    ).subscribe(
+      () => this.extractSkills()
+    )
   }
 
   ngOnInit() {
@@ -259,7 +296,9 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
     this.loading = true;
     this.error = null;
 
-    this.searchQueryService.currentSearchTerms$.subscribe(searchTerms => {
+    this.searchQueryService.currentSearchTerms$.pipe(
+      takeUntil(this.destroy$)
+    ).subscribe(searchTerms => {
       this.currentSearchTerms = searchTerms;
     })
 
@@ -270,6 +309,7 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
     });
 
     forkJoin({
+      'embeddingModels': this.embeddingModelService.loadReadyModels(),
       'nationalities': this.countryService.listCountries(),
       'countriesRestricted': this.countryService.listCountriesRestricted(),
       'languages': this.languageService.listLanguages(),
@@ -281,6 +321,7 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
       'surveyTypes': this.surveyTypeService.listSurveyTypes()
     }).subscribe(results => {
       this.loading = false;
+      this.embeddingModels = results['embeddingModels'];
       this.nationalities = results['nationalities'];
       this.countries = results['countriesRestricted'];
       this.languages = results['languages'];
@@ -311,25 +352,89 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
     // The unsaved changes guard is implemented on the saved search route, see app-routing.module.ts.
     // This guard will throw confirmation modal if navigating away with unsaved search fields, which
     // is determined if the form is dirty or not.
-    this.searchForm.valueChanges.subscribe(() => {
+    this.searchForm.valueChanges.pipe(
+      takeUntil(this.destroy$)
+    ).subscribe(() => {
       this.onFormChange.emit(this.searchForm.dirty);
     });
   }
 
-  private runSearchWithSkills(skills: SkillName[]) {
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  get lexicalWeight(): number {
+    return this.searchForm.controls.lexicalWeight.value;
+  }
+
+  get embeddingModel(): EmbeddingModel {
+    //Look up model from selected modelKey
+    let embeddingModel: EmbeddingModel | null;
+    const modelKey = this.searchForm.controls.modelKey.value;
+    if (modelKey) {
+      embeddingModel = this.embeddingModels.find(model => model.modelKey === modelKey);
+    } else {
+      embeddingModel = null;
+    }
+
+    return embeddingModel;
+  }
+
+  public hasEmbeddingModel(): boolean {
+    return !!this.embeddingModel;
+  }
+
+  public hasEmbeddingModels(): boolean {
+    return !!this.embeddingModels && this.embeddingModels.length > 0;
+  }
+
+  get requirements(): string {
+    return this.searchForm.controls.requirements.value;
+  }
+
+  public hasRequirements(): boolean {
+    return this.requirements && this.requirements.trim().length > 0;
+  }
+
+  displayJobNameAsSource(): string {
+    return this.jobName ? `(Autopopulated from job ${this.jobId}: ${this.jobName})` : '';
+  }
+
+  private runSearchWithListConstraint(listId: number) {
     this.clearForm();
-    this.initializeQueryStringWithJobSkills(skills);
+    this.initializeListConstraint(listId);
     this.onSubmit();
   }
 
-  private initializeQueryStringWithJobSkills(skills: SkillName[]) {
+  private initializeListConstraint(listId: number) {
+      this.searchForm.controls.listAnyIds.patchValue([listId]);
+  }
+
+  private setUpJobMatch(jobMatchingInfo: JobMatchingInfo) {
+    this.clearForm();
+    this.jobName = jobMatchingInfo.jobName;
+    this.initializeRequirementsWithDescription(jobMatchingInfo.description);
+    this.setExtractedSkills(jobMatchingInfo.skillNames);
+    this.onSubmit();
+  }
+
+  private initializeRequirementsWithDescription(description: string) {
+    this.searchForm.controls.requirements.patchValue(description);
+    this.searchForm.markAsDirty();
+  }
+
+  private setExtractedSkills(skills: SkillName[]) {
     if (skills && skills.length > 0) {
+      //Construct query string as skill names separated by spaces.
+      //If a skill name is multiple words, then surround it with double quotes.
       let queryString = skills
       .map(
         s => s.name.indexOf(' ') < 0 ? s.name : '"' + s.name + '"'
       ).join(' ');
-      this.searchForm.controls['simpleQueryString'].patchValue(queryString);
-      this.searchForm.markAsDirty();
+      this.extractedSkills = queryString;
+    } else {
+      this.extractedSkills = "";
     }
   }
 
@@ -396,7 +501,7 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
   onSubmit() {
    //checkSelectionsAndApply
    // If there are candidates selected, run a check before applying search.
-    if (this.selectedCandidates.length > 0) {
+    if (this.selectedCandidates?.length > 0) {
       this.confirmClearSelectionAndApply();
     } else {
       this.apply();
@@ -413,16 +518,11 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
     const request: SearchCandidateRequestPaged =
       this.getIdsMultiSelect(this.searchForm.value)
 
-    //A new search request has to clear page number. Old page number no longer
-    //relevant with new search.
-    request.pageNumber = 0;
-    request.pageSize = this.pageSize;
-    request.sortFields = [this.sortField];
-    request.sortDirection = this.sortDirection;
-
     //Note that just changing searchRequest triggers the display of the results
     //See the html of this component, for which app-show-candidates takes
     //searchRequest as an input.
+    //The receiving code automatically resets the page number to 0 for changed search requests.
+    //See ngOnChanges of ShowCandidatesComponent.
     this.searchRequest = request;
 
     this.searchQueryService.changeSearchQuery(this.searchForm.value.simpleQueryString || '');
@@ -562,16 +662,23 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
       (request) => {
         this.populateFormWithSavedSearch(request);
 
-        //If this a new search generated from a job, clear any existing search params and
-        //automatically run a search using the job skills.
+        //If this is a new search generated from a job or a list, clear any existing
+        //search params and automatically run a search configured accordingly.
         //We don't want to keep any previous search details from earlier searches.
-        if (this.jobId) {
-          //Load the job skills
-          this.jobService.getSkills(this.jobId).subscribe({
-            next: (skills) => this.runSearchWithSkills(skills),
-            error: (error) => this.error = error
-          })
+        if (this.jobId || this.listId) {
+
+          if (this.jobId) {
+          //Load the job-matching info
+          this.jobService.getJobMatchingInfo(this.jobId).subscribe({
+            next: (jobMatchingInfo) => this.setUpJobMatch(jobMatchingInfo),
+              error: (error) => this.error = error
+            })
+          } else if (this.listId) {
+            //Load the list id into one of the list search fields.
+            this.runSearchWithListConstraint(this.listId);
+          }
         }
+
         this.loading = false;
       },
       error => {
@@ -682,7 +789,6 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
       this.searchForm.controls[name].patchValue(request[name]);
     });
 
-    /* DEFAULTS */
     let searchType = request.countrySearchType;
     if (searchType == null) {
       searchType = 'or';
@@ -924,6 +1030,23 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit {
     this.selectedBaseJoin = null;
     this.searchForm.controls['searchJoinRequests'].markAsDirty();
     this.onFormChange.emit(this.searchForm.dirty);
+  }
+
+  extractSkills(): void {
+    //Nothing to extract from - and no point showing skills left over from a previous,
+    //since-cleared description.
+    if (!this.hasRequirements()) {
+      this.setExtractedSkills([]);
+      return;
+    }
+
+    const request: ExtractSkillsRequest = {
+      lang: "en",
+      text: this.requirements
+    }
+    this.skillsService.extractSkills(request).subscribe({
+      next: value => this.setExtractedSkills(value)
+    })
   }
 
   canChangeSearchRequest(): boolean {

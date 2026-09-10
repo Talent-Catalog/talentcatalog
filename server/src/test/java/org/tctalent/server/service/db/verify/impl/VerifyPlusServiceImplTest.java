@@ -1,0 +1,169 @@
+/*
+ * Copyright (c) 2026 Talent Catalog.
+ *
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
+ * for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see https://www.gnu.org/licenses/.
+ */
+package org.tctalent.server.service.db.verify.impl;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import org.tctalent.server.exception.InvalidRequestException;
+import org.tctalent.server.exception.InvalidSessionException;
+import org.tctalent.server.model.db.Candidate;
+import org.tctalent.server.model.db.YesNoUnsure;
+import org.tctalent.server.repository.db.CandidateRepository;
+import org.tctalent.server.request.verify.VerifyPlusScanRequest;
+import org.tctalent.server.service.db.CandidateService;
+import org.tctalent.server.service.db.verify.VerifyPlusIngestResult;
+import org.tctalent.server.service.db.verify.VerifyPlusPayload;
+import org.tctalent.server.service.db.verify.VerifyPlusPayloadParser;
+
+class VerifyPlusServiceImplTest {
+
+    @Mock
+    private CandidateService candidateService;
+
+    @Mock
+    private CandidateRepository candidateRepository;
+
+    @Mock
+    private VerifyPlusPayloadParser payloadParser;
+
+    @InjectMocks
+    private VerifyPlusServiceImpl verifyPlusService;
+
+    private Candidate candidate;
+    private VerifyPlusScanRequest request;
+
+    @BeforeEach
+    void setUp() {
+        MockitoAnnotations.openMocks(this);
+
+        candidate = new Candidate();
+        candidate.setId(10L);
+
+        request = new VerifyPlusScanRequest();
+        request.setRawPayload("{\"v\":\"mock-1\",\"unhcrId\":\"UNHCR-1\"}");
+        request.setConsented(true);
+    }
+
+    @Test
+    @DisplayName("Given a valid payload with a unique UNHCR ID, when ingestScan is called, then the candidate's UNHCR number is updated and duplicate is false")
+    void ingestScan_uniqueUnhcrId_persistsAndReturnsDuplicateFalse() {
+        VerifyPlusPayload parsed = new VerifyPlusPayload("mock-1", request.getRawPayload(), "UNHCR-1");
+        when(candidateService.getLoggedInCandidate()).thenReturn(Optional.of(candidate));
+        when(payloadParser.parse(request.getRawPayload())).thenReturn(parsed);
+        when(candidateRepository.findOthersByUnhcrNumber(any(), any(), any(Long.class))).thenReturn(
+            Collections.emptyList());
+        when(candidateService.save(candidate)).thenReturn(candidate);
+
+        VerifyPlusIngestResult result = verifyPlusService.ingestScan(request);
+
+        assertEquals("UNHCR-1", candidate.getUnhcrNumber());
+        assertEquals(YesNoUnsure.Yes, candidate.getUnhcrRegistered());
+        assertTrue(candidate.getVerifyPlusConsented());
+        assertNotNull(candidate.getVerifyPlusConsentedAt());
+        assertEquals("UNHCR-1", result.getUnhcrNumber());
+        assertFalse(result.isDuplicate());
+        verify(candidateService).save(candidate);
+    }
+
+    @Test
+    @DisplayName("Given a valid payload with a duplicate UNHCR ID, when ingestScan is called, then the candidate's UNHCR number is updated and duplicate is true")
+    void ingestScan_duplicateUnhcrId_returnsDuplicateTrue() {
+        VerifyPlusPayload parsed = new VerifyPlusPayload("mock-1", request.getRawPayload(), "UNHCR-1");
+        Candidate other = new Candidate();
+        other.setId(20L);
+
+        when(candidateService.getLoggedInCandidate()).thenReturn(Optional.of(candidate));
+        when(payloadParser.parse(request.getRawPayload())).thenReturn(parsed);
+        when(candidateRepository.findOthersByUnhcrNumber(any(), any(), any(Long.class))).thenReturn(
+            List.of(other));
+        when(candidateService.save(candidate)).thenReturn(candidate);
+
+        VerifyPlusIngestResult result = verifyPlusService.ingestScan(request);
+
+        assertTrue(candidate.getVerifyPlusConsented());
+        assertNotNull(candidate.getVerifyPlusConsentedAt());
+        assertTrue(result.isDuplicate());
+    }
+
+    @Test
+    @DisplayName("Given a candidate with an existing UNHCR number, when ingestScan is called with a new UNHCR number, then the candidate's UNHCR number is overwritten")
+    void ingestScan_overwritesUnhcrNumberOnRescan() {
+        candidate.setUnhcrRegistered(YesNoUnsure.Yes);
+        candidate.setUnhcrNumber("OLD-UNHCR");
+        VerifyPlusPayload parsed = new VerifyPlusPayload("mock-1", request.getRawPayload(), "NEW-UNHCR");
+
+        when(candidateService.getLoggedInCandidate()).thenReturn(Optional.of(candidate));
+        when(payloadParser.parse(request.getRawPayload())).thenReturn(parsed);
+        when(candidateRepository.findOthersByUnhcrNumber(any(), any(), any(Long.class))).thenReturn(
+            Collections.emptyList());
+        when(candidateService.save(candidate)).thenReturn(candidate);
+
+        VerifyPlusIngestResult result = verifyPlusService.ingestScan(request);
+
+        assertEquals("NEW-UNHCR", candidate.getUnhcrNumber());
+        assertEquals(YesNoUnsure.Yes, candidate.getUnhcrRegistered());
+        assertTrue(candidate.getVerifyPlusConsented());
+        assertNotNull(candidate.getVerifyPlusConsentedAt());
+        assertEquals("NEW-UNHCR", result.getUnhcrNumber());
+    }
+
+    @Test
+    @DisplayName("Given no logged-in candidate, when ingestScan is called, then an InvalidSessionException is thrown")
+    void ingestScan_notLoggedIn_throwsInvalidSessionException() {
+        when(candidateService.getLoggedInCandidate()).thenReturn(Optional.empty());
+
+        assertThrows(InvalidSessionException.class, () -> verifyPlusService.ingestScan(request));
+    }
+
+    @Test
+    @DisplayName("Given consent is null, when ingestScan is called, then an InvalidRequestException is thrown and candidate is not saved")
+    void ingestScan_nullConsent_throwsInvalidRequestException() {
+        request.setConsented(null);
+        when(candidateService.getLoggedInCandidate()).thenReturn(Optional.of(candidate));
+
+        assertThrows(InvalidRequestException.class, () -> verifyPlusService.ingestScan(request));
+
+        verify(candidateService, never()).save(any(Candidate.class));
+    }
+
+    @Test
+    @DisplayName("Given consent is false, when ingestScan is called, then an InvalidRequestException is thrown and candidate is not saved")
+    void ingestScan_falseConsent_throwsInvalidRequestException() {
+        request.setConsented(false);
+        when(candidateService.getLoggedInCandidate()).thenReturn(Optional.of(candidate));
+
+        assertThrows(InvalidRequestException.class, () -> verifyPlusService.ingestScan(request));
+
+        verify(candidateService, never()).save(any(Candidate.class));
+    }
+}

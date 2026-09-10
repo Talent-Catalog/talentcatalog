@@ -105,6 +105,7 @@ class CandidateOccupationCardStubComponent {
   @Input() candidateOccupation: unknown;
   @Input() occupations: unknown;
   @Input() preview?: boolean;
+  @Input() isPrincipal?: boolean;
 }
 
 @Component({

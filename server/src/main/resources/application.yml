@@ -302,8 +302,8 @@ email:
   defaultEmail: ${EMAIL_DEFAULTEMAIL:noreply@talentcatalog.net}
   testOverrideEmail: ${EMAIL_TESTOVERRIDEEMAIL:}
 
-  # Duolingo API Configuration:
-  # Contains the API secret and base URL for interacting with the Duolingo English test API.
+# Duolingo API Configuration:
+# Contains the API secret and base URL for interacting with the Duolingo English test API.
 duolingo:
   api:
     apiSecret: ${DUOLINGO_SECRET:}
@@ -342,6 +342,13 @@ tc-api:
 tc-skills-extraction-service:
   apiUrl: ${TC_SKILLS_EXTRACTION_API_URL:http://localhost:8000}
   apiKey: ${TC_SKILLS_EXTRACTION_API_KEY:}
+
+tc-vector-embedding-service:
+  apiUrl: ${TC_VECTOR_EMBEDDING_API_URL:http://localhost:8000}
+  apiKey: ${TC_VECTOR_EMBEDDING_API_KEY:}
+
+vector-embedding-model:
+  defaultEmbeddingModelKey: MINILM_L6_SPACY_V3
 
 dpa:
   dpaVisibilityDelayDays: ${DPA_VISIBILITY_DELAY_DAYS:90}

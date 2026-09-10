@@ -5,6 +5,8 @@
     [name]="name"
     [value]="value"
     [checked]="value === innerValue"
+    [attr.aria-labelledby]="ariaLabelledby || null"
+    [attr.aria-label]="ariaLabelledby ? null : (ariaLabel || null)"
     (change)="onChangeValue(value)"
   />
   <span>{{ label }}</span>

@@ -55,4 +55,15 @@ export class TranslationService {
     return this.http.put(`${this.apiUrl}/file/${language}`, translations);
   }
 
+  importPatch(patch, dryRun: boolean = false, strictLanguages: boolean = false) {
+    return this.http.post(
+      `${this.apiUrl}/patch/import?dryRun=${dryRun}&strictLanguages=${strictLanguages}`,
+      patch
+    );
+  }
+
+  exportPatch(request) {
+    return this.http.post(`${this.apiUrl}/patch/export`, request);
+  }
+
 }

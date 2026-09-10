@@ -60,6 +60,7 @@
                                        [candidateOccupation]="occupation"
                                        [editable]="editable"
                                        [adminUser]="adminUser"
+                                       [isPrincipal]="isPrincipal(occupation)"
                                        (deleteOccupation)="deleteCandidateOccupation($event)">
     </app-view-candidate-job-experience>
 

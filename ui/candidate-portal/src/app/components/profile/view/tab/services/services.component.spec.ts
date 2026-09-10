@@ -15,11 +15,18 @@
  */
 
 import {ComponentFixture, TestBed} from '@angular/core/testing';
-import {NO_ERRORS_SCHEMA} from "@angular/core";
+import {NO_ERRORS_SCHEMA, Pipe, PipeTransform} from "@angular/core";
 import {of} from "rxjs";
 
 import {ServicesComponent} from './services.component';
 import {ServiceProvider} from "../../../../../model/services";
+
+@Pipe({name: 'translate'})
+class MockTranslatePipe implements PipeTransform {
+  transform(value: string): string {
+    return value;
+  }
+}
 
 describe('ServicesComponent', () => {
   let component: ServicesComponent;
@@ -27,13 +34,15 @@ describe('ServicesComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [ServicesComponent],
+      declarations: [ServicesComponent, MockTranslatePipe],
       schemas: [NO_ERRORS_SCHEMA],
     });
     fixture = TestBed.createComponent(ServicesComponent);
     component = fixture.componentInstance;
     component.showLinkedin$ = of(true);
     component.showReference$ = of(true);
+    component.showPifi$ = of(true);
+    component.showVerifyPlus$ = of(true);
     fixture.detectChanges();
   });
 

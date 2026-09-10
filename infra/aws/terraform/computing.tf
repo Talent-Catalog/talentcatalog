@@ -285,8 +285,8 @@ resource "aws_ecs_service" "web-app" {
   }
 
   network_configuration {
-    security_groups = [aws_security_group.fargate.id]
-    subnets         = module.vpc.public_subnets
+    security_groups  = [aws_security_group.fargate.id]
+    subnets          = module.vpc.public_subnets
     assign_public_ip = true
   }
   health_check_grace_period_seconds = 300

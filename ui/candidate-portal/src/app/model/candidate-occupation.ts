@@ -23,4 +23,6 @@ export interface CandidateOccupation {
   migrationOccupation?: string;
   // Request object variables
   occupationId?: number;
+  // True if this is the candidate's principal occupation
+  principal?: boolean;
 }

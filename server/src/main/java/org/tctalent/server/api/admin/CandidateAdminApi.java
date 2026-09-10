@@ -86,6 +86,7 @@ import org.tctalent.server.request.chat.FetchCandidatesWithChatRequest;
 import org.tctalent.server.response.EraseCandidateResponse;
 import org.tctalent.server.security.CandidateTokenProvider;
 import org.tctalent.server.security.CvClaims;
+import org.tctalent.server.service.db.CandidateBestNMatchingService;
 import org.tctalent.server.service.db.CandidateErasureService;
 import org.tctalent.server.service.db.CandidateOpportunityService;
 import org.tctalent.server.service.db.CandidateSavedListService;
@@ -101,6 +102,7 @@ import org.tctalent.server.util.dto.DtoBuilder;
 public class CandidateAdminApi {
 
     private final CandidateService candidateService;
+    private final CandidateBestNMatchingService candidateBestNMatchingService;
     private final CandidateOpportunityService candidateOpportunityService;
     private final CandidateSavedListService candidateSavedListService;
     private final CandidateBuilderSelector builderSelector;
@@ -110,8 +112,29 @@ public class CandidateAdminApi {
     private final CandidateTokenProvider candidateTokenProvider;
     private final CandidateErasureService candidateErasureService;
 
+    /**
+     * Match always returns a single page of results, sorted by score, the highest score first,
+     * being the best N candidate matches.
+     * @param request Standard search request. Paging info and sort are ignored.
+     * @return N or less matching candidates in a single page
+     */
+    @PostMapping("match")
+    public Map<String, Object> match(@RequestBody SearchCandidateRequest request) {
+        //Possible update of user default saved search
+        savedSearchService.updateUserDefaultSavedSearchIfNeeded(request);
+
+        Page<CandidateReadDto> candidateReadDtoPage
+            = candidateBestNMatchingService.matchAsSinglePage(request);
+
+        DtoBuilder builder = builderSelector.selectBuilder(request.getDtoType());
+        return builder.buildPage(candidateReadDtoPage);
+    }
+
     @PostMapping("search")
     public Map<String, Object> search(@RequestBody SearchCandidateRequest request) {
+        //Possible update of user default saved search
+        savedSearchService.updateUserDefaultSavedSearchIfNeeded(request);
+
         Page<CandidateReadDto> candidates = savedSearchService.searchCandidateDtos(request);
 
         long start = System.currentTimeMillis();
@@ -119,7 +142,6 @@ public class CandidateAdminApi {
 
         DtoBuilder builder = builderSelector.selectBuilder(request.getDtoType());
         final Map<String, Object> stringObjectMap = builder.buildPage(candidates);
-
 
         end = System.currentTimeMillis();
         long computeDtoTime = end - start;

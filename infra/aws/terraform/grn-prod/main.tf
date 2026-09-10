@@ -222,7 +222,7 @@ module "grn_prod" {
   db_public_access        = true # just for initial setup and testing; will switch to private after deployment is complete
   db_multi_az             = true
   db_instance_class       = "db.m6g.large"
-  db_engine_version       = "17.5"
+  db_engine_version       = "17"
   db_family               = "postgres17"
   db_major_engine_version = "17"
   db_name                 = "grn"
@@ -261,11 +261,11 @@ module "grn_prod" {
   server_url                            = "https://globalrefugee.net/"
 
   # todo: retire or point to GRN SF
-  sf_base_classic_url                   = "https://talentbeyondboundaries.my.salesforce.com/"
-  sf_base_lightning_url                 = "https://talentbeyondboundaries.lightning.force.com"
-  sf_base_login_url                     = "https://login.salesforce.com/"
+  sf_base_classic_url   = "https://talentbeyondboundaries.my.salesforce.com/"
+  sf_base_lightning_url = "https://talentbeyondboundaries.lightning.force.com"
+  sf_base_login_url     = "https://login.salesforce.com/"
 
-  spring_client_url                     = "-"
+  spring_client_url = "-"
   # Empty so SPRING_DATASOURCE_URL is auto-populated from the RDS created by this stack.
   # The provided spring_datasource_username/password are used to create the RDS master user and are written to SSM for the app.
   spring_datasource_url           = "" # use RDS created by this stack
@@ -278,15 +278,16 @@ module "grn_prod" {
   tc_cors_urls                    = "https://globalrefugee.net,https://www.globalrefugee.net"
 
   # todo: this is not used and should be removed?
-  tc_db_copy_config               = "data.sharing/tcCopies.xml"
+  tc_db_copy_config = "data.sharing/tcCopies.xml"
 
   # todo: this list can be expanded -- see backlog ticket
-  tc_destinations                 = "Australia,Belgium,Canada,France,Germany,Ireland,Italy,Slovakia,Spain,United Kingdom,United States"
+  tc_destinations = "Australia,Belgium,Canada,France,Germany,Ireland,Italy,Slovakia,Spain,United Kingdom,United States"
 
-  tc_skills_extraction_api_url    = "https://skills.globalrefugee.net"
-  web_admin                       = "https://globalrefugee.net/admin-portal"
-  web_portal                      = "https://globalrefugee.net/candidate-portal"
-  tc_instance_type                = "GRN"
+  tc_skills_extraction_api_url = "https://skills.globalrefugee.net"
+  tc_vector_embedding_api_url  = "https://skills.globalrefugee.net"
+  web_admin                    = "https://globalrefugee.net/admin-portal"
+  web_portal                   = "https://globalrefugee.net/candidate-portal"
+  tc_instance_type             = "GRN"
 
   # Secrets: loaded from secrets.auto.tfvars
   aws_access_key             = var.aws_access_key

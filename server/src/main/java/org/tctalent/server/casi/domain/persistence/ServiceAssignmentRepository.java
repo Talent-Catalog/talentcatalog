@@ -96,6 +96,19 @@ public interface ServiceAssignmentRepository extends JpaRepository<ServiceAssign
       @Param("serviceCode") ServiceCode serviceCode,
       @Param("resourceId") Long resourceId);
 
+  @Query("""
+         select e
+         from ServiceAssignmentEntity e
+         where e.provider    = :provider
+           and e.serviceCode = :serviceCode
+           and e.resource.id = :resourceId
+         order by e.assignedAt desc
+         """)
+  List<ServiceAssignmentEntity> findByProviderAndServiceAndResource(
+      @Param("provider") ServiceProvider provider,
+      @Param("serviceCode") ServiceCode serviceCode,
+      @Param("resourceId") Long resourceId);
+
 
   @Query("""
          select e
