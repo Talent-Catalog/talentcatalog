@@ -29,6 +29,7 @@ import {LinkedinService} from '../../../services/linkedin.service';
 import {CasiPortalService} from '../../../services/casi-portal.service';
 import {LocalStorageService} from '../../../services/local-storage.service';
 import {AuthenticationService} from '../../../services/authentication.service';
+import {environment} from '../../../../environments/environment';
 
 @Pipe({name: 'translate'})
 class TranslatePipeStub implements PipeTransform {
@@ -49,6 +50,7 @@ describe('ViewCandidateComponent', () => {
   let localStorageService: jasmine.SpyObj<LocalStorageService>;
   let location: jasmine.SpyObj<Location>;
   let authenticationService: jasmine.SpyObj<AuthenticationService>;
+  let originalEnvironmentName: string;
 
   const candidate = {
     id: 1,
@@ -61,6 +63,7 @@ describe('ViewCandidateComponent', () => {
   };
 
   beforeEach(async () => {
+    originalEnvironmentName = environment.environmentName;
     authorizationService = jasmine.createSpyObj<AuthorizationService>(
       'AuthorizationService',
       ['canViewChats']
@@ -177,6 +180,10 @@ describe('ViewCandidateComponent', () => {
     fixture.detectChanges();
   });
 
+  afterEach(() => {
+    environment.environmentName = originalEnvironmentName;
+  });
+
   it('should create', () => {
     expect(component).toBeTruthy();
   });
@@ -234,6 +241,88 @@ describe('ViewCandidateComponent', () => {
         expect(showServicesTab).toBeTrue();
         done();
       });
+    });
+  });
+
+  it('should expose Verify+ eligibility for GRN local', (done) => {
+    environment.environmentName = 'local';
+    authenticationService.isGrnInstance.and.returnValue(true);
+    fixture = TestBed.createComponent(ViewCandidateComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+
+    component.verifyPlusEligible$.subscribe(verifyPlusEligible => {
+      expect(verifyPlusEligible).toBeTrue();
+      done();
+    });
+  });
+
+  it('should expose Verify+ eligibility for GRN staging', (done) => {
+    environment.environmentName = 'staging';
+    authenticationService.isGrnInstance.and.returnValue(true);
+    fixture = TestBed.createComponent(ViewCandidateComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+
+    component.verifyPlusEligible$.subscribe(verifyPlusEligible => {
+      expect(verifyPlusEligible).toBeTrue();
+      done();
+    });
+  });
+
+  it('should hide Verify+ eligibility for GRN prod', (done) => {
+    environment.environmentName = 'prod';
+    authenticationService.isGrnInstance.and.returnValue(true);
+    fixture = TestBed.createComponent(ViewCandidateComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+
+    component.verifyPlusEligible$.subscribe(verifyPlusEligible => {
+      expect(verifyPlusEligible).toBeFalse();
+      done();
+    });
+  });
+
+  it('should hide Verify+ eligibility for TBB local', (done) => {
+    environment.environmentName = 'local';
+    authenticationService.isGrnInstance.and.returnValue(false);
+    fixture = TestBed.createComponent(ViewCandidateComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+
+    component.verifyPlusEligible$.subscribe(verifyPlusEligible => {
+      expect(verifyPlusEligible).toBeFalse();
+      done();
+    });
+  });
+
+  it('should show the services tab when Verify+ is the only eligible service in staging GRN', (done) => {
+    environment.environmentName = 'staging';
+    authenticationService.isGrnInstance.and.returnValue(true);
+    linkedinService.isEligible.and.returnValue(of(false));
+    casiPortalService.checkEligibility.and.returnValue(of(false));
+    fixture = TestBed.createComponent(ViewCandidateComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+
+    component.showServicesTab$.subscribe(showServicesTab => {
+      expect(showServicesTab).toBeTrue();
+      done();
+    });
+  });
+
+  it('should hide the services tab when Verify+ is the only GRN service in prod', (done) => {
+    environment.environmentName = 'prod';
+    authenticationService.isGrnInstance.and.returnValue(true);
+    linkedinService.isEligible.and.returnValue(of(false));
+    casiPortalService.checkEligibility.and.returnValue(of(false));
+    fixture = TestBed.createComponent(ViewCandidateComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+
+    component.showServicesTab$.subscribe(showServicesTab => {
+      expect(showServicesTab).toBeFalse();
+      done();
     });
   });
 });

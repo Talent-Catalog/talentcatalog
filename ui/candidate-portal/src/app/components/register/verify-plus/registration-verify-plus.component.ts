@@ -20,6 +20,7 @@ import {VerifyPlusScannerComponent} from '../../common/verify-plus-scanner/verif
 import {VerifyPlusScanResult, VerifyPlusService} from '../../../services/verify-plus.service';
 import {RegistrationService} from '../../../services/registration.service';
 import {AuthenticationService} from '../../../services/authentication.service';
+import {isVerifyPlusUiEnabled} from '../../../util/verify-plus-ui';
 
 /**
  * Component for the Verify Plus registration step.
@@ -48,7 +49,7 @@ export class RegistrationVerifyPlusComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    if (!this.authenticationService.isGrnInstance()) {
+    if (!isVerifyPlusUiEnabled(this.authenticationService.isGrnInstance())) {
       this.registrationService.next();
     }
   }

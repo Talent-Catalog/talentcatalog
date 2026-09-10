@@ -36,6 +36,7 @@ import {AuthorizationService} from "../../../services/authorization.service";
 import {CasiPortalService} from "../../../services/casi-portal.service";
 import {environment} from "../../../../environments/environment";
 import {AuthenticationService} from "../../../services/authentication.service";
+import {isVerifyPlusUiEnabled} from "../../../util/verify-plus-ui";
 
 @Component({
   selector: 'app-view-candidate',
@@ -167,7 +168,9 @@ export class ViewCandidateComponent implements OnInit {
       pifi: this.casiPortalService.checkEligibility('PIFI', 'HELP_SITE_LINK'),
       // TODO - SM -when eligibility criteria is determined move this to the server as a
       //  checkEligibility test (for example by enrolled/approved country)
-      verifyPlus: of(this.authenticationService.isGrnInstance())
+      verifyPlus: of(
+        isVerifyPlusUiEnabled(this.authenticationService.isGrnInstance())
+      )
       // Additional async service eligibility calls here
     }).pipe(shareReplay(1)); // Avoid re-triggering on multiple subscriptions
 
