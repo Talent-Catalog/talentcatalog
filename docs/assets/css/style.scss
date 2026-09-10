@@ -37,6 +37,16 @@ body {
   }
 }
 
+.page-header .logo-link {
+  display: block;
+  max-width: 100%;
+}
+
+.page-header .logo {
+  max-width: 100%;
+  height: auto;
+}
+
 .project-name {
   font-size: 1.75rem;
   font-family: "Source Serif 4", serif;
