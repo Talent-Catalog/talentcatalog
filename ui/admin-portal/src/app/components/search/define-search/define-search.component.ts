@@ -394,7 +394,16 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit, 
   }
 
   public hasRequirements(): boolean {
-    return this.requirements && this.requirements.trim().length > 0;
+    //Create a temporary element to strip HTML tags and get the pure text content of the
+    // requirements field. This has the advantage of using built-in browser functionality.
+    const tempElement = document.createElement('div');
+    tempElement.innerHTML = this.requirements;
+    //textContent and innerText are not always the same, so we check both and use whichever is
+    // available. Different ones are used depending on the browser.
+    const pureText = (tempElement.textContent ?? tempElement.innerText ?? '')
+    .replace(/&nbsp;/g, '')
+    .trim();
+    return pureText.length > 0;
   }
 
   displayJobNameAsSource(): string {
