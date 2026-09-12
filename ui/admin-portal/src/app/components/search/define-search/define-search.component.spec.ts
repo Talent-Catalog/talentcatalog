@@ -466,6 +466,35 @@ describe('DefineSearchComponent', () => {
     expect(component.extractedSkills).toBe('');
   });
 
+  it('should report no requirements when the field is unset', () => {
+    expect(component.hasRequirements()).toBeFalse();
+  });
+
+  it('should report no requirements for whitespace-only text', () => {
+    component.searchForm.controls.requirements.patchValue('   ');
+    expect(component.hasRequirements()).toBeFalse();
+  });
+
+  it('should report no requirements for markup with no visible text', () => {
+    component.searchForm.controls.requirements.patchValue('<p><br></p>');
+    expect(component.hasRequirements()).toBeFalse();
+  });
+
+  it('should report no requirements for markup containing only a non-breaking space', () => {
+    component.searchForm.controls.requirements.patchValue('<p>&nbsp;</p>');
+    expect(component.hasRequirements()).toBeFalse();
+  });
+
+  it('should report requirements present for plain text', () => {
+    component.searchForm.controls.requirements.patchValue('Senior welder with diesel experience');
+    expect(component.hasRequirements()).toBeTrue();
+  });
+
+  it('should report requirements present for text wrapped in markup', () => {
+    component.searchForm.controls.requirements.patchValue('<p>Senior welder</p>');
+    expect(component.hasRequirements()).toBeTrue();
+  });
+
   it('should call extractSkills once requirements changes have settled for 3 seconds', fakeAsync(() => {
     spyOn(component, 'extractSkills');
 
