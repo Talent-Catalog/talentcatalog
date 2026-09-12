@@ -157,6 +157,9 @@
           </div>
 
           <div *ngIf="hasEmbeddingModels()" class="col-md-12 mt-3">
+
+            <tc-loading [loading]="loadingJobMatchingInfo"></tc-loading>
+
             <div>
               <div class="ai-input" [class.ai-input--highlighted]="!hasRequirements()">
                 <img class="ai-input-sparkle ai-input-sparkle-start"
