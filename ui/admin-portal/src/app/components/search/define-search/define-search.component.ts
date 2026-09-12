@@ -134,6 +134,7 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit, 
 
   error: any;
   loading: boolean;
+  loadingJobMatchingInfo: boolean;
   searchForm: UntypedFormGroup;
   showSearchRequest: boolean = false;
   results: SearchResults<Candidate>;
@@ -677,11 +678,18 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit, 
         if (this.jobId || this.listId) {
 
           if (this.jobId) {
-          //Load the job-matching info
-          this.jobService.getJobMatchingInfo(this.jobId).subscribe({
-            next: (jobMatchingInfo) => this.setUpJobMatch(jobMatchingInfo),
-              error: (error) => this.error = error
-            })
+            this.loadingJobMatchingInfo = true;
+            //Load the job-matching info
+            this.jobService.getJobMatchingInfo(this.jobId).subscribe({
+                next: (jobMatchingInfo) => {
+                  this.setUpJobMatch(jobMatchingInfo);
+                  this.loadingJobMatchingInfo = false;
+                },
+                error: (error) => {
+                  this.error = error;
+                  this.loadingJobMatchingInfo = false;
+                }
+              })
           } else if (this.listId) {
             //Load the list id into one of the list search fields.
             this.runSearchWithListConstraint(this.listId);
