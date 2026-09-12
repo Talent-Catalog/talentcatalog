@@ -134,6 +134,7 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit, 
 
   error: any;
   loading: boolean;
+  loadingJobMatchingInfo: boolean;
   searchForm: UntypedFormGroup;
   showSearchRequest: boolean = false;
   results: SearchResults<Candidate>;
@@ -394,7 +395,16 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit, 
   }
 
   public hasRequirements(): boolean {
-    return this.requirements && this.requirements.trim().length > 0;
+    //Create a temporary element to strip HTML tags and get the pure text content of the
+    // requirements field. This has the advantage of using built-in browser functionality.
+    const tempElement = document.createElement('div');
+    tempElement.innerHTML = this.requirements;
+    //textContent and innerText are not always the same, so we check both and use whichever is
+    // available. Different ones are used depending on the browser.
+    const pureText = (tempElement.textContent ?? tempElement.innerText ?? '')
+    .replace(/&nbsp;/g, '')
+    .trim();
+    return pureText.length > 0;
   }
 
   displayJobNameAsSource(): string {
@@ -668,11 +678,18 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit, 
         if (this.jobId || this.listId) {
 
           if (this.jobId) {
-          //Load the job-matching info
-          this.jobService.getJobMatchingInfo(this.jobId).subscribe({
-            next: (jobMatchingInfo) => this.setUpJobMatch(jobMatchingInfo),
-              error: (error) => this.error = error
-            })
+            this.loadingJobMatchingInfo = true;
+            //Load the job-matching info
+            this.jobService.getJobMatchingInfo(this.jobId).subscribe({
+                next: (jobMatchingInfo) => {
+                  this.setUpJobMatch(jobMatchingInfo);
+                  this.loadingJobMatchingInfo = false;
+                },
+                error: (error) => {
+                  this.error = error;
+                  this.loadingJobMatchingInfo = false;
+                }
+              })
           } else if (this.listId) {
             //Load the list id into one of the list search fields.
             this.runSearchWithListConstraint(this.listId);

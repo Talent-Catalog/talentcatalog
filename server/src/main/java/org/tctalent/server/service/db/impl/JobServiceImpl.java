@@ -467,10 +467,26 @@ public class JobServiceImpl implements JobService {
         return jobMatchingInfo;
     }
 
+    /**
+     * Extracts a textual description of the given job, which can be used to match candidates to
+     * the job.
+     * <p>
+     *     If there is a job summary, we just use that.
+     *     Otherwise, we extract text from the job opp intake and JD file text.
+     * </p>
+     * @param jobOpp Job opportunity
+     * @return Textual description of the job
+     */
     private String extractJobText(SalesforceJobOpp jobOpp) {
-        StringBuilder sb = new StringBuilder();
+        final String jobSummary = jobOpp.getJobSummary();
 
-        appendJobText(sb, jobOpp.getJobSummary());
+        //If we have a job summary, just use that.
+        if (StringUtils.hasText(jobSummary)) {
+            return jobSummary;
+        }
+
+        //No job summary, so extract text from the job opp intake and JD file text.
+        StringBuilder sb = new StringBuilder();
 
         final JobOppIntake jobOppIntake = jobOpp.getJobOppIntake();
         if (jobOppIntake != null) {
