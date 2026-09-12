@@ -135,6 +135,13 @@ public class CandidateBestNMatchingRepository {
         // Note also that raw scores appear in fused_candidates as diagnostics only.
         // Weighted RRF combines ranks, not scores.
 
+        // The final WHERE rrf_score > 0 excludes candidates that only survived the
+        // FULL OUTER JOIN below because of a zero weight on their side - eg a
+        // semantic-only candidate when semanticWeight is 0. rrf_score can only be
+        // exactly 0 when a candidate has no rank on the non-zero-weighted side and a
+        // zero weight on the side that did rank it, so it contributes no genuine
+        // signal under the requested weighting.
+
         return """
             WITH lexical_candidate_scores AS (
             """
@@ -200,6 +207,7 @@ public class CandidateBestNMatchingRepository {
             SELECT candidate_id, lexical_rank, semantic_rank,
                    lexical_score, semantic_score, rrf_score
             FROM fused_candidates
+            WHERE rrf_score > 0
             ORDER BY rrf_score DESC, candidate_id
             LIMIT :resultLimit
             """;
