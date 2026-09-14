@@ -305,8 +305,8 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit, 
 
     this.searchForm.get('simpleQueryString').valueChanges.pipe(
         first()
-    ).subscribe(() => {
-      this.updateTextSearchQuery();
+    ).subscribe((simpleQueryString) => {
+      this.updateTextSearchQuery(simpleQueryString, this.extractedSkills);
     });
 
     forkJoin({
@@ -448,7 +448,7 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit, 
     }
 
     //Update text search query to update highlighting
-    this.updateTextSearchQuery();
+    this.updateTextSearchQuery(this.searchForm.value.simpleQueryString, this.extractedSkills);
   }
 
   // Stops Keyword Search tooltip from opening on keydown.enter in inputs
@@ -538,18 +538,20 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit, 
     //See ngOnChanges of ShowCandidatesComponent.
     this.searchRequest = request;
 
-    this.updateTextSearchQuery();
+    this.updateTextSearchQuery(this.searchForm.value.simpleQueryString, this.extractedSkills);
   }
 
   /**
    * Updates the search query service with the combined text search query, which includes the
    * simpleQueryString and any extracted skills.
+   * @param simpleQueryString The current simple query string text.
+   * @param extractedSkills Any skills extracted from the requirements text, or empty if none.
    */
-  updateTextSearchQuery(): void {
-    let combinedTextSearchQuery: string = this.searchForm.value.simpleQueryString ?? '';
-    if (this.extractedSkills) {
+  updateTextSearchQuery(simpleQueryString: string, extractedSkills: string): void {
+    let combinedTextSearchQuery: string = simpleQueryString ?? '';
+    if (extractedSkills) {
       // If there are extracted skills, we want to append them to the simpleQueryString
-      combinedTextSearchQuery += (combinedTextSearchQuery ? ' ' : '') + this.extractedSkills;
+      combinedTextSearchQuery += (combinedTextSearchQuery ? ' ' : '') + extractedSkills;
     }
     this.searchQueryService.changeSearchQuery(combinedTextSearchQuery);
   }
