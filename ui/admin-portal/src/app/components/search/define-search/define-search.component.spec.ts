@@ -369,6 +369,23 @@ describe('DefineSearchComponent', () => {
     expect(component.showSearchRequest).toBeTrue();
   }));
 
+  it('should publish a loaded saved search\'s keyword text once its form values are populated', fakeAsync(() => {
+    component.savedSearch = {id: 8, defaultSearch: true} as any;
+    savedSearchService.load.and.returnValue(
+      of({searchJoinRequests: [], simpleQueryString: 'engineer'} as any)
+    );
+
+    component.ngOnInit();
+    tick();
+
+    expect(searchQueryService.changeSearchQuery).toHaveBeenCalledWith('engineer');
+
+    // Populating the form patches 'requirements' too, which schedules a debounced
+    // extractSkills() timer (see the note by discardPeriodicTasks() elsewhere in this
+    // file) - discard it rather than letting it fire after this test completes.
+    discardPeriodicTasks();
+  }));
+
   it('should expose lookup initialization errors', fakeAsync(() => {
     countryService.listCountries.and.returnValue(throwError('lookup failed'));
 
@@ -493,6 +510,30 @@ describe('DefineSearchComponent', () => {
   it('should report requirements present for text wrapped in markup', () => {
     component.searchForm.controls.requirements.patchValue('<p>Senior welder</p>');
     expect(component.hasRequirements()).toBeTrue();
+  });
+
+  it('should publish simpleQueryString alone when there are no extracted skills', () => {
+    component.updateTextSearchQuery('developer', '');
+
+    expect(searchQueryService.changeSearchQuery).toHaveBeenCalledWith('developer');
+  });
+
+  it('should publish an empty query when neither simpleQueryString nor extracted skills are set', () => {
+    component.updateTextSearchQuery(null, '');
+
+    expect(searchQueryService.changeSearchQuery).toHaveBeenCalledWith('');
+  });
+
+  it('should publish extracted skills alone when simpleQueryString is empty', () => {
+    component.updateTextSearchQuery(null, 'Welding "Diesel Mechanics"');
+
+    expect(searchQueryService.changeSearchQuery).toHaveBeenCalledWith('Welding "Diesel Mechanics"');
+  });
+
+  it('should combine simpleQueryString and extracted skills separated by a space', () => {
+    component.updateTextSearchQuery('developer', 'Welding');
+
+    expect(searchQueryService.changeSearchQuery).toHaveBeenCalledWith('developer Welding');
   });
 
   it('should call extractSkills once requirements changes have settled for 3 seconds', fakeAsync(() => {
