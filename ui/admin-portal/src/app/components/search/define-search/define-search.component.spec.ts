@@ -495,6 +495,42 @@ describe('DefineSearchComponent', () => {
     expect(component.hasRequirements()).toBeTrue();
   });
 
+  it('should publish simpleQueryString alone when there are no extracted skills', () => {
+    component.searchForm.get('simpleQueryString').patchValue('developer');
+    component.extractedSkills = '';
+
+    component.updateTextSearchQuery();
+
+    expect(searchQueryService.changeSearchQuery).toHaveBeenCalledWith('developer');
+  });
+
+  it('should publish an empty query when neither simpleQueryString nor extracted skills are set', () => {
+    component.searchForm.get('simpleQueryString').patchValue(null);
+    component.extractedSkills = '';
+
+    component.updateTextSearchQuery();
+
+    expect(searchQueryService.changeSearchQuery).toHaveBeenCalledWith('');
+  });
+
+  it('should publish extracted skills alone when simpleQueryString is empty', () => {
+    component.searchForm.get('simpleQueryString').patchValue(null);
+    component.extractedSkills = 'Welding "Diesel Mechanics"';
+
+    component.updateTextSearchQuery();
+
+    expect(searchQueryService.changeSearchQuery).toHaveBeenCalledWith('Welding "Diesel Mechanics"');
+  });
+
+  it('should combine simpleQueryString and extracted skills separated by a space', () => {
+    component.searchForm.get('simpleQueryString').patchValue('developer');
+    component.extractedSkills = 'Welding';
+
+    component.updateTextSearchQuery();
+
+    expect(searchQueryService.changeSearchQuery).toHaveBeenCalledWith('developer Welding');
+  });
+
   it('should call extractSkills once requirements changes have settled for 3 seconds', fakeAsync(() => {
     spyOn(component, 'extractSkills');
 

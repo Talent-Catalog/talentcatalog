@@ -305,8 +305,8 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit, 
 
     this.searchForm.get('simpleQueryString').valueChanges.pipe(
         first()
-    ).subscribe(initialValue => {
-      this.searchQueryService.changeSearchQuery(initialValue || '');
+    ).subscribe(() => {
+      this.updateTextSearchQuery();
     });
 
     forkJoin({
@@ -446,6 +446,9 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit, 
     } else {
       this.extractedSkills = "";
     }
+
+    //Update text search query to update highlighting
+    this.updateTextSearchQuery();
   }
 
   // Stops Keyword Search tooltip from opening on keydown.enter in inputs
@@ -535,7 +538,20 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit, 
     //See ngOnChanges of ShowCandidatesComponent.
     this.searchRequest = request;
 
-    this.searchQueryService.changeSearchQuery(this.searchForm.value.simpleQueryString || '');
+    this.updateTextSearchQuery();
+  }
+
+  /**
+   * Updates the search query service with the combined text search query, which includes the
+   * simpleQueryString and any extracted skills.
+   */
+  updateTextSearchQuery(): void {
+    let combinedTextSearchQuery: string = this.searchForm.value.simpleQueryString ?? '';
+    if (this.extractedSkills) {
+      // If there are extracted skills, we want to append them to the simpleQueryString
+      combinedTextSearchQuery += (combinedTextSearchQuery ? ' ' : '') + this.extractedSkills;
+    }
+    this.searchQueryService.changeSearchQuery(combinedTextSearchQuery);
   }
 
   /**
