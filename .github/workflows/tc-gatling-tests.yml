@@ -43,14 +43,14 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Ensure Gradle cache dir exists
         run: |
           mkdir -p .gradle-cache/caches .gradle-cache/wrapper
 
       - name: Restore Gradle cache
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: |
             .gradle-cache/caches
@@ -113,7 +113,7 @@ jobs:
             --strict-percentile p95
       - name: Upload Gatling HTML reports
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: gatling-reports-${{ inputs.tier }}-shard-${{ inputs.shard_index }}
           path: perf-reports
@@ -121,7 +121,7 @@ jobs:
 
       - name: Upload perf summaries (json/md)
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: perf-summary-${{ inputs.tier }}-shard-${{ inputs.shard_index }}
           path: perf-summary
@@ -129,7 +129,7 @@ jobs:
 
       - name: Upload raw simulation logs
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: perf-raw-${{ inputs.tier }}-shard-${{ inputs.shard_index }}
           path: perf-raw
