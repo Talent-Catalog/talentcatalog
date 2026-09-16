@@ -600,7 +600,7 @@ for additional documentation.
 ### Master branch ###
 
 The main branch is "master". We only merge into "master" when code is ready for production.
-No GitHub Actions workflow runs automatically on push to "master". Production build, test,
+The `tc-prod-build-deploy` workflow does not run automatically on push to "master". Production build, test,
 and image deployments to GRN and TC (TBB + OPC) are triggered manually via the
 `tc-prod-build-deploy` workflow — see the
 [Release Runbook wiki](https://github.com/Talent-Catalog/talentcatalog/wiki/Release#release-runbook)
