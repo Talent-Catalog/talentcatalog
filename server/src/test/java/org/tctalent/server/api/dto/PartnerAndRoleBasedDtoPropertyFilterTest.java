@@ -51,4 +51,22 @@ class PartnerAndRoleBasedDtoPropertyFilterTest {
 
     assertFalse(filter.ignoreProperty(candidate, "phone"));
   }
+
+  @Test
+  @DisplayName("Source partner admin can view private fields for its UserReadDto")
+  void sourcePartnerAdmin_doesNotIgnoreEmail_onOwnPartnerUserReadDto() {
+    PartnerImpl viewerPartner = getSourcePartner();
+
+    PartnerReadDto candidatePartner = new PartnerReadDto();
+    candidatePartner.setId(viewerPartner.getId());
+    UserReadDto candidateUser = UserReadDto.builder()
+        .partner(candidatePartner)
+        .build();
+
+    PartnerAndRoleBasedDtoPropertyFilter filter =
+        new PartnerAndRoleBasedDtoPropertyFilter(
+            viewerPartner, Role.admin, Set.of(), Set.of(), Set.of("id"), Set.of());
+
+    assertFalse(filter.ignoreProperty(candidateUser, "email"));
+  }
 }
