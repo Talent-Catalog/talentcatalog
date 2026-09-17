@@ -22,6 +22,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.redis.core.Cursor;
+import org.springframework.data.redis.core.ScanOptions;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Repository;
@@ -121,6 +123,33 @@ public class CandidateRedisCache {
                 values().set(key, row.json());
             } else {
                 values().set(key, row.json(), ttl);
+            }
+        }
+    }
+
+    /**
+     * Removes all cached candidate JSON entries from Redis.
+     */
+    public void clear() {
+        ScanOptions options = ScanOptions.scanOptions()
+            .match("candidate:json:*")
+            .count(1000)
+            .build();
+
+        try (Cursor<String> cursor = redisTemplate.scan(options)) {
+            List<String> keys = new ArrayList<>();
+
+            while (cursor.hasNext()) {
+                keys.add(cursor.next());
+
+                if (keys.size() >= 1000) {
+                    redisTemplate.delete(keys);
+                    keys.clear();
+                }
+            }
+
+            if (!keys.isEmpty()) {
+                redisTemplate.delete(keys);
             }
         }
     }
