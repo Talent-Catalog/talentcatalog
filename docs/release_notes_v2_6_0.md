@@ -26,16 +26,15 @@ sass:
     </div>
   </a>
 
-  <a href="./v260/verify_plus" class="card">
-    <img src="./assets/images/v260/VerifyPlusServicesCard.png" alt="Verify+" class="card-image">
+  <a href="./v260/refugee_id_card_scanning" class="card">
+    <img src="./assets/images/v260/RefugeeIdCardServicesCard.png" alt="Refugee ID Card Scanning" class="card-image">
     <div class="card-body">
-      <div class="card-title">UNHCR ID Card Scanning</div>
+      <div class="card-title">Refugee ID Card Scanning</div>
       <div class="card-description">
-        GRN candidates who hold a UNHCR ID card can now scan its QR code straight from their
-        phone to capture and verify their UNHCR registration number and personal details — either from the 
+        GRN candidates who hold a refugee ID card can now scan its QR code straight from their
+        phone to capture and verify their refugee registration number and personal details — either from the 
         Services tab, or as an optional step during registration.
-        In this release, scanning UNHCR Verify Plus cards is disabled. While the capability 
-        to scan cards exists, enabling functionality awaits agreement permissions with UNHCR.
+        Scanning is disabled in this release; the capability exists but awaits partner agreement.
       </div>
       <div class="card-footer">
         <button class="btn btn-sm">Learn more</button>
