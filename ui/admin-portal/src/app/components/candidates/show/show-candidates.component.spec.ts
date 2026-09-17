@@ -1836,4 +1836,33 @@ describe('ShowCandidatesComponent', () => {
     expect(downloadArgs[1]).toEqual({type: 'text/csv;charset=utf-8;'});
     expect(downloadArgs[2]).toBe('candidates.csv');
   }));
+
+  it('should use existing export for saved search without unsaved filter changes', fakeAsync(() => {
+    const mockBlob = new Blob(['test'], {type: 'text/csv'});
+
+    mockCandidateService.export.calls.reset();
+    mockCandidateSourceCandidateService.export.calls.reset();
+
+    component.candidateSource = new MockSavedSearch();
+    component.results = {
+      totalElements: 2
+    } as SearchResults<Candidate>;
+
+    component.searchRequest = null;
+
+    mockCandidateSourceCandidateService.export.and.returnValue(of(mockBlob));
+
+    const downloadSpy = spyOn(component, 'createAndDownloadBlobFile');
+
+    component.exportCandidates();
+    tick();
+
+    expect(mockCandidateService.export)
+    .not.toHaveBeenCalled();
+
+    expect(mockCandidateSourceCandidateService.export)
+    .toHaveBeenCalled();
+
+    expect(downloadSpy).toHaveBeenCalled();
+  }));
 });
