@@ -50,7 +50,7 @@ public class CandidateRedisCache {
 
     private final StringRedisTemplate redisTemplate;
     private final CandidateCacheProperties cacheProperties;
-
+    private static final int CACHE_FLUSH_BATCH_SIZE = 1000;
     private ValueOperations<String, String> values() {
         return redisTemplate.opsForValue();
     }
@@ -133,7 +133,7 @@ public class CandidateRedisCache {
     public void clear() {
         ScanOptions options = ScanOptions.scanOptions()
             .match("candidate:json:*")
-            .count(1000)
+            .count(CACHE_FLUSH_BATCH_SIZE)
             .build();
 
         try (Cursor<String> cursor = redisTemplate.scan(options)) {
@@ -142,7 +142,7 @@ public class CandidateRedisCache {
             while (cursor.hasNext()) {
                 keys.add(cursor.next());
 
-                if (keys.size() >= 1000) {
+                if (keys.size() >= CACHE_FLUSH_BATCH_SIZE) {
                     redisTemplate.delete(keys);
                     keys.clear();
                 }
