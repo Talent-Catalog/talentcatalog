@@ -1,0 +1,71 @@
+{
+  "version": 1,
+  "description": "Refugee ID card generic naming — supersedes UNHCR/Verify+ branded strings for these 4 keys. Supersedes the in-review TC-1483 fill for REGISTRATION.HEADER.TITLE.VERIFYPLUS (that patch used the old branded text; this one replaces it with generic wording). Machine-translated draft for the 10 non-English languages — needs native-speaker/vendor review before import to any environment.",
+  "languages": ["en", "ar", "fa", "ps", "es", "fr", "tr", "ru", "uk", "nl", "pt"],
+  "entries": [
+    {
+      "key": "SERVICES.VERIFY_PLUS.TITLE",
+      "values": {
+        "en": "Refugee ID Scan",
+        "ar": "مسح هوية اللاجئ",
+        "fa": "اسکن هویت پناهندگی",
+        "ps": "د کډوال پیژندنې سکین",
+        "es": "Escaneo de ID de Refugiado",
+        "fr": "Scan d'identité de réfugié",
+        "tr": "Mülteci Kimlik Taraması",
+        "ru": "Сканирование удостоверения беженца",
+        "uk": "Сканування посвідчення біженця",
+        "nl": "Vluchtelingen-ID-scan",
+        "pt": "Digitalização de ID de Refugiado"
+      }
+    },
+    {
+      "key": "REGISTRATION.HEADER.TITLE.VERIFYPLUS",
+      "values": {
+        "en": "Scan your refugee ID card (optional)",
+        "ar": "امسح بطاقة هوية اللاجئ (اختياري)",
+        "fa": "کارت شناسایی پناهندگی خود را اسکن کنید (اختیاری)",
+        "ps": "خپل د کډوال پیژندنې کارت سکین کړئ (اختیاري)",
+        "es": "Escanee su tarjeta de identificación de refugiado (opcional)",
+        "fr": "Scannez votre carte d'identité de réfugié (facultatif)",
+        "tr": "Mülteci kimlik kartınızı tarayın (isteğe bağlı)",
+        "ru": "Отсканируйте удостоверение беженца (необязательно)",
+        "uk": "Відскануйте посвідчення біженця (необов'язково)",
+        "nl": "Scan uw vluchtelingen-ID-kaart (optioneel)",
+        "pt": "Digitalize seu cartão de identificação de refugiado (opcional)"
+      }
+    },
+    {
+      "key": "REGISTRATION.VERIFY_PLUS.TITLE",
+      "values": {
+        "en": "Refugee ID Scan (optional)",
+        "ar": "مسح هوية اللاجئ (اختياري)",
+        "fa": "اسکن هویت پناهندگی (اختیاری)",
+        "ps": "د کډوال پیژندنې سکین (اختیاري)",
+        "es": "Escaneo de ID de Refugiado (opcional)",
+        "fr": "Scan d'identité de réfugié (facultatif)",
+        "tr": "Mülteci Kimlik Taraması (isteğe bağlı)",
+        "ru": "Сканирование удостоверения беженца (необязательно)",
+        "uk": "Сканування посвідчення біженця (необов'язково)",
+        "nl": "Vluchtelingen-ID-scan (optioneel)",
+        "pt": "Digitalização de ID de Refugiado (opcional)"
+      }
+    },
+    {
+      "key": "REGISTRATION.VERIFY_PLUS.DESCRIPTION",
+      "values": {
+        "en": "Scan your refugee ID card now to pre-fill your refugee registration number.",
+        "ar": "قم بمسح بطاقة هوية اللاجئ الآن لملء رقم تسجيل اللاجئ الخاص بك مسبقًا.",
+        "fa": "اکنون کارت شناسایی پناهندگی خود را اسکن کنید تا شماره ثبت نام پناهندگی خود را از قبل پر کنید.",
+        "ps": "همدا اوس خپل د کډوال پیژندنې کارت سکین کړئ ترڅو خپل د کډوالۍ ثبت شمیره دمخه ډکه کړئ.",
+        "es": "Escanee su tarjeta de identificación de refugiado ahora para completar previamente su número de registro de refugiado.",
+        "fr": "Scannez dès maintenant votre carte d'identité de réfugié pour pré-remplir votre numéro d'enregistrement de réfugié.",
+        "tr": "Mülteci kayıt numaranızı önceden doldurmak için mülteci kimlik kartınızı şimdi tarayın.",
+        "ru": "Отсканируйте свою карту беженца сейчас, чтобы предварительно заполнить свой регистрационный номер беженца.",
+        "uk": "Відскануйте посвідчення біженця зараз, щоб попередньо заповнити реєстраційний номер біженця.",
+        "nl": "Scan nu uw vluchtelingen-ID-kaart om uw vluchtelingenregistratienummer vooraf in te vullen.",
+        "pt": "Digitalize seu cartão de identificação de refugiado agora para preencher previamente seu número de registro de refugiado."
+      }
+    }
+  ]
+}
