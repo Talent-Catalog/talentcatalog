@@ -82,6 +82,8 @@ export class EditCandidateJobExperienceComponent implements OnInit {
       fullTime: [this.candidateJobExperience.fullTime],
       paid: [this.candidateJobExperience.paid],
       description: [this.candidateJobExperience.description],
+      tidiedDescription: [this.candidateJobExperience.tidiedDescription],
+      keywordsInDescription: [this.candidateJobExperience.keywordsInDescription],
     });
     this.loading = false;
   }

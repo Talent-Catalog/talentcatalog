@@ -17,6 +17,7 @@
 package org.tctalent.server.repository.db.read.dto;
 
 import java.time.LocalDate;
+import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
 import org.tctalent.server.repository.db.read.annotation.JsonOneToOne;
@@ -37,6 +38,8 @@ public class CandidateJobExperienceReadDto {
     @JsonOneToOne(joinColumn = "country_id")
     private CountryReadDto country;
     private String description;
+    private String tidiedDescription;
+    private List<String> keywordsInDescription;
     private LocalDate endDate;
     private String fullTime;
     private Long id;
