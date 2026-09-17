@@ -1,33 +1,33 @@
 ---
-title: Verify+
-description: Scan your UNHCR Verify+ card to capture and verify your UNHCR registration number
+title: Refugee ID Card Scanning
+description: Scan your refugee ID card to capture and verify your registration number
 sass:
   style: compressed
 ---
 
-# Verify+: Scan Your UNHCR Card to Verify Your Registration
+# Refugee ID Card Scanning: Verify Your Registration
 
 <div class="card-image-container">
     <img class="card-image"
-         src="../assets/images/v260/VerifyPlusServicesCard.png"
-         alt="UNHCR Verify+ card in the Candidate Portal Services tab"
+         src="../assets/images/v260/RefugeeIdCardServicesCard.png"
+         alt="Refugee ID card in the Candidate Portal Services tab"
     >
 </div>
 
-Refugees issued a UNHCR Verify+ card have their UNHCR ID encoded in a QR code on the card.
+Refugees issued an ID card have their registration number encoded in a QR code on the card.
 On GRN, candidates can now scan that code directly from their phone's camera to capture and
-verify their UNHCR registration number and personal details — no backend account linking required, 
+verify their refugee registration number and personal details — no backend account linking required, 
 and nothing ever leaves the device until the candidate chooses to submit it.
 
 ## 📷 Scan From the Services Tab
 
-A new **UNHCR Verify+** card in the Candidate Portal's Services tab lets a candidate scan their
-UNHCR Verify+ QR code at any time. Selecting it opens the device's back camera; the code is
+A new **Refugee ID Scan** card in the Candidate Portal's Services tab lets a candidate scan their
+refugee ID card QR code at any time. Selecting it opens the device's back camera; the code is
 decoded on-device, and the scanned payload is shown for review before anything is submitted.
 
 <div class="card-image-container">
     <img class="card-image"
-         src="../assets/images/v260/VerifyPlusReviewScan.png"
+         src="../assets/images/v260/RefugeeIdCardReviewScan.png"
          alt="Review scanned payload screen with Rescan and Confirm buttons"
     >
 </div>
@@ -38,62 +38,62 @@ off automatically; a **Rescan** option is always available if needed.
 
 
 The above screen grab is just a mocked scan, and actual QR scan decodes a candidate's personal
-details, as well as their UNHCR registration number and a low res photo image may also be decoded
-from their UNHCR Verify+ card.
+details, as well as their refugee registration number and a low res photo image may also be decoded
+from their refugee ID card.
 
 ## 📝 Or Scan During Registration
 
 The same scan-and-submit flow is also offered as an optional, skippable step during GRN
-registration — **"Scan your Verify+ card (optional)."** A candidate who scans their card has
-their UNHCR registration number and personal details pre-filled automatically on the following 
+registration — **"Scan your refugee ID card (optional)."** A candidate who scans their card has
+their refugee registration number and personal details pre-filled automatically on the following 
 step; a candidate without a card handy can skip the step and continue registering.
 
-<!-- TODO(images): The VerifyPlusRegistrationStep.png carries over a hint banner — "If possible
+<!-- TODO(images): The RefugeeIdCardRegistrationStep.png carries over a hint banner — "If possible
      please provide this response in English so it can be more easily reviewed by our team"
      — that's boilerplate text for a free-text question and doesn't fit a QR-scan step.
      It would be better not to display it -- needs a dev fix.  SM -->
 
 <div class="card-image-container">
     <img class="card-image"
-         src="../assets/images/v260/VerifyPlusRegistrationStep.png"
-         alt="Optional Verify+ scan step during registration"
+         src="../assets/images/v260/RefugeeIdCardRegistrationStep.png"
+         alt="Optional refugee ID card scan step during registration"
     >
 </div>
 
-The UNHCR registration number is captured, alongside any personal details,and it shows up, 
+The refugee registration number is captured, alongside any personal details,and it shows up, 
 already filled in, on the next registration step , for candidate review:
 
 <div class="card-image-container">
     <img class="card-image"
-         src="../assets/images/v260/VerifyPlusPrefilledField.png"
-         alt="UNHCR registration number field pre-filled after a scan"
+         src="../assets/images/v260/RefugeeIdCardPrefilledField.png"
+         alt="Refugee registration number field pre-filled after a scan"
     >
 </div>
 
-## 🔍 Built for Real UNHCR QR Codes
+## 🔍 Built for Real Refugee ID QR Codes
 
-Genuine UNHCR Verify+ cards use very high-density QR codes — like the sample below — and common 
+Genuine refugee ID cards use very high-density QR codes — like the sample below — and common 
 decoding libraries struggle to read these QR codes reliably. Therefore GRN mobile scanners are 
 built using decoders capable of handling that density, so a scan succeeds on the first realistic 
 try.
 
 <div class="card-image-container">
     <img class="card-image"
-         src="../assets/images/v260/VerifyPlusQrSample.png"
-         alt="Sample UNHCR Verify+ card QR code"
+         src="../assets/images/v260/RefugeeIdCardQrSample.png"
+         alt="Sample refugee ID card QR code"
     >
 </div>
 
 ## 🌐 Available in Your Language
 
-The entire UNHCR Verify+ flow — scanner prompts, confirmation screens, success and duplicate
+The entire scan flow — scanner prompts, confirmation screens, success and duplicate
 messaging — has been translated across all 11 languages the Candidate Portal currently supports,
 including Arabic, Farsi, Pashto, and Ukrainian.
 
 <div class="card-image-container">
     <img class="card-image"
-         src="../assets/images/v260/VerifyPlusMultiLanguage.png"
-         alt="UNHCR Verify+ scan screen shown in multiple languages"
+         src="../assets/images/v260/RefugeeIdCardMultiLanguage.png"
+         alt="Refugee ID card scan screen shown in multiple languages"
     >
 </div>
 
@@ -108,13 +108,13 @@ for it to be captured and stored — skipping the step means nothing is saved.
 ## 👀 Coming Into View for Staff
 
 Right after consent, admin-portal staff have visibility into what's been verified — showing 
-the captured UNHCR ID and verification status on a candidate's profile.
+the captured registration number and verification status on a candidate's profile.
 
 <!-- TODO(images): Grab a screenshot once the admin portal PR is merged.  SM -->
 
 ## 🚀 What's Next
 
-- **Availability:** Verify+ is currently available on GRN only.
-- **Beyond the UNHCR number:** today's release captures and verifies the UNHCR registration
+- **Availability:** Refugee ID card scanning is currently available on GRN only.
+- **Beyond the registration number:** today's release captures and verifies the refugee registration
   number only. Parsing and storing additional fields from the card, and photo handling, are
   both still ahead.
