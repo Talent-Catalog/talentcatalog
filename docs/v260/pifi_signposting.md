@@ -22,7 +22,7 @@ in their new country.
 ## 🏠 A New Card in the Services Tab
 
 Eligible GRN registrants see a **PiFi Property** card — *"Helping migrants find a place to
-call home in Australia"* — sitting alongside the other CASI services like UNHCR Verify+.
+call home in Australia"* — sitting alongside the other CASI services.
 Selecting it shows a short description of the service and a single button through to PiFi's
 site.
 
