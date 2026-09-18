@@ -25,7 +25,7 @@ A new **Refugee ID Scan** card in the Candidate Portal's Services tab lets a can
 refugee ID card QR code at any time. Selecting it opens the device's back camera; the code is
 decoded on-device, and the scanned payload is shown for review before anything is submitted.
 
-<div class="card-image-container">
+<div class="card-image-container-narrow">
     <img class="card-image"
          src="../assets/images/v260/RefugeeIdCardReviewScan.png"
          alt="Review scanned payload screen with Rescan and Confirm buttons"
