@@ -27,6 +27,7 @@ decoded on-device, and the scanned payload is shown for review before anything i
 
 <div class="card-image-container-narrow">
     <img class="card-image"
+         style="max-width: 434px;"
          src="../assets/images/v260/RefugeeIdCardReviewScan.png"
          alt="Review scanned payload screen with Rescan and Confirm buttons"
     >
