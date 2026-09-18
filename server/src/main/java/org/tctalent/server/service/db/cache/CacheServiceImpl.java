@@ -18,6 +18,7 @@ package org.tctalent.server.service.db.cache;
 
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
+import org.tctalent.server.repository.db.read.cache.CandidateRedisCache;
 
 /**
  * Implementation of the {@link CacheService} interface for cache management.
@@ -26,6 +27,12 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class CacheServiceImpl implements CacheService {
+
+  private final CandidateRedisCache candidateRedisCache;
+
+  public CacheServiceImpl(CandidateRedisCache candidateRedisCache) {
+    this.candidateRedisCache = candidateRedisCache;
+  }
 
   /**
    * {@inheritDoc}
@@ -38,6 +45,11 @@ public class CacheServiceImpl implements CacheService {
   @Override
   public void flushUserCache() {
     // This method will remove all entries in the "users" cache
+  }
+
+  @Override
+  public void flushCandidateCache() {
+    candidateRedisCache.clear();
   }
 
 }
