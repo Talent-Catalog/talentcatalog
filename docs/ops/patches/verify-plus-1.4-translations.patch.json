@@ -18,7 +18,17 @@
     {
       "key": "REGISTRATION.HEADER.TITLE.VERIFYPLUS",
       "values": {
-        "en": "Scan your Verify+ card (optional)"
+        "en": "Scan your Verify+ card (optional)",
+        "ar": "امسح بطاقة Verify+ (اختياري)",
+        "fa": "کارت Verify+ خود را اسکن کنید (اختیاری)",
+        "ps": "خپل Verify+ کارت سکین کړئ (اختیاري)",
+        "es": "Escanee su tarjeta Verify+ (opcional)",
+        "fr": "Scannez votre carte Verify+ (facultatif)",
+        "tr": "Verify+ kartınızı tarayın (isteğe bağlı)",
+        "ru": "Отсканируйте свою карту Verify+ (необязательно)",
+        "uk": "Відскануйте свою картку Verify+ (необов'язково)",
+        "nl": "Scan uw Verify+-kaart (optioneel)",
+        "pt": "Digitalize seu cartão Verify+ (opcional)"
       }
     },
     {
