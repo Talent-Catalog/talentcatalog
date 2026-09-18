@@ -27,8 +27,8 @@ export interface CandidateJobExperience {
   fullTime: string;
   paid: string;
   description: string;
-  tidiedDescription: string;
-  keywordsInDescription: string[];
+  tidiedDescription?: string;
+  keywordsInDescription?: string[];
   candidateOccupation?: CandidateOccupation;
 
   // RENDERING HELPERS

@@ -20,7 +20,7 @@ import {Subject} from "rxjs";
 import {takeUntil} from "rxjs/operators";
 
 /**
- * Use this directive to highlight current elastic search terms within an element's text content.
+ * Use this directive to highlight current keyword search terms within an element's text content.
  *
  * @author sadatmalik
  */
