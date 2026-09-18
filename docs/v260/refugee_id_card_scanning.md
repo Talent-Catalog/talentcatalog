@@ -78,7 +78,7 @@ decoding libraries struggle to read these QR codes reliably. Therefore GRN mobil
 built using decoders capable of handling that density, so a scan succeeds on the first realistic 
 try.
 
-<div class="card-image-container">
+<div class="card-image-container-narrow">
     <img class="card-image"
          src="../assets/images/v260/RefugeeIdCardQrSample.png"
          alt="Sample refugee ID card QR code"
