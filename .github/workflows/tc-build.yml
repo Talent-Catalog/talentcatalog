@@ -38,6 +38,13 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY_TEST }}
           aws-region: us-east-1
 
+      - name: Find TBB staging Redis
+        run: |
+          aws elasticache describe-replication-groups \
+            --region us-east-1 \
+            --query 'ReplicationGroups[].{Id:ReplicationGroupId,Status:Status,Endpoint:NodeGroups[0].PrimaryEndpoint.Address}' \
+            --output table
+          
       - name: Download DB dump from S3
         run: |
           mkdir -p server/src/test/resources
