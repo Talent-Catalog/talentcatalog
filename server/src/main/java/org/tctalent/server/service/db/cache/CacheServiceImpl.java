@@ -47,6 +47,17 @@ public class CacheServiceImpl implements CacheService {
     // This method will remove all entries in the "users" cache
   }
 
+  /**
+   * {@inheritDoc}
+   * <p>
+   * Candidate JSON is stored directly in Redis via {@link CandidateRedisCache}
+   * ({@code candidate:json:*} keys), not through Spring's cache abstraction.
+   * {@code @CacheEvict} therefore cannot be used here — it would only clear a
+   * named Spring cache and leave the candidate keys in place. This method
+   * delegates to {@link CandidateRedisCache#clear()} to SCAN and delete those
+   * keys. Postgres {@code candidate_json_cache} is left unchanged.
+   * </p>
+   */
   @Override
   public void flushCandidateCache() {
     candidateRedisCache.clear();
