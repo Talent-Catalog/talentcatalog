@@ -77,6 +77,12 @@ jobs:
       - name: Deploy to TBB with Jib
         run: ./gradlew jib -Ptest-tc-system -x test
 
+      - name: Reboot TBB staging Redis
+        uses: ./.github/actions/reboot-elasticache
+        with:
+          replication-group-id: tc-test-cache
+          region: us-east-1
+
       # --- Deploy to OPC Staging (eu-west-2) ---
 
       - name: Configure AWS credentials for OPC
@@ -96,6 +102,19 @@ jobs:
             --service tc-server-opc-staging \
             --force-new-deployment \
             --region eu-west-2
+          
+      - name: Wait for OPC staging
+        run: |
+          aws ecs wait services-stable \
+            --cluster tc-server-opc-staging \
+            --services tc-server-opc-staging \
+            --region eu-west-2
+
+      - name: Reboot OPC staging Redis
+        uses: ./.github/actions/reboot-elasticache
+        with:
+          replication-group-id: tc-test-cache
+          region: eu-west-2
 
       # --- Deploy to GRN Staging (same OPC staging account, eu-west-2) ---
       - name: Deploy to GRN Staging with Jib
@@ -108,3 +127,16 @@ jobs:
             --service grn-staging \
             --force-new-deployment \
             --region eu-west-2
+
+      - name: Wait for GRN staging
+        run: |
+          aws ecs wait services-stable \
+            --cluster grn-staging \
+            --services grn-staging \
+            --region eu-west-2
+
+      - name: Reboot GRN staging Redis
+        uses: ./.github/actions/reboot-elasticache
+        with:
+          replication-group-id: grn-staging-cache
+          region: eu-west-2

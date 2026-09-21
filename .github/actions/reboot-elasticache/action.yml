@@ -1,0 +1,62 @@
+name: Reboot ElastiCache Redis
+
+description: Reboot the primary Redis node and wait until it is available
+
+inputs:
+  replication-group-id:
+    required: true
+    description: ElastiCache replication group ID
+
+  region:
+    required: true
+    description: AWS region
+
+runs:
+  using: composite
+
+  steps:
+    - name: Reboot Redis primary
+      shell: bash
+      env:
+        REPLICATION_GROUP_ID: ${{ inputs.replication-group-id }}
+        AWS_REGION: ${{ inputs.region }}
+      run: |
+        set -euo pipefail
+
+        echo "Finding Redis primary for: $REPLICATION_GROUP_ID"
+
+        read -r PRIMARY_CLUSTER PRIMARY_NODE <<< "$( \
+          aws elasticache describe-replication-groups \
+            --replication-group-id "$REPLICATION_GROUP_ID" \
+            --region "$AWS_REGION" \
+            --query "ReplicationGroups[0].NodeGroups[0].NodeGroupMembers[?CurrentRole=='primary'].[CacheClusterId,CacheNodeId] | [0]" \
+            --output text \
+        )"
+
+        if [ -z "${PRIMARY_CLUSTER:-}" ] || [ "$PRIMARY_CLUSTER" = "None" ]; then
+          echo "::error::Could not determine Redis primary cluster"
+          exit 1
+        fi
+
+        if [ -z "${PRIMARY_NODE:-}" ] || [ "$PRIMARY_NODE" = "None" ]; then
+          echo "::error::Could not determine Redis primary node"
+          exit 1
+        fi
+
+        echo "Rebooting Redis:"
+        echo "Cluster: $PRIMARY_CLUSTER"
+        echo "Node: $PRIMARY_NODE"
+
+        aws elasticache reboot-cache-cluster \
+          --cache-cluster-id "$PRIMARY_CLUSTER" \
+          --cache-node-ids-to-reboot "$PRIMARY_NODE" \
+          --region "$AWS_REGION" \
+          >/dev/null
+
+        echo "Waiting for Redis to become available..."
+
+        aws elasticache wait cache-cluster-available \
+          --cache-cluster-id "$PRIMARY_CLUSTER" \
+          --region "$AWS_REGION"
+
+        echo "::notice::Redis reboot completed successfully: $REPLICATION_GROUP_ID"
