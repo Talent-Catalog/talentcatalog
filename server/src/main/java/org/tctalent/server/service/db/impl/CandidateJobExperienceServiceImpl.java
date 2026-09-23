@@ -134,9 +134,7 @@ public class CandidateJobExperienceServiceImpl implements CandidateJobExperience
         if (candidate == null) {
             throw new InvalidSessionException("Not logged in");
         }
-        CandidateJobExperience experience = updateCandidateJobExperience(request.getExperienceId(), request);
-
-        return experience;
+        return updateCandidateJobExperience(request.getExperienceId(), request);
     }
 
     @Override
@@ -381,8 +379,17 @@ public class CandidateJobExperienceServiceImpl implements CandidateJobExperience
         final String modelKey = model.getModelKey();
         final String tableName = embeddingModelService.getTableNameForModel(model);
 
+        //Construct the text to embed by concatenating the description, tidied description,
+        //and keywords in description.
+        String textToEmbed = experience.getDescription() == null? "" : experience.getDescription();
+        if (experience.getTidiedDescription() != null) {
+            textToEmbed += " " + experience.getTidiedDescription();
+        }
+        if (experience.getKeywordsInDescription() != null) {
+            textToEmbed += " " + String.join(" ", experience.getKeywordsInDescription());
+        }
         final EmbeddingResult result = tcVectorEmbeddingService.generateEmbedding(
-            modelKey, context, experience.getDescription(), EmbeddingInputType.DOCUMENT);
+            modelKey, context, textToEmbed, EmbeddingInputType.DOCUMENT);
 
         if (result.isSuccessful()) {
             jobExperienceEmbeddingRepository.upsert(
