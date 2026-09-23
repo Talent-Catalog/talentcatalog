@@ -8,7 +8,7 @@ caching table (`candidate_json_cache`). Those caches store all the data for a ca
 single JSON object, together with a version number which is used to detect stale data.
 
 This allows us to fetch all candidate data for a given candidate with a single cache query 
-or a single database query with no joins. 
+or a simple database query with no joins. 
 
 ## Architecture
                                                            
@@ -17,8 +17,8 @@ It is responsible for fetching the complete data for one or more candidates by t
 
 Changes to candidate-related data are detected using database triggers. 
 These can be found in Flyway starting with `V1_398__add_cached_json_support.sql`.
-That Flyway sets up a trigger on each table called `<table name>_bump_version` which updates
-the `candidate` field `data_version`.
+That Flyway sets up a trigger on each candidate-related table called `<table name>_bump_version` 
+which updates the `candidate` field `data_version`.
 
 Cached data (in Redis or in the `candidate_json_cache` table) is considered stale if its version 
 does not match the current `data_version` of the candidate.
