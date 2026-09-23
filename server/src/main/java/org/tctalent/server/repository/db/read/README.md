@@ -17,7 +17,7 @@ It is responsible for fetching the complete data for one or more candidates by t
 
 Changes to candidate-related data are detected using database triggers. 
 These can be found in Flyway starting with `V1_398__add_cached_json_support.sql`.
-That Flyway sets up a trigger on each table called <table name>_bump_version which updates
+That Flyway sets up a trigger on each table called `<table name>_bump_version` which updates
 the `candidate` field `data_version`.
 
 Cached data (in Redis or in the `candidate_json_cache` table) is considered stale if its version 
@@ -32,8 +32,9 @@ fetching all the data from the database.
 This is performed by `CandidateJsonDao.loadJsonByIds`, which in turn calls 
 `SqlJsonQueryBuilder.buildJsonQuery` which builds an SQL query that constructs a JSON
 representation of the candidate data by joining all the relevant tables and using the 
-`json_build_object` function to create a JSON object, guided by annotations such as `@SqlColumn`
-and `@JsonOneToMany` (see the code in the `annotation` subdirectory).
+`json_build_object` function to create a JSON object. 
+It is guided by annotations on the `xxxReadDto` classes, such as `@SqlColumn` and `@JsonOneToMany`
+(see the code for these in the `annotation` subdirectory).
 Then that JSON object is stored in the caches, deserialized from JSON into a `CandidateDto` object 
 and returned to the caller.
 
