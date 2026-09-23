@@ -106,7 +106,7 @@ export class CandidateJobExperienceFormComponent implements OnInit, AfterViewIni
       paid: [this.candidateJobExperience ? this.candidateJobExperience.paid : null, Validators.required],
       description: [
         this.candidateJobExperience ? this.candidateJobExperience.description : '',
-        this.textPartsDescriptionRequired
+        this.descriptionRequired
       ]
     }, {validator: this.startDateBeforeEndDate('startDate', 'endDate')});
 
@@ -179,20 +179,10 @@ export class CandidateJobExperienceFormComponent implements OnInit, AfterViewIni
     this.formClosed.emit();
   }
 
-  private textPartsDescriptionRequired(control: AbstractControl): ValidationErrors | null {
-    const value = control.value;
-    if (typeof value !== 'string' || !value.trim()) {
+  private descriptionRequired(control: AbstractControl): ValidationErrors | null {
+    const description = control.value;
+    if (typeof description !== 'string' || !description.trim()) {
       return {required: true};
-    }
-
-    let description = value;
-    try {
-      const parsed = JSON.parse(value);
-      if (typeof parsed?.parts?.original === 'string') {
-        description = parsed.parts.original;
-      }
-    } catch {
-      // Legacy plain text descriptions are valid input, so validate the raw value.
     }
 
     const visibleText = description

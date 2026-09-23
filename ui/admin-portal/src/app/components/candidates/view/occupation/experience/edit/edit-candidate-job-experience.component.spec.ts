@@ -29,9 +29,6 @@ import {NO_ERRORS_SCHEMA} from "@angular/core";
 import {of, throwError} from "rxjs";
 import {MockJob} from "../../../../../../MockData/MockJob";
 import {MockCandidate} from "../../../../../../MockData/MockCandidate";
-import {
-  TextPartsInputComponent
-} from "../../../../../util/text-parts-input/text-parts-input.component";
 
 describe('EditCandidateJobExperienceComponent', () => {
   let component: EditCandidateJobExperienceComponent;
@@ -49,7 +46,7 @@ describe('EditCandidateJobExperienceComponent', () => {
     await TestBed.configureTestingModule({
       declarations: [EditCandidateJobExperienceComponent],
       imports: [HttpClientTestingModule,FormsModule,ReactiveFormsModule, NgSelectModule,
-        NgxWigModule,TextPartsInputComponent],
+        NgxWigModule],
       providers: [
         UntypedFormBuilder,
         { provide: CandidateJobExperienceService, useValue: candidateJobExperienceServiceSpy },
@@ -89,7 +86,9 @@ describe('EditCandidateJobExperienceComponent', () => {
       endDate: component.candidateJobExperience.endDate,
       fullTime: component.candidateJobExperience.fullTime,
       paid: component.candidateJobExperience.paid,
-      description: component.candidateJobExperience.description
+      description: component.candidateJobExperience.description,
+      tidiedDescription: null,
+      keywordsInDescription: null
     });
   });
 
@@ -104,7 +103,8 @@ describe('EditCandidateJobExperienceComponent', () => {
     component.onSave();
 
     expect(component.saving).toBe(false);
-    expect(mockCandidateJobExperienceService.update).toHaveBeenCalledWith(component.candidateJobExperience.id, component.candidateForm.value);
+    expect(mockCandidateJobExperienceService.update).
+    toHaveBeenCalledWith(component.candidateJobExperience.id, component.candidateForm.value);
     expect(mockActiveModal.close).toHaveBeenCalledWith(updatedJobExperience);
   });
 

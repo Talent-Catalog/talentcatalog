@@ -223,13 +223,9 @@ describe('ViewCandidateJobExperienceComponent', () => {
   it('should edit experience, extract skills and refresh after success', fakeAsync(() => {
     const experience = {
       id: 5,
-      description: JSON.stringify({
-        parts: {
-          original: 'Original text',
-          tidied: 'Tidied text',
-          keywords: ['Java', 'Spring']
-        }
-      })
+      description: 'Original text',
+      tidiedDescription: 'Tidied text',
+      keywordsInDescription: ['Java', 'Spring']
     } as any;
 
     const modalRef = {
@@ -275,13 +271,9 @@ describe('ViewCandidateJobExperienceComponent', () => {
   it('should ignore edit experience modal dismissal', fakeAsync(() => {
     const experience = {
       id: 5,
-      description: JSON.stringify({
-        parts: {
-          original: '',
-          tidied: '',
-          keywords: []
-        }
-      })
+      description: '',
+      tidiedDescription: '',
+      keywordsInDescription: []
     } as any;
 
     const modalRef = {

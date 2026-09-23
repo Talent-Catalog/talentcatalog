@@ -74,7 +74,7 @@ export class EditCandidateJobExperienceComponent implements OnInit {
     );
 
     //Convert the keywordsInDescription array into a comma-separated string for display in the form.
-    let keywordsAsCsv = '';
+    let keywordsAsCsv = null;
     if (this.candidateJobExperience.keywordsInDescription && Array.isArray(this.candidateJobExperience.keywordsInDescription)) {
       keywordsAsCsv = this.candidateJobExperience.keywordsInDescription.join(', ');
     }
@@ -98,7 +98,7 @@ export class EditCandidateJobExperienceComponent implements OnInit {
     //Populate an UpdateCandidateJobExperienceRequest object with the form values and send it to the backend.
     const updateRequest = { ...this.candidateForm.value };
     //Convert keywords into an array of strings. Currently, it is a csv string.
-    if (typeof updateRequest.keywordsInDescription === 'string') {
+    if (updateRequest.keywordsInDescription && typeof updateRequest.keywordsInDescription === 'string') {
       updateRequest.keywordsInDescription = (updateRequest.keywordsInDescription as string)
       .split(',').map((s: string) => s.trim());
     }
