@@ -73,6 +73,11 @@ export class EditCandidateJobExperienceComponent implements OnInit {
       }
     );
 
+    //Convert the keywordsInDescription array into a comma-separated string for display in the form.
+    let keywordsAsCsv = '';
+    if (this.candidateJobExperience.keywordsInDescription && Array.isArray(this.candidateJobExperience.keywordsInDescription)) {
+      keywordsAsCsv = this.candidateJobExperience.keywordsInDescription.join(', ');
+    }
     this.candidateForm = this.fb.group({
       countryId: [this.candidateJobExperience.country ? this.candidateJobExperience.country.id : null, Validators.required],
       companyName: [this.candidateJobExperience.companyName],
@@ -83,14 +88,21 @@ export class EditCandidateJobExperienceComponent implements OnInit {
       paid: [this.candidateJobExperience.paid],
       description: [this.candidateJobExperience.description],
       tidiedDescription: [this.candidateJobExperience.tidiedDescription],
-      keywordsInDescription: [this.candidateJobExperience.keywordsInDescription],
+      keywordsInDescription: [keywordsAsCsv],
     });
     this.loading = false;
   }
 
   onSave() {
     this.saving = true;
-    this.candidateJobExperienceService.update(this.candidateJobExperience.id, this.candidateForm.value).subscribe(
+    //Populate an UpdateCandidateJobExperienceRequest object with the form values and send it to the backend.
+    const updateRequest = { ...this.candidateForm.value };
+    //Convert keywords into an array of strings. Currently, it is a csv string.
+    if (typeof updateRequest.keywordsInDescription === 'string') {
+      updateRequest.keywordsInDescription = (updateRequest.keywordsInDescription as string)
+      .split(',').map((s: string) => s.trim());
+    }
+    this.candidateJobExperienceService.update(this.candidateJobExperience.id, updateRequest).subscribe(
       (candidateJobExperience) => {
         this.closeModal(candidateJobExperience);
         this.saving = false;

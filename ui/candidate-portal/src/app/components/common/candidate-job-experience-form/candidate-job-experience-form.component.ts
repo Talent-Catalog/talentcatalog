@@ -147,6 +147,7 @@ export class CandidateJobExperienceFormComponent implements OnInit, AfterViewIni
 
   save() {
     this.saving = true;
+    //Note that candidate portal does not keywordsInDescription, tidiedDescription
     if (this.form.value.experienceId) {
       this.jobExperienceService.updateJobExperience(this.form.value).subscribe(
         (response) => this.emitSaveEvent(response),
