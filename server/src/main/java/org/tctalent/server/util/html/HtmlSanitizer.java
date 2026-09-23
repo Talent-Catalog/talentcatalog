@@ -19,11 +19,8 @@ package org.tctalent.server.util.html;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.safety.Safelist;
-import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
-import org.tctalent.server.util.text.TextParts;
-import org.tctalent.server.util.text.TextPartsCodec;
 
 /**
  * <a href="https://jsoup.org/">Jsoup</a> implementation of HTML Sanitization
@@ -38,48 +35,23 @@ public class HtmlSanitizer {
      * scripting (XSS) attack
      * Ref: <a href="https://owasp.org/www-community/attacks/xss/">OWASP website</a>
      *
-     * @param htmlOrTextPartsJson an untrusted string that could be HTML or a JSON encoded
-     *                            TextParts object containing HTML.
+     * @param html an untrusted string that could be HTML.
      * @return a string with any potential Cross Site Scripting tags removed, null if the input
      * string was null.
      */
     @Nullable
-    public static String sanitize(@Nullable String htmlOrTextPartsJson) {
-        if (htmlOrTextPartsJson == null) {
+    public static String sanitize(@Nullable String html) {
+        if (html == null) {
             return null;
         }
 
-        //Check for a JSON encoded TextParts object. Try reading it as Json.
-        try {
-            TextParts parts = TextPartsCodec.readJson(htmlOrTextPartsJson);
-            // If the HTML is a valid JSON-encoded TextParts object, return its original text.
-            return TextPartsCodec.write(sanitizeTextParts(parts));
-        } catch (IllegalArgumentException e) {
-            // If the HTML is not a valid JSON-encoded TextParts object,
-            // just sanitize it as a regular HTML string.
-            return StringSanitizer.removeControlCharacters(
-                JSoupCleanNotPretty(htmlOrTextPartsJson, Safelist.relaxed()));
-        }
+        return StringSanitizer.removeControlCharacters(
+            JSoupCleanNotPretty(html, Safelist.relaxed()));
     }
 
     /**
-     * Sanitizes the original and tidied text in the given TextParts object.
-     * @param textParts a TextParts object containing original and tidied text to be sanitized.
-     * @return a new TextParts object with the original and tidied text sanitized,
-     * but with the same keywords as the input.
-     */
-    @NonNull
-    private static TextParts sanitizeTextParts(@NonNull TextParts textParts) {
-        TextParts sanitized = new TextParts();
-        sanitized.setOriginal(sanitize(textParts.getOriginal()));
-        sanitized.setTidied(sanitize(textParts.getTidied()));
-        sanitized.setKeywords(textParts.getKeywords());
-        return sanitized;
-    }
-
-    /**
-     * Similar to the sanitize method above except that it does not process TextParts json.
-     * It is only intended for use sanitizing text in Chat posts.
+     * Similar to the sanitize method above except that it is only intended for use sanitizing
+     * text in Chat posts.
      * <p>
      * It does not strip <a> tags of 'target=' or 'rel=' to allow links to open in a new tab.
      * As adding this target attribute back can open up a site to risks, also adding the attribute
