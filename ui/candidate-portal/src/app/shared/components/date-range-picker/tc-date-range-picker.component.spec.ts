@@ -14,13 +14,13 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {NO_ERRORS_SCHEMA} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {NgbDate, NgbDatepickerModule} from '@ng-bootstrap/ng-bootstrap';
 import {of} from 'rxjs';
 
 import {LanguageService} from '../../../services/language.service';
 import {TcDateRangePickerComponent} from './tc-date-range-picker.component';
+import {RouterTestingModule} from "@angular/router/testing";
 
 describe('TcDateRangePickerComponent', () => {
   let component: TcDateRangePickerComponent;
@@ -39,20 +39,16 @@ describe('TcDateRangePickerComponent', () => {
     .and.returnValue(of(null));
 
     TestBed.configureTestingModule({
-      declarations: [
-        TcDateRangePickerComponent
-      ],
       imports: [
-        NgbDatepickerModule
+        TcDateRangePickerComponent,
+        NgbDatepickerModule,
+        RouterTestingModule
       ],
       providers: [
         {
           provide: LanguageService,
           useValue: languageServiceSpy
         }
-      ],
-      schemas: [
-        NO_ERRORS_SCHEMA
       ]
     });
 

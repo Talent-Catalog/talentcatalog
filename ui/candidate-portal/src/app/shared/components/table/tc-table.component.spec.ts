@@ -8,7 +8,7 @@ describe('TcTableComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [TcTableComponent]
+      imports: [TcTableComponent]
     });
     fixture = TestBed.createComponent(TcTableComponent);
     component = fixture.componentInstance;

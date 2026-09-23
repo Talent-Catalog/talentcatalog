@@ -15,18 +15,6 @@
  */
 
 import {NgModule} from '@angular/core';
-import {CommonModule} from '@angular/common';
-import {RouterLink} from '@angular/router';
-import {FormsModule, ReactiveFormsModule} from '@angular/forms';
-
-import {
-  NgbAlert,
-  NgbDropdownModule,
-  NgbInputDatepicker,
-  NgbNavModule,
-  NgbPaginationModule,
-  NgbTypeahead
-} from '@ng-bootstrap/ng-bootstrap';
 
 import {ButtonComponent} from './components/button/button.component';
 
@@ -90,7 +78,7 @@ import {
 } from './components/date-range-picker/tc-date-range-picker.component';
 
 @NgModule({
-  declarations: [
+  imports: [
     ButtonComponent,
 
     TcTableComponent,
@@ -137,22 +125,6 @@ import {
     TcRadioComponent,
     TcDatePickerComponent,
     TcDateRangePickerComponent
-  ],
-  imports: [
-    CommonModule,
-    RouterLink,
-
-    // forms
-    ReactiveFormsModule,
-    FormsModule,
-
-    // ng-bootstrap
-    NgbPaginationModule,
-    NgbNavModule,
-    NgbAlert,
-    NgbDropdownModule,
-    NgbInputDatepicker,
-    NgbTypeahead
   ],
   exports: [
     ButtonComponent,

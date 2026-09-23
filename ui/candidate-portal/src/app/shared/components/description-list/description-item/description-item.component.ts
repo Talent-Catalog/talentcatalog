@@ -1,4 +1,5 @@
 import {Component, Input} from '@angular/core';
+import {CommonModule} from '@angular/common';
 
 /**
  * @component DescriptionItemComponent
@@ -34,7 +35,9 @@ import {Component, Input} from '@angular/core';
 @Component({
   selector: 'tc-description-item',
   templateUrl: './description-item.component.html',
-  styleUrls: ['./description-item.component.scss']
+  styleUrls: ['./description-item.component.scss'],
+  standalone: true,
+  imports: [CommonModule]
 })
 export class DescriptionItemComponent {
   @Input() label!: string;

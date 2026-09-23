@@ -76,6 +76,7 @@ import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
   selector: 'tc-textarea',
   templateUrl: './textarea.component.html',
   styleUrls: ['./textarea.component.scss'],
+  standalone: true,
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,

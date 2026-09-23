@@ -30,6 +30,7 @@ import {ControlValueAccessor, NG_VALUE_ACCESSOR} from "@angular/forms";
 @Component({
   selector: 'tc-radio',
   templateUrl: './tc-radio.component.html',
+  standalone: true,
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,

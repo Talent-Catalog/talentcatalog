@@ -1,4 +1,5 @@
 import {Component, Input} from '@angular/core';
+import {ButtonComponent} from "../../button/button.component";
 
 /**
  * @component TcDropdownButtonComponent
@@ -53,7 +54,9 @@ import {Component, Input} from '@angular/core';
 @Component({
   selector: 'tc-dropdown-button',
   templateUrl: './tc-dropdown-button.component.html',
-  styleUrls: ['./tc-dropdown-button.component.scss']
+  styleUrls: ['./tc-dropdown-button.component.scss'],
+  standalone: true,
+  imports: [ButtonComponent]
 })
 export class TcDropdownButtonComponent {
   @Input() type: 'solid' | 'outline' | 'plain' = 'plain';

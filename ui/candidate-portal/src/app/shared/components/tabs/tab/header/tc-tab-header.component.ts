@@ -47,7 +47,9 @@ import {Component, TemplateRef, ViewChild} from '@angular/core';
 @Component({
   selector: 'tc-tab-header',
   templateUrl: './tc-tab-header.component.html',
-  styleUrls: ['./tc-tab-header.component.scss']
+  styleUrls: ['./tc-tab-header.component.scss'],
+  standalone: true,
+  imports: []
 })
 export class TcTabHeaderComponent {
   @ViewChild(TemplateRef, { static: true }) template!: TemplateRef<any>;

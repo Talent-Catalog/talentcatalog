@@ -36,7 +36,9 @@ import {TcTabContentComponent} from "./content/tc-tab-content.component";
 @Component({
   selector: 'tc-tab',
   templateUrl: './tc-tab.component.html',
-  styleUrls: ['./tc-tab.component.scss']
+  styleUrls: ['./tc-tab.component.scss'],
+  standalone: true,
+  imports: []
 })
 export class TcTabComponent implements AfterContentInit {
   @Input() id: string;

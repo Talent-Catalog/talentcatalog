@@ -8,7 +8,7 @@ describe('TcTabHeaderComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [TcTabHeaderComponent]
+      imports: [TcTabHeaderComponent]
     });
     fixture = TestBed.createComponent(TcTabHeaderComponent);
     component = fixture.componentInstance;

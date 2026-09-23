@@ -9,7 +9,7 @@ describe('TcAccordionItemComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [TcAccordionItemComponent],
+      imports: [TcAccordionItemComponent],
       providers: [
         {
           provide: TcAccordionComponent,

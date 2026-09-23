@@ -8,7 +8,7 @@ describe('TcDropdownDividerComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [TcDropdownDividerComponent]
+      imports: [TcDropdownDividerComponent]
     });
     fixture = TestBed.createComponent(TcDropdownDividerComponent);
     component = fixture.componentInstance;

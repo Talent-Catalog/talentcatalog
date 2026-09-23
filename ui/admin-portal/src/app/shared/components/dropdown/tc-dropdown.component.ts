@@ -1,5 +1,6 @@
 import {Component, Input} from '@angular/core';
-import {Placement} from '@ng-bootstrap/ng-bootstrap';
+import {CommonModule} from '@angular/common';
+import {NgbDropdown, NgbDropdownMenu, NgbDropdownToggle, Placement} from '@ng-bootstrap/ng-bootstrap';
 
 /**
  * @component TcDropdownComponent
@@ -48,6 +49,8 @@ import {Placement} from '@ng-bootstrap/ng-bootstrap';
   selector: 'tc-dropdown',
   templateUrl: './tc-dropdown.component.html',
   styleUrls: ['./tc-dropdown.component.scss'],
+  standalone: true,
+  imports: [CommonModule, NgbDropdown, NgbDropdownToggle, NgbDropdownMenu]
 })
 export class TcDropdownComponent {
   @Input() placement: Placement = 'bottom-start';

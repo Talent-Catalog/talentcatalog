@@ -14,6 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {RouterTestingModule} from "@angular/router/testing";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {VisaJobCheckCaComponent} from "./visa-job-check-ca.component";
@@ -94,15 +95,16 @@ describe('VisaJobCheckCaComponent', () => {
     const occupationSpy = jasmine.createSpyObj('CandidateOccupationService', ['get']);
     await TestBed.configureTestingModule({
       imports: [HttpClientTestingModule,FormsModule,ReactiveFormsModule,
-        NgSelectModule],
+        NgSelectModule,RouterTestingModule,
+        TcAccordionComponent,
+        TcAccordionItemComponent
+      ],
       declarations: [ VisaJobCheckCaComponent,DependantsComponent,VisaJobNotesComponent,FixedInputComponent,
         RelocatingDependantsComponent,JobEligibilityAssessmentComponent,JobInterestComponent,
         AgeRequirementComponent,RelevantWorkExpComponent,IneligiblePathwaysComponent,PreferredPathwaysComponent,
         EligiblePathwaysComponent,OccupationCategoryComponent,OccupationSubcategoryComponent
         ,AutosaveStatusComponent,VisaJobPutForwardComponent,QualificationRelevantComponent,
-        LanguageThresholdComponent,
-        TcAccordionComponent,
-        TcAccordionItemComponent
+        LanguageThresholdComponent
       ],
       providers: [
         { provide: CandidateEducationService, useValue: educationSpy },

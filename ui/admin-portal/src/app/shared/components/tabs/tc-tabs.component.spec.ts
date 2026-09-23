@@ -34,7 +34,8 @@ describe('TcTabsComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [TcTabsComponent, TcTabComponent, TcTabHeaderComponent, TcTabContentComponent, TestHostComponent],
+      declarations: [TestHostComponent],
+      imports: [TcTabsComponent, TcTabComponent, TcTabHeaderComponent, TcTabContentComponent],
     }).compileComponents();
 
     fixture = TestBed.createComponent(TestHostComponent);

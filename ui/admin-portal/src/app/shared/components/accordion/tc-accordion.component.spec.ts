@@ -1,4 +1,5 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {RouterTestingModule} from '@angular/router/testing';
 
 import {TcAccordionComponent} from './tc-accordion.component';
 
@@ -8,7 +9,7 @@ describe('TcAccordionComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [TcAccordionComponent]
+      imports: [TcAccordionComponent, RouterTestingModule]
     });
     fixture = TestBed.createComponent(TcAccordionComponent);
     component = fixture.componentInstance;
