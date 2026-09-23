@@ -54,8 +54,6 @@ import org.tctalent.server.service.embedding.dto.EmbeddingInputType;
 import org.tctalent.server.service.embedding.dto.EmbeddingResult;
 import org.tctalent.server.service.embedding.dto.EmbeddingsResponse;
 import org.tctalent.server.util.background.PageProcessReturn;
-import org.tctalent.server.util.text.TextParts;
-import org.tctalent.server.util.text.TextPartsCodec;
 
 @Service
 @RequiredArgsConstructor
@@ -115,7 +113,10 @@ public class CandidateJobExperienceServiceImpl implements CandidateJobExperience
         candidateJobExperience.setEndDate(request.getEndDate());
         candidateJobExperience.setFullTime(request.getFullTime());
         candidateJobExperience.setPaid(request.getPaid());
-        updateJobExperienceDescription(candidateJobExperience, request.getDescription());
+
+        candidateJobExperience.setDescription(request.getDescription());
+        candidateJobExperience.setTidiedDescription(request.getTidiedDescription());
+        updateJobExperienceKeywords(candidateJobExperience, request.getKeywordsInDescription());
 
         // Save the candidateOccupation
         final CandidateJobExperience jobExperience =
@@ -133,17 +134,17 @@ public class CandidateJobExperienceServiceImpl implements CandidateJobExperience
         if (candidate == null) {
             throw new InvalidSessionException("Not logged in");
         }
-        CandidateJobExperience experience = updateCandidateJobExperience(request.getId(), request);
+        CandidateJobExperience experience = updateCandidateJobExperience(request.getExperienceId(), request);
 
         return experience;
     }
 
     @Override
-    public CandidateJobExperience updateCandidateJobExperience(Long id, UpdateJobExperienceRequest request) {
+    public CandidateJobExperience updateCandidateJobExperience(Long experienceId, UpdateJobExperienceRequest request) {
         // Load the candidate from the database - throw an exception if not found
         CandidateJobExperience candidateJobExperience = candidateJobExperienceRepository
-                .findByIdLoadCandidateOccupation(id)
-                .orElseThrow(() -> new NoSuchObjectException(CandidateJobExperience.class, id));
+                .findByIdLoadCandidateOccupation(experienceId)
+                .orElseThrow(() -> new NoSuchObjectException(CandidateJobExperience.class, experienceId));
 
         Country country = getCountry(request.getCountryId());
 
@@ -165,7 +166,9 @@ public class CandidateJobExperienceServiceImpl implements CandidateJobExperience
         candidateJobExperience.setEndDate(request.getEndDate());
         candidateJobExperience.setFullTime(request.getFullTime());
         candidateJobExperience.setPaid(request.getPaid());
-        updateJobExperienceDescription(candidateJobExperience, request.getDescription());
+        candidateJobExperience.setDescription(request.getDescription());
+        candidateJobExperience.setTidiedDescription(request.getTidiedDescription());
+        updateJobExperienceKeywords(candidateJobExperience, request.getKeywordsInDescription());
         candidateJobExperience.setCandidateOccupation(candidateOccupation);
 
         // Save the candidate experience
@@ -302,21 +305,16 @@ public class CandidateJobExperienceServiceImpl implements CandidateJobExperience
     }
 
     /**
-     * Updates the description of a CandidateJobExperience object.
-     * <p>
-     * It also checks for any additional keywords that have been specified that may need to be
-     * stored as new skills.
+     * Updates the keywords of a CandidateJobExperience and adds any new skills to the database.
      * @param candidateJobExperience Job experience to update
-     * @param description New description
+     * @param keywordsInDescription Keywords user highlighted in description
      */
-    private void updateJobExperienceDescription(
-        CandidateJobExperience candidateJobExperience, String description) {
-        //Extract any keywords.
-        TextParts textParts = TextPartsCodec.read(description);
-        final List<String> keywords = textParts.getKeywords();
+    private void updateJobExperienceKeywords(
+        CandidateJobExperience candidateJobExperience, List<String> keywordsInDescription) {
+
         //Add any new skills to the database.
-        skillsService.addTcSkillsIfNew(keywords, "en");
-        candidateJobExperience.setDescription(description);
+        skillsService.addTcSkillsIfNew(keywordsInDescription, "en");
+        candidateJobExperience.setKeywordsInDescription(keywordsInDescription);
     }
 
     @Override

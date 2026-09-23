@@ -65,5 +65,5 @@ public interface CandidateJobExperienceService {
 
     CandidateJobExperience updateCandidateJobExperience(UpdateJobExperienceRequest request);
 
-    CandidateJobExperience updateCandidateJobExperience(Long candidateId, UpdateJobExperienceRequest request);
+    CandidateJobExperience updateCandidateJobExperience(Long experienceId, UpdateJobExperienceRequest request);
 }

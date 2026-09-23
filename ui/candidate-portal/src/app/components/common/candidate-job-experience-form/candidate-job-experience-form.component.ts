@@ -95,7 +95,7 @@ export class CandidateJobExperienceFormComponent implements OnInit, AfterViewIni
       });
 
     this.form = this.fb.group({
-      id: [this.candidateJobExperience ? this.candidateJobExperience.id : null],
+      experienceId: [this.candidateJobExperience ? this.candidateJobExperience.id : null],
       companyName: [this.candidateJobExperience ? this.candidateJobExperience.companyName : '', Validators.required],
       country: [this.candidateJobExperience ? this.candidateJobExperience.countryId : null, Validators.required],
       candidateOccupationId: [this.candidateJobExperience ? this.candidateJobExperience.candidateOccupationId : '', Validators.required],

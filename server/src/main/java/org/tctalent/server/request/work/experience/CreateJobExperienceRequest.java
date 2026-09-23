@@ -19,6 +19,7 @@ package org.tctalent.server.request.work.experience;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
+import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
 import org.tctalent.server.util.html.HtmlSanitizer;
@@ -49,11 +50,18 @@ public class CreateJobExperienceRequest {
     @NotBlank
     private String description;
 
+    private String tidiedDescription;
+    private List<String> keywordsInDescription;
+
     public void setCountry(Long countryId) {
         this.countryId = countryId;
     }
 
-    public void setDescription(String description) {
-        this.description = HtmlSanitizer.sanitize(description);
+    public String getDescription() {
+        return HtmlSanitizer.sanitize(description);
+    }
+
+    public String getTidiedDescription() {
+        return HtmlSanitizer.sanitize(tidiedDescription);
     }
 }
