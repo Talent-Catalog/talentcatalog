@@ -66,7 +66,7 @@ describe('ShowCandidatesComponent', () => {
   let formBuilder: UntypedFormBuilder;
 
   // Mock services
-  const mockCandidateService = jasmine.createSpyObj('CandidateService', ['searchOrMatch', 'findByCandidateNumberOrName', 'downloadCv', 'createUpdateOppsFromCandidates', 'createUpdateOppsFromCandidateList', 'updateStatus', 'resolveOutstandingTasks', 'export']);
+  const mockCandidateService = jasmine.createSpyObj('CandidateService', ['searchOrMatch', 'findByCandidateNumberOrName', 'downloadCv', 'createUpdateOppsFromCandidates', 'createUpdateOppsFromCandidateList', 'updateStatus', 'resolveOutstandingTasks']);
   const mockCandidateSourceService = jasmine.createSpyObj('CandidateSourceService', ['copy', 'starSourceForUser', 'unstarSourceForUser']);
   const mockSavedSearchService = jasmine.createSpyObj('SavedSearchService', ['clearSelection', 'selectCandidate', 'getSelectionCount', 'updateSelectedStatuses', 'getSavedSearchTypeInfos', 'addWatcher', 'removeWatcher', 'saveSelection']);
   const mockSavedListService = jasmine.createSpyObj('SavedListService', ['publish', 'importEmployerFeedback', 'createFolder', 'get']);
@@ -1786,83 +1786,4 @@ describe('ShowCandidatesComponent', () => {
       expect(window.open).toHaveBeenCalledWith('/candidate/12345', '_blank');
     });
   });
-
-  it('should export current unsaved filters for a saved search', fakeAsync(() => {
-    const mockBlob = new Blob(['test'], {type: 'text/csv'});
-
-    mockCandidateService.export.calls.reset();
-    mockCandidateSourceCandidateService.export.calls.reset();
-
-    component.candidateSource = new MockSavedSearch();
-    component.results = {
-      totalElements: 2
-    } as SearchResults<Candidate>;
-
-    component.searchRequest = {
-      savedSearchId: 1,
-      countryIds: [10],
-      nationalityIds: [20],
-      occupationIds: [30],
-      statuses: ['active'],
-      gender: 'female'
-    } as any;
-
-    mockCandidateService.export.and.returnValue(of(mockBlob));
-
-    const downloadSpy = spyOn(component, 'createAndDownloadBlobFile');
-
-    component.exportCandidates();
-    tick();
-
-    expect(mockCandidateService.export)
-    .toHaveBeenCalled();
-
-    const request = mockCandidateService.export.calls.mostRecent().args[0];
-
-    expect(request.countryIds).toEqual([10]);
-    expect(request.nationalityIds).toEqual([20]);
-    expect(request.occupationIds).toEqual([30]);
-    expect(request.statuses).toEqual(['active']);
-    expect(request.gender).toBe('female');
-
-    expect(mockCandidateSourceCandidateService.export)
-    .not.toHaveBeenCalled();
-
-    expect(downloadSpy).toHaveBeenCalled();
-
-    const downloadArgs = downloadSpy.calls.mostRecent().args;
-
-    expect(downloadArgs[0]).toBe(mockBlob);
-    expect(downloadArgs[1]).toEqual({type: 'text/csv;charset=utf-8;'});
-    expect(downloadArgs[2]).toBe('candidates.csv');
-  }));
-
-  it('should use existing export for saved search without unsaved filter changes', fakeAsync(() => {
-    const mockBlob = new Blob(['test'], {type: 'text/csv'});
-
-    mockCandidateService.export.calls.reset();
-    mockCandidateSourceCandidateService.export.calls.reset();
-
-    component.candidateSource = new MockSavedSearch();
-    component.results = {
-      totalElements: 2
-    } as SearchResults<Candidate>;
-
-    component.searchRequest = null;
-
-    mockCandidateSourceCandidateService.export.and.returnValue(of(mockBlob));
-
-    const downloadSpy = spyOn(component, 'createAndDownloadBlobFile');
-
-    component.exportCandidates();
-    tick();
-
-    expect(mockCandidateService.export)
-    .not.toHaveBeenCalled();
-
-    expect(mockCandidateSourceCandidateService.export)
-    .toHaveBeenCalled();
-
-    expect(downloadSpy).toHaveBeenCalled();
-  }));
 });

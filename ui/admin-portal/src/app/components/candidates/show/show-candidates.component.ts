@@ -649,17 +649,13 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
       throw new Error(csvError)
     }
     this.exporting = true;
-    let export$;
+
     //Create the appropriate request
     let request;
     let reviewable = false;
     if (isSavedSearch(this.candidateSource)) {
       reviewable = this.candidateSource.reviewable;
-      if (this.searchRequest) {
-        request = {...this.searchRequest};
-      } else {
-        request = new SavedSearchGetRequest();
-      }
+      request = new SavedSearchGetRequest();
     } else {
       request = new SavedListGetRequest();
     }
@@ -672,13 +668,7 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
       request.reviewStatusFilter = this.reviewStatusFilter;
     }
 
-    if (isSavedSearch(this.candidateSource) && this.searchRequest) {
-      export$ = this.candidateService.export(request);
-    } else {
-      export$ = this.candidateSourceCandidateService.export(this.candidateSource, request);
-    }
-
-    export$.subscribe(
+    this.candidateSourceCandidateService.export(this.candidateSource, request).subscribe(
       result => {
         const options = {type: 'text/csv;charset=utf-8;'};
         const filename = 'candidates.csv';
