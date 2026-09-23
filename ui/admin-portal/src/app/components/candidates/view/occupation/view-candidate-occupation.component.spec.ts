@@ -38,7 +38,7 @@ describe('ViewCandidateOccupationComponent', () => {
   const mockCandidate = new MockCandidate();
   beforeEach(waitForAsync(() => {
     mockModalService = jasmine.createSpyObj('NgbModal', ['open']);
-    mockCandidateService = jasmine.createSpyObj('CandidateService', ['get']);
+    mockCandidateService = jasmine.createSpyObj('CandidateService', ['get', 'updateCandidate']);
     mockCandidateOccupationService = jasmine.createSpyObj('CandidateOccupationService', ['get']);
     mockCandidateJobExperienceService = jasmine.createSpyObj('CandidateJobExperienceService', ['search']);
 
@@ -80,4 +80,19 @@ describe('ViewCandidateOccupationComponent', () => {
     expect(component.orderOccupation).toBe(true);
     expect(component.experiences).toEqual(component.candidate.candidateJobExperiences);
   });
+
+  afterEach(() => {
+    // mockCandidate is a single shared instance across all tests in this file;
+    // reset any principalOccupation mutation so later tests aren't affected by test order.
+    (mockCandidate as any).principalOccupation = undefined;
+  });
+
+  it('should identify the principal occupation', () => {
+    const occupation = component.candidate.candidateOccupations[0];
+    component.candidate.principalOccupation = occupation;
+
+    expect(component.isPrincipal(occupation)).toBeTrue();
+    expect(component.isPrincipal({id: occupation.id + 1} as any)).toBeFalse();
+  });
+
 });

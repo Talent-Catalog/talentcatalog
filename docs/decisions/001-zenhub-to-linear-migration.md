@@ -90,23 +90,38 @@ ZenHub's sprint and velocity tracking has not been a strong feature of the tool 
 
 ## Decision 4: Workspace and Team Structure
 
-**Status:** Decided
+**Status:** Review
 
 ### Context
 
 Linear is organised as a workspace containing one or more teams. Each team has its own issue ID prefix (e.g. `TC-123`), workflow states, and cycles. The choice affects how product planning, roadmaps, and reporting are scoped.
+
+Teams also affect issue synchronization with GitHub. When two way sync is configured 
+(meaning that Linear issues automatically create matching GitHub issues) a GitHub repository 
+has to be chosen as the location for automatically created issues. This is configured in the Team.
+To avoid ambiguity, each Team can only have one GitHub repository nominated for two way sync.
 
 ### Options
 
 **Option A — Single team**  
 One workspace, one team (`Talent Catalog`). All issues share a single prefix. Simpler day-to-day; product planning is scoped across the whole project.
 
+Option A is not compatible with decision 1: the decision that all Linear issues are reflected in
+GitHub using 2 way sync. A single team means that all Linear issues are reflected in 
+the same GitHub repository.
+Conversely, a GitHub issue in a different repository would not be reflected in Linear.
+Issues in Linear should be reflected in GitHub in the appropriate repository.
+
 **Option B — Multiple teams**  
 One workspace, multiple teams (e.g. `Backend`, `Frontend`, `Platform`). Each team has its own prefix, cycles, and roadmap. Allows independent planning per stream at the cost of added structural complexity.
+
+Projects can be used to group issues in Linear that involve multiple repositories.
 
 ### Decision
 
 Start with Option A. Split into multiple teams later if product management identifies a clear need to plan streams independently.
+
+This decision is incompatible with Decision 1 and needs to be reviewed.
 
 ---
 

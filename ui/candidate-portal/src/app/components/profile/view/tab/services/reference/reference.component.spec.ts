@@ -1,9 +1,16 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {of, throwError} from 'rxjs';
-import {NO_ERRORS_SCHEMA} from "@angular/core";
+import {NO_ERRORS_SCHEMA, Pipe, PipeTransform} from "@angular/core";
 import {ReferenceComponent} from './reference.component';
 import {CasiPortalService} from "../../../../../../services/casi-portal.service";
 import {ResourceStatus} from "../../../../../../model/services";
+
+@Pipe({name: 'translate'})
+class MockTranslatePipe implements PipeTransform {
+  transform(value: string): string {
+    return value;
+  }
+}
 
 describe('ReferenceComponent', () => {
   let component: ReferenceComponent;
@@ -29,7 +36,7 @@ describe('ReferenceComponent', () => {
     mockPortalService.updateResourceStatus.and.returnValue(of(void 0));
 
     await TestBed.configureTestingModule({
-      declarations: [ReferenceComponent],
+      declarations: [ReferenceComponent, MockTranslatePipe],
       providers: [{provide: CasiPortalService, useValue: mockPortalService}],
       schemas: [NO_ERRORS_SCHEMA]
     }).compileComponents();

@@ -15,6 +15,7 @@
  */
 
 import {Component, Input, OnInit} from '@angular/core';
+import {DatePipe} from "@angular/common";
 import {Candidate} from "../../../../model/candidate";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {EditCandidateRegistrationComponent} from "./edit/edit-candidate-registration.component";
@@ -36,10 +37,22 @@ export class ViewCandidateRegistrationComponent implements OnInit {
   error;
 
   constructor(private modalService: NgbModal,
-              private candidateService: CandidateService) { }
+              private candidateService: CandidateService,
+              private datePipe: DatePipe) { }
 
   ngOnInit() {
 
+  }
+
+  get verifyPlusScanTooltip(): string {
+    const scannedAt = this.candidate?.verifyPlusConsentedAt;
+    if (!scannedAt) {
+      return 'Verify+ card scan date unavailable';
+    }
+    const formatted = this.datePipe.transform(scannedAt, 'yyyy-MM-dd, h:mm:ss a');
+    return formatted
+      ? `Verify+ card scanned on ${formatted}`
+      : 'Verify+ card scan date unavailable';
   }
 
   editRegistrationDetails() {

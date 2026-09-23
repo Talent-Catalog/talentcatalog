@@ -5,22 +5,27 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.InOrder;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.tctalent.server.exception.EntityExistsException;
 import org.tctalent.server.exception.InvalidCredentialsException;
+import org.tctalent.server.exception.InvalidRequestException;
 import org.tctalent.server.exception.InvalidSessionException;
 import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.model.db.Candidate;
@@ -33,7 +38,9 @@ import org.tctalent.server.repository.db.OccupationRepository;
 import org.tctalent.server.request.candidate.occupation.CreateCandidateOccupationRequest;
 import org.tctalent.server.request.candidate.occupation.UpdateCandidateOccupationRequest;
 import org.tctalent.server.request.candidate.occupation.UpdateCandidateOccupationsRequest;
+import org.tctalent.server.request.note.CreateCandidateNoteRequest;
 import org.tctalent.server.security.AuthService;
+import org.tctalent.server.service.db.CandidateNoteService;
 import org.tctalent.server.service.db.CandidateService;
 import org.tctalent.server.service.db.email.EmailHelper;
 
@@ -57,6 +64,9 @@ class CandidateOccupationServiceImplTest {
 
   @Mock
   private EmailHelper emailHelper;
+
+  @Mock
+  private CandidateNoteService candidateNoteService;
 
   @InjectMocks
   private CandidateOccupationServiceImpl service;
@@ -319,6 +329,77 @@ class CandidateOccupationServiceImplTest {
   }
 
   @Test
+  void deleteCandidateOccupationClearsPrincipalOccupationWhenDeletingIt() {
+    User user = mock(User.class);
+    Candidate candidate = candidate(20L);
+    CandidateOccupation candidateOccupation = candidateOccupation(1L, candidate,
+        occupation(10L, "Engineer"), 5);
+    candidate.setPrincipalOccupation(candidateOccupation);
+
+    when(authService.getLoggedInUser()).thenReturn(Optional.of(user));
+    when(authService.hasAdminPrivileges(user.getRole())).thenReturn(true);
+    when(candidateOccupationRepository.findByIdLoadCandidate(1L))
+        .thenReturn(Optional.of(candidateOccupation));
+    when(candidateRepository.findById(20L)).thenReturn(Optional.of(candidate));
+    when(candidateOccupationRepository.findByCandidateId(20L))
+        .thenReturn(List.of(candidateOccupation));
+
+    service.deleteCandidateOccupation(1L);
+
+    assertEquals(null, candidate.getPrincipalOccupation());
+    verify(candidateService).save(candidate);
+  }
+
+  @Test
+  void deleteCandidateOccupationThrowsWhenDeletingPrincipalWithOtherOccupationsRemaining() {
+    User user = mock(User.class);
+    Candidate candidate = candidate(20L);
+    CandidateOccupation principal = candidateOccupation(1L, candidate,
+        occupation(10L, "Engineer"), 5);
+    CandidateOccupation other = candidateOccupation(2L, candidate,
+        occupation(11L, "Teacher"), 3);
+    candidate.setPrincipalOccupation(principal);
+
+    when(authService.getLoggedInUser()).thenReturn(Optional.of(user));
+    when(authService.hasAdminPrivileges(user.getRole())).thenReturn(true);
+    when(candidateOccupationRepository.findByIdLoadCandidate(1L))
+        .thenReturn(Optional.of(principal));
+    when(candidateRepository.findById(20L)).thenReturn(Optional.of(candidate));
+    when(candidateOccupationRepository.findByCandidateId(20L))
+        .thenReturn(List.of(principal, other));
+
+    assertThrows(InvalidRequestException.class,
+        () -> service.deleteCandidateOccupation(1L));
+
+    verify(candidateOccupationRepository, never()).delete(any());
+    verify(candidateService, never()).save(any());
+    assertSame(principal, candidate.getPrincipalOccupation());
+  }
+
+  @Test
+  void deleteCandidateOccupationAllowsDeletingPrincipalWhenItIsTheOnlyOccupation() {
+    User user = mock(User.class);
+    Candidate candidate = candidate(20L);
+    CandidateOccupation principal = candidateOccupation(1L, candidate,
+        occupation(10L, "Engineer"), 5);
+    candidate.setPrincipalOccupation(principal);
+
+    when(authService.getLoggedInUser()).thenReturn(Optional.of(user));
+    when(authService.hasAdminPrivileges(user.getRole())).thenReturn(true);
+    when(candidateOccupationRepository.findByIdLoadCandidate(1L))
+        .thenReturn(Optional.of(principal));
+    when(candidateRepository.findById(20L)).thenReturn(Optional.of(candidate));
+    when(candidateOccupationRepository.findByCandidateId(20L))
+        .thenReturn(List.of(principal));
+
+    service.deleteCandidateOccupation(1L);
+
+    verify(candidateOccupationRepository).delete(principal);
+    assertEquals(null, candidate.getPrincipalOccupation());
+    verify(candidateService).save(candidate);
+  }
+
+  @Test
   void listMyOccupationsReturnsRepositoryResults() {
     CandidateOccupation candidateOccupation = candidateOccupation(1L, candidate(20L),
         occupation(10L, "Engineer"), 5);
@@ -376,6 +457,7 @@ class CandidateOccupationServiceImplTest {
         removedOccupation, 8);
 
     UpdateCandidateOccupationRequest update = updateRequest(1L, 11L, 9L);
+    update.setPrincipal(true);
     UpdateCandidateOccupationsRequest request = bulkRequest(List.of(update));
 
     when(candidateService.getLoggedInCandidate()).thenReturn(Optional.of(candidate));
@@ -387,12 +469,148 @@ class CandidateOccupationServiceImplTest {
 
     List<CandidateOccupation> result = service.updateCandidateOccupations(request);
 
-    assertEquals(List.of(existingToUpdate, existingToRemove), result);
+    assertEquals(List.of(existingToUpdate), result);
     assertSame(newOccupation, existingToUpdate.getOccupation());
     assertEquals(9L, existingToUpdate.getYearsExperience());
 
     verify(candidateOccupationRepository).deleteById(2L);
     verify(candidateService).save(candidate);
+  }
+
+  @Test
+  void updateCandidateOccupationsSetsPrincipalOccupationWhenFlagged() {
+    User user = mock(User.class);
+    Candidate candidate = candidate(20L);
+    Occupation occupation = occupation(10L, "Engineer");
+    CandidateOccupation existing = candidateOccupation(1L, candidate, occupation, 3);
+
+    UpdateCandidateOccupationRequest update = updateRequest(1L, 10L, 12L);
+    update.setPrincipal(true);
+    UpdateCandidateOccupationsRequest request = bulkRequest(List.of(update));
+
+    when(candidateService.getLoggedInCandidate()).thenReturn(Optional.of(candidate));
+    when(authService.getLoggedInUser()).thenReturn(Optional.of(user));
+    when(candidateOccupationRepository.findByCandidateId(20L)).thenReturn(List.of(existing));
+    when(candidateOccupationRepository.save(existing)).thenReturn(existing);
+
+    service.updateCandidateOccupations(request);
+
+    assertSame(existing, candidate.getPrincipalOccupation());
+    verify(candidateService).save(candidate);
+  }
+
+  @Test
+  void updateCandidateOccupationsThrowsWhenNonEmptyListHasNoPrincipalFlagged() {
+    UpdateCandidateOccupationRequest update = updateRequest(1L, 10L, 12L);
+    UpdateCandidateOccupationsRequest request = bulkRequest(List.of(update));
+
+    assertThrows(InvalidRequestException.class,
+        () -> service.updateCandidateOccupations(request));
+
+    verifyNoInteractions(candidateOccupationRepository);
+    verifyNoInteractions(candidateService);
+  }
+
+  @Test
+  void updateCandidateOccupationsThrowsWhenUpdatesListIsNull() {
+    UpdateCandidateOccupationsRequest request = new UpdateCandidateOccupationsRequest();
+
+    assertThrows(InvalidRequestException.class,
+        () -> service.updateCandidateOccupations(request));
+
+    verifyNoInteractions(candidateOccupationRepository);
+    verifyNoInteractions(candidateService);
+  }
+
+  @Test
+  void updateCandidateOccupationsThrowsWhenUpdatesListContainsNullEntry() {
+    UpdateCandidateOccupationRequest update = updateRequest(1L, 10L, 12L);
+    update.setPrincipal(true);
+    UpdateCandidateOccupationsRequest request = bulkRequest(Arrays.asList(update, null));
+
+    assertThrows(InvalidRequestException.class,
+        () -> service.updateCandidateOccupations(request));
+
+    verifyNoInteractions(candidateOccupationRepository);
+    verifyNoInteractions(candidateService);
+  }
+
+  @Test
+  void updateCandidateOccupationsThrowsWhenMultipleUpdatesFlaggedAsPrincipal() {
+    UpdateCandidateOccupationRequest first = updateRequest(1L, 10L, 12L);
+    first.setPrincipal(true);
+    UpdateCandidateOccupationRequest second = updateRequest(2L, 11L, 5L);
+    second.setPrincipal(true);
+    UpdateCandidateOccupationsRequest request = bulkRequest(List.of(first, second));
+
+    assertThrows(InvalidRequestException.class,
+        () -> service.updateCandidateOccupations(request));
+
+    verifyNoInteractions(candidateOccupationRepository);
+    verifyNoInteractions(candidateService);
+  }
+
+  @Test
+  void updateCandidateOccupationsAllowsEmptyListWithNoPrincipal() {
+    Candidate candidate = candidate(20L);
+    UpdateCandidateOccupationsRequest request = bulkRequest(List.of());
+
+    when(candidateService.getLoggedInCandidate()).thenReturn(Optional.of(candidate));
+    when(candidateOccupationRepository.findByCandidateId(20L)).thenReturn(List.of());
+
+    List<CandidateOccupation> result = service.updateCandidateOccupations(request);
+
+    assertEquals(List.of(), result);
+    verify(candidateService).save(candidate);
+  }
+
+  @Test
+  void updateCandidateOccupationsAllowsNonEmptyListWithExactlyOnePrincipal() {
+    User user = mock(User.class);
+    Candidate candidate = candidate(20L);
+    Occupation occupation = occupation(10L, "Engineer");
+    CandidateOccupation existing = candidateOccupation(1L, candidate, occupation, 3);
+
+    UpdateCandidateOccupationRequest update = updateRequest(1L, 10L, 12L);
+    update.setPrincipal(true);
+    UpdateCandidateOccupationsRequest request = bulkRequest(List.of(update));
+
+    when(candidateService.getLoggedInCandidate()).thenReturn(Optional.of(candidate));
+    when(authService.getLoggedInUser()).thenReturn(Optional.of(user));
+    when(candidateOccupationRepository.findByCandidateId(20L)).thenReturn(List.of(existing));
+    when(candidateOccupationRepository.save(existing)).thenReturn(existing);
+
+    service.updateCandidateOccupations(request);
+
+    assertSame(existing, candidate.getPrincipalOccupation());
+    verify(candidateService).save(candidate);
+  }
+
+  @Test
+  void updateCandidateOccupationsClearsPrincipalBeforeDeletingRemovedPrincipalOccupation() {
+    User user = mock(User.class);
+    Candidate candidate = candidate(20L);
+    Occupation removedOccupation = occupation(10L, "Engineer");
+    CandidateOccupation existing = candidateOccupation(1L, candidate, removedOccupation, 3);
+    candidate.setPrincipalOccupation(existing);
+
+    // No updates at all: the candidate's only (and principal) occupation is being removed.
+    UpdateCandidateOccupationsRequest request = bulkRequest(List.of());
+
+    when(candidateService.getLoggedInCandidate()).thenReturn(Optional.of(candidate));
+    when(authService.getLoggedInUser()).thenReturn(Optional.of(user));
+    when(candidateOccupationRepository.findByCandidateId(20L)).thenReturn(List.of(existing));
+
+    service.updateCandidateOccupations(request);
+
+    assertEquals(null, candidate.getPrincipalOccupation());
+
+    // The principal FK must be cleared and flushed before the now-unreferenced
+    // occupation is deleted, otherwise the FK constraint would reject the delete.
+    InOrder inOrder = inOrder(candidateService, candidateOccupationRepository);
+    inOrder.verify(candidateService).save(candidate);
+    inOrder.verify(candidateOccupationRepository).flush();
+    inOrder.verify(candidateOccupationRepository).deleteById(1L);
   }
 
   @Test
@@ -403,6 +621,7 @@ class CandidateOccupationServiceImplTest {
     CandidateOccupation existing = candidateOccupation(1L, candidate, occupation, 3);
 
     UpdateCandidateOccupationRequest update = updateRequest(1L, 10L, 12L);
+    update.setPrincipal(true);
     UpdateCandidateOccupationsRequest request = bulkRequest(List.of(update));
 
     when(candidateService.getLoggedInCandidate()).thenReturn(Optional.of(candidate));
@@ -428,6 +647,7 @@ class CandidateOccupationServiceImplTest {
     CandidateOccupation existing = candidateOccupation(1L, candidate, occupation, 3);
 
     UpdateCandidateOccupationRequest update = updateRequest(1L, null, 12L);
+    update.setPrincipal(true);
     UpdateCandidateOccupationsRequest request = bulkRequest(List.of(update));
 
     when(candidateService.getLoggedInCandidate()).thenReturn(Optional.of(candidate));
@@ -454,6 +674,7 @@ class CandidateOccupationServiceImplTest {
     when(existing.getOccupation()).thenReturn(null, fallbackOccupation);
 
     UpdateCandidateOccupationRequest update = updateRequest(1L, 10L, 12L);
+    update.setPrincipal(true);
     UpdateCandidateOccupationsRequest request = bulkRequest(List.of(update));
 
     when(candidateService.getLoggedInCandidate()).thenReturn(Optional.of(candidate));
@@ -476,6 +697,7 @@ class CandidateOccupationServiceImplTest {
     CandidateOccupation duplicate = candidateOccupation(5L, candidate, occupation, 2);
 
     UpdateCandidateOccupationRequest update = updateRequest(null, 10L, 15L);
+    update.setPrincipal(true);
     UpdateCandidateOccupationsRequest request = bulkRequest(List.of(update));
 
     when(candidateService.getLoggedInCandidate()).thenReturn(Optional.of(candidate));
@@ -501,6 +723,7 @@ class CandidateOccupationServiceImplTest {
     Occupation occupation = occupation(10L, "Engineer");
 
     UpdateCandidateOccupationRequest update = updateRequest(null, 10L, 6L);
+    update.setPrincipal(true);
     UpdateCandidateOccupationsRequest request = bulkRequest(List.of(update));
 
     when(candidateService.getLoggedInCandidate()).thenReturn(Optional.of(candidate));
@@ -532,6 +755,7 @@ class CandidateOccupationServiceImplTest {
     Candidate candidate = candidate(20L);
 
     UpdateCandidateOccupationRequest update = updateRequest(null, 10L, 6L);
+    update.setPrincipal(true);
     UpdateCandidateOccupationsRequest request = bulkRequest(List.of(update));
 
     when(candidateService.getLoggedInCandidate()).thenReturn(Optional.of(candidate));
@@ -646,6 +870,109 @@ class CandidateOccupationServiceImplTest {
 
     verify(candidateService).save(candidate);
     verify(candidateOccupationRepository).save(candidateOccupation);
+  }
+
+  @Test
+  void updateCandidateOccupationSetsPrincipalAndCreatesNoteWhenFlagged() {
+    Candidate candidate = candidate(20L);
+    Occupation previousOccupation = occupation(9L, "Old");
+    Occupation newOccupation = occupation(10L, "Teacher");
+    CandidateOccupation candidateOccupation = candidateOccupation(1L, candidate,
+        previousOccupation, 2);
+    UpdateCandidateOccupationRequest request = updateRequest(1L, 10L, 9L);
+    request.setPrincipal(true);
+
+    when(candidateOccupationRepository.findByIdLoadCandidate(1L))
+        .thenReturn(Optional.of(candidateOccupation));
+    when(occupationRepository.findById(10L)).thenReturn(Optional.of(newOccupation));
+    when(candidateOccupationRepository.findByCandidateIdAAndOccupationId(20L, 10L))
+        .thenReturn(null);
+    when(candidateOccupationRepository.save(candidateOccupation)).thenReturn(candidateOccupation);
+
+    CandidateOccupation result = service.updateCandidateOccupation(request);
+
+    assertSame(candidateOccupation, result);
+    assertSame(candidateOccupation, candidate.getPrincipalOccupation());
+    verify(candidateService).save(candidate);
+
+    ArgumentCaptor<CreateCandidateNoteRequest> captor =
+        ArgumentCaptor.forClass(CreateCandidateNoteRequest.class);
+    verify(candidateNoteService).createCandidateNote(captor.capture());
+    CreateCandidateNoteRequest noteRequest = captor.getValue();
+    assertEquals(20L, noteRequest.getCandidateId());
+    assertEquals("Principal occupation updated to 'Teacher'", noteRequest.getTitle());
+  }
+
+  @Test
+  void updateCandidateOccupationPropagatesExceptionWhenNoteCreationFailsSoTransactionCanRollBack() {
+    Candidate candidate = candidate(20L);
+    Occupation occupation = occupation(10L, "Engineer");
+    CandidateOccupation candidateOccupation = candidateOccupation(1L, candidate,
+        occupation, 2);
+    UpdateCandidateOccupationRequest request = updateRequest(1L, 10L, 9L);
+    request.setPrincipal(true);
+
+    when(candidateOccupationRepository.findByIdLoadCandidate(1L))
+        .thenReturn(Optional.of(candidateOccupation));
+    when(occupationRepository.findById(10L)).thenReturn(Optional.of(occupation));
+    when(candidateOccupationRepository.findByCandidateIdAAndOccupationId(20L, 10L))
+        .thenReturn(null);
+    when(candidateOccupationRepository.save(candidateOccupation)).thenReturn(candidateOccupation);
+    doThrow(new RuntimeException("note service unavailable"))
+        .when(candidateNoteService).createCandidateNote(any());
+
+    // The method itself must not swallow this - @Transactional only rolls back the
+    // occupation save and principal switch already applied in this method if the
+    // exception actually propagates out to the transactional proxy.
+    assertThrows(RuntimeException.class, () -> service.updateCandidateOccupation(request));
+
+    verify(candidateService, never()).save(any());
+  }
+
+  @Test
+  void updateCandidateOccupationIsNoOpForPrincipalWhenAlreadyPrincipal() {
+    Candidate candidate = candidate(20L);
+    Occupation occupation = occupation(10L, "Engineer");
+    CandidateOccupation candidateOccupation = candidateOccupation(1L, candidate,
+        occupation, 2);
+    candidate.setPrincipalOccupation(candidateOccupation);
+    UpdateCandidateOccupationRequest request = updateRequest(1L, 10L, 9L);
+    request.setPrincipal(true);
+
+    when(candidateOccupationRepository.findByIdLoadCandidate(1L))
+        .thenReturn(Optional.of(candidateOccupation));
+    when(occupationRepository.findById(10L)).thenReturn(Optional.of(occupation));
+    when(candidateOccupationRepository.findByCandidateIdAAndOccupationId(20L, 10L))
+        .thenReturn(candidateOccupation);
+    when(candidateOccupationRepository.save(candidateOccupation)).thenReturn(candidateOccupation);
+
+    CandidateOccupation result = service.updateCandidateOccupation(request);
+
+    assertSame(candidateOccupation, result);
+    assertSame(candidateOccupation, candidate.getPrincipalOccupation());
+    verify(candidateService).save(candidate);
+    verifyNoInteractions(candidateNoteService);
+  }
+
+  @Test
+  void updateCandidateOccupationDoesNotTouchPrincipalWhenNotFlagged() {
+    Candidate candidate = candidate(20L);
+    Occupation occupation = occupation(10L, "Engineer");
+    CandidateOccupation candidateOccupation = candidateOccupation(1L, candidate,
+        occupation, 2);
+    UpdateCandidateOccupationRequest request = updateRequest(1L, 10L, 9L);
+
+    when(candidateOccupationRepository.findByIdLoadCandidate(1L))
+        .thenReturn(Optional.of(candidateOccupation));
+    when(occupationRepository.findById(10L)).thenReturn(Optional.of(occupation));
+    when(candidateOccupationRepository.findByCandidateIdAAndOccupationId(20L, 10L))
+        .thenReturn(candidateOccupation);
+    when(candidateOccupationRepository.save(candidateOccupation)).thenReturn(candidateOccupation);
+
+    service.updateCandidateOccupation(request);
+
+    assertEquals(null, candidate.getPrincipalOccupation());
+    verifyNoInteractions(candidateNoteService);
   }
 
   private static Candidate candidate(Long id) {

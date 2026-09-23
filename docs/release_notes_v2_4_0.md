@@ -1,5 +1,5 @@
 ---
-title: Release Notes 2.4.0
+title: V2.4.0 - 5 Dec 25
 description: What's new in this release
 permalink: v240
 sass:

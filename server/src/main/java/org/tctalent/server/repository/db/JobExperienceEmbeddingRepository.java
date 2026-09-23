@@ -16,7 +16,9 @@
 
 package org.tctalent.server.repository.db;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -65,6 +67,39 @@ public class JobExperienceEmbeddingRepository {
             embeddingModelId,
             toVectorLiteral(embedding)
         );
+    }
+
+    /**
+     * Returns the ids of the given candidate job experiences that already have an embedding
+     * for the given model's table.
+     *
+     * @param tableName Name of the embedding table to check
+     * @param experienceIds Candidate job experience ids to check
+     * @return Set of ids of experiences that have embeddings in the given table
+     */
+    public Set<Long> findEmbeddedExperienceIds(String tableName, List<Long> experienceIds) {
+        validateTableName(tableName);
+
+        if (experienceIds.isEmpty()) {
+            return Set.of();
+        }
+
+        String placeholders = experienceIds.stream()
+            .map(id -> "?")
+            .collect(Collectors.joining(","));
+
+        // A SQL bind parameter cannot represent an identifier, so the table name is interpolated
+        // only after validating it against a strict allow-list pattern above.
+        String sql = """
+            select candidate_job_experience_id
+            from %s
+            where candidate_job_experience_id in (%s)
+            """.formatted(tableName, placeholders);
+
+        List<Long> ids = jdbcTemplate.query(
+            sql, (rs, rowNum) -> rs.getLong(1), experienceIds.toArray());
+
+        return new HashSet<>(ids);
     }
 
     /**

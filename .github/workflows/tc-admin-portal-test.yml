@@ -29,11 +29,11 @@ jobs:
     steps:
       # Step 1: Checkout the repository
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       # Step 2: Set up Node.js for Angular using version from .nvmrc
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version-file: '.nvmrc'
           cache: 'npm'
@@ -53,7 +53,7 @@ jobs:
 
       # Step 5: Upload the report to codecov
       - name: Upload Admin Portal coverage to Codecov
-        uses: codecov/codecov-action@v5
+        uses: codecov/codecov-action@v7
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: ./ui/admin-portal/coverage/lcov.info
@@ -65,7 +65,7 @@ jobs:
       # Step 6: Archive test results if tests fail
       - name: Archive test results
         if: failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: admin-portal-test-results
           path: |

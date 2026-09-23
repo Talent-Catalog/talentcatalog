@@ -23,6 +23,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
@@ -45,6 +46,7 @@ import static org.tctalent.server.data.LanguageTestData.getTranslationFile;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
@@ -77,6 +79,9 @@ import org.tctalent.server.request.language.level.SearchLanguageLevelRequest;
 import org.tctalent.server.request.occupation.SearchOccupationRequest;
 import org.tctalent.server.request.survey.SearchSurveyTypeRequest;
 import org.tctalent.server.request.translation.CreateTranslationRequest;
+import org.tctalent.server.request.translation.ExportTranslationPatchRequest;
+import org.tctalent.server.request.translation.TranslationPatchEntry;
+import org.tctalent.server.request.translation.TranslationPatchRequest;
 import org.tctalent.server.request.translation.UpdateTranslationRequest;
 import org.tctalent.server.security.AuthService;
 import org.tctalent.server.service.db.CountryService;
@@ -106,6 +111,8 @@ class TranslationAdminApiTest extends ApiTestBase {
   private static final String EDUCATION_MAJOR_PATH = "/education_major";
   private static final String SURVEY_TYPE_PATH = "/survey_type";
   private static final String TRANSLATION_PATH = "/file/{language}";
+  private static final String PATCH_IMPORT_PATH = "/patch/import";
+  private static final String PATCH_EXPORT_PATH = "/patch/export";
 
   private static final Translation translation = getTranslation();
   private final Page<Country> countryPage = new PageImpl<>(
@@ -524,5 +531,67 @@ class TranslationAdminApiTest extends ApiTestBase {
             .andExpect(jsonPath("$", notNullValue()));
 
     verify(translationService).updateTranslationFile(anyString(), anyMap());
+  }
+
+  @Test
+  @DisplayName("import translation patch succeeds")
+  void importTranslationPatchSucceeds() throws Exception {
+    TranslationPatchEntry entry = new TranslationPatchEntry();
+    entry.setKey("SERVICES.VERIFY_PLUS.TAG");
+    entry.setValues(Map.of("en", "Verify+"));
+
+    TranslationPatchRequest request = new TranslationPatchRequest();
+    request.setVersion(1);
+    request.setLanguages(List.of("en"));
+    request.setEntries(List.of(entry));
+
+    given(translationService.importTranslationPatch(
+        any(TranslationPatchRequest.class), eq(true), eq(true)))
+        .willReturn(Map.of("status", "success"));
+
+    mockMvc.perform(post(BASE_PATH + PATCH_IMPORT_PATH)
+            .with(csrf())
+            .param("dryRun", "true")
+            .param("strictLanguages", "true")
+            .header("Authorization", "Bearer " + "jwt-token")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(request))
+            .accept(MediaType.APPLICATION_JSON))
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(jsonPath("$.status", is("success")));
+
+    verify(translationService).importTranslationPatch(
+        any(TranslationPatchRequest.class), eq(true), eq(true));
+  }
+
+  @Test
+  @DisplayName("export translation patch succeeds")
+  void exportTranslationPatchSucceeds() throws Exception {
+    ExportTranslationPatchRequest request = new ExportTranslationPatchRequest();
+    request.setLanguages(List.of("en"));
+    request.setPrefixes(List.of("SERVICES.VERIFY_PLUS"));
+    request.setKeys(List.of("REGISTRATION.HEADER.TITLE.VERIFYPLUS"));
+
+    given(translationService.exportTranslationPatch(any(ExportTranslationPatchRequest.class)))
+        .willReturn(Map.of(
+            "version", 1,
+            "languages", List.of("en"),
+            "entries", List.of()
+        ));
+
+    mockMvc.perform(post(BASE_PATH + PATCH_EXPORT_PATH)
+            .with(csrf())
+            .header("Authorization", "Bearer " + "jwt-token")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(request))
+            .accept(MediaType.APPLICATION_JSON))
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(jsonPath("$.version", is(1)));
+
+    verify(translationService).exportTranslationPatch(any(ExportTranslationPatchRequest.class));
   }
 }

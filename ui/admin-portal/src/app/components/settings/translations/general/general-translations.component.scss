@@ -21,6 +21,13 @@
 .header {
   display: flex;
   justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.header-actions {
+  margin-bottom: 0.5rem;
 }
 
 .filter {

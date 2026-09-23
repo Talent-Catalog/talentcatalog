@@ -2,8 +2,8 @@
  * Copyright (c) 2026 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
- *  the terms of the GNU General Public License as published by the Free
- *  Software Foundation, either version 3 of the License, or any later version.
+ * the terms of the GNU General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or any later version.
  *
  * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
@@ -14,15 +14,12 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {expect, test} from '@playwright/test';
-
-test('candidate login page loads', async ({ page }) => {
-  await page.goto('/login');
-
-  await expect(page).toHaveTitle(/Login/i);
-
-  await expect(page.locator('input#username')).toBeVisible();
-  await expect(page.locator('input#password')).toBeVisible();
-
-  await expect(page.locator('form')).toBeVisible();
-});
+export interface SharedServiceLink {
+  id: number;
+  provider: string;
+  serviceCode: string;
+  resourceCode: string;
+  countryIsoCode: string;
+  resourceType: string;
+  status: string;
+}

@@ -26,4 +26,11 @@ public class BaseCandidateContactRequest {
     private String email;
     private String phone;
     private String whatsapp;
+
+    /**
+     * Trims leading/trailing whitespace from a pasted email address - see TC-723.
+     */
+    public void setEmail(String email) {
+        this.email = email == null ? null : email.strip();
+    }
 }

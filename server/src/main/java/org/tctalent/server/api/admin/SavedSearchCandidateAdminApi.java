@@ -76,7 +76,8 @@ public class SavedSearchCandidateAdminApi implements
         //Check if this is a match search - ie there is a non empty requirements
         final String requirements = searchRequest.getRequirements();
         if (StringUtils.hasText(requirements)) {
-            searchRequest.setPageSize(request.getPageSize());
+            //Copy across page size and any review filter
+            searchRequest.merge(request);
             candidates = candidateBestNMatchingService.matchAsSinglePage(searchRequest);
         } else {
             candidates = savedSearchService.searchCandidateDtos(savedSearchId, request);

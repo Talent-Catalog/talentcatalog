@@ -26,6 +26,7 @@ import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {ViewCandidateAccountComponent} from "../../account/view-candidate-account.component";
 import {CUSTOM_ELEMENTS_SCHEMA} from "@angular/core";
+import {DatePipe} from "@angular/common";
 import {RouterTestingModule} from "@angular/router/testing";
 
 describe('CandidateGeneralTabComponent', () => {
@@ -36,6 +37,7 @@ describe('CandidateGeneralTabComponent', () => {
     await TestBed.configureTestingModule({
       imports: [HttpClientTestingModule,FormsModule,ReactiveFormsModule, NgSelectModule,RouterTestingModule],
       declarations: [ CandidateGeneralTabComponent,ViewCandidateLanguageComponent,ViewCandidateAccountComponent,ViewCandidateRegistrationComponent,ViewCandidateContactComponent ],
+      providers: [DatePipe],
       schemas: [CUSTOM_ELEMENTS_SCHEMA]
     })
     .compileComponents();

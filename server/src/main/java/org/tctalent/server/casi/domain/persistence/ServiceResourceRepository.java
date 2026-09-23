@@ -24,6 +24,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.tctalent.server.casi.domain.model.ResourceStatus;
+import org.tctalent.server.casi.domain.model.ResourceType;
 import org.tctalent.server.casi.domain.model.ServiceCode;
 import org.tctalent.server.casi.domain.model.ServiceProvider;
 
@@ -146,5 +147,48 @@ public interface ServiceResourceRepository extends JpaRepository<ServiceResource
       @Param("provider") ServiceProvider provider,
       @Param("now") OffsetDateTime now,
       @Param("excluded") Collection<ResourceStatus> excluded);
+
+
+  @Query("""
+    select r
+    from ServiceResourceEntity r
+    where r.provider = :provider
+      and r.serviceCode = :serviceCode
+      and r.resourceType = :resourceType
+    order by r.countryIsoCode asc, r.id asc
+    """)
+  List<ServiceResourceEntity> findByProviderAndServiceCodeAndResourceType(
+      @Param("provider") ServiceProvider provider,
+      @Param("serviceCode") ServiceCode serviceCode,
+      @Param("resourceType") ResourceType resourceType);
+
+  @Query("""
+    select r
+    from ServiceResourceEntity r
+    where r.id = :id
+      and r.provider = :provider
+      and r.serviceCode = :serviceCode
+      and r.resourceType = :resourceType
+    """)
+  Optional<ServiceResourceEntity> findByIdAndProviderAndServiceCodeAndResourceType(
+      @Param("id") Long id,
+      @Param("provider") ServiceProvider provider,
+      @Param("serviceCode") ServiceCode serviceCode,
+      @Param("resourceType") ResourceType resourceType);
+
+  boolean existsByProviderAndServiceCodeAndResourceTypeAndCountryIsoCodeAndStatusNot(
+      ServiceProvider provider,
+      ServiceCode serviceCode,
+      ResourceType resourceType,
+      String countryIsoCode,
+      ResourceStatus excludedStatus);
+
+  boolean existsByProviderAndServiceCodeAndResourceTypeAndCountryIsoCodeAndStatusNotAndIdNot(
+      ServiceProvider provider,
+      ServiceCode serviceCode,
+      ResourceType resourceType,
+      String countryIsoCode,
+      ResourceStatus excludedStatus,
+      Long id);
 
 }

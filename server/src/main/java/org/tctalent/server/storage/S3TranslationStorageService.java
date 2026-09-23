@@ -155,6 +155,10 @@ public class S3TranslationStorageService {
         }
     }
 
+    public String getActiveTranslationsBucket() {
+        return getTranslationsBucket();
+    }
+
     private String getTranslationsBucket() {
         String configuredTranslationsBucket = s3Properties.getTranslationsBucket();
         if (StringUtils.hasText(configuredTranslationsBucket)) {

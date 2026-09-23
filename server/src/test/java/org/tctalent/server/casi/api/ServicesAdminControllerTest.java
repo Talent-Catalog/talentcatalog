@@ -27,6 +27,7 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -53,6 +54,7 @@ import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
 import org.tctalent.server.api.admin.ApiTestBase;
+import org.tctalent.server.casi.api.request.CreateUpdateSharedLinkRequest;
 import org.tctalent.server.casi.api.request.ServiceListActionRequest;
 import org.tctalent.server.casi.api.request.UpdateServiceResourceStatusRequest;
 import org.tctalent.server.casi.core.services.CandidateAssistanceService;
@@ -104,7 +106,7 @@ class ServicesAdminControllerTest extends ApiTestBase {
   private ServiceResource testResource;
   private ServiceAssignment testAssignment;
 
-    @BeforeEach
+  @BeforeEach
   void setUp() {
     configureAuthentication();
     testUser = user;
@@ -1000,5 +1002,101 @@ class ServicesAdminControllerTest extends ApiTestBase {
 
     verify(candidateServiceRegistry).forProviderAndServiceCode("duolingo", "test_proctored");
   }
+
+  @Test
+  @DisplayName("list shared links succeeds")
+  void listSharedLinksSucceeds() throws Exception {
+    ServiceResource shared = ServiceResource.builder()
+        .id(9L)
+        .provider(ServiceProvider.UNHCR)
+        .serviceCode(ServiceCode.HELP_SITE_LINK)
+        .countryIsoCode("PK")
+        .resourceCode("https://help.unhcr.org/pakistan/")
+        .status(ResourceStatus.AVAILABLE)
+        .build();
+    given(candidateAssistanceService.getSharedResources()).willReturn(List.of(shared));
+    given(candidateServiceRegistry.forProviderAndServiceCode("UNHCR", "HELP_SITE_LINK"))
+        .willReturn(candidateAssistanceService);
+
+    mockMvc.perform(get(BASE_PATH + "/UNHCR/HELP_SITE_LINK/shared")
+            .header("Authorization", "Bearer " + "jwt-token")
+            .contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$[0].countryIsoCode", is("PK")));
+  }
+
+  @Test
+  @DisplayName("create shared link succeeds")
+  void createSharedLinkSucceeds() throws Exception {
+    ServiceResource shared = ServiceResource.builder()
+        .id(9L)
+        .provider(ServiceProvider.UNHCR)
+        .serviceCode(ServiceCode.HELP_SITE_LINK)
+        .countryIsoCode("PK")
+        .resourceCode("https://help.unhcr.org/pakistan/")
+        .status(ResourceStatus.AVAILABLE)
+        .build();
+    given(candidateServiceRegistry.forProviderAndServiceCode("UNHCR", "HELP_SITE_LINK"))
+        .willReturn(candidateAssistanceService);
+    given(candidateAssistanceService.createSharedResource("PK", "https://help.unhcr.org/pakistan/"))
+        .willReturn(shared);
+
+    CreateUpdateSharedLinkRequest request = new CreateUpdateSharedLinkRequest();
+    request.setCountryIsoCode("PK");
+    request.setResourceCode("https://help.unhcr.org/pakistan/");
+
+    mockMvc.perform(post(BASE_PATH + "/UNHCR/HELP_SITE_LINK/shared")
+            .with(csrf())
+            .header("Authorization", "Bearer " + "jwt-token")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(request)))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.countryIsoCode", is("PK")));
+  }
+
+  @Test
+  @DisplayName("update shared link succeeds")
+  void updateSharedLinkSucceeds() throws Exception {
+    ServiceResource shared = ServiceResource.builder()
+        .id(9L)
+        .provider(ServiceProvider.UNHCR)
+        .serviceCode(ServiceCode.HELP_SITE_LINK)
+        .countryIsoCode("JO")
+        .resourceCode("https://help.unhcr.org/jordan/")
+        .status(ResourceStatus.AVAILABLE)
+        .build();
+    given(candidateServiceRegistry.forProviderAndServiceCode("UNHCR", "HELP_SITE_LINK"))
+        .willReturn(candidateAssistanceService);
+    given(candidateAssistanceService.updateSharedResource(9L, "JO", "https://help.unhcr.org/jordan/"))
+        .willReturn(shared);
+
+    CreateUpdateSharedLinkRequest request = new CreateUpdateSharedLinkRequest();
+    request.setCountryIsoCode("JO");
+    request.setResourceCode("https://help.unhcr.org/jordan/");
+
+    mockMvc.perform(put(BASE_PATH + "/UNHCR/HELP_SITE_LINK/shared/9")
+            .with(csrf())
+            .header("Authorization", "Bearer " + "jwt-token")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(request)))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.countryIsoCode", is("JO")));
+  }
+
+  @Test
+  @DisplayName("disable shared link succeeds")
+  void disableSharedLinkSucceeds() throws Exception {
+    given(candidateServiceRegistry.forProviderAndServiceCode("UNHCR", "HELP_SITE_LINK"))
+        .willReturn(candidateAssistanceService);
+
+    mockMvc.perform(delete(BASE_PATH + "/UNHCR/HELP_SITE_LINK/shared/9")
+            .with(csrf())
+            .header("Authorization", "Bearer " + "jwt-token")
+            .contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk());
+
+    verify(candidateAssistanceService).disableSharedResource(9L);
+  }
+
 }
 

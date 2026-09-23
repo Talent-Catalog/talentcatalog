@@ -27,6 +27,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.tctalent.server.exception.EntityExistsException;
 import org.tctalent.server.model.db.Country;
@@ -46,6 +47,8 @@ import org.tctalent.server.request.language.level.SearchLanguageLevelRequest;
 import org.tctalent.server.request.occupation.SearchOccupationRequest;
 import org.tctalent.server.request.survey.SearchSurveyTypeRequest;
 import org.tctalent.server.request.translation.CreateTranslationRequest;
+import org.tctalent.server.request.translation.ExportTranslationPatchRequest;
+import org.tctalent.server.request.translation.TranslationPatchRequest;
 import org.tctalent.server.request.translation.UpdateTranslationRequest;
 import org.tctalent.server.security.AuthService;
 import org.tctalent.server.service.db.CountryService;
@@ -165,6 +168,20 @@ public class TranslationAdminApi {
         Map<String, Object> result = new HashMap<>();
         result.put("status", "success");
         return result;
+    }
+
+    @PostMapping("patch/import")
+    public Map<String, Object> importTranslationPatch(
+        @Valid @RequestBody TranslationPatchRequest request,
+        @RequestParam(value = "dryRun", defaultValue = "false") boolean dryRun,
+        @RequestParam(value = "strictLanguages", defaultValue = "false") boolean strictLanguages) {
+        return this.translationService.importTranslationPatch(request, dryRun, strictLanguages);
+    }
+
+    @PostMapping("patch/export")
+    public Map<String, Object> exportTranslationPatch(
+        @Valid @RequestBody ExportTranslationPatchRequest request) {
+        return this.translationService.exportTranslationPatch(request);
     }
 
     private DtoBuilder translatedObjectDto() {

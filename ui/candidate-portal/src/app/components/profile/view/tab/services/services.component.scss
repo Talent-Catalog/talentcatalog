@@ -40,6 +40,7 @@
   }
   &.duolingo { background-color: #CFF1B5; }
   &.unhcr { background-color: white; }
+  &.pifi { background-color: white; }
 }
 
 .service-tag {
@@ -52,6 +53,10 @@
   &.duolingo { background-color: #89E219; }
   &.unhcr {
     background-color: #0077c0;
+    color: white;
+  }
+  &.pifi {
+    background-color: #6f42c1;
     color: white;
   }
 }

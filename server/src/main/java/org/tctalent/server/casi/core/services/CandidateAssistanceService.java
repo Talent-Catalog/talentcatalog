@@ -168,6 +168,39 @@ public interface CandidateAssistanceService {
   List<ServiceResource> getResourcesForCandidate(Long candidateId);
 
   /**
+   * List all shared resources (signposting links) for this provider/service.
+   *
+   * @return shared resources for this provider/service
+   */
+  List<ServiceResource> getSharedResources();
+
+  /**
+   * Create a shared link for a specific country.
+   *
+   * @param countryIsoCode ISO-3166 alpha-2 country code
+   * @param resourceCode link URL
+   * @return created shared resource
+   */
+  ServiceResource createSharedResource(String countryIsoCode, String resourceCode);
+
+  /**
+   * Update a shared link.
+   *
+   * @param id shared resource id
+   * @param countryIsoCode ISO-3166 alpha-2 country code
+   * @param resourceCode link URL
+   * @return updated shared resource
+   */
+  ServiceResource updateSharedResource(Long id, String countryIsoCode, String resourceCode);
+
+  /**
+   * Soft-delete a shared link by setting its status to DISABLED.
+   *
+   * @param id shared resource id
+   */
+  void disableSharedResource(Long id);
+
+  /**
    * Get a specific resource by its unique resource code.
    * @param resourceCode the unique resource code
    * @return the service resource

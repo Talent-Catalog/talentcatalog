@@ -30,7 +30,11 @@
 
   <div class="mb-3">
     <tc-label for="dateCompleted">{{ 'REGISTRATION.CERTIFICATIONS.LABEL.DATECOMPLETED' | translate }} <sup>*</sup></tc-label>
-    <tc-date-picker id="dateCompleted" [control]="form.controls.dateCompleted"></tc-date-picker>
+    <tc-date-picker
+      id="dateCompleted"
+      [control]="form.controls.dateCompleted"
+      [showHelpText]="false">
+    </tc-date-picker>
     <app-form-control-error [control]="form.controls.dateCompleted"></app-form-control-error>
     <p class="small mt-2 mb-0">
       {{ 'FORM.LABEL.APPROX' | translate }}

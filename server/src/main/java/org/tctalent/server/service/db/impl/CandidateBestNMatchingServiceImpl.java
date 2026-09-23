@@ -19,13 +19,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.tctalent.server.configuration.properties.VectorEmbeddingModelProperties;
+import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.repository.db.matching.CandidateBestNMatchingRepository;
 import org.tctalent.server.repository.db.matching.CandidateBestNMatchingResult;
 import org.tctalent.server.repository.db.read.dto.CandidateReadDto;
@@ -42,6 +45,7 @@ import org.tctalent.server.service.embedding.dto.EmbeddingInputType;
 import org.tctalent.server.service.embedding.dto.EmbeddingResult;
 import org.tctalent.server.util.textExtract.IdAndScore;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class CandidateBestNMatchingServiceImpl implements CandidateBestNMatchingService {
@@ -98,6 +102,33 @@ public class CandidateBestNMatchingServiceImpl implements CandidateBestNMatching
         int n = request.getPageSize();
         final Double requestedWeight = request.getLexicalWeight();
         double lexicalWeight = requestedWeight == null ? 0.5 : requestedWeight;
+
+        /* **** LEXICAL SEARCH **** */
+        //Capture any additional keyword filtering. This will be ANDed into the lexical search
+        //to provide additional filtering on the standard text search for extracted skills.
+        //Captured before request.setSimpleQueryString below overwrites it.
+        final String extraFilteringKeywords = request.getSimpleQueryString();
+
+        //For lexical match, the query string combines the extracted skills with any
+        //additional keyword filtering.
+        final String filteredSkillsQuery = computeFilteredSkillsQuery(
+            skillsQueryString, extraFilteringKeywords);
+
+        //A lexicalWeight > 0 means the lexical rank contributes to the final ranking.
+        //If there is no lexical query text, ts_rank scores every candidate 0 and the
+        //"ranking" would degenerate into an arbitrary id order. Not finding any skill
+        //keywords in free-text requirements is a normal outcome, not a user error, so
+        //fall back to a purely semantic match rather than rejecting the request - but
+        //log it since it silently overrides an explicitly requested lexicalWeight.
+        if (lexicalWeight > 0 && !StringUtils.hasText(filteredSkillsQuery)) {
+            LogBuilder.builder(log)
+                .action("CandidateBestNMatching")
+                .message("No lexical search terms found - falling back from lexicalWeight="
+                    + lexicalWeight + " to 0 (pure semantic match)")
+                .logWarn();
+            lexicalWeight = 0;
+        }
+
         CandidateBestNMatchingRequest matchingRequest = CandidateBestNMatchingRequest.builder()
             .simpleQueryString(skillsQueryString)
             .queryEmbedding(embedding)
@@ -114,15 +145,15 @@ public class CandidateBestNMatchingServiceImpl implements CandidateBestNMatching
 
         //Force sort by score.
         request.setSortFields(new String[]{"match_score"});
+        request.setSortDirection(Direction.DESC);
 
         /* **** SEMANTIC SEARCH **** */
-        //Ignore any text search constraints for the semantic match.
-        request.setSimpleQueryString(null);
+        //Note that this same constraint is built into the SQL generated for lexical search.
         String constraintJoinsAndWhereSql = savedSearchService.extractJoinAndWhereSQL(request);
 
-        /* **** LEXICAL SEARCH **** */
-        //For lexical match, modify the request to use the query string with the extracted skills.
-        request.setSimpleQueryString(skillsQueryString);
+        //Modify the request to use the combined lexical query string computed above, ready
+        //for generating the lexical search SQL below.
+        request.setSimpleQueryString(filteredSkillsQuery);
 
         //Generate the SQL for a standard Saved Search based on the skills extracted into
         //the above standard keyword search field.
@@ -139,6 +170,28 @@ public class CandidateBestNMatchingServiceImpl implements CandidateBestNMatching
         //Convert the results to IdAndScore's.
         List<IdAndScore> idAndScores = convertResults(results);
         return candidateDtoFetchService.fetchAndSetScores(idAndScores);
+    }
+
+    /**
+     * Computes a filtered skills query by ANDing the skillsQueryString with the
+     * extraFilteringKeywords if they are both not empty.
+     * @param skillsQueryString The skills query string.
+     * @param extraFilteringKeywords The extra filtering keywords.
+     * @return The filtered skills query.
+     */
+    private String computeFilteredSkillsQuery(
+        String skillsQueryString, String extraFilteringKeywords) {
+        String query;
+        if (StringUtils.hasText(skillsQueryString) && StringUtils.hasText(extraFilteringKeywords)) {
+            query = "(" + skillsQueryString.strip() + ") + (" + extraFilteringKeywords.strip() + ")";
+        } else if (StringUtils.hasText(skillsQueryString)) {
+            query = skillsQueryString.strip();
+        } else if (StringUtils.hasText(extraFilteringKeywords)) {
+            query = extraFilteringKeywords.strip();
+        } else {
+            query = "";
+        }
+        return query;
     }
 
     private List<IdAndScore> convertResults(List<CandidateBestNMatchingResult> results) {

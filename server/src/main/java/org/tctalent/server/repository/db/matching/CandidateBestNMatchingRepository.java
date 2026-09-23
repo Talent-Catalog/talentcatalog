@@ -30,8 +30,20 @@ import org.tctalent.server.request.candidate.matching.CandidateBestNMatchingRequ
 import org.tctalent.server.service.db.EmbeddingModelService;
 
 /**
- * Executes candidate matching with JDBC because the PostgreSQL-specific CTEs, full-text operators,
+ * Executes candidate matching with JDBC because the PostgreSQL-specific
+ * CTEs (Common Table Expressions), full-text operators,
  * pgvector nearest-neighbour ordering, and dynamic trusted identifier are not a good fit for JPA.
+ * <p>
+ * CTE is syntax like
+ * <pre>
+ *     WITH lexical_candidates AS (
+ *       SELECT id AS candidate_id, score AS lexical_score,
+ *              ROW_NUMBER() OVER (ORDER BY score DESC, id) AS lexical_rank
+ *       FROM lexical_candidate_scores
+ *       ORDER BY score DESC, id
+ *       LIMIT :candidateLimit
+ *     )
+ * </pre>
  */
 @Repository
 @RequiredArgsConstructor
@@ -63,7 +75,9 @@ public class CandidateBestNMatchingRepository {
      * @param request Request that contains the natural language requirements and other information
      *                controlling the matching process. See {@link CandidateBestNMatchingRequest}
      *                for details.
-     * @param lexicalCandidateScoresSql This is the SQL that does the text matching
+     * @param lexicalCandidateScoresSql This is the SQL that does the text matching.
+     *                                  Note that this SQL will also contain the same constraints
+     *                                  expressed in constraintJoinsAndWhereSql.
      * @param constraintJoinsAndWhereSql The embedded vector matching is also constrained by this
      *                                   SQL generated from the standard search constraints of a
      *                                   TC search screen.
@@ -86,8 +100,8 @@ public class CandidateBestNMatchingRepository {
 
         validate(request, tableName, model.getDimensions());
 
+        //These parameters are used in the SQL query in buildSql below.
         MapSqlParameterSource parameters = new MapSqlParameterSource()
-            .addValue("queryText", request.getSimpleQueryString())
             .addValue("queryEmbedding", toVectorLiteral(request.getQueryEmbedding()))
             .addValue("lexicalWeight", request.getLexicalWeight())
             .addValue("semanticWeight", 1-request.getLexicalWeight())
@@ -108,15 +122,34 @@ public class CandidateBestNMatchingRepository {
             throw new IllegalArgumentException("Embedding dimensions must be positive");
         }
 
-        // A SQL bind parameter cannot represent an identifier. The table name is interpolated
-        // only after syntax and configured-model allow-list validation.
+        // A SQL bind parameter cannot represent an identifier.
+        // The table name is inserted into the string using the String.formatted method call below.
+
+        // Note that there is deliberately no join or occupation predicate associated with
+        // computing the semantic pool.
+        // That could prevent PostgreSQL from making the best use of`the special HNSW index
+        // generated for vector embeddings.
+        // The semantic pool is computed first, and then the constraints are applied to the
+        // semantic candidates.
+
+        // Note also that raw scores appear in fused_candidates as diagnostics only.
+        // Weighted RRF combines ranks, not scores.
+
+        // The final WHERE rrf_score > 0 excludes candidates that only survived the
+        // FULL OUTER JOIN below because of a zero weight on their side - eg a
+        // semantic-only candidate when semanticWeight is 0. rrf_score can only be
+        // exactly 0 when a candidate has no rank on the non-zero-weighted side and a
+        // zero weight on the side that did rank it, so it contributes no genuine
+        // signal under the requested weighting.
+
         return """
-            WITH parameters AS (
-                SELECT to_tsquery('english', :queryText) AS text_query
-            ),
-            lexical_candidate_scores AS (
+            WITH lexical_candidate_scores AS (
             """
                 +
+                //Note that this SQL contains the same constraints described in
+                //constraintJoinsAndWhereSql.
+                //So lexical_candidate_scores and semantic_candidate_scores contain the same
+                //constraints.
                 lexicalCandidateScoresSql
                 +
                 " LIMIT :candidateLimit"
@@ -131,8 +164,6 @@ public class CandidateBestNMatchingRepository {
                 LIMIT :candidateLimit
             ),
             semantic_pool AS (
-                -- Deliberately no join or occupation predicate here: this exact nearest-neighbour
-                -- ORDER BY/LIMIT shape gives PostgreSQL the best opportunity to use the HNSW index.
                 SELECT candidate_job_experience_id,
                        embedding <=> CAST(:queryEmbedding AS vector(%d)) AS distance
                 FROM %s
@@ -166,7 +197,6 @@ public class CandidateBestNMatchingRepository {
                        sc.semantic_rank,
                        lc.lexical_score,
                        sc.semantic_score,
-                       -- Raw scores are diagnostics only. Weighted RRF combines ranks, not scores.
                        COALESCE(:lexicalWeight /
                            (:rrfK + lc.lexical_rank), 0.0)
                        + COALESCE(:semanticWeight /
@@ -177,6 +207,7 @@ public class CandidateBestNMatchingRepository {
             SELECT candidate_id, lexical_rank, semantic_rank,
                    lexical_score, semantic_score, rrf_score
             FROM fused_candidates
+            WHERE rrf_score > 0
             ORDER BY rrf_score DESC, candidate_id
             LIMIT :resultLimit
             """;

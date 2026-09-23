@@ -20,40 +20,41 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.FilterType;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import org.tctalent.server.casi.application.policy.DuolingoTaskPolicy;
+import org.tctalent.server.casi.application.policy.LinkedInTaskPolicy;
+import org.tctalent.server.casi.application.policy.ReferenceTaskPolicy;
 import org.tctalent.server.casi.application.policy.TaskPolicyRegistry;
 import org.tctalent.server.casi.domain.model.ServiceProvider;
-import org.tctalent.server.casi.domain.persistence.ServiceResourceRepository;
-import org.tctalent.server.service.db.CandidateService;
 
 
 @SpringJUnitConfig(classes = TaskPolicyRegistryTest.TestConfig.class) // load minimal context
 class TaskPolicyRegistryTest {
 
+  /**
+   * Scan only TaskPolicyRegistry and concrete TaskPolicy beans. Avoid scanning
+   * EligibilityPolicy components (e.g. PifiEligibilityPolicy), which pull in
+   * unrelated dependencies, and skip NoOpTaskPolicy (not a Spring bean).
+   */
   @Configuration
-  @ComponentScan(basePackageClasses = {
-      TaskPolicyRegistry.class,    // the registry @Component
-      DuolingoTaskPolicy.class     // the policy @Component (add others as needed)
-  })
+  @ComponentScan(
+      basePackageClasses = TaskPolicyRegistry.class,
+      useDefaultFilters = false,
+      includeFilters = @ComponentScan.Filter(
+          type = FilterType.ASSIGNABLE_TYPE,
+          classes = {
+              TaskPolicyRegistry.class,
+              DuolingoTaskPolicy.class,
+              LinkedInTaskPolicy.class,
+              ReferenceTaskPolicy.class
+          }
+      )
+  )
   static class TestConfig {
-
-    /** Satisfies ReferenceEligibilityPolicy's dependency so EligibilityPolicyRegistry can be created. */
-    @Bean
-    CandidateService candidateService() {
-      return Mockito.mock(CandidateService.class);
-    }
-
-    /** Satisfies UnhcrEligibilityPolicy dependency when policy package is component-scanned. */
-    @Bean
-    ServiceResourceRepository serviceResourceRepository() {
-      return Mockito.mock(ServiceResourceRepository.class);
-    }
   }
 
   @Autowired

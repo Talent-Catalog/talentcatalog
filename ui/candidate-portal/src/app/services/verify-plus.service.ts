@@ -17,7 +17,7 @@ export class VerifyPlusService {
   constructor(private http: HttpClient) {
   }
 
-  submitScan(rawPayload: string): Observable<VerifyPlusScanResult> {
-    return this.http.post<VerifyPlusScanResult>(this.apiBaseUrl, {rawPayload});
+  submitScan(rawPayload: string, consented: boolean): Observable<VerifyPlusScanResult> {
+    return this.http.post<VerifyPlusScanResult>(this.apiBaseUrl, {rawPayload, consented});
   }
 }

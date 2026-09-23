@@ -1,0 +1,54 @@
+/*
+ * Copyright (c) 2026 Talent Catalog.
+ *
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
+ * for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see https://www.gnu.org/licenses/.
+ */
+
+@import "bootstrap/scss/bootstrap.scss";
+
+.service-title {
+  padding: 2rem;
+  border-bottom-left-radius: 2rem;
+  border-bottom-right-radius: 2rem;
+  background-color: #f3eef9;
+}
+
+.service-content {
+  padding: 2rem;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+img {
+  max-width: 205px;
+  margin-left: 1rem;
+
+  @include media-breakpoint-down(sm) {
+    width: 90px;
+    max-height: fit-content;
+  }
+}
+
+.cta {
+  margin-top: 1.5rem;
+}
+
+.cta-url {
+  margin-top: 0.75rem;
+  font-size: 0.875rem;
+  word-break: break-word;
+}

@@ -4,7 +4,7 @@ import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
 import {CandidateOccupationService} from '../../../../../services/candidate-occupation.service';
 import {OccupationService} from '../../../../../services/occupation.service';
 import {ReactiveFormsModule} from '@angular/forms';
-import {of} from 'rxjs';
+import {of, throwError} from 'rxjs';
 import {CandidateOccupation} from '../../../../../model/candidate-occupation';
 import {Occupation} from '../../../../../model/occupation';
 import {NO_ERRORS_SCHEMA} from '@angular/core';
@@ -83,26 +83,63 @@ describe('EditCandidateOccupationComponent', () => {
 
     expect(component.form.value).toEqual({
       occupationId: 1,
-      yearsExperience: 3
+      yearsExperience: 3,
+      markAsPrincipal: false
     });
     expect(component.occupations.length).toBe(2);
     expect(component.loading).toBeFalse();
   }));
 
-  it('should call update service and close modal on save success', fakeAsync(() => {
+  it('should call update service with principal false and close modal on save success', fakeAsync(() => {
     component.candidateOccupation = mockCandidateOccupation;
     component.ngOnInit();
 
-    component.form.setValue({occupationId: 2, yearsExperience: 5});
+    component.form.setValue({occupationId: 2, yearsExperience: 5, markAsPrincipal: false});
 
     component.onSave();
     tick();
 
     expect(mockCandidateOccupationService.update).toHaveBeenCalledWith(123, {
       occupationId: 2,
-      yearsExperience: 5
+      yearsExperience: 5,
+      principal: false
     });
     expect(mockActiveModal.close).toHaveBeenCalledWith(mockCandidateOccupation);
+  }));
+
+  it('should call update service with principal true when markAsPrincipal is checked', fakeAsync(() => {
+    const updatedOccupation = {...mockCandidateOccupation, yearsExperience: 5};
+    mockCandidateOccupationService.update.and.returnValue(of(updatedOccupation));
+    component.candidateOccupation = mockCandidateOccupation;
+    component.ngOnInit();
+
+    component.form.setValue({occupationId: 1, yearsExperience: 5, markAsPrincipal: true});
+
+    component.onSave();
+    tick();
+
+    expect(mockCandidateOccupationService.update).toHaveBeenCalledWith(123, {
+      occupationId: 1,
+      yearsExperience: 5,
+      principal: true
+    });
+    expect(mockActiveModal.close).toHaveBeenCalledWith(updatedOccupation);
+  }));
+
+  it('should surface an error if the update fails', fakeAsync(() => {
+    mockCandidateOccupationService.update.and.returnValue(
+      throwError('update error'));
+    component.candidateOccupation = mockCandidateOccupation;
+    component.ngOnInit();
+
+    component.form.setValue({occupationId: 1, yearsExperience: 5, markAsPrincipal: true});
+
+    component.onSave();
+    tick();
+
+    expect(component.error).toBe('update error');
+    expect(component.saving).toBeFalse();
+    expect(mockActiveModal.close).not.toHaveBeenCalled();
   }));
 
   it('should dismiss the modal when dismiss() is called', () => {

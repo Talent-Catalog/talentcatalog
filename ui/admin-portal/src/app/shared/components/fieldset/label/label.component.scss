@@ -3,6 +3,14 @@
 .form-label {
   margin-bottom: 0;
 
+  // A label with `for` toggles its associated input natively on click, but
+  // the browser's own UA stylesheet sets `cursor: default` directly on
+  // <label>, which beats any inherited cursor - override it here so it
+  // reads as clickable.
+  &[for] {
+    cursor: pointer;
+  }
+
   &.size-md {
     @include label-md;
   }

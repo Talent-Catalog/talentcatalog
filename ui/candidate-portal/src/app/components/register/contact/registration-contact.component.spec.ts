@@ -288,6 +288,22 @@ describe('RegistrationContactComponent', () => {
   });
 
   // ---------------------------------------------------------------------------
+  // Email sanitization (TC-723)
+  // ---------------------------------------------------------------------------
+
+  describe('email sanitization', () => {
+    it('should trim leading/trailing whitespace pasted around the email', () => {
+      component.form.get('email').setValue('  user@example.com  ');
+      expect(component.email).toBe('user@example.com');
+    });
+
+    it('should leave a clean email unchanged', () => {
+      component.form.get('email').setValue('user@example.com');
+      expect(component.email).toBe('user@example.com');
+    });
+  });
+
+  // ---------------------------------------------------------------------------
   // Form validation
   // ---------------------------------------------------------------------------
 

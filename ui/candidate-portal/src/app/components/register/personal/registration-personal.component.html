@@ -58,7 +58,12 @@
     <div class="col-12 col-md-6">
       <div class="mb-3">
         <tc-label for="dob">{{ 'REGISTRATION.PERSONAL.LABEL.DOB' | translate }} <sup>*</sup></tc-label>
-        <tc-date-picker id="dob" [control]="form.controls.dob" [allowFuture]="false"></tc-date-picker>
+        <tc-date-picker
+          id="dob"
+          [control]="form.controls.dob"
+          [allowFuture]="false"
+          [showHelpText]="false">
+        </tc-date-picker>
         <app-form-control-error [control]="form.controls.dob"></app-form-control-error>
       </div>
     </div>

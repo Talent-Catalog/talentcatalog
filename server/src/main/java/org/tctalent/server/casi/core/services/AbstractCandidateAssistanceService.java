@@ -16,6 +16,8 @@
 
 package org.tctalent.server.casi.core.services;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -30,6 +32,7 @@ import org.tctalent.server.casi.domain.mappers.ServiceAssignmentMapper;
 import org.tctalent.server.casi.domain.mappers.ServiceResourceMapper;
 import org.tctalent.server.casi.domain.model.AssignmentStatus;
 import org.tctalent.server.casi.domain.model.ResourceStatus;
+import org.tctalent.server.casi.domain.model.ResourceType;
 import org.tctalent.server.casi.domain.model.ServiceAssignment;
 import org.tctalent.server.casi.domain.model.ServiceCode;
 import org.tctalent.server.casi.domain.model.ServiceProvider;
@@ -219,6 +222,97 @@ public abstract class AbstractCandidateAssistanceService implements CandidateAss
         .toList();
   }
 
+
+  @Override
+  @Transactional(readOnly = true)
+  public List<ServiceResource> getSharedResources() {
+    return resourceRepository
+        .findByProviderAndServiceCodeAndResourceType(provider(), serviceCode(), ResourceType.SHARED)
+        .stream()
+        .map(ServiceResourceMapper::toModel)
+        .toList();
+  }
+
+  @Override
+  @Transactional
+  public ServiceResource createSharedResource(String countryIsoCode, String resourceCode) {
+    String normalizedIso = normalizeIso(countryIsoCode);
+    String normalizedUrl = normalizeUrl(resourceCode);
+
+    boolean exists = resourceRepository
+        .existsByProviderAndServiceCodeAndResourceTypeAndCountryIsoCodeAndStatusNot(
+            provider(),
+            serviceCode(),
+            ResourceType.SHARED,
+            normalizedIso,
+            ResourceStatus.DISABLED);
+    if (exists) {
+      throw new InvalidRequestException(
+          "A shared resource already exists for " + provider() + "::" + serviceCode()
+              + " in country " + normalizedIso + ".");
+    }
+
+    ServiceResourceEntity entity = new ServiceResourceEntity();
+    entity.setProvider(provider());
+    entity.setServiceCode(serviceCode());
+    entity.setCountryIsoCode(normalizedIso);
+    entity.setResourceCode(normalizedUrl);
+    entity.setResourceType(ResourceType.SHARED);
+    entity.setStatus(ResourceStatus.AVAILABLE);
+
+    return ServiceResourceMapper.toModel(resourceRepository.save(entity));
+  }
+
+  @Override
+  @Transactional
+  public ServiceResource updateSharedResource(Long id, String countryIsoCode, String resourceCode) {
+    String normalizedIso = normalizeIso(countryIsoCode);
+    String normalizedUrl = normalizeUrl(resourceCode);
+
+    ServiceResourceEntity entity = resourceRepository
+        .findByIdAndProviderAndServiceCodeAndResourceType(id, provider(), serviceCode(), ResourceType.SHARED)
+        .orElseThrow(() -> new NoSuchObjectException("Shared resource with id " + id + " not found"));
+
+    boolean exists = resourceRepository
+        .existsByProviderAndServiceCodeAndResourceTypeAndCountryIsoCodeAndStatusNotAndIdNot(
+            provider(),
+            serviceCode(),
+            ResourceType.SHARED,
+            normalizedIso,
+            ResourceStatus.DISABLED,
+            id);
+    if (exists) {
+      throw new InvalidRequestException(
+          "A shared resource already exists for " + provider() + "::" + serviceCode()
+              + " in country " + normalizedIso + ".");
+    }
+
+    entity.setCountryIsoCode(normalizedIso);
+    entity.setResourceCode(normalizedUrl);
+    entity.setStatus(ResourceStatus.AVAILABLE);
+
+    return ServiceResourceMapper.toModel(resourceRepository.save(entity));
+  }
+
+  @Override
+  @Transactional
+  public void disableSharedResource(Long id) {
+    ServiceResourceEntity entity = resourceRepository
+        .findByIdAndProviderAndServiceCodeAndResourceType(id, provider(), serviceCode(), ResourceType.SHARED)
+        .orElseThrow(() -> new NoSuchObjectException("Shared resource with id " + id + " not found"));
+
+    entity.setStatus(ResourceStatus.DISABLED);
+    resourceRepository.save(entity);
+
+    assignmentRepository.findByProviderAndServiceAndResource(provider(), serviceCode(), entity.getId())
+        .stream()
+        .filter(a -> a.getStatus() == AssignmentStatus.ASSIGNED)
+        .forEach(a -> {
+          a.setStatus(AssignmentStatus.DISABLED);
+          assignmentRepository.save(a);
+        });
+  }
+
   // Get resource by resource code (e.g., get coupon by coupon code)
   // Throws NoSuchObjectException if not found
   @Override
@@ -265,6 +359,40 @@ public abstract class AbstractCandidateAssistanceService implements CandidateAss
 
     resource.setStatus(newStatus);
     resourceRepository.save(resource);
+  }
+
+  private String normalizeIso(String countryIsoCode) {
+    if (countryIsoCode == null || countryIsoCode.isBlank()) {
+      throw new InvalidRequestException("Country ISO code is required.");
+    }
+
+    String normalized = countryIsoCode.trim().toUpperCase(Locale.ROOT);
+    if (!normalized.matches("^[A-Z]{2}$")) {
+      throw new InvalidRequestException("Country ISO code must be a valid ISO-3166 alpha-2 code.");
+    }
+
+    return normalized;
+  }
+
+  private String normalizeUrl(String resourceCode) {
+    if (resourceCode == null || resourceCode.isBlank()) {
+      throw new InvalidRequestException("Resource link URL is required.");
+    }
+
+    String normalized = resourceCode.trim();
+    try {
+      URI uri = new URI(normalized);
+      String scheme = uri.getScheme();
+      if (scheme == null || (!"http".equalsIgnoreCase(scheme) && !"https".equalsIgnoreCase(scheme))) {
+        throw new InvalidRequestException("Resource link must use http or https.");
+      }
+      if (uri.getHost() == null || uri.getHost().isBlank()) {
+        throw new InvalidRequestException("Resource link must include a host.");
+      }
+      return normalized;
+    } catch (URISyntaxException e) {
+      throw new InvalidRequestException("Resource link must be a valid URL.");
+    }
   }
 
   // Count available resources for this provider (e.g., count all available Duolingo coupons

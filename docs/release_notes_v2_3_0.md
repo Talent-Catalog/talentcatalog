@@ -1,5 +1,5 @@
 ---
-title: Release Notes 2.3.0
+title: V2.3.0 - 11 Apr 25
 description: What's new in this release
 permalink: v230
 sass:

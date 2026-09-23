@@ -378,6 +378,11 @@ public class SecurityConfiguration {
                 // POST: SEARCH LISTS BY IDS
                 .requestMatchers(HttpMethod.POST, "/api/admin/saved-list/search-ids").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "RESTRICTED")
 
+                // POST: TRANSLATION PATCH IMPORT/EXPORT (SYSTEM ADMIN ONLY)
+                .requestMatchers(HttpMethod.POST,
+                    "/api/admin/translation/patch/import",
+                    "/api/admin/translation/patch/export").hasRole("SYSTEMADMIN")
+
                 // POST: VIEW TRANSLATIONS
                 .requestMatchers(HttpMethod.POST, "/api/admin/translation/*").hasAnyRole( "SYSTEMADMIN", "ADMIN", "PARTNERADMIN", "SEMILIMITED", "LIMITED", "RESTRICTED")
 

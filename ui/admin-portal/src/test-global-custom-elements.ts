@@ -414,6 +414,7 @@ const REAL_COMPONENTS = new Set([
   'TcTabComponent',
   'TcTabHeaderComponent',
   'TcTabContentComponent',
+  'InputComponent',
 ]);
 
 const originalConfigure = TestBed.configureTestingModule.bind(TestBed);

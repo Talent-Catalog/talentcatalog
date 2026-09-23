@@ -3,6 +3,7 @@ import {
   ElementRef,
   EventEmitter,
   forwardRef,
+  HostBinding,
   Input,
   OnInit,
   Output,
@@ -86,6 +87,7 @@ import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
   ]
 })
 export class InputComponent implements ControlValueAccessor, OnInit {
+  @HostBinding('attr.id') hostId = null;
   @Input() id?: string;
   @Input() ariaLabel?: string;
   @Input() name?: string;

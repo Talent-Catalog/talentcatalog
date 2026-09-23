@@ -21,7 +21,7 @@ import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {SavedSearchService} from "../../../services/saved-search.service";
 import {AuthorizationService} from "../../../services/authorization.service";
 import {ElementRef, NO_ERRORS_SCHEMA, SimpleChange} from '@angular/core';
-import {ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
+import {ComponentFixture, discardPeriodicTasks, fakeAsync, TestBed, tick} from '@angular/core/testing';
 import {Router} from '@angular/router';
 import {BehaviorSubject, of, throwError} from 'rxjs';
 
@@ -37,6 +37,7 @@ import {SurveyTypeService} from '../../../services/survey-type.service';
 import {CandidateStatus, UnhcrStatus} from '../../../model/candidate';
 import {EmbeddingModelService} from "../../../services/embedding-model.service";
 import {JobMatchingInfo} from "../../../model/JobMatchingInfo";
+import {SkillsService} from "../../../services/skills.service";
 
 describe('DefineSearchComponent', () => {
   let component: DefineSearchComponent;
@@ -47,6 +48,7 @@ describe('DefineSearchComponent', () => {
   let languageService: jasmine.SpyObj<LanguageService>;
   let partnerService: jasmine.SpyObj<PartnerService>;
   let savedSearchService: jasmine.SpyObj<SavedSearchService>;
+  let skillsService: jasmine.SpyObj<SkillsService>;
   let educationLevelService: jasmine.SpyObj<EducationLevelService>;
   let educationMajorService: jasmine.SpyObj<EducationMajorService>;
   let embeddingModelService: jasmine.SpyObj<EmbeddingModelService>;
@@ -121,6 +123,7 @@ describe('DefineSearchComponent', () => {
     savedSearchService = jasmine.createSpyObj('SavedSearchService', [
       'load', 'clearSelection', 'getSavedSearchTypeInfos', 'delete', 'get'
     ]);
+    skillsService = jasmine.createSpyObj('SkillsService', ['extractSkills']);
     educationLevelService = jasmine.createSpyObj('EducationLevelService', ['listEducationLevels']);
     educationMajorService = jasmine.createSpyObj('EducationMajorService', ['listMajors']);
     candidateOccupationService = jasmine.createSpyObj('CandidateOccupationService', ['listOccupations']);
@@ -146,6 +149,10 @@ describe('DefineSearchComponent', () => {
     authorizationService.isEmployerPartner.and.returnValue(false);
     authorizationService.canEditCandidateSource.and.returnValue(true);
     savedSearchService.getSavedSearchTypeInfos.and.returnValue([]);
+    // The 'requirements' control's debounced valueChanges subscription (real, non-fakeAsync
+    // timer) can fire well after a test completes - see the note by discardPeriodicTasks()
+    // below. Stub a harmless response so that doesn't crash if it lands during another test.
+    skillsService.extractSkills.and.returnValue(of([]));
     setSuccessfulLookupResponses();
 
     await TestBed.configureTestingModule({
@@ -156,6 +163,7 @@ describe('DefineSearchComponent', () => {
         {provide: CountryService, useValue: countryService},
         {provide: LanguageService, useValue: languageService},
         {provide: PartnerService, useValue: partnerService},
+        {provide: SkillsService, useValue: skillsService},
         {provide: SavedSearchService, useValue: savedSearchService},
         {provide: EducationLevelService, useValue: educationLevelService},
         {provide: EducationMajorService, useValue: educationMajorService},
@@ -361,6 +369,23 @@ describe('DefineSearchComponent', () => {
     expect(component.showSearchRequest).toBeTrue();
   }));
 
+  it('should publish a loaded saved search\'s keyword text once its form values are populated', fakeAsync(() => {
+    component.savedSearch = {id: 8, defaultSearch: true} as any;
+    savedSearchService.load.and.returnValue(
+      of({searchJoinRequests: [], simpleQueryString: 'engineer'} as any)
+    );
+
+    component.ngOnInit();
+    tick();
+
+    expect(searchQueryService.changeSearchQuery).toHaveBeenCalledWith('engineer');
+
+    // Populating the form patches 'requirements' too, which schedules a debounced
+    // extractSkills() timer (see the note by discardPeriodicTasks() elsewhere in this
+    // file) - discard it rather than letting it fire after this test completes.
+    discardPeriodicTasks();
+  }));
+
   it('should expose lookup initialization errors', fakeAsync(() => {
     countryService.listCountries.and.returnValue(throwError('lookup failed'));
 
@@ -387,7 +412,7 @@ describe('DefineSearchComponent', () => {
     (component as any).setUpJobMatch(mockInfo);
 
     expect(component.clearForm).toHaveBeenCalled();
-    expect(component.searchForm.get('simpleQueryString').value)
+    expect(component.extractedSkills)
     .toBe('Java "Project Management"');
     expect(component.searchForm.dirty).toBeTrue();
     expect(component.onSubmit).toHaveBeenCalled();
@@ -406,10 +431,134 @@ describe('DefineSearchComponent', () => {
 
   it('should ignore empty job skills', () => {
     component.searchForm.markAsPristine();
-    (component as any).initializeQueryStringWithJobSkills([]);
+    (component as any).setExtractedSkills([]);
     expect(component.searchForm.get('simpleQueryString').value).toBeNull();
     expect(component.searchForm.pristine).toBeTrue();
   });
+
+  it('should request skill extraction for the current requirements text and update extractedSkills', () => {
+    component.searchForm.controls.requirements.patchValue('Senior welder with diesel experience');
+    skillsService.extractSkills.and.returnValue(of([
+      {name: 'Welding', lang: 'en'},
+      {name: 'Diesel Mechanics', lang: 'en'}
+    ]));
+
+    component.extractSkills();
+
+    expect(skillsService.extractSkills).toHaveBeenCalledWith({
+      lang: 'en',
+      text: 'Senior welder with diesel experience'
+    });
+    expect(component.extractedSkills).toBe('Welding "Diesel Mechanics"');
+  });
+
+  it('should clear extractedSkills when a non-empty requirements text yields no skills', () => {
+    component.searchForm.controls.requirements.patchValue('some text');
+    component.extractedSkills = 'stale skills';
+    skillsService.extractSkills.and.returnValue(of([]));
+
+    component.extractSkills();
+
+    expect(skillsService.extractSkills).toHaveBeenCalledWith({lang: 'en', text: 'some text'});
+    expect(component.extractedSkills).toBe('');
+  });
+
+  it('should clear extractedSkills without calling the service when requirements is empty', () => {
+    component.searchForm.controls.requirements.patchValue('');
+    component.extractedSkills = 'stale skills';
+
+    component.extractSkills();
+
+    expect(skillsService.extractSkills).not.toHaveBeenCalled();
+    expect(component.extractedSkills).toBe('');
+  });
+
+  it('should clear extractedSkills without calling the service when requirements is only whitespace', () => {
+    component.searchForm.controls.requirements.patchValue('   ');
+    component.extractedSkills = 'stale skills';
+
+    component.extractSkills();
+
+    expect(skillsService.extractSkills).not.toHaveBeenCalled();
+    expect(component.extractedSkills).toBe('');
+  });
+
+  it('should report no requirements when the field is unset', () => {
+    expect(component.hasRequirements()).toBeFalse();
+  });
+
+  it('should report no requirements for whitespace-only text', () => {
+    component.searchForm.controls.requirements.patchValue('   ');
+    expect(component.hasRequirements()).toBeFalse();
+  });
+
+  it('should report no requirements for markup with no visible text', () => {
+    component.searchForm.controls.requirements.patchValue('<p><br></p>');
+    expect(component.hasRequirements()).toBeFalse();
+  });
+
+  it('should report no requirements for markup containing only a non-breaking space', () => {
+    component.searchForm.controls.requirements.patchValue('<p>&nbsp;</p>');
+    expect(component.hasRequirements()).toBeFalse();
+  });
+
+  it('should report requirements present for plain text', () => {
+    component.searchForm.controls.requirements.patchValue('Senior welder with diesel experience');
+    expect(component.hasRequirements()).toBeTrue();
+  });
+
+  it('should report requirements present for text wrapped in markup', () => {
+    component.searchForm.controls.requirements.patchValue('<p>Senior welder</p>');
+    expect(component.hasRequirements()).toBeTrue();
+  });
+
+  it('should publish simpleQueryString alone when there are no extracted skills', () => {
+    component.updateTextSearchQuery('developer', '');
+
+    expect(searchQueryService.changeSearchQuery).toHaveBeenCalledWith('developer');
+  });
+
+  it('should publish an empty query when neither simpleQueryString nor extracted skills are set', () => {
+    component.updateTextSearchQuery(null, '');
+
+    expect(searchQueryService.changeSearchQuery).toHaveBeenCalledWith('');
+  });
+
+  it('should publish extracted skills alone when simpleQueryString is empty', () => {
+    component.updateTextSearchQuery(null, 'Welding "Diesel Mechanics"');
+
+    expect(searchQueryService.changeSearchQuery).toHaveBeenCalledWith('Welding "Diesel Mechanics"');
+  });
+
+  it('should combine simpleQueryString and extracted skills separated by a space', () => {
+    component.updateTextSearchQuery('developer', 'Welding');
+
+    expect(searchQueryService.changeSearchQuery).toHaveBeenCalledWith('developer Welding');
+  });
+
+  it('should call extractSkills once requirements changes have settled for 3 seconds', fakeAsync(() => {
+    spyOn(component, 'extractSkills');
+
+    component.searchForm.controls.requirements.patchValue('Java developer needed');
+    tick(2999);
+    expect(component.extractSkills).not.toHaveBeenCalled();
+
+    tick(1);
+    expect(component.extractSkills).toHaveBeenCalledTimes(1);
+  }));
+
+  it('should restart the 3 second delay whenever requirements changes again before it settles', fakeAsync(() => {
+    spyOn(component, 'extractSkills');
+
+    component.searchForm.controls.requirements.patchValue('Java d');
+    tick(2999);
+    component.searchForm.controls.requirements.patchValue('Java developer needed');
+    tick(2999);
+    expect(component.extractSkills).not.toHaveBeenCalled();
+
+    tick(1);
+    expect(component.extractSkills).toHaveBeenCalledTimes(1);
+  }));
 
   it('should prevent Enter defaults after view initialization', () => {
     const input = document.createElement('input');
@@ -860,6 +1009,12 @@ describe('DefineSearchComponent', () => {
     expect(component.formWrapper.nativeElement.click).toHaveBeenCalled();
     expect(component.searchForm.pristine).toBeTrue();
     expect(component.onFormChange.emit).toHaveBeenCalledWith(false);
+
+    // Patching 'requirements' above (as part of the blanket patch of all form
+    // controls) triggers the debounced extractSkills() subscription, which
+    // schedules a pending timer via rxjs' debounceTime. Discard it rather than
+    // letting it fire, since we're not testing skill extraction here.
+    discardPeriodicTasks();
   }));
 
   it('should populate empty optional collections without failing', () => {

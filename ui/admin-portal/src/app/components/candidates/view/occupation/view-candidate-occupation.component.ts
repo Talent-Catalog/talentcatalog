@@ -60,6 +60,10 @@ export class ViewCandidateOccupationComponent implements OnInit, OnChanges {
     this.experiences = this.candidate?.candidateJobExperiences;
   }
 
+  isPrincipal(occupation: CandidateOccupation): boolean {
+    return this.candidate?.principalOccupation?.id === occupation.id;
+  }
+
   get loading() {
     const l = this._loading;
     return l.experience || l.occupation || l.candidate;

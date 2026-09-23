@@ -54,6 +54,7 @@ export class ViewCandidateJobExperienceComponent implements OnInit, OnChanges {
   @Input() editable: boolean;
   @Input() adminUser: boolean;
   @Input() candidateOccupation: CandidateOccupation;
+  @Input() isPrincipal: boolean;
   @Output() deleteOccupation = new EventEmitter<CandidateOccupation>();
 
   candidateJobExperienceForm: UntypedFormGroup;
@@ -84,6 +85,8 @@ export class ViewCandidateJobExperienceComponent implements OnInit, OnChanges {
     });
 
     modal.componentInstance.candidateOccupation = this.candidateOccupation;
+    modal.componentInstance.isPrincipal = this.isPrincipal;
+    modal.componentInstance.hasExistingPrincipalOccupation = !!this.candidate?.principalOccupation;
 
     modal.result
       .then((candidateOccupation) => this.candidateService.updateCandidate())

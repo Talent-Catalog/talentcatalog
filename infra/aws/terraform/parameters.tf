@@ -365,6 +365,12 @@ resource "aws_ssm_parameter" "tc_skills_extraction_api_url" {
   value = var.tc_skills_extraction_api_url
 }
 
+resource "aws_ssm_parameter" "tc_vector_embedding_api_url" {
+  name  = "/${var.app}/${var.env}/TC_VECTOR_EMBEDDING_API_URL"
+  type  = "String"
+  value = var.tc_vector_embedding_api_url
+}
+
 resource "aws_ssm_parameter" "translation_password" {
   name  = "/${var.app}/${var.env}/TRANSLATION_PASSWORD"
   type  = "SecureString"

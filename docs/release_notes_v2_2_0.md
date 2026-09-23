@@ -1,5 +1,6 @@
 ---
-title: What's New in Talent Catalog
+title: V2.2.0 - 5 Feb 24
+description: What's new in this release
 sass:
   style: compressed
 ---

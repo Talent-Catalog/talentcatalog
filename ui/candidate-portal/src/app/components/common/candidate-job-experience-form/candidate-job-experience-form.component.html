@@ -67,7 +67,11 @@
       <tc-label for="startDate">
         {{ 'FORM.JOBEXPERIENCE.LABEL.STARTDATE' | translate }} <sup>*</sup>
       </tc-label>
-      <tc-date-picker id="startDate" [control]="form.controls.startDate"></tc-date-picker>
+      <tc-date-picker
+        id="startDate"
+        [control]="form.controls.startDate"
+        [showHelpText]="false">
+      </tc-date-picker>
       <app-form-control-error [control]="form.controls.startDate"></app-form-control-error>
       <p class="small mt-2 mb-0">
         {{ 'FORM.LABEL.APPROX' | translate }}
@@ -85,7 +89,11 @@
       <tc-label for="endDate">
         {{ 'FORM.JOBEXPERIENCE.LABEL.ENDDATE' | translate }}
       </tc-label>
-      <tc-date-picker id="endDate" [control]="form.controls.endDate"></tc-date-picker>
+      <tc-date-picker
+        id="endDate"
+        [control]="form.controls.endDate"
+        [showHelpText]="false">
+      </tc-date-picker>
       <app-form-control-error [control]="form.controls.endDate"></app-form-control-error>
       <p class="small mt-2 mb-0">
         {{ 'FORM.LABEL.APPROX' | translate }}

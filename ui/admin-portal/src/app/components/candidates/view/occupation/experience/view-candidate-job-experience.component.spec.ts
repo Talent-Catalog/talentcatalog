@@ -420,6 +420,25 @@ describe('ViewCandidateJobExperienceComponent', () => {
     .not.toHaveBeenCalled();
   }));
 
+  it('should pass isPrincipal through to the edit occupation modal', fakeAsync(() => {
+    component.candidateJobExperienceForm = new UntypedFormGroup({
+      candidateOccupationId: new UntypedFormControl(null)
+    });
+    component.isPrincipal = true;
+
+    const modalRef = {
+      componentInstance: {},
+      result: Promise.resolve(component.candidateOccupation)
+    } as any;
+
+    mockNgbModal.open.and.returnValue(modalRef);
+
+    component.editOccupation();
+    tick();
+
+    expect(modalRef.componentInstance.isPrincipal).toBe(true);
+  }));
+
   it('should expose the isHtml helper', () => {
     expect(component.isHtml('<p>Hello</p>')).toBeTrue();
     expect(component.isHtml('Plain text')).toBeFalse();

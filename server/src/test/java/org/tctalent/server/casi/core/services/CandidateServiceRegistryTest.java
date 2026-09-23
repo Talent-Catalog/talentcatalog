@@ -106,6 +106,26 @@ class CandidateServiceRegistryTest {
         return null;
       }
 
+
+      @Override
+      public List<ServiceResource> getSharedResources() {
+        return null;
+      }
+
+      @Override
+      public ServiceResource createSharedResource(String countryIsoCode, String resourceCode) {
+        return null;
+      }
+
+      @Override
+      public ServiceResource updateSharedResource(Long id, String countryIsoCode, String resourceCode) {
+        return null;
+      }
+
+      @Override
+      public void disableSharedResource(Long id) {
+      }
+
       @Override
       public ServiceResource getResourceForResourceCode(
           String resourceCode) {

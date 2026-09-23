@@ -247,7 +247,8 @@
 
           <app-candidate-occupation-card [candidateOccupation]="occupation"
                                          [occupations]="occupations"
-                                         [preview]="true">
+                                         [preview]="true"
+                                         [isPrincipal]="occupation.id === candidate?.principalOccupation?.id">
           </app-candidate-occupation-card>
 
           <div class="text-center" *ngIf="i < candidate?.candidateOccupations?.length - 1">

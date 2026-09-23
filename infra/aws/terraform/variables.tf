@@ -81,8 +81,8 @@ variable "db_instance_class" {
 
 variable "db_engine_version" {
   type        = string
-  description = "The PostgreSQL engine version"
-  default     = "14.3"
+  description = "The PostgreSQL engine version. A major-version prefix (e.g. \"17\") matches whichever minor release RDS has applied, avoiding downgrade errors while auto_minor_version_upgrade is enabled."
+  default     = "14"
 }
 
 variable "db_family" {
@@ -367,6 +367,11 @@ variable "tc_destinations" {
 variable "tc_skills_extraction_api_url" {
   type        = string
   description = "TC skills extraction API URL"
+}
+
+variable "tc_vector_embedding_api_url" {
+  type        = string
+  description = "TC vector embedding API URL"
 }
 
 variable "web_admin" {
