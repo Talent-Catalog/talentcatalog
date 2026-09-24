@@ -54,6 +54,8 @@ import org.tctalent.server.service.embedding.dto.EmbeddingInputType;
 import org.tctalent.server.service.embedding.dto.EmbeddingResult;
 import org.tctalent.server.service.embedding.dto.EmbeddingsResponse;
 import org.tctalent.server.util.background.PageProcessReturn;
+import org.tctalent.server.util.text.TextParts;
+import org.tctalent.server.util.text.TextPartsCodec;
 
 @Service
 @RequiredArgsConstructor
@@ -262,6 +264,55 @@ public class CandidateJobExperienceServiceImpl implements CandidateJobExperience
                 }
             }
         }
+    }
+
+    @Override
+    public PageProcessReturn batchUpdatePageOfCandidateJobExperienceTextParts(
+        SearchJobExperienceRequest request) {
+
+        PageProcessReturn pageProcessReturn;
+
+        Page<CandidateJobExperience> page = searchCandidateJobExperience(request);
+
+        pageProcessReturn = new PageProcessReturn(page);
+
+        batchUpdatePageOfCandidateJobExperienceTextParts(page.getContent());
+
+        return pageProcessReturn;
+    }
+
+    private void batchUpdatePageOfCandidateJobExperienceTextParts(
+        List<CandidateJobExperience> experiences) {
+
+        experiences.forEach(experience -> {
+            String description = experience.getDescription();
+            //Skip experiences where the description isn't a TextParts
+            if (TextPartsCodec.isTextParts(description)) {
+                try {
+                    TextParts parts = TextPartsCodec.readJson(description);
+                    experience.setKeywordsInDescription(parts.getKeywords());
+                    experience.setTidiedDescription(parts.getTidied());
+                    experience.setDescription(parts.getOriginal());
+                } catch (Exception e) {
+                    LogBuilder.builder(log)
+                        .action("batchUpdatePageOfCandidateJobExperienceTextParts")
+                        .message(String.format(
+                            "Error converting TextParts for candidate job experience %d: '%s'",
+                            experience.getId(), e.getMessage()))
+                        .logError();
+                }
+                try {
+                    candidateJobExperienceRepository.save(experience);
+                } catch (Exception e) {
+                    LogBuilder.builder(log)
+                        .action("batchUpdatePageOfCandidateJobExperienceTextParts")
+                        .message(String.format(
+                            "Error saving candidate job experience %d: '%s'",
+                            experience.getId(), e.getMessage()))
+                        .logError();
+                }
+            }
+        });
     }
 
     /**

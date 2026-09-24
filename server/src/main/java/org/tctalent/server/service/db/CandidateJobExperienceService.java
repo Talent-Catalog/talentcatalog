@@ -39,6 +39,19 @@ public interface CandidateJobExperienceService {
         SearchJobExperienceRequest request);
 
     /**
+     * Updates the experience description fields for a list of candidate job experiences.
+     * TextParts encodings are replaced by the new description fields that do not require JSON
+     * encoding
+     * <p>
+     * This method is intended for batch processing of candidate job experiences to replace
+     * TextParts.
+     * @param request the request used to return the page of candidate job experiences to update.
+     *                If empty, that signals that the batch processing is complete.
+     */
+    PageProcessReturn batchUpdatePageOfCandidateJobExperienceTextParts(
+        SearchJobExperienceRequest request);
+
+    /**
      * Computes the context string for a given job experience.
      * <p>
      * The context string is used for generating embeddings or other processing.

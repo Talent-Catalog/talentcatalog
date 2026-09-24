@@ -184,6 +184,34 @@ public class BackgroundProcessingServiceImpl implements BackgroundProcessingServ
   }
 
   @Override
+  public String convertTextParts() {
+
+    //Process all experiences except for deleted or withdrawn candidates
+    SearchJobExperienceRequest searchRequest = new SearchJobExperienceRequest();
+    searchRequest.setActiveCandidate(true);
+
+    //Set page size
+    searchRequest.setPageSize(100);
+
+    //Create the processor, passing in the request and services it needs
+    PagedCandidateJobExperienceBackProcessor backProcessor =
+        new PagedCandidateJobExperienceBackProcessor( "convertTextParts",
+            searchRequest) {
+          @Override
+          protected PageProcessReturn processPageOfExperiences(
+              SearchJobExperienceRequest searchJobExperienceRequest) {
+
+            return candidateJobExperienceService
+                .batchUpdatePageOfCandidateJobExperienceTextParts(searchJobExperienceRequest);
+          }
+        };
+    //Start the processing
+    PageContextBackRunner runner = new PageContextBackRunner();
+    runner.start(taskScheduler, backProcessor, 100, "TextParts conversion");
+    return "TextParts conversion started";
+  }
+
+  @Override
   public void setCandidatePublicIds() {
 
     //Process all candidates except deleted or withdrawn
