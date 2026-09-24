@@ -29,6 +29,7 @@ import {NO_ERRORS_SCHEMA} from "@angular/core";
 import {of, throwError} from "rxjs";
 import {MockJob} from "../../../../../../MockData/MockJob";
 import {MockCandidate} from "../../../../../../MockData/MockCandidate";
+import {CandidateJobExperience} from "../../../../../../model/candidate-job-experience";
 
 describe('EditCandidateJobExperienceComponent', () => {
   let component: EditCandidateJobExperienceComponent;
@@ -121,5 +122,109 @@ describe('EditCandidateJobExperienceComponent', () => {
     expect(component.saving).toBe(false);
     expect(component.error).toBe(error);
     expect(mockActiveModal.close).not.toHaveBeenCalled();
+  });
+
+  describe('keywordsInDescription processing', () => {
+
+    function withKeywords(keywordsInDescription: any): CandidateJobExperience {
+      return {
+        ...mockCandidate.candidateJobExperiences[0],
+        keywordsInDescription
+      };
+    }
+
+    describe('ngOnInit', () => {
+
+      it('should join a populated keywordsInDescription array into a comma-separated string', () => {
+        component.candidateJobExperience = withKeywords(['Java', 'Spring', 'SQL']);
+
+        component.ngOnInit();
+
+        expect(component.candidateForm.value.keywordsInDescription).toBe('Java, Spring, SQL');
+      });
+
+      it('should leave keywordsInDescription as null when it is undefined', () => {
+        component.candidateJobExperience = withKeywords(undefined);
+
+        component.ngOnInit();
+
+        expect(component.candidateForm.value.keywordsInDescription).toBeNull();
+      });
+
+      it('should leave keywordsInDescription as null when it is null', () => {
+        component.candidateJobExperience = withKeywords(null);
+
+        component.ngOnInit();
+
+        expect(component.candidateForm.value.keywordsInDescription).toBeNull();
+      });
+
+      it('should leave keywordsInDescription as null when it is not an array', () => {
+        component.candidateJobExperience = withKeywords('not-an-array');
+
+        component.ngOnInit();
+
+        expect(component.candidateForm.value.keywordsInDescription).toBeNull();
+      });
+
+      it('should produce an empty string when keywordsInDescription is an empty array', () => {
+        component.candidateJobExperience = withKeywords([]);
+
+        component.ngOnInit();
+
+        expect(component.candidateForm.value.keywordsInDescription).toBe('');
+      });
+    });
+
+    describe('onSave', () => {
+
+      it('should convert a comma-separated keywordsInDescription string back into a trimmed array', () => {
+        const updatedJobExperience = { ...component.candidateJobExperience };
+        mockCandidateJobExperienceService.update.and.returnValue(of(updatedJobExperience));
+
+        component.candidateForm.patchValue({
+          keywordsInDescription: 'Java, Spring , SQL'
+        });
+
+        component.onSave();
+
+        expect(mockCandidateJobExperienceService.update).toHaveBeenCalledWith(
+          component.candidateJobExperience.id,
+          jasmine.objectContaining({keywordsInDescription: ['Java', 'Spring', 'SQL']})
+        );
+      });
+
+      it('should leave keywordsInDescription unchanged when it is null', () => {
+        const updatedJobExperience = { ...component.candidateJobExperience };
+        mockCandidateJobExperienceService.update.and.returnValue(of(updatedJobExperience));
+
+        component.candidateForm.patchValue({
+          keywordsInDescription: null
+        });
+
+        component.onSave();
+
+        expect(mockCandidateJobExperienceService.update).toHaveBeenCalledWith(
+          component.candidateJobExperience.id,
+          jasmine.objectContaining({keywordsInDescription: null})
+        );
+      });
+
+      it('should leave keywordsInDescription unchanged when it is an empty string', () => {
+        const updatedJobExperience = { ...component.candidateJobExperience };
+        mockCandidateJobExperienceService.update.and.returnValue(of(updatedJobExperience));
+
+        component.candidateForm.patchValue({
+          keywordsInDescription: ''
+        });
+
+        component.onSave();
+
+        expect(mockCandidateJobExperienceService.update).toHaveBeenCalledWith(
+          component.candidateJobExperience.id,
+          jasmine.objectContaining({keywordsInDescription: ''})
+        );
+      });
+    });
   });
 });
