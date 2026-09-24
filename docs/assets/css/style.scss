@@ -35,6 +35,10 @@ body {
     padding: 2rem 6rem;
     flex-direction: row;
   }
+
+  .project-info {
+    margin-left: 5rem;
+  }
 }
 
 .page-header .logo-link {
@@ -50,6 +54,7 @@ body {
 .project-name {
   font-size: 1.75rem;
   font-family: "Source Serif 4", serif;
+  text-align: right;
 }
 
 .project-tagline {
@@ -243,6 +248,10 @@ a .card-description {
 
   .site-footer {
     flex-direction: column-reverse;
+  }
+
+  .project-name {
+    text-align: center;
   }
 
   .project-tagline {
