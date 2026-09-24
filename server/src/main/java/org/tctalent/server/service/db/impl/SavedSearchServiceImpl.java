@@ -412,9 +412,8 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             candidates = doSearchCandidates(request);
         } else {
             SavedSearch savedSearch = getSavedSearch(request.getSavedSearchId());
-            // If searching a default search, update the default search with every search (aka Autosave).
-            // Else it is a saved search and those are updated upon 'Update Search' button only.
-            if (savedSearch.getDefaultSearch()) {
+            // Automatically persist the latest filters when configured for this search.
+            if (Boolean.TRUE.equals(savedSearch.getAutoUpdateOnSearch())) {
                 UpdateSavedSearchRequest updateRequest = new UpdateSavedSearchRequest();
                 updateRequest.setSearchCandidateRequest(request);
                 //Set other fields - no changes there
@@ -427,7 +426,6 @@ public class SavedSearchServiceImpl implements SavedSearchService {
                 //todo Need special method which only updates search part. Then don't need the above "no changes there" stuff
                 updateSavedSearch(savedSearch.getId(), updateRequest);
             }
-
             //Do the search
             candidates = doSearchCandidates(request);
 
@@ -463,12 +461,12 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         SavedSearch savedSearch = getSavedSearch(savedSearchId);
         // If searching a default search, update the default search with every search (aka Autosave).
         // Else it is a saved search and those are updated upon 'Update Search' button only.
-        if (savedSearch.getDefaultSearch()) {
+        if (Boolean.TRUE.equals(savedSearch.getAutoUpdateOnSearch())) {
             UpdateSavedSearchRequest updateRequest = new UpdateSavedSearchRequest();
             updateRequest.setSearchCandidateRequest(request);
             //Set other fields - no changes there
             updateRequest.setName(savedSearch.getName());
-            updateRequest.setDefaultSearch(true);
+            updateRequest.setDefaultSearch(savedSearch.getDefaultSearch());
             updateRequest.setFixed(savedSearch.getFixed());
             updateRequest.setReviewable(savedSearch.getReviewable());
             updateRequest.setSavedSearchType(savedSearch.getSavedSearchType());
@@ -750,7 +748,6 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         }
 
         SavedSearch newSavedSearch = convertToSavedSearch(savedSearch, request);
-
         //delete and recreate all joined searches
         searchJoinRepository.deleteBySearchId(id);
 
@@ -1154,6 +1151,11 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         savedSearch.setFixed(request.getFixed());
         savedSearch.setDefaultSearch(request.getDefaultSearch());
         savedSearch.setReviewable(request.getReviewable());
+        if (request.getAutoUpdateOnSearch() != null) {
+            savedSearch.setAutoUpdateOnSearch(request.getAutoUpdateOnSearch());
+        } else if (origSavedSearch != null) {
+            savedSearch.setAutoUpdateOnSearch(origSavedSearch.getAutoUpdateOnSearch());
+        }
         if (origSavedSearch != null) {
             savedSearch.setDescription(origSavedSearch.getDescription());
             savedSearch.setDisplayedFieldsLong(origSavedSearch.getDisplayedFieldsLong());
