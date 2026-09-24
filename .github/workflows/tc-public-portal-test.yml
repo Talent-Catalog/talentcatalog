@@ -34,10 +34,10 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version-file: '.nvmrc'
           cache: npm
@@ -52,7 +52,7 @@ jobs:
           CI: true
 
       - name: Upload Public Portal coverage to Codecov
-        uses: codecov/codecov-action@v5
+        uses: codecov/codecov-action@v7
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: ./ui/public-portal/coverage/lcov.info
@@ -63,7 +63,7 @@ jobs:
 
       - name: Archive test results
         if: failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: public-portal-test-results
           path: |
