@@ -1,0 +1,215 @@
+{
+  "version": 1,
+  "description": "Refugee ID card generic naming — supersedes UNHCR/Verify+ branded strings across the full candidate-portal scan flow (Services tab card, registration step, scan intro, duplicate/success/error messaging, and the tag badge). Supersedes the in-review TC-1483 fill for REGISTRATION.HEADER.TITLE.VERIFYPLUS (that patch used the old branded text; this one replaces it with generic wording) and layers on top of the verify-plus-4.1-translations.patch.json trust-wording text for REGISTRATION.VERIFY_PLUS.DESCRIPTION and SERVICES.VERIFY_PLUS.SCAN_INTRO. Machine-translated draft for the 10 non-English languages — needs native-speaker/vendor review before import to any environment.",
+  "languages": ["en", "ar", "fa", "ps", "es", "fr", "tr", "ru", "uk", "nl", "pt"],
+  "entries": [
+    {
+      "key": "SERVICES.VERIFY_PLUS.TITLE",
+      "values": {
+        "en": "Refugee ID Scan",
+        "ar": "مسح هوية اللاجئ",
+        "fa": "اسکن هویت پناهندگی",
+        "ps": "د کډوال پیژندنې سکین",
+        "es": "Escaneo de ID de Refugiado",
+        "fr": "Scan d'identité de réfugié",
+        "tr": "Mülteci Kimlik Taraması",
+        "ru": "Сканирование удостоверения беженца",
+        "uk": "Сканування посвідчення біженця",
+        "nl": "Vluchtelingen-ID-scan",
+        "pt": "Digitalização de ID de Refugiado"
+      }
+    },
+    {
+      "key": "SERVICES.VERIFY_PLUS.TAG",
+      "values": {
+        "en": "ID Scan",
+        "ar": "مسح الهوية",
+        "fa": "اسکن هویت",
+        "ps": "د پیژندنې سکین",
+        "es": "Escaneo de ID",
+        "fr": "Scan d'ID",
+        "tr": "Kimlik Taraması",
+        "ru": "Скан ID",
+        "uk": "Скан ID",
+        "nl": "ID-scan",
+        "pt": "Escaneamento de ID"
+      }
+    },
+    {
+      "key": "SERVICES.VERIFY_PLUS.SCAN_INTRO",
+      "values": {
+        "en": "Scan your refugee ID card QR code. A valid scan shows the card is genuine. It does not prove that you are the person named on the card.",
+        "ar": "امسح رمز QR لبطاقة هوية اللاجئ. يظهر الفحص الصالح أن البطاقة أصلية. ولا يثبت أنك الشخص المذكور على البطاقة.",
+        "fa": "کد QR کارت شناسایی پناهندگی خود را اسکن کنید. یک اسکن معتبر نشان می‌دهد که کارت اصیل است. این ثابت نمی‌کند که شما شخص نام‌برده روی کارت هستید.",
+        "ps": "د خپل د کډوال پیژندنې کارت QR کوډ سکین کړئ. یو باوري سکین ښيي چې کارت اصلي دی. دا ثابت نه کوي چې تاسو هغه شخص یاست چې په کارت کې نومول شوی.",
+        "es": "Escanee el código QR de su tarjeta de identificación de refugiado. Un escaneo válido muestra que la tarjeta es auténtica. No prueba que usted sea la persona nombrada en la tarjeta.",
+        "fr": "Scannez le code QR de votre carte d'identité de réfugié. Un scan valide montre que la carte est authentique. Il ne prouve pas que vous êtes la personne nommée sur la carte.",
+        "tr": "Mülteci kimlik kartınızın QR kodunu tarayın. Geçerli bir tarama, kartın gerçek olduğunu gösterir. Kartta adı geçen kişi olduğunuzu kanıtlamaz.",
+        "ru": "Отсканируйте QR-код вашей карты беженца. Действительное сканирование показывает, что карта подлинная. Это не доказывает, что вы — человек, указанный на карте.",
+        "uk": "Відскануйте QR-код посвідчення біженця. Дійсне сканування показує, що картка справжня. Це не доводить, що ви є особою, зазначеною на картці.",
+        "nl": "Scan de QR-code van uw vluchtelingen-ID-kaart. Een geldige scan toont aan dat de kaart echt is. Het bewijst niet dat u de persoon bent die op de kaart staat.",
+        "pt": "Digitalize o código QR do seu cartão de identificação de refugiado. Uma digitalização válida mostra que o cartão é genuíno. Não prova que você é a pessoa nomeada no cartão."
+      }
+    },
+    {
+      "key": "SERVICES.VERIFY_PLUS.DESCRIPTION",
+      "values": {
+        "en": "Scan your refugee ID card QR code to capture data from your card.",
+        "ar": "قم بمسح رمز QR لبطاقة هوية اللاجئ لالتقاط البيانات من بطاقتك.",
+        "fa": "کد QR کارت شناسایی پناهندگی خود را اسکن کنید تا داده ها را از کارت خود بگیرید.",
+        "ps": "خپل د کډوال پیژندنې کارت QR کوډ سکین کړئ ترڅو له خپل کارت څخه ډیټا ترلاسه کړئ.",
+        "es": "Escanee el código QR de su tarjeta de identificación de refugiado para capturar datos de su tarjeta.",
+        "fr": "Scannez le code QR de votre carte d'identité de réfugié pour capturer les données de votre carte.",
+        "tr": "Kartınızdan veri yakalamak için mülteci kimlik kartınızın QR kodunu tarayın.",
+        "ru": "Отсканируйте QR-код вашей карты беженца, чтобы получить данные с вашей карты.",
+        "uk": "Відскануйте QR-код вашого посвідчення біженця, щоб отримати дані з вашої картки.",
+        "nl": "Scan de QR-code van uw vluchtelingen-ID-kaart om gegevens van uw kaart vast te leggen.",
+        "pt": "Digitalize o código QR do seu cartão de identificação de refugiado para capturar dados do seu cartão."
+      }
+    },
+    {
+      "key": "REGISTRATION.HEADER.TITLE.VERIFYPLUS",
+      "values": {
+        "en": "Scan your refugee ID card (optional)",
+        "ar": "امسح بطاقة هوية اللاجئ (اختياري)",
+        "fa": "کارت شناسایی پناهندگی خود را اسکن کنید (اختیاری)",
+        "ps": "خپل د کډوال پیژندنې کارت سکین کړئ (اختیاري)",
+        "es": "Escanee su tarjeta de identificación de refugiado (opcional)",
+        "fr": "Scannez votre carte d'identité de réfugié (facultatif)",
+        "tr": "Mülteci kimlik kartınızı tarayın (isteğe bağlı)",
+        "ru": "Отсканируйте удостоверение беженца (необязательно)",
+        "uk": "Відскануйте посвідчення біженця (необов'язково)",
+        "nl": "Scan uw vluchtelingen-ID-kaart (optioneel)",
+        "pt": "Digitalize seu cartão de identificação de refugiado (opcional)"
+      }
+    },
+    {
+      "key": "REGISTRATION.VERIFY_PLUS.TITLE",
+      "values": {
+        "en": "Refugee ID Scan (optional)",
+        "ar": "مسح هوية اللاجئ (اختياري)",
+        "fa": "اسکن هویت پناهندگی (اختیاری)",
+        "ps": "د کډوال پیژندنې سکین (اختیاري)",
+        "es": "Escaneo de ID de Refugiado (opcional)",
+        "fr": "Scan d'identité de réfugié (facultatif)",
+        "tr": "Mülteci Kimlik Taraması (isteğe bağlı)",
+        "ru": "Сканирование удостоверения беженца (необязательно)",
+        "uk": "Сканування посвідчення біженця (необов'язково)",
+        "nl": "Vluchtelingen-ID-scan (optioneel)",
+        "pt": "Digitalização de ID de Refugiado (opcional)"
+      }
+    },
+    {
+      "key": "REGISTRATION.VERIFY_PLUS.DESCRIPTION",
+      "values": {
+        "en": "Scan your refugee ID card now to pre-fill your refugee registration number. A valid scan shows the card is genuine. It does not prove that you are the person named on the card.",
+        "ar": "قم بمسح بطاقة هوية اللاجئ الآن لملء رقم تسجيل اللاجئ الخاص بك مسبقًا. يظهر الفحص الصالح أن البطاقة أصلية. ولا يثبت أنك الشخص المذكور على البطاقة.",
+        "fa": "اکنون کارت شناسایی پناهندگی خود را اسکن کنید تا شماره ثبت نام پناهندگی خود را از قبل پر کنید. یک اسکن معتبر نشان می‌دهد که کارت اصیل است. این ثابت نمی‌کند که شما شخص نام‌برده روی کارت هستید.",
+        "ps": "همدا اوس خپل د کډوال پیژندنې کارت سکین کړئ ترڅو خپل د کډوالۍ ثبت شمیره دمخه ډکه کړئ. یو باوري سکین ښيي چې کارت اصلي دی. دا ثابت نه کوي چې تاسو هغه شخص یاست چې په کارت کې نومول شوی.",
+        "es": "Escanee su tarjeta de identificación de refugiado ahora para completar previamente su número de registro de refugiado. Un escaneo válido muestra que la tarjeta es auténtica. No prueba que usted sea la persona nombrada en la tarjeta.",
+        "fr": "Scannez dès maintenant votre carte d'identité de réfugié pour pré-remplir votre numéro d'enregistrement de réfugié. Un scan valide montre que la carte est authentique. Il ne prouve pas que vous êtes la personne nommée sur la carte.",
+        "tr": "Mülteci kayıt numaranızı önceden doldurmak için mülteci kimlik kartınızı şimdi tarayın. Geçerli bir tarama, kartın gerçek olduğunu gösterir. Kartta adı geçen kişi olduğunuzu kanıtlamaz.",
+        "ru": "Отсканируйте свою карту беженца сейчас, чтобы предварительно заполнить свой регистрационный номер беженца. Действительное сканирование показывает, что карта подлинная. Это не доказывает, что вы — человек, указанный на карте.",
+        "uk": "Відскануйте посвідчення біженця зараз, щоб попередньо заповнити реєстраційний номер біженця. Дійсне сканування показує, що картка справжня. Це не доводить, що ви є особою, зазначеною на картці.",
+        "nl": "Scan nu uw vluchtelingen-ID-kaart om uw vluchtelingenregistratienummer vooraf in te vullen. Een geldige scan toont aan dat de kaart echt is. Het bewijst niet dat u de persoon bent die op de kaart staat.",
+        "pt": "Digitalize seu cartão de identificação de refugiado agora para preencher previamente seu número de registro de refugiado. Uma digitalização válida mostra que o cartão é genuíno. Não prova que você é a pessoa nomeada no cartão."
+      }
+    },
+    {
+      "key": "SERVICES.VERIFY_PLUS.DUPLICATE_TITLE",
+      "values": {
+        "en": "Duplicate registration number found",
+        "ar": "تم العثور على رقم تسجيل مكرر",
+        "fa": "شماره ثبت تکراری پیدا شد",
+        "ps": "نقل ثبت شمیره وموندل شوه",
+        "es": "Número de registro duplicado encontrado",
+        "fr": "Numéro d'enregistrement en double trouvé",
+        "tr": "Yinelenen kayıt numarası bulundu",
+        "ru": "Обнаружен повторяющийся регистрационный номер",
+        "uk": "Знайдено повторюваний реєстраційний номер",
+        "nl": "Dubbel registratienummer gevonden",
+        "pt": "Número de registro duplicado encontrado"
+      }
+    },
+    {
+      "key": "SERVICES.VERIFY_PLUS.DUPLICATE_BODY",
+      "values": {
+        "en": "We submitted your scan, but this refugee registration number already exists on another active candidate:",
+        "ar": "لقد أرسلنا الفحص الخاص بك، ولكن رقم تسجيل اللاجئ هذا موجود بالفعل على مرشح نشط آخر:",
+        "fa": "ما اسکن شما را ارسال کردیم، اما این شماره ثبت پناهندگی از قبل در یک نامزد فعال دیگر وجود دارد:",
+        "ps": "موږ ستاسو سکین سپارلی، مګر دا د کډوالۍ ثبت شمیره دمخه په بل فعال نوماند کې شتون لري:",
+        "es": "Enviamos su escaneo, pero este número de registro de refugiado ya existe en otro candidato activo:",
+        "fr": "Nous avons soumis votre scan, mais ce numéro d'enregistrement de réfugié existe déjà sur un autre candidat actif :",
+        "tr": "Taramanızı gönderdik ancak bu mülteci kayıt numarası başka bir aktif adayda zaten mevcut:",
+        "ru": "Мы отправили ваш скан, но этот регистрационный номер беженца уже существует у другого активного кандидата:",
+        "uk": "Ми надіслали ваш скан, але цей реєстраційний номер біженця вже існує на іншому активному кандидаті:",
+        "nl": "We hebben uw scan ingediend, maar dit vluchtelingenregistratienummer bestaat al op een andere actieve kandidaat:",
+        "pt": "Enviamos sua digitalização, mas este número de registro de refugiado já existe em outro candidato ativo:"
+      }
+    },
+    {
+      "key": "REGISTRATION.VERIFY_PLUS.DUPLICATE_BODY",
+      "values": {
+        "en": "We submitted your scan, but this refugee registration number already exists on another active candidate:",
+        "ar": "لقد أرسلنا الفحص الخاص بك، ولكن رقم تسجيل اللاجئ هذا موجود بالفعل على مرشح نشط آخر:",
+        "fa": "ما اسکن شما را ارسال کردیم، اما این شماره ثبت پناهندگی از قبل در یک نامزد فعال دیگر وجود دارد:",
+        "ps": "موږ ستاسو سکین سپارلی، مګر دا د کډوالۍ ثبت شمیره دمخه په بل فعال نوماند کې شتون لري:",
+        "es": "Enviamos su escaneo, pero este número de registro de refugiado ya existe en otro candidato activo:",
+        "fr": "Nous avons soumis votre scan, mais ce numéro d'enregistrement de réfugié existe déjà sur un autre candidat actif :",
+        "tr": "Taramanızı gönderdik ancak bu mülteci kayıt numarası başka bir aktif adayda zaten mevcut:",
+        "ru": "Мы отправили ваш скан, но этот регистрационный номер беженца уже существует у другого активного кандидата:",
+        "uk": "Ми надіслали ваш скан, але цей реєстраційний номер біженця вже існує на іншому активному кандидаті:",
+        "nl": "We hebben uw scan ingediend, maar dit vluchtelingenregistratienummer bestaat al op een andere actieve kandidaat:",
+        "pt": "Enviamos sua digitalização, mas este número de registro de refugiado já existe em outro candidato ativo:"
+      }
+    },
+    {
+      "key": "SERVICES.VERIFY_PLUS.SUBMIT_ERROR_HINT",
+      "values": {
+        "en": "If this is a valid refugee ID card QR code, please rescan.",
+        "ar": "إذا كان رمز QR هذا رمز بطاقة هوية لاجئ صالحًا، فيرجى إعادة المسح ضوئيًا.",
+        "fa": "اگر این یک کد QR معتبر کارت شناسایی پناهندگی است، لطفاً دوباره اسکن کنید.",
+        "ps": "که دا د اعتبار وړ د کډوال پیژندنې کارت QR کوډ وي، مهرباني وکړئ بیا سکین کړئ.",
+        "es": "Si este es un código QR válido de una tarjeta de identificación de refugiado, vuelva a escanearlo.",
+        "fr": "Si ceci est un code QR valide de carte d'identité de réfugié, veuillez effectuer une nouvelle analyse.",
+        "tr": "Bu geçerli bir mülteci kimlik kartı QR koduysa lütfen yeniden tarayın.",
+        "ru": "Если это действительный QR-код карты беженца, повторите сканирование.",
+        "uk": "Якщо це дійсний QR-код посвідчення біженця, повторіть сканування.",
+        "nl": "Als dit een geldige QR-code van een vluchtelingen-ID-kaart is, scan dan opnieuw.",
+        "pt": "Se este for um código QR válido de um cartão de identificação de refugiado, verifique novamente."
+      }
+    },
+    {
+      "key": "SERVICES.VERIFY_PLUS.SUCCESS_BODY",
+      "values": {
+        "en": "Your refugee registration number was captured successfully:",
+        "ar": "تم التقاط رقم تسجيل اللاجئ الخاص بك بنجاح:",
+        "fa": "شماره ثبت پناهندگی شما با موفقیت ثبت شد:",
+        "ps": "ستاسو د کډوالۍ ثبت شمیره په بریالیتوب سره ونیول شوه:",
+        "es": "Su número de registro de refugiado fue capturado exitosamente:",
+        "fr": "Votre numéro d'enregistrement de réfugié a été capturé avec succès :",
+        "tr": "Mülteci kayıt numaranız başarıyla alındı:",
+        "ru": "Ваш регистрационный номер беженца успешно захвачен:",
+        "uk": "Ваш реєстраційний номер біженця було успішно захоплено:",
+        "nl": "Uw vluchtelingenregistratienummer is succesvol vastgelegd:",
+        "pt": "Seu número de registro de refugiado foi capturado com sucesso:"
+      }
+    },
+    {
+      "key": "REGISTRATION.VERIFY_PLUS.SUCCESS_TITLE",
+      "values": {
+        "en": "Refugee registration number captured",
+        "ar": "تم التقاط رقم تسجيل اللاجئ",
+        "fa": "شماره ثبت پناهندگی گرفته شد",
+        "ps": "د کډوالۍ ثبت شمیره ونیول شوه",
+        "es": "Número de registro de refugiado capturado",
+        "fr": "Numéro d'enregistrement de réfugié capturé",
+        "tr": "Mülteci kayıt numarası yakalandı",
+        "ru": "Регистрационный номер беженца захвачен",
+        "uk": "Реєстраційний номер біженця захоплено",
+        "nl": "Vluchtelingenregistratienummer vastgelegd",
+        "pt": "Número de registro de refugiado capturado"
+      }
+    }
+  ]
+}

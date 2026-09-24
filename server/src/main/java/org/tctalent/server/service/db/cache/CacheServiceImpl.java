@@ -18,6 +18,7 @@ package org.tctalent.server.service.db.cache;
 
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
+import org.tctalent.server.repository.db.read.cache.CandidateRedisCache;
 
 /**
  * Implementation of the {@link CacheService} interface for cache management.
@@ -26,6 +27,12 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class CacheServiceImpl implements CacheService {
+
+  private final CandidateRedisCache candidateRedisCache;
+
+  public CacheServiceImpl(CandidateRedisCache candidateRedisCache) {
+    this.candidateRedisCache = candidateRedisCache;
+  }
 
   /**
    * {@inheritDoc}
@@ -38,6 +45,22 @@ public class CacheServiceImpl implements CacheService {
   @Override
   public void flushUserCache() {
     // This method will remove all entries in the "users" cache
+  }
+
+  /**
+   * {@inheritDoc}
+   * <p>
+   * Candidate JSON is stored directly in Redis via {@link CandidateRedisCache}
+   * ({@code candidate:json:*} keys), not through Spring's cache abstraction.
+   * {@code @CacheEvict} therefore cannot be used here — it would only clear a
+   * named Spring cache and leave the candidate keys in place. This method
+   * delegates to {@link CandidateRedisCache#clear()} to SCAN and delete those
+   * keys. Postgres {@code candidate_json_cache} is left unchanged.
+   * </p>
+   */
+  @Override
+  public void flushCandidateCache() {
+    candidateRedisCache.clear();
   }
 
 }

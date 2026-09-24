@@ -19,6 +19,7 @@
 <head>
     <meta charset="UTF-8">
 
+    <link rel="icon" type="image/svg+xml" href="{{ '/assets/images/opc_favicon.svg' | relative_url }}">
     {% seo %}
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -34,7 +35,7 @@
 
 <header class="page-header" role="banner">
     <a class="logo-link" href="{{site.url}}/talentcatalog/release_notes"><img class="logo" src="{{ '/assets/images/TCLogo2.png?v=' | append: site.github.build_revision | relative_url }}" alt="TC logo" height="80" /></a>
-    <div>
+    <div class="project-info">
         <h1 class="project-name">{{ page.title | default: site.title | default: site.github.repository_name }}</h1>
         <h2 class="project-tagline">{{ page.description | default: site.description | default: site.github.project_tagline }}</h2>
     </div>

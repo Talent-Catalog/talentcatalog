@@ -23,6 +23,8 @@ import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.Role;
 import org.tctalent.server.model.db.User;
 import org.tctalent.server.model.db.partner.Partner;
+import org.tctalent.server.repository.db.read.dto.CandidateReadDto;
+import org.tctalent.server.repository.db.read.dto.UserReadDto;
 import org.tctalent.server.util.dto.DtoPropertyFilter;
 
 /**
@@ -95,9 +97,9 @@ public class PartnerAndRoleBasedDtoPropertyFilter implements DtoPropertyFilter {
             } else {
                 //It is not a public property - so could be ignored. Depends on partner type and role.
                 //TODO JC This code needs to be modified to understand recruiter ownership
-                Partner candidatePartner = fetchPartner(o);
-                if (partner != null && candidatePartner != null) {
-                    ignore = roleBasedFilter(role, partner, candidatePartner, property);
+                Long candidatePartnerId = fetchPartnerId(o);
+                if (partner != null && candidatePartnerId != null) {
+                    ignore = roleBasedFilter(role, partner, candidatePartnerId, property);
                 } else {
                     // If partner or candidate partner is null, then only show public properties
                     ignore = true;
@@ -107,14 +109,15 @@ public class PartnerAndRoleBasedDtoPropertyFilter implements DtoPropertyFilter {
         return ignore;
     }
 
-    private boolean roleBasedFilter(Role role, Partner partner, Partner candidatePartner, String property) {
+    private boolean roleBasedFilter(Role role, Partner partner, Long candidatePartnerId,
+        String property) {
         boolean ignore;
         switch (role) {
             case admin:
             case partneradmin:
                 // Source partner admins can only see full details if the candidate is assigned to their partner
                 if (partner.isSourcePartner()) {
-                    ignore = isNotPartnerMatch(partner, candidatePartner);
+                    ignore = isNotPartnerMatch(partner, candidatePartnerId);
                 } else if (isViewerPartner(partner)) {
                     // Viewer partners can only see the semi limited (no personal details) fields, regardless of role
                     ignore = !isVisibleToViewerPartner(property);
@@ -133,7 +136,7 @@ public class PartnerAndRoleBasedDtoPropertyFilter implements DtoPropertyFilter {
                         || !semiLimitedExtraProperties.contains(property);
                 // However, source partner semi limited users can't see the extra semi limited properties if they aren't
                 // assigned to the same partner as the candidate.
-                if (partner.isSourcePartner() && isNotPartnerMatch(partner, candidatePartner)) {
+                if (partner.isSourcePartner() && isNotPartnerMatch(partner, candidatePartnerId)) {
                     ignore = true;
                 }
                break;
@@ -146,11 +149,11 @@ public class PartnerAndRoleBasedDtoPropertyFilter implements DtoPropertyFilter {
     /**
      * Checks if an admin portal user partner matches a candidate's assigned partner
      * @param partner admin portal user partner
-     * @param candidatePartner candidate's assigned partner
+     * @param candidatePartnerId candidate's assigned partner id
      * @return boolean if match or not
      */
-    private boolean isNotPartnerMatch(Partner partner, Partner candidatePartner) {
-        return !partner.getId().equals(candidatePartner.getId());
+    private boolean isNotPartnerMatch(Partner partner, Long candidatePartnerId) {
+        return !partner.getId().equals(candidatePartnerId);
     }
 
     /**
@@ -199,25 +202,41 @@ public class PartnerAndRoleBasedDtoPropertyFilter implements DtoPropertyFilter {
                 inFullyVisibleCandidates = fullyVisibleUserIds != null
                     && userId != null
                     && fullyVisibleUserIds.contains(userId);
+            } else if (o instanceof CandidateReadDto) {
+                final Long candidateId = ((CandidateReadDto) o).getId();
+                inFullyVisibleCandidates = fullyVisibleCandidateIds != null
+                    && candidateId != null
+                    && fullyVisibleCandidateIds.contains(candidateId);
+            } else if (o instanceof UserReadDto) {
+                final Long userId = ((UserReadDto) o).getId();
+                inFullyVisibleCandidates = fullyVisibleUserIds != null
+                    && userId != null
+                    && fullyVisibleUserIds.contains(userId);
             }
         return inFullyVisibleCandidates;
     }
 
     /**
-     * Fetches the source partner associated with the given object
-     * @param o Object - should be a Candidate or a User
-     * @return Partner associated with object, or null if none found
+     * Fetches the source partner id associated with the given object.
+     * @param o Candidate or user entity/read DTO
+     * @return Partner id associated with object, or null if none found
      */
     @Nullable
-    private Partner fetchPartner(Object o) {
-        User user = null;
+    private Long fetchPartnerId(Object o) {
         if (o instanceof Candidate) {
-            user = ((Candidate) o).getUser();
+            final User user = ((Candidate) o).getUser();
+            return user == null || user.getPartner() == null ? null : user.getPartner().getId();
         } else if (o instanceof User) {
-            user = (User) o;
+            final Partner userPartner = ((User) o).getPartner();
+            return userPartner == null ? null : userPartner.getId();
+        } else if (o instanceof CandidateReadDto) {
+            final UserReadDto user = ((CandidateReadDto) o).getUser();
+            return user == null || user.getPartner() == null ? null : user.getPartner().getId();
+        } else if (o instanceof UserReadDto) {
+            return ((UserReadDto) o).getPartner() == null
+                ? null : ((UserReadDto) o).getPartner().getId();
         }
-
-        return user == null ? null : user.getPartner();
+        return null;
     }
 
 }
