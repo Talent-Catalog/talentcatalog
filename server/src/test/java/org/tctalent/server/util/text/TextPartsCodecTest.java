@@ -60,15 +60,10 @@ class TextPartsCodecTest {
 
     @Test
     void isTextPartsReturnsTrueForWellFormedTextPartsJson() {
-        String stored = """
-            {
-              "parts": {
-                "original": "i work electrician",
-                "tidied": "I worked as an electrician.",
-                "keywords": ["electrician", "wiring"]
-              }
-            }
-            """;
+        String stored =
+            "{\"parts\":{\"original\":\"i work electrician\","
+                + "\"tidied\":\"I worked as an electrician.\","
+                + "\"keywords\":[\"electrician\",\"wiring\"]}}";
 
         assertTrue(TextPartsCodec.isTextParts(stored));
     }
