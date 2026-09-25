@@ -302,7 +302,8 @@ public class CandidateJobExperienceServiceImpl implements CandidateJobExperience
                         .logError();
                 }
                 try {
-                    candidateJobExperienceRepository.save(experience);
+                    //Now update the experience and its embedding.
+                    save(experience, true);
                 } catch (Exception e) {
                     LogBuilder.builder(log)
                         .action("batchUpdatePageOfCandidateJobExperienceTextParts")
