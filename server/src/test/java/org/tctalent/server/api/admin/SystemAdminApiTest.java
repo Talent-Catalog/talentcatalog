@@ -912,6 +912,7 @@ class SystemAdminApiTest {
   void simpleServiceEndpoints_delegateToServices() {
     systemAdminApi.setPublicIds();
     systemAdminApi.flushUserCache();
+    systemAdminApi.flushCandidateCache();
     systemAdminApi.notifyOfNewChatPosts();
     systemAdminApi.loadCandidateOpportunityLastActiveStages();
     systemAdminApi.createEmployerForAllJobs();
@@ -925,6 +926,7 @@ class SystemAdminApiTest {
     verify(backgroundProcessingService).setSavedListPublicIds();
     verify(backgroundProcessingService).setSavedSearchPublicIds();
     verify(cacheService).flushUserCache();
+    verify(cacheService).flushCandidateCache();
     verify(notificationService).notifyUsersOfChatsWithNewUnreadPosts();
     verify(candidateOpportunityService).loadCandidateOpportunityLastActiveStages();
     verify(jobService).createEmployerForAllJobs();

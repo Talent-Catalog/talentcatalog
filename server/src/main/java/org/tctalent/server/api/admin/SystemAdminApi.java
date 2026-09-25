@@ -568,6 +568,16 @@ public class SystemAdminApi {
             .logInfo();
     }
 
+    @PostMapping("flush_candidate_cache")
+    public void flushCandidateCache() {
+        cacheService.flushCandidateCache();
+        LogBuilder.builder(log)
+            .user(authService.getLoggedInUser())
+            .action("FlushCandidateCache")
+            .message("Candidate cache flushed")
+            .logInfo();
+    }
+
     @PostMapping("notifyOfChatsWithNewUnreadPosts")
     public void notifyOfNewChatPosts() {
         notificationService.notifyUsersOfChatsWithNewUnreadPosts();
