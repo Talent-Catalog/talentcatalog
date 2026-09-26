@@ -81,9 +81,31 @@
               [innerHtml]="experience.role"
               appHighlightSearch>
           </h6>
-          <div *ngIf="experience.description">
-            <app-text-parts-view  [text]="experience.description" appHighlightSearch></app-text-parts-view>
+          <div class="text-parts-view">
+            <div class="mb-3" *ngIf="experience?.description">
+              <label class="form-label">Original</label>
+              <div class="form-control-plaintext" [innerHTML]="experience?.description"
+                   appHighlightSearch></div>
+            </div>
+
+            <div class="mb-3" *ngIf="experience?.tidiedDescription">
+              <label class="form-label">Tidied</label>
+              <div class="form-control-plaintext" [innerHTML]="experience.tidiedDescription"
+                   appHighlightSearch></div>
+            </div>
+
+            <div class="mb-3" *ngIf="experience?.keywordsInDescription?.length">
+              <label class="form-label">Keywords</label>
+              <div appHighlightSearch>
+                <span
+                  class="badge bg-secondary me-1"
+                  *ngFor="let keyword of experience.keywordsInDescription">
+                  {{ keyword }}
+                </span>
+              </div>
+            </div>
           </div>
+
           <small class="text-muted">
             {{experience.startDate | date: 'customMonthYear' }} - {{experience.endDate | date: 'customMonthYear' }}
           </small>

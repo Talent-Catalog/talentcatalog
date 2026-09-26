@@ -33,7 +33,7 @@ import {NO_ERRORS_SCHEMA, SimpleChange} from "@angular/core";
 import {MockCandidate} from "../../../../../MockData/MockCandidate";
 import {CandidateJobExperience} from "../../../../../model/candidate-job-experience";
 import {CandidateService} from "../../../../../services/candidate.service";
-import {of} from "rxjs";
+import {of, throwError} from "rxjs";
 import {SkillsService} from "../../../../../services/skills.service";
 import {EditCandidateOccupationComponent} from "../edit/edit-candidate-occupation.component";
 import {
@@ -223,13 +223,9 @@ describe('ViewCandidateJobExperienceComponent', () => {
   it('should edit experience, extract skills and refresh after success', fakeAsync(() => {
     const experience = {
       id: 5,
-      description: JSON.stringify({
-        parts: {
-          original: 'Original text',
-          tidied: 'Tidied text',
-          keywords: ['Java', 'Spring']
-        }
-      })
+      description: 'Original text',
+      tidiedDescription: 'Tidied text',
+      keywordsInDescription: ['Java', 'Spring']
     } as any;
 
     const modalRef = {
@@ -275,13 +271,9 @@ describe('ViewCandidateJobExperienceComponent', () => {
   it('should ignore edit experience modal dismissal', fakeAsync(() => {
     const experience = {
       id: 5,
-      description: JSON.stringify({
-        parts: {
-          original: '',
-          tidied: '',
-          keywords: []
-        }
-      })
+      description: '',
+      tidiedDescription: '',
+      keywordsInDescription: []
     } as any;
 
     const modalRef = {
@@ -305,6 +297,34 @@ describe('ViewCandidateJobExperienceComponent', () => {
 
     expect(mockCandidateService.updateCandidate)
     .not.toHaveBeenCalled();
+  }));
+
+  it('should safely build skill extraction text when description fields are missing', fakeAsync(() => {
+    const experience = {
+      id: 9,
+      description: undefined,
+      tidiedDescription: undefined,
+      keywordsInDescription: undefined
+    } as any;
+
+    const modalRef = {
+      componentInstance: {},
+      result: Promise.resolve(experience)
+    } as any;
+
+    mockNgbModal.open.and.returnValue(modalRef);
+    mockSkillsService.extractSkills.and.returnValue(of([]));
+
+    expect(() => component.editCandidateJobExperience(experience)).not.toThrow();
+    tick();
+
+    expect(mockSkillsService.extractSkills).toHaveBeenCalledWith({
+      lang: 'en',
+      text: '  '
+    });
+
+    expect(mockCandidateService.updateCandidate)
+    .toHaveBeenCalled();
   }));
 
   it('should emit delete occupation immediately when there are no experiences', () => {
@@ -388,6 +408,29 @@ describe('ViewCandidateJobExperienceComponent', () => {
     expect(component.loading).toBeFalse();
     expect(mockCandidateService.updateCandidate)
     .toHaveBeenCalled();
+  }));
+
+  it('should set error and stop loading when deleting a job experience fails', fakeAsync(() => {
+    const experience = {id: 7} as any;
+    const error = 'Delete failed';
+
+    const modalRef = {
+      componentInstance: {},
+      result: Promise.resolve(true)
+    } as any;
+
+    mockNgbModal.open.and.returnValue(modalRef);
+    mockCandidateJobExperienceService.delete
+    .and.returnValue(throwError(error));
+
+    component.loading = true;
+    component.deleteCandidateJobExperience(experience);
+    tick();
+
+    expect(component.error).toBe(error);
+    expect(component.loading).toBeFalse();
+    expect(mockCandidateService.updateCandidate)
+    .not.toHaveBeenCalled();
   }));
 
   it('should not delete a job experience when confirmation is false', fakeAsync(() => {

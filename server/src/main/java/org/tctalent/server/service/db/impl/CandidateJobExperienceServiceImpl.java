@@ -115,7 +115,10 @@ public class CandidateJobExperienceServiceImpl implements CandidateJobExperience
         candidateJobExperience.setEndDate(request.getEndDate());
         candidateJobExperience.setFullTime(request.getFullTime());
         candidateJobExperience.setPaid(request.getPaid());
-        updateJobExperienceDescription(candidateJobExperience, request.getDescription());
+
+        candidateJobExperience.setDescription(request.getDescription());
+        candidateJobExperience.setTidiedDescription(request.getTidiedDescription());
+        updateJobExperienceKeywords(candidateJobExperience, request.getKeywordsInDescription());
 
         // Save the candidateOccupation
         final CandidateJobExperience jobExperience =
@@ -133,17 +136,15 @@ public class CandidateJobExperienceServiceImpl implements CandidateJobExperience
         if (candidate == null) {
             throw new InvalidSessionException("Not logged in");
         }
-        CandidateJobExperience experience = updateCandidateJobExperience(request.getId(), request);
-
-        return experience;
+        return updateCandidateJobExperience(request.getExperienceId(), request);
     }
 
     @Override
-    public CandidateJobExperience updateCandidateJobExperience(Long id, UpdateJobExperienceRequest request) {
+    public CandidateJobExperience updateCandidateJobExperience(Long experienceId, UpdateJobExperienceRequest request) {
         // Load the candidate from the database - throw an exception if not found
         CandidateJobExperience candidateJobExperience = candidateJobExperienceRepository
-                .findByIdLoadCandidateOccupation(id)
-                .orElseThrow(() -> new NoSuchObjectException(CandidateJobExperience.class, id));
+                .findByIdLoadCandidateOccupation(experienceId)
+                .orElseThrow(() -> new NoSuchObjectException(CandidateJobExperience.class, experienceId));
 
         Country country = getCountry(request.getCountryId());
 
@@ -165,7 +166,9 @@ public class CandidateJobExperienceServiceImpl implements CandidateJobExperience
         candidateJobExperience.setEndDate(request.getEndDate());
         candidateJobExperience.setFullTime(request.getFullTime());
         candidateJobExperience.setPaid(request.getPaid());
-        updateJobExperienceDescription(candidateJobExperience, request.getDescription());
+        candidateJobExperience.setDescription(request.getDescription());
+        candidateJobExperience.setTidiedDescription(request.getTidiedDescription());
+        updateJobExperienceKeywords(candidateJobExperience, request.getKeywordsInDescription());
         candidateJobExperience.setCandidateOccupation(candidateOccupation);
 
         // Save the candidate experience
@@ -263,6 +266,56 @@ public class CandidateJobExperienceServiceImpl implements CandidateJobExperience
         }
     }
 
+    @Override
+    public PageProcessReturn batchUpdatePageOfCandidateJobExperienceTextParts(
+        SearchJobExperienceRequest request) {
+
+        PageProcessReturn pageProcessReturn;
+
+        Page<CandidateJobExperience> page = searchCandidateJobExperience(request);
+
+        pageProcessReturn = new PageProcessReturn(page);
+
+        batchUpdatePageOfCandidateJobExperienceTextParts(page.getContent());
+
+        return pageProcessReturn;
+    }
+
+    private void batchUpdatePageOfCandidateJobExperienceTextParts(
+        List<CandidateJobExperience> experiences) {
+
+        experiences.forEach(experience -> {
+            String description = experience.getDescription();
+            //Skip experiences where the description isn't a TextParts
+            if (TextPartsCodec.isTextParts(description)) {
+                try {
+                    TextParts parts = TextPartsCodec.readJson(description);
+                    experience.setKeywordsInDescription(parts.getKeywords());
+                    experience.setTidiedDescription(parts.getTidied());
+                    experience.setDescription(parts.getOriginal());
+                } catch (Exception e) {
+                    LogBuilder.builder(log)
+                        .action("batchUpdatePageOfCandidateJobExperienceTextParts")
+                        .message(String.format(
+                            "Error converting TextParts for candidate job experience %d: '%s'",
+                            experience.getId(), e.getMessage()))
+                        .logError();
+                }
+                try {
+                    //Now update the experience and its embedding.
+                    save(experience, true);
+                } catch (Exception e) {
+                    LogBuilder.builder(log)
+                        .action("batchUpdatePageOfCandidateJobExperienceTextParts")
+                        .message(String.format(
+                            "Error saving candidate job experience %d: '%s'",
+                            experience.getId(), e.getMessage()))
+                        .logError();
+                }
+            }
+        });
+    }
+
     /**
      * Checks which of the given job experiences have embeddings for the given model.
      * @param experiences Job experiences
@@ -302,21 +355,16 @@ public class CandidateJobExperienceServiceImpl implements CandidateJobExperience
     }
 
     /**
-     * Updates the description of a CandidateJobExperience object.
-     * <p>
-     * It also checks for any additional keywords that have been specified that may need to be
-     * stored as new skills.
+     * Updates the keywords of a CandidateJobExperience and adds any new skills to the database.
      * @param candidateJobExperience Job experience to update
-     * @param description New description
+     * @param keywordsInDescription Keywords user highlighted in description
      */
-    private void updateJobExperienceDescription(
-        CandidateJobExperience candidateJobExperience, String description) {
-        //Extract any keywords.
-        TextParts textParts = TextPartsCodec.read(description);
-        final List<String> keywords = textParts.getKeywords();
+    private void updateJobExperienceKeywords(
+        CandidateJobExperience candidateJobExperience, List<String> keywordsInDescription) {
+
         //Add any new skills to the database.
-        skillsService.addTcSkillsIfNew(keywords, "en");
-        candidateJobExperience.setDescription(description);
+        skillsService.addTcSkillsIfNew(keywordsInDescription, "en");
+        candidateJobExperience.setKeywordsInDescription(keywordsInDescription);
     }
 
     @Override
@@ -383,8 +431,17 @@ public class CandidateJobExperienceServiceImpl implements CandidateJobExperience
         final String modelKey = model.getModelKey();
         final String tableName = embeddingModelService.getTableNameForModel(model);
 
+        //Construct the text to embed by concatenating the description, tidied description,
+        //and keywords in description.
+        String textToEmbed = experience.getDescription() == null? "" : experience.getDescription();
+        if (experience.getTidiedDescription() != null) {
+            textToEmbed += " " + experience.getTidiedDescription();
+        }
+        if (experience.getKeywordsInDescription() != null) {
+            textToEmbed += " " + String.join(" ", experience.getKeywordsInDescription());
+        }
         final EmbeddingResult result = tcVectorEmbeddingService.generateEmbedding(
-            modelKey, context, experience.getDescription(), EmbeddingInputType.DOCUMENT);
+            modelKey, context, textToEmbed, EmbeddingInputType.DOCUMENT);
 
         if (result.isSuccessful()) {
             jobExperienceEmbeddingRepository.upsert(

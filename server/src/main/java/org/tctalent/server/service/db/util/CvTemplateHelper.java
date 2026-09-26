@@ -25,7 +25,6 @@ import org.tctalent.server.exception.CvGenerationException;
 import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.service.db.impl.TcInstanceService;
-import org.tctalent.server.util.text.CandidateTidiedTextViewFactory;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
@@ -48,8 +47,6 @@ public class CvTemplateHelper {
 
   private final TemplateEngine cvTemplateEngine;
   private final TcInstanceService tcInstanceService;
-  private final CandidateTidiedTextViewFactory candidateTidiedTextViewFactory;
-  private final CvExportDataPreparer cvExportDataPreparer;
 
   /**
    * Note - we can't use Lombok RequiredArgsConstructor because currently Lombok doesn't copy
@@ -57,14 +54,10 @@ public class CvTemplateHelper {
    */
   public CvTemplateHelper(
       @Qualifier("cvTemplateEngine") TemplateEngine cvTemplateEngine,
-      TcInstanceService tcInstanceService,
-      CandidateTidiedTextViewFactory candidateTidiedTextViewFactory,
-      CvExportDataPreparer cvExportDataPreparer
+      TcInstanceService tcInstanceService
   ) {
     this.cvTemplateEngine = cvTemplateEngine;
     this.tcInstanceService = tcInstanceService;
-    this.candidateTidiedTextViewFactory = candidateTidiedTextViewFactory;
-    this.cvExportDataPreparer = cvExportDataPreparer;
   }
 
   public String getResourceBaseUrl() {
@@ -91,10 +84,8 @@ public class CvTemplateHelper {
    */
   public String renderCvXhtml(Candidate candidate, Boolean showName, Boolean showContact) {
     try {
-      Candidate preparedCandidate = cvExportDataPreparer.prepare(candidate, showContact);
-
       Context context = new Context();
-      context.setVariable("candidate", candidateTidiedTextViewFactory.create(preparedCandidate));
+      context.setVariable("candidate", candidate);
       context.setVariable("showName", showName);
       context.setVariable("showContact", showContact);
       context.setVariable("logoFile", tcInstanceService.getLogoFile());

@@ -607,6 +607,8 @@ public class CandidateBuilderSelector {
             .add("fullTime")
             .add("paid")
             .add("description")
+            .add("tidiedDescription")
+            .add("keywordsInDescription")
             .add("country", countryService.selectBuilder())
             ;
 

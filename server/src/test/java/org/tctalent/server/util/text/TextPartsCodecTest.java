@@ -17,6 +17,7 @@
 package org.tctalent.server.util.text;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -31,6 +32,55 @@ import org.tctalent.server.util.html.HtmlSanitizer;
 class TextPartsCodecTest {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
+
+    @Test
+    void isTextPartsReturnsFalseForNull() {
+        assertFalse(TextPartsCodec.isTextParts(null));
+    }
+
+    @Test
+    void isTextPartsReturnsFalseForEmptyString() {
+        assertFalse(TextPartsCodec.isTextParts(""));
+    }
+
+    @Test
+    void isTextPartsReturnsFalseForPlainText() {
+        assertFalse(TextPartsCodec.isTextParts("I work electrician 5 years"));
+    }
+
+    @Test
+    void isTextPartsReturnsFalseForHtml() {
+        assertFalse(TextPartsCodec.isTextParts("<p>Line 1</p><div>Line 2</div>"));
+    }
+
+    @Test
+    void isTextPartsReturnsFalseForUnrelatedJson() {
+        assertFalse(TextPartsCodec.isTextParts("{\"hello\":\"world\"}"));
+    }
+
+    @Test
+    void isTextPartsReturnsTrueForWellFormedTextPartsJson() {
+        String stored =
+            "{\"parts\":{\"original\":\"i work electrician\","
+                + "\"tidied\":\"I worked as an electrician.\","
+                + "\"keywords\":[\"electrician\",\"wiring\"]}}";
+
+        assertTrue(TextPartsCodec.isTextParts(stored));
+    }
+
+    @Test
+    void isTextPartsReturnsTrueForMalformedTextPartsJson() {
+        // Matches on the "{"parts" prefix even though the rest is not valid JSON, so that
+        // callers can distinguish corrupted TextParts JSON from unrelated/legacy text.
+        String malformedJson = "{\"parts\":{\"original\":\"hello\nworld\"}}";
+
+        assertTrue(TextPartsCodec.isTextParts(malformedJson));
+    }
+
+    @Test
+    void isTextPartsReturnsFalseWhenPartsPrefixIsNotAtStart() {
+        assertFalse(TextPartsCodec.isTextParts(" {\"parts\":{\"original\":\"hello\"}}"));
+    }
 
     @Test
     void readsNullAsEmptyOriginalText() {
