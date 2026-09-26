@@ -21,6 +21,7 @@ import javax.security.auth.login.AccountLockedException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -33,6 +34,7 @@ import org.tctalent.server.model.db.User;
 import org.tctalent.server.request.LoginRequest;
 import org.tctalent.server.response.JwtAuthenticationResponse;
 import org.tctalent.server.service.db.UserService;
+import org.tctalent.server.service.db.impl.TcInstanceService;
 import org.tctalent.server.util.dto.DtoBuilder;
 import org.tctalent.server.util.qr.EncodedQrImage;
 
@@ -51,6 +53,18 @@ import org.tctalent.server.util.qr.EncodedQrImage;
 public class AuthAdminApi {
 
     private final UserService userService;
+    private final TcInstanceService tcInstanceService;
+
+    /**
+     * Returns the type of Talent Catalog instance (eg GRN or TBB) that is running.
+     * <p/>
+     * This is unauthenticated so that it can be called from the login page - ie before the user
+     * has logged in - to determine which branding to display.
+     */
+    @GetMapping("instance-type")
+    public Map<String, Object> getInstanceType() {
+        return Map.of("tcInstanceType", tcInstanceService.getInstanceType());
+    }
 
     @PostMapping("login")
     public Map<String, Object> login(@RequestBody LoginRequest request)
