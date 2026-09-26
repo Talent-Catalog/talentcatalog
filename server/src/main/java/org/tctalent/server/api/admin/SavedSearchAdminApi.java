@@ -387,6 +387,7 @@ public class SavedSearchAdminApi implements
             .add("watcherUserIds")
             .add("createdBy", userDto())
             .add("global")
+            .add("autoUpdateOnSearch")
             ;
     }
 
@@ -431,6 +432,7 @@ public class SavedSearchAdminApi implements
                 .add("reviewable")
                 .add("global")
                 .add("defaultSearch")
+                .add("autoUpdateOnSearch")
                 .add("includePendingTermsCandidates")
                 .add("miniIntakeCompleted")
                 .add("fullIntakeCompleted")

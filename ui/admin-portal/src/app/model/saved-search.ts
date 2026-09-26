@@ -70,6 +70,7 @@ export interface SavedSearchRef extends HasId {
 
 export interface SavedSearch extends CandidateSource, SearchCandidateRequest, SavedSearchRef {
   defaultSearch: boolean;
+  autoUpdateOnSearch?: boolean;
   reviewable: boolean;
   savedSearchType: SavedSearchType;
   savedSearchSubtype: SavedSearchSubtype;
@@ -155,6 +156,7 @@ export interface SavedSearchRequest {
   name?: string;
   fixed?: boolean;
   reviewable?: boolean;
+  autoUpdateOnSearch?: boolean;
   jobId?: number;
   savedSearchType?: SavedSearchType;
   savedSearchSubtype?: SavedSearchSubtype;
@@ -192,6 +194,7 @@ export function convertToSavedSearchRequest
   savedSearchRequest.fixed = savedSearch.fixed;
   savedSearchRequest.jobId = jobId;
   savedSearchRequest.reviewable = savedSearch.reviewable;
+  savedSearchRequest.autoUpdateOnSearch = savedSearch.autoUpdateOnSearch;
   savedSearchRequest.savedSearchType = savedSearch.savedSearchType;
   savedSearchRequest.savedSearchSubtype = savedSearch.savedSearchSubtype;
   savedSearchRequest.searchCandidateRequest = searchCandidateRequest;

@@ -34,5 +34,5 @@ public class UpdateSavedSearchRequest extends AbstractUpdateCandidateSourceReque
     private SavedSearchType savedSearchType;
     private SavedSearchSubtype savedSearchSubtype;
     private SearchCandidateRequest searchCandidateRequest;
-
+    private Boolean autoUpdateOnSearch;
 }

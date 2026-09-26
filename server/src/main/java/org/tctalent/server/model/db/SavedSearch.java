@@ -58,6 +58,17 @@ public class SavedSearch extends AbstractCandidateSource {
     private Boolean defaultSearch = false;
 
     /**
+     * Controls whether changes to this saved search's filter criteria are persisted automatically
+     * when the search is run.
+     * <p>
+     * The default is {@code true}, meaning that changing filters and clicking Search updates the
+     * stored search criteria before the search results are returned.
+     * <p>
+     * When set to {@code false}, running the search does not modify its persisted criteria.
+     */
+    private Boolean autoUpdateOnSearch = true;
+
+    /**
      * This is the query string that will be used to search text related to candidates.
      * Currently, it is based on Elasticsearch style simple query string syntax.
      */
