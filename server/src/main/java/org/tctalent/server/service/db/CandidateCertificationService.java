@@ -29,6 +29,19 @@ public interface CandidateCertificationService {
 
     CandidateCertification updateCandidateCertification(UpdateCandidateCertificationRequest request);
 
+    /**
+     * Deletes the certification with the given id.
+     * <p/>
+     * Users with admin privileges may delete any candidate's certification. Other users - ie
+     * candidates using the candidate portal - may only delete their own.
+     * @param id Id of the certification to delete
+     * @throws org.tctalent.server.exception.InvalidSessionException if no user is logged in, or
+     * a non admin user has no associated candidate
+     * @throws org.tctalent.server.exception.NoSuchObjectException if no certification exists
+     * with the given id
+     * @throws org.tctalent.server.exception.InvalidCredentialsException if a non admin user
+     * attempts to delete another candidate's certification
+     */
     void deleteCandidateCertification(Long id);
 
 }

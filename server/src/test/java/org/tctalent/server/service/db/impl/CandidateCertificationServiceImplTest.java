@@ -22,9 +22,11 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.AdditionalAnswers.returnsFirstArg;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.tctalent.server.data.CandidateTestData.getCandidate;
 import static org.tctalent.server.data.UserTestData.getAdminUser;
+import static org.tctalent.server.data.UserTestData.getCandidateUser;
 
 import java.time.LocalDate;
 import java.util.Collections;
@@ -37,6 +39,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.tctalent.server.exception.InvalidCredentialsException;
 import org.tctalent.server.exception.InvalidSessionException;
 import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.model.db.Candidate;
@@ -60,6 +63,7 @@ class CandidateCertificationServiceImplTest {
 
     private static final long CERT_ID = 123L;
     private static final User ADMIN_USER = getAdminUser();
+    private static final User CANDIDATE_USER = getCandidateUser();
     private static final String NAME = "name";
     private static final String INSTITUTION = "institution";
     private static final LocalDate DATE_COMPLETED = LocalDate.parse("2024-06-01");
@@ -197,9 +201,10 @@ class CandidateCertificationServiceImplTest {
     }
 
     @Test
-    @DisplayName("should delete candidate certification")
+    @DisplayName("should delete candidate certification when user has admin privileges")
     void deleteCandidateCertification_shouldDeleteCandidateCertification() {
         given(authService.getLoggedInUser()).willReturn(Optional.of(ADMIN_USER));
+        given(authService.hasAdminPrivileges(ADMIN_USER.getRole())).willReturn(true);
         given(candidateCertificationRepository.findByIdLoadCandidate(updateRequest.getId()))
             .willReturn(Optional.ofNullable(certification));
 
@@ -207,6 +212,56 @@ class CandidateCertificationServiceImplTest {
 
         verify(candidateCertificationRepository).delete(certification);
         verify(candidateService).save(candidate);
+    }
+
+    @Test
+    @DisplayName("should delete own certification when candidate has no admin privileges")
+    void deleteCandidateCertification_shouldDeleteOwnCertification_whenCandidateNotAdmin() {
+        given(authService.getLoggedInUser()).willReturn(Optional.of(CANDIDATE_USER));
+        given(authService.hasAdminPrivileges(CANDIDATE_USER.getRole())).willReturn(false);
+        given(candidateCertificationRepository.findByIdLoadCandidate(updateRequest.getId()))
+            .willReturn(Optional.ofNullable(certification));
+        given(authService.getLoggedInCandidate()).willReturn(candidate);
+
+        candidateCertificationService.deleteCandidateCertification(CERT_ID);
+
+        verify(candidateCertificationRepository).delete(certification);
+        verify(candidateService).save(candidate);
+    }
+
+    @Test
+    @DisplayName("should throw when candidate deletes another candidate's certification")
+    void deleteCandidateCertification_shouldThrow_whenDeletingAnotherCandidatesCertification() {
+        Candidate otherCandidate = new Candidate();
+        otherCandidate.setId(candidateId + 1);
+
+        given(authService.getLoggedInUser()).willReturn(Optional.of(CANDIDATE_USER));
+        given(authService.hasAdminPrivileges(CANDIDATE_USER.getRole())).willReturn(false);
+        given(candidateCertificationRepository.findByIdLoadCandidate(updateRequest.getId()))
+            .willReturn(Optional.ofNullable(certification));
+        given(authService.getLoggedInCandidate()).willReturn(otherCandidate);
+
+        assertThrows(InvalidCredentialsException.class,
+            () -> candidateCertificationService.deleteCandidateCertification(CERT_ID));
+
+        verify(candidateCertificationRepository, never()).delete(any(CandidateCertification.class));
+        verify(candidateService, never()).save(any(Candidate.class));
+    }
+
+    @Test
+    @DisplayName("should throw when non admin user has no candidate")
+    void deleteCandidateCertification_shouldThrow_whenNonAdminUserHasNoCandidate() {
+        given(authService.getLoggedInUser()).willReturn(Optional.of(CANDIDATE_USER));
+        given(authService.hasAdminPrivileges(CANDIDATE_USER.getRole())).willReturn(false);
+        given(candidateCertificationRepository.findByIdLoadCandidate(updateRequest.getId()))
+            .willReturn(Optional.ofNullable(certification));
+        given(authService.getLoggedInCandidate()).willReturn(null);
+
+        assertThrows(InvalidSessionException.class,
+            () -> candidateCertificationService.deleteCandidateCertification(CERT_ID));
+
+        verify(candidateCertificationRepository, never()).delete(any(CandidateCertification.class));
+        verify(candidateService, never()).save(any(Candidate.class));
     }
 
 }
