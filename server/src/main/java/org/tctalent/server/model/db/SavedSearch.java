@@ -55,7 +55,7 @@ public class SavedSearch extends AbstractCandidateSource {
      * and overwritten with any different new search they initiate. In effect, this means a user
      * opening the 'New Search' tab will always see their most recently initiated new search.
      */
-    private Boolean defaultSearch = false;
+    private boolean  defaultSearch = false;
 
     /**
      * Controls whether changes to this saved search's filter criteria are persisted automatically
@@ -66,7 +66,7 @@ public class SavedSearch extends AbstractCandidateSource {
      * <p>
      * When set to {@code false}, running the search does not modify its persisted criteria.
      */
-    private Boolean autoUpdateOnSearch = true;
+    private boolean  autoUpdateOnSearch = true;
 
     /**
      * This is the query string that will be used to search text related to candidates.
@@ -178,7 +178,7 @@ public class SavedSearch extends AbstractCandidateSource {
      * <p/>
      * When a search is marked as not reviewable, the front end will not supply review filters.
      */
-    private Boolean reviewable = false;
+    private boolean reviewable = false;
 
     //TODO JC There is only ever one "SearchJoin" per search - this is legacy code where each search
     //could be based on a boolean expression of base searches. Too complex and was dropped ages ago.
@@ -223,13 +223,6 @@ public class SavedSearch extends AbstractCandidateSource {
     public void setExportColumns(@Nullable List<ExportColumn> exportColumns) {
         modifyColumnIndices(exportColumns);
         this.exportColumns = exportColumns;
-    }
-
-
-    public void setDefaultSearch(Boolean defaultSearch) {
-        if (defaultSearch != null) {
-            this.defaultSearch = defaultSearch;
-        }
     }
 
 
@@ -297,12 +290,6 @@ public class SavedSearch extends AbstractCandidateSource {
         }
     }
 
-
-    public void setReviewable(Boolean reviewable) {
-        if (reviewable != null) {
-            this.reviewable = reviewable;
-        }
-    }
 
     @Override
     public Set<SavedSearch> getUsersCollection(User user) {

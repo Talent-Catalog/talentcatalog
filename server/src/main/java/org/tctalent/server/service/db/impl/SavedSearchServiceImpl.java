@@ -413,14 +413,14 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         } else {
             SavedSearch savedSearch = getSavedSearch(request.getSavedSearchId());
             // Automatically persist the latest filters when configured for this search.
-            if (Boolean.TRUE.equals(savedSearch.getAutoUpdateOnSearch())) {
+            if (savedSearch.isDefaultSearch() || savedSearch.isAutoUpdateOnSearch()) {
                 UpdateSavedSearchRequest updateRequest = new UpdateSavedSearchRequest();
                 updateRequest.setSearchCandidateRequest(request);
                 //Set other fields - no changes there
                 updateRequest.setName(savedSearch.getName());
-                updateRequest.setDefaultSearch(savedSearch.getDefaultSearch());
+                updateRequest.setDefaultSearch(savedSearch.isDefaultSearch());
                 updateRequest.setFixed(savedSearch.getFixed());
-                updateRequest.setReviewable(savedSearch.getReviewable());
+                updateRequest.setReviewable(savedSearch.isReviewable());
                 updateRequest.setSavedSearchType(savedSearch.getSavedSearchType());
                 updateRequest.setSavedSearchSubtype(savedSearch.getSavedSearchSubtype());
                 //todo Need special method which only updates search part. Then don't need the above "no changes there" stuff
@@ -459,16 +459,16 @@ public class SavedSearchServiceImpl implements SavedSearchService {
     public void updateUserDefaultSavedSearchIfNeeded(@NotNull SearchCandidateRequest request) {
         final Long savedSearchId = request.getSavedSearchId();
         SavedSearch savedSearch = getSavedSearch(savedSearchId);
-        // If searching a default search, update the default search with every search (aka Autosave).
-        // Else it is a saved search and those are updated upon 'Update Search' button only.
-        if (Boolean.TRUE.equals(savedSearch.getAutoUpdateOnSearch())) {
+        // Default searches always auto-update.
+        // Named saved searches auto-update when configured to do so.
+        if (savedSearch.isDefaultSearch() || savedSearch.isAutoUpdateOnSearch()) {
             UpdateSavedSearchRequest updateRequest = new UpdateSavedSearchRequest();
             updateRequest.setSearchCandidateRequest(request);
             //Set other fields - no changes there
             updateRequest.setName(savedSearch.getName());
-            updateRequest.setDefaultSearch(savedSearch.getDefaultSearch());
+            updateRequest.setDefaultSearch(savedSearch.isDefaultSearch());
             updateRequest.setFixed(savedSearch.getFixed());
-            updateRequest.setReviewable(savedSearch.getReviewable());
+            updateRequest.setReviewable(savedSearch.isReviewable());
             updateRequest.setSavedSearchType(savedSearch.getSavedSearchType());
             updateRequest.setSavedSearchSubtype(savedSearch.getSavedSearchSubtype());
             updateSavedSearch(savedSearchId, updateRequest);
@@ -726,7 +726,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             if (!savedSearch.getFixed() || savedSearch.getCreatedBy().getId().equals(loggedInUser.getId())) {
                 savedSearch.setName(request.getName());
                 savedSearch.setFixed(request.getFixed());
-                savedSearch.setReviewable(request.getReviewable());
+                savedSearch.setReviewable(request.isReviewable());
 
                 final Long jobId = request.getJobId();
                 if (jobId != null) {
@@ -1149,13 +1149,11 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         SavedSearch savedSearch = new SavedSearch();
         savedSearch.setName(request.getName());
         savedSearch.setFixed(request.getFixed());
-        savedSearch.setDefaultSearch(request.getDefaultSearch());
-        savedSearch.setReviewable(request.getReviewable());
-        if (request.getAutoUpdateOnSearch() != null) {
-            savedSearch.setAutoUpdateOnSearch(request.getAutoUpdateOnSearch());
-        } else if (origSavedSearch != null) {
-            savedSearch.setAutoUpdateOnSearch(origSavedSearch.getAutoUpdateOnSearch());
-        }
+        savedSearch.setDefaultSearch(request.isDefaultSearch());
+        savedSearch.setReviewable(request.isReviewable());
+        savedSearch.setAutoUpdateOnSearch(
+            savedSearch.isDefaultSearch() || request.isAutoUpdateOnSearch()
+        );
         if (origSavedSearch != null) {
             savedSearch.setDescription(origSavedSearch.getDescription());
             savedSearch.setDisplayedFieldsLong(origSavedSearch.getDisplayedFieldsLong());

@@ -28,11 +28,10 @@ import org.tctalent.server.request.candidate.SearchCandidateRequest;
 @Setter
 @ToString
 public class UpdateSavedSearchRequest extends AbstractUpdateCandidateSourceRequest {
-
-    private Boolean defaultSearch;
-    private Boolean reviewable;
+    private boolean autoUpdateOnSearch = true;
+    private boolean defaultSearch = false;
+    private boolean reviewable = false;
     private SavedSearchType savedSearchType;
     private SavedSearchSubtype savedSearchSubtype;
     private SearchCandidateRequest searchCandidateRequest;
-    private Boolean autoUpdateOnSearch;
 }

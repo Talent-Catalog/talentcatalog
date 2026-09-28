@@ -90,24 +90,32 @@ export class CandidatesSearchComponent implements OnInit, BlockUnsavedChanges {
     return this.formDirty ? this.unsavedChangesCheck() : true;
   }
 
+  private isAutoUpdateSearch(): boolean {
+    return this.savedSearch?.autoUpdateOnSearch ?? true;
+  }
+
   unsavedChangesCheck() {
     const unsavedChangesModal = this.modalService.open(ConfirmationComponent, {
       centered: true,
       backdrop: 'static'
     });
 
+    const autoUpdateSearch = this.isAutoUpdateSearch();
+
     unsavedChangesModal.componentInstance.title =
-      this.savedSearch?.autoUpdateOnSearch !== false
+      autoUpdateSearch
         ? "Unapplied search filter changes"
         : "Unsaved search filter changes";
+
     unsavedChangesModal.componentInstance.message =
-      this.savedSearch?.autoUpdateOnSearch !== false
+      autoUpdateSearch
         ? 'You have filter changes that have not been applied. ' +
         'To keep them, please cancel and click "Search". ' +
         '<br><br>Or to proceed without keeping them - click OK.'
         : 'You have unsaved changes to the search filters. ' +
         'To keep them, please cancel and click "Update Search". ' +
         '<br><br>Or to proceed without saving - click OK.';
+    
     return unsavedChangesModal.result.then(
       () => {
         return true;
