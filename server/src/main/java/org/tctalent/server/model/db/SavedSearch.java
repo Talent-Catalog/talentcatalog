@@ -51,13 +51,6 @@ public class SavedSearch extends AbstractCandidateSource {
     private String type;
 
     /**
-     * Every user has one default search. It is opened every time they use the 'New Search' tab
-     * and overwritten with any different new search they initiate. In effect, this means a user
-     * opening the 'New Search' tab will always see their most recently initiated new search.
-     */
-    private boolean  defaultSearch = false;
-
-    /**
      * Controls whether changes to this saved search's filter criteria are persisted automatically
      * when the search is run.
      * <p>
@@ -66,7 +59,14 @@ public class SavedSearch extends AbstractCandidateSource {
      * <p>
      * When set to {@code false}, running the search does not modify its persisted criteria.
      */
-    private boolean  autoUpdateOnSearch = true;
+    private boolean autoUpdateOnSearch = true;
+
+    /**
+     * Every user has one default search. It is opened every time they use the 'New Search' tab
+     * and overwritten with any different new search they initiate. In effect, this means a user
+     * opening the 'New Search' tab will always see their most recently initiated new search.
+     */
+    private boolean defaultSearch = false;
 
     /**
      * This is the query string that will be used to search text related to candidates.
