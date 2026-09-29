@@ -59,7 +59,7 @@ public class SavedSearch extends AbstractCandidateSource {
 
     /**
      * This is the query string that will be used to search text related to candidates.
-     * Currently, it is based on Elasticsearch style simple query string syntax.
+     * It uses the keyword-search simple query syntax used by candidate text search.
      */
     private String simpleQueryString;
 
