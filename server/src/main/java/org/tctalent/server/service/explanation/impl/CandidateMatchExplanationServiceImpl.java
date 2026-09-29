@@ -1,6 +1,9 @@
 package org.tctalent.server.service.explanation.impl;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.NonNull;
@@ -18,6 +21,7 @@ import org.tctalent.server.service.db.CandidateService;
 import org.tctalent.server.service.explanation.CandidateMatchExplanationService;
 import org.tctalent.server.service.explanation.dto.CandidateMatchExplanationServiceClient;
 import org.tctalent.server.service.explanation.dto.ExplanationCandidateInput;
+import org.tctalent.server.service.explanation.dto.ExplanationError;
 import org.tctalent.server.service.explanation.dto.ExplanationExperienceInput;
 import org.tctalent.server.service.explanation.dto.ExplanationResult;
 import org.tctalent.server.service.explanation.dto.ExplanationsRequest;
@@ -44,13 +48,20 @@ public class CandidateMatchExplanationServiceImpl implements CandidateMatchExpla
 
         String candidateIdString = String.valueOf(candidate.getId());
 
-        List<ExplanationExperienceInput> experienceInputs = experiences.stream()
-            .map(experience -> ExplanationExperienceInput.builder()
-                .experienceId(String.valueOf(experience.getId()))
+        // Maps the experience ID strings sent to Python back to the TC Long IDs they came from,
+        // so that any experience ID Python echoes back can be validated against what was actually
+        // sent rather than blindly parsed.
+        Map<String, Long> sentExperienceIdsByString = new HashMap<>();
+        List<ExplanationExperienceInput> experienceInputs = new ArrayList<>();
+        for (CandidateJobExperience experience : experiences) {
+            String experienceIdString = String.valueOf(experience.getId());
+            sentExperienceIdsByString.put(experienceIdString, experience.getId());
+            experienceInputs.add(ExplanationExperienceInput.builder()
+                .experienceId(experienceIdString)
                 .jobTitle(experience.getRole())
                 .description(experience.getDescription())
-                .build())
-            .toList();
+                .build());
+        }
 
         ExplanationsRequest request = ExplanationsRequest.builder()
             .opportunityDescription(opportunityDescription)
@@ -100,24 +111,35 @@ public class CandidateMatchExplanationServiceImpl implements CandidateMatchExpla
         }
 
         if (result.getError() != null) {
+            ExplanationError error = result.getError();
             LogBuilder.builder(log)
                 .candidateId(candidate.getId())
                 .action("generateExplanation")
-                .message("Match explanation service reported an error: " + result.getError())
+                .message("Match explanation service reported an error: ["
+                    + error.getCode() + "] " + error.getMessage())
                 .logError();
             throw new MatchExplanationException(
                 "Match explanation service reported an error for candidate " + candidateIdString
-                    + ": " + result.getError());
+                    + ": [" + error.getCode() + "] " + error.getMessage());
         }
 
         List<ExperienceMatchExplanation> experienceExplanations =
             result.getExperienceExplanations() == null
                 ? List.of()
                 : result.getExperienceExplanations().stream()
-                    .map(item -> ExperienceMatchExplanation.builder()
-                        .experienceId(Long.valueOf(item.getExperienceId()))
-                        .explanation(item.getExplanation())
-                        .build())
+                    .map(item -> {
+                        Long experienceId = sentExperienceIdsByString.get(item.getExperienceId());
+                        if (experienceId == null) {
+                            throw new MatchExplanationException(
+                                "Match explanation service returned unknown experience ID '"
+                                    + item.getExperienceId() + "' for candidate "
+                                    + candidateIdString);
+                        }
+                        return ExperienceMatchExplanation.builder()
+                            .experienceId(experienceId)
+                            .explanation(item.getExplanation())
+                            .build();
+                    })
                     .toList();
 
         return CandidateMatchExplanation.builder()

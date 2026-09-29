@@ -27,6 +27,7 @@ import org.tctalent.server.service.db.CandidateService;
 import org.tctalent.server.service.explanation.dto.CandidateMatchExplanationServiceClient;
 import org.tctalent.server.service.explanation.dto.ExperienceExplanationItem;
 import org.tctalent.server.service.explanation.dto.ExplanationCandidateInput;
+import org.tctalent.server.service.explanation.dto.ExplanationError;
 import org.tctalent.server.service.explanation.dto.ExplanationResult;
 import org.tctalent.server.service.explanation.dto.ExplanationsRequest;
 import org.tctalent.server.service.explanation.dto.ExplanationsResponse;
@@ -188,7 +189,10 @@ class CandidateMatchExplanationServiceImplTest {
 
         ExplanationResult result = ExplanationResult.builder()
             .candidateId(candidateIdString)
-            .error("LLM request failed")
+            .error(ExplanationError.builder()
+                .code("LLM_SERVICE_UNAVAILABLE")
+                .message("The LLM service is unavailable")
+                .build())
             .build();
         given(candidateMatchExplanationServiceClient.generateExplanations(any()))
             .willReturn(ExplanationsResponse.builder()
@@ -199,7 +203,36 @@ class CandidateMatchExplanationServiceImplTest {
         Exception ex = assertThrows(MatchExplanationException.class,
             () -> service.generateExplanation(candidate.getId(), OPPORTUNITY_DESCRIPTION));
 
-        assertTrue(ex.getMessage().contains("LLM request failed"));
+        assertTrue(ex.getMessage().contains("LLM_SERVICE_UNAVAILABLE"));
+        assertTrue(ex.getMessage().contains("The LLM service is unavailable"));
+    }
+
+    @Test
+    @DisplayName("should throw when Python returns an experience ID that was not sent")
+    void generateExplanation_shouldThrow_whenReturnedExperienceIdUnexpected() {
+        given(candidateJobExperienceRepository.findByCandidateId(candidate.getId()))
+            .willReturn(List.of(experience1));
+
+        ExplanationResult result = ExplanationResult.builder()
+            .candidateId(candidateIdString)
+            .summary(SUMMARY)
+            .experienceExplanations(List.of(
+                ExperienceExplanationItem.builder()
+                    .experienceId("not-a-sent-id")
+                    .explanation("Explanation for unknown experience")
+                    .build()
+            ))
+            .build();
+        given(candidateMatchExplanationServiceClient.generateExplanations(any()))
+            .willReturn(ExplanationsResponse.builder()
+                .requested(1).succeeded(1).failed(0)
+                .results(List.of(result))
+                .build());
+
+        Exception ex = assertThrows(MatchExplanationException.class,
+            () -> service.generateExplanation(candidate.getId(), OPPORTUNITY_DESCRIPTION));
+
+        assertTrue(ex.getMessage().contains("not-a-sent-id"));
     }
 
     @Test

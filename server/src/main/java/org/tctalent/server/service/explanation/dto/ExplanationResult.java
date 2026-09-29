@@ -39,5 +39,6 @@ public class ExplanationResult {
 
     /** Non-null when this candidate's explanation could not be generated. */
     @Nullable
-    String error;
+    @Valid
+    ExplanationError error;
 }

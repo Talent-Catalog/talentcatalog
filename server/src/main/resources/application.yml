@@ -347,10 +347,6 @@ tc-vector-embedding-service:
   apiUrl: ${TC_VECTOR_EMBEDDING_API_URL:http://localhost:8000}
   apiKey: ${TC_VECTOR_EMBEDDING_API_KEY:}
 
-tc-match-explanation-service:
-  apiUrl: ${TC_MATCH_EXPLANATION_API_URL:http://localhost:8000}
-  apiKey: ${TC_MATCH_EXPLANATION_API_KEY:}
-
 vector-embedding-model:
   defaultEmbeddingModelKey: MINILM_L6_SPACY_V3
 
