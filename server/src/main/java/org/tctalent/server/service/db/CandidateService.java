@@ -572,7 +572,7 @@ public interface CandidateService {
      * This candidate exam method is moved into the Candidate Service due a
      * circular dependency error when referencing the candidate service in
      * the Candidate Exam Service. The Candidate Service is needed in this method
-     * to update the Candidate's record on Elasticsearch with the updated IeltsScore field.
+     * to keep candidate search data aligned with the updated IeltsScore field.
      * Delete the candidate exam with the given id.
      * @param examId ID of record to be deleted
      * @return True if record was deleted, false if it was not found.
@@ -671,7 +671,7 @@ public interface CandidateService {
 
     /**
      * Extracts to a list the candidates on given page, iterates over list, setting partnerId on
-     * associated user object, saves to DB and updates the corresponding elasticsearch index entry.
+     * associated user object, then saves to DB while triggering normal search-related updates.
      * @param candidatePage page of candidates
      * @param newPartner the new partner to which they will be assigned
      */
