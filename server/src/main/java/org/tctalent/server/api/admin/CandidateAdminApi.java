@@ -61,6 +61,7 @@ import org.tctalent.server.request.candidate.CandidateEmailSearchRequest;
 import org.tctalent.server.request.candidate.CandidateExternalIdSearchRequest;
 import org.tctalent.server.request.candidate.CandidateIntakeAuditRequest;
 import org.tctalent.server.request.candidate.CandidateIntakeDataUpdate;
+import org.tctalent.server.request.candidate.CandidateMatchExplanationRequest;
 import org.tctalent.server.request.candidate.CandidateNumberOrNameSearchRequest;
 import org.tctalent.server.request.candidate.CandidatePublicIdSearchRequest;
 import org.tctalent.server.request.candidate.DownloadCvRequest;
@@ -83,6 +84,7 @@ import org.tctalent.server.request.candidate.UpdateCandidateShareableNotesReques
 import org.tctalent.server.request.candidate.UpdateCandidateStatusRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateSurveyRequest;
 import org.tctalent.server.request.chat.FetchCandidatesWithChatRequest;
+import org.tctalent.server.response.CandidateMatchExplanation;
 import org.tctalent.server.response.EraseCandidateResponse;
 import org.tctalent.server.security.CandidateTokenProvider;
 import org.tctalent.server.security.CvClaims;
@@ -93,6 +95,7 @@ import org.tctalent.server.service.db.CandidateSavedListService;
 import org.tctalent.server.service.db.CandidateService;
 import org.tctalent.server.service.db.SavedListService;
 import org.tctalent.server.service.db.SavedSearchService;
+import org.tctalent.server.service.explanation.CandidateMatchExplanationService;
 import org.tctalent.server.util.dto.DtoBuilder;
 
 @RestController
@@ -111,6 +114,7 @@ public class CandidateAdminApi {
     private final CandidateIntakeDataBuilderSelector intakeDataBuilderSelector;
     private final CandidateTokenProvider candidateTokenProvider;
     private final CandidateErasureService candidateErasureService;
+    private final CandidateMatchExplanationService candidateMatchExplanationService;
 
     /**
      * Match always returns a single page of results, sorted by score, the highest score first,
@@ -251,6 +255,27 @@ public class CandidateAdminApi {
         candidate = candidateService.addMissingDestinations(candidate);
         DtoBuilder builder = intakeDataBuilderSelector.selectBuilder();
         return builder.build(candidate);
+    }
+
+    /**
+     * Generates an on-demand LLM explanation of how the given candidate's job experience relates
+     * to the supplied opportunity description.
+     * <p/>
+     * This only compares the supplied opportunity description with the candidate's existing job
+     * experience text - it does not perform candidate matching or rerun the Best-N matching
+     * algorithm.
+     *
+     * @param id ID of candidate
+     * @param request opportunity description to compare the candidate against
+     * @return generated match explanation
+     * @throws NoSuchObjectException if no candidate is found with that id
+     */
+    @PostMapping("{id}/match-explanation")
+    public CandidateMatchExplanation getMatchExplanation(
+        @PathVariable("id") long id,
+        @Valid @RequestBody CandidateMatchExplanationRequest request) throws NoSuchObjectException {
+        return candidateMatchExplanationService.generateExplanation(
+            id, request.getOpportunityDescription());
     }
 
     @PutMapping("{id}/links")

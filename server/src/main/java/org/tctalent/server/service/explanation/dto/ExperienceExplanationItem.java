@@ -1,0 +1,22 @@
+package org.tctalent.server.service.explanation.dto;
+
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
+import jakarta.validation.constraints.NotBlank;
+import lombok.Builder;
+import lombok.Value;
+import lombok.extern.jackson.Jacksonized;
+
+/** Explanation of how one job experience relates to the opportunity, as returned by Python. */
+@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
+@Value
+@Builder
+@Jacksonized
+public class ExperienceExplanationItem {
+
+    /** TC candidate job experience ID, as a string, copied back unchanged from the request. */
+    @NotBlank
+    String experienceId;
+
+    String explanation;
+}
