@@ -154,7 +154,7 @@ public class CandidateDtoFetchServiceImpl implements CandidateDtoFetchService {
 
             //Optionally update candidate data with any ranking values.
             final Number score = idAndScore.score();
-            //Rank is a transient field so no need to set to null
+            //Score is a transient field so no need to set to null
             if (score != null) {
                 candidate.setScore(score);
             }
