@@ -154,6 +154,7 @@
     <!-- Verify+ -->
     <div *ngIf="showVerifyPlus$ | async"
          class="service-card unhcr"
+         data-testid="verify-plus-service-card"
          (click)="selectService(Service.VERIFY_PLUS)"
     >
       <div>

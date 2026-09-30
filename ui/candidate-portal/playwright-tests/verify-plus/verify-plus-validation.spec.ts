@@ -38,7 +38,7 @@ import {scanVerifyPlusQrFixtureToReview,} from '../support/verify-plus-qr-decodi
  * Standard guidance displayed underneath Verify+ backend validation errors.
  */
 const SUBMISSION_ERROR_HINT =
-  'If this QR code is a valid UNHCR Verify+ code, please rescan.';
+  'If this is a valid refugee ID card QR code, please rescan.';
 
 /**
  * Returns whether a validation scenario may modify persistent candidate data.
@@ -254,10 +254,9 @@ async function expectValidationResult(
       });
 
       await expect(
-        verifyPlusPage
-          .successBody,
+        verifyPlusPage.successBody,
       ).toContainText(
-        'Your UNHCR number was captured successfully:',
+        'Your refugee registration number was captured successfully:',
       );
 
       await expect(
