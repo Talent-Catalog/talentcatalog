@@ -96,7 +96,6 @@ describe('CandidateMatchExplanationComponent', () => {
   }
 
   it('should receive candidateId, jobId and opportunityDescription from the host', () => {
-    candidateServiceSpy.getMatchExplanation.and.returnValue(of(explanationFixture('S')));
     createHost();
 
     expect(component.candidateId).toBe(1);
@@ -104,31 +103,59 @@ describe('CandidateMatchExplanationComponent', () => {
     expect(component.opportunityDescription).toBe('Initial opportunity description');
   });
 
-  describe('mode: jobId + opportunityDescription', () => {
+  describe('passive initialization (no automatic network activity)', () => {
+
+    it('should start closed', () => {
+      createHost();
+
+      expect(component.opened).toBeFalse();
+    });
+
+    it('should NOT call GET merely from instantiation', fakeAsync(() => {
+      createHost();
+      tick();
+
+      expect(candidateServiceSpy.getMatchExplanation).not.toHaveBeenCalled();
+    }));
+
+    it('should NOT call POST merely from instantiation', fakeAsync(() => {
+      createHost();
+      tick();
+
+      expect(candidateServiceSpy.generateMatchExplanation).not.toHaveBeenCalled();
+    }));
+
+    it('should NOT call GET or POST when opportunityDescription is supplied but never opened', fakeAsync(() => {
+      createHost(null, 'Some description');
+      tick();
+
+      expect(candidateServiceSpy.getMatchExplanation).not.toHaveBeenCalled();
+      expect(candidateServiceSpy.generateMatchExplanation).not.toHaveBeenCalled();
+    }));
+  });
+
+  describe('mode: jobId + opportunityDescription (opened via show())', () => {
 
     it('should retrieve an existing explanation via GET', fakeAsync(() => {
       const explanation = explanationFixture('Existing summary');
       candidateServiceSpy.getMatchExplanation.and.returnValue(of(explanation));
       createHost();
+
+      component.show();
       tick();
 
       expect(candidateServiceSpy.getMatchExplanation).toHaveBeenCalledWith(1, 100);
     }));
 
-    it('should display the existing explanation', fakeAsync(() => {
+    it('should display the existing explanation and NOT call POST', fakeAsync(() => {
       const explanation = explanationFixture('Existing summary');
       candidateServiceSpy.getMatchExplanation.and.returnValue(of(explanation));
       createHost();
+
+      component.show();
       tick();
 
       expect(component.explanation).toEqual(explanation);
-    }));
-
-    it('should NOT trigger generation when GET succeeds', fakeAsync(() => {
-      candidateServiceSpy.getMatchExplanation.and.returnValue(of(explanationFixture('S')));
-      createHost();
-      tick();
-
       expect(candidateServiceSpy.generateMatchExplanation).not.toHaveBeenCalled();
     }));
 
@@ -136,25 +163,20 @@ describe('CandidateMatchExplanationComponent', () => {
       candidateServiceSpy.getMatchExplanation.and.returnValue(throwError(notFoundError()));
       candidateServiceSpy.generateMatchExplanation.and.returnValue(of(explanationFixture('Generated')));
       createHost();
+
+      component.show();
       tick();
 
       expect(candidateServiceSpy.generateMatchExplanation).toHaveBeenCalled();
-    }));
-
-    it('should display the generated explanation after a 404', fakeAsync(() => {
-      const generated = explanationFixture('Generated summary');
-      candidateServiceSpy.getMatchExplanation.and.returnValue(throwError(notFoundError()));
-      candidateServiceSpy.generateMatchExplanation.and.returnValue(of(generated));
-      createHost();
-      tick();
-
-      expect(component.explanation).toEqual(generated);
+      expect(component.explanation.summary).toBe('Generated');
     }));
 
     it('should generate using the current candidateId, jobId and opportunityDescription', fakeAsync(() => {
       candidateServiceSpy.getMatchExplanation.and.returnValue(throwError(notFoundError()));
       candidateServiceSpy.generateMatchExplanation.and.returnValue(of(explanationFixture('G')));
       createHost();
+
+      component.show();
       tick();
 
       expect(candidateServiceSpy.generateMatchExplanation).toHaveBeenCalledWith(1, {
@@ -166,6 +188,8 @@ describe('CandidateMatchExplanationComponent', () => {
     it('should NOT generate when GET fails with a non-404 error', fakeAsync(() => {
       candidateServiceSpy.getMatchExplanation.and.returnValue(throwError(serverError()));
       createHost();
+
+      component.show();
       tick();
 
       expect(candidateServiceSpy.generateMatchExplanation).not.toHaveBeenCalled();
@@ -176,6 +200,8 @@ describe('CandidateMatchExplanationComponent', () => {
     it('should offer Regenerate once an explanation is displayed', fakeAsync(() => {
       candidateServiceSpy.getMatchExplanation.and.returnValue(of(explanationFixture('S')));
       createHost();
+
+      component.show();
       tick();
 
       expect(component.hasUsableDescription()).toBeTrue();
@@ -187,8 +213,9 @@ describe('CandidateMatchExplanationComponent', () => {
     it('should generate directly, without calling GET, when jobId is absent', fakeAsync(() => {
       candidateServiceSpy.generateMatchExplanation.and.returnValue(
         of(explanationFixture('Generated without a job')));
-
       createHost(null);
+
+      component.show();
       tick();
 
       expect(candidateServiceSpy.getMatchExplanation).not.toHaveBeenCalled();
@@ -201,8 +228,9 @@ describe('CandidateMatchExplanationComponent', () => {
 
     it('should surface an error when generation fails and jobId is absent', fakeAsync(() => {
       candidateServiceSpy.generateMatchExplanation.and.returnValue(throwError('LLM unavailable'));
-
       createHost(null);
+
+      component.show();
       tick();
 
       expect(component.error).toBeTruthy();
@@ -212,6 +240,8 @@ describe('CandidateMatchExplanationComponent', () => {
     it('should offer Regenerate once generated', fakeAsync(() => {
       candidateServiceSpy.generateMatchExplanation.and.returnValue(of(explanationFixture('Generated')));
       createHost(null);
+
+      component.show();
       tick();
 
       expect(component.hasUsableDescription()).toBeTrue();
@@ -223,25 +253,32 @@ describe('CandidateMatchExplanationComponent', () => {
     it('should retrieve an existing explanation via GET', fakeAsync(() => {
       candidateServiceSpy.getMatchExplanation.and.returnValue(of(explanationFixture('Persisted')));
       createHost(100, null);
+
+      component.show();
       tick();
 
       expect(candidateServiceSpy.getMatchExplanation).toHaveBeenCalledWith(1, 100);
       expect(component.explanation.summary).toBe('Persisted');
     }));
 
-    it('should NOT generate when GET returns 404 (nothing to generate from)', fakeAsync(() => {
+    it('should NOT generate when GET returns 404, and should show the "no explanation" state', fakeAsync(() => {
       candidateServiceSpy.getMatchExplanation.and.returnValue(throwError(notFoundError()));
       createHost(100, null);
+
+      component.show();
       tick();
 
       expect(candidateServiceSpy.generateMatchExplanation).not.toHaveBeenCalled();
       expect(component.explanation).toBeNull();
       expect(component.error).toBeNull();
+      expect(component.loaded).toBeTrue();
     }));
 
     it('should NOT offer Regenerate even when a persisted explanation is displayed', fakeAsync(() => {
       candidateServiceSpy.getMatchExplanation.and.returnValue(of(explanationFixture('Persisted')));
       createHost(100, null);
+
+      component.show();
       tick();
 
       expect(component.explanation).toBeTruthy();
@@ -251,8 +288,9 @@ describe('CandidateMatchExplanationComponent', () => {
     it('should not allow regenerate() to make a request without a usable description', fakeAsync(() => {
       candidateServiceSpy.getMatchExplanation.and.returnValue(of(explanationFixture('Persisted')));
       createHost(100, null);
-      tick();
 
+      component.show();
+      tick();
       component.regenerate();
 
       expect(candidateServiceSpy.generateMatchExplanation).not.toHaveBeenCalled();
@@ -261,40 +299,37 @@ describe('CandidateMatchExplanationComponent', () => {
 
   describe('mode: neither jobId nor opportunityDescription', () => {
 
-    it('should NOT call GET or POST', fakeAsync(() => {
+    it('should have no context and offer no "Show" action', () => {
       createHost(null, null);
+
+      expect(component.hasContext()).toBeFalse();
+    });
+
+    it('should NOT call GET or POST even if show() were somehow invoked', fakeAsync(() => {
+      createHost(null, null);
+
+      component.show();
       tick();
 
       expect(candidateServiceSpy.getMatchExplanation).not.toHaveBeenCalled();
       expect(candidateServiceSpy.generateMatchExplanation).not.toHaveBeenCalled();
-    }));
-
-    it('should display no explanation UI', fakeAsync(() => {
-      createHost(null, null);
-      tick();
-      hostFixture.detectChanges();
-
-      expect(component.explanation).toBeNull();
-      expect(hostFixture.debugElement.query(By.css('tc-card'))).toBeFalsy();
     }));
   });
 
   describe('blank opportunityDescription', () => {
 
-    it('should be treated the same as absent (no GET, no POST)', fakeAsync(() => {
+    it('should be treated the same as absent (no GET, no POST) for hasContext purposes when no jobId either', fakeAsync(() => {
       createHost(null, '   ');
-      tick();
 
-      expect(candidateServiceSpy.getMatchExplanation).not.toHaveBeenCalled();
-      expect(candidateServiceSpy.generateMatchExplanation).not.toHaveBeenCalled();
-      expect(component.hasUsableDescription()).toBeFalse();
+      expect(component.hasContext()).toBeFalse();
     }));
 
-    it('should not be usable for an explicit regenerate() call either', fakeAsync(() => {
+    it('should not be usable for an explicit regenerate() call', fakeAsync(() => {
       candidateServiceSpy.getMatchExplanation.and.returnValue(of(explanationFixture('Persisted')));
       createHost(100, '   ');
-      tick();
 
+      component.show();
+      tick();
       component.regenerate();
 
       expect(candidateServiceSpy.generateMatchExplanation).not.toHaveBeenCalled();
@@ -306,6 +341,8 @@ describe('CandidateMatchExplanationComponent', () => {
     it('should display the summary', fakeAsync(() => {
       candidateServiceSpy.getMatchExplanation.and.returnValue(of(explanationFixture('A clear summary')));
       createHost();
+
+      component.show();
       tick();
       hostFixture.detectChanges();
 
@@ -315,6 +352,8 @@ describe('CandidateMatchExplanationComponent', () => {
     it('should display all experience explanations', fakeAsync(() => {
       candidateServiceSpy.getMatchExplanation.and.returnValue(of(explanationFixture('S')));
       createHost();
+
+      component.show();
       tick();
       hostFixture.detectChanges();
 
@@ -326,6 +365,8 @@ describe('CandidateMatchExplanationComponent', () => {
     it('should display limitations when non-empty', fakeAsync(() => {
       candidateServiceSpy.getMatchExplanation.and.returnValue(of(explanationFixture('S')));
       createHost();
+
+      component.show();
       tick();
       hostFixture.detectChanges();
 
@@ -337,12 +378,79 @@ describe('CandidateMatchExplanationComponent', () => {
       explanation.limitations = [];
       candidateServiceSpy.getMatchExplanation.and.returnValue(of(explanation));
       createHost();
+
+      component.show();
       tick();
       hostFixture.detectChanges();
 
       const headings = Array.from(hostFixture.nativeElement.querySelectorAll('h6'))
         .map((el: HTMLElement) => el.textContent);
       expect(headings).not.toContain('Limitations');
+    }));
+
+    it('should not display anything when closed', fakeAsync(() => {
+      candidateServiceSpy.getMatchExplanation.and.returnValue(of(explanationFixture('Hidden summary')));
+      createHost();
+
+      component.show();
+      tick();
+      component.close();
+      hostFixture.detectChanges();
+
+      expect(hostFixture.nativeElement.textContent).not.toContain('Hidden summary');
+    }));
+  });
+
+  describe('closing and reopening', () => {
+
+    it('should redisplay an already-loaded explanation without a new GET when reopened', fakeAsync(() => {
+      candidateServiceSpy.getMatchExplanation.and.returnValue(of(explanationFixture('Loaded once')));
+      createHost();
+
+      component.show();
+      tick();
+      expect(candidateServiceSpy.getMatchExplanation).toHaveBeenCalledTimes(1);
+
+      component.close();
+      expect(component.explanation.summary).toBe('Loaded once');
+
+      component.show();
+      tick();
+
+      expect(candidateServiceSpy.getMatchExplanation).toHaveBeenCalledTimes(1);
+      expect(component.explanation.summary).toBe('Loaded once');
+    }));
+
+    it('should redisplay an already-generated explanation without a new POST when reopened', fakeAsync(() => {
+      candidateServiceSpy.generateMatchExplanation.and.returnValue(of(explanationFixture('Generated once')));
+      createHost(null);
+
+      component.show();
+      tick();
+      expect(candidateServiceSpy.generateMatchExplanation).toHaveBeenCalledTimes(1);
+
+      component.close();
+      component.show();
+      tick();
+
+      expect(candidateServiceSpy.generateMatchExplanation).toHaveBeenCalledTimes(1);
+      expect(component.explanation.summary).toBe('Generated once');
+    }));
+
+    it('should redisplay the "no explanation" state without a new GET when reopened', fakeAsync(() => {
+      candidateServiceSpy.getMatchExplanation.and.returnValue(throwError(notFoundError()));
+      createHost(100, null);
+
+      component.show();
+      tick();
+      expect(candidateServiceSpy.getMatchExplanation).toHaveBeenCalledTimes(1);
+
+      component.close();
+      component.show();
+      tick();
+
+      expect(candidateServiceSpy.getMatchExplanation).toHaveBeenCalledTimes(1);
+      expect(component.explanation).toBeNull();
     }));
   });
 
@@ -351,6 +459,7 @@ describe('CandidateMatchExplanationComponent', () => {
     beforeEach(fakeAsync(() => {
       candidateServiceSpy.getMatchExplanation.and.returnValue(of(explanationFixture('Original summary')));
       createHost();
+      component.show();
       tick();
     }));
 
@@ -396,9 +505,43 @@ describe('CandidateMatchExplanationComponent', () => {
 
   describe('input changes', () => {
 
-    it('should retrieve the explanation for a new candidateId/jobId pair', fakeAsync(() => {
+    it('should NOT automatically retrieve/generate for a new candidateId/jobId pair', fakeAsync(() => {
       candidateServiceSpy.getMatchExplanation.and.returnValue(of(explanationFixture('First')));
       createHost();
+      component.show();
+      tick();
+      candidateServiceSpy.getMatchExplanation.calls.reset();
+
+      hostComponent.candidateId = 2;
+      hostComponent.jobId = 200;
+      hostFixture.detectChanges();
+      tick();
+
+      expect(candidateServiceSpy.getMatchExplanation).not.toHaveBeenCalled();
+    }));
+
+    it('should clear the previous explanation and return to the closed state on candidateId/jobId change', fakeAsync(() => {
+      candidateServiceSpy.getMatchExplanation.and.returnValue(of(explanationFixture('First')));
+      createHost();
+      component.show();
+      tick();
+      expect(component.opened).toBeTrue();
+      expect(component.explanation).toBeTruthy();
+
+      hostComponent.candidateId = 2;
+      hostComponent.jobId = 200;
+      hostFixture.detectChanges();
+      tick();
+
+      expect(component.opened).toBeFalse();
+      expect(component.explanation).toBeNull();
+      expect(component.loaded).toBeFalse();
+    }));
+
+    it('should require an explicit show() to retrieve for the new pair', fakeAsync(() => {
+      candidateServiceSpy.getMatchExplanation.and.returnValue(of(explanationFixture('First')));
+      createHost();
+      component.show();
       tick();
 
       candidateServiceSpy.getMatchExplanation.and.returnValue(of(explanationFixture('Second')));
@@ -407,7 +550,11 @@ describe('CandidateMatchExplanationComponent', () => {
       hostFixture.detectChanges();
       tick();
 
+      component.show();
+      tick();
+
       expect(candidateServiceSpy.getMatchExplanation).toHaveBeenCalledWith(2, 200);
+      expect(component.explanation.summary).toBe('Second');
     }));
 
     it('should not let a stale response from the previous pair overwrite current state', fakeAsync(() => {
@@ -416,29 +563,29 @@ describe('CandidateMatchExplanationComponent', () => {
 
       candidateServiceSpy.getMatchExplanation.and.returnValue(firstPairResponse);
       createHost();
+      component.show(); // pair A's GET in flight
 
-      // Switch to a new pair before the first pair's GET has resolved.
+      // Switch to a new pair before the first pair's GET has resolved - this cancels A's GET and
+      // returns to the closed state.
       candidateServiceSpy.getMatchExplanation.and.returnValue(secondPairResponse);
       hostComponent.candidateId = 2;
       hostComponent.jobId = 200;
       hostFixture.detectChanges();
 
+      component.show(); // pair B's GET in flight
+
       // Second pair resolves first...
       secondPairResponse.next(explanationFixture('Second pair result'));
       tick();
-      // ...then the stale first pair's response finally arrives.
+      // ...then the stale first pair's response finally arrives (already unsubscribed - no-op).
       firstPairResponse.next(explanationFixture('Stale first pair result'));
       tick();
 
       expect(component.explanation.summary).toBe('Second pair result');
     }));
 
-    it('should NOT trigger GET or POST when only opportunityDescription changes', fakeAsync(() => {
-      candidateServiceSpy.getMatchExplanation.and.returnValue(of(explanationFixture('S')));
+    it('should NOT trigger GET or POST when only opportunityDescription changes (not yet opened)', fakeAsync(() => {
       createHost();
-      tick();
-      candidateServiceSpy.getMatchExplanation.calls.reset();
-      candidateServiceSpy.generateMatchExplanation.calls.reset();
 
       hostComponent.opportunityDescription = 'A brand new description';
       hostFixture.detectChanges();
@@ -448,10 +595,11 @@ describe('CandidateMatchExplanationComponent', () => {
       expect(candidateServiceSpy.generateMatchExplanation).not.toHaveBeenCalled();
     }));
 
-    it('should not unexpectedly regenerate a persisted explanation merely because opportunityDescription changes', fakeAsync(() => {
+    it('should retain a displayed explanation when only opportunityDescription changes', fakeAsync(() => {
       const persisted = explanationFixture('Persisted summary');
       candidateServiceSpy.getMatchExplanation.and.returnValue(of(persisted));
       createHost();
+      component.show();
       tick();
 
       hostComponent.opportunityDescription = 'A brand new description';
@@ -465,6 +613,7 @@ describe('CandidateMatchExplanationComponent', () => {
     it('should use the new opportunityDescription on a subsequent explicit regeneration', fakeAsync(() => {
       candidateServiceSpy.getMatchExplanation.and.returnValue(of(explanationFixture('S')));
       createHost();
+      component.show();
       tick();
 
       hostComponent.opportunityDescription = 'A brand new description';
@@ -487,6 +636,7 @@ describe('CandidateMatchExplanationComponent', () => {
       // Establish pair A (candidateId=1, jobId=100) with its initial explanation.
       candidateServiceSpy.getMatchExplanation.and.returnValue(of(explanationFixture('A original')));
       createHost();
+      component.show();
       tick();
 
       // 1. Start regeneration for pair A and leave it in flight.
@@ -495,16 +645,17 @@ describe('CandidateMatchExplanationComponent', () => {
       component.regenerate();
       expect(component.regenerating).toBeTrue();
 
-      // 2. Change inputs to pair B.
+      // 2. Change inputs to pair B - closes/resets, cancelling A's in-flight regenerate.
       candidateServiceSpy.getMatchExplanation.and.returnValue(of(explanationFixture('B original')));
       hostComponent.candidateId = 2;
       hostComponent.jobId = 200;
       hostFixture.detectChanges();
-      tick();
-
-      // 3. B's explanation is established/displayed, and A's stale regenerating flag was reset.
-      expect(component.explanation.summary).toBe('B original');
       expect(component.regenerating).toBeFalse();
+
+      // 3. Open and establish B's explanation.
+      component.show();
+      tick();
+      expect(component.explanation.summary).toBe('B original');
 
       // 4. Start regeneration for B and leave it in flight.
       const regenerateB = new Subject<CandidateMatchExplanation>();
@@ -533,6 +684,7 @@ describe('CandidateMatchExplanationComponent', () => {
     it('should not let a stale (previous-pair) regeneration error affect the current pair', fakeAsync(() => {
       candidateServiceSpy.getMatchExplanation.and.returnValue(of(explanationFixture('A original')));
       createHost();
+      component.show();
       tick();
 
       const regenerateA = new Subject<CandidateMatchExplanation>();
@@ -543,6 +695,8 @@ describe('CandidateMatchExplanationComponent', () => {
       hostComponent.candidateId = 2;
       hostComponent.jobId = 200;
       hostFixture.detectChanges();
+
+      component.show();
       tick();
 
       const regenerateB = new Subject<CandidateMatchExplanation>();

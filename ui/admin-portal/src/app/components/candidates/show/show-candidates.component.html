@@ -742,6 +742,7 @@ arrays with more than one value display in drop down
     </div>
 
 <!--      Data on selected candidate-->
+<!--    todo passing in of opportunity description-->
       <app-candidate-search-card class="profile"
                                  *ngIf="currentCandidate"
                                  [candidateSource]="candidateSource"
@@ -753,6 +754,7 @@ arrays with more than one value display in drop down
                                  (closeEvent)="setCurrentCandidate(null)"
                                  (candidateUpdated)="updatedCandidate($event)"
                                  [isKeywordSearch]="isKeywordSearch"
+                                 [opportunityDescription]="opportunityDescription"
       ></app-candidate-search-card>
 
     </div>

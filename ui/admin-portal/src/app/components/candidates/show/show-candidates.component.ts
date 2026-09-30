@@ -148,6 +148,14 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
   @Input() declare pageNumber: number;
   @Input() declare pageSize: CandidatePageSize;
 
+  // todo Is this the best way to get the opportunityDescription. Can we use isMatchingSearch
+  /**
+   * Opportunity/job description currently being matched/searched against, if the parent has one
+   * (typically only search-related parents do - saved-list parents generally do not supply
+   * this). Passed straight through to the candidate search card - never derived here.
+   */
+  @Input() opportunityDescription?: string;
+
   readonly pageSizeOptions: CandidatePageSize[] = [20, 50, 100];
   @Input() searchRequest: SearchCandidateRequestPaged;
   @Output() candidateSelection = new EventEmitter();
