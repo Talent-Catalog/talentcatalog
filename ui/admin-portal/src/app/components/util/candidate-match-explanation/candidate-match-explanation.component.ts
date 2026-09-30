@@ -54,8 +54,8 @@ export class CandidateMatchExplanationComponent implements OnChanges, OnDestroy 
   /** ID of the candidate being explained. */
   @Input({required: true}) candidateId!: number;
 
-  /** ID of the Talent Catalog job the explanation is persisted/retrieved against. */
-  @Input({required: true}) jobId!: number;
+  /** Optional ID of the Talent Catalog job the explanation is persisted/retrieved against. */
+  @Input() jobId?: number;
 
   /**
    * Opportunity description to send to the explanation service when (re)generating.
