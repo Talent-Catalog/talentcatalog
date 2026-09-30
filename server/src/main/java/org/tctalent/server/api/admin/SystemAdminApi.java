@@ -1345,7 +1345,7 @@ public class SystemAdminApi {
             .message("Finished processing. Success total of: " + success + " out of " + count)
             .logInfo();
 
-        return "Done. Now run esload to update elasticsearch.";
+        return "Done.";
     }
 
     @PostMapping("google")
@@ -3029,8 +3029,8 @@ public class SystemAdminApi {
     /**
      * Reassigns all candidates on saved list or search with given ID to partner organisation with
      * given ID. Previously done by direct DB edit but this necessitated additional steps of
-     * flushing the Redis cache and updating the corresponding elasticsearch index entry. Cache
-     * evictions and ES index update proceed as usual with this in-code implementation.
+     * flushing the Redis cache manually. Cache evictions proceed as usual with this in-code
+     * implementation.
      * <p><strong>Check and double-check param for candidateSource — specifying the wrong one could
      * be very problematic! Also be certain to 'Update' your saved search (i.e. save the current
      * version, which is what this method will use).</strong></p>

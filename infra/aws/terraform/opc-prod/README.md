@@ -24,7 +24,6 @@ Create/edit `secrets.auto.tfvars` in this directory with the real secret values:
 aws_access_key             = "..."
 aws_secret_key             = "..."
 duolingo_api_secret        = "..."
-es_password                = "..."  # todo: retire elasticsearch
 email_password             = "..."
 drive_id                   = "..."
 drive_rootfolder           = "..."

@@ -23,13 +23,6 @@ variable "duolingo_api_secret" {
   default     = ""
 }
 
-variable "es_password" {
-  description = "Elasticsearch password (todo: retire elasticsearch)"
-  type        = string
-  sensitive   = true
-  default     = ""
-}
-
 variable "email_password" {
   description = "Email password"
   type        = string
@@ -254,8 +247,6 @@ module "tc-plus-prod" {
   email_test_override                   = "-" # todo: set prod value
   email_user                            = "-" # todo: confirm if used/needed
   email_type                            = "SMTP"
-  es_url                                = "https://tc-prod.es.us-east-1.aws.found.io:9243" # todo: retire elasticsearch
-  es_username                           = "elastic"                                        # todo: retire elasticsearch
   gradle_home                           = "/usr/local/gradle"
   java_home                             = "/usr/lib/jvm/java"
   logbuilder_include_cpu_utilization    = "true"
@@ -288,7 +279,6 @@ module "tc-plus-prod" {
   aws_access_key             = var.aws_access_key
   aws_secret_key             = var.aws_secret_key
   duolingo_api_secret        = var.duolingo_api_secret
-  es_password                = var.es_password
   email_password             = var.email_password
   drive_id                   = var.drive_id
   drive_rootfolder           = var.drive_rootfolder
