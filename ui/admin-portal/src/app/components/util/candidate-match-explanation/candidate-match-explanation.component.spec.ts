@@ -34,7 +34,7 @@ import {CandidateMatchExplanation} from '../../../model/candidate-match-explanat
 })
 class TestHostComponent {
   candidateId = 1;
-  jobId = 100;
+  jobId: number | undefined = 100;
   opportunityDescription = 'Initial opportunity description';
 }
 
@@ -79,9 +79,13 @@ describe('CandidateMatchExplanationComponent', () => {
     candidateServiceSpy = TestBed.inject(CandidateService) as jasmine.SpyObj<CandidateService>;
   });
 
-  function createHost() {
+  // Note: `null` (not `undefined`) is the "no jobId" sentinel here, since a JS default
+  // parameter value kicks in for an explicitly-passed `undefined` argument too, not just an
+  // omitted one - `createHost(null)` would otherwise silently fall back to jobId 100.
+  function createHost(initialJobId: number | null = 100) {
     hostFixture = TestBed.createComponent(TestHostComponent);
     hostComponent = hostFixture.componentInstance;
+    hostComponent.jobId = initialJobId === null ? undefined : initialJobId;
     hostFixture.detectChanges();
     component = hostFixture.debugElement
       .query(By.directive(CandidateMatchExplanationComponent)).componentInstance;
@@ -329,6 +333,121 @@ describe('CandidateMatchExplanationComponent', () => {
         jobId: 100,
         opportunityDescription: 'A brand new description'
       });
+    }));
+  });
+
+  describe('optional jobId', () => {
+
+    it('should generate directly, without calling GET, when jobId is absent', fakeAsync(() => {
+      candidateServiceSpy.generateMatchExplanation.and.returnValue(
+        of(explanationFixture('Generated without a job')));
+
+      createHost(null);
+      tick();
+
+      expect(candidateServiceSpy.getMatchExplanation).not.toHaveBeenCalled();
+      expect(candidateServiceSpy.generateMatchExplanation).toHaveBeenCalledWith(1, {
+        jobId: undefined,
+        opportunityDescription: 'Initial opportunity description'
+      });
+      expect(component.explanation.summary).toBe('Generated without a job');
+    }));
+
+    it('should surface an error when generation fails and jobId is absent', fakeAsync(() => {
+      candidateServiceSpy.generateMatchExplanation.and.returnValue(throwError('LLM unavailable'));
+
+      createHost(null);
+      tick();
+
+      expect(component.error).toBeTruthy();
+      expect(component.explanation).toBeNull();
+    }));
+  });
+
+  describe('stale explicit regeneration', () => {
+
+    it('should not let a stale (previous-pair) regeneration success affect the current pair', fakeAsync(() => {
+      // Establish pair A (candidateId=1, jobId=100) with its initial explanation.
+      candidateServiceSpy.getMatchExplanation.and.returnValue(of(explanationFixture('A original')));
+      createHost();
+      tick();
+
+      // 1. Start regeneration for pair A and leave it in flight.
+      const regenerateA = new Subject<CandidateMatchExplanation>();
+      candidateServiceSpy.generateMatchExplanation.and.returnValue(regenerateA);
+      component.regenerate();
+      expect(component.regenerating).toBeTrue();
+
+      // 2. Change inputs to pair B.
+      candidateServiceSpy.getMatchExplanation.and.returnValue(of(explanationFixture('B original')));
+      hostComponent.candidateId = 2;
+      hostComponent.jobId = 200;
+      hostFixture.detectChanges();
+      tick();
+
+      // 3. B's explanation is established/displayed, and A's stale regenerating flag was reset.
+      expect(component.explanation.summary).toBe('B original');
+      expect(component.regenerating).toBeFalse();
+
+      // 4. Start regeneration for B and leave it in flight.
+      const regenerateB = new Subject<CandidateMatchExplanation>();
+      candidateServiceSpy.generateMatchExplanation.and.returnValue(regenerateB);
+      component.regenerate();
+      expect(component.regenerating).toBeTrue();
+
+      // 5. Complete A's old (stale) regeneration.
+      regenerateA.next(explanationFixture('A stale result'));
+      tick();
+
+      // 6. B must still be regenerating, with its explanation/error untouched by A's stale result.
+      expect(component.regenerating).toBeTrue();
+      expect(component.explanation.summary).toBe('B original');
+      expect(component.error).toBeNull();
+
+      // 7. Complete B's regeneration.
+      regenerateB.next(explanationFixture('B regenerated'));
+      tick();
+
+      // 8. Regenerating clears and B's new explanation is displayed.
+      expect(component.regenerating).toBeFalse();
+      expect(component.explanation.summary).toBe('B regenerated');
+    }));
+
+    it('should not let a stale (previous-pair) regeneration error affect the current pair', fakeAsync(() => {
+      candidateServiceSpy.getMatchExplanation.and.returnValue(of(explanationFixture('A original')));
+      createHost();
+      tick();
+
+      const regenerateA = new Subject<CandidateMatchExplanation>();
+      candidateServiceSpy.generateMatchExplanation.and.returnValue(regenerateA);
+      component.regenerate();
+
+      candidateServiceSpy.getMatchExplanation.and.returnValue(of(explanationFixture('B original')));
+      hostComponent.candidateId = 2;
+      hostComponent.jobId = 200;
+      hostFixture.detectChanges();
+      tick();
+
+      const regenerateB = new Subject<CandidateMatchExplanation>();
+      candidateServiceSpy.generateMatchExplanation.and.returnValue(regenerateB);
+      component.regenerate();
+      expect(component.regenerating).toBeTrue();
+
+      // A's stale regeneration fails - must not clear B's regenerating state, set B's error, or
+      // change B's displayed explanation.
+      regenerateA.error('A stale error');
+      tick();
+
+      expect(component.regenerating).toBeTrue();
+      expect(component.error).toBeNull();
+      expect(component.explanation.summary).toBe('B original');
+
+      // B's own regeneration still completes normally afterwards.
+      regenerateB.next(explanationFixture('B regenerated'));
+      tick();
+
+      expect(component.regenerating).toBeFalse();
+      expect(component.explanation.summary).toBe('B regenerated');
     }));
   });
 });

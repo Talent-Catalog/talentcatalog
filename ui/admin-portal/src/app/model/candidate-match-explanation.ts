@@ -35,8 +35,12 @@ export interface ExperienceMatchExplanation {
  * The candidate is identified separately (by path/method parameter), not by this request body.
  */
 export interface CandidateMatchExplanationRequest {
-  /** ID of the Talent Catalog job this request relates to. */
-  jobId: number;
+  /**
+   * ID of the Talent Catalog job this request relates to, or undefined if not associated with
+   * a specific job. When present, the backend persists/replaces the explanation for
+   * (candidateId, jobId); when absent, the explanation is generated but not persisted.
+   */
+  jobId?: number;
   /** Description of the job/opportunity to compare the candidate's experience against. */
   opportunityDescription: string;
 }
