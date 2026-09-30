@@ -277,7 +277,7 @@ module "tc-plus-staging" {
   spring_servlet_max_file_size    = "10MB"
   spring_servlet_max_request_size = "10MB"
   tc_api_url                      = "https://test.api.tctalent.org"
-  tc_cors_urls                    = "https://tctalent-test.org,https://*.d2jx6ziu0w8kq9.amplifyapp.com,https://*.d1bt868vpd541m.amplifyapp.com"
+  tc_cors_urls                    = "https://tctalent-test.org,https://*.d1y6boungf42dt.amplifyapp.com,https://*.d1xx9vnl0oax4v.amplifyapp.com"
   tc_db_copy_config               = "data.sharing/tcCopies.xml"                                                                         # todo: can this be retired?
   tc_destinations                 = "Australia,Belgium,Canada,France,Germany,Ireland,Italy,Slovakia,Spain,United Kingdom,United States" # todo: set TC destinations
   tc_skills_extraction_api_url    = "https://test.skills.tctalent.org"
