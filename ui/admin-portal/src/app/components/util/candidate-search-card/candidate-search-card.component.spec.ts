@@ -15,6 +15,7 @@
  */
 import {CandidateSearchCardComponent} from "./candidate-search-card.component";
 import {ComponentFixture, TestBed} from "@angular/core/testing";
+import {By} from "@angular/platform-browser";
 import {AuthorizationService} from "../../../services/authorization.service";
 import {CUSTOM_ELEMENTS_SCHEMA} from "@angular/core";
 import {NgbNavModule} from "@ng-bootstrap/ng-bootstrap";
@@ -35,7 +36,9 @@ describe('CandidateSearchCardComponent', () => {
 
   beforeEach(async () => {
     const localStorageSpy = jasmine.createSpyObj('LocalStorageService', ['get', 'set']);
-    const authSpy = jasmine.createSpyObj('AuthorizationService', ['canViewPrivateCandidateInfo']);
+    const authSpy = jasmine.createSpyObj('AuthorizationService', [
+      'canViewPrivateCandidateInfo', 'canSeeJobDetails', 'isAnAdmin', 'isEditableCandidate'
+    ]);
     const candidateServiceSpy = jasmine.createSpyObj('CandidateService', ['updateCandidate']);
 
     await TestBed.configureTestingModule({
@@ -116,6 +119,66 @@ describe('CandidateSearchCardComponent', () => {
     authService.canViewPrivateCandidateInfo.and.returnValue(true);
     expect(component.canViewPrivateInfo()).toBeTrue();
     expect(authService.canViewPrivateCandidateInfo).toHaveBeenCalledWith(component.candidate);
+  });
+
+  describe('match explanation integration', () => {
+
+    function findMatchExplanationEl() {
+      return fixture.debugElement.query(By.css('app-candidate-match-explanation'));
+    }
+
+    it('should pass the current candidate id', () => {
+      component.candidate = {id: 42, candidateOpportunities: []} as Candidate;
+      component.candidateSource = {sfJobOpp: {id: 7}} as CandidateSource;
+      fixture.detectChanges();
+
+      expect(findMatchExplanationEl().properties['candidateId']).toBe(42);
+    });
+
+    it('should derive jobId from candidateSource.sfJobOpp?.id', () => {
+      component.candidate = {id: 42, candidateOpportunities: []} as Candidate;
+      component.candidateSource = {sfJobOpp: {id: 7}} as CandidateSource;
+      fixture.detectChanges();
+
+      expect(findMatchExplanationEl().properties['jobId']).toBe(7);
+    });
+
+    it('should pass opportunityDescription through when supplied', () => {
+      component.candidate = {id: 42, candidateOpportunities: []} as Candidate;
+      component.candidateSource = {sfJobOpp: {id: 7}} as CandidateSource;
+      component.opportunityDescription = 'A supplied opportunity description';
+      fixture.detectChanges();
+
+      expect(findMatchExplanationEl().properties['opportunityDescription'])
+        .toBe('A supplied opportunity description');
+    });
+
+    it('should show the match explanation when only a usable opportunityDescription exists (no job)', () => {
+      component.candidate = {id: 42, candidateOpportunities: []} as Candidate;
+      component.candidateSource = {} as CandidateSource;
+      component.opportunityDescription = 'A supplied opportunity description';
+      fixture.detectChanges();
+
+      expect(findMatchExplanationEl()).toBeTruthy();
+    });
+
+    it('should NOT instantiate the match explanation component when neither jobId nor a usable opportunityDescription exists', () => {
+      component.candidate = {id: 42, candidateOpportunities: []} as Candidate;
+      component.candidateSource = {} as CandidateSource;
+      component.opportunityDescription = undefined;
+      fixture.detectChanges();
+
+      expect(findMatchExplanationEl()).toBeFalsy();
+    });
+
+    it('should NOT instantiate the match explanation component when opportunityDescription is blank', () => {
+      component.candidate = {id: 42, candidateOpportunities: []} as Candidate;
+      component.candidateSource = {} as CandidateSource;
+      component.opportunityDescription = '   ';
+      fixture.detectChanges();
+
+      expect(findMatchExplanationEl()).toBeFalsy();
+    });
   });
 
 });

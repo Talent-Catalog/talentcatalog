@@ -35,7 +35,7 @@ import {CandidateMatchExplanation} from '../../../model/candidate-match-explanat
 class TestHostComponent {
   candidateId = 1;
   jobId: number | undefined = 100;
-  opportunityDescription = 'Initial opportunity description';
+  opportunityDescription: string | undefined = 'Initial opportunity description';
 }
 
 function notFoundError(): HttpErrorResponse {
@@ -79,19 +79,23 @@ describe('CandidateMatchExplanationComponent', () => {
     candidateServiceSpy = TestBed.inject(CandidateService) as jasmine.SpyObj<CandidateService>;
   });
 
-  // Note: `null` (not `undefined`) is the "no jobId" sentinel here, since a JS default
-  // parameter value kicks in for an explicitly-passed `undefined` argument too, not just an
-  // omitted one - `createHost(null)` would otherwise silently fall back to jobId 100.
-  function createHost(initialJobId: number | null = 100) {
+  // Note: `null` (not `undefined`) is the "absent" sentinel for these parameters, since a JS
+  // default parameter value kicks in for an explicitly-passed `undefined` argument too, not just
+  // an omitted one - `createHost(undefined)` would otherwise silently fall back to the default.
+  function createHost(
+    initialJobId: number | null = 100,
+    initialDescription: string | null = 'Initial opportunity description'
+  ) {
     hostFixture = TestBed.createComponent(TestHostComponent);
     hostComponent = hostFixture.componentInstance;
     hostComponent.jobId = initialJobId === null ? undefined : initialJobId;
+    hostComponent.opportunityDescription = initialDescription === null ? undefined : initialDescription;
     hostFixture.detectChanges();
     component = hostFixture.debugElement
       .query(By.directive(CandidateMatchExplanationComponent)).componentInstance;
   }
 
-  it('should receive the three required inputs', () => {
+  it('should receive candidateId, jobId and opportunityDescription from the host', () => {
     candidateServiceSpy.getMatchExplanation.and.returnValue(of(explanationFixture('S')));
     createHost();
 
@@ -100,7 +104,7 @@ describe('CandidateMatchExplanationComponent', () => {
     expect(component.opportunityDescription).toBe('Initial opportunity description');
   });
 
-  describe('initial retrieval', () => {
+  describe('mode: jobId + opportunityDescription', () => {
 
     it('should retrieve an existing explanation via GET', fakeAsync(() => {
       const explanation = explanationFixture('Existing summary');
@@ -167,6 +171,133 @@ describe('CandidateMatchExplanationComponent', () => {
       expect(candidateServiceSpy.generateMatchExplanation).not.toHaveBeenCalled();
       expect(component.error).toBeTruthy();
       expect(component.explanation).toBeNull();
+    }));
+
+    it('should offer Regenerate once an explanation is displayed', fakeAsync(() => {
+      candidateServiceSpy.getMatchExplanation.and.returnValue(of(explanationFixture('S')));
+      createHost();
+      tick();
+
+      expect(component.hasUsableDescription()).toBeTrue();
+    }));
+  });
+
+  describe('mode: opportunityDescription only (no jobId)', () => {
+
+    it('should generate directly, without calling GET, when jobId is absent', fakeAsync(() => {
+      candidateServiceSpy.generateMatchExplanation.and.returnValue(
+        of(explanationFixture('Generated without a job')));
+
+      createHost(null);
+      tick();
+
+      expect(candidateServiceSpy.getMatchExplanation).not.toHaveBeenCalled();
+      expect(candidateServiceSpy.generateMatchExplanation).toHaveBeenCalledWith(1, {
+        jobId: undefined,
+        opportunityDescription: 'Initial opportunity description'
+      });
+      expect(component.explanation.summary).toBe('Generated without a job');
+    }));
+
+    it('should surface an error when generation fails and jobId is absent', fakeAsync(() => {
+      candidateServiceSpy.generateMatchExplanation.and.returnValue(throwError('LLM unavailable'));
+
+      createHost(null);
+      tick();
+
+      expect(component.error).toBeTruthy();
+      expect(component.explanation).toBeNull();
+    }));
+
+    it('should offer Regenerate once generated', fakeAsync(() => {
+      candidateServiceSpy.generateMatchExplanation.and.returnValue(of(explanationFixture('Generated')));
+      createHost(null);
+      tick();
+
+      expect(component.hasUsableDescription()).toBeTrue();
+    }));
+  });
+
+  describe('mode: jobId only (no opportunityDescription)', () => {
+
+    it('should retrieve an existing explanation via GET', fakeAsync(() => {
+      candidateServiceSpy.getMatchExplanation.and.returnValue(of(explanationFixture('Persisted')));
+      createHost(100, null);
+      tick();
+
+      expect(candidateServiceSpy.getMatchExplanation).toHaveBeenCalledWith(1, 100);
+      expect(component.explanation.summary).toBe('Persisted');
+    }));
+
+    it('should NOT generate when GET returns 404 (nothing to generate from)', fakeAsync(() => {
+      candidateServiceSpy.getMatchExplanation.and.returnValue(throwError(notFoundError()));
+      createHost(100, null);
+      tick();
+
+      expect(candidateServiceSpy.generateMatchExplanation).not.toHaveBeenCalled();
+      expect(component.explanation).toBeNull();
+      expect(component.error).toBeNull();
+    }));
+
+    it('should NOT offer Regenerate even when a persisted explanation is displayed', fakeAsync(() => {
+      candidateServiceSpy.getMatchExplanation.and.returnValue(of(explanationFixture('Persisted')));
+      createHost(100, null);
+      tick();
+
+      expect(component.explanation).toBeTruthy();
+      expect(component.hasUsableDescription()).toBeFalse();
+    }));
+
+    it('should not allow regenerate() to make a request without a usable description', fakeAsync(() => {
+      candidateServiceSpy.getMatchExplanation.and.returnValue(of(explanationFixture('Persisted')));
+      createHost(100, null);
+      tick();
+
+      component.regenerate();
+
+      expect(candidateServiceSpy.generateMatchExplanation).not.toHaveBeenCalled();
+    }));
+  });
+
+  describe('mode: neither jobId nor opportunityDescription', () => {
+
+    it('should NOT call GET or POST', fakeAsync(() => {
+      createHost(null, null);
+      tick();
+
+      expect(candidateServiceSpy.getMatchExplanation).not.toHaveBeenCalled();
+      expect(candidateServiceSpy.generateMatchExplanation).not.toHaveBeenCalled();
+    }));
+
+    it('should display no explanation UI', fakeAsync(() => {
+      createHost(null, null);
+      tick();
+      hostFixture.detectChanges();
+
+      expect(component.explanation).toBeNull();
+      expect(hostFixture.debugElement.query(By.css('tc-card'))).toBeFalsy();
+    }));
+  });
+
+  describe('blank opportunityDescription', () => {
+
+    it('should be treated the same as absent (no GET, no POST)', fakeAsync(() => {
+      createHost(null, '   ');
+      tick();
+
+      expect(candidateServiceSpy.getMatchExplanation).not.toHaveBeenCalled();
+      expect(candidateServiceSpy.generateMatchExplanation).not.toHaveBeenCalled();
+      expect(component.hasUsableDescription()).toBeFalse();
+    }));
+
+    it('should not be usable for an explicit regenerate() call either', fakeAsync(() => {
+      candidateServiceSpy.getMatchExplanation.and.returnValue(of(explanationFixture('Persisted')));
+      createHost(100, '   ');
+      tick();
+
+      component.regenerate();
+
+      expect(candidateServiceSpy.generateMatchExplanation).not.toHaveBeenCalled();
     }));
   });
 
@@ -317,6 +448,20 @@ describe('CandidateMatchExplanationComponent', () => {
       expect(candidateServiceSpy.generateMatchExplanation).not.toHaveBeenCalled();
     }));
 
+    it('should not unexpectedly regenerate a persisted explanation merely because opportunityDescription changes', fakeAsync(() => {
+      const persisted = explanationFixture('Persisted summary');
+      candidateServiceSpy.getMatchExplanation.and.returnValue(of(persisted));
+      createHost();
+      tick();
+
+      hostComponent.opportunityDescription = 'A brand new description';
+      hostFixture.detectChanges();
+      tick();
+
+      expect(component.explanation).toEqual(persisted);
+      expect(candidateServiceSpy.generateMatchExplanation).not.toHaveBeenCalled();
+    }));
+
     it('should use the new opportunityDescription on a subsequent explicit regeneration', fakeAsync(() => {
       candidateServiceSpy.getMatchExplanation.and.returnValue(of(explanationFixture('S')));
       createHost();
@@ -333,34 +478,6 @@ describe('CandidateMatchExplanationComponent', () => {
         jobId: 100,
         opportunityDescription: 'A brand new description'
       });
-    }));
-  });
-
-  describe('optional jobId', () => {
-
-    it('should generate directly, without calling GET, when jobId is absent', fakeAsync(() => {
-      candidateServiceSpy.generateMatchExplanation.and.returnValue(
-        of(explanationFixture('Generated without a job')));
-
-      createHost(null);
-      tick();
-
-      expect(candidateServiceSpy.getMatchExplanation).not.toHaveBeenCalled();
-      expect(candidateServiceSpy.generateMatchExplanation).toHaveBeenCalledWith(1, {
-        jobId: undefined,
-        opportunityDescription: 'Initial opportunity description'
-      });
-      expect(component.explanation.summary).toBe('Generated without a job');
-    }));
-
-    it('should surface an error when generation fails and jobId is absent', fakeAsync(() => {
-      candidateServiceSpy.generateMatchExplanation.and.returnValue(throwError('LLM unavailable'));
-
-      createHost(null);
-      tick();
-
-      expect(component.error).toBeTruthy();
-      expect(component.explanation).toBeNull();
     }));
   });
 

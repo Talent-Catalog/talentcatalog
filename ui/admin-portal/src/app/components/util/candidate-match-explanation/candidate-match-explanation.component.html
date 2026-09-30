@@ -15,6 +15,7 @@
     <div class="d-flex align-items-center justify-content-between w-100">
       <span>Match Explanation</span>
       <tc-button
+        *ngIf="hasUsableDescription()"
         type="outline"
         size="sm"
         color="secondary"
