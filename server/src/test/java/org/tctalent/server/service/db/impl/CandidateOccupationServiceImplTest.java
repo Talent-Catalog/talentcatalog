@@ -614,6 +614,73 @@ class CandidateOccupationServiceImplTest {
   }
 
   @Test
+  void updateCandidateOccupationsDeletesRemovedOccupationBeforeReplacingItWithAnother() {
+    // Candidate has A (principal) and B. B is removed and A is changed to B in the same save.
+    User user = mock(User.class);
+    Candidate candidate = candidate(20L);
+    Occupation occupationA = occupation(10L, "A");
+    Occupation occupationB = occupation(11L, "B");
+    CandidateOccupation existingA = candidateOccupation(1L, candidate, occupationA, 3);
+    CandidateOccupation existingB = candidateOccupation(2L, candidate, occupationB, 5);
+    candidate.setPrincipalOccupation(existingA);
+
+    UpdateCandidateOccupationRequest update = updateRequest(1L, 11L, 3L);
+    update.setPrincipal(true);
+    UpdateCandidateOccupationsRequest request = bulkRequest(List.of(update));
+
+    when(candidateService.getLoggedInCandidate()).thenReturn(Optional.of(candidate));
+    when(authService.getLoggedInUser()).thenReturn(Optional.of(user));
+    when(candidateOccupationRepository.findByCandidateId(20L))
+        .thenReturn(List.of(existingA, existingB));
+    when(occupationRepository.findById(11L)).thenReturn(Optional.of(occupationB));
+    when(candidateOccupationRepository.save(existingA)).thenReturn(existingA);
+
+    List<CandidateOccupation> result = service.updateCandidateOccupations(request);
+
+    assertEquals(List.of(existingA), result);
+    assertSame(occupationB, existingA.getOccupation());
+    assertSame(existingA, candidate.getPrincipalOccupation());
+
+    // Send the deletion of the old B row to the database before saving A as B.
+    // Otherwise, the database rejects having two rows for the same candidate and occupation.
+    InOrder inOrder = inOrder(candidateOccupationRepository);
+    inOrder.verify(candidateOccupationRepository).deleteById(2L);
+    inOrder.verify(candidateOccupationRepository).flush();
+    inOrder.verify(candidateOccupationRepository).save(existingA);
+  }
+
+  @Test
+  void updateCandidateOccupationsReusesRemovedOccupationWhenReAddedWithSameOccupation() {
+    User user = mock(User.class);
+    Candidate candidate = candidate(20L);
+    Occupation occupation = occupation(10L, "Engineer");
+    CandidateOccupation existing = candidateOccupation(1L, candidate, occupation, 3);
+    candidate.setPrincipalOccupation(existing);
+
+    // Adding the same occupation again sends no original row ID. Reuse the existing
+    // row so its linked job experiences are preserved.
+    UpdateCandidateOccupationRequest update = updateRequest(null, 10L, 7L);
+    update.setPrincipal(true);
+
+    when(candidateService.getLoggedInCandidate()).thenReturn(Optional.of(candidate));
+    when(authService.getLoggedInUser()).thenReturn(Optional.of(user));
+    when(candidateOccupationRepository.findByCandidateId(20L)).thenReturn(List.of(existing));
+    when(candidateOccupationRepository.findByCandidateIdAAndOccupationId(20L, 10L))
+        .thenReturn(existing);
+    when(occupationRepository.findById(10L)).thenReturn(Optional.of(occupation));
+    when(candidateOccupationRepository.save(existing)).thenReturn(existing);
+
+    List<CandidateOccupation> result = service.updateCandidateOccupations(bulkRequest(List.of(update)));
+
+    assertEquals(1, result.size());
+    assertSame(existing, result.get(0));
+    assertEquals(7L, existing.getYearsExperience());
+    assertSame(existing, candidate.getPrincipalOccupation());
+    verify(candidateOccupationRepository).save(existing);
+    verify(candidateOccupationRepository, never()).deleteById(anyLong());
+  }
+
+  @Test
   void updateCandidateOccupationsUpdatesExistingYearsOnlyWhenOccupationSame() {
     User user = mock(User.class);
     Candidate candidate = candidate(20L);
