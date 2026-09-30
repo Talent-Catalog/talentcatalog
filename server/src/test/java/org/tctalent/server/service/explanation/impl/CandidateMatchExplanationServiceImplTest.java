@@ -1,6 +1,7 @@
 package org.tctalent.server.service.explanation.impl;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -44,6 +45,7 @@ class CandidateMatchExplanationServiceImplTest {
     private static final String OPPORTUNITY_DESCRIPTION =
         "We are looking for an experienced Java developer.";
     private static final String SUMMARY = "The candidate is a strong match.";
+    private static final long JOB_ID = 777L;
 
     @Mock private CandidateService candidateService;
     @Mock private CandidateJobExperienceRepository candidateJobExperienceRepository;
@@ -101,7 +103,7 @@ class CandidateMatchExplanationServiceImplTest {
                 .build());
 
         CandidateMatchExplanation explanation =
-            service.generateExplanation(candidate.getId(), OPPORTUNITY_DESCRIPTION);
+            service.generateExplanation(candidate.getId(), null, OPPORTUNITY_DESCRIPTION);
 
         assertEquals(SUMMARY, explanation.getSummary());
         assertEquals(1, explanation.getExperienceExplanations().size());
@@ -119,7 +121,7 @@ class CandidateMatchExplanationServiceImplTest {
         given(candidateMatchExplanationServiceClient.generateExplanations(requestCaptor.capture()))
             .willReturn(successResponseWithNoExperiences());
 
-        service.generateExplanation(candidate.getId(), OPPORTUNITY_DESCRIPTION);
+        service.generateExplanation(candidate.getId(), null, OPPORTUNITY_DESCRIPTION);
 
         ExplanationCandidateInput candidateInput = requestCaptor.getValue().getCandidates().get(0);
         assertEquals(candidateIdString, candidateInput.getCandidateId());
@@ -134,7 +136,7 @@ class CandidateMatchExplanationServiceImplTest {
         given(candidateMatchExplanationServiceClient.generateExplanations(requestCaptor.capture()))
             .willReturn(successResponseWithNoExperiences());
 
-        service.generateExplanation(candidate.getId(), OPPORTUNITY_DESCRIPTION);
+        service.generateExplanation(candidate.getId(), null, OPPORTUNITY_DESCRIPTION);
 
         var experiences = requestCaptor.getValue().getCandidates().get(0).getExperiences();
         assertEquals(2, experiences.size());
@@ -175,7 +177,7 @@ class CandidateMatchExplanationServiceImplTest {
                 .build());
 
         CandidateMatchExplanation explanation =
-            service.generateExplanation(candidate.getId(), OPPORTUNITY_DESCRIPTION);
+            service.generateExplanation(candidate.getId(), null, OPPORTUNITY_DESCRIPTION);
 
         assertEquals(EXPERIENCE_ID_1, explanation.getExperienceExplanations().get(0).getExperienceId());
         assertEquals(EXPERIENCE_ID_2, explanation.getExperienceExplanations().get(1).getExperienceId());
@@ -201,7 +203,7 @@ class CandidateMatchExplanationServiceImplTest {
                 .build());
 
         Exception ex = assertThrows(MatchExplanationException.class,
-            () -> service.generateExplanation(candidate.getId(), OPPORTUNITY_DESCRIPTION));
+            () -> service.generateExplanation(candidate.getId(), null, OPPORTUNITY_DESCRIPTION));
 
         assertTrue(ex.getMessage().contains("LLM_SERVICE_UNAVAILABLE"));
         assertTrue(ex.getMessage().contains("The LLM service is unavailable"));
@@ -230,9 +232,39 @@ class CandidateMatchExplanationServiceImplTest {
                 .build());
 
         Exception ex = assertThrows(MatchExplanationException.class,
-            () -> service.generateExplanation(candidate.getId(), OPPORTUNITY_DESCRIPTION));
+            () -> service.generateExplanation(candidate.getId(), null, OPPORTUNITY_DESCRIPTION));
 
         assertTrue(ex.getMessage().contains("not-a-sent-id"));
+    }
+
+    @Test
+    @DisplayName("should generate an explanation when no jobId is supplied")
+    void generateExplanation_shouldSucceed_whenJobIdAbsent() {
+        given(candidateJobExperienceRepository.findByCandidateId(candidate.getId()))
+            .willReturn(List.of());
+        given(candidateMatchExplanationServiceClient.generateExplanations(any()))
+            .willReturn(successResponseWithNoExperiences());
+
+        CandidateMatchExplanation explanation =
+            service.generateExplanation(candidate.getId(), null, OPPORTUNITY_DESCRIPTION);
+
+        assertEquals(SUMMARY, explanation.getSummary());
+    }
+
+    @Test
+    @DisplayName("should generate an explanation when a jobId is supplied, without sending it to Python")
+    void generateExplanation_shouldSucceed_whenJobIdSupplied() {
+        given(candidateJobExperienceRepository.findByCandidateId(candidate.getId()))
+            .willReturn(List.of());
+        given(candidateMatchExplanationServiceClient.generateExplanations(requestCaptor.capture()))
+            .willReturn(successResponseWithNoExperiences());
+
+        CandidateMatchExplanation explanation =
+            service.generateExplanation(candidate.getId(), JOB_ID, OPPORTUNITY_DESCRIPTION);
+
+        assertEquals(SUMMARY, explanation.getSummary());
+        // The Python request has no notion of a TC job at all - confirm the job ID is nowhere in it.
+        assertFalse(requestCaptor.getValue().toString().contains(String.valueOf(JOB_ID)));
     }
 
     @Test
@@ -247,7 +279,7 @@ class CandidateMatchExplanationServiceImplTest {
                 .build());
 
         assertThrows(MatchExplanationException.class,
-            () -> service.generateExplanation(candidate.getId(), OPPORTUNITY_DESCRIPTION));
+            () -> service.generateExplanation(candidate.getId(), null, OPPORTUNITY_DESCRIPTION));
     }
 
     @Test
@@ -267,7 +299,7 @@ class CandidateMatchExplanationServiceImplTest {
                 .build());
 
         Exception ex = assertThrows(MatchExplanationException.class,
-            () -> service.generateExplanation(candidate.getId(), OPPORTUNITY_DESCRIPTION));
+            () -> service.generateExplanation(candidate.getId(), null, OPPORTUNITY_DESCRIPTION));
 
         assertTrue(ex.getMessage().contains(candidateIdString));
     }
@@ -281,7 +313,7 @@ class CandidateMatchExplanationServiceImplTest {
             .willThrow(new RestClientException("connection refused"));
 
         assertThrows(MatchExplanationException.class,
-            () -> service.generateExplanation(candidate.getId(), OPPORTUNITY_DESCRIPTION));
+            () -> service.generateExplanation(candidate.getId(), null, OPPORTUNITY_DESCRIPTION));
     }
 
     private ExplanationsResponse successResponseWithNoExperiences() {

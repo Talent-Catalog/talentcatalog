@@ -7,6 +7,7 @@ import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 import org.tctalent.server.exception.MatchExplanationException;
@@ -38,7 +39,7 @@ public class CandidateMatchExplanationServiceImpl implements CandidateMatchExpla
 
     @Override
     public @NonNull CandidateMatchExplanation generateExplanation(
-        long candidateId, @NonNull String opportunityDescription)
+        long candidateId, @Nullable Long jobId, @NonNull String opportunityDescription)
         throws NoSuchObjectException, MatchExplanationException {
 
         Candidate candidate = candidateService.getCandidate(candidateId);
@@ -79,6 +80,7 @@ public class CandidateMatchExplanationServiceImpl implements CandidateMatchExpla
         } catch (RestClientException e) {
             LogBuilder.builder(log)
                 .candidateId(candidate.getId())
+                .jobId(jobId)
                 .action("generateExplanation")
                 .message("Call to match explanation service failed")
                 .logError(e);
@@ -89,6 +91,7 @@ public class CandidateMatchExplanationServiceImpl implements CandidateMatchExpla
         if (response == null || response.getResults() == null || response.getResults().isEmpty()) {
             LogBuilder.builder(log)
                 .candidateId(candidate.getId())
+                .jobId(jobId)
                 .action("generateExplanation")
                 .message("Match explanation service returned no result")
                 .logError();
@@ -101,6 +104,7 @@ public class CandidateMatchExplanationServiceImpl implements CandidateMatchExpla
         if (!candidateIdString.equals(result.getCandidateId())) {
             LogBuilder.builder(log)
                 .candidateId(candidate.getId())
+                .jobId(jobId)
                 .action("generateExplanation")
                 .message("Match explanation service returned mismatched candidate ID: "
                     + result.getCandidateId())
@@ -114,6 +118,7 @@ public class CandidateMatchExplanationServiceImpl implements CandidateMatchExpla
             ExplanationError error = result.getError();
             LogBuilder.builder(log)
                 .candidateId(candidate.getId())
+                .jobId(jobId)
                 .action("generateExplanation")
                 .message("Match explanation service reported an error: ["
                     + error.getCode() + "] " + error.getMessage())

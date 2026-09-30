@@ -266,7 +266,10 @@ public class CandidateAdminApi {
      * algorithm.
      *
      * @param id ID of candidate
-     * @param request opportunity description to compare the candidate against
+     * @param request opportunity description to compare the candidate against, plus an optional
+     * {@link CandidateMatchExplanationRequest#getJobId() jobId} carried through purely as TC
+     * context - it is not used to derive the opportunity description and is not sent to the
+     * explanation service
      * @return generated match explanation
      * @throws NoSuchObjectException if no candidate is found with that id
      */
@@ -275,7 +278,7 @@ public class CandidateAdminApi {
         @PathVariable("id") long id,
         @Valid @RequestBody CandidateMatchExplanationRequest request) throws NoSuchObjectException {
         return candidateMatchExplanationService.generateExplanation(
-            id, request.getOpportunityDescription());
+            id, request.getJobId(), request.getOpportunityDescription());
     }
 
     @PutMapping("{id}/links")
@@ -521,8 +524,7 @@ public class CandidateAdminApi {
                                 @RequestParam(name="candidateOccupationIds", defaultValue = "")
                                 List<Long> candidateOccupationIds) {
          CvClaims cvClaims = new CvClaims(candidateNumber, restrictCandidateOccupations, candidateOccupationIds);
-         String token = candidateTokenProvider.generateCvToken(cvClaims, 365L);
-         return token;
+         return candidateTokenProvider.generateCvToken(cvClaims, 365L);
     }
 
     /**

@@ -1,6 +1,7 @@
 package org.tctalent.server.service.explanation;
 
 import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 import org.tctalent.server.exception.MatchExplanationException;
 import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.response.CandidateMatchExplanation;
@@ -15,6 +16,11 @@ public interface CandidateMatchExplanationService {
      * algorithm.</p>
      *
      * @param candidateId ID of the candidate to explain
+     * @param jobId ID of the Talent Catalog job this request relates to, or null if the request
+     * is not associated with a specific Talent Catalog job. This is carried through purely as TC
+     * context (e.g. for possible future persistence, caching or auditing) - it is not sent to the
+     * Python explanation service, is not used to look up or derive {@code opportunityDescription},
+     * and the referenced job is not required to exist.
      * @param opportunityDescription description of the opportunity/job to compare against
      * @return generated match explanation
      * @throws NoSuchObjectException if no candidate is found with the given id
@@ -23,6 +29,6 @@ public interface CandidateMatchExplanationService {
      * mismatched candidate ID, or could not be reached
      */
     @NonNull
-    CandidateMatchExplanation generateExplanation(long candidateId,
+    CandidateMatchExplanation generateExplanation(long candidateId, @Nullable Long jobId,
         @NonNull String opportunityDescription) throws NoSuchObjectException, MatchExplanationException;
 }
