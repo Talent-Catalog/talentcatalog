@@ -15,10 +15,17 @@ import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.CandidateJobExperience;
+import org.tctalent.server.model.db.SalesforceJobOpp;
+import org.tctalent.server.model.db.explanation.CandidateJobMatchExplanation;
+import org.tctalent.server.model.db.explanation.CandidateJobMatchExplanationData;
+import org.tctalent.server.model.db.explanation.CandidateJobMatchExplanationKey;
+import org.tctalent.server.model.db.mapper.CandidateJobMatchExplanationMapper;
 import org.tctalent.server.repository.db.CandidateJobExperienceRepository;
+import org.tctalent.server.repository.db.CandidateJobMatchExplanationRepository;
 import org.tctalent.server.response.CandidateMatchExplanation;
 import org.tctalent.server.response.ExperienceMatchExplanation;
 import org.tctalent.server.service.db.CandidateService;
+import org.tctalent.server.service.db.SalesforceJobOppService;
 import org.tctalent.server.service.explanation.CandidateMatchExplanationService;
 import org.tctalent.server.service.explanation.dto.CandidateMatchExplanationServiceClient;
 import org.tctalent.server.service.explanation.dto.ExplanationCandidateInput;
@@ -34,7 +41,10 @@ import org.tctalent.server.service.explanation.dto.ExplanationsResponse;
 public class CandidateMatchExplanationServiceImpl implements CandidateMatchExplanationService {
 
     private final CandidateService candidateService;
+    private final SalesforceJobOppService salesforceJobOppService;
     private final CandidateJobExperienceRepository candidateJobExperienceRepository;
+    private final CandidateJobMatchExplanationRepository candidateJobMatchExplanationRepository;
+    private final CandidateJobMatchExplanationMapper candidateJobMatchExplanationMapper;
     private final CandidateMatchExplanationServiceClient candidateMatchExplanationServiceClient;
 
     @Override
@@ -43,6 +53,11 @@ public class CandidateMatchExplanationServiceImpl implements CandidateMatchExpla
         throws NoSuchObjectException, MatchExplanationException {
 
         Candidate candidate = candidateService.getCandidate(candidateId);
+
+        // Loaded up front (before calling the explanation service) so that an invalid jobId
+        // fails fast, consistent with how a missing candidate is already handled, rather than
+        // wasting an LLM call before discovering the job doesn't exist.
+        SalesforceJobOpp job = jobId == null ? null : salesforceJobOppService.getJobOpp(jobId);
 
         List<CandidateJobExperience> experiences =
             candidateJobExperienceRepository.findByCandidateId(candidate.getId());
@@ -147,10 +162,47 @@ public class CandidateMatchExplanationServiceImpl implements CandidateMatchExpla
                     })
                     .toList();
 
-        return CandidateMatchExplanation.builder()
+        CandidateMatchExplanation explanation = CandidateMatchExplanation.builder()
             .summary(result.getSummary())
             .experienceExplanations(experienceExplanations)
             .limitations(result.getLimitations())
             .build();
+
+        if (job != null) {
+            persistExplanation(candidate, job, explanation);
+        }
+
+        return explanation;
+    }
+
+    /**
+     * Persists the given explanation against the (candidate, job) pair, replacing any
+     * explanation already persisted for that pair rather than inserting a second record.
+     */
+    private void persistExplanation(
+        Candidate candidate, SalesforceJobOpp job, CandidateMatchExplanation explanation) {
+
+        CandidateJobMatchExplanationKey key =
+            new CandidateJobMatchExplanationKey(candidate.getId(), job.getId());
+        CandidateJobMatchExplanationData data = candidateJobMatchExplanationMapper.toData(explanation);
+
+        CandidateJobMatchExplanation entity = candidateJobMatchExplanationRepository.findById(key)
+            .orElseGet(() -> new CandidateJobMatchExplanation(candidate, job));
+        entity.setExplanation(data);
+
+        candidateJobMatchExplanationRepository.save(entity);
+    }
+
+    @Override
+    public @NonNull CandidateMatchExplanation getPersistedExplanation(long candidateId, long jobId)
+        throws NoSuchObjectException {
+
+        CandidateJobMatchExplanationKey key =
+            new CandidateJobMatchExplanationKey(candidateId, jobId);
+        CandidateJobMatchExplanation entity = candidateJobMatchExplanationRepository.findById(key)
+            .orElseThrow(() -> new NoSuchObjectException(
+                "No match explanation found for candidate " + candidateId + " and job " + jobId));
+
+        return candidateJobMatchExplanationMapper.toResponse(entity.getExplanation());
     }
 }
