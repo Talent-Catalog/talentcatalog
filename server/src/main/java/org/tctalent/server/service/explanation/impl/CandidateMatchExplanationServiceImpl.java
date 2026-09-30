@@ -2,8 +2,10 @@ package org.tctalent.server.service.explanation.impl;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.NonNull;
@@ -28,6 +30,7 @@ import org.tctalent.server.service.db.CandidateService;
 import org.tctalent.server.service.db.SalesforceJobOppService;
 import org.tctalent.server.service.explanation.CandidateMatchExplanationService;
 import org.tctalent.server.service.explanation.dto.CandidateMatchExplanationServiceClient;
+import org.tctalent.server.service.explanation.dto.ExperienceExplanationItem;
 import org.tctalent.server.service.explanation.dto.ExplanationCandidateInput;
 import org.tctalent.server.service.explanation.dto.ExplanationError;
 import org.tctalent.server.service.explanation.dto.ExplanationExperienceInput;
@@ -143,24 +146,62 @@ public class CandidateMatchExplanationServiceImpl implements CandidateMatchExpla
                     + ": [" + error.getCode() + "] " + error.getMessage());
         }
 
-        List<ExperienceMatchExplanation> experienceExplanations =
-            result.getExperienceExplanations() == null
-                ? List.of()
-                : result.getExperienceExplanations().stream()
-                    .map(item -> {
-                        Long experienceId = sentExperienceIdsByString.get(item.getExperienceId());
-                        if (experienceId == null) {
-                            throw new MatchExplanationException(
-                                "Match explanation service returned unknown experience ID '"
-                                    + item.getExperienceId() + "' for candidate "
-                                    + candidateIdString);
-                        }
-                        return ExperienceMatchExplanation.builder()
-                            .experienceId(experienceId)
-                            .explanation(item.getExplanation())
-                            .build();
-                    })
-                    .toList();
+        List<ExperienceExplanationItem> returnedItems = result.getExperienceExplanations() == null
+            ? List.of()
+            : result.getExperienceExplanations();
+
+        // Python is expected to return exactly one experience_explanation for every candidate
+        // experience supplied - no fewer, no more, no duplicates. Validate this fully before
+        // constructing (and possibly persisting) the final explanation, rather than only
+        // checking for unexpected IDs.
+        Set<String> seenExperienceIds = new HashSet<>();
+        Set<String> duplicateExperienceIds = new HashSet<>();
+        for (ExperienceExplanationItem item : returnedItems) {
+            if (!seenExperienceIds.add(item.getExperienceId())) {
+                duplicateExperienceIds.add(item.getExperienceId());
+            }
+        }
+        if (!duplicateExperienceIds.isEmpty()) {
+            LogBuilder.builder(log)
+                .candidateId(candidate.getId())
+                .jobId(jobId)
+                .action("generateExplanation")
+                .message("Match explanation service returned duplicate experience ID(s): "
+                    + duplicateExperienceIds)
+                .logError();
+            throw new MatchExplanationException(
+                "Match explanation service returned duplicate experience ID(s) "
+                    + duplicateExperienceIds + " for candidate " + candidateIdString);
+        }
+
+        Set<String> sentExperienceIds = sentExperienceIdsByString.keySet();
+        if (!seenExperienceIds.equals(sentExperienceIds)) {
+            Set<String> missingExperienceIds = new HashSet<>(sentExperienceIds);
+            missingExperienceIds.removeAll(seenExperienceIds);
+            Set<String> unexpectedExperienceIds = new HashSet<>(seenExperienceIds);
+            unexpectedExperienceIds.removeAll(sentExperienceIds);
+
+            LogBuilder.builder(log)
+                .candidateId(candidate.getId())
+                .jobId(jobId)
+                .action("generateExplanation")
+                .message("Match explanation service returned experience explanations that do "
+                    + "not match the experiences sent. Missing: " + missingExperienceIds
+                    + ", unexpected: " + unexpectedExperienceIds)
+                .logError();
+            throw new MatchExplanationException(
+                "Match explanation service returned experience explanations that do not match "
+                    + "the experiences sent for candidate " + candidateIdString
+                    + ". Missing experience ID(s): " + missingExperienceIds
+                    + ". Unexpected experience ID(s): " + unexpectedExperienceIds);
+        }
+
+        List<ExperienceMatchExplanation> experienceExplanations = returnedItems.stream()
+            .map(item -> ExperienceMatchExplanation.builder()
+                .experienceId(sentExperienceIdsByString.get(item.getExperienceId()))
+                .explanation(item.getExplanation())
+                .build())
+            .toList();
 
         CandidateMatchExplanation explanation = CandidateMatchExplanation.builder()
             .summary(result.getSummary())

@@ -14,6 +14,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.tctalent.server.data.CandidateTestData.getCandidate;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
@@ -158,7 +159,7 @@ class CandidateMatchExplanationServiceImplTest {
         given(candidateJobExperienceRepository.findByCandidateId(candidate.getId()))
             .willReturn(List.of(experience1, experience2));
         given(candidateMatchExplanationServiceClient.generateExplanations(requestCaptor.capture()))
-            .willReturn(successResponseWithNoExperiences());
+            .willReturn(successResponseWithExperiences(EXPERIENCE_ID_1, EXPERIENCE_ID_2));
 
         service.generateExplanation(candidate.getId(), null, OPPORTUNITY_DESCRIPTION);
 
@@ -434,12 +435,90 @@ class CandidateMatchExplanationServiceImplTest {
             () -> service.getPersistedExplanation(candidate.getId(), JOB_ID));
     }
 
+    @Test
+    @DisplayName("should accept when every sent experience ID is returned exactly once")
+    void generateExplanation_shouldAccept_whenAllSentExperienceIdsReturnedExactlyOnce() {
+        given(candidateJobExperienceRepository.findByCandidateId(candidate.getId()))
+            .willReturn(List.of(experience1, experience2));
+        given(candidateMatchExplanationServiceClient.generateExplanations(any()))
+            .willReturn(successResponseWithExperiences(EXPERIENCE_ID_1, EXPERIENCE_ID_2));
+
+        CandidateMatchExplanation explanation =
+            service.generateExplanation(candidate.getId(), null, OPPORTUNITY_DESCRIPTION);
+
+        assertEquals(2, explanation.getExperienceExplanations().size());
+    }
+
+    @Test
+    @DisplayName("should reject when a supplied experience is omitted from the response")
+    void generateExplanation_shouldThrow_whenSuppliedExperienceOmitted() {
+        given(candidateJobExperienceRepository.findByCandidateId(candidate.getId()))
+            .willReturn(List.of(experience1, experience2));
+        // Only experience1 is echoed back - experience2 is missing.
+        given(candidateMatchExplanationServiceClient.generateExplanations(any()))
+            .willReturn(successResponseWithExperiences(EXPERIENCE_ID_1));
+
+        Exception ex = assertThrows(MatchExplanationException.class,
+            () -> service.generateExplanation(candidate.getId(), null, OPPORTUNITY_DESCRIPTION));
+
+        assertTrue(ex.getMessage().contains(String.valueOf(EXPERIENCE_ID_2)));
+    }
+
+    @Test
+    @DisplayName("should reject when the same experience ID is returned more than once")
+    void generateExplanation_shouldThrow_whenExperienceIdReturnedTwice() {
+        given(candidateJobExperienceRepository.findByCandidateId(candidate.getId()))
+            .willReturn(List.of(experience1, experience2));
+        // experience1's ID is returned twice; experience2's ID never appears.
+        given(candidateMatchExplanationServiceClient.generateExplanations(any()))
+            .willReturn(successResponseWithExperiences(EXPERIENCE_ID_1, EXPERIENCE_ID_1));
+
+        Exception ex = assertThrows(MatchExplanationException.class,
+            () -> service.generateExplanation(candidate.getId(), null, OPPORTUNITY_DESCRIPTION));
+
+        assertTrue(ex.getMessage().contains(String.valueOf(EXPERIENCE_ID_1)));
+    }
+
+    @Test
+    @DisplayName("should accept when no experiences were sent and none were returned")
+    void generateExplanation_shouldAccept_whenNoExperiencesSentAndNoneReturned() {
+        given(candidateJobExperienceRepository.findByCandidateId(candidate.getId()))
+            .willReturn(List.of());
+        given(candidateMatchExplanationServiceClient.generateExplanations(any()))
+            .willReturn(successResponseWithNoExperiences());
+
+        CandidateMatchExplanation explanation =
+            service.generateExplanation(candidate.getId(), null, OPPORTUNITY_DESCRIPTION);
+
+        assertEquals(SUMMARY, explanation.getSummary());
+        assertTrue(explanation.getExperienceExplanations().isEmpty());
+    }
+
     private ExplanationsResponse successResponseWithNoExperiences() {
         return ExplanationsResponse.builder()
             .requested(1).succeeded(1).failed(0)
             .results(List.of(ExplanationResult.builder()
                 .candidateId(candidateIdString)
                 .summary(SUMMARY)
+                .build()))
+            .build();
+    }
+
+    /** Builds a successful response echoing back one experience explanation per given ID. */
+    private ExplanationsResponse successResponseWithExperiences(long... experienceIds) {
+        List<ExperienceExplanationItem> items = Arrays.stream(experienceIds)
+            .mapToObj(id -> ExperienceExplanationItem.builder()
+                .experienceId(String.valueOf(id))
+                .explanation("Explanation for " + id)
+                .build())
+            .toList();
+
+        return ExplanationsResponse.builder()
+            .requested(1).succeeded(1).failed(0)
+            .results(List.of(ExplanationResult.builder()
+                .candidateId(candidateIdString)
+                .summary(SUMMARY)
+                .experienceExplanations(items)
                 .build()))
             .build();
     }
