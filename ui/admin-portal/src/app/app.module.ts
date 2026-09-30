@@ -838,6 +838,9 @@ import {
   CandidateCvTextTabComponent
 } from './components/candidates/view/tab/candidate-cv-text-tab/candidate-cv-text-tab.component';
 import {
+  CandidateMatchExplanationComponent
+} from './components/util/candidate-match-explanation/candidate-match-explanation.component';
+import {
   ImportLinkedinPremiumCouponsComponent
 } from "./components/casi-management/import-linkedin-premium-coupons/import-linkedin-premium-coupons.component";
 import {
@@ -1200,6 +1203,7 @@ import {
     ViewPrivacyPolicyInfoComponent,
     SafeHtmlPipe,
     CandidateCvTextTabComponent,
+    CandidateMatchExplanationComponent,
     CasiManagementComponent,
     CsvPreviewComponent,
     ManageHelpSiteLinksComponent,

@@ -1,0 +1,185 @@
+/*
+ * Copyright (c) 2026 Talent Catalog.
+ *
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
+ * for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see https://www.gnu.org/licenses/.
+ */
+
+import {Component, Input, OnChanges, OnDestroy, SimpleChanges} from '@angular/core';
+import {HttpErrorResponse} from '@angular/common/http';
+import {Observable, of, Subject} from 'rxjs';
+import {catchError, map, switchMap, takeUntil} from 'rxjs/operators';
+import {CandidateService} from '../../../services/candidate.service';
+import {CandidateMatchExplanation} from '../../../model/candidate-match-explanation';
+
+interface CandidateJobKey {
+  candidateId: number;
+  jobId: number;
+}
+
+interface ExplanationOutcome {
+  key: CandidateJobKey;
+  explanation?: CandidateMatchExplanation;
+  error?: string;
+}
+
+/**
+ * Displays the on-demand LLM-generated match explanation for a given (candidate, job) pair.
+ * <p/>
+ * On first use (and whenever candidateId/jobId change), retrieves any already-persisted
+ * explanation. If none has been generated yet (the retrieval returns 404), one is generated
+ * automatically. The user can also explicitly regenerate an already-displayed explanation.
+ * <p/>
+ * Changing only opportunityDescription does NOT trigger any automatic retrieval/generation -
+ * the new value is simply used the next time generation is (explicitly or automatically)
+ * triggered. This is intentional: a changed description may make a persisted explanation stale,
+ * but regeneration remains under explicit user control.
+ */
+@Component({
+  selector: 'app-candidate-match-explanation',
+  templateUrl: './candidate-match-explanation.component.html',
+  styleUrls: ['./candidate-match-explanation.component.scss']
+})
+export class CandidateMatchExplanationComponent implements OnChanges, OnDestroy {
+
+  /** ID of the candidate being explained. */
+  @Input({required: true}) candidateId!: number;
+
+  /** ID of the Talent Catalog job the explanation is persisted/retrieved against. */
+  @Input({required: true}) jobId!: number;
+
+  /**
+   * Opportunity description to send to the explanation service when (re)generating.
+   * This is the actual text used - it is never derived from the job by this component.
+   */
+  @Input({required: true}) opportunityDescription!: string;
+
+  explanation: CandidateMatchExplanation | null = null;
+  error: string | null = null;
+
+  /** Checking for a persisted explanation. */
+  checking = false;
+  /** Automatically generating because none was persisted yet. */
+  generating = false;
+  /** Explicitly regenerating an already-displayed explanation. */
+  regenerating = false;
+
+  private candidateJob$ = new Subject<CandidateJobKey>();
+  private destroy$ = new Subject<void>();
+
+  constructor(private candidateService: CandidateService) {
+    this.candidateJob$.pipe(
+      switchMap(key => this.retrieveOrGenerate(key)),
+      takeUntil(this.destroy$)
+    ).subscribe(outcome => this.applyOutcome(outcome));
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    const candidateOrJobChanged = !!changes['candidateId'] || !!changes['jobId'];
+    if (candidateOrJobChanged && this.candidateId != null && this.jobId != null) {
+      this.explanation = null;
+      this.error = null;
+      this.checking = true;
+      this.generating = false;
+      this.candidateJob$.next({candidateId: this.candidateId, jobId: this.jobId});
+    }
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  regenerate(): void {
+    if (this.generating || this.regenerating) {
+      // A generation request is already in flight - don't start another.
+      return;
+    }
+    const candidateId = this.candidateId;
+    const jobId = this.jobId;
+    this.regenerating = true;
+    this.error = null;
+    this.candidateService.generateMatchExplanation(candidateId, {
+      jobId,
+      opportunityDescription: this.opportunityDescription
+    }).pipe(takeUntil(this.destroy$)).subscribe({
+      next: (explanation) => {
+        this.regenerating = false;
+        if (this.isCurrent(candidateId, jobId)) {
+          this.explanation = explanation;
+        }
+      },
+      error: (error) => {
+        this.regenerating = false;
+        if (this.isCurrent(candidateId, jobId)) {
+          // Keep the previously displayed explanation - just surface the error.
+          this.error = error;
+        }
+      }
+    });
+  }
+
+  /**
+   * Retrieves the persisted explanation for the given key, automatically generating one if
+   * none exists (404). Both the retrieval and any resulting automatic generation are part of
+   * this single inner observable, so a subsequent candidateId/jobId change (which resubscribes
+   * via switchMap) cancels whichever of the two is still in flight.
+   */
+  private retrieveOrGenerate(key: CandidateJobKey): Observable<ExplanationOutcome> {
+    return this.candidateService.getMatchExplanation(key.candidateId, key.jobId).pipe(
+      map((explanation): ExplanationOutcome => ({key, explanation})),
+      catchError((err: HttpErrorResponse) => {
+        if (err.status === 404) {
+          this.checking = false;
+          this.generating = true;
+          return this.candidateService.generateMatchExplanation(key.candidateId, {
+            jobId: key.jobId,
+            opportunityDescription: this.opportunityDescription
+          }).pipe(
+            map((explanation): ExplanationOutcome => ({key, explanation})),
+            catchError((genErr) => of({key, error: genErr} as ExplanationOutcome))
+          );
+        }
+        return of({key, error: this.extractErrorMessage(err)} as ExplanationOutcome);
+      })
+    );
+  }
+
+  private applyOutcome(outcome: ExplanationOutcome): void {
+    this.checking = false;
+    this.generating = false;
+    if (!this.isCurrent(outcome.key.candidateId, outcome.key.jobId)) {
+      // Superseded by a newer candidateId/jobId pair. switchMap already cancels the stale
+      // inner observable, but this guards against applying an already-in-flight result too.
+      return;
+    }
+    if (outcome.error) {
+      this.error = outcome.error;
+    } else {
+      this.explanation = outcome.explanation;
+    }
+  }
+
+  private isCurrent(candidateId: number, jobId: number): boolean {
+    return candidateId === this.candidateId && jobId === this.jobId;
+  }
+
+  private extractErrorMessage(err: HttpErrorResponse): string {
+    if (err.error != null && err.error.message) {
+      return err.error.message;
+    }
+    if (err.message != null) {
+      return err.message;
+    }
+    return `${err.status} ${err.statusText}`;
+  }
+}

@@ -1,0 +1,47 @@
+<div *ngIf="checking">
+  <tc-loading [loading]="true"></tc-loading>
+  <p class="text-muted small">Checking for an existing match explanation...</p>
+</div>
+
+<div *ngIf="generating">
+  <tc-loading [loading]="true"></tc-loading>
+  <p class="text-muted small">Generating match explanation...</p>
+</div>
+
+<tc-alert type="danger" *ngIf="error">{{error}}</tc-alert>
+
+<tc-card *ngIf="explanation && !checking && !generating">
+  <tc-card-header>
+    <div class="d-flex align-items-center justify-content-between w-100">
+      <span>Match Explanation</span>
+      <tc-button
+        type="outline"
+        size="sm"
+        color="secondary"
+        [loading]="regenerating"
+        (onClick)="regenerate()">
+        <i class="fas fa-sync"></i> Regenerate explanation
+      </tc-button>
+    </div>
+  </tc-card-header>
+
+  <div class="mb-3">
+    <p class="mb-0">{{explanation.summary}}</p>
+  </div>
+
+  <div *ngIf="explanation.experienceExplanations?.length" class="mb-3">
+    <h6>Relevant experience</h6>
+    <ul class="mb-0">
+      <li *ngFor="let item of explanation.experienceExplanations">
+        <strong>Experience #{{item.experienceId}}:</strong> {{item.explanation}}
+      </li>
+    </ul>
+  </div>
+
+  <div *ngIf="explanation.limitations?.length">
+    <h6>Limitations</h6>
+    <ul class="mb-0">
+      <li *ngFor="let limitation of explanation.limitations">{{limitation}}</li>
+    </ul>
+  </div>
+</tc-card>
