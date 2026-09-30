@@ -27,10 +27,21 @@ import lombok.Value;
 @Value
 @Builder
 public class CandidateMatchExplanation {
-
+    /**
+     * Concise overall explanation of how the candidate's supplied experience
+     * relates to the opportunity.
+     */
     String summary;
 
+    /**
+     * Explanation for each supplied job experience describing how that experience
+     * relates to the opportunity.
+     */
     List<ExperienceMatchExplanation> experienceExplanations;
 
+    /**
+     * Gaps or uncertainties in the supplied candidate experience data that limit
+     * the ability to assess the candidate against the opportunity.
+     */
     List<String> limitations;
 }
