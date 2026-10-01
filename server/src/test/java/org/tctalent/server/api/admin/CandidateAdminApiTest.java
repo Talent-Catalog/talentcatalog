@@ -114,6 +114,7 @@ import org.tctalent.server.service.db.CandidateSavedListService;
 import org.tctalent.server.service.db.CandidateService;
 import org.tctalent.server.service.db.SavedListService;
 import org.tctalent.server.service.db.SavedSearchService;
+import org.tctalent.server.service.explanation.CandidateMatchExplanationService;
 import org.tctalent.server.util.dto.DtoBuilder;
 
 /**
@@ -200,6 +201,8 @@ class CandidateAdminApiTest extends ApiTestBase {
     CandidateIntakeDataBuilderSelector candidateIntakeDataBuilderSelector;
     @MockitoBean
     CandidateErasureService candidateErasureService;
+    @MockitoBean
+    CandidateMatchExplanationService candidateMatchExplanationService;
 
     @Autowired MockMvc mockMvc;
     @Autowired ObjectMapper objectMapper;

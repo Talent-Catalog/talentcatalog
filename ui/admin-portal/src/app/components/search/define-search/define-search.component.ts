@@ -67,7 +67,7 @@ import {
 import {
   LanguageLevelFormControlComponent
 } from '../../util/form/language-proficiency/language-level-form-control.component';
-import {Router} from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
 import {
   ClearSelectionRequest,
   getCandidateSourceNavigation,
@@ -194,6 +194,7 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit, 
               private languageLevelService: LanguageLevelService,
               private modalService: NgbModal,
               private router: Router,
+              private activatedRoute: ActivatedRoute,
               private skillsService: SkillsService,
               private authorizationService: AuthorizationService,
               private authenticationService: AuthenticationService,
@@ -630,6 +631,54 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit, 
     this.englishLanguagePicker.clearProficiencies();
     this.otherLanguagePicker.form.reset();
     this.searchForm.markAsDirty();
+  }
+
+  /**
+   * Handles the user clicking the "Clear Search" button: clears the search form (as clearForm()
+   * always has) and, in addition, explicitly clears any job association on the default search.
+   * <p/>
+   * This is deliberately NOT folded into clearForm() itself, since clearForm() is also called
+   * internally by setUpJobMatch()/runSearchWithListConstraint() as a generic "reset form fields"
+   * step before auto-populating a job- or list-driven search - contexts where clearing the job
+   * association would immediately undo the job this method is in the middle of setting up.
+   */
+  onClearSearch() {
+    this.clearForm();
+    this.clearJobAssociation();
+  }
+
+  /**
+   * Explicitly clears any job association on the user's default saved search (via the dedicated
+   * job-association endpoint - see TC-1535) and removes the 'job' query param from the URL, so
+   * that reinitializing from the same URL doesn't immediately reassign the job just cleared.
+   * <p/>
+   * Only applicable to the default search - a named saved search's persisted job association is
+   * only ever changed by an explicit save, not by clearing the search form.
+   */
+  private clearJobAssociation() {
+    if (!this.savedSearch?.defaultSearch) {
+      return;
+    }
+
+    if (this.savedSearch.sfJobOpp != null) {
+      this.savedSearchService.updateJob(this.savedSearch.id, null).subscribe({
+        next: updated => {
+          this.savedSearch = updated;
+        },
+        error: err => {
+          this.error = err;
+        }
+      });
+    }
+
+    if (this.jobId) {
+      this.jobId = 0;
+      this.router.navigate([], {
+        relativeTo: this.activatedRoute,
+        queryParams: {job: null},
+        queryParamsHandling: 'merge'
+      });
+    }
   }
 
   newSearch() {

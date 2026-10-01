@@ -56,6 +56,7 @@ import org.tctalent.server.request.search.ClearSelectionRequest;
 import org.tctalent.server.request.search.CreateFromDefaultSavedSearchRequest;
 import org.tctalent.server.request.search.SearchSavedSearchRequest;
 import org.tctalent.server.request.search.SelectCandidateInSearchRequest;
+import org.tctalent.server.request.search.UpdateSavedSearchJobRequest;
 import org.tctalent.server.request.search.UpdateSavedSearchRequest;
 import org.tctalent.server.request.search.UpdateSharingRequest;
 import org.tctalent.server.request.search.UpdateWatchingRequest;
@@ -328,6 +329,25 @@ public class SavedSearchAdminApi implements
             @PathVariable("id") long id,
             @RequestBody UpdateWatchingRequest request) {
         SavedSearch savedSearch = this.savedSearchService.removeWatcher(id, request);
+        return extendedSavedSearchDto().build(savedSearch);
+    }
+
+    /**
+     * Explicitly assigns or clears the job associated with the given saved search.
+     * @param id ID of saved search
+     * @param request Request containing the job id to assign, or null to clear any
+     *                existing association
+     * @return The updated saved search
+     * @throws NoSuchObjectException if there is no such saved search or job
+     * @throws InvalidRequestException if the saved search does not belong to the
+     * logged in user
+     */
+    @PutMapping("/job/{id}")
+    public Map<String, Object> updateJob(
+            @PathVariable("id") long id,
+            @Valid @RequestBody UpdateSavedSearchJobRequest request)
+            throws NoSuchObjectException, InvalidRequestException {
+        SavedSearch savedSearch = this.savedSearchService.updateSavedSearchJob(id, request);
         return extendedSavedSearchDto().build(savedSearch);
     }
 

@@ -22,7 +22,7 @@ import {SavedSearchService} from "../../../services/saved-search.service";
 import {AuthorizationService} from "../../../services/authorization.service";
 import {ElementRef, NO_ERRORS_SCHEMA, SimpleChange} from '@angular/core';
 import {ComponentFixture, discardPeriodicTasks, fakeAsync, TestBed, tick} from '@angular/core/testing';
-import {Router} from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
 import {BehaviorSubject, of, throwError} from 'rxjs';
 
 import {CandidateOccupationService} from '../../../services/candidate-occupation.service';
@@ -121,7 +121,7 @@ describe('DefineSearchComponent', () => {
     languageService = jasmine.createSpyObj('LanguageService', ['listLanguages']);
     partnerService = jasmine.createSpyObj('PartnerService', ['listSourcePartners']);
     savedSearchService = jasmine.createSpyObj('SavedSearchService', [
-      'load', 'clearSelection', 'getSavedSearchTypeInfos', 'delete', 'get'
+      'load', 'clearSelection', 'getSavedSearchTypeInfos', 'delete', 'get', 'updateJob'
     ]);
     skillsService = jasmine.createSpyObj('SkillsService', ['extractSkills']);
     educationLevelService = jasmine.createSpyObj('EducationLevelService', ['listEducationLevels']);
@@ -174,6 +174,7 @@ describe('DefineSearchComponent', () => {
         {provide: LanguageLevelService, useValue: languageLevelService},
         {provide: NgbModal, useValue: modalService},
         {provide: Router, useValue: router},
+        {provide: ActivatedRoute, useValue: {snapshot: {}}},
         {provide: AuthorizationService, useValue: authorizationService},
         {provide: AuthenticationService, useValue: authenticationService},
         {provide: SearchQueryService, useValue: searchQueryService}
@@ -700,6 +701,122 @@ describe('DefineSearchComponent', () => {
     expect(component.englishLanguagePicker.clearProficiencies).toHaveBeenCalled();
     expect(component.otherLanguagePicker.form.reset).toHaveBeenCalled();
     expect(component.searchForm.dirty).toBeTrue();
+  });
+
+  describe('clearForm() does not touch job association (used internally by job/list auto-population)', () => {
+
+    beforeEach(() => {
+      setPickerMocks();
+    });
+
+    it('should NOT call the job API or touch the URL when clearForm() is called directly', () => {
+      component.savedSearch = {id: 7, defaultSearch: true, sfJobOpp: {id: 123}} as any;
+      component.jobId = 123;
+
+      component.clearForm();
+
+      expect(savedSearchService.updateJob).not.toHaveBeenCalled();
+      expect(router.navigate).not.toHaveBeenCalled();
+      expect(component.jobId).toBe(123);
+    });
+
+    it('should not clobber jobId/jobName when setUpJobMatch (which calls clearForm internally) runs', () => {
+      component.savedSearch = {id: 7, defaultSearch: true, sfJobOpp: null} as any;
+      component.jobId = 123;
+      spyOn(component, 'onSubmit');
+
+      (component as any).setUpJobMatch({
+        description: '',
+        skillNames: [],
+        jobName: 'Test job'
+      });
+
+      expect(savedSearchService.updateJob).not.toHaveBeenCalled();
+      expect(router.navigate).not.toHaveBeenCalled();
+      expect(component.jobId).toBe(123);
+      expect(component.jobName).toBe('Test job');
+      expect(component.displayJobNameAsSource()).toContain('123');
+    });
+  });
+
+  describe('onClearSearch() - user-triggered Clear Search button', () => {
+
+    beforeEach(() => {
+      setPickerMocks();
+    });
+
+    it('should clear the form fields (delegating to clearForm)', () => {
+      component.savedSearch = {id: 7, defaultSearch: true, sfJobOpp: null} as any;
+      component.searchForm.get('simpleQueryString').patchValue('test query');
+
+      component.onClearSearch();
+
+      expect(component.searchForm.get('simpleQueryString').value).toBeNull();
+    });
+
+    it('should clear the job association via the API when the default search has an existing job', () => {
+      component.savedSearch = {id: 7, defaultSearch: true, sfJobOpp: {id: 123}} as any;
+      component.jobId = 123;
+      const updated = {id: 7, defaultSearch: true, sfJobOpp: null} as any;
+      savedSearchService.updateJob.and.returnValue(of(updated));
+
+      component.onClearSearch();
+
+      expect(savedSearchService.updateJob).toHaveBeenCalledWith(7, null);
+      expect(component.savedSearch).toEqual(updated);
+    });
+
+    it('should remove the job query param from the URL while preserving unrelated params', () => {
+      component.savedSearch = {id: 7, defaultSearch: true, sfJobOpp: {id: 123}} as any;
+      component.jobId = 123;
+      savedSearchService.updateJob.and.returnValue(of({id: 7, defaultSearch: true, sfJobOpp: null} as any));
+
+      component.onClearSearch();
+
+      expect(component.jobId).toBeFalsy();
+      expect(router.navigate).toHaveBeenCalledWith([], jasmine.objectContaining({
+        queryParams: {job: null},
+        queryParamsHandling: 'merge'
+      }));
+    });
+
+    it('should surface an error without crashing if clearing the job association fails', () => {
+      component.savedSearch = {id: 7, defaultSearch: true, sfJobOpp: {id: 123}} as any;
+      component.jobId = 123;
+      savedSearchService.updateJob.and.returnValue(throwError('Failed to clear job'));
+
+      component.onClearSearch();
+
+      expect(component.error).toEqual('Failed to clear job');
+    });
+
+    it('should not call the job API when the default search has no existing job association', () => {
+      component.savedSearch = {id: 7, defaultSearch: true, sfJobOpp: null} as any;
+      component.jobId = 0;
+
+      component.onClearSearch();
+
+      expect(savedSearchService.updateJob).not.toHaveBeenCalled();
+      expect(router.navigate).not.toHaveBeenCalled();
+    });
+
+    it('should not clear the job association for a non-default (named) saved search', () => {
+      component.savedSearch = {id: 7, defaultSearch: false, sfJobOpp: {id: 123}} as any;
+      component.jobId = 123;
+
+      component.onClearSearch();
+
+      expect(savedSearchService.updateJob).not.toHaveBeenCalled();
+      expect(router.navigate).not.toHaveBeenCalled();
+    });
+
+    it('should do nothing when there is no current saved search', () => {
+      component.savedSearch = undefined;
+
+      expect(() => component.onClearSearch()).not.toThrow();
+      expect(savedSearchService.updateJob).not.toHaveBeenCalled();
+      expect(router.navigate).not.toHaveBeenCalled();
+    });
   });
 
   it('should navigate to a new search', () => {

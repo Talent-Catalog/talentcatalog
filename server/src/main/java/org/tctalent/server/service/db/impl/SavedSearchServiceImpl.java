@@ -120,6 +120,7 @@ import org.tctalent.server.request.candidate.UpdateDisplayedFieldPathsRequest;
 import org.tctalent.server.request.candidate.source.UpdateCandidateSourceDescriptionRequest;
 import org.tctalent.server.request.search.CreateFromDefaultSavedSearchRequest;
 import org.tctalent.server.request.search.SearchSavedSearchRequest;
+import org.tctalent.server.request.search.UpdateSavedSearchJobRequest;
 import org.tctalent.server.request.search.UpdateSavedSearchRequest;
 import org.tctalent.server.request.search.UpdateSharingRequest;
 import org.tctalent.server.request.search.UpdateWatchingRequest;
@@ -887,6 +888,34 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         savedSearch.parseType();
 
         savedSearch.removeWatcher(request.getUserId());
+
+        return savedSearchRepository.save(savedSearch);
+    }
+
+    @Override
+    @Transactional
+    public SavedSearch updateSavedSearchJob(long id, UpdateSavedSearchJobRequest request) {
+        final User loggedInUser = userService.getLoggedInUser();
+        if (loggedInUser == null) {
+            throw new InvalidSessionException("Not logged in");
+        }
+
+        SavedSearch savedSearch = savedSearchRepository.findById(id)
+                .orElseThrow(() -> new NoSuchObjectException(SavedSearch.class, id));
+
+        if (!savedSearch.getCreatedBy().getId().equals(loggedInUser.getId())) {
+            throw new InvalidRequestException("You can't modify another user's saved search.");
+        }
+
+        final Long jobId = request.getJobId();
+        if (jobId == null) {
+            savedSearch.setSfJobOpp(null);
+        } else {
+            final SalesforceJobOpp currentJobOpp = savedSearch.getSfJobOpp();
+            if (currentJobOpp == null || !jobId.equals(currentJobOpp.getId())) {
+                savedSearch.setSfJobOpp(salesforceJobOppService.getJobOpp(jobId));
+            }
+        }
 
         return savedSearchRepository.save(savedSearch);
     }

@@ -18,6 +18,10 @@
   <div><strong>{{error}}</strong></div>
 </tc-alert>
 
+<tc-alert [type]="'danger'" *ngIf="jobAssignmentError">
+  <div><strong>Failed to associate job with search: {{jobAssignmentError}}</strong></div>
+</tc-alert>
+
 <tc-loading [loading]="loading"></tc-loading>
 
 <app-define-search *ngIf="!error && !loading"

@@ -152,6 +152,24 @@ describe('CandidateSearchCardComponent', () => {
       expect(findMatchExplanationEl().properties['jobId']).toBe(99);
     });
 
+    it('should fall through to candidateSource.sfJobOpp?.id when jobId is 0 (absent-job sentinel, not a real id)', () => {
+      component.candidate = {id: 42, candidateOpportunities: []} as Candidate;
+      component.candidateSource = {sfJobOpp: {id: 7}} as CandidateSource;
+      component.jobId = 0;
+      fixture.detectChanges();
+
+      expect(findMatchExplanationEl().properties['jobId']).toBe(7);
+    });
+
+    it('should NOT instantiate the match explanation component when jobId is 0 and there is no sfJobOpp or opportunityDescription', () => {
+      component.candidate = {id: 42, candidateOpportunities: []} as Candidate;
+      component.candidateSource = {} as CandidateSource;
+      component.jobId = 0;
+      fixture.detectChanges();
+
+      expect(findMatchExplanationEl()).toBeFalsy();
+    });
+
     it('should prefer the explicitly-supplied jobId over candidateSource.sfJobOpp?.id when both are present', () => {
       component.candidate = {id: 42, candidateOpportunities: []} as Candidate;
       component.candidateSource = {sfJobOpp: {id: 7}} as CandidateSource;
