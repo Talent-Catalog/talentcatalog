@@ -16,6 +16,10 @@ cd infra/aws/terraform/opc-prod
 terraform init
 ```
 
+Run this once per checkout. Run it again when the backend, providers, or modules change, or when
+Terraform reports that initialization is required. A later `terraform init` in the same checkout
+is harmless and leaves existing infrastructure and remote state unchanged.
+
 ## 2. Set secrets
 
 Create/edit `secrets.auto.tfvars` in this directory with the real secret values:
