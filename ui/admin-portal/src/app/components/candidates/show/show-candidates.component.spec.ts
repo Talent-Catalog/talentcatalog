@@ -655,6 +655,29 @@ describe('ShowCandidatesComponent', () => {
         .toBe('A supplied opportunity description');
     });
 
+    it('should pass jobId through to the candidate search card', () => {
+      component.candidateSource = new MockCandidateSource();
+      fixture.detectChanges(); // triggers ngOnInit, which resets currentCandidate to null
+
+      component.setCurrentCandidate(new MockCandidate());
+      component.jobId = 123;
+      fixture.detectChanges();
+
+      const searchCardEl = fixture.debugElement.query(By.css('app-candidate-search-card'));
+      expect(searchCardEl.properties['jobId']).toBe(123);
+    });
+
+    it('should leave jobId undefined when the parent does not supply one', () => {
+      component.candidateSource = new MockCandidateSource();
+      fixture.detectChanges(); // triggers ngOnInit, which resets currentCandidate to null
+
+      component.setCurrentCandidate(new MockCandidate());
+      fixture.detectChanges();
+
+      const searchCardEl = fixture.debugElement.query(By.css('app-candidate-search-card'));
+      expect(searchCardEl.properties['jobId']).toBeUndefined();
+    });
+
     it('should leave opportunityDescription undefined when the parent does not supply one', () => {
       component.candidateSource = new MockCandidateSource();
       fixture.detectChanges(); // triggers ngOnInit, which resets currentCandidate to null

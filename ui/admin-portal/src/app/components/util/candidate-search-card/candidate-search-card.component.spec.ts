@@ -143,6 +143,24 @@ describe('CandidateSearchCardComponent', () => {
       expect(findMatchExplanationEl().properties['jobId']).toBe(7);
     });
 
+    it('should use the explicitly-supplied jobId when candidateSource.sfJobOpp is absent (e.g. an AI-matching search)', () => {
+      component.candidate = {id: 42, candidateOpportunities: []} as Candidate;
+      component.candidateSource = {} as CandidateSource;
+      component.jobId = 99;
+      fixture.detectChanges();
+
+      expect(findMatchExplanationEl().properties['jobId']).toBe(99);
+    });
+
+    it('should prefer the explicitly-supplied jobId over candidateSource.sfJobOpp?.id when both are present', () => {
+      component.candidate = {id: 42, candidateOpportunities: []} as Candidate;
+      component.candidateSource = {sfJobOpp: {id: 7}} as CandidateSource;
+      component.jobId = 99;
+      fixture.detectChanges();
+
+      expect(findMatchExplanationEl().properties['jobId']).toBe(99);
+    });
+
     it('should pass opportunityDescription through when supplied', () => {
       component.candidate = {id: 42, candidateOpportunities: []} as Candidate;
       component.candidateSource = {sfJobOpp: {id: 7}} as CandidateSource;

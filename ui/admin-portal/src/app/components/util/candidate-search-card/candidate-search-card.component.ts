@@ -57,6 +57,15 @@ export class CandidateSearchCardComponent implements OnInit, OnDestroy, AfterVie
    */
   @Input() opportunityDescription?: string;
 
+  /**
+   * ID of the Talent Catalog job this search/list is explicitly scoped to, if the parent already
+   * knows it directly (e.g. a search initiated from a specific job). This takes precedence over
+   * candidateSource.sfJobOpp?.id (see matchExplanationJobId()) since some parents - notably an
+   * AI-matching search - never populate that field on their own candidateSource, even when a
+   * job is genuinely associated with the search.
+   */
+  @Input() jobId?: number;
+
   @Output() closeEvent = new EventEmitter();
   @Output() onSearchCardRendered = new EventEmitter();
   @Output() candidateUpdated = new EventEmitter<Candidate>();
@@ -209,8 +218,17 @@ export class CandidateSearchCardComponent implements OnInit, OnDestroy, AfterVie
    * the explanation UI is omitted entirely rather than shown empty.
    */
   shouldShowMatchExplanation(): boolean {
-    return !!this.candidateSource?.sfJobOpp?.id
+    return this.matchExplanationJobId() != null
       || !!(this.opportunityDescription && this.opportunityDescription.trim());
+  }
+
+  // todo Should be able to get from candidate source - search from job should add the job to the source
+  /**
+   * The job ID to use for the match explanation: the explicitly-supplied jobId if the parent
+   * gave us one, otherwise whatever job candidateSource itself is already associated with.
+   */
+  matchExplanationJobId(): number | undefined {
+    return this.jobId ?? this.candidateSource?.sfJobOpp?.id;
   }
 
   isAnAdmin(): boolean {

@@ -156,6 +156,15 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
    */
   @Input() opportunityDescription?: string;
 
+  /**
+   * ID of the Talent Catalog job this search/list is explicitly scoped to, if the parent already
+   * knows it directly (e.g. a search initiated from a specific job). This is separate from -
+   * and takes precedence over - any job association already carried by candidateSource itself
+   * (candidateSource.sfJobOpp), which some parents (e.g. a job's submission list) populate
+   * instead. Never derived/fetched here - passed straight through to the candidate search card.
+   */
+  @Input() jobId?: number;
+
   readonly pageSizeOptions: CandidatePageSize[] = [20, 50, 100];
   @Input() searchRequest: SearchCandidateRequestPaged;
   @Output() candidateSelection = new EventEmitter();

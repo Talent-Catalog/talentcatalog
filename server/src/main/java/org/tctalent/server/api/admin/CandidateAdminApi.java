@@ -279,7 +279,7 @@ public class CandidateAdminApi {
      * does not correspond to an existing Talent Catalog job
      */
     @PostMapping("{id}/match-explanation")
-    public CandidateMatchExplanation getMatchExplanation(
+    public CandidateMatchExplanation generateMatchExplanation(
         @PathVariable("id") long id,
         @Valid @RequestBody CandidateMatchExplanationRequest request) throws NoSuchObjectException {
         return candidateMatchExplanationService.generateExplanation(
@@ -289,7 +289,7 @@ public class CandidateAdminApi {
     /**
      * Retrieves a previously persisted candidate/job match explanation.
      * <p/>
-     * This does NOT regenerate the explanation - see {@link #getMatchExplanation}.
+     * This does NOT regenerate the explanation - see {@link #generateMatchExplanation}.
      *
      * @param id ID of candidate
      * @param jobId ID of the Talent Catalog job

@@ -426,6 +426,7 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit, 
     this.jobName = jobMatchingInfo.jobName;
     this.initializeRequirementsWithDescription(jobMatchingInfo.description);
     this.setExtractedSkills(jobMatchingInfo.skillNames);
+    //todo Possibly assign job
     this.onSubmit();
   }
 
