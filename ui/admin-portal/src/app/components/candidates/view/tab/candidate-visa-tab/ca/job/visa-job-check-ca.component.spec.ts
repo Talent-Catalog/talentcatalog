@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import {HttpClientTestingModule} from "@angular/common/http/testing";
-import {RouterTestingModule} from "@angular/router/testing";
+import {provideRouter} from "@angular/router";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {VisaJobCheckCaComponent} from "./visa-job-check-ca.component";
@@ -95,7 +95,7 @@ describe('VisaJobCheckCaComponent', () => {
     const occupationSpy = jasmine.createSpyObj('CandidateOccupationService', ['get']);
     await TestBed.configureTestingModule({
       imports: [HttpClientTestingModule,FormsModule,ReactiveFormsModule,
-        NgSelectModule,RouterTestingModule,
+        NgSelectModule,
         TcAccordionComponent,
         TcAccordionItemComponent
       ],
@@ -107,6 +107,7 @@ describe('VisaJobCheckCaComponent', () => {
         LanguageThresholdComponent
       ],
       providers: [
+        provideRouter([]),
         { provide: CandidateEducationService, useValue: educationSpy },
         { provide: CandidateOccupationService, useValue: occupationSpy }
       ],

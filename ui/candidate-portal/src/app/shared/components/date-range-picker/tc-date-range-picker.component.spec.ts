@@ -20,7 +20,7 @@ import {of} from 'rxjs';
 
 import {LanguageService} from '../../../services/language.service';
 import {TcDateRangePickerComponent} from './tc-date-range-picker.component';
-import {RouterTestingModule} from "@angular/router/testing";
+import {provideRouter} from "@angular/router";
 
 describe('TcDateRangePickerComponent', () => {
   let component: TcDateRangePickerComponent;
@@ -41,10 +41,10 @@ describe('TcDateRangePickerComponent', () => {
     TestBed.configureTestingModule({
       imports: [
         TcDateRangePickerComponent,
-        NgbDatepickerModule,
-        RouterTestingModule
+        NgbDatepickerModule
       ],
       providers: [
+        provideRouter([]),
         {
           provide: LanguageService,
           useValue: languageServiceSpy

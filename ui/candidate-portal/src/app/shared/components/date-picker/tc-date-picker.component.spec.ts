@@ -12,7 +12,7 @@ import {DebugElement} from "@angular/core";
 import {By} from "@angular/platform-browser";
 import {LanguageService} from "../../../services/language.service";
 import {of} from "rxjs";
-import {RouterTestingModule} from "@angular/router/testing";
+import {provideRouter} from "@angular/router";
 
 describe('TcDatePickerComponent', () => {
   let component: TcDatePickerComponent;
@@ -25,10 +25,10 @@ describe('TcDatePickerComponent', () => {
         TcDatePickerComponent,
         FormsModule,
         ReactiveFormsModule,
-        NgbDatepickerModule,
-        RouterTestingModule
+        NgbDatepickerModule
       ],
       providers: [
+        provideRouter([]),
         {
           provide: LanguageService,
           useValue: { loadDatePickerLanguageData: () => of(null) }

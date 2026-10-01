@@ -1,5 +1,5 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
-import {RouterTestingModule} from '@angular/router/testing';
+import {provideRouter} from '@angular/router';
 
 import {TcDropdownButtonComponent} from './tc-dropdown-button.component';
 
@@ -9,7 +9,8 @@ describe('TcDropdownButtonComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [TcDropdownButtonComponent, RouterTestingModule]
+      imports: [TcDropdownButtonComponent],
+      providers: [provideRouter([])]
     });
     fixture = TestBed.createComponent(TcDropdownButtonComponent);
     component = fixture.componentInstance;
