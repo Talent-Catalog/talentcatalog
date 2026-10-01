@@ -55,10 +55,20 @@ cd infra/aws/terraform/grn-prod
 terraform init
 ```
 
-Run this once per environment directory in each checkout. Run it again when the backend, providers,
-or modules change, or when Terraform reports that initialization is required. A later `terraform init`
-in the same environment directory is harmless and leaves existing infrastructure and remote state
-unchanged.
+Run this once per environment directory in each checkout. Run it again when providers or modules
+change, or when Terraform reports that initialization is required. Repeating `terraform init` with
+the same backend settings is harmless: it does not change infrastructure or remote state.
+
+If the `backend "s3"` block changes (bucket, key, region, or lock table), plain `terraform init`
+stops and asks you to choose:
+
+- `terraform init -migrate-state` copies the existing state to the new backend. Use this when
+  moving state.
+- `terraform init -reconfigure` points this directory at the new backend without copying state.
+  Use this only when the new backend already holds the correct state. Otherwise Terraform will
+  see no existing resources there.
+
+Confirm which one you need before running either.
 
 ## 2. Set secrets
 
