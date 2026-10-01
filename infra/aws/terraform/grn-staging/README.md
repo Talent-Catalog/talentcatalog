@@ -26,16 +26,23 @@ Internet -> Route53 (test.globalrefugee.net)
 
 ## Prerequisites
 
-- In the shell you run Terraform from, select the shared runner user. This is the same profile in 
-- every environment directory:
+- Once per machine, create the shared runner profile with the runner user's access key. Use region
+  `eu-west-2`:
+
+  ```bash
+  aws configure --profile opc-shared-terraform-runner
+  ```
+
+- In the shell you run Terraform from, select that profile. This is the same profile in every
+  environment directory:
 
   ```bash
   export AWS_PROFILE=opc-shared-terraform-runner
   ```
 
   Terraform's provider then assumes `arn:aws:iam::164804461258:role/opc-staging-terraform-exec` for 
-- resource changes. The S3 backend keeps using the runner user for state and locks. The export 
-- lasts for that shell only.
+  resource changes. The S3 backend keeps using the runner user for state and locks. The export 
+  lasts for that shell only.
 - Terraform >= 1.3
 - The S3 backend bucket (`opc-shared-terraform-state`) and DynamoDB lock table (`opc-terraform-locks`) 
   must already exist in the OPC account

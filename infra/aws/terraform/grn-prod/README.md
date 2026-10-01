@@ -26,8 +26,15 @@ Internet -> Route53 (globalrefugee.net)
 
 ## Prerequisites
 
-§- In the shell you run Terraform from, select the shared runner user. This is the same profile in 
-every environment directory:
+- Once per machine, create the shared runner profile with the runner user's access key. Use region
+  `eu-west-2`:
+
+  ```bash
+  aws configure --profile opc-shared-terraform-runner
+  ```
+
+- In the shell you run Terraform from, select that profile. This is the same profile in every
+  environment directory:
 
   ```bash
   export AWS_PROFILE=opc-shared-terraform-runner
