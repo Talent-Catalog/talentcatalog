@@ -912,6 +912,9 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             savedSearch.setSfJobOpp(null);
         } else {
             final SalesforceJobOpp currentJobOpp = savedSearch.getSfJobOpp();
+            if (currentJobOpp != null && jobId.equals(currentJobOpp.getId())) {
+                return savedSearch;
+            }
             if (currentJobOpp == null || !jobId.equals(currentJobOpp.getId())) {
                 savedSearch.setSfJobOpp(salesforceJobOppService.getJobOpp(jobId));
             }
