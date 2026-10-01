@@ -459,7 +459,7 @@
 
           <tc-button [type]="'outline'"
                      [loading]="exporting"
-                     *ngIf="!isSavedList() && isExportable()"
+                     *ngIf="!isSavedList() && isExportable() && !isMatchingSearch"
                      (onClick)="exportCandidates()"
                      title="Export candidates">
             Export <i class="fas fa-file-excel"></i>

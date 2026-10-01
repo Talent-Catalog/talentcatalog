@@ -22,6 +22,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.redis.core.Cursor;
+import org.springframework.data.redis.core.ScanOptions;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Repository;
@@ -48,7 +50,7 @@ public class CandidateRedisCache {
 
     private final StringRedisTemplate redisTemplate;
     private final CandidateCacheProperties cacheProperties;
-
+    private static final int CACHE_FLUSH_BATCH_SIZE = 1000;
     private ValueOperations<String, String> values() {
         return redisTemplate.opsForValue();
     }
@@ -121,6 +123,33 @@ public class CandidateRedisCache {
                 values().set(key, row.json());
             } else {
                 values().set(key, row.json(), ttl);
+            }
+        }
+    }
+
+    /**
+     * Removes all cached candidate JSON entries from Redis.
+     */
+    public void clear() {
+        ScanOptions options = ScanOptions.scanOptions()
+            .match("candidate:json:*")
+            .count(CACHE_FLUSH_BATCH_SIZE)
+            .build();
+
+        try (Cursor<String> cursor = redisTemplate.scan(options)) {
+            List<String> keys = new ArrayList<>();
+
+            while (cursor.hasNext()) {
+                keys.add(cursor.next());
+
+                if (keys.size() >= CACHE_FLUSH_BATCH_SIZE) {
+                    redisTemplate.delete(keys);
+                    keys.clear();
+                }
+            }
+
+            if (!keys.isEmpty()) {
+                redisTemplate.delete(keys);
             }
         }
     }

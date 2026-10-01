@@ -31,4 +31,9 @@ public interface CacheService {
    */
   void flushUserCache();
 
+  /**
+   * Flushes the Redis cache for candidate JSON data.
+   */
+  void flushCandidateCache();
+
 }

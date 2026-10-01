@@ -56,6 +56,7 @@ export class AdminApiComponent implements OnInit {
     { command: 'move-candidate-drive/{number}', description: 'Move candidate to the current candidate data drive', method: 'POST' },
     { command: 'move-candidates-drive/{listId}', description: 'Move candidates from the given list to the current candidate data drive', method: 'POST' },
     { command: 'flush_user_cache', description: 'Flush Redis cache for cached users', method: 'POST' },
+    { command: 'flush_candidate_cache', description: 'Flush Redis cache for cached candidates', method: 'POST' },
     { command: 'build_embeddings', description: 'Add embeddings for "building" model', method: 'POST' }
     // Add more general-purpose or maintenance commands here
   ];

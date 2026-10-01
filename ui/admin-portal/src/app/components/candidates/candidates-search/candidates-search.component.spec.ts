@@ -105,4 +105,44 @@ describe('CandidatesSearchComponent', () => {
     expect(modalService.open).toHaveBeenCalledWith(ConfirmationComponent, jasmine.any(Object));
   });
 
+  it('should tell user to click Search when auto update is enabled', () => {
+    component.savedSearch = new MockSavedSearch();
+    component.savedSearch.autoUpdateOnSearch = true;
+
+    const modalRef = {
+      componentInstance: {},
+      result: Promise.resolve()
+    } as NgbModalRef;
+
+    spyOn(modalService, 'open').and.returnValue(modalRef);
+
+    component.unsavedChangesCheck();
+
+    expect(modalRef.componentInstance.title)
+    .toBe('Unapplied search filter changes');
+
+    expect(modalRef.componentInstance.message)
+    .toContain('click "Search"');
+  });
+
+  it('should tell user to click Update Search when auto update is disabled', () => {
+    component.savedSearch = new MockSavedSearch();
+    component.savedSearch.autoUpdateOnSearch = false;
+
+    const modalRef = {
+      componentInstance: {},
+      result: Promise.resolve()
+    } as NgbModalRef;
+
+    spyOn(modalService, 'open').and.returnValue(modalRef);
+
+    component.unsavedChangesCheck();
+
+    expect(modalRef.componentInstance.title)
+    .toBe('Unsaved search filter changes');
+
+    expect(modalRef.componentInstance.message)
+    .toContain('click "Update Search"');
+  });
+
 });
