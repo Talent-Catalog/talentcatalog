@@ -862,7 +862,6 @@ class SavedSearchServiceImplUnitTest {
 
     given(userService.getLoggedInUser()).willReturn(user);
     given(savedSearchRepository.findById(1L)).willReturn(Optional.of(savedSearch));
-    given(savedSearchRepository.save(savedSearch)).willReturn(savedSearch);
 
     UpdateSavedSearchJobRequest request = new UpdateSavedSearchJobRequest();
     request.setJobId(30L);
@@ -872,6 +871,7 @@ class SavedSearchServiceImplUnitTest {
     assertSame(savedSearch, result);
     assertSame(job, savedSearch.getSfJobOpp());
     verify(salesforceJobOppService, never()).getJobOpp(anyLong());
+    verify(savedSearchRepository, never()).save(any(SavedSearch.class));
   }
 
   @Test
