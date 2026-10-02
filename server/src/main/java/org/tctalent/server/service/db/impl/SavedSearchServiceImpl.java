@@ -749,6 +749,14 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         }
 
         SavedSearch newSavedSearch = convertToSavedSearch(savedSearch, request);
+        //convertToSavedSearch builds a new SavedSearch, so a null jobId would otherwise clear the
+        //existing job association. A null jobId means "no change" (see
+        //AbstractUpdateCandidateSourceRequest.jobId) - eg auto-updates of the default search
+        //on every search run must not wipe a job assigned via updateSavedSearchJob.
+        if (request.getJobId() == null) {
+            newSavedSearch.setSfJobOpp(savedSearch.getSfJobOpp());
+        }
+
         //delete and recreate all joined searches
         searchJoinRepository.deleteBySearchId(id);
 

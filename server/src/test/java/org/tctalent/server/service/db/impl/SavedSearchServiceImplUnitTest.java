@@ -37,6 +37,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
@@ -54,6 +55,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
@@ -604,6 +606,96 @@ class SavedSearchServiceImplUnitTest {
     assertEquals(List.of("short"), result.getDisplayedFieldsShort());
     verify(searchJoinRepository).deleteBySearchId(1L);
     verify(searchJoinRepository).save(any(SearchJoin.class));
+  }
+
+  @Test
+  @DisplayName("updateSavedSearch with candidate request and null jobId preserves the existing job")
+  void updateSavedSearchWithCandidateRequestPreservesJobWhenJobIdNull() {
+    SalesforceJobOpp job = new SalesforceJobOpp();
+    job.setId(30L);
+    SavedSearch original = savedSearch(1L, "Old", user);
+    original.setSfJobOpp(job);
+
+    UpdateSavedSearchRequest request = updateSearchRequest("Old");
+    request.setSearchCandidateRequest(new SearchCandidateRequest());
+
+    given(userService.getLoggedInUser()).willReturn(user);
+    given(savedSearchRepository.findById(1L)).willReturn(Optional.of(original));
+    given(savedSearchRepository.save(any(SavedSearch.class))).willAnswer(invocation -> invocation.getArgument(0));
+
+    SavedSearch result = service.updateSavedSearch(1L, request);
+
+    assertSame(job, result.getSfJobOpp());
+    verifyNoInteractions(salesforceJobOppService);
+  }
+
+  @Test
+  @DisplayName("updateSavedSearch with candidate request and negative jobId clears the existing job")
+  void updateSavedSearchWithCandidateRequestClearsJobWhenJobIdNegative() {
+    SalesforceJobOpp job = new SalesforceJobOpp();
+    job.setId(30L);
+    SavedSearch original = savedSearch(1L, "Old", user);
+    original.setSfJobOpp(job);
+
+    UpdateSavedSearchRequest request = updateSearchRequest("Old");
+    request.setSearchCandidateRequest(new SearchCandidateRequest());
+    request.setJobId(-1L);
+
+    given(userService.getLoggedInUser()).willReturn(user);
+    given(savedSearchRepository.findById(1L)).willReturn(Optional.of(original));
+    given(savedSearchRepository.save(any(SavedSearch.class))).willAnswer(invocation -> invocation.getArgument(0));
+
+    SavedSearch result = service.updateSavedSearch(1L, request);
+
+    assertNull(result.getSfJobOpp());
+  }
+
+  @Test
+  @DisplayName("updateSavedSearch with candidate request and a jobId sets that job")
+  void updateSavedSearchWithCandidateRequestSetsNewJob() {
+    SalesforceJobOpp oldJob = new SalesforceJobOpp();
+    oldJob.setId(30L);
+    SalesforceJobOpp newJob = new SalesforceJobOpp();
+    newJob.setId(31L);
+    SavedSearch original = savedSearch(1L, "Old", user);
+    original.setSfJobOpp(oldJob);
+
+    UpdateSavedSearchRequest request = updateSearchRequest("Old");
+    request.setSearchCandidateRequest(new SearchCandidateRequest());
+    request.setJobId(31L);
+
+    given(userService.getLoggedInUser()).willReturn(user);
+    given(savedSearchRepository.findById(1L)).willReturn(Optional.of(original));
+    given(salesforceJobOppService.getJobOpp(31L)).willReturn(newJob);
+    given(savedSearchRepository.save(any(SavedSearch.class))).willAnswer(invocation -> invocation.getArgument(0));
+
+    SavedSearch result = service.updateSavedSearch(1L, request);
+
+    assertSame(newJob, result.getSfJobOpp());
+  }
+
+  @Test
+  @DisplayName("auto-updating the default search on a search run preserves its assigned job")
+  void updateUserDefaultSavedSearchIfNeededPreservesJob() {
+    SalesforceJobOpp job = new SalesforceJobOpp();
+    job.setId(30L);
+    SavedSearch defaultSearch = savedSearch(1L, "Default", user);
+    defaultSearch.setDefaultSearch(true);
+    defaultSearch.setSfJobOpp(job);
+
+    SearchCandidateRequest searchRequest = new SearchCandidateRequest();
+    searchRequest.setSavedSearchId(1L);
+
+    given(savedSearchRepository.findByIdLoadUsers(1L)).willReturn(Optional.of(defaultSearch));
+    given(userService.getLoggedInUser()).willReturn(user);
+    given(savedSearchRepository.findById(1L)).willReturn(Optional.of(defaultSearch));
+    given(savedSearchRepository.save(any(SavedSearch.class))).willAnswer(invocation -> invocation.getArgument(0));
+
+    service.updateUserDefaultSavedSearchIfNeeded(searchRequest);
+
+    ArgumentCaptor<SavedSearch> saved = ArgumentCaptor.forClass(SavedSearch.class);
+    verify(savedSearchRepository).save(saved.capture());
+    assertSame(job, saved.getValue().getSfJobOpp());
   }
 
   @Test
