@@ -650,7 +650,7 @@ public class CandidateServiceImpl implements CandidateService {
     }
 
     private Candidate saveNewCandidate(Partner partner, Candidate candidate) {
-        //Save candidate to get id (but don't update Elasticsearch yet)
+        //Save candidate to get id before follow-up post-save processing
         candidate = save(candidate);
 
         final String candidateNumber = candidateNumberGenerator.generateCandidateNumber(candidate);
@@ -661,7 +661,7 @@ public class CandidateServiceImpl implements CandidateService {
             candidate.setPartnerRef(candidateNumber);
         }
 
-        //Save candidate to get id (but don't update Elasticsearch yet)
+        //Save candidate again now that generated fields are populated
         return save(candidate);
     }
 

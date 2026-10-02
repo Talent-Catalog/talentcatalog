@@ -191,7 +191,7 @@
       </div>
       <div class="w-100 mt-2" *ngIf="seeMore && isSavedSearch()">
         <div *ngIf="savedSearch.keyword">Keyword: {{savedSearch.keyword}},</div>
-        <div *ngIf="savedSearch.simpleQueryString">Elasticsearch: {{savedSearch.simpleQueryString}},</div>
+        <div *ngIf="savedSearch.simpleQueryString">Keyword Search: {{savedSearch.simpleQueryString}},</div>
         <div *ngIf="savedSearch.statuses">Statuses: {{savedSearch.statuses}},</div>
         <div *ngIf="savedSearch.includeDraftAndDeleted">Includes deleted and draft candidates,</div>
         <div *ngIf="savedSearch.vettedOccupationNames">Vetted Occupations: <span

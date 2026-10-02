@@ -1030,7 +1030,7 @@ public class Candidate extends AbstractCandidateDataDomainObject<Long> implement
     }
 
     /**
-     * Used alongside @Formula for updating the elasticsearch record of number of
+     * Used alongside @Formula for keeping the derived search value for number of
      * dependants.
      * @return Long of total up-to-date number of dependants belonging to Candidate.
      */

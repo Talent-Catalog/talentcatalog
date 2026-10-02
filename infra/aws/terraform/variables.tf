@@ -249,16 +249,6 @@ variable "email_type" {
   description = "Email type (e.g., SMTP)"
 }
 
-variable "es_url" {
-  type        = string
-  description = "Elasticsearch URL (todo: retire elasticsearch)"
-}
-
-variable "es_username" {
-  type        = string
-  description = "Elasticsearch username (todo: retire elasticsearch)"
-}
-
 variable "gradle_home" {
   type        = string
   description = "Gradle home directory"
@@ -427,12 +417,6 @@ variable "aws_secret_key" {
 variable "duolingo_api_secret" {
   type        = string
   description = "Duolingo API secret"
-  sensitive   = true
-}
-
-variable "es_password" {
-  type        = string
-  description = "Elasticsearch password (todo: retire elasticsearch)"
   sensitive   = true
 }
 

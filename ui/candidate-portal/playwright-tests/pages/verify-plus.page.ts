@@ -84,23 +84,18 @@ export class VerifyPlusPage {
      * Scope the locator to app-services and select the card by its unique text.
      */
     this.verifyPlusServiceCard = this.servicesContainer
-    .locator('.service-card')
-    .filter({
-      hasText: 'UNHCR Verify+',
-    });
+    .getByTestId('verify-plus-service-card');
 
     this.verifyPlusComponent = page.locator('app-verify-plus');
 
-    this.title = this.verifyPlusComponent.getByRole('heading', {
-      level: 2,
-      name: 'UNHCR Verify+',
-      exact: true,
-    });
+    this.title = this.verifyPlusComponent.locator(
+      '.service-title h2'
+    );
 
     this.description = this.verifyPlusComponent.locator(
       '.service-title p',
     );
-    
+
 
     this.scanner = this.verifyPlusComponent.locator(
       'app-verify-plus-scanner',
@@ -178,14 +173,9 @@ export class VerifyPlusPage {
    * Backend/business-validation error shown after Confirm.
    */
     this.submissionError =
-      this.verifyPlusComponent
-      .locator(
-        'p.mt-3.text-danger',
-      )
-      .filter({
-        hasText:
-          'If this QR code is a valid UNHCR Verify+ code, please rescan.',
-      });
+      this.verifyPlusComponent.getByTestId(
+        'verify-plus-submit-error',
+      );
 
     /*
      * Successful Verify+ submission.
@@ -193,27 +183,13 @@ export class VerifyPlusPage {
      * Locate the unique heading first. The surrounding .scan-result is simply
      * its parent element in the production template.
      */
-    this.successHeading =
-      this.verifyPlusComponent
-      .getByRole(
-        'heading',
-        {
-          level:
-            3,
-
-          name:
-            'Verification submitted',
-
-          exact:
-            true,
-        },
-      );
-
     this.successResult =
-      this.successHeading
-      .locator(
-        'xpath=..',
+      this.verifyPlusComponent.getByTestId(
+        'verify-plus-success',
       );
+
+    this.successHeading =
+      this.successResult.locator('h3');
 
     this.successBody =
       this.successResult
@@ -224,27 +200,13 @@ export class VerifyPlusPage {
     /*
      * Duplicate Verify+ submission.
      */
-    this.duplicateHeading =
-      this.verifyPlusComponent
-      .getByRole(
-        'heading',
-        {
-          level:
-            3,
-
-          name:
-            'Duplicate UNHCR number found',
-
-          exact:
-            true,
-        },
-      );
-
     this.duplicateResult =
-      this.duplicateHeading
-      .locator(
-        'xpath=..',
+      this.verifyPlusComponent.getByTestId(
+        'verify-plus-duplicate',
       );
+
+    this.duplicateHeading =
+      this.duplicateResult.locator('h3');
 
     this.duplicateBody =
       this.duplicateResult
