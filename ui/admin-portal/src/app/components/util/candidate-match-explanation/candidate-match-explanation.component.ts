@@ -17,6 +17,7 @@
 import {Component, Input, OnChanges, OnDestroy, SimpleChanges} from '@angular/core';
 import {HttpErrorResponse} from '@angular/common/http';
 import {Observable, of, Subject} from 'rxjs';
+import {NgbPopover} from '@ng-bootstrap/ng-bootstrap';
 import {catchError, map, switchMap, takeUntil} from 'rxjs/operators';
 import {CandidateService} from '../../../services/candidate.service';
 import {Candidate} from '../../../model/candidate';
@@ -134,6 +135,21 @@ export class CandidateMatchExplanationComponent implements OnChanges, OnDestroy 
   /** The candidate's current job experiences, indexed by ID - rebuilt whenever candidate changes. */
   private experiencesById = new Map<number, CandidateJobExperience>();
 
+  /**
+   * How long to wait, after the pointer leaves the heading or popover (or the heading loses
+   * focus), before deciding whether to close - just long enough for the pointer to cross the
+   * small gap between the heading and the popover. Not a general close delay: the popover closes
+   * as soon as this elapses unless the pointer has entered the heading or popover again.
+   */
+  static readonly EXPERIENCE_POPOVER_BRIDGE_MS = 100;
+
+  /** The experience popover currently open (at most one at a time), and what is keeping it open. */
+  private activeExperiencePopover: NgbPopover | null = null;
+  private pointerOverExperienceTrigger = false;
+  private pointerOverExperiencePopover = false;
+  private experienceTriggerFocused = false;
+  private experiencePopoverCloseTimer: ReturnType<typeof setTimeout> | null = null;
+
   constructor(private candidateService: CandidateService) {
     this.trigger$.pipe(
       switchMap(key => key ? this.retrieveOrGenerate(key) : of(null)),
@@ -166,6 +182,7 @@ export class CandidateMatchExplanationComponent implements OnChanges, OnDestroy 
   }
 
   ngOnDestroy(): void {
+    this.cancelExperiencePopoverCloseCheck();
     this.destroy$.next();
     this.destroy$.complete();
     this.cancelRegenerate$.complete();
@@ -205,6 +222,99 @@ export class CandidateMatchExplanationComponent implements OnChanges, OnDestroy 
     return jobTitle
       ? `${jobTitle} (${item.experienceId})`
       : `Experience #${item.experienceId}`;
+  }
+
+  // ---------------------------------------------------------------------------------------------
+  // Experience popover: open while the pointer is over the heading or the popover itself, or the
+  // heading has keyboard focus; close once none of those is true. Escape and outside clicks also
+  // close it (ngbPopover autoClose="outside").
+  // ---------------------------------------------------------------------------------------------
+
+  onExperienceTriggerEnter(popover: NgbPopover): void {
+    this.activateExperiencePopover(popover);
+    this.pointerOverExperienceTrigger = true;
+  }
+
+  onExperienceTriggerLeave(): void {
+    this.pointerOverExperienceTrigger = false;
+    this.scheduleExperiencePopoverCloseCheck();
+  }
+
+  /**
+   * Keyboard focus opens the popover and keeps it open until blur. Focus caused by a mouse click
+   * is ignored (it doesn't match :focus-visible) - otherwise clicking the heading would hold the
+   * popover open after the pointer leaves.
+   */
+  onExperienceTriggerFocus(popover: NgbPopover, event: FocusEvent): void {
+    if (!(event.target as Element).matches(':focus-visible')) {
+      return;
+    }
+    this.activateExperiencePopover(popover);
+    this.experienceTriggerFocused = true;
+  }
+
+  onExperienceTriggerBlur(): void {
+    this.experienceTriggerFocused = false;
+    this.scheduleExperiencePopoverCloseCheck();
+  }
+
+  onExperiencePopoverEnter(): void {
+    this.pointerOverExperiencePopover = true;
+    this.cancelExperiencePopoverCloseCheck();
+  }
+
+  onExperiencePopoverLeave(): void {
+    this.pointerOverExperiencePopover = false;
+    this.scheduleExperiencePopoverCloseCheck();
+  }
+
+  /** Keeps state consistent when ngbPopover itself closes the popover (Escape, outside click). */
+  onExperiencePopoverHidden(popover: NgbPopover): void {
+    if (popover === this.activeExperiencePopover) {
+      this.resetExperiencePopoverState();
+    }
+  }
+
+  /** Opens the given popover, first closing any other experience popover that is open. */
+  private activateExperiencePopover(popover: NgbPopover): void {
+    this.cancelExperiencePopoverCloseCheck();
+    if (this.activeExperiencePopover !== popover) {
+      const previous = this.activeExperiencePopover;
+      this.resetExperiencePopoverState();
+      previous?.close();
+      this.activeExperiencePopover = popover;
+    }
+    if (!popover.isOpen()) {
+      popover.open();
+    }
+  }
+
+  private scheduleExperiencePopoverCloseCheck(): void {
+    this.cancelExperiencePopoverCloseCheck();
+    this.experiencePopoverCloseTimer = setTimeout(() => {
+      this.experiencePopoverCloseTimer = null;
+      if (!this.pointerOverExperienceTrigger && !this.pointerOverExperiencePopover
+        && !this.experienceTriggerFocused) {
+        const popover = this.activeExperiencePopover;
+        this.resetExperiencePopoverState();
+        popover?.close();
+      }
+    }, CandidateMatchExplanationComponent.EXPERIENCE_POPOVER_BRIDGE_MS);
+  }
+
+  private cancelExperiencePopoverCloseCheck(): void {
+    if (this.experiencePopoverCloseTimer !== null) {
+      clearTimeout(this.experiencePopoverCloseTimer);
+      this.experiencePopoverCloseTimer = null;
+    }
+  }
+
+  private resetExperiencePopoverState(): void {
+    this.cancelExperiencePopoverCloseCheck();
+    this.activeExperiencePopover = null;
+    this.pointerOverExperienceTrigger = false;
+    this.pointerOverExperiencePopover = false;
+    this.experienceTriggerFocused = false;
   }
 
   /**

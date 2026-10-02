@@ -393,7 +393,15 @@ ngx-wig {
 .candidate-job-experience-popover {
   max-width: min(600px, 90vw);
 
+  /* The padding and scrolling live on the content wrapper (which tracks pointer enter/leave)
+   * rather than on .popover-body, so that the wrapper fills the body and owns the scrollbar -
+   * otherwise moving onto the padding or scrollbar would count as leaving the popover. */
   .popover-body {
+    padding: 0;
+  }
+
+  .candidate-job-experience-popover-content {
+    padding: var(--bs-popover-body-padding-y) var(--bs-popover-body-padding-x);
     max-height: 60vh;
     overflow-y: auto;
   }

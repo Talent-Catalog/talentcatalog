@@ -574,6 +574,181 @@ describe('CandidateMatchExplanationComponent', () => {
       hostFixture?.destroy();
     });
 
+    describe('hover interaction', () => {
+      const BRIDGE = CandidateMatchExplanationComponent.EXPERIENCE_POPOVER_BRIDGE_MS;
+
+      function popoverContent(): HTMLElement | null {
+        return document.body.querySelector('.candidate-job-experience-popover-content');
+      }
+
+      function fire(el: Element, type: string) {
+        el.dispatchEvent(new Event(type));
+        hostFixture.detectChanges();
+      }
+
+      /** Dispatches a focus event, controlling whether it counts as keyboard (:focus-visible) focus. */
+      function focus(el: HTMLElement, keyboard: boolean) {
+        const matches = el.matches.bind(el);
+        spyOn(el, 'matches').and.callFake(
+          (selector: string) => selector === ':focus-visible' ? keyboard : matches(selector));
+        el.dispatchEvent(new FocusEvent('focus'));
+        hostFixture.detectChanges();
+      }
+
+      function openFirst(): HTMLElement {
+        showWith(explanationWithTitles(), candidateWithExperiences());
+        const heading = headings()[0];
+        fire(heading, 'mouseenter');
+        return heading;
+      }
+
+      it('should open the popover when the pointer enters the heading', fakeAsync(() => {
+        openFirst();
+
+        expect(popoverElement()).not.toBeNull();
+        expect(popoverContent().querySelector('app-candidate-job-experience')).not.toBeNull();
+      }));
+
+      it('should stay open when the pointer moves from the heading into the popover', fakeAsync(() => {
+        const heading = openFirst();
+
+        fire(heading, 'mouseleave');
+        tick(BRIDGE / 2);
+        fire(popoverContent(), 'mouseenter');
+        tick(BRIDGE * 2);
+        hostFixture.detectChanges();
+
+        expect(popoverElement()).not.toBeNull();
+      }));
+
+      it('should remain open, however long, while the pointer is over the popover (to scroll/select)', fakeAsync(() => {
+        const heading = openFirst();
+        fire(heading, 'mouseleave');
+        fire(popoverContent(), 'mouseenter');
+
+        tick(10000);
+        fire(popoverContent(), 'wheel');
+        fire(popoverContent(), 'scroll');
+        popoverContent().click();
+        tick(10000);
+        hostFixture.detectChanges();
+
+        expect(popoverElement()).not.toBeNull();
+      }));
+
+      it('should make the content wrapper the scroll container, so its scrollbar is inside the hover area', fakeAsync(() => {
+        openFirst();
+
+        expect(getComputedStyle(popoverContent()).overflowY).toBe('auto');
+        expect(getComputedStyle(popoverElement().querySelector('.popover-body')).paddingTop).toBe('0px');
+      }));
+
+      it('should close when the pointer leaves the heading without entering the popover', fakeAsync(() => {
+        const heading = openFirst();
+
+        fire(heading, 'mouseleave');
+        tick(BRIDGE);
+        hostFixture.detectChanges();
+
+        expect(popoverElement()).toBeNull();
+      }));
+
+      it('should close when the pointer leaves the popover', fakeAsync(() => {
+        const heading = openFirst();
+        fire(heading, 'mouseleave');
+        fire(popoverContent(), 'mouseenter');
+
+        fire(popoverContent(), 'mouseleave');
+        tick(BRIDGE);
+        hostFixture.detectChanges();
+
+        expect(popoverElement()).toBeNull();
+      }));
+
+      it('should stay open when the pointer moves from the popover back to the heading', fakeAsync(() => {
+        const heading = openFirst();
+        fire(heading, 'mouseleave');
+        fire(popoverContent(), 'mouseenter');
+
+        fire(popoverContent(), 'mouseleave');
+        fire(heading, 'mouseenter');
+        tick(BRIDGE * 2);
+        hostFixture.detectChanges();
+
+        expect(popoverElement()).not.toBeNull();
+      }));
+
+      it('should show only one experience popover at a time', fakeAsync(() => {
+        const first = openFirst();
+        fire(first, 'mouseleave');
+        fire(headings()[1], 'mouseenter');
+
+        expect(document.body.querySelectorAll('ngb-popover-window').length).toBe(1);
+        expect(popoverElement().textContent).toContain('Current Team Lead role');
+        tick(BRIDGE * 2);
+        hostFixture.detectChanges();
+        expect(document.body.querySelectorAll('ngb-popover-window').length).toBe(1);
+      }));
+
+      it('should close on Escape and not get stuck afterwards', fakeAsync(() => {
+        const heading = openFirst();
+        tick(); // ngbPopover registers its Escape/outside-click listeners asynchronously
+
+        // ngbPopover's autoClose matches on the legacy `which` key code, which synthetic events lack
+        const escape = new KeyboardEvent('keydown', {key: 'Escape'});
+        Object.defineProperty(escape, 'which', {get: () => 27});
+        document.dispatchEvent(escape);
+        hostFixture.detectChanges();
+        expect(popoverElement()).toBeNull();
+
+        fire(heading, 'mouseleave');
+        tick(BRIDGE);
+        fire(heading, 'mouseenter');
+        expect(popoverElement()).not.toBeNull();
+        fire(heading, 'mouseleave');
+        tick(BRIDGE);
+        hostFixture.detectChanges();
+        expect(popoverElement()).toBeNull();
+      }));
+
+      it('should open on keyboard focus and close on blur', fakeAsync(() => {
+        showWith(explanationWithTitles(), candidateWithExperiences());
+        const heading = headings()[0];
+
+        expect(heading.getAttribute('tabindex')).toBe('0');
+        focus(heading, true);
+        expect(popoverElement()).not.toBeNull();
+        tick(BRIDGE * 2);
+        expect(popoverElement()).not.toBeNull();
+
+        fire(heading, 'blur');
+        tick(BRIDGE);
+        hostFixture.detectChanges();
+        expect(popoverElement()).toBeNull();
+      }));
+
+      it('should not be held open by focus from a mouse click once the pointer leaves', fakeAsync(() => {
+        const heading = openFirst();
+        focus(heading, false);
+
+        fire(heading, 'mouseleave');
+        tick(BRIDGE);
+        hostFixture.detectChanges();
+
+        expect(popoverElement()).toBeNull();
+      }));
+
+      it('should close any open popover, without errors, when the component is destroyed mid-bridge', fakeAsync(() => {
+        const heading = openFirst();
+        fire(heading, 'mouseleave');
+
+        hostFixture.destroy();
+        tick(BRIDGE);
+
+        expect(popoverElement()).toBeNull();
+      }));
+    });
+
     it('should receive the candidate from the host', fakeAsync(() => {
       const candidate = candidateWithExperiences();
       showWith(explanationWithTitles(), candidate);
@@ -639,6 +814,7 @@ describe('CandidateMatchExplanationComponent', () => {
       expect(popover.textContent).not.toContain('Current Developer role');
 
       headings()[1].dispatchEvent(new Event('mouseleave'));
+      tick(CandidateMatchExplanationComponent.EXPERIENCE_POPOVER_BRIDGE_MS);
       hostFixture.detectChanges();
       expect(popoverElement()).toBeNull();
     }));
@@ -678,6 +854,7 @@ describe('CandidateMatchExplanationComponent', () => {
       headings()[0].dispatchEvent(new Event('mouseenter'));
       hostFixture.detectChanges();
       headings()[0].dispatchEvent(new Event('mouseleave'));
+      tick(CandidateMatchExplanationComponent.EXPERIENCE_POPOVER_BRIDGE_MS);
       hostFixture.detectChanges();
 
       // The CandidateService spy only provides the explanation methods - any other call (e.g.

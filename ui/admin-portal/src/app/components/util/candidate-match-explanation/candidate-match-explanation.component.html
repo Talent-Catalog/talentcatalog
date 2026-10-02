@@ -64,14 +64,28 @@
             <!-- The heading always comes from the explanation itself (historical jobTitle); the
                  hover shows the candidate's current experience with the same ID, if it still exists. -->
             <ng-container *ngIf="findExperience(item.experienceId) as experience; else plainHeading">
+              <!-- Manually controlled (see the component's experience popover methods) so the
+                   popover stays open while the pointer is over either the heading or the popover. -->
               <strong class="experience-heading-hover"
+                      tabindex="0"
                       [ngbPopover]="experiencePopover"
-                      triggers="mouseenter:mouseleave"
+                      #experiencePopoverRef="ngbPopover"
+                      triggers="manual"
+                      autoClose="outside"
                       container="body"
                       placement="auto"
-                      popoverClass="candidate-job-experience-popover">{{experienceHeading(item)}}:</strong>
+                      popoverClass="candidate-job-experience-popover"
+                      (mouseenter)="onExperienceTriggerEnter(experiencePopoverRef)"
+                      (mouseleave)="onExperienceTriggerLeave()"
+                      (focus)="onExperienceTriggerFocus(experiencePopoverRef, $event)"
+                      (blur)="onExperienceTriggerBlur()"
+                      (hidden)="onExperiencePopoverHidden(experiencePopoverRef)">{{experienceHeading(item)}}:</strong>
               <ng-template #experiencePopover>
-                <app-candidate-job-experience [experience]="experience"></app-candidate-job-experience>
+                <div class="candidate-job-experience-popover-content"
+                     (mouseenter)="onExperiencePopoverEnter()"
+                     (mouseleave)="onExperiencePopoverLeave()">
+                  <app-candidate-job-experience [experience]="experience"></app-candidate-job-experience>
+                </div>
               </ng-template>
             </ng-container>
             <ng-template #plainHeading>
