@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
@@ -193,6 +194,7 @@ public class CandidateOccupationServiceImpl implements CandidateOccupationServic
     }
 
     @Override
+    @Transactional
     public List<CandidateOccupation> updateCandidateOccupations(UpdateCandidateOccupationsRequest request) {
         // Validate the principal-occupation invariant up front, before any occupation
         // is created/updated/deleted below, so a malformed request can't partially
@@ -221,7 +223,6 @@ public class CandidateOccupationServiceImpl implements CandidateOccupationServic
             .orElseThrow(() -> new InvalidSessionException("Not logged in"));
 
         List<CandidateOccupation> updatedOccupations = new ArrayList<>();
-        List<Long> updatedOccupationIds = new ArrayList<>();
         CandidateOccupation principalOccupation = null;
 
         List<CandidateOccupation> candidateOccupations = candidateOccupationRepository.findByCandidateId(candidate.getId());
@@ -233,6 +234,43 @@ public class CandidateOccupationServiceImpl implements CandidateOccupationServic
             .action("UpdateCandidateOccupations")
             .message("Update candidate occupations request" + request.getUpdates())
             .logInfo();
+
+        // Keep existing occupation rows included in the request. If an occupation was
+        // removed and added again without its original row ID, keep the matching row
+        // so its linked job experiences are preserved.
+        Set<Long> retainedIds = request.getUpdates().stream()
+            .map(UpdateCandidateOccupationRequest::getId)
+            .filter(map::containsKey)
+            .collect(Collectors.toSet());
+        for (UpdateCandidateOccupationRequest update : request.getUpdates()) {
+            if (!map.containsKey(update.getId())) {
+                candidateOccupations.stream()
+                    .filter(co -> !retainedIds.contains(co.getId()))
+                    .filter(co -> co.getOccupation() != null
+                        && co.getOccupation().getId().equals(update.getOccupationId()))
+                    .map(CandidateOccupation::getId)
+                    .forEach(retainedIds::add);
+            }
+        }
+        List<Long> removedIds = map.keySet().stream()
+            .filter(id -> !retainedIds.contains(id))
+            .toList();
+        if (!removedIds.isEmpty()) {
+            // Clear the candidate's principal occupation reference before deleting that occupation.
+            if (candidate.getPrincipalOccupation() != null
+                && removedIds.contains(candidate.getPrincipalOccupation().getId())) {
+                candidate.setPrincipalOccupation(null);
+                candidateService.save(candidate);
+                candidateOccupationRepository.flush();
+            }
+            for (Long removedId : removedIds) {
+                // The user has confirmed that linked job experiences can also be deleted.
+                candidateOccupationRepository.deleteById(removedId);
+            }
+            // Send the deletions to the database before updating occupations, so changing
+            // A to B does not conflict with the old B row that the user removed.
+            candidateOccupationRepository.flush();
+        }
 
         for (UpdateCandidateOccupationRequest update : request.getUpdates()) {
             /* Check if candidate occupation has been previously saved */
@@ -307,30 +345,14 @@ public class CandidateOccupationServiceImpl implements CandidateOccupationServic
                 .message("Saved candidate " + candidate.getId() + " occupation " + candidateOccupation.getOccupation().getName())
                 .logInfo();
 
-            updatedOccupationIds.add(candidateOccupation.getId());
-
             if (Boolean.TRUE.equals(update.getPrincipal())) {
                 principalOccupation = candidateOccupation;
             }
         }
 
-        // The whole occupation list is replaced on every save, so this also covers
-        // switching principal occupation and clearing it if it was removed. This must
-        // happen - and be flushed - before any removed occupations are deleted below,
-        // otherwise deleting a candidate's current principal occupation would violate
-        // the principal_occupation_id foreign key on candidate.
+        // Save the principal occupation selected in the request, or clear it if the list is empty.
         candidate.setPrincipalOccupation(principalOccupation);
         candidateService.save(candidate);
-        candidateOccupationRepository.flush();
-
-        for (Long existingCandidateOccupationId : map.keySet()) {
-            /* Check if the candidate occupation has been removed */
-            if (!updatedOccupationIds.contains(existingCandidateOccupationId)){
-                //The user will have confirmed that they are OK to lose any
-                // associated experiences
-                candidateOccupationRepository.deleteById(existingCandidateOccupationId);
-            }
-        }
 
         return updatedOccupations;
     }

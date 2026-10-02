@@ -16,6 +16,8 @@
 
 <div class="container">
 
+  <app-error [error]="error"></app-error>
+
   <tc-loading [loading]="loading"></tc-loading>
 
   <ng-container *ngIf="!loading">
@@ -154,8 +156,6 @@
       </tc-button>
     </div>
   </ng-container>
-
-  <app-error [error]="error"></app-error>
 
   <app-registration-footer [nextDisabled]="nextDisabled"
                            [type]="edit ? 'update' : 'step'"
