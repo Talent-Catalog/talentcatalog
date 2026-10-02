@@ -63,4 +63,8 @@ module "database" {
       Component = "rds"
     }
   )
+
+  # Vanta user data classification, set per environment. The module merges these
+  # with the tags above and applies them to the DB instance only.
+  db_instance_tags = var.db_vanta_tags
 }
