@@ -19,6 +19,8 @@ import {HttpErrorResponse} from '@angular/common/http';
 import {Observable, of, Subject} from 'rxjs';
 import {catchError, map, switchMap, takeUntil} from 'rxjs/operators';
 import {CandidateService} from '../../../services/candidate.service';
+import {Candidate} from '../../../model/candidate';
+import {CandidateJobExperience} from '../../../model/candidate-job-experience';
 import {
   CandidateMatchExplanation,
   ExperienceMatchExplanation
@@ -95,6 +97,13 @@ export class CandidateMatchExplanationComponent implements OnChanges, OnDestroy 
    */
   @Input() opportunityDescription?: string;
 
+  /**
+   * The candidate's already-loaded data, if available. Used only to look up (by ID) the current
+   * job experiences referenced by an explanation so they can be shown on hover - this component
+   * never fetches the candidate itself. Changing it does not affect the explanation lifecycle.
+   */
+  @Input() candidate?: Candidate;
+
   /** Whether the user has opened (expanded) the explanation UI. */
   opened = false;
 
@@ -122,6 +131,9 @@ export class CandidateMatchExplanationComponent implements OnChanges, OnDestroy 
   private cancelRegenerate$ = new Subject<void>();
   private destroy$ = new Subject<void>();
 
+  /** The candidate's current job experiences, indexed by ID - rebuilt whenever candidate changes. */
+  private experiencesById = new Map<number, CandidateJobExperience>();
+
   constructor(private candidateService: CandidateService) {
     this.trigger$.pipe(
       switchMap(key => key ? this.retrieveOrGenerate(key) : of(null)),
@@ -134,6 +146,9 @@ export class CandidateMatchExplanationComponent implements OnChanges, OnDestroy 
   }
 
   ngOnChanges(changes: SimpleChanges): void {
+    if (changes['candidate']) {
+      this.experiencesById = this.indexExperiences(this.candidate);
+    }
     if (changes['candidateId'] || changes['jobId']) {
       // A new candidate/job context - any previously loaded explanation belongs to the old
       // context and must not be shown here. Return to the closed state; the user must
@@ -168,6 +183,16 @@ export class CandidateMatchExplanationComponent implements OnChanges, OnDestroy 
    */
   hasUsableDescription(): boolean {
     return this.currentDescription() !== undefined;
+  }
+
+  /**
+   * The candidate's current job experience with the given ID, or undefined if it isn't present
+   * in the supplied candidate data - e.g. the candidate wasn't supplied, or a persisted
+   * explanation refers to an experience that has since been deleted. Matched by ID, never by
+   * position.
+   */
+  findExperience(experienceId: number): CandidateJobExperience | undefined {
+    return this.experiencesById.get(experienceId);
   }
 
   /**
@@ -308,6 +333,26 @@ export class CandidateMatchExplanationComponent implements OnChanges, OnDestroy 
     } else {
       this.explanation = outcome.explanation ?? null;
     }
+  }
+
+  /**
+   * Indexes the candidate's job experiences by ID. Experiences may be supplied at the top level
+   * of the candidate and/or nested within its occupations (depending on how the candidate was
+   * loaded), so both are included.
+   */
+  private indexExperiences(candidate?: Candidate): Map<number, CandidateJobExperience> {
+    const experiences: CandidateJobExperience[] = [...(candidate?.candidateJobExperiences ?? [])];
+    for (const occupation of candidate?.candidateOccupations ?? []) {
+      experiences.push(...(occupation?.candidateJobExperiences ?? []));
+    }
+
+    const byId = new Map<number, CandidateJobExperience>();
+    for (const experience of experiences) {
+      if (experience?.id != null && !byId.has(experience.id)) {
+        byId.set(experience.id, experience);
+      }
+    }
+    return byId;
   }
 
   private isCurrent(candidateId: number, jobId: number | undefined): boolean {

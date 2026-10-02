@@ -1,0 +1,68 @@
+<!--
+  ~ Copyright (c) 2026 Talent Catalog.
+  ~
+  ~ This program is free software: you can redistribute it and/or modify it under
+  ~ the terms of the GNU General Public License as published by the Free
+  ~ Software Foundation, either version 3 of the License, or any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful, but WITHOUT
+  ~ ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+  ~ FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
+  ~ for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program. If not, see https://www.gnu.org/licenses/.
+  -->
+
+<div class="row">
+
+  <div class="col">
+    <h6 class="card-title"
+        [innerHtml]="experience.role"
+        appHighlightSearch>
+    </h6>
+    <div class="text-parts-view">
+      <div class="mb-3" *ngIf="experience?.description">
+        <label class="form-label">Original</label>
+        <div class="form-control-plaintext" [innerHTML]="experience?.description"
+             appHighlightSearch></div>
+      </div>
+
+      <div class="mb-3" *ngIf="experience?.tidiedDescription">
+        <label class="form-label">Tidied</label>
+        <div class="form-control-plaintext" [innerHTML]="experience.tidiedDescription"
+             appHighlightSearch></div>
+      </div>
+
+      <div class="mb-3" *ngIf="experience?.keywordsInDescription?.length">
+        <label class="form-label">Keywords</label>
+        <div appHighlightSearch>
+          <span
+            class="badge bg-secondary me-1"
+            *ngFor="let keyword of experience.keywordsInDescription">
+            {{ keyword }}
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <small class="text-muted">
+      {{experience.startDate | date: 'customMonthYear' }} - {{experience.endDate | date: 'customMonthYear' }}
+    </small>
+    <small class="text-muted">
+      {{experience.fullTime ? 'Full Time' : 'Part Time'}}
+      {{experience.paid ? 'Paid' : 'Voluntary'}}
+    </small>
+  </div>
+
+  <!-- Optional caller-supplied controls (e.g. edit/delete), laid out beside the details -->
+  <ng-content select="[experienceActions]"></ng-content>
+
+  <div class="col-12">
+    <span class="font-italic"
+          [innerHtml]="experience.companyName + ', ' + experience.country.name"
+          appHighlightSearch>
+    </span>
+  </div>
+
+</div>

@@ -61,7 +61,23 @@
         <h6>Relevant experience</h6>
         <ul class="mb-0">
           <li *ngFor="let item of explanation.experienceExplanations">
-            <strong>{{experienceHeading(item)}}:</strong> {{item.explanation}}
+            <!-- The heading always comes from the explanation itself (historical jobTitle); the
+                 hover shows the candidate's current experience with the same ID, if it still exists. -->
+            <ng-container *ngIf="findExperience(item.experienceId) as experience; else plainHeading">
+              <strong class="experience-heading-hover"
+                      [ngbPopover]="experiencePopover"
+                      triggers="mouseenter:mouseleave"
+                      container="body"
+                      placement="auto"
+                      popoverClass="candidate-job-experience-popover">{{experienceHeading(item)}}:</strong>
+              <ng-template #experiencePopover>
+                <app-candidate-job-experience [experience]="experience"></app-candidate-job-experience>
+              </ng-template>
+            </ng-container>
+            <ng-template #plainHeading>
+              <strong>{{experienceHeading(item)}}:</strong>
+            </ng-template>
+            {{item.explanation}}
           </li>
         </ul>
       </div>

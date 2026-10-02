@@ -122,6 +122,7 @@
     <div *ngIf="shouldShowMatchExplanation()" class="mt-2">
       <app-candidate-match-explanation
         [candidateId]="candidate.id"
+        [candidate]="candidate"
         [jobId]="candidateSource?.sfJobOpp?.id"
         [opportunityDescription]="opportunityDescription"
       ></app-candidate-match-explanation>

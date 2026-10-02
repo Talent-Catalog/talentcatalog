@@ -23,11 +23,18 @@ import {CandidateMatchExplanationComponent} from './candidate-match-explanation.
 import {CandidateService} from '../../../services/candidate.service';
 import {CandidateMatchExplanation} from '../../../model/candidate-match-explanation';
 import {ExtendDatePipe} from '../../../util/date-adapter/extend-date-pipe';
+import {NgbConfig, NgbPopoverModule} from '@ng-bootstrap/ng-bootstrap';
+import {
+  CandidateJobExperienceComponent
+} from '../../candidates/view/occupation/experience/candidate-job-experience/candidate-job-experience.component';
+import {Candidate} from '../../../model/candidate';
+import {CandidateJobExperience} from '../../../model/candidate-job-experience';
 
 @Component({
   template: `
     <app-candidate-match-explanation
       [candidateId]="candidateId"
+      [candidate]="candidate"
       [jobId]="jobId"
       [opportunityDescription]="opportunityDescription">
     </app-candidate-match-explanation>
@@ -35,6 +42,7 @@ import {ExtendDatePipe} from '../../../util/date-adapter/extend-date-pipe';
 })
 class TestHostComponent {
   candidateId = 1;
+  candidate: Candidate | undefined = undefined;
   jobId: number | undefined = 100;
   opportunityDescription: string | undefined = 'Initial opportunity description';
 }
@@ -70,7 +78,11 @@ describe('CandidateMatchExplanationComponent', () => {
     ]);
 
     await TestBed.configureTestingModule({
-      declarations: [CandidateMatchExplanationComponent, TestHostComponent, ExtendDatePipe],
+      declarations: [
+        CandidateMatchExplanationComponent, TestHostComponent, ExtendDatePipe,
+        CandidateJobExperienceComponent
+      ],
+      imports: [NgbPopoverModule],
       providers: [
         {provide: CandidateService, useValue: spy}
       ],
@@ -78,6 +90,9 @@ describe('CandidateMatchExplanationComponent', () => {
     }).compileComponents();
 
     candidateServiceSpy = TestBed.inject(CandidateService) as jasmine.SpyObj<CandidateService>;
+    // Popovers open/close synchronously without animation, so fakeAsync tests aren't left with
+    // pending transition timers.
+    TestBed.inject(NgbConfig).animation = false;
   });
 
   // Note: `null` (not `undefined`) is the "absent" sentinel for these parameters, since a JS
@@ -85,10 +100,12 @@ describe('CandidateMatchExplanationComponent', () => {
   // an omitted one - `createHost(undefined)` would otherwise silently fall back to the default.
   function createHost(
     initialJobId: number | null = 100,
-    initialDescription: string | null = 'Initial opportunity description'
+    initialDescription: string | null = 'Initial opportunity description',
+    candidate?: Candidate
   ) {
     hostFixture = TestBed.createComponent(TestHostComponent);
     hostComponent = hostFixture.componentInstance;
+    hostComponent.candidate = candidate;
     hostComponent.jobId = initialJobId === null ? undefined : initialJobId;
     hostComponent.opportunityDescription = initialDescription === null ? undefined : initialDescription;
     hostFixture.detectChanges();
@@ -498,6 +515,175 @@ describe('CandidateMatchExplanationComponent', () => {
       hostFixture.detectChanges();
 
       expect(hostFixture.nativeElement.textContent).not.toContain('Hidden summary');
+    }));
+  });
+
+  describe('experience hover (current candidate job experience)', () => {
+
+    function jobExperience(id: number, role: string): CandidateJobExperience {
+      return {
+        id,
+        role,
+        companyName: `Company ${id}`,
+        country: {id: 1, name: 'Australia', status: 'active', translatedName: null},
+        startDate: '2020-01-01',
+        endDate: '2021-01-01',
+        fullTime: true as any,
+        paid: true as any,
+        description: `Current description for ${id}`
+      };
+    }
+
+    // Experiences deliberately listed in a different order from the explanation (501, 502), and
+    // with current roles that differ from the explanation's persisted job titles.
+    function candidateWithExperiences(): Candidate {
+      return {
+        id: 1,
+        candidateJobExperiences: [jobExperience(502, 'Current Team Lead role')],
+        candidateOccupations: [
+          {candidateJobExperiences: [jobExperience(999, 'Unrelated role'), jobExperience(501, 'Current Developer role')]}
+        ]
+      } as any as Candidate;
+    }
+
+    function explanationWithTitles(): CandidateMatchExplanation {
+      const explanation = explanationFixture('S');
+      explanation.experienceExplanations[0].jobTitle = 'Historical Developer Title';
+      explanation.experienceExplanations[1].jobTitle = 'Historical Lead Title';
+      return explanation;
+    }
+
+    function showWith(explanation: CandidateMatchExplanation, candidate?: Candidate) {
+      candidateServiceSpy.getMatchExplanation.and.returnValue(of(explanation));
+      createHost(100, 'Initial opportunity description', candidate);
+      component.show();
+      tick();
+      hostFixture.detectChanges();
+    }
+
+    function headings(): HTMLElement[] {
+      return Array.from(hostFixture.nativeElement.querySelectorAll('li strong'));
+    }
+
+    function popoverElement(): HTMLElement | null {
+      return document.body.querySelector('ngb-popover-window');
+    }
+
+    afterEach(() => {
+      // Popovers are attached to the body, so make sure none leak between tests.
+      hostFixture?.destroy();
+    });
+
+    it('should receive the candidate from the host', fakeAsync(() => {
+      const candidate = candidateWithExperiences();
+      showWith(explanationWithTitles(), candidate);
+
+      expect(component.candidate).toBe(candidate);
+    }));
+
+    it('should resolve experiences by ID, from top-level or occupation experiences, regardless of position', fakeAsync(() => {
+      showWith(explanationWithTitles(), candidateWithExperiences());
+
+      expect(component.findExperience(501).role).toBe('Current Developer role');
+      expect(component.findExperience(502).role).toBe('Current Team Lead role');
+      expect(component.findExperience(999).role).toBe('Unrelated role');
+      expect(component.findExperience(12345)).toBeUndefined();
+    }));
+
+    it('should re-index experiences when the candidate input changes', fakeAsync(() => {
+      showWith(explanationWithTitles(), candidateWithExperiences());
+
+      hostComponent.candidate = {id: 1, candidateJobExperiences: [jobExperience(501, 'Edited role')]} as any;
+      hostFixture.detectChanges();
+
+      expect(component.findExperience(501).role).toBe('Edited role');
+      expect(component.findExperience(502)).toBeUndefined();
+      // Updating the candidate data does not disturb the displayed explanation
+      expect(component.explanation).not.toBeNull();
+    }));
+
+    it('should make headings hover targets when the experience exists', fakeAsync(() => {
+      showWith(explanationWithTitles(), candidateWithExperiences());
+
+      const hoverTargets = hostFixture.nativeElement.querySelectorAll('li strong.experience-heading-hover');
+      expect(hoverTargets.length).toBe(2);
+    }));
+
+    it('should still head explanations with the persisted jobTitle, not the current role', fakeAsync(() => {
+      showWith(explanationWithTitles(), candidateWithExperiences());
+
+      expect(headings().map(h => h.textContent.trim()))
+        .toEqual(['Historical Developer Title (501):', 'Historical Lead Title (502):']);
+    }));
+
+    it('should keep the "Experience #<id>" fallback heading when jobTitle is absent', fakeAsync(() => {
+      showWith(explanationFixture('S'), candidateWithExperiences());
+
+      expect(headings().map(h => h.textContent.trim()))
+        .toEqual(['Experience #501:', 'Experience #502:']);
+      expect(hostFixture.nativeElement.querySelectorAll('strong.experience-heading-hover').length).toBe(2);
+    }));
+
+    it('should show the matching current experience via the reusable experience component on hover', fakeAsync(() => {
+      showWith(explanationWithTitles(), candidateWithExperiences());
+
+      // Hover the second heading (502), whose experience is first in the candidate's top-level list
+      headings()[1].dispatchEvent(new Event('mouseenter'));
+      hostFixture.detectChanges();
+
+      const popover = popoverElement();
+      expect(popover).not.toBeNull();
+      expect(popover.querySelector('app-candidate-job-experience')).not.toBeNull();
+      expect(popover.textContent).toContain('Current Team Lead role');
+      expect(popover.textContent).toContain('Company 502, Australia');
+      expect(popover.textContent).not.toContain('Current Developer role');
+
+      headings()[1].dispatchEvent(new Event('mouseleave'));
+      hostFixture.detectChanges();
+      expect(popoverElement()).toBeNull();
+    }));
+
+    it('should handle an experience that no longer exists: heading shown, no hover target or popover, no error', fakeAsync(() => {
+      const candidate = candidateWithExperiences();
+      // 502 has since been deleted from the candidate
+      candidate.candidateJobExperiences = [];
+      showWith(explanationWithTitles(), candidate);
+
+      const [present, missing] = headings();
+      expect(missing.textContent.trim()).toBe('Historical Lead Title (502):');
+      expect(missing.classList).not.toContain('experience-heading-hover');
+      expect(present.classList).toContain('experience-heading-hover');
+
+      expect(() => {
+        missing.dispatchEvent(new Event('mouseenter'));
+        hostFixture.detectChanges();
+      }).not.toThrow();
+      expect(popoverElement()).toBeNull();
+      expect(hostFixture.nativeElement.textContent).toContain('Relevant leadership experience.');
+    }));
+
+    it('should show plain headings with no popover when no candidate is supplied', fakeAsync(() => {
+      showWith(explanationWithTitles());
+
+      expect(hostFixture.nativeElement.querySelectorAll('strong.experience-heading-hover').length).toBe(0);
+      expect(headings().length).toBe(2);
+      headings()[0].dispatchEvent(new Event('mouseenter'));
+      hostFixture.detectChanges();
+      expect(popoverElement()).toBeNull();
+    }));
+
+    it('should make no additional candidate API requests to resolve or display experiences', fakeAsync(() => {
+      showWith(explanationWithTitles(), candidateWithExperiences());
+
+      headings()[0].dispatchEvent(new Event('mouseenter'));
+      hostFixture.detectChanges();
+      headings()[0].dispatchEvent(new Event('mouseleave'));
+      hostFixture.detectChanges();
+
+      // The CandidateService spy only provides the explanation methods - any other call (e.g.
+      // re-fetching the candidate) would throw. The explanation itself was retrieved just once.
+      expect(candidateServiceSpy.getMatchExplanation).toHaveBeenCalledTimes(1);
+      expect(candidateServiceSpy.generateMatchExplanation).not.toHaveBeenCalled();
     }));
   });
 

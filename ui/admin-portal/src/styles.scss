@@ -385,3 +385,16 @@ ngx-wig {
     position: static !important;
   }
 }
+
+/* Popover showing a candidate job experience (see CandidateMatchExplanationComponent). Has to be
+ * global because the popover is rendered in the body, outside the component's view encapsulation.
+ * Widened from Bootstrap's default popover max-width so the experience details remain readable.
+ */
+.candidate-job-experience-popover {
+  max-width: min(600px, 90vw);
+
+  .popover-body {
+    max-height: 60vh;
+    overflow-y: auto;
+  }
+}

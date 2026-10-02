@@ -74,48 +74,8 @@
 
       <hr *ngIf="i > 0">
 
-      <div class="row">
-
-        <div class="col-10">
-          <h6 class="card-title"
-              [innerHtml]="experience.role"
-              appHighlightSearch>
-          </h6>
-          <div class="text-parts-view">
-            <div class="mb-3" *ngIf="experience?.description">
-              <label class="form-label">Original</label>
-              <div class="form-control-plaintext" [innerHTML]="experience?.description"
-                   appHighlightSearch></div>
-            </div>
-
-            <div class="mb-3" *ngIf="experience?.tidiedDescription">
-              <label class="form-label">Tidied</label>
-              <div class="form-control-plaintext" [innerHTML]="experience.tidiedDescription"
-                   appHighlightSearch></div>
-            </div>
-
-            <div class="mb-3" *ngIf="experience?.keywordsInDescription?.length">
-              <label class="form-label">Keywords</label>
-              <div appHighlightSearch>
-                <span
-                  class="badge bg-secondary me-1"
-                  *ngFor="let keyword of experience.keywordsInDescription">
-                  {{ keyword }}
-                </span>
-              </div>
-            </div>
-          </div>
-
-          <small class="text-muted">
-            {{experience.startDate | date: 'customMonthYear' }} - {{experience.endDate | date: 'customMonthYear' }}
-          </small>
-          <small class="text-muted">
-            {{experience.fullTime ? 'Full Time' : 'Part Time'}}
-            {{experience.paid ? 'Paid' : 'Voluntary'}}
-          </small>
-        </div>
-
-        <div class="col-2" *ngIf="editable">
+      <app-candidate-job-experience [experience]="experience">
+        <div experienceActions class="col-2" *ngIf="editable">
           <div class="d-flex gap-2 justify-content-end">
             <tc-button (onClick)="editCandidateJobExperience(experience)"
                        [type]="'plain'"
@@ -132,23 +92,7 @@
             </tc-button>
           </div>
         </div>
-
-        <div class="col-12">
-          <span class="font-italic"
-                [innerHtml]="experience.companyName + ', ' + experience.country.name"
-                appHighlightSearch>
-          </span>
-        </div>
-
-        <div class="col-12">
-
-        </div>
-
-        <div class="col-12">
-
-        </div>
-
-      </div>
+      </app-candidate-job-experience>
 
     </ng-container>
 </tc-card>

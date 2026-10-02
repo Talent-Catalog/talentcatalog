@@ -165,6 +165,9 @@ import {
   ViewCandidateJobExperienceComponent
 } from './components/candidates/view/occupation/experience/view-candidate-job-experience.component';
 import {
+  CandidateJobExperienceComponent
+} from './components/candidates/view/occupation/experience/candidate-job-experience/candidate-job-experience.component';
+import {
   CreateUpdateUserComponent
 } from './components/settings/users/create-update-user/create-update-user.component';
 import {
@@ -930,6 +933,7 @@ import {
     CandidateSourceComponent,
     ViewCandidateOccupationComponent,
     ViewCandidateJobExperienceComponent,
+    CandidateJobExperienceComponent,
     LanguageLevelFormControlComponent,
     CandidatePipe,
     EditCandidateJobExperienceComponent,

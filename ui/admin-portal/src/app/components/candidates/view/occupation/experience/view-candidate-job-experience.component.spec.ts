@@ -41,6 +41,11 @@ import {
 } from "./create/create-candidate-job-experience.component";
 import {EditCandidateJobExperienceComponent} from "./edit/edit-candidate-job-experience.component";
 import {ConfirmationComponent} from "../../../../util/confirm/confirmation.component";
+import {
+  CandidateJobExperienceComponent
+} from "./candidate-job-experience/candidate-job-experience.component";
+import {ExtendDatePipe} from "../../../../../util/date-adapter/extend-date-pipe";
+import {By} from "@angular/platform-browser";
 
 describe('ViewCandidateJobExperienceComponent', () => {
   let component: ViewCandidateJobExperienceComponent;
@@ -63,7 +68,7 @@ describe('ViewCandidateJobExperienceComponent', () => {
     const skillsServiceSpy = jasmine.createSpyObj('SkillsService', ['extractSkills']);
 
     await TestBed.configureTestingModule({
-      declarations: [ViewCandidateJobExperienceComponent],
+      declarations: [ViewCandidateJobExperienceComponent, CandidateJobExperienceComponent, ExtendDatePipe],
       imports: [HttpClientTestingModule,FormsModule,ReactiveFormsModule, NgSelectModule,NgxWigModule],
       providers: [
         UntypedFormBuilder,
@@ -485,6 +490,85 @@ describe('ViewCandidateJobExperienceComponent', () => {
   it('should expose the isHtml helper', () => {
     expect(component.isHtml('<p>Hello</p>')).toBeTrue();
     expect(component.isHtml('Plain text')).toBeFalse();
+  });
+
+  describe('rendering (via the reusable CandidateJobExperienceComponent)', () => {
+
+    function experienceComponents() {
+      return fixture.debugElement.queryAll(By.directive(CandidateJobExperienceComponent));
+    }
+
+    it('should render one reusable experience component per experience, in order', () => {
+      fixture.detectChanges();
+
+      const rendered = experienceComponents()
+        .map(de => (de.componentInstance as CandidateJobExperienceComponent).experience);
+      expect(rendered).toEqual(component.candidateOccupation.candidateJobExperiences);
+      expect(fixture.nativeElement.textContent).toContain('Developer');
+      expect(fixture.nativeElement.textContent).toContain('Project Manager');
+    });
+
+    it('should still render the occupation heading', () => {
+      fixture.detectChanges();
+
+      expect(fixture.nativeElement.textContent).toContain('Software Engineer (5 years)');
+    });
+
+    it('should render separators only between experiences', () => {
+      fixture.detectChanges();
+
+      expect(fixture.nativeElement.querySelectorAll('hr').length).toBe(experienceComponents().length - 1);
+    });
+
+    it('should keep edit and delete controls in the parent alongside each experience when editable', () => {
+      fixture.detectChanges();
+
+      experienceComponents().forEach(de => {
+        const buttons = de.queryAll(By.css('[experienceActions] tc-button'));
+        expect(buttons.length).toBe(2);
+      });
+    });
+
+    it('should call the parent edit/delete handlers for the corresponding experience', () => {
+      spyOn(component, 'editCandidateJobExperience');
+      spyOn(component, 'deleteCandidateJobExperience');
+      fixture.detectChanges();
+
+      const second = experienceComponents()[1];
+      const [editButton, deleteButton] = second.queryAll(By.css('[experienceActions] tc-button'));
+      editButton.triggerEventHandler('onClick', null);
+      deleteButton.triggerEventHandler('onClick', null);
+
+      const secondExperience = component.candidateOccupation.candidateJobExperiences[1];
+      expect(component.editCandidateJobExperience).toHaveBeenCalledWith(secondExperience);
+      expect(component.deleteCandidateJobExperience).toHaveBeenCalledWith(secondExperience);
+    });
+
+    it('should show edit but not delete for non-admin users', () => {
+      component.adminUser = false;
+      fixture.detectChanges();
+
+      experienceComponents().forEach(de => {
+        expect(de.queryAll(By.css('[experienceActions] tc-button')).length).toBe(1);
+      });
+    });
+
+    it('should show no experience controls when not editable', () => {
+      component.editable = false;
+      fixture.detectChanges();
+
+      expect(fixture.nativeElement.querySelector('[experienceActions]')).toBeNull();
+      expect(experienceComponents().length).toBe(2);
+    });
+
+    it('should show the empty state when there are no experiences', () => {
+      component.experiences = [];
+      fixture.detectChanges();
+
+      expect(experienceComponents().length).toBe(0);
+      expect(fixture.nativeElement.textContent)
+        .toContain('No job experience data has been entered by this candidate.');
+    });
   });
 
 });
