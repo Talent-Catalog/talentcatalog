@@ -222,7 +222,8 @@ module "grn_staging" {
 
   # Vanta user data classification (TC-1524)
   db_vanta_tags = {
-    VantaContainsUserData = "false"
+    VantaContainsUserData = "true"
+    VantaUserDataStored   = "Test candidate data and user account records"
   }
 
   availability_zones = ["eu-west-2a", "eu-west-2b", "eu-west-2c"]
