@@ -427,6 +427,12 @@ public class SystemAdminApi {
         return ResponseEntity.ok(message);
     }
 
+    @PostMapping("convert_text_parts")
+    public ResponseEntity<String> convertTextParts() {
+        String message = backgroundProcessingService.convertTextParts();
+        return ResponseEntity.ok(message);
+    }
+
     @PostMapping("run_api_migration")
     public ResponseEntity<String> runApiMigration() {
         String response = tcApiService.runApiMigration();

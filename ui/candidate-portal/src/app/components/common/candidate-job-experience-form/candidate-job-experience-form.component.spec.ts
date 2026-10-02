@@ -24,6 +24,7 @@ import {
   ReactiveFormsModule
 } from '@angular/forms';
 import {TranslateModule, TranslateService} from '@ngx-translate/core';
+import {NgxWigModule} from 'ngx-wig';
 import {of, throwError} from 'rxjs';
 
 import {CandidateJobExperienceFormComponent} from './candidate-job-experience-form.component';
@@ -110,30 +111,6 @@ class TcRadioStubComponent implements ControlValueAccessor {
   writeValue(): void {}
   registerOnChange(): void {}
   registerOnTouched(): void {}
-}
-
-@Component({
-  selector: 'app-text-parts-input',
-  template: '',
-  providers: [
-    {
-      provide: NG_VALUE_ACCESSOR,
-      useExisting: forwardRef(() => TextPartsInputStubComponent),
-      multi: true
-    }
-  ]
-})
-class TextPartsInputStubComponent implements ControlValueAccessor {
-  @Input() hideKeywords?: boolean;
-  @Input() hideTidied?: boolean;
-
-  writeValue(_value: unknown): void {}
-
-  registerOnChange(_fn: (value: unknown) => void): void {}
-
-  registerOnTouched(_fn: () => void): void {}
-
-  setDisabledState(_isDisabled: boolean): void {}
 }
 
 function makeCountry(id: number, name: string): Country {
@@ -223,9 +200,8 @@ describe('CandidateJobExperienceFormComponent', () => {
         NgSelectStubComponent,
         TcDatePickerStubComponent,
         TcRadioStubComponent,
-        TextPartsInputStubComponent
       ],
-      imports: [FormsModule, ReactiveFormsModule, TranslateModule.forRoot()],
+      imports: [FormsModule, ReactiveFormsModule, TranslateModule.forRoot(), NgxWigModule],
       providers: [
         {provide: CountryService, useValue: countryServiceSpy},
         {provide: CandidateOccupationService, useValue: candidateOccupationServiceSpy},
@@ -262,7 +238,7 @@ describe('CandidateJobExperienceFormComponent', () => {
     beforeEach(async () => configureAndCreate());
 
     it('should build the expected form controls', () => {
-      expect(component.form.contains('id')).toBeTrue();
+      expect(component.form.contains('experienceId')).toBeTrue();
       expect(component.form.contains('companyName')).toBeTrue();
       expect(component.form.contains('country')).toBeTrue();
       expect(component.form.contains('candidateOccupationId')).toBeTrue();
@@ -314,7 +290,7 @@ describe('CandidateJobExperienceFormComponent', () => {
       const experience = makeExperience();
       await configureAndCreate({candidateJobExperience: experience});
 
-      expect(component.form.value.id).toBe(1);
+      expect(component.form.value.experienceId).toBe(1);
       expect(component.form.value.companyName).toBe('ACME');
       expect(component.form.value.country).toBe(1);
       expect(component.form.value.candidateOccupationId).toBe(10);
@@ -379,22 +355,14 @@ describe('CandidateJobExperienceFormComponent', () => {
       expect(component.form.invalid).toBeTrue();
     });
 
-    it('should require visible description text after text parts input is cleared', () => {
-      component.form.controls.description.setValue(JSON.stringify({
-        parts: {
-          original: ''
-        }
-      }));
+    it('should require visible description text when description is cleared to empty markup', () => {
+      component.form.controls.description.setValue('<p>&nbsp;</p>');
 
       expect(component.form.controls.description.hasError('required')).toBeTrue();
     });
 
-    it('should allow visible description text in text parts input format', () => {
-      component.form.controls.description.setValue(JSON.stringify({
-        parts: {
-          original: '<p>Managed customer support tickets.</p>'
-        }
-      }));
+    it('should allow visible description text in HTML format', () => {
+      component.form.controls.description.setValue('<p>Managed customer support tickets.</p>');
 
       expect(component.form.controls.description.hasError('required')).toBeFalse();
     });

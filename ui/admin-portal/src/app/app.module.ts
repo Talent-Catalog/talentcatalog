@@ -851,10 +851,6 @@ import {
 import {
   EraseCandidateDataComponent
 } from "./components/candidates/view/erase/erase-candidate-data.component";
-import {TextPartsViewComponent} from "./components/util/text-parts-view/text-parts-view.component";
-import {
-  TextPartsInputComponent
-} from "./components/util/text-parts-input/text-parts-input.component";
 import {
   ViewCandidateAspirationsComponent
 } from "./components/candidates/view/aspirations/view-candidate-aspirations.component";
@@ -1232,8 +1228,6 @@ import {
         useClass: LanguageLoader
       },
     }),
-    TextPartsInputComponent,
-    TextPartsViewComponent,
   ],
   providers: [
     {provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true},
