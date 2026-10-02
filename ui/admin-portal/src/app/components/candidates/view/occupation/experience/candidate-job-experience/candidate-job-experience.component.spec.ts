@@ -29,8 +29,8 @@ function experienceFixture(): CandidateJobExperience {
     role: 'Senior Software Engineer',
     startDate: '2020-01-01',
     endDate: '2022-06-01',
-    fullTime: true as any,
-    paid: true as any,
+    fullTime: true,
+    paid: true,
     description: '<p>Built <b>backend</b> services.</p>',
     tidiedDescription: 'Built backend services in Java.',
     keywordsInDescription: ['Java', 'Spring']
@@ -122,13 +122,35 @@ describe('CandidateJobExperienceComponent', () => {
 
     expect(el.textContent).toContain('Full Time');
     expect(el.textContent).toContain('Paid');
+    expect(el.textContent).not.toContain('Part Time');
+    expect(el.textContent).not.toContain('Voluntary');
   });
 
   it('should display part-time and voluntary', () => {
-    const el = render({...experienceFixture(), fullTime: false as any, paid: false as any});
+    const el = render({...experienceFixture(), fullTime: false, paid: false});
 
     expect(el.textContent).toContain('Part Time');
     expect(el.textContent).toContain('Voluntary');
+    expect(el.textContent).not.toContain('Full Time');
+    expect(el.textContent).not.toContain('Paid');
+  });
+
+  it('should show neither contract nor paid label when not supplied (unknown)', () => {
+    const experience = experienceFixture();
+    delete experience.fullTime;
+    delete experience.paid;
+    const el = render(experience);
+
+    ['Full Time', 'Part Time', 'Paid', 'Voluntary'].forEach(label =>
+      expect(el.textContent).not.toContain(label));
+  });
+
+  it('should show only the supplied label when the other is unknown', () => {
+    const el = render({...experienceFixture(), fullTime: false, paid: null});
+
+    expect(el.textContent).toContain('Part Time');
+    expect(el.textContent).not.toContain('Paid');
+    expect(el.textContent).not.toContain('Voluntary');
   });
 
   it('should display the company and country', () => {

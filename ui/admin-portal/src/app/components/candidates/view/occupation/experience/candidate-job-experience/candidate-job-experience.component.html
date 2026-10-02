@@ -49,9 +49,10 @@
     <small class="text-muted">
       {{experience.startDate | date: 'customMonthYear' }} - {{experience.endDate | date: 'customMonthYear' }}
     </small>
+    <!-- fullTime/paid are absent when not supplied (unknown) - show nothing rather than guessing -->
     <small class="text-muted">
-      {{experience.fullTime ? 'Full Time' : 'Part Time'}}
-      {{experience.paid ? 'Paid' : 'Voluntary'}}
+      <ng-container *ngIf="experience.fullTime != null">{{experience.fullTime ? 'Full Time' : 'Part Time'}}</ng-container>
+      <ng-container *ngIf="experience.paid != null">{{experience.paid ? 'Paid' : 'Voluntary'}}</ng-container>
     </small>
   </div>
 

@@ -528,8 +528,8 @@ describe('CandidateMatchExplanationComponent', () => {
         country: {id: 1, name: 'Australia', status: 'active', translatedName: null},
         startDate: '2020-01-01',
         endDate: '2021-01-01',
-        fullTime: true as any,
-        paid: true as any,
+        fullTime: true,
+        paid: true,
         description: `Current description for ${id}`
       };
     }

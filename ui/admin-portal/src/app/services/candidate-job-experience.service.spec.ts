@@ -49,8 +49,8 @@ describe('CandidateJobExperienceService', () => {
         role: 'Developer',
         startDate: '2022-01-01',
         endDate: '2022-12-31',
-        fullTime: 'yes',
-        paid: 'yes',
+        fullTime: true,
+        paid: true,
         description: 'Developed various features',
         expanded: true
       }
@@ -76,8 +76,8 @@ describe('CandidateJobExperienceService', () => {
       role: 'Developer',
       startDate: '2022-01-01',
       endDate: '2022-12-31',
-      fullTime: 'yes',
-      paid: 'yes',
+      fullTime: true,
+      paid: true,
       description: 'Developed various features',
       expanded: true
     };
@@ -87,8 +87,8 @@ describe('CandidateJobExperienceService', () => {
       role: 'Developer',
       startDate: '2022-01-01',
       endDate: '2022-12-31',
-      fullTime: 'yes',
-      paid: 'yes',
+      fullTime: true,
+      paid: true,
       description: 'Developed various features'
     };
 
@@ -113,8 +113,8 @@ describe('CandidateJobExperienceService', () => {
       role: 'Senior Developer',
       startDate: '2022-01-01',
       endDate: '2023-01-01',
-      fullTime: 'yes',
-      paid: 'yes',
+      fullTime: true,
+      paid: true,
       description: 'Updated job description',
       expanded: true
     };
@@ -124,8 +124,8 @@ describe('CandidateJobExperienceService', () => {
       role: 'Senior Developer',
       startDate: '2022-01-01',
       endDate: '2023-01-01',
-      fullTime: 'yes',
-      paid: 'yes',
+      fullTime: true,
+      paid: true,
       description: 'Updated job description'
     };
 
@@ -158,8 +158,8 @@ describe('CandidateJobExperienceService', () => {
           role: 'Developer',
           startDate: '2022-01-01',
           endDate: '2022-12-31',
-          fullTime: 'yes',
-          paid: 'yes',
+          fullTime: true,
+          paid: true,
           description: 'Developed various features',
           expanded: true
         }
@@ -189,8 +189,8 @@ describe('CandidateJobExperienceService', () => {
       role: 'Developer',
       startDate: '2022-01-01',
       endDate: '2022-12-31',
-      fullTime: 'yes',
-      paid: 'yes',
+      fullTime: true,
+      paid: true,
       description: 'Developed various features',
       expanded: true
     };
