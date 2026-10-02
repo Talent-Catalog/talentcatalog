@@ -220,6 +220,11 @@ module "grn_staging" {
   db_major_engine_version = "17"
   db_name                 = "tcplus"
 
+  # Vanta user data classification (TC-1524)
+  db_vanta_tags = {
+    VantaContainsUserData = "false"
+  }
+
   availability_zones = ["eu-west-2a", "eu-west-2b", "eu-west-2c"]
 
   # Redis cache (unique cluster id in same account)
