@@ -39,7 +39,7 @@ jobs:
 
     env:
       CI: true
-      PLAYWRIGHT_WORKERS: 6
+      PLAYWRIGHT_WORKERS: ${{ vars.E2E_PLAYWRIGHT_WORKERS }}
       E2E_BASE_URL: ${{ vars.E2E_BASE_URL }}
       E2E_API_BASE_URL: ${{ vars.E2E_API_BASE_URL }}
 
@@ -67,10 +67,11 @@ jobs:
         run: npx playwright install --with-deps
 
       - name: Run Playwright E2E tests
+        timeout-minutes: 22
         run: npm run e2e
 
       - name: Upload Playwright artifacts
-        if: failure()
+        if: always()
         uses: actions/upload-artifact@v7
         with:
           name: candidate-portal-playwright-${{ github.run_id }}

@@ -87,8 +87,8 @@ public class SkillsServiceImpl implements SkillsService {
     private final static int INITIAL_CAPACITY = 30_000;
 
     @Override
-    public void addTcSkillsIfNew(@NonNull List<String> skills, @NonNull String languageCode) {
-        if (skills.isEmpty()) {
+    public void addTcSkillsIfNew(List<String> skills, @NonNull String languageCode) {
+        if (skills == null || skills.isEmpty()) {
             return;
         }
         final String skillsAsString = String.join(",", skills);

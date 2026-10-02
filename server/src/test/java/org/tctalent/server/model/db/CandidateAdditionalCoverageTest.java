@@ -380,7 +380,11 @@ class CandidateAdditionalCoverageTest {
     CandidateJobExperience qaJob = mock(CandidateJobExperience.class);
 
     when(javaJob.getDescription()).thenReturn("Java developer");
+    when(javaJob.getTidiedDescription()).thenReturn(null);
+    when(javaJob.getKeywordsInDescription()).thenReturn(List.of("Java", "developer"));
     when(qaJob.getDescription()).thenReturn("QA tester");
+    when(qaJob.getTidiedDescription()).thenReturn("Tidied QA tester");
+    when(qaJob.getKeywordsInDescription()).thenReturn(List.of("QA", "tester"));
 
     CandidateAttachment cvAttachment = mock(CandidateAttachment.class);
     CandidateAttachment nonCvAttachment = mock(CandidateAttachment.class);
@@ -403,8 +407,8 @@ class CandidateAdditionalCoverageTest {
     candidate.updateText();
 
     assertEquals(
-        "Java developer || QA tester || CV text extract || Strong communication skills || "
-            + "Bottle washer,Head rattler",
+        "Java developer || QA tester || Tidied QA tester || Java,developer,QA,tester "
+            + "|| CV text extract || Strong communication skills || Bottle washer,Head rattler",
         candidate.getText()
     );
   }

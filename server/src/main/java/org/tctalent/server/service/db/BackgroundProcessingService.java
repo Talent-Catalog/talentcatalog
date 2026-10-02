@@ -64,6 +64,15 @@ public interface BackgroundProcessingService {
   String buildEmbeddings();
 
   /**
+   * Converts all candidate job experiences that use TextParts to encode experience descriptions
+   * including tidied text and keywords. Convert them to populate the new tidiedDescription and
+   * keywordsInDescription fields. The existing description field is converted from a JSON object
+   * to just containing the original description text.
+   * @return a string indicating the result of the operation
+   */
+  String convertTextParts();
+
+  /**
    * Adds publicID to any partner that doesn't have one
    */
   void setPartnerPublicIds();

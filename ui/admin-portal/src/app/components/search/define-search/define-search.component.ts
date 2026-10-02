@@ -526,7 +526,7 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit, 
     event.preventDefault(); // Stop unintended effect (Keyword Search tooltip opening)
     this.apply();
   }
-
+  
   apply() {
     //Initialize a search request from the modified formData
     const request: SearchCandidateRequestPaged =
@@ -540,8 +540,13 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit, 
     this.searchRequest = request;
 
     this.updateTextSearchQuery(this.searchForm.value.simpleQueryString, this.extractedSkills);
-  }
 
+    // Search automatically saves the filters when enabled.
+    if (this.savedSearch?.autoUpdateOnSearch !== false) {
+      this.searchForm.markAsPristine();
+      this.onFormChange.emit(false);
+    }
+  }
   /**
    * Updates the search query service with the combined text search query, which includes the
    * simpleQueryString and any extracted skills.

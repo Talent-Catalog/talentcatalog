@@ -31,8 +31,10 @@ import static org.mockito.ArgumentMatchers.contains;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.startsWith;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -500,7 +502,7 @@ class SavedSearchServiceImplUnitTest {
     SavedSearch result = service.getDefaultSavedSearch();
 
     assertEquals("_DefaultSavedSearchForUser10", result.getName());
-    assertTrue(result.getDefaultSearch());
+    assertTrue(result.isDefaultSearch());
     assertEquals("default-public-id", result.getPublicId());
   }
 
@@ -767,6 +769,87 @@ class SavedSearchServiceImplUnitTest {
     service.removeWatcher(1L, request);
 
     assertFalse(savedSearch.getWatcherUserIds().contains(20L));
+  }
+
+  @Test
+  @DisplayName("named saved search auto-updates when enabled")
+  void namedSavedSearchAutoUpdatesWhenEnabled() {
+    SavedSearch savedSearch = savedSearch(1L, "Saved Search", user);
+    savedSearch.setDefaultSearch(false);
+    savedSearch.setAutoUpdateOnSearch(true);
+
+    SearchCandidateRequest request = new SearchCandidateRequest();
+    request.setSavedSearchId(savedSearch.getId());
+
+    SavedSearchServiceImpl serviceSpy = spy(service);
+    doReturn(savedSearch)
+        .when(serviceSpy)
+        .getSavedSearch(savedSearch.getId());
+    doReturn(savedSearch)
+        .when(serviceSpy)
+        .updateSavedSearch(
+            eq(savedSearch.getId()),
+            any(UpdateSavedSearchRequest.class)
+        );
+
+    serviceSpy.updateUserDefaultSavedSearchIfNeeded(request);
+
+    verify(serviceSpy).updateSavedSearch(
+        eq(savedSearch.getId()),
+        any(UpdateSavedSearchRequest.class)
+    );
+  }
+
+  @Test
+  @DisplayName("named saved search does not auto-update when disabled")
+  void namedSavedSearchDoesNotAutoUpdateWhenDisabled() {
+    SavedSearch savedSearch = savedSearch(1L, "Saved Search", user);
+    savedSearch.setDefaultSearch(false);
+    savedSearch.setAutoUpdateOnSearch(false);
+
+    SearchCandidateRequest request = new SearchCandidateRequest();
+    request.setSavedSearchId(savedSearch.getId());
+
+    SavedSearchServiceImpl serviceSpy = spy(service);
+    doReturn(savedSearch)
+        .when(serviceSpy)
+        .getSavedSearch(savedSearch.getId());
+
+    serviceSpy.updateUserDefaultSavedSearchIfNeeded(request);
+
+    verify(serviceSpy, never()).updateSavedSearch(
+        eq(savedSearch.getId()),
+        any(UpdateSavedSearchRequest.class)
+    );
+  }
+
+  @Test
+  @DisplayName("default saved search always auto-updates even when flag is false")
+  void defaultSavedSearchAlwaysAutoUpdates() {
+    SavedSearch savedSearch = savedSearch(1L, "Default Search", user);
+    savedSearch.setDefaultSearch(true);
+    savedSearch.setAutoUpdateOnSearch(false);
+
+    SearchCandidateRequest request = new SearchCandidateRequest();
+    request.setSavedSearchId(savedSearch.getId());
+
+    SavedSearchServiceImpl serviceSpy = spy(service);
+    doReturn(savedSearch)
+        .when(serviceSpy)
+        .getSavedSearch(savedSearch.getId());
+    doReturn(savedSearch)
+        .when(serviceSpy)
+        .updateSavedSearch(
+            eq(savedSearch.getId()),
+            any(UpdateSavedSearchRequest.class)
+        );
+
+    serviceSpy.updateUserDefaultSavedSearchIfNeeded(request);
+
+    verify(serviceSpy).updateSavedSearch(
+        eq(savedSearch.getId()),
+        any(UpdateSavedSearchRequest.class)
+    );
   }
 
   @Test
