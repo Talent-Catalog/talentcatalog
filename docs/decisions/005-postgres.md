@@ -1,7 +1,7 @@
 # ADR 005: Our Postgres Database standards
 
-**Date:** 2026-09-24
-**Status:** Review
+**Date:** 2026-10-02
+**Status:** Accepted
 
 ## Context
   
