@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
+import java.time.OffsetDateTime;
 import java.util.List;
 import lombok.Builder;
 import lombok.Value;
@@ -26,6 +27,14 @@ public class ExplanationResult {
     /** TC candidate ID, as a string, copied back unchanged from the request. */
     @NotBlank
     String candidateId;
+
+    /** UTC time at which Python generated this explanation. Null for a failed result. */
+    @Nullable
+    OffsetDateTime generatedAt;
+
+    /** Name of the LLM model that actually generated this explanation. Null for a failed result. */
+    @Nullable
+    String modelName;
 
     @Nullable
     String summary;

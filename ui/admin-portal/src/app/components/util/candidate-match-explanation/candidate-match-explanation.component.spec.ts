@@ -22,6 +22,7 @@ import {HttpErrorResponse} from '@angular/common/http';
 import {CandidateMatchExplanationComponent} from './candidate-match-explanation.component';
 import {CandidateService} from '../../../services/candidate.service';
 import {CandidateMatchExplanation} from '../../../model/candidate-match-explanation';
+import {ExtendDatePipe} from '../../../util/date-adapter/extend-date-pipe';
 
 @Component({
   template: `
@@ -69,7 +70,7 @@ describe('CandidateMatchExplanationComponent', () => {
     ]);
 
     await TestBed.configureTestingModule({
-      declarations: [CandidateMatchExplanationComponent, TestHostComponent],
+      declarations: [CandidateMatchExplanationComponent, TestHostComponent, ExtendDatePipe],
       providers: [
         {provide: CandidateService, useValue: spy}
       ],
@@ -387,6 +388,105 @@ describe('CandidateMatchExplanationComponent', () => {
         .map((el: HTMLElement) => el.textContent);
       expect(headings).not.toContain('Limitations');
     }));
+
+    describe('experience headings', () => {
+
+      function headingTexts(): string[] {
+        return Array.from(hostFixture.nativeElement.querySelectorAll('li strong'))
+          .map((el: HTMLElement) => el.textContent.trim());
+      }
+
+      function showWith(explanation: CandidateMatchExplanation) {
+        candidateServiceSpy.getMatchExplanation.and.returnValue(of(explanation));
+        createHost();
+        component.show();
+        tick();
+        hostFixture.detectChanges();
+      }
+
+      it('should render "<Job Title> (<id>)" when jobTitle is present', fakeAsync(() => {
+        const explanation = explanationFixture('S');
+        explanation.experienceExplanations[0].jobTitle = 'Senior Software Engineer';
+        explanation.experienceExplanations[1].jobTitle = 'Team Lead';
+        showWith(explanation);
+
+        expect(headingTexts()).toEqual(['Senior Software Engineer (501):', 'Team Lead (502):']);
+      }));
+
+      it('should fall back to "Experience #<id>" when jobTitle is absent (e.g. legacy explanation)', fakeAsync(() => {
+        showWith(explanationFixture('S'));
+
+        expect(headingTexts()).toEqual(['Experience #501:', 'Experience #502:']);
+      }));
+
+      it('should fall back to "Experience #<id>" when jobTitle is null or blank, never rendering "null"/"undefined"', fakeAsync(() => {
+        const explanation = explanationFixture('S');
+        explanation.experienceExplanations[0].jobTitle = null;
+        explanation.experienceExplanations[1].jobTitle = '  ';
+        showWith(explanation);
+
+        expect(headingTexts()).toEqual(['Experience #501:', 'Experience #502:']);
+        const text = hostFixture.nativeElement.textContent;
+        expect(text).not.toContain('null');
+        expect(text).not.toContain('undefined');
+      }));
+    });
+
+    describe('generated-at / model metadata', () => {
+
+      const GENERATED_AT = '2026-10-02T03:30:00Z';
+      const MODEL_NAME = 'qwen.qwen3-235b-a22b-2507-v1:0';
+
+      function metadataLine(): HTMLElement | null {
+        return hostFixture.nativeElement.querySelector('.match-explanation-metadata');
+      }
+
+      function showWith(explanation: CandidateMatchExplanation) {
+        candidateServiceSpy.getMatchExplanation.and.returnValue(of(explanation));
+        createHost();
+        component.show();
+        tick();
+        hostFixture.detectChanges();
+      }
+
+      // Formatted with the same pipe/format as the template, so the expectation follows the
+      // test runner's local timezone just as the rendered value does.
+      function formattedGeneratedAt(): string {
+        return new ExtendDatePipe('en-US').transform(GENERATED_AT, 'customDateTime');
+      }
+
+      it('should display both generated timestamp and model name when present', fakeAsync(() => {
+        showWith({...explanationFixture('S'), generatedAt: GENERATED_AT, modelName: MODEL_NAME});
+
+        const text = metadataLine().textContent.replace(/\s+/g, ' ').trim();
+        expect(text).toBe(`Generated ${formattedGeneratedAt()} · ${MODEL_NAME}`);
+      }));
+
+      it('should display only the generated timestamp when modelName is missing', fakeAsync(() => {
+        showWith({...explanationFixture('S'), generatedAt: GENERATED_AT, modelName: null});
+
+        const text = metadataLine().textContent.replace(/\s+/g, ' ').trim();
+        expect(text).toBe(`Generated ${formattedGeneratedAt()}`);
+        expect(text).not.toContain('·');
+      }));
+
+      it('should display only the model name when generatedAt is missing', fakeAsync(() => {
+        showWith({...explanationFixture('S'), modelName: MODEL_NAME});
+
+        const text = metadataLine().textContent.replace(/\s+/g, ' ').trim();
+        expect(text).toBe(MODEL_NAME);
+        expect(text).not.toContain('Generated');
+        expect(text).not.toContain('·');
+      }));
+
+      it('should render no metadata line when both are missing (e.g. legacy explanation)', fakeAsync(() => {
+        showWith({...explanationFixture('Legacy summary'), generatedAt: null, modelName: null});
+
+        expect(metadataLine()).toBeNull();
+        expect(hostFixture.nativeElement.textContent).toContain('Legacy summary');
+        expect(hostFixture.nativeElement.textContent).not.toContain('Generated');
+      }));
+    });
 
     it('should not display anything when closed', fakeAsync(() => {
       candidateServiceSpy.getMatchExplanation.and.returnValue(of(explanationFixture('Hidden summary')));

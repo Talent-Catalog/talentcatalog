@@ -2,6 +2,7 @@ package org.tctalent.server.service.explanation.impl;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -14,6 +15,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.tctalent.server.data.CandidateTestData.getCandidate;
 
+import java.time.OffsetDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -62,6 +64,8 @@ class CandidateMatchExplanationServiceImplTest {
         "We are looking for an experienced Java developer.";
     private static final String SUMMARY = "The candidate is a strong match.";
     private static final long JOB_ID = 777L;
+    private static final OffsetDateTime GENERATED_AT = OffsetDateTime.parse("2026-10-02T03:30:00Z");
+    private static final String MODEL_NAME = "qwen.qwen3-235b-a22b-2507-v1:0";
 
     @Mock private CandidateService candidateService;
     @Mock private SalesforceJobOppService salesforceJobOppService;
@@ -72,6 +76,7 @@ class CandidateMatchExplanationServiceImplTest {
 
     @Captor private ArgumentCaptor<ExplanationsRequest> requestCaptor;
     @Captor private ArgumentCaptor<CandidateJobMatchExplanation> entityCaptor;
+    @Captor private ArgumentCaptor<CandidateMatchExplanation> explanationCaptor;
 
     @InjectMocks
     private CandidateMatchExplanationServiceImpl service;
@@ -112,10 +117,15 @@ class CandidateMatchExplanationServiceImplTest {
 
         ExplanationResult result = ExplanationResult.builder()
             .candidateId(candidateIdString)
+            .generatedAt(GENERATED_AT)
+            .modelName(MODEL_NAME)
             .summary(SUMMARY)
             .experienceExplanations(List.of(
                 ExperienceExplanationItem.builder()
                     .experienceId(String.valueOf(EXPERIENCE_ID_1))
+                    // Deliberately differs from the experience's role: the title must come from
+                    // the Python response, not be re-derived from the candidate's experience.
+                    .jobTitle("Title From Python")
                     .explanation("Directly relevant Java experience.")
                     .build()
             ))
@@ -130,9 +140,12 @@ class CandidateMatchExplanationServiceImplTest {
         CandidateMatchExplanation explanation =
             service.generateExplanation(candidate.getId(), null, OPPORTUNITY_DESCRIPTION);
 
+        assertEquals(GENERATED_AT, explanation.getGeneratedAt());
+        assertEquals(MODEL_NAME, explanation.getModelName());
         assertEquals(SUMMARY, explanation.getSummary());
         assertEquals(1, explanation.getExperienceExplanations().size());
         assertEquals(EXPERIENCE_ID_1, explanation.getExperienceExplanations().get(0).getExperienceId());
+        assertEquals("Title From Python", explanation.getExperienceExplanations().get(0).getJobTitle());
         assertEquals("Directly relevant Java experience.",
             explanation.getExperienceExplanations().get(0).getExplanation());
         assertEquals(List.of("Limited detail in job description."), explanation.getLimitations());
@@ -357,6 +370,10 @@ class CandidateMatchExplanationServiceImplTest {
         assertEquals(candidate, savedEntity.getCandidate());
         assertEquals(job, savedEntity.getJob());
         assertEquals(mappedData, savedEntity.getExplanation());
+
+        verify(candidateJobMatchExplanationMapper).toData(explanationCaptor.capture());
+        assertEquals(GENERATED_AT, explanationCaptor.getValue().getGeneratedAt());
+        assertEquals(MODEL_NAME, explanationCaptor.getValue().getModelName());
     }
 
     @Test
@@ -369,8 +386,11 @@ class CandidateMatchExplanationServiceImplTest {
             .willReturn(successResponseWithNoExperiences());
 
         CandidateJobMatchExplanation existingEntity = new CandidateJobMatchExplanation(candidate, job);
-        existingEntity.setExplanation(
-            CandidateJobMatchExplanationData.builder().summary("Old summary").build());
+        existingEntity.setExplanation(CandidateJobMatchExplanationData.builder()
+            .generatedAt(GENERATED_AT.minusDays(7))
+            .modelName("old-model")
+            .summary("Old summary")
+            .build());
         given(candidateJobMatchExplanationRepository.findById(any()))
             .willReturn(Optional.of(existingEntity));
 
@@ -384,6 +404,11 @@ class CandidateMatchExplanationServiceImplTest {
         verify(candidateJobMatchExplanationRepository, times(1)).save(entityCaptor.capture());
         assertSame(existingEntity, entityCaptor.getValue());
         assertEquals(newData, existingEntity.getExplanation());
+
+        // The newly generated metadata (not the old persisted metadata) is what gets persisted.
+        verify(candidateJobMatchExplanationMapper).toData(explanationCaptor.capture());
+        assertEquals(GENERATED_AT, explanationCaptor.getValue().getGeneratedAt());
+        assertEquals(MODEL_NAME, explanationCaptor.getValue().getModelName());
     }
 
     @Test
@@ -405,16 +430,16 @@ class CandidateMatchExplanationServiceImplTest {
     @DisplayName("GET: returns the persisted explanation without calling Python")
     void getPersistedExplanation_shouldReturnPersisted_whenExists() {
         CandidateJobMatchExplanation entity = new CandidateJobMatchExplanation(candidate, job);
-        CandidateJobMatchExplanationData data =
-            CandidateJobMatchExplanationData.builder().summary(SUMMARY).build();
+        CandidateJobMatchExplanationData data = CandidateJobMatchExplanationData.builder()
+            .generatedAt(GENERATED_AT).modelName(MODEL_NAME).summary(SUMMARY).build();
         entity.setExplanation(data);
 
         given(candidateJobMatchExplanationRepository.findById(
             new CandidateJobMatchExplanationKey(candidate.getId(), JOB_ID)))
             .willReturn(Optional.of(entity));
 
-        CandidateMatchExplanation expected =
-            CandidateMatchExplanation.builder().summary(SUMMARY).build();
+        CandidateMatchExplanation expected = CandidateMatchExplanation.builder()
+            .generatedAt(GENERATED_AT).modelName(MODEL_NAME).summary(SUMMARY).build();
         given(candidateJobMatchExplanationMapper.toResponse(data)).willReturn(expected);
 
         CandidateMatchExplanation result =
@@ -494,11 +519,29 @@ class CandidateMatchExplanationServiceImplTest {
         assertTrue(explanation.getExperienceExplanations().isEmpty());
     }
 
+    @Test
+    @DisplayName("should propagate null jobTitle and metadata as null rather than fabricating values")
+    void generateExplanation_shouldNotFabricateMissingMetadata() {
+        given(candidateJobExperienceRepository.findByCandidateId(candidate.getId()))
+            .willReturn(List.of(experience1));
+        given(candidateMatchExplanationServiceClient.generateExplanations(any()))
+            .willReturn(successResponseWithExperiences(EXPERIENCE_ID_1));
+
+        CandidateMatchExplanation explanation =
+            service.generateExplanation(candidate.getId(), null, OPPORTUNITY_DESCRIPTION);
+
+        assertNull(explanation.getGeneratedAt());
+        assertNull(explanation.getModelName());
+        assertNull(explanation.getExperienceExplanations().get(0).getJobTitle());
+    }
+
     private ExplanationsResponse successResponseWithNoExperiences() {
         return ExplanationsResponse.builder()
             .requested(1).succeeded(1).failed(0)
             .results(List.of(ExplanationResult.builder()
                 .candidateId(candidateIdString)
+                .generatedAt(GENERATED_AT)
+                .modelName(MODEL_NAME)
                 .summary(SUMMARY)
                 .build()))
             .build();

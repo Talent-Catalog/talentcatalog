@@ -16,9 +16,11 @@
 
 package org.tctalent.server.response;
 
+import java.time.OffsetDateTime;
 import java.util.List;
 import lombok.Builder;
 import lombok.Value;
+import org.springframework.lang.Nullable;
 
 /**
  * On-demand explanation of how a candidate's job experience relates to a supplied opportunity
@@ -27,6 +29,20 @@ import lombok.Value;
 @Value
 @Builder
 public class CandidateMatchExplanation {
+    /**
+     * When the explanation was generated, as reported by the explanation service.
+     * May be null for explanations persisted before this was recorded.
+     */
+    @Nullable
+    OffsetDateTime generatedAt;
+
+    /**
+     * Name of the LLM model that generated the explanation, as reported by the explanation
+     * service. May be null for explanations persisted before this was recorded.
+     */
+    @Nullable
+    String modelName;
+
     /**
      * Concise overall explanation of how the candidate's supplied experience
      * relates to the opportunity.

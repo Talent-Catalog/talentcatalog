@@ -199,11 +199,16 @@ public class CandidateMatchExplanationServiceImpl implements CandidateMatchExpla
         List<ExperienceMatchExplanation> experienceExplanations = returnedItems.stream()
             .map(item -> ExperienceMatchExplanation.builder()
                 .experienceId(sentExperienceIdsByString.get(item.getExperienceId()))
+                .jobTitle(item.getJobTitle())
                 .explanation(item.getExplanation())
                 .build())
             .toList();
 
+        // generatedAt and modelName describe the generated artifact, so they are taken as-is from
+        // the Python response rather than recreated here.
         CandidateMatchExplanation explanation = CandidateMatchExplanation.builder()
+            .generatedAt(result.getGeneratedAt())
+            .modelName(result.getModelName())
             .summary(result.getSummary())
             .experienceExplanations(experienceExplanations)
             .limitations(result.getLimitations())

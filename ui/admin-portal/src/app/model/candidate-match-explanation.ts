@@ -19,6 +19,16 @@
  * supplied opportunity description. Mirrors the server's CandidateMatchExplanation response DTO.
  */
 export interface CandidateMatchExplanation {
+  /**
+   * When the explanation was generated (ISO-8601 timestamp), as reported by the explanation
+   * service. Absent/null for explanations persisted before this was recorded.
+   */
+  generatedAt?: string;
+  /**
+   * Name of the LLM model that generated the explanation. Absent/null for explanations persisted
+   * before this was recorded.
+   */
+  modelName?: string;
   summary: string;
   experienceExplanations: ExperienceMatchExplanation[];
   limitations: string[];
@@ -27,6 +37,11 @@ export interface CandidateMatchExplanation {
 /** Explanation of how a single candidate job experience relates to a supplied opportunity. */
 export interface ExperienceMatchExplanation {
   experienceId: number;
+  /**
+   * Job title of the experience, as returned with the explanation. Absent/null for explanations
+   * persisted before this was recorded.
+   */
+  jobTitle?: string;
   explanation: string;
 }
 

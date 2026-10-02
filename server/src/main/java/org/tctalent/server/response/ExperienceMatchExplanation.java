@@ -18,6 +18,7 @@ package org.tctalent.server.response;
 
 import lombok.Builder;
 import lombok.Value;
+import org.springframework.lang.Nullable;
 
 /** Explanation of how a single candidate job experience relates to a supplied opportunity. */
 @Value
@@ -25,6 +26,13 @@ import lombok.Value;
 public class ExperienceMatchExplanation {
 
     Long experienceId;
+
+    /**
+     * Job title of the experience, as returned by the explanation service. May be null, including
+     * for explanations persisted before this was recorded.
+     */
+    @Nullable
+    String jobTitle;
 
     String explanation;
 }

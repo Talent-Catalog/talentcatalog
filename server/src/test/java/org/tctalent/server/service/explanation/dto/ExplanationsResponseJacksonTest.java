@@ -5,7 +5,9 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.time.OffsetDateTime;
 import org.junit.jupiter.api.Test;
+import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 
 /**
  * Verifies that {@link ExplanationsResponse} deserializes representative JSON as actually
@@ -14,7 +16,9 @@ import org.junit.jupiter.api.Test;
  */
 class ExplanationsResponseJacksonTest {
 
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    // Configured the same way as Spring's auto-configured ObjectMapper (used by the RestClient),
+    // which registers the java.time module needed for generated_at.
+    private final ObjectMapper objectMapper = Jackson2ObjectMapperBuilder.json().build();
 
     @Test
     void shouldDeserialize_successfulResult() throws Exception {
@@ -26,11 +30,19 @@ class ExplanationsResponseJacksonTest {
               "results": [
                 {
                   "candidate_id": "123",
+                  "generated_at": "2026-10-02T03:30:00Z",
+                  "model_name": "qwen.qwen3-235b-a22b-2507-v1:0",
                   "summary": "The candidate is a strong match.",
                   "experience_explanations": [
                     {
                       "experience_id": "456",
+                      "job_title": "Senior Software Engineer",
                       "explanation": "Directly relevant experience."
+                    },
+                    {
+                      "experience_id": "789",
+                      "job_title": null,
+                      "explanation": "Some transferable experience."
                     }
                   ],
                   "limitations": ["Limited detail in job description."],
@@ -49,12 +61,18 @@ class ExplanationsResponseJacksonTest {
 
         ExplanationResult result = response.getResults().get(0);
         assertEquals("123", result.getCandidateId());
+        assertEquals(OffsetDateTime.parse("2026-10-02T03:30:00Z"), result.getGeneratedAt());
+        assertEquals("qwen.qwen3-235b-a22b-2507-v1:0", result.getModelName());
         assertEquals("The candidate is a strong match.", result.getSummary());
         assertNotNull(result.getExperienceExplanations());
-        assertEquals(1, result.getExperienceExplanations().size());
+        assertEquals(2, result.getExperienceExplanations().size());
         assertEquals("456", result.getExperienceExplanations().get(0).getExperienceId());
+        assertEquals("Senior Software Engineer",
+            result.getExperienceExplanations().get(0).getJobTitle());
         assertEquals("Directly relevant experience.",
             result.getExperienceExplanations().get(0).getExplanation());
+        assertEquals("789", result.getExperienceExplanations().get(1).getExperienceId());
+        assertNull(result.getExperienceExplanations().get(1).getJobTitle());
         assertNotNull(result.getLimitations());
         assertEquals("Limited detail in job description.", result.getLimitations().get(0));
         assertNull(result.getError());
@@ -70,6 +88,8 @@ class ExplanationsResponseJacksonTest {
               "results": [
                 {
                   "candidate_id": "123",
+                  "generated_at": null,
+                  "model_name": null,
                   "summary": null,
                   "experience_explanations": null,
                   "limitations": null,
@@ -86,6 +106,8 @@ class ExplanationsResponseJacksonTest {
 
         ExplanationResult result = response.getResults().get(0);
         assertEquals("123", result.getCandidateId());
+        assertNull(result.getGeneratedAt());
+        assertNull(result.getModelName());
         assertNull(result.getSummary());
         assertNull(result.getExperienceExplanations());
         assertNull(result.getLimitations());

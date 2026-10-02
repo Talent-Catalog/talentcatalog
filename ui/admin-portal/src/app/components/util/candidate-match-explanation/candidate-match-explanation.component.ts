@@ -19,7 +19,10 @@ import {HttpErrorResponse} from '@angular/common/http';
 import {Observable, of, Subject} from 'rxjs';
 import {catchError, map, switchMap, takeUntil} from 'rxjs/operators';
 import {CandidateService} from '../../../services/candidate.service';
-import {CandidateMatchExplanation} from '../../../model/candidate-match-explanation';
+import {
+  CandidateMatchExplanation,
+  ExperienceMatchExplanation
+} from '../../../model/candidate-match-explanation';
 
 interface CandidateJobKey {
   candidateId: number;
@@ -165,6 +168,18 @@ export class CandidateMatchExplanationComponent implements OnChanges, OnDestroy 
    */
   hasUsableDescription(): boolean {
     return this.currentDescription() !== undefined;
+  }
+
+  /**
+   * Heading for an experience explanation: "<Job Title> (<id>)" when the explanation carries a
+   * job title, otherwise (e.g. an explanation persisted before job titles were recorded)
+   * "Experience #<id>".
+   */
+  experienceHeading(item: ExperienceMatchExplanation): string {
+    const jobTitle = item.jobTitle?.trim();
+    return jobTitle
+      ? `${jobTitle} (${item.experienceId})`
+      : `Experience #${item.experienceId}`;
   }
 
   /**

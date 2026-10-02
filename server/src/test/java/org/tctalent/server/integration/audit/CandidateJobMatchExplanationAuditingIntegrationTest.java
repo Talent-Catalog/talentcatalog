@@ -19,7 +19,9 @@ package org.tctalent.server.integration.audit;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
+import jakarta.persistence.EntityManager;
 import java.time.OffsetDateTime;
 import java.util.List;
 import org.junit.jupiter.api.AfterEach;
@@ -40,6 +42,7 @@ import org.tctalent.server.model.db.User;
 import org.tctalent.server.model.db.explanation.CandidateJobMatchExplanation;
 import org.tctalent.server.model.db.explanation.CandidateJobMatchExplanationData;
 import org.tctalent.server.model.db.explanation.CandidateJobMatchExplanationKey;
+import org.tctalent.server.model.db.explanation.ExperienceMatchExplanationData;
 import org.tctalent.server.repository.db.CandidateJobMatchExplanationRepository;
 import org.tctalent.server.repository.db.CandidateRepository;
 import org.tctalent.server.repository.db.SalesforceJobOppRepository;
@@ -68,6 +71,7 @@ class CandidateJobMatchExplanationAuditingIntegrationTest extends BaseDBIntegrat
     @Autowired private CandidateRepository candidateRepository;
     @Autowired private SalesforceJobOppRepository salesforceJobOppRepository;
     @Autowired private CandidateJobMatchExplanationRepository candidateJobMatchExplanationRepository;
+    @Autowired private EntityManager entityManager;
 
     @MockitoBean private SavedSearchService savedSearchService;
     @MockitoBean private CandidateRedisCache candidateRedisCache;
@@ -159,6 +163,59 @@ class CandidateJobMatchExplanationAuditingIntegrationTest extends BaseDBIntegrat
         assertEquals(1, candidateJobMatchExplanationRepository.count());
         assertEquals("Second", candidateJobMatchExplanationRepository.findById(key)
             .orElseThrow().getExplanation().getSummary());
+    }
+
+    @Test
+    @DisplayName("persists generatedAt, modelName and jobTitle in the jsonb column, and regeneration replaces them")
+    void candidateJobMatchExplanationMetadata_persistsAndIsReplacedOnRegeneration() {
+        authenticateAs(systemAdmin);
+        Candidate candidate = TestDataFactory.createAndSaveCandidate(
+            candidateRepository, createUser("metadata-candidate-user"));
+        SalesforceJobOpp job =
+            TestDataFactory.createAndSaveSalesforceJobOpportunity(salesforceJobOppRepository);
+        CandidateJobMatchExplanationKey key =
+            new CandidateJobMatchExplanationKey(candidate.getId(), job.getId());
+
+        OffsetDateTime firstGeneratedAt = OffsetDateTime.parse("2026-10-01T03:30:00Z");
+        CandidateJobMatchExplanation firstWrite = new CandidateJobMatchExplanation(candidate, job);
+        firstWrite.setExplanation(metadataExplanation(firstGeneratedAt, "first-model", "First Title"));
+        candidateJobMatchExplanationRepository.saveAndFlush(firstWrite);
+        entityManager.clear();
+
+        CandidateJobMatchExplanationData firstRead =
+            candidateJobMatchExplanationRepository.findById(key).orElseThrow().getExplanation();
+        assertEquals(firstGeneratedAt, firstRead.getGeneratedAt());
+        assertEquals("first-model", firstRead.getModelName());
+        assertEquals("First Title", firstRead.getExperienceExplanations().get(0).getJobTitle());
+
+        OffsetDateTime secondGeneratedAt = OffsetDateTime.parse("2026-10-02T03:30:00Z");
+        CandidateJobMatchExplanation secondWrite = candidateJobMatchExplanationRepository.findById(key)
+            .orElseThrow();
+        secondWrite.setExplanation(metadataExplanation(secondGeneratedAt, "second-model", null));
+        candidateJobMatchExplanationRepository.saveAndFlush(secondWrite);
+        entityManager.clear();
+
+        CandidateJobMatchExplanationData secondRead =
+            candidateJobMatchExplanationRepository.findById(key).orElseThrow().getExplanation();
+        assertEquals(1, candidateJobMatchExplanationRepository.count());
+        assertEquals(secondGeneratedAt, secondRead.getGeneratedAt());
+        assertEquals("second-model", secondRead.getModelName());
+        assertNull(secondRead.getExperienceExplanations().get(0).getJobTitle());
+    }
+
+    private CandidateJobMatchExplanationData metadataExplanation(
+        OffsetDateTime generatedAt, String modelName, String jobTitle) {
+        return CandidateJobMatchExplanationData.builder()
+            .generatedAt(generatedAt)
+            .modelName(modelName)
+            .summary("Summary from " + modelName)
+            .experienceExplanations(List.of(ExperienceMatchExplanationData.builder()
+                .experienceId(456L)
+                .jobTitle(jobTitle)
+                .explanation("Explanation from " + modelName)
+                .build()))
+            .limitations(List.of())
+            .build();
     }
 
     private User createUser(String usernamePrefix) {

@@ -19,6 +19,7 @@ package org.tctalent.server.model.db.explanation;
 import lombok.Builder;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
+import org.springframework.lang.Nullable;
 
 /**
  * Persisted (jsonb) representation of the explanation for one candidate job experience.
@@ -31,6 +32,10 @@ import lombok.extern.jackson.Jacksonized;
 public class ExperienceMatchExplanationData {
 
     Long experienceId;
+
+    /** Null when not supplied, including for explanations persisted before this was recorded. */
+    @Nullable
+    String jobTitle;
 
     String explanation;
 }

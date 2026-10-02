@@ -46,6 +46,13 @@
         </div>
       </tc-card-header>
 
+      <p *ngIf="explanation.generatedAt || explanation.modelName"
+         class="text-muted small mb-2 match-explanation-metadata">
+        <span *ngIf="explanation.generatedAt">Generated {{explanation.generatedAt | date: 'customDateTime'}}</span>
+        <span *ngIf="explanation.generatedAt && explanation.modelName"> · </span>
+        <span *ngIf="explanation.modelName">{{explanation.modelName}}</span>
+      </p>
+
       <div class="mb-3">
         <p class="mb-0">{{explanation.summary}}</p>
       </div>
@@ -54,7 +61,7 @@
         <h6>Relevant experience</h6>
         <ul class="mb-0">
           <li *ngFor="let item of explanation.experienceExplanations">
-            <strong>Experience #{{item.experienceId}}:</strong> {{item.explanation}}
+            <strong>{{experienceHeading(item)}}:</strong> {{item.explanation}}
           </li>
         </ul>
       </div>

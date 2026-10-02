@@ -16,10 +16,13 @@
 
 package org.tctalent.server.model.db.explanation;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import java.time.OffsetDateTime;
 import java.util.List;
 import lombok.Builder;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
+import org.springframework.lang.Nullable;
 
 /**
  * Persisted (jsonb) representation of a generated candidate/job match explanation.
@@ -32,6 +35,24 @@ import lombok.extern.jackson.Jacksonized;
 @Builder
 @Jacksonized
 public class CandidateJobMatchExplanationData {
+
+    /**
+     * When the explanation was generated, as reported by the explanation service - not to be
+     * confused with the entity's own created/updated audit dates.
+     * <p>Null for explanations persisted before this was recorded.</p>
+     * <p>Explicitly stored as an ISO-8601 string: the jsonb ObjectMapper would otherwise write it
+     * as a numeric epoch timestamp.</p>
+     */
+    @Nullable
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
+    OffsetDateTime generatedAt;
+
+    /**
+     * Name of the LLM model that generated the explanation, as reported by the explanation
+     * service. Null for explanations persisted before this was recorded.
+     */
+    @Nullable
+    String modelName;
 
     String summary;
 
