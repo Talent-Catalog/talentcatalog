@@ -9,8 +9,7 @@ describe('TcPaginationComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [TcPaginationComponent],
-      imports: [NgbPaginationModule]
+      imports: [TcPaginationComponent, NgbPaginationModule]
     }).compileComponents();
 
     fixture = TestBed.createComponent(TcPaginationComponent);

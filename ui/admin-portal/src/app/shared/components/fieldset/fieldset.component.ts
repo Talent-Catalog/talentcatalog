@@ -28,7 +28,8 @@ import {Component, Input} from '@angular/core';
 @Component({
   selector: 'tc-fieldset',
   templateUrl: './fieldset.component.html',
-  styleUrls: ['./fieldset.component.scss']
+  styleUrls: ['./fieldset.component.scss'],
+  standalone: true
 })
 export class FieldsetComponent {
   @Input() disabled = false;

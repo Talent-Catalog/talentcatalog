@@ -8,7 +8,7 @@ describe('BadgeComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [BadgeComponent]
+      imports: [BadgeComponent]
     });
     fixture = TestBed.createComponent(BadgeComponent);
     component = fixture.componentInstance;
