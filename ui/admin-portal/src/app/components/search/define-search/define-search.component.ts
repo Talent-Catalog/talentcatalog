@@ -124,6 +124,11 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit, 
 
   @Input() jobId: number;
   jobName: string;  //Populated when JobMatchingInfo is fetched.
+  /**
+   * ID of the job that jobName belongs to - either the job passed in via the jobId input (job
+   * query param), or the job associated with the loaded saved search.
+   */
+  jobNameSourceId: number;
 
   @Input() listId: number;
   @Input() savedSearch: SavedSearch;
@@ -409,7 +414,7 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit, 
   }
 
   displayJobNameAsSource(): string {
-    return this.jobName ? `(Autopopulated from job ${this.jobId}: ${this.jobName})` : '';
+    return this.jobName ? `(Autopopulated from job ${this.jobNameSourceId}: ${this.jobName})` : '';
   }
 
   private runSearchWithListConstraint(listId: number) {
@@ -425,6 +430,7 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit, 
   private setUpJobMatch(jobMatchingInfo: JobMatchingInfo) {
     this.clearForm();
     this.jobName = jobMatchingInfo.jobName;
+    this.jobNameSourceId = this.jobId;
     this.initializeRequirementsWithDescription(jobMatchingInfo.description);
     this.setExtractedSkills(jobMatchingInfo.skillNames);
     this.onSubmit();
@@ -664,6 +670,8 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit, 
       return;
     }
 
+    this.clearJobNameDisplay();
+
     if (this.savedSearch.sfJobOpp != null) {
       this.savedSearchService.updateJob(this.savedSearch.id, null).subscribe({
         next: updated => {
@@ -744,6 +752,13 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit, 
       (request) => {
         this.populateFormWithSavedSearch(request);
 
+        //Display (only) the job this saved search is associated with, if any - unless a job
+        //passed in explicitly (jobId) is about to set up a job match below, which takes precedence.
+        this.clearJobNameDisplay();
+        if (!this.jobId) {
+          this.displayAssociatedJob(this.savedSearch?.sfJobOpp?.id);
+        }
+
         //If this is a new search generated from a job or a list, clear any existing
         //search params and automatically run a search configured accordingly.
         //We don't want to keep any previous search details from earlier searches.
@@ -774,6 +789,36 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit, 
         this.error = error;
         this.loading = false;
       });
+  }
+
+  /**
+   * Displays the name of the given job (the job associated with the loaded saved search) in the
+   * same way as a job passed in via the job query param - but purely as a label: unlike
+   * setUpJobMatch, it doesn't replace the saved search's own criteria with the job's or re-run
+   * the search.
+   * <p/>
+   * Only the job name is used from the response. Failure just means no label is shown - it
+   * doesn't affect the search itself, so it isn't surfaced as an error.
+   */
+  private displayAssociatedJob(jobId: number | undefined) {
+    if (!jobId) {
+      return;
+    }
+    this.jobService.getJobMatchingInfo(jobId).subscribe({
+      next: jobMatchingInfo => {
+        //Ignore a stale response if a different saved search/job has since been loaded.
+        if (!this.jobId && this.savedSearch?.sfJobOpp?.id === jobId) {
+          this.jobName = jobMatchingInfo.jobName;
+          this.jobNameSourceId = jobId;
+        }
+      },
+      error: () => { /* No label - see above */ }
+    });
+  }
+
+  private clearJobNameDisplay() {
+    this.jobName = null;
+    this.jobNameSourceId = null;
   }
 
   onExclusionListSelected(list: CandidateSource) {
