@@ -536,6 +536,25 @@ public class TestDataFactory {
   }
 
   /**
+   * Creates and persists a SalesforceJobOpp instance using the supplied user as the creator.
+   *
+   * <p>This overload is useful for tests that need to reference an actual persisted user rather
+   * than relying on the default system user with a hardcoded ID.</p>
+   *
+   * @param repository The SalesforceJobOppRepository to save the job opportunity.
+   * @param createdBy  The persisted user to set as the creator of the job opportunity.
+   * @return The persisted SalesforceJobOpp instance.
+   */
+  public static SalesforceJobOpp createAndSaveSalesforceJobOpportunity(
+      SalesforceJobOppRepository repository,
+      User createdBy
+  ) {
+    SalesforceJobOpp job = createSalesforceJobOpportunity();
+    job.setCreatedBy(createdBy);
+    return saveEntity(repository, job);
+  }
+
+  /**
    * Creates and persists a PartnerImpl instance.
    *
    * @param repository The PartnerRepository to save the partner.

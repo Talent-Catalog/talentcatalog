@@ -98,7 +98,10 @@ class CandidateJobMatchExplanationAuditingIntegrationTest extends BaseDBIntegrat
         Candidate candidate = TestDataFactory.createAndSaveCandidate(
             candidateRepository, createUser("explanation-candidate-user"));
         SalesforceJobOpp job =
-            TestDataFactory.createAndSaveSalesforceJobOpportunity(salesforceJobOppRepository);
+            TestDataFactory.createAndSaveSalesforceJobOpportunity(
+                salesforceJobOppRepository,
+                systemAdmin
+            );
 
         CandidateJobMatchExplanation entity = new CandidateJobMatchExplanation(candidate, job);
         entity.setExplanation(CandidateJobMatchExplanationData.builder()
@@ -141,7 +144,10 @@ class CandidateJobMatchExplanationAuditingIntegrationTest extends BaseDBIntegrat
         Candidate candidate = TestDataFactory.createAndSaveCandidate(
             candidateRepository, createUser("upsert-candidate-user"));
         SalesforceJobOpp job =
-            TestDataFactory.createAndSaveSalesforceJobOpportunity(salesforceJobOppRepository);
+            TestDataFactory.createAndSaveSalesforceJobOpportunity(
+                salesforceJobOppRepository,
+                systemAdmin
+            );
         CandidateJobMatchExplanationKey key =
             new CandidateJobMatchExplanationKey(candidate.getId(), job.getId());
 
@@ -172,7 +178,10 @@ class CandidateJobMatchExplanationAuditingIntegrationTest extends BaseDBIntegrat
         Candidate candidate = TestDataFactory.createAndSaveCandidate(
             candidateRepository, createUser("metadata-candidate-user"));
         SalesforceJobOpp job =
-            TestDataFactory.createAndSaveSalesforceJobOpportunity(salesforceJobOppRepository);
+            TestDataFactory.createAndSaveSalesforceJobOpportunity(
+                salesforceJobOppRepository,
+                systemAdmin
+            );
         CandidateJobMatchExplanationKey key =
             new CandidateJobMatchExplanationKey(candidate.getId(), job.getId());
 
