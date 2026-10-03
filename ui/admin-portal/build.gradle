@@ -64,7 +64,11 @@ node {
 //See https://angular.io/cli/build
 //So this task effectively runs "ng build --configuration production --base-href /...-portal/"
 task npm_build_ui_bundle(type: NpmTask) {
-  def config = project.hasProperty('test-tc-system') ? 'staging' : 'production'
+  def isStaging =
+    project.hasProperty('test-tc-system') ||
+      project.hasProperty('opc-staging') ||
+      project.hasProperty('grn-staging')
+  def config = isStaging ? 'staging' : 'production'
   args = ['run', 'build', '--', '--configuration', config, '--base-href', "/$project.name/"]
   dependsOn 'npm_install'
 }
