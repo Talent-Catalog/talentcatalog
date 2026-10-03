@@ -53,7 +53,10 @@ export class LoginComponent implements OnInit {
 
   ngOnInit() {
     this.backgroundImage = `url(${environment.assetBaseUrl}/assets/images/login-splash-v2.2.1.png)`;
-    this.loginImage = `${environment.assetBaseUrl}/assets/images/tcHorizontalLogo.png`;
+
+    //Local storage won't have the instance type before login, so fetch it from the server to
+    //know which logo to display.
+    this.authenticationService.fetchTcInstanceType().subscribe(() => this.setLoginImage());
 
     this.route.queryParams.subscribe(params => {
       this.returnUrl = params['returnUrl'] || '';
@@ -129,6 +132,16 @@ export class LoginComponent implements OnInit {
     this.authenticationService.mfaSetup().subscribe(
       (qr: EncodedQrImage) => { this.showQrCode(qr)}
     )
+  }
+
+  isGrn() {
+    return this.authenticationService.isGrnInstance();
+  }
+
+  private setLoginImage() {
+    this.loginImage = this.isGrn() ?
+      `${environment.assetBaseUrl}/assets/images/grnLogoDark.svg` :
+      `${environment.assetBaseUrl}/assets/images/tcHorizontalLogo.png`;
   }
 
   private showQrCode(qr: EncodedQrImage) {

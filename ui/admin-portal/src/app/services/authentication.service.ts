@@ -105,6 +105,23 @@ export class AuthenticationService implements OnDestroy {
   }
 
   /**
+   * Fetches the type of Talent Catalog instance (eg GRN or TBB) that is running, caching it in
+   * local storage.
+   * <p/>
+   * Normally the instance type is picked up from local storage - it is stored there on login (see
+   * {@link #storeCredentials}). But before login - eg on the login page itself - local storage
+   * won't have it yet, so this can be called to fetch it from the server instead.
+   */
+  fetchTcInstanceType(): Observable<TcInstanceType> {
+    return this.http.get<{tcInstanceType: TcInstanceType}>(`${this.apiUrl}/instance-type`).pipe(
+      map(response => {
+        this.localStorageService.set('tc_instance_type', response.tcInstanceType);
+        return response.tcInstanceType;
+      })
+    );
+  }
+
+  /**
    * Check that user - possibly retrieved from cache - is not junk
    * @param user User object to check
    */
