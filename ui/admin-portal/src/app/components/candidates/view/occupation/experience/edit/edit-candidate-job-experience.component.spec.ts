@@ -24,6 +24,8 @@ import {
 import {HttpClientTestingModule} from "@angular/common/http/testing";
 import {FormsModule, ReactiveFormsModule, UntypedFormBuilder} from "@angular/forms";
 import {NgSelectModule} from "@ng-select/ng-select";
+import {NgSelectComponent} from "@ng-select/ng-select";
+import {By} from "@angular/platform-browser";
 import {NgxWigModule} from "ngx-wig";
 import {NO_ERRORS_SCHEMA} from "@angular/core";
 import {of, throwError} from "rxjs";
@@ -91,6 +93,12 @@ describe('EditCandidateJobExperienceComponent', () => {
       tidiedDescription: null,
       keywordsInDescription: null
     });
+  });
+
+  it('should pre-populate fullTime/paid controls with the experience\'s boolean values', () => {
+    // MockCandidate experience 1 is full time and paid
+    expect(component.candidateForm.value.fullTime).toBe(true);
+    expect(component.candidateForm.value.paid).toBe(true);
   });
 
   it('should save the edited job experience successfully', () => {
@@ -225,6 +233,41 @@ describe('EditCandidateJobExperienceComponent', () => {
           jasmine.objectContaining({keywordsInDescription: ''})
         );
       });
+    });
+  });
+
+  describe('fullTime / paid select boundary', () => {
+
+    function selectOption(id: string, displayText: string) {
+      const select: NgSelectComponent = fixture.debugElement
+        .query(By.css(`ng-select#${id}`)).componentInstance;
+      select.select(select.itemsList.items.find(item => item.label === displayText));
+      fixture.detectChanges();
+    }
+
+    it('should produce actual booleans (not strings) from the Contract Type and Paid selects', () => {
+      selectOption('fullTime', 'Part Time');
+      selectOption('paid', 'Voluntary');
+      expect(component.candidateForm.value.fullTime).toBe(false);
+      expect(component.candidateForm.value.paid).toBe(false);
+
+      selectOption('fullTime', 'Full Time');
+      selectOption('paid', 'Paid');
+      expect(component.candidateForm.value.fullTime).toBe(true);
+      expect(component.candidateForm.value.paid).toBe(true);
+    });
+
+    it('should send actual booleans to the service on save', () => {
+      mockCandidateJobExperienceService.update.and.returnValue(of(component.candidateJobExperience));
+      
+      selectOption('fullTime', 'Part Time');
+      selectOption('paid', 'Paid');
+
+      component.onSave();
+
+      const sent = mockCandidateJobExperienceService.update.calls.mostRecent().args[1];
+      expect(sent.fullTime).toBe(false);
+      expect(sent.paid).toBe(true);
     });
   });
 });

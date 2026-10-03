@@ -642,6 +642,30 @@ describe('ShowCandidatesComponent', () => {
       expect(component.candidateSelection.emit).toHaveBeenCalledWith(candidate);
     });
 
+    it('should pass opportunityDescription through to the candidate search card', () => {
+      component.candidateSource = new MockCandidateSource();
+      fixture.detectChanges(); // triggers ngOnInit, which resets currentCandidate to null
+
+      component.setCurrentCandidate(new MockCandidate());
+      component.opportunityDescription = 'A supplied opportunity description';
+      fixture.detectChanges();
+
+      const searchCardEl = fixture.debugElement.query(By.css('app-candidate-search-card'));
+      expect(searchCardEl.properties['opportunityDescription'])
+        .toBe('A supplied opportunity description');
+    });
+
+    it('should leave opportunityDescription undefined when the parent does not supply one', () => {
+      component.candidateSource = new MockCandidateSource();
+      fixture.detectChanges(); // triggers ngOnInit, which resets currentCandidate to null
+
+      component.setCurrentCandidate(new MockCandidate());
+      fixture.detectChanges();
+
+      const searchCardEl = fixture.debugElement.query(By.css('app-candidate-search-card'));
+      expect(searchCardEl.properties['opportunityDescription']).toBeUndefined();
+    });
+
     it('should apply review filter and search without page number', () => {
       component.searchInResultsForm = formBuilder.group({statusesDisplay: [['rejected']]});
       spyOn(component, 'doSearch');

@@ -31,12 +31,17 @@ import {
 } from '../model/candidate';
 import {Observable, Subject} from 'rxjs';
 import {environment} from '../../environments/environment';
-import {HttpClient} from '@angular/common/http';
+import {HttpClient, HttpContext} from '@angular/common/http';
 import {SearchResults} from '../model/search-results';
 import {map} from "rxjs/operators";
 import {CandidateSource, FetchCandidatesWithChatRequest} from "../model/base";
 import {IntakeService} from "../components/util/intake/IntakeService";
 import {JobChatUserInfo} from "../model/chat";
+import {
+  CandidateMatchExplanation,
+  CandidateMatchExplanationRequest
+} from "../model/candidate-match-explanation";
+import {PRESERVE_HTTP_ERROR_RESPONSE} from "./error.interceptor";
 
 export type CvFormat = 'PDF' | 'DOCX' | 'GOOGLE_DOC';
 
@@ -285,6 +290,33 @@ export class CandidateService implements IntakeService {
   fetchPotentialDuplicates(id: number): Observable<Candidate[]> {
     return this.http.get<Candidate[]>(
       `${this.apiUrl}/${id}/fetch-potential-duplicates-of-given-candidate`
+    );
+  }
+
+  /**
+   * Retrieves the previously persisted candidate/job match explanation, if any.
+   * Does NOT generate one - a 404 means none has been generated/persisted yet.
+   * <p/>
+   * The context token preserves the raw HttpErrorResponse (instead of the usual
+   * interceptor-normalized error string) so that callers can distinguish a 404 "not generated
+   * yet" response from a genuine error.
+   */
+  getMatchExplanation(candidateId: number, jobId: number): Observable<CandidateMatchExplanation> {
+    return this.http.get<CandidateMatchExplanation>(
+      `${this.apiUrl}/${candidateId}/match-explanation/${jobId}`,
+      {context: new HttpContext().set(PRESERVE_HTTP_ERROR_RESPONSE, true)}
+    );
+  }
+
+  /**
+   * Generates (or regenerates) a candidate/job match explanation. When request.jobId is
+   * supplied, the backend persists/replaces the explanation for (candidateId, jobId).
+   */
+  generateMatchExplanation(
+    candidateId: number, request: CandidateMatchExplanationRequest
+  ): Observable<CandidateMatchExplanation> {
+    return this.http.post<CandidateMatchExplanation>(
+      `${this.apiUrl}/${candidateId}/match-explanation`, request
     );
   }
 

@@ -67,7 +67,7 @@ import {
 import {
   LanguageLevelFormControlComponent
 } from '../../util/form/language-proficiency/language-level-form-control.component';
-import {Router} from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
 import {
   ClearSelectionRequest,
   getCandidateSourceNavigation,
@@ -124,6 +124,11 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit, 
 
   @Input() jobId: number;
   jobName: string;  //Populated when JobMatchingInfo is fetched.
+  /**
+   * ID of the job that jobName belongs to - either the job passed in via the jobId input (job
+   * query param), or the job associated with the loaded saved search.
+   */
+  jobNameSourceId: number;
 
   @Input() listId: number;
   @Input() savedSearch: SavedSearch;
@@ -194,6 +199,7 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit, 
               private languageLevelService: LanguageLevelService,
               private modalService: NgbModal,
               private router: Router,
+              private activatedRoute: ActivatedRoute,
               private skillsService: SkillsService,
               private authorizationService: AuthorizationService,
               private authenticationService: AuthenticationService,
@@ -408,7 +414,7 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit, 
   }
 
   displayJobNameAsSource(): string {
-    return this.jobName ? `(Autopopulated from job ${this.jobId}: ${this.jobName})` : '';
+    return this.jobName ? `(Autopopulated from job ${this.jobNameSourceId}: ${this.jobName})` : '';
   }
 
   private runSearchWithListConstraint(listId: number) {
@@ -424,6 +430,7 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit, 
   private setUpJobMatch(jobMatchingInfo: JobMatchingInfo) {
     this.clearForm();
     this.jobName = jobMatchingInfo.jobName;
+    this.jobNameSourceId = this.jobId;
     this.initializeRequirementsWithDescription(jobMatchingInfo.description);
     this.setExtractedSkills(jobMatchingInfo.skillNames);
     this.onSubmit();
@@ -636,6 +643,56 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit, 
     this.searchForm.markAsDirty();
   }
 
+  /**
+   * Handles the user clicking the "Clear Search" button: clears the search form (as clearForm()
+   * always has) and, in addition, explicitly clears any job association on the default search.
+   * <p/>
+   * This is deliberately NOT folded into clearForm() itself, since clearForm() is also called
+   * internally by setUpJobMatch()/runSearchWithListConstraint() as a generic "reset form fields"
+   * step before auto-populating a job- or list-driven search - contexts where clearing the job
+   * association would immediately undo the job this method is in the middle of setting up.
+   */
+  onClearSearch() {
+    this.clearForm();
+    this.clearJobAssociation();
+  }
+
+  /**
+   * Explicitly clears any job association on the user's default saved search (via the dedicated
+   * job-association endpoint - see TC-1535) and removes the 'job' query param from the URL, so
+   * that reinitializing from the same URL doesn't immediately reassign the job just cleared.
+   * <p/>
+   * Only applicable to the default search - a named saved search's persisted job association is
+   * only ever changed by an explicit save, not by clearing the search form.
+   */
+  private clearJobAssociation() {
+    if (!this.savedSearch?.defaultSearch) {
+      return;
+    }
+
+    this.clearJobNameDisplay();
+
+    if (this.savedSearch.sfJobOpp != null) {
+      this.savedSearchService.updateJob(this.savedSearch.id, null).subscribe({
+        next: updated => {
+          this.savedSearch = updated;
+        },
+        error: err => {
+          this.error = err;
+        }
+      });
+    }
+
+    if (this.jobId) {
+      this.jobId = 0;
+      this.router.navigate([], {
+        relativeTo: this.activatedRoute,
+        queryParams: {job: null},
+        queryParamsHandling: 'merge'
+      });
+    }
+  }
+
   newSearch() {
     this.router.navigate(['search']);
   }
@@ -695,6 +752,13 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit, 
       (request) => {
         this.populateFormWithSavedSearch(request);
 
+        //Display (only) the job this saved search is associated with, if any - unless a job
+        //passed in explicitly (jobId) is about to set up a job match below, which takes precedence.
+        this.clearJobNameDisplay();
+        if (!this.jobId) {
+          this.displayAssociatedJob(this.savedSearch?.sfJobOpp?.id);
+        }
+
         //If this is a new search generated from a job or a list, clear any existing
         //search params and automatically run a search configured accordingly.
         //We don't want to keep any previous search details from earlier searches.
@@ -725,6 +789,36 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit, 
         this.error = error;
         this.loading = false;
       });
+  }
+
+  /**
+   * Displays the name of the given job (the job associated with the loaded saved search) in the
+   * same way as a job passed in via the job query param - but purely as a label: unlike
+   * setUpJobMatch, it doesn't replace the saved search's own criteria with the job's or re-run
+   * the search.
+   * <p/>
+   * Only the job name is used from the response. Failure just means no label is shown - it
+   * doesn't affect the search itself, so it isn't surfaced as an error.
+   */
+  private displayAssociatedJob(jobId: number | undefined) {
+    if (!jobId) {
+      return;
+    }
+    this.jobService.getJobMatchingInfo(jobId).subscribe({
+      next: jobMatchingInfo => {
+        //Ignore a stale response if a different saved search/job has since been loaded.
+        if (!this.jobId && this.savedSearch?.sfJobOpp?.id === jobId) {
+          this.jobName = jobMatchingInfo.jobName;
+          this.jobNameSourceId = jobId;
+        }
+      },
+      error: () => { /* No label - see above */ }
+    });
+  }
+
+  private clearJobNameDisplay() {
+    this.jobName = null;
+    this.jobNameSourceId = null;
   }
 
   onExclusionListSelected(list: CandidateSource) {

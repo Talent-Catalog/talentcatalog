@@ -40,7 +40,7 @@
             <tc-button [hidden]="!savedSearch?.defaultSearch"
                        [color]="'warning'"
                        [disabled]="loading"
-                       (onClick)="clearForm()"
+                       (onClick)="onClearSearch()"
             >
               Clear Search
             </tc-button>
@@ -1110,6 +1110,7 @@
 
   </div>
 
+<!--  todo passing opportunityDescription - do we need this. Also has to use hasRequirements because of html-->
   <app-show-candidates *ngIf="!error && !loading"
                        [isKeywordSearch]="!isEmptySearchTerms()"
                        [isMatchingSearch]="hasRequirements()"
@@ -1122,6 +1123,7 @@
                        (candidateSelection)="selectedCandidate = $event"
                        [(selectedCandidates)]="selectedCandidates"
                        (editSource)="updateSavedSearchModal()"
+                       [opportunityDescription]="requirements"
   >
     <!--Toggle search details-->
     <div [ngClass]="showSearchRequest ? 'my-3' : ''">

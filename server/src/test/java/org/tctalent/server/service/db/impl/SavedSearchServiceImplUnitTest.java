@@ -37,6 +37,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
@@ -54,6 +55,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
@@ -108,6 +110,7 @@ import org.tctalent.server.request.candidate.UpdateDisplayedFieldPathsRequest;
 import org.tctalent.server.request.candidate.source.UpdateCandidateSourceDescriptionRequest;
 import org.tctalent.server.request.search.CreateFromDefaultSavedSearchRequest;
 import org.tctalent.server.request.search.SearchSavedSearchRequest;
+import org.tctalent.server.request.search.UpdateSavedSearchJobRequest;
 import org.tctalent.server.request.search.UpdateSavedSearchRequest;
 import org.tctalent.server.request.search.UpdateSharingRequest;
 import org.tctalent.server.request.search.UpdateWatchingRequest;
@@ -606,6 +609,96 @@ class SavedSearchServiceImplUnitTest {
   }
 
   @Test
+  @DisplayName("updateSavedSearch with candidate request and null jobId preserves the existing job")
+  void updateSavedSearchWithCandidateRequestPreservesJobWhenJobIdNull() {
+    SalesforceJobOpp job = new SalesforceJobOpp();
+    job.setId(30L);
+    SavedSearch original = savedSearch(1L, "Old", user);
+    original.setSfJobOpp(job);
+
+    UpdateSavedSearchRequest request = updateSearchRequest("Old");
+    request.setSearchCandidateRequest(new SearchCandidateRequest());
+
+    given(userService.getLoggedInUser()).willReturn(user);
+    given(savedSearchRepository.findById(1L)).willReturn(Optional.of(original));
+    given(savedSearchRepository.save(any(SavedSearch.class))).willAnswer(invocation -> invocation.getArgument(0));
+
+    SavedSearch result = service.updateSavedSearch(1L, request);
+
+    assertSame(job, result.getSfJobOpp());
+    verifyNoInteractions(salesforceJobOppService);
+  }
+
+  @Test
+  @DisplayName("updateSavedSearch with candidate request and negative jobId clears the existing job")
+  void updateSavedSearchWithCandidateRequestClearsJobWhenJobIdNegative() {
+    SalesforceJobOpp job = new SalesforceJobOpp();
+    job.setId(30L);
+    SavedSearch original = savedSearch(1L, "Old", user);
+    original.setSfJobOpp(job);
+
+    UpdateSavedSearchRequest request = updateSearchRequest("Old");
+    request.setSearchCandidateRequest(new SearchCandidateRequest());
+    request.setJobId(-1L);
+
+    given(userService.getLoggedInUser()).willReturn(user);
+    given(savedSearchRepository.findById(1L)).willReturn(Optional.of(original));
+    given(savedSearchRepository.save(any(SavedSearch.class))).willAnswer(invocation -> invocation.getArgument(0));
+
+    SavedSearch result = service.updateSavedSearch(1L, request);
+
+    assertNull(result.getSfJobOpp());
+  }
+
+  @Test
+  @DisplayName("updateSavedSearch with candidate request and a jobId sets that job")
+  void updateSavedSearchWithCandidateRequestSetsNewJob() {
+    SalesforceJobOpp oldJob = new SalesforceJobOpp();
+    oldJob.setId(30L);
+    SalesforceJobOpp newJob = new SalesforceJobOpp();
+    newJob.setId(31L);
+    SavedSearch original = savedSearch(1L, "Old", user);
+    original.setSfJobOpp(oldJob);
+
+    UpdateSavedSearchRequest request = updateSearchRequest("Old");
+    request.setSearchCandidateRequest(new SearchCandidateRequest());
+    request.setJobId(31L);
+
+    given(userService.getLoggedInUser()).willReturn(user);
+    given(savedSearchRepository.findById(1L)).willReturn(Optional.of(original));
+    given(salesforceJobOppService.getJobOpp(31L)).willReturn(newJob);
+    given(savedSearchRepository.save(any(SavedSearch.class))).willAnswer(invocation -> invocation.getArgument(0));
+
+    SavedSearch result = service.updateSavedSearch(1L, request);
+
+    assertSame(newJob, result.getSfJobOpp());
+  }
+
+  @Test
+  @DisplayName("auto-updating the default search on a search run preserves its assigned job")
+  void updateUserDefaultSavedSearchIfNeededPreservesJob() {
+    SalesforceJobOpp job = new SalesforceJobOpp();
+    job.setId(30L);
+    SavedSearch defaultSearch = savedSearch(1L, "Default", user);
+    defaultSearch.setDefaultSearch(true);
+    defaultSearch.setSfJobOpp(job);
+
+    SearchCandidateRequest searchRequest = new SearchCandidateRequest();
+    searchRequest.setSavedSearchId(1L);
+
+    given(savedSearchRepository.findByIdLoadUsers(1L)).willReturn(Optional.of(defaultSearch));
+    given(userService.getLoggedInUser()).willReturn(user);
+    given(savedSearchRepository.findById(1L)).willReturn(Optional.of(defaultSearch));
+    given(savedSearchRepository.save(any(SavedSearch.class))).willAnswer(invocation -> invocation.getArgument(0));
+
+    service.updateUserDefaultSavedSearchIfNeeded(searchRequest);
+
+    ArgumentCaptor<SavedSearch> saved = ArgumentCaptor.forClass(SavedSearch.class);
+    verify(savedSearchRepository).save(saved.capture());
+    assertSame(job, saved.getValue().getSfJobOpp());
+  }
+
+  @Test
   @DisplayName("updateSavedSearch throws duplicate name")
   void updateSavedSearchThrowsDuplicateName() {
     SavedSearch original = savedSearch(1L, "Old", user);
@@ -849,6 +942,149 @@ class SavedSearchServiceImplUnitTest {
         eq(savedSearch.getId()),
         any(UpdateSavedSearchRequest.class)
     );
+  }
+
+  @Test
+  @DisplayName("updateSavedSearchJob throws when not logged in")
+  void updateSavedSearchJobThrowsWhenNotLoggedIn() {
+    given(userService.getLoggedInUser()).willReturn(null);
+
+    UpdateSavedSearchJobRequest request = new UpdateSavedSearchJobRequest();
+    request.setJobId(30L);
+
+    assertThrows(InvalidSessionException.class, () -> service.updateSavedSearchJob(1L, request));
+  }
+
+  @Test
+  @DisplayName("updateSavedSearchJob throws when saved search missing")
+  void updateSavedSearchJobThrowsWhenSearchMissing() {
+    given(userService.getLoggedInUser()).willReturn(user);
+    given(savedSearchRepository.findById(1L)).willReturn(Optional.empty());
+
+    UpdateSavedSearchJobRequest request = new UpdateSavedSearchJobRequest();
+    request.setJobId(30L);
+
+    assertThrows(NoSuchObjectException.class, () -> service.updateSavedSearchJob(1L, request));
+  }
+
+  @Test
+  @DisplayName("updateSavedSearchJob throws when saved search belongs to another user")
+  void updateSavedSearchJobThrowsForOtherUsersSearch() {
+    SavedSearch savedSearch = savedSearch(1L, "Search", user(99L));
+
+    given(userService.getLoggedInUser()).willReturn(user);
+    given(savedSearchRepository.findById(1L)).willReturn(Optional.of(savedSearch));
+
+    UpdateSavedSearchJobRequest request = new UpdateSavedSearchJobRequest();
+    request.setJobId(30L);
+
+    assertThrows(InvalidRequestException.class, () -> service.updateSavedSearchJob(1L, request));
+  }
+
+  @Test
+  @DisplayName("updateSavedSearchJob assigns job when none previously associated")
+  void updateSavedSearchJobAssignsJob() {
+    SavedSearch savedSearch = savedSearch(1L, "Search", user);
+    SalesforceJobOpp job = new SalesforceJobOpp();
+    job.setId(30L);
+
+    given(userService.getLoggedInUser()).willReturn(user);
+    given(savedSearchRepository.findById(1L)).willReturn(Optional.of(savedSearch));
+    given(salesforceJobOppService.getJobOpp(30L)).willReturn(job);
+    given(savedSearchRepository.save(savedSearch)).willReturn(savedSearch);
+
+    UpdateSavedSearchJobRequest request = new UpdateSavedSearchJobRequest();
+    request.setJobId(30L);
+
+    SavedSearch result = service.updateSavedSearchJob(1L, request);
+
+    assertSame(savedSearch, result);
+    assertSame(job, savedSearch.getSfJobOpp());
+  }
+
+  @Test
+  @DisplayName("updateSavedSearchJob replaces an existing different job")
+  void updateSavedSearchJobReplacesExistingJob() {
+    SavedSearch savedSearch = savedSearch(1L, "Search", user);
+    SalesforceJobOpp oldJob = new SalesforceJobOpp();
+    oldJob.setId(10L);
+    savedSearch.setSfJobOpp(oldJob);
+
+    SalesforceJobOpp newJob = new SalesforceJobOpp();
+    newJob.setId(30L);
+
+    given(userService.getLoggedInUser()).willReturn(user);
+    given(savedSearchRepository.findById(1L)).willReturn(Optional.of(savedSearch));
+    given(salesforceJobOppService.getJobOpp(30L)).willReturn(newJob);
+    given(savedSearchRepository.save(savedSearch)).willReturn(savedSearch);
+
+    UpdateSavedSearchJobRequest request = new UpdateSavedSearchJobRequest();
+    request.setJobId(30L);
+
+    SavedSearch result = service.updateSavedSearchJob(1L, request);
+
+    assertSame(savedSearch, result);
+    assertSame(newJob, savedSearch.getSfJobOpp());
+  }
+
+  @Test
+  @DisplayName("updateSavedSearchJob is a no-op when assigning the same job already associated")
+  void updateSavedSearchJobNoOpWhenSameJobAlreadyAssigned() {
+    SavedSearch savedSearch = savedSearch(1L, "Search", user);
+    SalesforceJobOpp job = new SalesforceJobOpp();
+    job.setId(30L);
+    savedSearch.setSfJobOpp(job);
+
+    given(userService.getLoggedInUser()).willReturn(user);
+    given(savedSearchRepository.findById(1L)).willReturn(Optional.of(savedSearch));
+
+    UpdateSavedSearchJobRequest request = new UpdateSavedSearchJobRequest();
+    request.setJobId(30L);
+
+    SavedSearch result = service.updateSavedSearchJob(1L, request);
+
+    assertSame(savedSearch, result);
+    assertSame(job, savedSearch.getSfJobOpp());
+    verify(salesforceJobOppService, never()).getJobOpp(anyLong());
+    verify(savedSearchRepository, never()).save(any(SavedSearch.class));
+  }
+
+  @Test
+  @DisplayName("updateSavedSearchJob throws when job id is invalid")
+  void updateSavedSearchJobThrowsForInvalidJobId() {
+    SavedSearch savedSearch = savedSearch(1L, "Search", user);
+
+    given(userService.getLoggedInUser()).willReturn(user);
+    given(savedSearchRepository.findById(1L)).willReturn(Optional.of(savedSearch));
+    given(salesforceJobOppService.getJobOpp(999L))
+        .willThrow(new NoSuchObjectException(SalesforceJobOpp.class, 999L));
+
+    UpdateSavedSearchJobRequest request = new UpdateSavedSearchJobRequest();
+    request.setJobId(999L);
+
+    assertThrows(NoSuchObjectException.class, () -> service.updateSavedSearchJob(1L, request));
+  }
+
+  @Test
+  @DisplayName("updateSavedSearchJob clears an existing job association when jobId is null")
+  void updateSavedSearchJobClearsJob() {
+    SavedSearch savedSearch = savedSearch(1L, "Search", user);
+    SalesforceJobOpp job = new SalesforceJobOpp();
+    job.setId(30L);
+    savedSearch.setSfJobOpp(job);
+
+    given(userService.getLoggedInUser()).willReturn(user);
+    given(savedSearchRepository.findById(1L)).willReturn(Optional.of(savedSearch));
+    given(savedSearchRepository.save(savedSearch)).willReturn(savedSearch);
+
+    UpdateSavedSearchJobRequest request = new UpdateSavedSearchJobRequest();
+    request.setJobId(null);
+
+    SavedSearch result = service.updateSavedSearchJob(1L, request);
+
+    assertSame(savedSearch, result);
+    assertNull(savedSearch.getSfJobOpp());
+    verify(salesforceJobOppService, never()).getJobOpp(anyLong());
   }
 
   @Test

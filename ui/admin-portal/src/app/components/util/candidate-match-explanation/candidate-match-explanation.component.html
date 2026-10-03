@@ -1,0 +1,107 @@
+<ng-container *ngIf="hasContext()">
+
+  <div *ngIf="!opened">
+    <tc-button type="plain" size="sm" color="secondary" (onClick)="show()">
+      <i class="fas fa-eye"></i> Show match explanation
+    </tc-button>
+  </div>
+
+  <div *ngIf="opened">
+
+    <div class="d-flex justify-content-end mb-1">
+      <tc-button type="plain" size="sm" color="secondary" (onClick)="close()">
+        <i class="fas fa-chevron-up"></i> Hide match explanation
+      </tc-button>
+    </div>
+
+    <div *ngIf="checking">
+      <tc-loading [loading]="true"></tc-loading>
+      <p class="text-muted small">Checking for an existing match explanation...</p>
+    </div>
+
+    <div *ngIf="generating">
+      <tc-loading [loading]="true"></tc-loading>
+      <p class="text-muted small">Generating match explanation...</p>
+    </div>
+
+    <tc-alert type="danger" *ngIf="error">{{error}}</tc-alert>
+
+    <p *ngIf="loaded && !explanation && !error && !checking && !generating" class="text-muted small">
+      No match explanation has been generated for this candidate.
+    </p>
+
+    <tc-card *ngIf="explanation && !checking && !generating">
+      <tc-card-header>
+        <div class="d-flex align-items-center justify-content-between w-100">
+          <span>Match Explanation</span>
+          <tc-button
+            *ngIf="hasUsableDescription()"
+            type="outline"
+            size="sm"
+            color="secondary"
+            [loading]="regenerating"
+            (onClick)="regenerate()">
+            <i class="fas fa-sync"></i> Regenerate explanation
+          </tc-button>
+        </div>
+      </tc-card-header>
+
+      <p *ngIf="explanation.generatedAt || explanation.modelName"
+         class="text-muted small mb-2 match-explanation-metadata">
+        <span *ngIf="explanation.generatedAt">Generated {{explanation.generatedAt | date: 'customDateTime'}}</span>
+        <span *ngIf="explanation.generatedAt && explanation.modelName"> · </span>
+        <span *ngIf="explanation.modelName">{{explanation.modelName}}</span>
+      </p>
+
+      <div class="mb-3">
+        <p class="mb-0">{{explanation.summary}}</p>
+      </div>
+
+      <div *ngIf="explanation.experienceExplanations?.length" class="mb-3">
+        <h6>Relevant experience</h6>
+        <ul class="mb-0">
+          <li *ngFor="let item of explanation.experienceExplanations">
+            <!-- The heading always comes from the explanation itself (historical jobTitle); the
+                 hover shows the candidate's current experience with the same ID, if it still exists. -->
+            <ng-container *ngIf="findExperience(item.experienceId) as experience; else plainHeading">
+              <!-- Manually controlled (see the component's experience popover methods) so the
+                   popover stays open while the pointer is over either the heading or the popover. -->
+              <strong class="experience-heading-hover"
+                      tabindex="0"
+                      [ngbPopover]="experiencePopover"
+                      #experiencePopoverRef="ngbPopover"
+                      triggers="manual"
+                      autoClose="outside"
+                      container="body"
+                      placement="auto"
+                      popoverClass="candidate-job-experience-popover"
+                      (mouseenter)="onExperienceTriggerEnter(experiencePopoverRef)"
+                      (mouseleave)="onExperienceTriggerLeave()"
+                      (focus)="onExperienceTriggerFocus(experiencePopoverRef, $event)"
+                      (blur)="onExperienceTriggerBlur()"
+                      (hidden)="onExperiencePopoverHidden(experiencePopoverRef)">{{experienceHeading(item)}}:</strong>
+              <ng-template #experiencePopover>
+                <div class="candidate-job-experience-popover-content"
+                     (mouseenter)="onExperiencePopoverEnter()"
+                     (mouseleave)="onExperiencePopoverLeave()">
+                  <app-candidate-job-experience [experience]="experience"></app-candidate-job-experience>
+                </div>
+              </ng-template>
+            </ng-container>
+            <ng-template #plainHeading>
+              <strong>{{experienceHeading(item)}}:</strong>
+            </ng-template>
+            {{item.explanation}}
+          </li>
+        </ul>
+      </div>
+
+      <div *ngIf="explanation.limitations?.length">
+        <h6>Limitations</h6>
+        <ul class="mb-0">
+          <li *ngFor="let limitation of explanation.limitations">{{limitation}}</li>
+        </ul>
+      </div>
+    </tc-card>
+  </div>
+</ng-container>

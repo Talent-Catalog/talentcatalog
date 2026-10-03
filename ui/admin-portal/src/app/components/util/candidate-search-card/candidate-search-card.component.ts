@@ -50,6 +50,12 @@ export class CandidateSearchCardComponent implements OnInit, OnDestroy, AfterVie
   @Input() defaultSearch: boolean;
   @Input() savedSearchSelectionChange: boolean;
   @Input() isKeywordSearch: boolean;
+  /**
+   * Opportunity/job description currently being matched/searched against, if the parent has one
+   * (typically only search-related parents do - saved-list parents generally do not supply
+   * this). Passed straight through to the match explanation component - never derived here.
+   */
+  @Input() opportunityDescription?: string;
 
   @Output() closeEvent = new EventEmitter();
   @Output() onSearchCardRendered = new EventEmitter();
@@ -194,6 +200,17 @@ export class CandidateSearchCardComponent implements OnInit, OnDestroy, AfterVie
    */
   getCandidateOppForJobSource(): CandidateOpportunity {
     return this.candidate.candidateOpportunities.find(o => o.jobOpp.id === this.candidateSource.sfJobOpp?.id);
+  }
+
+  /**
+   * Only show the match explanation when there is at least some context for it - either a TC
+   * job (to retrieve a previously-generated explanation from) or a usable opportunity
+   * description (to generate one from). Otherwise there is nothing to retrieve or generate, so
+   * the explanation UI is omitted entirely rather than shown empty.
+   */
+  shouldShowMatchExplanation(): boolean {
+    return this.candidateSource?.sfJobOpp?.id != null
+      || !!(this.opportunityDescription && this.opportunityDescription.trim());
   }
 
   isAnAdmin(): boolean {

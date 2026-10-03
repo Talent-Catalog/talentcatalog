@@ -201,6 +201,18 @@ export class SavedSearchService {
       );
   }
 
+  /**
+   * Explicitly assigns or clears the job associated with the given saved search.
+   * @param id ID of saved search
+   * @param jobId ID of job to assign, or null to clear any existing association
+   */
+  updateJob(id: number, jobId: number | null): Observable<SavedSearch> {
+    return this.http.put<SavedSearch>(`${this.apiUrl}/job/${id}`, {jobId})
+      .pipe(
+        map(savedSearch => SavedSearchService.convertSavedSearchEnums(savedSearch))
+      );
+  }
+
   clearSelection(id: number, request: ClearSelectionRequest): Observable<void> {
     return this.http.put<void>(`${this.apiUrl}/clear-selection/${id}`, request);
   }

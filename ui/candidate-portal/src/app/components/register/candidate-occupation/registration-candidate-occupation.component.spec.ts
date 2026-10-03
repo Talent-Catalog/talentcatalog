@@ -133,8 +133,8 @@ function makeJobExperience(occupationId: number): CandidateJobExperience {
     role: 'Engineer',
     startDate: '2020-01-01',
     endDate: '2021-01-01',
-    fullTime: 'true',
-    paid: 'true',
+    fullTime: true,
+    paid: true,
     description: 'desc',
     candidateOccupation: {
       id: 99,
