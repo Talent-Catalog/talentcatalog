@@ -34,4 +34,19 @@ import {CandidateJobExperience} from '../../../../../../model/candidate-job-expe
 export class CandidateJobExperienceComponent {
 
   @Input({required: true}) experience!: CandidateJobExperience;
+
+  /**
+   * Eg "Full Time Paid" or "Part Time Voluntary". fullTime/paid are absent when not supplied
+   * (unknown), in which case their label is omitted rather than guessed.
+   */
+  get workTerms(): string {
+    const terms: string[] = [];
+    if (this.experience.fullTime != null) {
+      terms.push(this.experience.fullTime ? 'Full Time' : 'Part Time');
+    }
+    if (this.experience.paid != null) {
+      terms.push(this.experience.paid ? 'Paid' : 'Voluntary');
+    }
+    return terms.join(' ');
+  }
 }

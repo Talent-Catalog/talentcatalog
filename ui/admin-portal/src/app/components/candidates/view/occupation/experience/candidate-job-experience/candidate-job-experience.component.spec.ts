@@ -126,6 +126,12 @@ describe('CandidateJobExperienceComponent', () => {
     expect(el.textContent).not.toContain('Voluntary');
   });
 
+  it('should separate the contract and payment labels with a space', () => {
+    const el = render(experienceFixture());
+
+    expect(el.textContent).toContain('Full Time Paid');
+  });
+
   it('should display part-time and voluntary', () => {
     const el = render({...experienceFixture(), fullTime: false, paid: false});
 
