@@ -124,6 +124,7 @@ import {
   listActionTooltips,
   ServiceList
 } from "../../../model/service-list";
+import {JobService} from "../../../services/job.service";
 
 export type CandidatePageSize = 20 | 50 | 100;
 
@@ -148,13 +149,20 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
   @Input() declare pageNumber: number;
   @Input() declare pageSize: CandidatePageSize;
 
-  // todo Is this the best way to get the opportunityDescription. Can we use isMatchingSearch
   /**
    * Opportunity/job description currently being matched/searched against, if the parent has one
    * (typically only search-related parents do - saved-list parents generally do not supply
-   * this). Passed straight through to the candidate search card - never derived here.
+   * this). Owned by the parent - never written by this component. See
+   * explanationOpportunityDescription for what is actually passed to the candidate search card.
    */
   @Input() opportunityDescription?: string;
+
+  /**
+   * Description of the job associated with the current candidate source, fetched by this
+   * component when the source is a job-linked saved list. Cleared whenever the source changes.
+   */
+  private sourceJobDescription?: string;
+  private sourceJobDescriptionSubscription?: Subscription;
 
   readonly pageSizeOptions: CandidatePageSize[] = [20, 50, 100];
   @Input() searchRequest: SearchCandidateRequestPaged;
@@ -232,6 +240,7 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
               private candidateService: CandidateService,
               private casiAdminService: CasiAdminService,
               private candidateSourceService: CandidateSourceService,
+              private jobService: JobService,
               private savedSearchService: SavedSearchService,
               private savedListCandidateService: SavedListCandidateService,
               private savedListService: SavedListService,
@@ -436,6 +445,8 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
           this.selectedCandidates = [];
 
           this.loadServiceList();
+
+          this.loadSourceJobDescription();
         }
       }
     }
@@ -477,6 +488,45 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
   ngOnDestroy(): void {
     if (this.subscription) {
       this.subscription.unsubscribe();
+    }
+    this.sourceJobDescriptionSubscription?.unsubscribe();
+  }
+
+  /**
+   * The opportunity description that candidate match explanations are generated against: the
+   * description supplied by the parent if any, otherwise the description of the job associated
+   * with the current (job-linked saved list) candidate source, if any.
+   */
+  get explanationOpportunityDescription(): string | undefined {
+    return this.opportunityDescription ?? this.sourceJobDescription;
+  }
+
+  /**
+   * Replaces any previously fetched source job description with that of the current candidate
+   * source's job - if it is a saved list associated with a job.
+   * <p/>
+   * Any fetch still in flight for a previous source is cancelled, so that a slow response for
+   * an earlier source can never be applied to the current one. A failed fetch just means no
+   * description is available (explanations can then only be retrieved, not generated) - it is
+   * logged rather than surfaced as an error, since the candidates themselves are unaffected.
+   */
+  private loadSourceJobDescription() {
+    this.sourceJobDescriptionSubscription?.unsubscribe();
+    this.sourceJobDescriptionSubscription = undefined;
+    this.sourceJobDescription = undefined;
+
+    const source = this.candidateSource;
+    if (isSavedList(source) && source.sfJobOpp) {
+      this.sourceJobDescriptionSubscription =
+        this.jobService.getJobMatchingInfo(source.sfJobOpp.id).subscribe({
+          next: jobMatchingInfo => {
+            this.sourceJobDescription = jobMatchingInfo.description;
+          },
+          error: error => {
+            console.warn('Could not load job description for candidate source '
+              + source.id + ': ', error);
+          }
+        });
     }
   }
 
