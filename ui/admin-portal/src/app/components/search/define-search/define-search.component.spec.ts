@@ -450,17 +450,20 @@ describe('DefineSearchComponent', () => {
       text: 'Senior welder with diesel experience'
     });
     expect(component.extractedSkills).toBe('Welding "Diesel Mechanics"');
+    expect(component.extractedSkillNames).toEqual(['Welding', 'Diesel Mechanics']);
   });
 
   it('should clear extractedSkills when a non-empty requirements text yields no skills', () => {
     component.searchForm.controls.requirements.patchValue('some text');
     component.extractedSkills = 'stale skills';
+    component.extractedSkillNames = ['stale skill'];
     skillsService.extractSkills.and.returnValue(of([]));
 
     component.extractSkills();
 
     expect(skillsService.extractSkills).toHaveBeenCalledWith({lang: 'en', text: 'some text'});
     expect(component.extractedSkills).toBe('');
+    expect(component.extractedSkillNames).toEqual([]);
   });
 
   it('should clear extractedSkills without calling the service when requirements is empty', () => {
