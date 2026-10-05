@@ -9,6 +9,9 @@ on:
   push:
     branches: [ staging ]
 
+permissions:
+  contents: read
+
 jobs:
   build-and-deploy:
     name: Build, Test and Deploy to Staging
