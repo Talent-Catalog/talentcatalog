@@ -8,7 +8,7 @@ describe('TcDropdownMenuComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [TcDropdownMenuComponent]
+      imports: [TcDropdownMenuComponent]
     });
     fixture = TestBed.createComponent(TcDropdownMenuComponent);
     component = fixture.componentInstance;

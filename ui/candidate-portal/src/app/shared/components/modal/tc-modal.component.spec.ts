@@ -5,6 +5,7 @@ import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {By} from "@angular/platform-browser";
 import {ButtonComponent} from "../button/button.component";
 import {Component} from "@angular/core";
+import {provideRouter} from '@angular/router';
 
 @Component({
   template: `
@@ -40,8 +41,9 @@ describe('TcModalComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [TcModalComponent, TestHostComponent, ButtonComponent],
-      providers: [NgbActiveModal],
+      declarations: [TestHostComponent],
+      imports: [TcModalComponent, ButtonComponent],
+      providers: [NgbActiveModal, provideRouter([])],
     }).compileComponents();
 
     fixture = TestBed.createComponent(TestHostComponent);

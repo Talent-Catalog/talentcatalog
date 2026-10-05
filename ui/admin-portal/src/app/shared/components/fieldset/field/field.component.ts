@@ -32,7 +32,8 @@ import {Component, HostBinding, Input} from '@angular/core';
 @Component({
   selector: 'tc-field',
   templateUrl: './field.component.html',
-  styleUrls: ['./field.component.scss']
+  styleUrls: ['./field.component.scss'],
+  standalone: true
 })
 export class FieldComponent {
   @Input() checkbox = false;

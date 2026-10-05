@@ -1,4 +1,5 @@
 import {Component, Input} from '@angular/core';
+import {CommonModule} from '@angular/common';
 
 /**
  * @component DescriptionListComponent
@@ -59,7 +60,9 @@ import {Component, Input} from '@angular/core';
 @Component({
   selector: 'tc-description-list',
   templateUrl: './description-list.component.html',
-  styleUrls: ['./description-list.component.scss']
+  styleUrls: ['./description-list.component.scss'],
+  standalone: true,
+  imports: [CommonModule]
 })
 export class DescriptionListComponent {
   /** Direction of single item and all items */

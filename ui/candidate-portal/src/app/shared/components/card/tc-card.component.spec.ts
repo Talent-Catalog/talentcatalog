@@ -8,7 +8,7 @@ describe('TcCardComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [TcCardComponent]
+      imports: [TcCardComponent]
     });
     fixture = TestBed.createComponent(TcCardComponent);
     component = fixture.componentInstance;
