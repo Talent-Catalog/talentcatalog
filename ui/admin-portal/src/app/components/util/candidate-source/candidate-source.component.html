@@ -93,15 +93,7 @@
                     Select columns to display
                   </tc-dropdown-item>
 
-                  <!--      Associated Job        -->
-                  <tc-dropdown-item *ngIf="candidateSource?.sfJobOpp" [routerLink]="['/job',candidateSource.sfJobOpp.id]" title="Associated Job">
-                    <tc-icon color="primary" size="md">
-                      <i class="fa-solid fa-briefcase" title="Associated Job"></i>
-                    </tc-icon>
-                    Associated Job
-                  </tc-dropdown-item>
-
-                  <!--      Associated Job        -->
+                  <!--      Associated Salesforce Job        -->
                   <tc-dropdown-item *ngIf="salesforceService.joblink(candidateSource) && canAccessSalesforce()" [href]="salesforceService.joblink(candidateSource)" target="_blank" title="Associated Job Opportunity on Salesforce">
                     <tc-icon color="primary" size="md">
                       <i class="fa-solid fa-briefcase" title="Associated Job Opportunity on Salesforce"></i>

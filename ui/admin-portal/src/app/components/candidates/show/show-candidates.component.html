@@ -64,6 +64,12 @@
         <i *ngIf="!isWatching()" class="far fa-eye notwatched" title="Watch"></i>
       </tc-icon>
 
+      <a *ngIf="candidateSource?.sfJobOpp" (click)="doShowJob()">
+        <tc-icon size="xl" ariaLabel="Associated job">
+          <i class="fa-solid fa-briefcase" title="Associated Job"></i>
+        </tc-icon>
+      </a>
+
       <a target="_blank" *ngIf="hasPublishedDoc()" (click)="doShowPublishedDoc()">
         <tc-icon [size]="'xl'" [ariaLabel]="'Show published sheet'">
           <i class="fas fa-globe" title="Show published sheet"></i>
@@ -130,14 +136,6 @@
             </tc-icon>
             Run stats
           </tc-dropdown-item>
-
-          <tc-dropdown-item target="_blank" *ngIf="candidateSource?.sfJobOpp" [routerLink]="['/job',candidateSource.sfJobOpp.id]">
-            <tc-icon [size]="'md'" [ariaLabel]="'Associated Job'">
-              <i class="fa-solid fa-briefcase" title="Associated Job"></i>
-            </tc-icon>
-            Associated Job
-          </tc-dropdown-item>
-
 
           <tc-dropdown-item target="_blank" *ngIf="salesforceService.joblink(candidateSource) && canAccessSalesforce()" (click)="doShowSalesforceLink()">
             <tc-icon [size]="'md'" [ariaLabel]="'Associated Job Opportunity on Salesforce'">

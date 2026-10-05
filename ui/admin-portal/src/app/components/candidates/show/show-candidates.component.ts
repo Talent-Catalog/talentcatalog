@@ -501,7 +501,7 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
 
   /**
    * Replaces any previously fetched source job description with that of the current candidate
-   * source's job - if it is a saved list associated with a job.
+   * source's job.
    * <p/>
    * A response that arrives after the source has changed again is ignored, so that a slow
    * response for an earlier source can never be applied to the current one. A failed fetch just
@@ -512,7 +512,7 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
     this.sourceJobDescription = undefined;
 
     const source = this.candidateSource;
-    if (isSavedList(source) && source.sfJobOpp) {
+    if (source.sfJobOpp) {
       this.jobService.getJobMatchingInfo(source.sfJobOpp.id).subscribe({
         next: jobMatchingInfo => {
           //Ignore a slow response for a source that is no longer current.
@@ -1641,6 +1641,12 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
             this.searching = false;
           });
       }
+    }
+  }
+
+  doShowJob() {
+    if (this.candidateSource?.sfJobOpp != null) {
+      this.router.navigate(['/job', this.candidateSource.sfJobOpp.id]);
     }
   }
 
