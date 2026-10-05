@@ -44,9 +44,9 @@ public class CandidateJobExperienceReadDto {
     @SqlColumn(transform = "to_jsonb(string_to_array(%s, ','))") //Convert csv string to jsonb array
     private List<String> keywordsInDescription;
     private LocalDate endDate;
-    private String fullTime;
+    private Boolean fullTime;
     private Long id;
-    private String paid;
+    private Boolean paid;
     private String role;
     private LocalDate startDate;
 }

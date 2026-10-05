@@ -24,8 +24,16 @@ export interface CandidateJobExperience {
   role: string;
   startDate: string;
   endDate: string;
-  fullTime: string;
-  paid: string;
+  /**
+   * Whether the job was full time (true) or part time (false). Absent when not supplied - the
+   * server's nullable Boolean is omitted from the JSON when null - meaning unknown.
+   */
+  fullTime?: boolean;
+  /**
+   * Whether the job was paid (true) or voluntary (false). Absent when not supplied - the
+   * server's nullable Boolean is omitted from the JSON when null - meaning unknown.
+   */
+  paid?: boolean;
   description: string;
   tidiedDescription?: string;
   keywordsInDescription?: string[];

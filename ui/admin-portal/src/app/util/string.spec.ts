@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {isHtml, truncate} from "./string";
+import {hasTextContent, isHtml, truncate} from "./string";
 
 describe('Utility Functions', () => {
   describe('truncate', () => {
@@ -84,6 +84,33 @@ describe('Utility Functions', () => {
       const text = '<img src="image.jpg" />';
       const result = isHtml(text);
       expect(result).toBe(true);
+    });
+  });
+
+  describe('hasTextContent', () => {
+    it('should be false for null, undefined and empty text', () => {
+      expect(hasTextContent(null)).toBeFalse();
+      expect(hasTextContent(undefined)).toBeFalse();
+      expect(hasTextContent('')).toBeFalse();
+    });
+
+    it('should be false for whitespace only', () => {
+      expect(hasTextContent('   \n\t ')).toBeFalse();
+    });
+
+    it('should be false for HTML with no visible text', () => {
+      expect(hasTextContent('<p></p>')).toBeFalse();
+      expect(hasTextContent('<p><br></p>')).toBeFalse();
+      expect(hasTextContent('<p>&nbsp;</p>')).toBeFalse();
+      expect(hasTextContent('<div> <p>  </p> </div>')).toBeFalse();
+    });
+
+    it('should be true for plain text', () => {
+      expect(hasTextContent('Java developer')).toBeTrue();
+    });
+
+    it('should be true for HTML containing text', () => {
+      expect(hasTextContent('<p>Java <b>developer</b></p>')).toBeTrue();
     });
   });
 });

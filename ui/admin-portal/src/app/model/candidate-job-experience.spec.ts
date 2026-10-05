@@ -32,8 +32,8 @@ describe('CandidateJobExperience Interface', () => {
       role: 'Software Developer',
       startDate: '2022-01-01',
       endDate: '2023-01-01',
-      fullTime: 'Yes',
-      paid: 'Yes',
+      fullTime: true,
+      paid: true,
       description: 'Developed software solutions for global talent.',
       expanded: true
     };
@@ -45,8 +45,8 @@ describe('CandidateJobExperience Interface', () => {
     expect(candidateJobExperience.role).toBe('Software Developer');
     expect(candidateJobExperience.startDate).toBe('2022-01-01');
     expect(candidateJobExperience.endDate).toBe('2023-01-01');
-    expect(candidateJobExperience.fullTime).toBe('Yes');
-    expect(candidateJobExperience.paid).toBe('Yes');
+    expect(candidateJobExperience.fullTime).toBe(true);
+    expect(candidateJobExperience.paid).toBe(true);
     expect(candidateJobExperience.description).toBe('Developed software solutions for global talent.');
     expect(candidateJobExperience.expanded).toBe(true);
   });
@@ -65,8 +65,8 @@ describe('CandidateJobExperience Interface', () => {
       role: 'Engineer',
       startDate: '2021-05-01',
       endDate: '2022-05-01',
-      fullTime: 'No',
-      paid: 'No',
+      fullTime: false,
+      paid: false,
       description: 'Worked on engineering projects.'
     };
 
@@ -88,8 +88,8 @@ describe('CandidateJobExperience Interface', () => {
       role: 'Designer',
       startDate: '2020-08-01',
       endDate: '2021-08-01',
-      fullTime: 'Yes',
-      paid: 'Yes',
+      fullTime: true,
+      paid: true,
       description: 'Designed innovative solutions.'
     };
 
@@ -99,8 +99,8 @@ describe('CandidateJobExperience Interface', () => {
     expect(typeof candidateJobExperience.role).toBe('string');
     expect(typeof candidateJobExperience.startDate).toBe('string');
     expect(typeof candidateJobExperience.endDate).toBe('string');
-    expect(typeof candidateJobExperience.fullTime).toBe('string');
-    expect(typeof candidateJobExperience.paid).toBe('string');
+    expect(typeof candidateJobExperience.fullTime).toBe('boolean');
+    expect(typeof candidateJobExperience.paid).toBe('boolean');
     expect(typeof candidateJobExperience.description).toBe('string');
   });
 });

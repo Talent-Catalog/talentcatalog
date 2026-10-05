@@ -102,4 +102,30 @@ describe('SavedSearchService', () => {
     expect(req.request.method).toBe('GET');
     req.flush(defaultSavedSearch);
   });
+
+  it('should assign a job to a saved search', () => {
+    const updatedSavedSearch: SavedSearch = { id: 1, name: 'Search', sfJobOpp: {id: 456} } as unknown as SavedSearch;
+
+    service.updateJob(1, 456).subscribe(savedSearch => {
+      expect(savedSearch).toEqual(updatedSavedSearch);
+    });
+
+    const req = httpMock.expectOne(`${apiUrl}/job/1`);
+    expect(req.request.method).toBe('PUT');
+    expect(req.request.body).toEqual({jobId: 456});
+    req.flush(updatedSavedSearch);
+  });
+
+  it('should clear a saved search job association by passing null', () => {
+    const updatedSavedSearch: SavedSearch = { id: 1, name: 'Search', sfJobOpp: null } as unknown as SavedSearch;
+
+    service.updateJob(1, null).subscribe(savedSearch => {
+      expect(savedSearch).toEqual(updatedSavedSearch);
+    });
+
+    const req = httpMock.expectOne(`${apiUrl}/job/1`);
+    expect(req.request.method).toBe('PUT');
+    expect(req.request.body).toEqual({jobId: null});
+    req.flush(updatedSavedSearch);
+  });
 });
