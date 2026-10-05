@@ -215,6 +215,29 @@ describe('CandidateMatchExplanationComponent', () => {
       expect(component.explanation).toBeNull();
     }));
 
+    it('should show the server-supplied message when GET fails with one', fakeAsync(() => {
+      candidateServiceSpy.getMatchExplanation.and.returnValue(throwError(new HttpErrorResponse({
+        status: 500, statusText: 'Internal Server Error', error: {message: 'Explanation lookup failed'}
+      })));
+      createHost();
+
+      component.show();
+      tick();
+
+      expect(component.error).toBe('Explanation lookup failed');
+    }));
+
+    it('should show the HTTP status when a GET failure has no message at all', fakeAsync(() => {
+      candidateServiceSpy.getMatchExplanation.and.returnValue(
+        throwError({status: 503, statusText: 'Service Unavailable'}));
+      createHost();
+
+      component.show();
+      tick();
+
+      expect(component.error).toBe('503 Service Unavailable');
+    }));
+
     it('should offer Regenerate once an explanation is displayed', fakeAsync(() => {
       candidateServiceSpy.getMatchExplanation.and.returnValue(of(explanationFixture('S')));
       createHost();
@@ -782,6 +805,20 @@ describe('CandidateMatchExplanationComponent', () => {
       expect(component.findExperience(502).role).toBe('Current Team Lead role');
       expect(component.findExperience(999).role).toBe('Unrelated role');
       expect(component.findExperience(12345)).toBeUndefined();
+    }));
+
+    it('should tolerate occupations without any job experiences', fakeAsync(() => {
+      const candidate = {
+        id: 1,
+        candidateOccupations: [
+          {candidateJobExperiences: undefined},
+          {candidateJobExperiences: [jobExperience(501, 'Current Developer role')]}
+        ]
+      } as any as Candidate;
+      showWith(explanationWithTitles(), candidate);
+
+      expect(component.findExperience(501).role).toBe('Current Developer role');
+      expect(component.findExperience(502)).toBeUndefined();
     }));
 
     it('should re-index experiences when the candidate input changes', fakeAsync(() => {

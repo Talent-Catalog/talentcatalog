@@ -387,7 +387,8 @@ export class CandidateMatchExplanationComponent implements OnChanges, OnDestroy 
    */
   private retrieveOrGenerate(key: CandidateJobKey): Observable<ExplanationOutcome> {
     if (key.jobId == null) {
-      if (!this.hasUsableDescription()) {
+      const description = this.currentDescription();
+      if (description === undefined) {
         // Neither jobId nor a usable description - nothing to retrieve or generate from.
         this.checking = false;
         this.generating = false;
@@ -395,14 +396,15 @@ export class CandidateMatchExplanationComponent implements OnChanges, OnDestroy 
       }
       this.checking = false;
       this.generating = true;
-      return this.generateOutcome(key);
+      return this.generateOutcome(key, description);
     }
 
     return this.candidateService.getMatchExplanation(key.candidateId, key.jobId).pipe(
       map((explanation): ExplanationOutcome => ({key, explanation})),
       catchError((err: HttpErrorResponse) => {
         if (err.status === 404) {
-          if (!this.hasUsableDescription()) {
+          const description = this.currentDescription();
+          if (description === undefined) {
             // Nothing persisted, and no description to generate from - stop here. Opening this
             // candidate's explanation (e.g. from a saved list) must never itself cause an LLM call.
             this.checking = false;
@@ -411,20 +413,16 @@ export class CandidateMatchExplanationComponent implements OnChanges, OnDestroy 
           }
           this.checking = false;
           this.generating = true;
-          return this.generateOutcome(key);
+          return this.generateOutcome(key, description);
         }
         return of({key, error: this.extractErrorMessage(err)} as ExplanationOutcome);
       })
     );
   }
 
-  private generateOutcome(key: CandidateJobKey): Observable<ExplanationOutcome> {
-    const opportunityDescription = this.currentDescription();
-    if (opportunityDescription === undefined) {
-      // Defensive: callers already check hasUsableDescription(), but never send a blank
-      // description regardless.
-      return of({key});
-    }
+  /** Generates using the given (already checked as usable) opportunity description. */
+  private generateOutcome(
+    key: CandidateJobKey, opportunityDescription: string): Observable<ExplanationOutcome> {
     return this.candidateService.generateMatchExplanation(key.candidateId, {
       jobId: key.jobId,
       opportunityDescription
@@ -435,13 +433,11 @@ export class CandidateMatchExplanationComponent implements OnChanges, OnDestroy 
   }
 
   private applyOutcome(outcome: ExplanationOutcome): void {
+    // No need to check the outcome is for the current candidateId/jobId: a change of either
+    // emits a null trigger (see ngOnChanges), and switchMap then cancels the stale retrieval
+    // before it can emit.
     this.checking = false;
     this.generating = false;
-    if (!this.isCurrent(outcome.key.candidateId, outcome.key.jobId)) {
-      // Superseded by a newer candidateId/jobId pair. switchMap already cancels the stale
-      // inner observable, but this guards against applying an already-in-flight result too.
-      return;
-    }
     this.loaded = true;
     if (outcome.error) {
       this.error = outcome.error;
@@ -468,10 +464,6 @@ export class CandidateMatchExplanationComponent implements OnChanges, OnDestroy 
       }
     }
     return byId;
-  }
-
-  private isCurrent(candidateId: number, jobId: number | undefined): boolean {
-    return candidateId === this.candidateId && jobId === this.jobId;
   }
 
   /** Returns the current opportunityDescription if it has text content, otherwise undefined. */

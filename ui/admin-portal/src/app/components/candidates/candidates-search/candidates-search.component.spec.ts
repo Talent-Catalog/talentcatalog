@@ -119,6 +119,19 @@ describe('CandidatesSearchComponent', () => {
     expect(component.loading).toBe(false);
   }));
 
+  it('should handle error from saved search service when loading a saved search by id', fakeAsync(() => {
+    const mockError = 'Error loading saved search';
+    mockSavedSearchService.get.and.returnValue(throwError(mockError));
+    paramMap$.next(fakeParamMap({id: '5'}));
+
+    fixture.detectChanges();
+    tick();
+
+    expect(component.loading).toBe(false);
+    expect(component.savedSearch).toBeUndefined();
+    expect(component.error).toEqual(mockError);
+  }));
+
   it('should not reload the saved search when only an unrelated query param changes', fakeAsync(() => {
     const mockDefaultSearch = new MockSavedSearch();
     mockSavedSearchService.getDefault.and.returnValue(of(mockDefaultSearch));
