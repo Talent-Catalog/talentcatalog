@@ -1,0 +1,41 @@
+# Run Staging Validation Only After Deployment Completes.
+name: TC Staging Validation
+
+on:
+  # Called automatically by tc-test-build-deploy.yml after deployment succeeds.
+  workflow_call:
+
+  # Keep manual execution available if required.
+  #
+  # This is useful while building/debugging the validation pipeline.
+  # Later tickets can add the real readiness and performance checks here.
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  staging-validation:
+    name: Staging Validation
+    runs-on: ubuntu-latest
+
+    steps:
+      # Intentionally contains no real validation yet.
+      #
+      # The purpose of this step is to prove that:
+      #
+      #   staging deployment
+      #          ↓
+      #   successful completion
+      #          ↓
+      #   staging validation starts
+      #
+      # Future tickets will replace/extend this  with
+      # stability, health, SHA verification and performance checks.
+      - name: Confirm staging validation started
+        run: |
+          echo "Staging deployment completed successfully."
+          echo "Staging validation has started."
+          echo ""
+          echo "This ticket only establishes the workflow."
+          echo "Readiness, health, SHA and performance checks are implemented in later tickets."
