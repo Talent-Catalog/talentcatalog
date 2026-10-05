@@ -1883,7 +1883,7 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
   hasTasksAssigned() {
     if (isSavedList(this.candidateSource)) {
       this.tasksAssignedToList = this.candidateSource.tasks;
-      return this.candidateSource.tasks.length > 0;
+      return this.candidateSource?.tasks?.length > 0;
     }
   }
 
