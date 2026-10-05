@@ -14,7 +14,8 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, Input, OnChanges, OnDestroy, SimpleChanges} from '@angular/core';
+import {Component, DestroyRef, Input, OnChanges, OnDestroy, SimpleChanges} from '@angular/core';
+import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {HttpErrorResponse} from '@angular/common/http';
 import {Observable, of, Subject} from 'rxjs';
 import {NgbPopover} from '@ng-bootstrap/ng-bootstrap';
@@ -127,10 +128,9 @@ export class CandidateMatchExplanationComponent implements OnChanges, OnDestroy 
   regenerating = false;
 
   /** Triggers a retrieval/generation for a key, or (when null) cancels one already in flight. */
-  private trigger$ = new Subject<CandidateJobKey | null>();
+  private candidateJobKey$ = new Subject<CandidateJobKey | null>();
   /** Emits whenever candidateId/jobId change, to cancel any still in-flight explicit regenerate(). */
   private cancelRegenerate$ = new Subject<void>();
-  private destroy$ = new Subject<void>();
 
   /** The candidate's current job experiences, indexed by ID - rebuilt whenever candidate changes. */
   private experiencesById = new Map<number, CandidateJobExperience>();
@@ -150,10 +150,15 @@ export class CandidateMatchExplanationComponent implements OnChanges, OnDestroy 
   private experienceTriggerFocused = false;
   private experiencePopoverCloseTimer: ReturnType<typeof setTimeout> | null = null;
 
-  constructor(private candidateService: CandidateService) {
-    this.trigger$.pipe(
-      switchMap(key => key ? this.retrieveOrGenerate(key) : of(null)),
-      takeUntil(this.destroy$)
+  /**
+   * @param destroyRef Needed for takeUntilDestroyed() outside the injection context (eg in
+   * regenerate()) - inside it (eg this constructor), takeUntilDestroyed() finds it itself.
+   */
+  constructor(private candidateService: CandidateService,
+              private destroyRef: DestroyRef) {
+    this.candidateJobKey$.pipe(
+      switchMap(candidateJobKey => candidateJobKey ? this.retrieveOrGenerate(candidateJobKey) : of(null)),
+      takeUntilDestroyed()
     ).subscribe(outcome => {
       if (outcome) {
         this.applyOutcome(outcome);
@@ -177,15 +182,12 @@ export class CandidateMatchExplanationComponent implements OnChanges, OnDestroy 
       this.generating = false;
       this.regenerating = false;
       this.cancelRegenerate$.next();
-      this.trigger$.next(null); // cancel any retrieval still in flight for the old context
+      this.candidateJobKey$.next(null); // cancel any retrieval still in flight for the old context
     }
   }
 
   ngOnDestroy(): void {
     this.cancelExperiencePopoverCloseCheck();
-    this.destroy$.next();
-    this.destroy$.complete();
-    this.cancelRegenerate$.complete();
   }
 
   /** Whether there is any useful context at all - if not, no UI (not even "Show") is offered. */
@@ -328,7 +330,7 @@ export class CandidateMatchExplanationComponent implements OnChanges, OnDestroy 
     }
     this.checking = true;
     this.error = null;
-    this.trigger$.next({candidateId: this.candidateId, jobId: this.jobId});
+    this.candidateJobKey$.next({candidateId: this.candidateId, jobId: this.jobId});
   }
 
   /** Collapses the explanation UI. Nothing already loaded is discarded. */
@@ -353,7 +355,7 @@ export class CandidateMatchExplanationComponent implements OnChanges, OnDestroy 
       // response (success or error) can never reach these handlers for a pair that is no
       // longer current.
       takeUntil(this.cancelRegenerate$),
-      takeUntil(this.destroy$)
+      takeUntilDestroyed(this.destroyRef)
     ).subscribe({
       next: (explanation) => {
         this.regenerating = false;

@@ -1184,4 +1184,36 @@ describe('CandidateMatchExplanationComponent', () => {
       expect(component.explanation.summary).toBe('B regenerated');
     }));
   });
+
+  describe('destroy', () => {
+
+    it('should unsubscribe from an in-flight retrieval when destroyed', fakeAsync(() => {
+      const pending = new Subject<CandidateMatchExplanation>();
+      candidateServiceSpy.getMatchExplanation.and.returnValue(pending);
+      createHost();
+      component.show();
+      tick();
+      expect(pending.observers.length).toBe(1);
+
+      hostFixture.destroy();
+
+      expect(pending.observers.length).toBe(0);
+    }));
+
+    it('should unsubscribe from an in-flight regeneration when destroyed', fakeAsync(() => {
+      candidateServiceSpy.getMatchExplanation.and.returnValue(of(explanationFixture('Existing')));
+      const pending = new Subject<CandidateMatchExplanation>();
+      candidateServiceSpy.generateMatchExplanation.and.returnValue(pending);
+      createHost();
+      component.show();
+      tick();
+
+      component.regenerate();
+      expect(pending.observers.length).toBe(1);
+
+      hostFixture.destroy();
+
+      expect(pending.observers.length).toBe(0);
+    }));
+  });
 });

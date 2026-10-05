@@ -1887,11 +1887,24 @@ describe('ShowCandidatesComponent', () => {
       expect(searchCardDescription()).toBeUndefined();
     }));
 
-    it('should not fetch a job description for a saved search', fakeAsync(() => {
-      spyOn(jobService, 'getJobMatchingInfo');
+    it('should also use the job description of a saved search associated with a job', fakeAsync(() => {
+      spyOn(jobService, 'getJobMatchingInfo').and.returnValue(of(jobInfo('Search job description')));
       const search: any = new MockSavedSearch();
       search.id = 3;
       search.sfJobOpp = {id: 8};
+
+      changeSource(search);
+      tick();
+
+      expect(jobService.getJobMatchingInfo).toHaveBeenCalledWith(8);
+      expect(component.explanationOpportunityDescription).toBe('Search job description');
+    }));
+
+    it('should not fetch a job description for a saved search without a job', fakeAsync(() => {
+      spyOn(jobService, 'getJobMatchingInfo');
+      const search: any = new MockSavedSearch();
+      search.id = 3;
+      search.sfJobOpp = null;
 
       changeSource(search);
       tick();

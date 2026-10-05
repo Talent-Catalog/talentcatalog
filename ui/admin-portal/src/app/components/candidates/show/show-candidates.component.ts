@@ -159,7 +159,8 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
 
   /**
    * Description of the job associated with the current candidate source, fetched by this
-   * component when the source is a job-linked saved list. Cleared whenever the source changes.
+   * component when the source (saved list or saved search) is associated with a job. Cleared
+   * whenever the source changes.
    */
   private sourceJobDescription?: string;
 
@@ -493,7 +494,7 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
   /**
    * The opportunity description that candidate match explanations are generated against: the
    * description supplied by the parent if any, otherwise the description of the job associated
-   * with the current (job-linked saved list) candidate source, if any.
+   * with the current candidate source (saved list or saved search), if any.
    */
   get explanationOpportunityDescription(): string | undefined {
     return this.opportunityDescription ?? this.sourceJobDescription;
