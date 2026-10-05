@@ -162,7 +162,6 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
    * component when the source is a job-linked saved list. Cleared whenever the source changes.
    */
   private sourceJobDescription?: string;
-  private sourceJobDescriptionSubscription?: Subscription;
 
   readonly pageSizeOptions: CandidatePageSize[] = [20, 50, 100];
   @Input() searchRequest: SearchCandidateRequestPaged;
@@ -489,8 +488,7 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
     if (this.subscription) {
       this.subscription.unsubscribe();
     }
-    this.sourceJobDescriptionSubscription?.unsubscribe();
-  }
+    }
 
   /**
    * The opportunity description that candidate match explanations are generated against: the
@@ -505,28 +503,28 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
    * Replaces any previously fetched source job description with that of the current candidate
    * source's job - if it is a saved list associated with a job.
    * <p/>
-   * Any fetch still in flight for a previous source is cancelled, so that a slow response for
-   * an earlier source can never be applied to the current one. A failed fetch just means no
-   * description is available (explanations can then only be retrieved, not generated) - it is
-   * logged rather than surfaced as an error, since the candidates themselves are unaffected.
+   * A response that arrives after the source has changed again is ignored, so that a slow
+   * response for an earlier source can never be applied to the current one. A failed fetch just
+   * means no description is available (explanations can then only be retrieved, not generated) -
+   * it is logged rather than surfaced as an error, since the candidates themselves are unaffected.
    */
   private loadSourceJobDescription() {
-    this.sourceJobDescriptionSubscription?.unsubscribe();
-    this.sourceJobDescriptionSubscription = undefined;
     this.sourceJobDescription = undefined;
 
     const source = this.candidateSource;
     if (isSavedList(source) && source.sfJobOpp) {
-      this.sourceJobDescriptionSubscription =
-        this.jobService.getJobMatchingInfo(source.sfJobOpp.id).subscribe({
-          next: jobMatchingInfo => {
+      this.jobService.getJobMatchingInfo(source.sfJobOpp.id).subscribe({
+        next: jobMatchingInfo => {
+          //Ignore a slow response for a source that is no longer current.
+          if (this.candidateSource === source) {
             this.sourceJobDescription = jobMatchingInfo.description;
-          },
-          error: error => {
-            console.warn('Could not load job description for candidate source '
-              + source.id + ': ', error);
           }
-        });
+        },
+        error: error => {
+          console.warn('Could not load job description for candidate source '
+            + source.id + ': ', error);
+        }
+      });
     }
   }
 

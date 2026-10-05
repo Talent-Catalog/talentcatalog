@@ -1911,7 +1911,6 @@ describe('ShowCandidatesComponent', () => {
       slowFirst.next(jobInfo('First list job description'));
       tick();
 
-      expect(slowFirst.observers.length).toBe(0);
       expect(component.explanationOpportunityDescription).toBe('Second list job description');
     }));
 
@@ -1926,16 +1925,6 @@ describe('ShowCandidatesComponent', () => {
       expect(component.error).toBeNull();
       expect(component.explanationOpportunityDescription).toBeUndefined();
       expect(console.warn).toHaveBeenCalled();
-    }));
-
-    it('should cancel an in-flight job description fetch on destroy', fakeAsync(() => {
-      const slow = new Subject<JobMatchingInfo>();
-      spyOn(jobService, 'getJobMatchingInfo').and.returnValue(slow);
-      changeSource(jobListSource(1, 8));
-
-      component.ngOnDestroy();
-
-      expect(slow.observers.length).toBe(0);
     }));
   });
 });
