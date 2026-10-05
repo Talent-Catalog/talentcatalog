@@ -152,6 +152,7 @@ export class CandidateMatchExplanationComponent implements OnChanges, OnDestroy 
   private experiencePopoverCloseTimer: ReturnType<typeof setTimeout> | null = null;
 
   /**
+   * @param candidateService Used to retrieve/generate explanations.
    * @param destroyRef Needed for takeUntilDestroyed() outside the injection context (eg in
    * regenerate()) - inside it (eg this constructor), takeUntilDestroyed() finds it itself.
    */
