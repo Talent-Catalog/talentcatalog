@@ -21,6 +21,7 @@ import {Observable, of, Subject} from 'rxjs';
 import {NgbPopover} from '@ng-bootstrap/ng-bootstrap';
 import {catchError, map, switchMap, takeUntil} from 'rxjs/operators';
 import {CandidateService} from '../../../services/candidate.service';
+import {hasTextContent} from '../../../util/string';
 import {Candidate} from '../../../model/candidate';
 import {CandidateJobExperience} from '../../../model/candidate-job-experience';
 import {
@@ -196,9 +197,10 @@ export class CandidateMatchExplanationComponent implements OnChanges, OnDestroy 
   }
 
   /**
-   * Whether a usable (present, non-blank) opportunityDescription is currently available. Drives
-   * whether Regenerate is offered, matching the backend's own @NotBlank requirement - a blank
-   * description is treated the same as an absent one throughout this component.
+   * Whether a usable opportunityDescription - one with some text content - is currently
+   * available. Drives whether Regenerate is offered. A blank description, or one that is only
+   * empty HTML (eg from a cleared rich text editor), is treated the same as an absent one
+   * throughout this component (see hasTextContent).
    */
   hasUsableDescription(): boolean {
     return this.currentDescription() !== undefined;
@@ -471,10 +473,10 @@ export class CandidateMatchExplanationComponent implements OnChanges, OnDestroy 
     return candidateId === this.candidateId && jobId === this.jobId;
   }
 
-  /** Returns the current opportunityDescription if non-blank, otherwise undefined. */
+  /** Returns the current opportunityDescription if it has text content, otherwise undefined. */
   private currentDescription(): string | undefined {
     const value = this.opportunityDescription;
-    return value != null && value.trim().length > 0 ? value : undefined;
+    return hasTextContent(value) ? value : undefined;
   }
 
   private extractErrorMessage(err: HttpErrorResponse): string {

@@ -342,6 +342,25 @@ describe('CandidateMatchExplanationComponent', () => {
       expect(component.hasContext()).toBeFalse();
     }));
 
+    it('should treat empty HTML (eg a cleared rich text editor) the same as absent', fakeAsync(() => {
+      createHost(null, '<p><br></p>');
+
+      expect(component.hasContext()).toBeFalse();
+      expect(component.hasUsableDescription()).toBeFalse();
+    }));
+
+    it('should not offer Regenerate when the description is only empty HTML', fakeAsync(() => {
+      candidateServiceSpy.getMatchExplanation.and.returnValue(of(explanationFixture('Persisted')));
+      createHost(100, '<p></p>');
+
+      component.show();
+      tick();
+      component.regenerate();
+
+      expect(component.hasUsableDescription()).toBeFalse();
+      expect(candidateServiceSpy.generateMatchExplanation).not.toHaveBeenCalled();
+    }));
+
     it('should not be usable for an explicit regenerate() call', fakeAsync(() => {
       candidateServiceSpy.getMatchExplanation.and.returnValue(of(explanationFixture('Persisted')));
       createHost(100, '   ');

@@ -1873,6 +1873,19 @@ describe('ShowCandidatesComponent', () => {
       expect(searchCardDescription()).toBe('Parent description');
     }));
 
+    it('should fall back to the job description when the parent description has no text content', fakeAsync(() => {
+      spyOn(jobService, 'getJobMatchingInfo').and.returnValue(of(jobInfo('List job description')));
+      changeSource(jobListSource(1, 8));
+      tick();
+
+      for (const blank of ['', '   ', '<p></p>', '<p><br></p>']) {
+        component.opportunityDescription = blank;
+        expect(component.explanationOpportunityDescription)
+          .withContext(JSON.stringify(blank))
+          .toBe('List job description');
+      }
+    }));
+
     it('should clear the fetched description when the source changes to one without a job', fakeAsync(() => {
       spyOn(jobService, 'getJobMatchingInfo').and.returnValue(of(jobInfo('List job description')));
       changeSource(jobListSource(1, 8));

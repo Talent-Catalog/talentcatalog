@@ -125,6 +125,7 @@ import {
   ServiceList
 } from "../../../model/service-list";
 import {JobService} from "../../../services/job.service";
+import {hasTextContent} from "../../../util/string";
 
 export type CandidatePageSize = 20 | 50 | 100;
 
@@ -493,11 +494,16 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
 
   /**
    * The opportunity description that candidate match explanations are generated against: the
-   * description supplied by the parent if any, otherwise the description of the job associated
-   * with the current candidate source (saved list or saved search), if any.
+   * description supplied by the parent if it has any text content, otherwise the description of
+   * the job associated with the current candidate source (saved list or saved search), if any.
+   * <p/>
+   * The parent's description can be blank or empty HTML (eg "&lt;p&gt;&lt;/p&gt;" once the
+   * search's requirements editor has been cleared) - which is treated as not supplied.
    */
   get explanationOpportunityDescription(): string | undefined {
-    return this.opportunityDescription ?? this.sourceJobDescription;
+    return hasTextContent(this.opportunityDescription)
+      ? this.opportunityDescription
+      : this.sourceJobDescription;
   }
 
   /**

@@ -89,6 +89,7 @@ import {AuthenticationService} from "../../../services/authentication.service";
 import {SearchQueryService} from "../../../services/search-query.service";
 import {debounceTime, first, takeUntil} from "rxjs/operators";
 import {JobService} from "../../../services/job.service";
+import {hasTextContent} from "../../../util/string";
 import {SkillName} from "../../../model/skill";
 import {CandidateNumberParser} from "../../../util/candidate-number-parser";
 import {EmbeddingModelService} from "../../../services/embedding-model.service";
@@ -401,16 +402,7 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit, 
   }
 
   public hasRequirements(): boolean {
-    //Create a temporary element to strip HTML tags and get the pure text content of the
-    // requirements field. This has the advantage of using built-in browser functionality.
-    const tempElement = document.createElement('div');
-    tempElement.innerHTML = this.requirements;
-    //textContent and innerText are not always the same, so we check both and use whichever is
-    // available. Different ones are used depending on the browser.
-    const pureText = (tempElement.textContent ?? tempElement.innerText ?? '')
-    .replace(/&nbsp;/g, '')
-    .trim();
-    return pureText.length > 0;
+    return hasTextContent(this.requirements);
   }
 
   displayJobNameAsSource(): string {
