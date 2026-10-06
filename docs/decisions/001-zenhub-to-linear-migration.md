@@ -383,3 +383,69 @@ Source-of-truth template files:
 ### Rationale
 
 GitHub templates guide external contributors creating issues directly in GitHub. Linear templates guide core team members creating issues in Linear. Keeping content aligned enforces consistent issue quality regardless of entry point.
+
+---
+
+## Decision 14: Label Taxonomy Review
+
+**Status:** Review
+
+### Context
+
+Decision 6 adopted the existing GitHub label set as-is, deferring cleanup: "noting a ticket to tidy up later if it becomes a pain point." This is that follow-up review.
+
+Each label below has been assessed as **Keep** (clear purpose, worth retaining) or **Open question** (purpose, naming, or continued usefulness is unclear and needs team input).
+
+### Issue Labels
+
+| Label | Assessment | Notes |
+|---|---|---|
+| `Migrated` | Keep | Retained for history-keeping. |
+| `enhancement` | Open question | Vague, but used on 87 issues. The description already says "new feature or request" — consider renaming to **New Feature** to match. |
+| `tech debt` | Keep | Needs a label description added — suggestions welcome. |
+| `best practice` | Open question | Vague, and heavily used. Unclear what it captures that isn't already implied by normal code review — do we always want best practice, making the label redundant? |
+| `question` | Keep | Useful for scanning in team meetings to spot issues that need discussion. |
+| `front end only` | Keep | Useful for understanding scope of an issue. |
+| `UI/UX` | Keep | Distinct from `front end only` — covers design-related work that isn't necessarily code (e.g. Figma/design review), not just frontend implementation. |
+| `mob testing` | Keep | |
+| `salesforce` | Keep | |
+| `documentation` | Keep | |
+| `testing` | Keep | |
+| `back end only` | Keep | |
+| `blocked` | Keep | |
+| `data` | Open question | Vague. Consider a clearer name/description, e.g. **Database changes** or **Database**. |
+| `Library upgrade` | Keep | Useful to flag PRs that require an `npm install` after pulling. |
+| `good first issue` | Open question | Do we expect enough newcomers to justify a standing label, or should "good first issue" candidates be assessed case-by-case instead? |
+| `Inter-Department Review` | Open question | Used when something needs review by another team (e.g. UI designs by another department). Now that we're OPC, is this still useful, or should it be renamed to **Partner Review**? |
+| `planning` | Open question | Vague and rarely used. |
+| `help wanted` | Open question | Overlaps with `question` — do we need both? |
+| `invalid` | Open question | Unclear purpose. May be a holdover from before a `Duplicate` status existed (there used to be a separate `duplicate` label); possibly redundant now. |
+| `spike` | Keep | |
+
+### Team Issue Labels
+
+| Label | Assessment | Notes |
+|---|---|---|
+| `Bug` | Keep | |
+| `Improvement` | Open question | Vague — most work could be described as an improvement. |
+| `Security` | Keep | |
+| `Feature` | Open question | Overlaps with `enhancement` ("new feature or request"). May not be needed at all — the team is always building new features, and large features are already captured via epics. |
+
+### Open Questions for Team Discussion
+
+- `enhancement` — rename to **New Feature**?
+- `best practice` — retire, or clarify what distinguishes it from normal code review expectations?
+- `data` — rename to **Database changes** / **Database**, and add a description?
+- `good first issue` — keep as a standing label, or assess candidates case-by-case instead?
+- `Inter-Department Review` — rename to **Partner Review**, or retire now that we're OPC?
+- `planning` — retire, given low usage?
+- `help wanted` — merge into/retire in favour of `question`?
+- `invalid` — retire, now that `Duplicate` exists as a status rather than a label?
+- `Improvement` — retire, given overlap with almost all work?
+- `Feature` — retire, given overlap with `enhancement` and the existence of epics for large features?
+
+Also needed: a label description for `tech debt`.
+
+### Decision
+
+Pending team discussion on the open questions above. This section will be updated with the agreed outcome and status changed to **Decided**.
