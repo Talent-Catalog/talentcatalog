@@ -182,7 +182,7 @@
               <div *ngIf="hasRequirements()">
                 <div class="ai-extracted-skills">
                   <span class="ai-extracted-skills-label">Extracted skills:</span>
-                  <span class="ai-extracted-skills-value">{{extractedSkills}}</span>
+                  <tc-badge *ngFor="let skill of extractedSkillNames" color="orange">{{skill}}</tc-badge>
                 </div>
               </div>
               <div *ngIf="jobName" class="ai-extracted-info">
@@ -200,7 +200,7 @@
                 <tc-label size="sm" class="form-label" for="lexicalWeight">How should AI match candidates?</tc-label>
                 <tc-button [type]="'plain'"
                            class="tool-tip-button"
-                           ngbTooltip="Lexical vs Semantic matching. Enter a value between 0 and 1. The default is 0.5, which is Balanced and means that the lexical ranking is equally important as the semantic ranking. Exact requirements gives more weight to lexical matching. Related experience gives more weight to semantic matching. Weighting uses industry standard Reciprocal Ranking Fusion (RRF)."
+                           ngbTooltip="Lexical vs Semantic matching. Enter a value between 0 and 1. The default is 0.5, which is Balanced and means that the lexical ranking is equally important as the semantic ranking. Specific skills gives more weight to lexical matching. Broader experience gives more weight to semantic matching. Weighting uses industry standard Reciprocal Ranking Fusion (RRF)."
                            triggers="click"
                            tooltipClass="search-tips"
                            placement="bottom top"
@@ -211,7 +211,7 @@
               </div>
 
               <div class="ai-match-slider-row">
-                <span>Related experience</span>
+                <span>Broader experience</span>
                 <div class="ai-match-slider-control">
                   <input
                     id="lexicalWeight"
@@ -223,7 +223,7 @@
                   />
                   <span class="ai-match-balanced">Balanced</span>
                 </div>
-                <span>Exact requirements</span>
+                <span>Specific skills</span>
               </div>
             </div>
 

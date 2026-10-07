@@ -174,6 +174,7 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit, 
 
   //Used to store (and display) skills extracted from a job description (when jobName is specified).
   extractedSkills: string;
+  extractedSkillNames: string[] = [];
 
   selectedBaseJoin;
   storedBaseJoin;
@@ -442,8 +443,10 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit, 
         s => s.name.indexOf(' ') < 0 ? s.name : '"' + s.name + '"'
       ).join(' ');
       this.extractedSkills = queryString;
+      this.extractedSkillNames = skills.map(s => s.name);
     } else {
       this.extractedSkills = "";
+      this.extractedSkillNames = [];
     }
 
     //Update text search query to update highlighting
