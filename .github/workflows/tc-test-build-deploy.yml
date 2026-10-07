@@ -9,6 +9,9 @@ on:
   push:
     branches: [ staging ]
 
+permissions:
+  contents: read
+
 jobs:
   build-and-deploy:
     name: Build, Test and Deploy to Staging
@@ -140,3 +143,27 @@ jobs:
         with:
           replication-group-id: grn-staging-cache
           region: eu-west-2
+
+
+  # This job MUST run only after the complete staging deployment job succeeds.
+  # `needs: build-and-deploy` gives us the required dependency:
+  #
+  #   Build/Test/Deploy
+  #          ↓
+  #       success
+  #          ↓
+  #   Staging Validation
+  #
+  # If build-and-deploy fails or is cancelled, GitHub Actions will not execute
+  # this job.
+  staging-validation:
+    name: Staging Validation
+
+    needs:
+      - build-and-deploy
+
+    # Explicitly document that validation is allowed only after successful
+    # deployment. `needs` already gives this behavior, but keeping the condition
+    # makes the intent obvious to future maintainers.
+    if: ${{ needs.build-and-deploy.result == 'success' }}
+    uses: ./.github/workflows/tc-staging-validation.yml
