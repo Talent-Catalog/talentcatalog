@@ -127,6 +127,12 @@ variable "db_capacity" {
   default     = 20
 }
 
+variable "db_vanta_tags" {
+  type        = map(string)
+  description = "Vanta user data classification tags (e.g. VantaContainsUserData, VantaUserDataStored) applied to the RDS instance. Set per environment."
+  default     = {}
+}
+
 ### Redis Cache (ElastiCache) variables:
 
 variable "cache_enable" {

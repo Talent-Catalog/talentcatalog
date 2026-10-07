@@ -220,6 +220,12 @@ module "grn_prod" {
   db_major_engine_version = "17"
   db_name                 = "grn"
 
+  # Vanta user data classification (TC-1524)
+  db_vanta_tags = {
+    VantaContainsUserData = "true"
+    VantaUserDataStored   = "GRN candidate and user records"
+  }
+
   availability_zones = ["eu-west-2a", "eu-west-2b", "eu-west-2c"]
 
   # Redis cache (unique cluster id in same account)

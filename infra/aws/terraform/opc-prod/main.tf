@@ -226,6 +226,12 @@ module "tc-plus-prod" {
   db_major_engine_version = "17"
   db_name                 = "tcplus"
 
+  # Vanta user data classification (TC-1524)
+  db_vanta_tags = {
+    VantaContainsUserData = "true"
+    VantaUserDataStored   = "Empty - migration target for TBB production TC database"
+  }
+
   availability_zones = ["eu-west-2a", "eu-west-2b", "eu-west-2c"]
 
   # Redis cache configuration (todo: enable for production)
