@@ -25,6 +25,7 @@ import static org.mockito.BDDMockito.willThrow;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -51,9 +52,11 @@ import org.tctalent.server.exception.InvalidCredentialsException;
 import org.tctalent.server.exception.PasswordExpiredException;
 import org.tctalent.server.exception.ServiceException;
 import org.tctalent.server.exception.UserDeactivatedException;
+import org.tctalent.server.model.db.TcInstanceType;
 import org.tctalent.server.request.LoginRequest;
 import org.tctalent.server.response.JwtAuthenticationResponse;
 import org.tctalent.server.service.db.UserService;
+import org.tctalent.server.service.db.impl.TcInstanceService;
 import org.tctalent.server.util.qr.EncodedQrImage;
 
 /**
@@ -88,6 +91,7 @@ class AuthAdminApiTest extends ApiTestBase {
     @Autowired ObjectMapper objectMapper;
 
     @MockitoBean UserService userService;
+    @MockitoBean TcInstanceService tcInstanceService;
 
     @BeforeEach
     public void setUp() {
@@ -101,6 +105,16 @@ class AuthAdminApiTest extends ApiTestBase {
     @Test
     public void testWebOnlyContextLoads() {
         assertThat(controller).isNotNull();
+    }
+
+    @Test
+    @DisplayName("instance type is returned - unauthenticated")
+    void getInstanceTypeSucceeds() throws Exception {
+        given(tcInstanceService.getInstanceType()).willReturn(TcInstanceType.GRN);
+
+        mockMvc.perform(get(BASE_PATH + "/instance-type"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.tcInstanceType", is(TcInstanceType.GRN.toString())));
     }
 
     @Test
