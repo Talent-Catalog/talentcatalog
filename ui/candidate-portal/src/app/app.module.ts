@@ -244,18 +244,18 @@ import {
 } from './components/profile/view/tab/services/reference/reference.component';
 import {UnhcrComponent} from './components/profile/view/tab/services/unhcr/unhcr.component';
 import {PifiComponent} from './components/profile/view/tab/services/pifi/pifi.component';
-import {VerifyPlusComponent} from './components/profile/view/tab/services/verify-plus/verify-plus.component';
-import {VerifyPlusScannerComponent} from './components/common/verify-plus-scanner/verify-plus-scanner.component';
+import {
+  VerifyPlusComponent
+} from './components/profile/view/tab/services/verify-plus/verify-plus.component';
+import {
+  VerifyPlusScannerComponent
+} from './components/common/verify-plus-scanner/verify-plus-scanner.component';
 import {
   CandidateAgreementsComponent
 } from './components/profile/view/tab/agreements/candidate-agreements.component';
 import {
   AgreementContentComponent
 } from './components/profile/view/tab/agreements/agreement-content/agreement-content.component';
-import {
-  TextPartsInputComponent
-} from "./components/util/text-parts-input/text-parts-input.component";
-import {TextPartsViewComponent} from "./components/util/text-parts-view/text-parts-view.component";
 
 //This is not used now - but is left here to show how the standard translation loading works.
 //See https://github.com/ngx-translate/core#configuration
@@ -393,8 +393,6 @@ export function HttpLoaderFactory(http: HttpClient) {
     NgxWigModule,
     QuillModule.forRoot(),
     PickerModule,
-    TextPartsInputComponent,
-    TextPartsViewComponent
   ],
   providers: [
     {provide: RedirectGuard},

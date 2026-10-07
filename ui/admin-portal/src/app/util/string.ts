@@ -32,6 +32,29 @@ export function isHtml(text): boolean {
   return /<\/?[a-z][\s\S]*>/i.test(text);
 }
 
+/**
+ * Whether the given text - which may be HTML, eg from a rich text editor - has any visible text
+ * content, ie anything other than HTML tags, non-breaking spaces and whitespace.
+ * <p/>
+ * For example "&lt;p&gt;&lt;/p&gt;", "&lt;p&gt;&amp;nbsp;&lt;/p&gt;" and "   " all have no text
+ * content.
+ */
+export function hasTextContent(text: string | null | undefined): boolean {
+  if (!text) {
+    return false;
+  }
+  //Create a temporary element to strip HTML tags and get the pure text content.
+  //This has the advantage of using built-in browser functionality.
+  const tempElement = document.createElement('div');
+  tempElement.innerHTML = text;
+  //textContent and innerText are not always the same, so we check both and use whichever is
+  // available. Different ones are used depending on the browser.
+  const pureText = (tempElement.textContent ?? tempElement.innerText ?? '')
+  .replace(/&nbsp;/g, '')
+  .trim();
+  return pureText.length > 0;
+}
+
 export function isNumeric(str: string): boolean {
   if (typeof str !== 'string' || str.trim() === '') {
     return false; // Not a string or an empty string after trimming

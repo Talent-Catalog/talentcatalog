@@ -121,9 +121,13 @@
       <tc-label for="description">
         {{ 'FORM.JOBEXPERIENCE.LABEL.DESCRIPTION' | translate }} <sup>*</sup>
       </tc-label>
-
-      <app-text-parts-input [hideKeywords]="true" [hideTidied]="true"
-                            formControlName="description"></app-text-parts-input>
+      <div class="text-parts-input">
+        <div class="mb-3">
+          <ngx-wig
+            formControlName="description">
+          </ngx-wig>
+        </div>
+      </div>
 
       <app-form-control-error [control]="form.controls.description"></app-form-control-error>
     </div>

@@ -39,6 +39,7 @@ import org.tctalent.server.request.candidate.UpdateDisplayedFieldPathsRequest;
 import org.tctalent.server.request.candidate.source.UpdateCandidateSourceDescriptionRequest;
 import org.tctalent.server.request.search.CreateFromDefaultSavedSearchRequest;
 import org.tctalent.server.request.search.SearchSavedSearchRequest;
+import org.tctalent.server.request.search.UpdateSavedSearchJobRequest;
 import org.tctalent.server.request.search.UpdateSavedSearchRequest;
 import org.tctalent.server.request.search.UpdateSharingRequest;
 import org.tctalent.server.request.search.UpdateWatchingRequest;
@@ -271,6 +272,24 @@ public interface SavedSearchService {
     SavedSearch addWatcher(long id, UpdateWatchingRequest request);
 
     SavedSearch removeWatcher(long id, UpdateWatchingRequest request);
+
+    /**
+     * Explicitly assigns or clears the job associated with the given saved search.
+     * <p/>
+     * If the request's jobId is non null, the corresponding job is looked up and assigned -
+     * unless the saved search is already associated with that same job, in which case nothing
+     * is persisted.
+     * <p/>
+     * If the request's jobId is null, any existing job association is cleared.
+     * @param id Id of saved search
+     * @param request Request specifying the job to assign, or null to clear any association
+     * @return The updated saved search
+     * @throws NoSuchObjectException if there is no saved search or job with the given id
+     * @throws InvalidRequestException if the saved search does not belong to the logged in user
+     * @throws InvalidSessionException if there is no logged in user
+     */
+    SavedSearch updateSavedSearchJob(long id, UpdateSavedSearchJobRequest request)
+            throws NoSuchObjectException, InvalidRequestException, InvalidSessionException;
 
     /**
      * Returns the scratch saved search for the logged in user,

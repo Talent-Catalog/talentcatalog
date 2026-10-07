@@ -120,6 +120,7 @@ import org.tctalent.server.request.candidate.UpdateDisplayedFieldPathsRequest;
 import org.tctalent.server.request.candidate.source.UpdateCandidateSourceDescriptionRequest;
 import org.tctalent.server.request.search.CreateFromDefaultSavedSearchRequest;
 import org.tctalent.server.request.search.SearchSavedSearchRequest;
+import org.tctalent.server.request.search.UpdateSavedSearchJobRequest;
 import org.tctalent.server.request.search.UpdateSavedSearchRequest;
 import org.tctalent.server.request.search.UpdateSharingRequest;
 import org.tctalent.server.request.search.UpdateWatchingRequest;
@@ -412,22 +413,20 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             candidates = doSearchCandidates(request);
         } else {
             SavedSearch savedSearch = getSavedSearch(request.getSavedSearchId());
-            // If searching a default search, update the default search with every search (aka Autosave).
-            // Else it is a saved search and those are updated upon 'Update Search' button only.
-            if (savedSearch.getDefaultSearch()) {
+            // Automatically persist the latest filters when configured for this search.
+            if (savedSearch.isDefaultSearch() || savedSearch.isAutoUpdateOnSearch()) {
                 UpdateSavedSearchRequest updateRequest = new UpdateSavedSearchRequest();
                 updateRequest.setSearchCandidateRequest(request);
                 //Set other fields - no changes there
                 updateRequest.setName(savedSearch.getName());
-                updateRequest.setDefaultSearch(savedSearch.getDefaultSearch());
+                updateRequest.setDefaultSearch(savedSearch.isDefaultSearch());
                 updateRequest.setFixed(savedSearch.getFixed());
-                updateRequest.setReviewable(savedSearch.getReviewable());
+                updateRequest.setReviewable(savedSearch.isReviewable());
                 updateRequest.setSavedSearchType(savedSearch.getSavedSearchType());
                 updateRequest.setSavedSearchSubtype(savedSearch.getSavedSearchSubtype());
                 //todo Need special method which only updates search part. Then don't need the above "no changes there" stuff
                 updateSavedSearch(savedSearch.getId(), updateRequest);
             }
-
             //Do the search
             candidates = doSearchCandidates(request);
 
@@ -461,16 +460,16 @@ public class SavedSearchServiceImpl implements SavedSearchService {
     public void updateUserDefaultSavedSearchIfNeeded(@NotNull SearchCandidateRequest request) {
         final Long savedSearchId = request.getSavedSearchId();
         SavedSearch savedSearch = getSavedSearch(savedSearchId);
-        // If searching a default search, update the default search with every search (aka Autosave).
-        // Else it is a saved search and those are updated upon 'Update Search' button only.
-        if (savedSearch.getDefaultSearch()) {
+        // Default searches always auto-update.
+        // Named saved searches auto-update when configured to do so.
+        if (savedSearch.isDefaultSearch() || savedSearch.isAutoUpdateOnSearch()) {
             UpdateSavedSearchRequest updateRequest = new UpdateSavedSearchRequest();
             updateRequest.setSearchCandidateRequest(request);
             //Set other fields - no changes there
             updateRequest.setName(savedSearch.getName());
-            updateRequest.setDefaultSearch(true);
+            updateRequest.setDefaultSearch(savedSearch.isDefaultSearch());
             updateRequest.setFixed(savedSearch.getFixed());
-            updateRequest.setReviewable(savedSearch.getReviewable());
+            updateRequest.setReviewable(savedSearch.isReviewable());
             updateRequest.setSavedSearchType(savedSearch.getSavedSearchType());
             updateRequest.setSavedSearchSubtype(savedSearch.getSavedSearchSubtype());
             updateSavedSearch(savedSearchId, updateRequest);
@@ -728,7 +727,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             if (!savedSearch.getFixed() || savedSearch.getCreatedBy().getId().equals(loggedInUser.getId())) {
                 savedSearch.setName(request.getName());
                 savedSearch.setFixed(request.getFixed());
-                savedSearch.setReviewable(request.getReviewable());
+                savedSearch.setReviewable(request.isReviewable());
 
                 final Long jobId = request.getJobId();
                 if (jobId != null) {
@@ -750,6 +749,13 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         }
 
         SavedSearch newSavedSearch = convertToSavedSearch(savedSearch, request);
+        //convertToSavedSearch builds a new SavedSearch, so a null jobId would otherwise clear the
+        //existing job association. A null jobId means "no change" (see
+        //AbstractUpdateCandidateSourceRequest.jobId) - eg auto-updates of the default search
+        //on every search run must not wipe a job assigned via updateSavedSearchJob.
+        if (request.getJobId() == null) {
+            newSavedSearch.setSfJobOpp(savedSearch.getSfJobOpp());
+        }
 
         //delete and recreate all joined searches
         searchJoinRepository.deleteBySearchId(id);
@@ -887,6 +893,35 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         savedSearch.parseType();
 
         savedSearch.removeWatcher(request.getUserId());
+
+        return savedSearchRepository.save(savedSearch);
+    }
+
+    @Override
+    @Transactional
+    public SavedSearch updateSavedSearchJob(long id, UpdateSavedSearchJobRequest request) {
+        final User loggedInUser = userService.getLoggedInUser();
+        if (loggedInUser == null) {
+            throw new InvalidSessionException("Not logged in");
+        }
+
+        SavedSearch savedSearch = savedSearchRepository.findById(id)
+                .orElseThrow(() -> new NoSuchObjectException(SavedSearch.class, id));
+
+        if (!savedSearch.getCreatedBy().getId().equals(loggedInUser.getId())) {
+            throw new InvalidRequestException("You can't modify another user's saved search.");
+        }
+
+        final Long jobId = request.getJobId();
+        if (jobId == null) {
+            savedSearch.setSfJobOpp(null);
+        } else {
+            final SalesforceJobOpp currentJobOpp = savedSearch.getSfJobOpp();
+            if (currentJobOpp != null && jobId.equals(currentJobOpp.getId())) {
+                return savedSearch;
+            }
+            savedSearch.setSfJobOpp(salesforceJobOppService.getJobOpp(jobId));
+        }
 
         return savedSearchRepository.save(savedSearch);
     }
@@ -1152,8 +1187,11 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         SavedSearch savedSearch = new SavedSearch();
         savedSearch.setName(request.getName());
         savedSearch.setFixed(request.getFixed());
-        savedSearch.setDefaultSearch(request.getDefaultSearch());
-        savedSearch.setReviewable(request.getReviewable());
+        savedSearch.setDefaultSearch(request.isDefaultSearch());
+        savedSearch.setReviewable(request.isReviewable());
+        savedSearch.setAutoUpdateOnSearch(
+            savedSearch.isDefaultSearch() || request.isAutoUpdateOnSearch()
+        );
         if (origSavedSearch != null) {
             savedSearch.setDescription(origSavedSearch.getDescription());
             savedSearch.setDisplayedFieldsLong(origSavedSearch.getDisplayedFieldsLong());

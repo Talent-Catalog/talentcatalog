@@ -1,5 +1,9 @@
 import {Component, EventEmitter, Input, Output, ViewEncapsulation} from '@angular/core';
+import {CommonModule} from '@angular/common';
 import {SearchResults} from "../../../model/search-results";
+import {AlertComponent} from "../alert/alert.component";
+import {TcLoadingComponent} from "../loading/tc-loading.component";
+import {TcPaginationComponent} from "../pagination/tc-pagination.component";
 
 /**
  * @component TcTableComponent
@@ -46,7 +50,9 @@ import {SearchResults} from "../../../model/search-results";
   // Setting to None means the tc-table scss style only applies styles to <table> elements within the tc-table component,
   // avoids styles bleeding out to the other <table> components not wrapped by <tc-table>. Also overrides any
   // existing <table> styles from bootstrap.
-  encapsulation: ViewEncapsulation.None
+  encapsulation: ViewEncapsulation.None,
+  standalone: true,
+  imports: [CommonModule, AlertComponent, TcLoadingComponent, TcPaginationComponent]
 })
 export class TcTableComponent {
   // Required inputs

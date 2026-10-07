@@ -71,6 +71,7 @@ import org.tctalent.server.request.search.ClearSelectionRequest;
 import org.tctalent.server.request.search.CreateFromDefaultSavedSearchRequest;
 import org.tctalent.server.request.search.SearchSavedSearchRequest;
 import org.tctalent.server.request.search.SelectCandidateInSearchRequest;
+import org.tctalent.server.request.search.UpdateSavedSearchJobRequest;
 import org.tctalent.server.request.search.UpdateSavedSearchRequest;
 import org.tctalent.server.request.search.UpdateSharingRequest;
 import org.tctalent.server.request.search.UpdateWatchingRequest;
@@ -114,6 +115,7 @@ class SavedSearchAdminApiTest extends ApiTestBase {
   private static final String UPDATE_CONTEXT_PATH = "/context/";
   private static final String UPDATE_FIELDS_PATH = "/displayed-fields/";
   private static final String UPDATE_DESCRIPTION_PATH = "/description/";
+  private static final String UPDATE_JOB_PATH = "/job/";
 
   private final Page<SavedSearch> savedSearchPage =
       new PageImpl<>(
@@ -602,6 +604,40 @@ class SavedSearchAdminApiTest extends ApiTestBase {
     updateSavedSearchAndVerifyResponse(path, objectMapper.writeValueAsString(request));
 
     verify(savedSearchService).removeWatcher(anyLong(), any(UpdateWatchingRequest.class));
+  }
+
+  @Test
+  @DisplayName("update job succeeds")
+  void updateJobSucceeds() throws Exception {
+    String path = UPDATE_JOB_PATH + SAVED_SEARCH_ID;
+
+    UpdateSavedSearchJobRequest request = new UpdateSavedSearchJobRequest();
+    request.setJobId(456L);
+
+    given(savedSearchService
+        .updateSavedSearchJob(anyLong(), any(UpdateSavedSearchJobRequest.class)))
+        .willReturn(savedSearch);
+
+    updateSavedSearchAndVerifyResponse(path, objectMapper.writeValueAsString(request));
+
+    verify(savedSearchService).updateSavedSearchJob(anyLong(), any(UpdateSavedSearchJobRequest.class));
+  }
+
+  @Test
+  @DisplayName("update job with null clears job association")
+  void updateJobWithNullClearsJob() throws Exception {
+    String path = UPDATE_JOB_PATH + SAVED_SEARCH_ID;
+
+    UpdateSavedSearchJobRequest request = new UpdateSavedSearchJobRequest();
+    request.setJobId(null);
+
+    given(savedSearchService
+        .updateSavedSearchJob(anyLong(), any(UpdateSavedSearchJobRequest.class)))
+        .willReturn(savedSearch);
+
+    updateSavedSearchAndVerifyResponse(path, objectMapper.writeValueAsString(request));
+
+    verify(savedSearchService).updateSavedSearchJob(anyLong(), any(UpdateSavedSearchJobRequest.class));
   }
 
   @Test

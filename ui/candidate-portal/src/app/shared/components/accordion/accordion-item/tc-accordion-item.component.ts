@@ -1,5 +1,7 @@
 import {Component, ContentChild, ElementRef, Input} from '@angular/core';
+import {CommonModule} from '@angular/common';
 import {TcAccordionComponent} from "../tc-accordion.component";
+import {TcIconComponent} from "../../icon-component/tc-icon.component";
 
 /**
  * @component TcAccordionItemComponent
@@ -48,7 +50,9 @@ import {TcAccordionComponent} from "../tc-accordion.component";
 @Component({
   selector: 'tc-accordion-item',
   templateUrl: './tc-accordion-item.component.html',
-  styleUrls: ['./tc-accordion-item.component.scss']
+  styleUrls: ['./tc-accordion-item.component.scss'],
+  standalone: true,
+  imports: [CommonModule, TcIconComponent]
 })
 export class TcAccordionItemComponent {
   /** The text displayed in the accordion header */

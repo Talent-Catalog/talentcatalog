@@ -15,7 +15,7 @@
  */
 
 import {Injectable} from '@angular/core';
-import {Observable} from 'rxjs/index';
+import {Observable} from 'rxjs';
 import {environment} from '../../environments/environment';
 import {HttpClient} from '@angular/common/http';
 import {CandidateJobExperience} from "../model/candidate-job-experience";
@@ -42,20 +42,20 @@ export class CandidateJobExperienceService {
     return this.http.post<CandidateJobExperience[]>(`${this.apiUrl}/list`, request);
   }
 
-  create(id: number, details): Observable<CandidateJobExperience>  {
-    return this.http.post<CandidateJobExperience>(`${this.apiUrl}/${id}`, details);
+  create(candidateId: number, details): Observable<CandidateJobExperience>  {
+    return this.http.post<CandidateJobExperience>(`${this.apiUrl}/${candidateId}`, details);
   }
 
-  update(id: number, details): Observable<CandidateJobExperience>  {
-    return this.http.put<CandidateJobExperience>(`${this.apiUrl}/${id}`, details);
+  update(experienceId: number, details): Observable<CandidateJobExperience>  {
+    return this.http.put<CandidateJobExperience>(`${this.apiUrl}/${experienceId}`, details);
   }
 
   search(request): Observable<SearchResults<CandidateJobExperience>> {
     return this.http.post<SearchResults<CandidateJobExperience>>(`${this.apiUrl}/search`, request);
   }
 
-  delete(id: number): Observable<CandidateJobExperience>  {
-    return this.http.delete<CandidateJobExperience>(`${this.apiUrl}/${id}`);
+  delete(experienceId: number): Observable<CandidateJobExperience>  {
+    return this.http.delete<CandidateJobExperience>(`${this.apiUrl}/${experienceId}`);
   }
 
 }

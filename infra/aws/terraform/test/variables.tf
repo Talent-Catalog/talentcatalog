@@ -58,18 +58,6 @@ variable "translations_folder" {
   type = string
 }
 
-variable "es_password" {
-  type = string
-}
-
-variable "es_url" {
-  type = string
-}
-
-variable "es_username" {
-  type = string
-}
-
 variable "email_default" {
   type = string
 }

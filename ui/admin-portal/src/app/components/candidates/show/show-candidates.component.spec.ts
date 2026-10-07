@@ -16,6 +16,7 @@
 
 import {ShowCandidatesComponent} from "./show-candidates.component";
 import {ComponentFixture, fakeAsync, TestBed, tick} from "@angular/core/testing";
+import {SimpleChange} from "@angular/core";
 import {FormsModule, ReactiveFormsModule, UntypedFormBuilder} from "@angular/forms";
 import {SortedByComponent} from "../../util/sort/sorted-by.component";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
@@ -42,7 +43,9 @@ import {SalesforceService} from "../../../services/salesforce.service";
 import {MockCandidateSource} from "../../../MockData/MockCandidateSource";
 import {MockUser} from "../../../MockData/MockUser";
 import {SavedSearchType} from "../../../model/saved-search";
-import {of, Subscription, throwError} from "rxjs";
+import {of, Subject, Subscription, throwError} from "rxjs";
+import {JobService} from "../../../services/job.service";
+import {JobMatchingInfo} from "../../../model/JobMatchingInfo";
 import {LocalStorageService} from "../../../services/local-storage.service";
 import {MockCandidate} from "../../../MockData/MockCandidate";
 import {MockSavedSearch} from "../../../MockData/MockSavedSearch";
@@ -640,6 +643,30 @@ describe('ShowCandidatesComponent', () => {
       expect(component.currentCandidate).toBe(candidate);
       expect(component.savedSearchSelectionChange).toBeTrue();
       expect(component.candidateSelection.emit).toHaveBeenCalledWith(candidate);
+    });
+
+    it('should pass opportunityDescription through to the candidate search card', () => {
+      component.candidateSource = new MockCandidateSource();
+      fixture.detectChanges(); // triggers ngOnInit, which resets currentCandidate to null
+
+      component.setCurrentCandidate(new MockCandidate());
+      component.opportunityDescription = 'A supplied opportunity description';
+      fixture.detectChanges();
+
+      const searchCardEl = fixture.debugElement.query(By.css('app-candidate-search-card'));
+      expect(searchCardEl.properties['opportunityDescription'])
+        .toBe('A supplied opportunity description');
+    });
+
+    it('should leave opportunityDescription undefined when the parent does not supply one', () => {
+      component.candidateSource = new MockCandidateSource();
+      fixture.detectChanges(); // triggers ngOnInit, which resets currentCandidate to null
+
+      component.setCurrentCandidate(new MockCandidate());
+      fixture.detectChanges();
+
+      const searchCardEl = fixture.debugElement.query(By.css('app-candidate-search-card'));
+      expect(searchCardEl.properties['opportunityDescription']).toBeUndefined();
     });
 
     it('should apply review filter and search without page number', () => {
@@ -1785,5 +1812,145 @@ describe('ShowCandidatesComponent', () => {
 
       expect(window.open).toHaveBeenCalledWith('/candidate/12345', '_blank');
     });
+  });
+
+  describe('opportunity description for match explanations', () => {
+    let jobService: JobService;
+
+    const jobInfo = (description: string): JobMatchingInfo =>
+      ({description, skillNames: [], jobName: 'Job'});
+
+    function jobListSource(id: number, jobId: number): any {
+      const source = new MockCandidateSource();
+      source.id = id;
+      source.sfJobOpp = {id: jobId, sfId: 'SF-' + jobId};
+      return source;
+    }
+
+    function changeSource(source: any) {
+      const previous = component.candidateSource;
+      component.candidateSource = source;
+      component.ngOnChanges({
+        candidateSource: new SimpleChange(previous, source, false)
+      });
+    }
+
+    function searchCardDescription(): string | undefined {
+      component.setCurrentCandidate(new MockCandidate());
+      fixture.detectChanges();
+      return fixture.debugElement.query(By.css('app-candidate-search-card'))
+        .properties['opportunityDescription'];
+    }
+
+    beforeEach(() => {
+      jobService = TestBed.inject(JobService);
+      mockCandidateSourceCandidateService.searchPaged.and.returnValue(
+        of({content: [], totalElements: 0, number: 0, size: 10}));
+      mockCasiAdminService.getServiceList.and.returnValue(of([]));
+      fixture.detectChanges(); // ngOnInit
+    });
+
+    it('should use the job description of a job-linked saved list, without writing the input', fakeAsync(() => {
+      spyOn(jobService, 'getJobMatchingInfo').and.returnValue(of(jobInfo('List job description')));
+
+      changeSource(jobListSource(1, 8));
+      tick();
+
+      expect(jobService.getJobMatchingInfo).toHaveBeenCalledWith(8);
+      expect(component.opportunityDescription).toBeUndefined();
+      expect(component.explanationOpportunityDescription).toBe('List job description');
+      expect(searchCardDescription()).toBe('List job description');
+    }));
+
+    it('should prefer a description supplied by the parent over the fetched job description', fakeAsync(() => {
+      spyOn(jobService, 'getJobMatchingInfo').and.returnValue(of(jobInfo('List job description')));
+      component.opportunityDescription = 'Parent description';
+
+      changeSource(jobListSource(1, 8));
+      tick();
+
+      expect(component.opportunityDescription).toBe('Parent description');
+      expect(searchCardDescription()).toBe('Parent description');
+    }));
+
+    it('should fall back to the job description when the parent description has no text content', fakeAsync(() => {
+      spyOn(jobService, 'getJobMatchingInfo').and.returnValue(of(jobInfo('List job description')));
+      changeSource(jobListSource(1, 8));
+      tick();
+
+      for (const blank of ['', '   ', '<p></p>', '<p><br></p>']) {
+        component.opportunityDescription = blank;
+        expect(component.explanationOpportunityDescription)
+          .withContext(JSON.stringify(blank))
+          .toBe('List job description');
+      }
+    }));
+
+    it('should clear the fetched description when the source changes to one without a job', fakeAsync(() => {
+      spyOn(jobService, 'getJobMatchingInfo').and.returnValue(of(jobInfo('List job description')));
+      changeSource(jobListSource(1, 8));
+      tick();
+
+      const noJobList = jobListSource(2, 9);
+      noJobList.sfJobOpp = null;
+      changeSource(noJobList);
+      tick();
+
+      expect(component.explanationOpportunityDescription).toBeUndefined();
+      expect(searchCardDescription()).toBeUndefined();
+    }));
+
+    it('should also use the job description of a saved search associated with a job', fakeAsync(() => {
+      spyOn(jobService, 'getJobMatchingInfo').and.returnValue(of(jobInfo('Search job description')));
+      const search: any = new MockSavedSearch();
+      search.id = 3;
+      search.sfJobOpp = {id: 8};
+
+      changeSource(search);
+      tick();
+
+      expect(jobService.getJobMatchingInfo).toHaveBeenCalledWith(8);
+      expect(component.explanationOpportunityDescription).toBe('Search job description');
+    }));
+
+    it('should not fetch a job description for a saved search without a job', fakeAsync(() => {
+      spyOn(jobService, 'getJobMatchingInfo');
+      const search: any = new MockSavedSearch();
+      search.id = 3;
+      search.sfJobOpp = null;
+
+      changeSource(search);
+      tick();
+
+      expect(jobService.getJobMatchingInfo).not.toHaveBeenCalled();
+      expect(component.explanationOpportunityDescription).toBeUndefined();
+    }));
+
+    it('should ignore a slow response for a previous source', fakeAsync(() => {
+      const slowFirst = new Subject<JobMatchingInfo>();
+      spyOn(jobService, 'getJobMatchingInfo').and.callFake((jobId: number) =>
+        jobId === 8 ? slowFirst : of(jobInfo('Second list job description')));
+
+      changeSource(jobListSource(1, 8));
+      changeSource(jobListSource(2, 9));
+      tick();
+      slowFirst.next(jobInfo('First list job description'));
+      tick();
+
+      expect(component.explanationOpportunityDescription).toBe('Second list job description');
+    }));
+
+    it('should not surface a page error when the job description cannot be loaded', fakeAsync(() => {
+      spyOn(jobService, 'getJobMatchingInfo').and.returnValue(throwError(() => 'lookup failed'));
+      spyOn(console, 'warn');
+      component.error = null;
+
+      changeSource(jobListSource(1, 8));
+      tick();
+
+      expect(component.error).toBeNull();
+      expect(component.explanationOpportunityDescription).toBeUndefined();
+      expect(console.warn).toHaveBeenCalled();
+    }));
   });
 });

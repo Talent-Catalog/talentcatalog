@@ -26,8 +26,7 @@ describe('TcRadioComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [TcRadioComponent],
-      imports: [FormsModule, ReactiveFormsModule]
+      imports: [TcRadioComponent, FormsModule, ReactiveFormsModule]
     }).compileComponents();
   });
 

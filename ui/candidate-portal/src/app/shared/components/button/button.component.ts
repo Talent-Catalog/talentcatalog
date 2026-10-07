@@ -1,5 +1,6 @@
 import {Component, EventEmitter, HostBinding, Input, Output} from '@angular/core';
-import {QueryParamsHandling} from '@angular/router';
+import {QueryParamsHandling, RouterLink} from '@angular/router';
+import {CommonModule} from '@angular/common';
 
 /**
  * @component ButtonComponent
@@ -84,6 +85,8 @@ import {QueryParamsHandling} from '@angular/router';
   selector: 'tc-button',
   templateUrl: './button.component.html',
   styleUrls: ['./button.component.scss'],
+  standalone: true,
+  imports: [CommonModule, RouterLink]
 })
 export class ButtonComponent {
   @Input() size: 'xs' | 'sm' | 'default' | 'lg' | 'xl'  = 'default';

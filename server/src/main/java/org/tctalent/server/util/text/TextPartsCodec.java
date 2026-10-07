@@ -47,11 +47,14 @@ public class TextPartsCodec {
         throw new UnsupportedOperationException("This is a utility class and cannot be instantiated");
     }
 
+    public static boolean isTextParts(@Nullable String text) {
+        return text != null && text.startsWith("{\"parts");
+    }
+
     /**
      * Reads the given JSON string and returns a TextParts object.
      * @param json JSON string representing a stored TextParts object.
-     * @return TextParts object represented by the given JSON string or null if the string does
-     * not represent a valid TextParts JSON object.
+     * @return TextParts object represented by the given JSON string.
      * @throws IllegalArgumentException If the given string is not valid JSON
      * or does not represent a valid stored TextParts JSON object.
      */
@@ -64,7 +67,7 @@ public class TextPartsCodec {
             }
             throw new IllegalArgumentException("Missing text parts in JSON: " + json);
         } catch (JsonProcessingException ex) {
-            boolean isTextPartsJson = json.startsWith("{\"parts");
+            boolean isTextPartsJson = isTextParts(json);
             if (isTextPartsJson) {
                 //Probably a corrupted TextParts JSON string.
                 log.error("Corrupted TextParts JSON string: {}", json);
@@ -129,9 +132,9 @@ public class TextPartsCodec {
         List<String> keywords = parts.getKeywords() == null
             ? new ArrayList<>()
             : parts.getKeywords()
-              .stream()
-              .filter(keyword -> keyword != null && !keyword.isBlank())
-              .toList();
+                .stream()
+                .filter(keyword -> keyword != null && !keyword.isBlank())
+                .toList();
 
         return new TextParts(original, parts.getTidied(), keywords);
     }

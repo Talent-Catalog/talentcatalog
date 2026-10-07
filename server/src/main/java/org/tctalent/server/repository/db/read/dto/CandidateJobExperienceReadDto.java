@@ -17,9 +17,11 @@
 package org.tctalent.server.repository.db.read.dto;
 
 import java.time.LocalDate;
+import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
 import org.tctalent.server.repository.db.read.annotation.JsonOneToOne;
+import org.tctalent.server.repository.db.read.annotation.SqlColumn;
 import org.tctalent.server.repository.db.read.annotation.SqlDefaults;
 import org.tctalent.server.repository.db.read.annotation.SqlTable;
 
@@ -37,10 +39,14 @@ public class CandidateJobExperienceReadDto {
     @JsonOneToOne(joinColumn = "country_id")
     private CountryReadDto country;
     private String description;
+    private String tidiedDescription;
+
+    @SqlColumn(transform = "to_jsonb(string_to_array(%s, ','))") //Convert csv string to jsonb array
+    private List<String> keywordsInDescription;
     private LocalDate endDate;
-    private String fullTime;
+    private Boolean fullTime;
     private Long id;
-    private String paid;
+    private Boolean paid;
     private String role;
     private LocalDate startDate;
 }

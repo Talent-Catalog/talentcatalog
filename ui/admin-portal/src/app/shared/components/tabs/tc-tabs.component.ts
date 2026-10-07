@@ -10,6 +10,7 @@ import {
   SimpleChanges,
   TemplateRef
 } from '@angular/core';
+import {CommonModule} from '@angular/common';
 import {TcTabComponent} from "./tab/tc-tab.component";
 
 export interface Tab {
@@ -58,7 +59,9 @@ export interface Tab {
 @Component({
   selector: 'tc-tabs',
   templateUrl: './tc-tabs.component.html',
-  styleUrls: ['./tc-tabs.component.scss']
+  styleUrls: ['./tc-tabs.component.scss'],
+  standalone: true,
+  imports: [CommonModule]
 })
 export class TcTabsComponent implements AfterContentInit, OnChanges {
   /** Optional input to set the active tab - if not provided, uses default tab or first tab */

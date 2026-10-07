@@ -165,6 +165,9 @@ import {
   ViewCandidateJobExperienceComponent
 } from './components/candidates/view/occupation/experience/view-candidate-job-experience.component';
 import {
+  CandidateJobExperienceComponent
+} from './components/candidates/view/occupation/experience/candidate-job-experience/candidate-job-experience.component';
+import {
   CreateUpdateUserComponent
 } from './components/settings/users/create-update-user/create-update-user.component';
 import {
@@ -838,6 +841,9 @@ import {
   CandidateCvTextTabComponent
 } from './components/candidates/view/tab/candidate-cv-text-tab/candidate-cv-text-tab.component';
 import {
+  CandidateMatchExplanationComponent
+} from './components/util/candidate-match-explanation/candidate-match-explanation.component';
+import {
   ImportLinkedinPremiumCouponsComponent
 } from "./components/casi-management/import-linkedin-premium-coupons/import-linkedin-premium-coupons.component";
 import {
@@ -851,10 +857,6 @@ import {
 import {
   EraseCandidateDataComponent
 } from "./components/candidates/view/erase/erase-candidate-data.component";
-import {TextPartsViewComponent} from "./components/util/text-parts-view/text-parts-view.component";
-import {
-  TextPartsInputComponent
-} from "./components/util/text-parts-input/text-parts-input.component";
 import {
   ViewCandidateAspirationsComponent
 } from "./components/candidates/view/aspirations/view-candidate-aspirations.component";
@@ -931,6 +933,7 @@ import {
     CandidateSourceComponent,
     ViewCandidateOccupationComponent,
     ViewCandidateJobExperienceComponent,
+    CandidateJobExperienceComponent,
     LanguageLevelFormControlComponent,
     CandidatePipe,
     EditCandidateJobExperienceComponent,
@@ -1200,6 +1203,7 @@ import {
     ViewPrivacyPolicyInfoComponent,
     SafeHtmlPipe,
     CandidateCvTextTabComponent,
+    CandidateMatchExplanationComponent,
     CasiManagementComponent,
     CsvPreviewComponent,
     ManageHelpSiteLinksComponent,
@@ -1232,8 +1236,6 @@ import {
         useClass: LanguageLoader
       },
     }),
-    TextPartsInputComponent,
-    TextPartsViewComponent,
   ],
   providers: [
     {provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true},
