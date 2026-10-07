@@ -257,6 +257,12 @@ module "grn_prod" {
   server_port                           = "8080"
   server_url                            = "https://globalrefugee.net/"
 
+  # Vanta user data classification (TC-1524)
+  candidate_files_vanta_tags = {
+    VantaContainsUserData = "true"
+    VantaUserDataStored   = "GRN candidate folders and documents"
+  }
+
   # todo: retire or point to GRN SF
   sf_base_classic_url   = "https://talentbeyondboundaries.my.salesforce.com/"
   sf_base_lightning_url = "https://talentbeyondboundaries.lightning.force.com"
