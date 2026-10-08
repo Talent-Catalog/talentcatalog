@@ -16,26 +16,26 @@ permissions:
 
 jobs:
   staging-validation:
-    name: Staging Validation
+    name: Health Check (${{ matrix.instance }})
     runs-on: ubuntu-latest
+    timeout-minutes: 4
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - instance: TBB
+            url: ${{ vars.TBB_STAGING_HEALTH_URL }}
+          - instance: OPC
+            url: ${{ vars.OPC_STAGING_HEALTH_URL }}
+          - instance: GRN
+            url: ${{ vars.GRN_STAGING_HEALTH_URL }}
 
     steps:
-      # Intentionally contains no real validation yet.
-      #
-      # The purpose of this step is to prove that:
-      #
-      #   staging deployment
-      #          ↓
-      #   successful completion
-      #          ↓
-      #   staging validation starts
-      #
-      # Future tickets will replace/extend this  with
-      # stability, health, SHA verification and performance checks.
-      - name: Confirm staging validation started
-        run: |
-          echo "Staging deployment completed successfully."
-          echo "Staging validation has started."
-          echo ""
-          echo "This ticket only establishes the workflow."
-          echo "Readiness, health, SHA and performance checks are implemented in later tickets."
+      - uses: actions/checkout@v7
+
+      - name: Check staging application health
+        env:
+          INSTANCE: ${{ matrix.instance }}
+          HEALTH_URL: ${{ matrix.url }}
+        run: bash .github/scripts/check-staging-health.sh
