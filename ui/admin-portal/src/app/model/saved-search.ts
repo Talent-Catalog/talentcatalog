@@ -106,7 +106,10 @@ export function getCandidateSourceType(source: CandidateSource) {
 }
 
 export function isSavedSearch(source: CandidateSource): source is SavedSearch {
-  return source ? 'savedSearchType' in source : false;
+  //We check for the presence of  a SavedSearch only property (ie not shared with Lists)
+  //that is guaranteed to be present in the source object no matter what DTO has been used.
+  //If it is present, then the source is a SavedSearch.
+  return source ? 'autoUpdateOnSearch' in source : false;
 }
 
 export function getSavedSearchBreadcrumb(savedSearch: SavedSearch, infos: SavedSearchTypeInfo[]): string {
