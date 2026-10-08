@@ -53,6 +53,7 @@ public class SavedListBuilderSelector {
             .add("id")
             .add("publicId")
             .add("name")
+            .add("registeredJob")
             .add("sfJobOpp", jobOppIdsDto())
             .add("displayedFieldsLong")
             .add("displayedFieldsShort")
