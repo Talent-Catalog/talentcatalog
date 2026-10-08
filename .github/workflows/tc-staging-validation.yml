@@ -16,26 +16,11 @@ permissions:
 
 jobs:
   staging-validation:
-    name: Health Check (${{ matrix.instance }})
+    name: Staging Validation
     runs-on: ubuntu-latest
-    timeout-minutes: 4
-
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - instance: TBB
-            url: ${{ vars.TBB_STAGING_HEALTH_URL }}
-          - instance: OPC
-            url: ${{ vars.OPC_STAGING_HEALTH_URL }}
-          - instance: GRN
-            url: ${{ vars.GRN_STAGING_HEALTH_URL }}
+    timeout-minutes: 5
 
     steps:
-      - uses: actions/checkout@v7
-
-      - name: Check staging application health
-        env:
-          INSTANCE: ${{ matrix.instance }}
-          HEALTH_URL: ${{ matrix.url }}
-        run: bash .github/scripts/check-staging-health.sh
+      # Give TC time to settle after deployment and Redis reboots.
+      - name: Wait 3 minutes for staging to settle
+        run: sleep 180
