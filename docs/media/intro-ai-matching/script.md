@@ -9,7 +9,7 @@ sass:
 
 ![Introduction to AI Matching](poster.png)
 
-**Status:** Draft, out for feedback ([#3733](https://github.com/Talent-Catalog/talentcatalog/issues/3733))  
+**Status:** Final ([#3733](https://github.com/Talent-Catalog/talentcatalog/issues/3733))  
 **Branding:** Global Refugee Network (GRN)  
 **Developed by:** [Open Pathway Collective](https://openpathwaycollective.org)  
 **Format:** 1920×1080, 2:29, narrated (Andrew Walsh voice, HeyGen) with music bed  
@@ -17,8 +17,6 @@ sass:
 
 The video is fully animated. Talent Catalog screens are recreated as stylised mock-ups
 with generic, anonymised data — no real candidate names or photos appear.
-
-When giving feedback, please refer to scenes by number (1–13).
 
 | # | On screen | Voice-over |
 |---|---|---|
