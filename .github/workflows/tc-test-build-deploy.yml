@@ -12,6 +12,14 @@ on:
 permissions:
   contents: read
 
+# Locking the complete staging deployment
+# and validation flow so a later merge cannot redeploy staging while the
+# current release is still being validated.
+concurrency:
+  group: tc-staging-deploy-validation
+  cancel-in-progress: false
+  queue: max
+
 jobs:
   build-and-deploy:
     name: Build, Test and Deploy to Staging
