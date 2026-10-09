@@ -66,6 +66,11 @@ export class RegistrationCandidateOccupationComponent implements OnInit, OnDestr
   // driving a warning that they need to choose a new principal occupation. Same
   // rule as above: not dismissible, only clears once a principal is selected.
   principalOccupationRemoved = false;
+  // Occupations already saved on the server for this candidate, keyed by candidate
+  // occupation id. Their occupations stay out of the dropdown for other rows, even if
+  // the row is removed or changed here, until the changes are saved. Otherwise the
+  // server could be asked to add an occupation before deleting the row that has it.
+  private savedOccupationIds = new Map<number, number>();
 
   @ViewChild('selectPrincipalHeading') selectPrincipalHeadingRef?: ElementRef<HTMLElement>;
   // Set only when the candidate saves their first occupation during this session (not on
@@ -106,6 +111,8 @@ export class RegistrationCandidateOccupationComponent implements OnInit, OnDestr
             principal: occ.id === candidate.principalOccupation?.id,
           };
         });
+        this.savedOccupationIds = new Map(
+          this.candidateOccupations.map(occ => [occ.id, occ.occupationId]));
         this._loading.candidate = false;
         this.showForm = this.candidateOccupations.length === 0;
       },
@@ -343,6 +350,14 @@ export class RegistrationCandidateOccupationComponent implements OnInit, OnDestr
           ? candidateOcc.occupationId.toString()
           : candidateOcc.occupation.id.toString()
         );
+      // Removing or changing a saved occupation does not make it available again
+      // until the changes are saved. The row being edited can keep its own saved occupation.
+      const editingId = this.editingIndex != null ? this.candidateOccupations[this.editingIndex]?.id : null;
+      this.savedOccupationIds.forEach((occupationId, id) => {
+        if (id !== editingId && occupationId != null) {
+          existingIds.push(occupationId.toString());
+        }
+      });
       // Remove the Unknown occupation from the occupations (only show if an existing id)
       existingIds.push('0');
       return this.occupations.filter(occ => !existingIds.includes(occ.id.toString()));
