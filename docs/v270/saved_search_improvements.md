@@ -23,8 +23,7 @@ filters you set are less likely to be lost or forgotten.
 
 Clicking **Search** on a saved search now automatically keeps any filter changes you've made on
 that search — there's no longer a need to separately click **Update Search** just to stop those
-changes being lost. This is the new standard behaviour for every saved search, and there's no
-setting to turn it off.
+changes being lost. This is the new standard behaviour for every saved search.
 
 If you've been using **Update Search** as a deliberate "commit" step — for example, to try out
 filter changes without affecting the saved search until you're sure — be aware that running
@@ -43,26 +42,12 @@ filter changes without affecting the saved search until you're sure — be aware
 If you change a saved search's filters and then try to navigate away without clicking **Search**,
 you'll now see a clearer prompt:
 
-> **Unapplied search filter changes**
->
-> You have filter changes that have not been applied. To keep them, please cancel and click
-> "Search".
->
-> Or to proceed without keeping them, click OK.
-
 ## 📊 Exports Match What You See
 
 CSV export from a saved search now reflects the filters currently applied, including changes you
 haven't explicitly saved — consistent with filters being kept automatically.
 
 ## 🏷️ Your Default Search, Properly Labelled
-
-<div class="card-image-container">
-    <img class="card-image"
-         src="../assets/images/v270/DefaultSearchUnsavedHeading.png"
-         alt="A default search headed Unsaved, rather than a system-generated list name"
-    >
-</div>
 
 Your default search is now clearly headed **Unsaved**, instead of being shown under a
 system-generated name such as "List: DefaultSearch-&lt;username&gt;".

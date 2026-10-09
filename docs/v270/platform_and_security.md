@@ -50,7 +50,7 @@ our code, configuration, and infrastructure. Keyword search was already handled 
 this is a behind-the-scenes clean-up: no change for users, and lower hosting cost and complexity
 for us.
 
-## ☁️ Consolidated on OPC Infrastructure
+## ☁️ Consolidating on OPC Infrastructure
 
 We moved AWS Amplify to our OPC AWS account, set up Terraform support for Amazon Bedrock access to
 power match explanations, and applied a batch of pending maintenance updates to our Redis
