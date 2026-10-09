@@ -22,18 +22,18 @@ program, and infrastructure that's simpler and cheaper to run.
 ## 🔐 The Right Data for the Right Admins
 
 Partner and role-based permissions now work as intended in candidate search and list results.
-Admins from non-default partners were previously limited to only the most restricted,
-publicly-visible view of a candidate's details — such as phone and email — in these results, even
-when their partner and role entitled them to see more. They now see exactly what their partner and
-role authorise, no more and no less.
+Admins from non-default partners were previously inadvertently limited to only the most restricted,
+publicly-visible view of a candidate's details in these results, even when their partner and role 
+entitled them to see more. They now see exactly what their partner and role authorise, no more and 
+no less.
 
 ## 🛡️ Security and Compliance with Vanta
 
 We completed a compliance review with Vanta, our security and compliance monitoring platform, and
-raised tickets to track any outstanding gaps as part of our ongoing Vanta Security and Compliance
-Remediation project.
+planned and are working through any outstanding gaps as part of our ongoing Vanta Security and 
+Compliance Remediation project.
 
-As part of that work, we've also created a **Data Inventory Map** in Vanta — a record of where
+As part of that work, we've also created a **Data Inventory Map** for Vanta — a record of where
 user data is held across the platform, with each resource classified by the kind of user data it
 holds. Knowing exactly where user data lives, and how sensitive it is, matters for protecting that
 data, for passing audits, and for giving our partners confidence in how we handle their
