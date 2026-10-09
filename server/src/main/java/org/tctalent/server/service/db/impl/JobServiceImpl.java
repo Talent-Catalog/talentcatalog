@@ -67,6 +67,7 @@ import org.tctalent.server.model.db.Employer;
 import org.tctalent.server.model.db.JobChatType;
 import org.tctalent.server.model.db.JobOppIntake;
 import org.tctalent.server.model.db.JobOpportunityStage;
+import org.tctalent.server.model.db.Matching;
 import org.tctalent.server.model.db.PartnerImpl;
 import org.tctalent.server.model.db.SalesforceJobOpp;
 import org.tctalent.server.model.db.SavedList;
@@ -455,7 +456,11 @@ public class JobServiceImpl implements JobService {
         SalesforceJobOpp jobOpp = salesforceJobOppRepository.findById(id)
             .orElseThrow(() -> new NoSuchObjectException(SalesforceJobOpp.class, id));
 
-        String text = JobServiceHelper.extractJobText(jobOpp);
+        //The job's own text only initialises its Matching. Once the Matching has a description,
+        //that is the job's matching text.
+        final Matching matching = jobOpp.getMatching();
+        String text = matching != null && matching.getMatchingDescription() != null
+            ? matching.getMatchingDescription() : JobServiceHelper.extractJobText(jobOpp);
 
         List<SkillName> skillNames = skillsService.extractSkillNames(text, lang);
 

@@ -86,6 +86,7 @@ import org.tctalent.server.model.db.Employer;
 import org.tctalent.server.model.db.JobChatType;
 import org.tctalent.server.model.db.JobOppIntake;
 import org.tctalent.server.model.db.JobOpportunityStage;
+import org.tctalent.server.model.db.Matching;
 import org.tctalent.server.model.db.SalesforceJobOpp;
 import org.tctalent.server.model.db.SavedList;
 import org.tctalent.server.model.db.SavedSearch;
@@ -115,6 +116,7 @@ import org.tctalent.server.service.db.SalesforceJobOppService;
 import org.tctalent.server.service.db.SalesforceService;
 import org.tctalent.server.service.db.SavedListService;
 import org.tctalent.server.service.db.SavedSearchService;
+import org.tctalent.server.service.db.SkillsService;
 import org.tctalent.server.service.db.SystemNotificationService;
 import org.tctalent.server.service.db.UserService;
 import org.tctalent.server.service.policy.ChatPolicy;
@@ -157,6 +159,7 @@ class JobServiceImplTest {
     @Mock private ChatPolicy chatPolicy;
     @Mock private UserService userService;
     @Mock private SalesforceJobOppRepository salesforceJobOppRepository;
+    @Mock private SkillsService skillsService;
     @Mock private SavedSearchService savedSearchService;
     @Mock private SavedListService savedListService;
     @Mock private NextStepProcessingService nextStepProcessingService;
@@ -1181,6 +1184,45 @@ class JobServiceImplTest {
         given(salesforceJobOppRepository.findById(JOB_ID)).willReturn(Optional.of(shortJob));
 
         assertThrows(InvalidRequestException.class, () -> jobService.uploadMou(JOB_ID, mockFile));
+    }
+
+    @Test
+    @DisplayName("getJobMatchingInfo returns the job's Matching description when it has one")
+    void getJobMatchingInfo_usesMatchingDescription() {
+        SalesforceJobOpp job = matchingInfoJob("Job summary", new Matching("Refined"));
+        given(salesforceJobOppRepository.findById(JOB_ID)).willReturn(Optional.of(job));
+
+        assertThat(jobService.getJobMatchingInfo(JOB_ID, "en").getDescription())
+            .isEqualTo("Refined");
+        then(skillsService).should().extractSkillNames("Refined", "en");
+    }
+
+    @Test
+    @DisplayName("getJobMatchingInfo returns the job's own text when the job has no Matching")
+    void getJobMatchingInfo_noMatching_usesJobText() {
+        SalesforceJobOpp job = matchingInfoJob("Job summary", null);
+        given(salesforceJobOppRepository.findById(JOB_ID)).willReturn(Optional.of(job));
+
+        assertThat(jobService.getJobMatchingInfo(JOB_ID, "en").getDescription())
+            .isEqualTo("Job summary");
+    }
+
+    @Test
+    @DisplayName("getJobMatchingInfo returns the job's own text when the job's Matching has no description")
+    void getJobMatchingInfo_blankMatching_usesJobText() {
+        SalesforceJobOpp job = matchingInfoJob("Job summary", new Matching("<p></p>"));
+        given(salesforceJobOppRepository.findById(JOB_ID)).willReturn(Optional.of(job));
+
+        assertThat(jobService.getJobMatchingInfo(JOB_ID, "en").getDescription())
+            .isEqualTo("Job summary");
+    }
+
+    private static SalesforceJobOpp matchingInfoJob(String jobSummary, Matching matching) {
+        SalesforceJobOpp job = new SalesforceJobOpp();
+        job.setId(JOB_ID);
+        job.setJobSummary(jobSummary);
+        job.setMatching(matching);
+        return job;
     }
 
     private void stubFileUpload() throws IOException {

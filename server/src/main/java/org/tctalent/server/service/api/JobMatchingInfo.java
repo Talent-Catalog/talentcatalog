@@ -35,6 +35,9 @@ public class JobMatchingInfo {
      * A textual description of a job, outlining key details such as responsibilities,
      * requirements, and other relevant information that helps in assessing a match
      * with candidates.
+     * <p>
+     * This is the description of the job's Matching if it has one - which may have been refined
+     * by users - otherwise text extracted from the job itself.
      */
     String description;
 
