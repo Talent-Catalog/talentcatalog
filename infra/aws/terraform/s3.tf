@@ -9,7 +9,9 @@ resource "aws_s3_bucket" "candidate_files" {
     var.common_tags,
     {
       Purpose = "Candidate attachments"
-    }
+    },
+    # Vanta user data classification, set per environment (TC-1524)
+    var.candidate_files_vanta_tags
   )
 }
 

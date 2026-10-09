@@ -229,7 +229,7 @@ module "tc-plus-staging" {
   # Vanta user data classification (TC-1524)
   db_vanta_tags = {
     VantaContainsUserData = "true"
-    VantaUserDataStored   = "Candidate and user records"
+    VantaUserDataStored   = "Empty - migration target for TBB staging database"
   }
 
   availability_zones = ["eu-west-2a", "eu-west-2b", "eu-west-2c"]
