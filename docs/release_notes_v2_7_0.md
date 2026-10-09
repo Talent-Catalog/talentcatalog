@@ -117,9 +117,9 @@ targeted releases like this one from the team going forward.
 
 # Performance Improvements
 
-* Saving search results to a new list no longer times out for users with many saved lists. The
-  save-to-list dialog now requests lightweight list data instead of loading every saved list in
-  full.
+* Saving search results to a new list no longer times out in test environments for users with many 
+  saved lists. The save-to-list dialog now requests lightweight list data instead of loading every 
+  saved list in full.
 
 # Security Updates
 
