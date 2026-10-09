@@ -144,10 +144,10 @@ public class SavedSearch extends AbstractCandidateSource {
 
     private String regoReferrerParam;
 
-    //TODO JC Not sure about this.
     /**
-     * Legacy storage of the natural language candidate requirements - now stored as the
-     * description of the search's {@link #matching}.
+     * Original storage for the natural language candidate requirements, retained for searches
+     * that have not yet been associated with a {@link Matching}. Requirements are now stored
+     * as the description of the search's {@link #matching}.
      * <p>
      * Only meaningful for a search which does not yet have a Matching. It is used to initialise
      * the Matching when one is created lazily, and is cleared whenever the requirements are

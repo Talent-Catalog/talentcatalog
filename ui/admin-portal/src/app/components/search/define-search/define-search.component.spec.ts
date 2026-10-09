@@ -924,8 +924,68 @@ describe('DefineSearchComponent', () => {
     tick();
 
     expect(jobService.getJobMatchingInfo).toHaveBeenCalledWith(3);
-    expect((component as any).setUpJobMatch).toHaveBeenCalledWith(mockInfo);
+    expect((component as any).setUpJobMatch).toHaveBeenCalledWith(mockInfo, null);
   }));
+
+  describe('opening a search for a job (setUpJobMatch)', () => {
+
+    const jobInfo: JobMatchingInfo =
+      {description: '<p>Raw job text</p>', skillNames: [], jobName: 'Test job'};
+
+    beforeEach(() => {
+      spyOn(component, 'clearForm');
+      spyOn(component, 'onSubmit');
+    });
+
+    it('should pass the saved requirements when the search is already associated with the job', fakeAsync(() => {
+      component.jobId = 3;
+      component.savedSearch = {id: 4, defaultSearch: true, sfJobOpp: {id: 3}} as any;
+      savedSearchService.load.and.returnValue(
+        of({searchJoinRequests: [], requirements: '<p>Refined</p>'} as any));
+      jobService.getJobMatchingInfo.and.returnValue(of(jobInfo as any));
+      spyOn(component, 'populateFormWithSavedSearch');
+      spyOn<any>(component, 'setUpJobMatch');
+
+      component.loadSavedSearch(4);
+      tick();
+
+      expect((component as any).setUpJobMatch).toHaveBeenCalledWith(jobInfo, '<p>Refined</p>');
+    }));
+
+    it('should not pass the saved requirements when the search is associated with a different job', fakeAsync(() => {
+      component.jobId = 3;
+      component.savedSearch = {id: 4, defaultSearch: true, sfJobOpp: {id: 123}} as any;
+      savedSearchService.load.and.returnValue(
+        of({searchJoinRequests: [], requirements: '<p>Other job</p>'} as any));
+      jobService.getJobMatchingInfo.and.returnValue(of(jobInfo as any));
+      spyOn(component, 'populateFormWithSavedSearch');
+      spyOn<any>(component, 'setUpJobMatch');
+
+      component.loadSavedSearch(4);
+      tick();
+
+      expect((component as any).setUpJobMatch).toHaveBeenCalledWith(jobInfo, null);
+    }));
+
+    it('should use existing job requirements rather than the job text', () => {
+      (component as any).setUpJobMatch(jobInfo, '<p>Refined</p>');
+
+      expect(component.searchForm.get('requirements').value).toBe('<p>Refined</p>');
+      expect(component.onSubmit).toHaveBeenCalled();
+    });
+
+    it('should use the job text when there are no existing job requirements', () => {
+      (component as any).setUpJobMatch(jobInfo, null);
+
+      expect(component.searchForm.get('requirements').value).toBe('<p>Raw job text</p>');
+    });
+
+    it('should use the job text when the existing job requirements have no text content', () => {
+      (component as any).setUpJobMatch(jobInfo, '<p>&nbsp;</p>');
+
+      expect(component.searchForm.get('requirements').value).toBe('<p>Raw job text</p>');
+    });
+  });
 
   describe('displaying the job associated with a loaded saved search', () => {
 
@@ -1122,10 +1182,21 @@ describe('DefineSearchComponent', () => {
 
     expect(ref.componentInstance.savedSearch).toBe(component.savedSearch);
     expect(ref.componentInstance.searchCandidateRequest).toBeDefined();
+    expect(ref.componentInstance.jobId).toBeUndefined();
     expect(router.navigate).toHaveBeenCalled();
     expect(component.populateFormWithSavedSearch).toHaveBeenCalled();
     expect(component.searchForm.pristine).toBeTrue();
   }));
+
+  it('should keep the search\'s job association when saving it as a named search', () => {
+    component.savedSearch = {id: 1, name: 'Default', defaultSearch: true, sfJobOpp: {id: 3}} as any;
+    const ref = modalRef(new Promise(() => {}));
+    modalService.open.and.returnValue(ref);
+
+    component.openSavedSearchModal(true);
+
+    expect(ref.componentInstance.jobId).toBe(3);
+  });
 
   it('should update without navigating and tolerate modal dismissal', fakeAsync(() => {
     router.navigate.calls.reset();

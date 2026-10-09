@@ -50,7 +50,9 @@ import org.tctalent.server.request.search.CreateFromDefaultSavedSearchRequest;
 import org.tctalent.server.request.search.UpdateSavedSearchJobRequest;
 import org.tctalent.server.request.search.UpdateSavedSearchRequest;
 import org.tctalent.server.security.TcUserDetails;
+import org.tctalent.server.service.db.JobService;
 import org.tctalent.server.service.db.SavedSearchService;
+import org.tctalent.server.service.db.SkillsService;
 
 /**
  * Integration tests of the Matching lifecycle of saved searches - see {@link Matching}.
@@ -67,8 +69,10 @@ class SavedSearchMatchingIntegrationTest extends BaseDBIntegrationTest {
     @Autowired private MatchingRepository matchingRepository;
     @Autowired private UserRepository userRepository;
     @Autowired private EntityManager entityManager;
+    @Autowired private JobService jobService;
 
     @MockitoBean private CandidateRedisCache candidateRedisCache;
+    @MockitoBean private SkillsService skillsService;
 
     private User user;
 
@@ -268,6 +272,45 @@ class SavedSearchMatchingIntegrationTest extends BaseDBIntegrationTest {
         assertThat(reloadedDefault.getMatching().getId()).isEqualTo(jobMatchingId);
         assertThat(matchingRepository.findById(jobMatchingId).orElseThrow()
             .getMatchingDescription()).isEqualTo("<p>Refined in default search</p>");
+    }
+
+    @Test
+    @DisplayName("saving a job-related default search through the save modal keeps its job and the job's Matching")
+    void jobDefaultSearch_savedThroughModal_keepsJobAndMatching() {
+        SalesforceJobOpp job = createJob();
+        SavedSearch defaultSearch = savedSearchService.getDefaultSavedSearch();
+        assignJob(defaultSearch, job.getId());
+        runDefaultSearch(defaultSearch, "<p>Refined in default search</p>");
+
+        //As the save modal now does: create with the default search's job and search request.
+        SavedSearch named = createSearch("named-via-modal", job.getId(),
+            "<p>Refined in default search</p>");
+
+        SavedSearch reloadedNamed = reload(named);
+        assertThat(reloadedNamed.getSfJobOpp().getId()).isEqualTo(job.getId());
+        assertThat(reloadedNamed.getMatching().getId()).isEqualTo(jobMatchingId(job));
+    }
+
+    @Test
+    @DisplayName("opening a search for a job with a refined Matching (?job=) does not change the Matching")
+    void openingJobSearch_doesNotChangeRefinedMatching() {
+        SalesforceJobOpp job = createJob();
+        SavedSearch named = createSearch("refined", job.getId(), null);
+        updateSearch(named, "<p>Refined</p>", null);
+        Matching before = matchingRepository.findById(jobMatchingId(job)).orElseThrow();
+        var updatedDateBefore = before.getUpdatedDate();
+
+        //As the UI does on ?job=: associate the default search with the job, fill the form
+        //from the job's matching info, and run the (auto-updating) default search.
+        SavedSearch defaultSearch = savedSearchService.getDefaultSavedSearch();
+        assignJob(defaultSearch, job.getId());
+        String description = jobService.getJobMatchingInfo(job.getId(), "en").getDescription();
+        runDefaultSearch(reload(defaultSearch), description);
+
+        assertThat(description).isEqualTo("<p>Refined</p>");
+        Matching after = matchingRepository.findById(jobMatchingId(job)).orElseThrow();
+        assertThat(after.getMatchingDescription()).isEqualTo("<p>Refined</p>");
+        assertThat(after.getUpdatedDate()).isEqualTo(updatedDateBefore);
     }
 
     @Test
