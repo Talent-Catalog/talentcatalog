@@ -57,10 +57,11 @@ candidate's background matched.
 
 ## 📄 Better Job Descriptions for Matching
 
-When a search is linked to a job, Talent Catalog now uses that job's summary as the primary source
-for the AI match requirements, instead of combining it with less structured intake and
-job-description-file text. Candidates with no genuine match are also no longer returned — previously
-they could appear at the bottom of the results with a zero match score.
+When a search is linked to a job that has a summary, Talent Catalog now uses that summary as the
+primary source for the AI match requirements, instead of combining it with less structured intake
+and job-description-file text. If the job has no summary, its requirements are still built from
+those other fields as before. Candidates with no genuine match are also no longer returned —
+previously they could appear at the bottom of the results with a zero match score.
 
 You'll also see a loading indicator while job-matching information is being fetched for a search,
 so it's clear that something is happening rather than that the screen has stalled.
