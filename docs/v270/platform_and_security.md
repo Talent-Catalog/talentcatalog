@@ -43,10 +43,12 @@ as infrastructure changes.
 
 ## 🔍 Elasticsearch Retired
 
-Elasticsearch — the search technology Talent Catalog relied on until matching moved onto Postgres
-in [v2.4.0](../v240) — has now been fully removed from our code, configuration, and
-infrastructure. Keyword search was already handled without it, so this is a behind-the-scenes
-clean-up: no change for users, and lower hosting cost and complexity for us.
+Keyword search moved onto Postgres text search back in
+[v2.4.0](../v240), after which Elasticsearch could be decommissioned, as noted in
+[v2.5.1](../v251). This release finishes that job: Elasticsearch has now been fully removed from
+our code, configuration, and infrastructure. Keyword search was already handled without it, so
+this is a behind-the-scenes clean-up: no change for users, and lower hosting cost and complexity
+for us.
 
 ## ☁️ Consolidated on OPC Infrastructure
 
