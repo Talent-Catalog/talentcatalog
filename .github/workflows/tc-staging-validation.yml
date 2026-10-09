@@ -18,24 +18,9 @@ jobs:
   staging-validation:
     name: Staging Validation
     runs-on: ubuntu-latest
+    timeout-minutes: 5
 
     steps:
-      # Intentionally contains no real validation yet.
-      #
-      # The purpose of this step is to prove that:
-      #
-      #   staging deployment
-      #          ↓
-      #   successful completion
-      #          ↓
-      #   staging validation starts
-      #
-      # Future tickets will replace/extend this  with
-      # stability, health, SHA verification and performance checks.
-      - name: Confirm staging validation started
-        run: |
-          echo "Staging deployment completed successfully."
-          echo "Staging validation has started."
-          echo ""
-          echo "This ticket only establishes the workflow."
-          echo "Readiness, health, SHA and performance checks are implemented in later tickets."
+      # Give TC time to settle after deployment and Redis reboots.
+      - name: Wait 3 minutes for staging to settle
+        run: sleep 180
