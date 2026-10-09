@@ -175,8 +175,8 @@ after conversion, the `flush_candidate_cache` admin action is available.
 * Fixed the skills-service production deploy failing on OPC ECR credentials.
 * tc-api-spec: fixed the CODEOWNERS catch-all rule and three broken links reported by the Redocly
   link checker.
-* GRN staging was building the candidate portal with the production Angular environment instead
-  of staging; build configuration now selects the correct environment for GRN staging.
+* GRN staging was building the candidate portal with the incorrect Angular environment; build 
+  configuration now selects the correct environment for GRN staging.
 
 ## Cloud Enhancements
 
