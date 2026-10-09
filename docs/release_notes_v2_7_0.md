@@ -70,7 +70,7 @@ targeted releases like this one from the team going forward.
     <div class="card-body">
       <div class="card-title">A Leaner, More Secure Platform</div>
       <div class="card-description">
-        Elasticsearch has been fully retired, and infrastructure has been consolidated into our
+        Elasticsearch has been fully retired, and key infrastructure has been consolidated into our
         OPC AWS account, with Amazon Bedrock now powering match explanations. Behind the scenes,
         a Vanta compliance review and a new data inventory map strengthen how we track and
         protect user data.
