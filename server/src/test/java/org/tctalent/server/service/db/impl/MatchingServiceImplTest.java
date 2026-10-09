@@ -19,6 +19,7 @@ package org.tctalent.server.service.db.impl;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -33,13 +34,18 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.model.db.Matching;
+import org.tctalent.server.model.db.SalesforceJobOpp;
 import org.tctalent.server.repository.db.MatchingRepository;
+import org.tctalent.server.repository.db.SalesforceJobOppRepository;
 
 @ExtendWith(MockitoExtension.class)
 class MatchingServiceImplTest {
 
     @Mock
     private MatchingRepository matchingRepository;
+
+    @Mock
+    private SalesforceJobOppRepository salesforceJobOppRepository;
 
     @InjectMocks
     private MatchingServiceImpl matchingService;
@@ -112,5 +118,92 @@ class MatchingServiceImplTest {
 
         assertThatThrownBy(() -> matchingService.updateMatchingDescription(99L, "Anything"))
             .isInstanceOf(NoSuchObjectException.class);
+    }
+
+    @Test
+    @DisplayName("getOrCreateJobMatching returns the job's existing Matching without changing its description")
+    void getOrCreateJobMatching_existing_returnsIt() {
+        Matching existing = new Matching("Refined");
+        SalesforceJobOpp job = job(1L, "Job summary");
+        job.setMatching(existing);
+
+        Matching result = matchingService.getOrCreateJobMatching(job, "Other");
+
+        assertThat(result).isSameAs(existing);
+        assertThat(result.getMatchingDescription()).isEqualTo("Refined");
+        verify(matchingRepository, never()).save(any(Matching.class));
+        verify(salesforceJobOppRepository, never()).setMatchingIfNone(anyLong(), anyLong());
+    }
+
+    @Test
+    @DisplayName("getOrCreateJobMatching initialises an existing blank job Matching with the preferred description")
+    void getOrCreateJobMatching_existingBlank_initialisesIt() {
+        Matching existing = new Matching(null);
+        SalesforceJobOpp job = job(1L, "Job summary");
+        job.setMatching(existing);
+        given(matchingRepository.save(existing)).willReturn(existing);
+
+        Matching result = matchingService.getOrCreateJobMatching(job, "Preferred");
+
+        assertThat(result.getMatchingDescription()).isEqualTo("Preferred");
+    }
+
+    @Test
+    @DisplayName("getOrCreateJobMatching creates the job's Matching from the preferred description")
+    void getOrCreateJobMatching_none_createsFromPreferredDescription() {
+        SalesforceJobOpp job = job(1L, "Job summary");
+        givenSavedMatchingGetsId(7L);
+        given(salesforceJobOppRepository.setMatchingIfNone(1L, 7L)).willReturn(1);
+
+        Matching result = matchingService.getOrCreateJobMatching(job, "<p>Preferred</p>");
+
+        assertThat(result.getMatchingDescription()).isEqualTo("<p>Preferred</p>");
+        assertThat(job.getMatching()).isSameAs(result);
+    }
+
+    @Test
+    @DisplayName("getOrCreateJobMatching creates the job's Matching from the job text when the preferred description is blank")
+    void getOrCreateJobMatching_none_blankPreferred_usesJobText() {
+        SalesforceJobOpp job = job(1L, "Job summary");
+        givenSavedMatchingGetsId(7L);
+        given(salesforceJobOppRepository.setMatchingIfNone(1L, 7L)).willReturn(1);
+
+        Matching result = matchingService.getOrCreateJobMatching(job, "<p></p>");
+
+        assertThat(result.getMatchingDescription()).isEqualTo("Job summary");
+    }
+
+    @Test
+    @DisplayName("getOrCreateJobMatching uses the Matching set concurrently by another request, discarding its own")
+    void getOrCreateJobMatching_concurrentlySet_usesWinner() {
+        SalesforceJobOpp job = job(1L, "Job summary");
+        givenSavedMatchingGetsId(7L);
+        given(salesforceJobOppRepository.setMatchingIfNone(1L, 7L)).willReturn(0);
+        given(salesforceJobOppRepository.findMatchingIdByJobId(1L)).willReturn(Optional.of(8L));
+        Matching winner = new Matching("Winner");
+        given(matchingRepository.findById(8L)).willReturn(Optional.of(winner));
+
+        Matching result = matchingService.getOrCreateJobMatching(job, null);
+
+        assertThat(result).isSameAs(winner);
+        assertThat(job.getMatching()).isSameAs(winner);
+        ArgumentCaptor<Matching> deleted = ArgumentCaptor.forClass(Matching.class);
+        verify(matchingRepository).delete(deleted.capture());
+        assertThat(deleted.getValue().getId()).isEqualTo(7L);
+    }
+
+    private void givenSavedMatchingGetsId(long id) {
+        given(matchingRepository.saveAndFlush(any(Matching.class))).willAnswer(invocation -> {
+            Matching matching = invocation.getArgument(0);
+            matching.setId(id);
+            return matching;
+        });
+    }
+
+    private static SalesforceJobOpp job(long id, String jobSummary) {
+        SalesforceJobOpp job = new SalesforceJobOpp();
+        job.setId(id);
+        job.setJobSummary(jobSummary);
+        return job;
     }
 }

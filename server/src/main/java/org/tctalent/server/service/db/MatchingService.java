@@ -20,6 +20,7 @@ import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.model.db.Matching;
+import org.tctalent.server.model.db.SalesforceJobOpp;
 
 /**
  * Service for creating and updating {@link Matching} contexts.
@@ -58,4 +59,26 @@ public interface MatchingService {
     @NonNull
     Matching updateMatchingDescription(long id, @Nullable String matchingDescription)
         throws NoSuchObjectException;
+
+    /**
+     * Gets the given job's single Matching, creating it if the job doesn't have one yet.
+     * <p>
+     * A new Matching is initialised with the given preferred description if it has text content,
+     * otherwise with the job's own text (see {@code JobServiceHelper#extractJobText}).
+     * <p>
+     * If the job already has a Matching whose description is blank, it is initialised with the
+     * preferred description, if that has text content. A Matching which already has a
+     * description is never changed.
+     * <p>
+     * This guarantees that a job never has more than one Matching, even when called concurrently
+     * for the same job.
+     *
+     * @param job Job
+     * @param preferredDescription Description to initialise the job's Matching with, if it has
+     *                             no description yet. Null if none.
+     * @return The job's Matching
+     */
+    @NonNull
+    Matching getOrCreateJobMatching(
+        @NonNull SalesforceJobOpp job, @Nullable String preferredDescription);
 }

@@ -32,6 +32,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.startsWith;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
@@ -76,6 +77,7 @@ import org.tctalent.server.model.db.EducationLevel;
 import org.tctalent.server.model.db.Gender;
 import org.tctalent.server.model.db.Language;
 import org.tctalent.server.model.db.LanguageLevel;
+import org.tctalent.server.model.db.Matching;
 import org.tctalent.server.model.db.ReviewStatus;
 import org.tctalent.server.model.db.SalesforceJobOpp;
 import org.tctalent.server.model.db.SavedList;
@@ -119,6 +121,7 @@ import org.tctalent.server.service.db.CandidateDtoFetchService;
 import org.tctalent.server.service.db.CandidateSavedListService;
 import org.tctalent.server.service.db.CandidateService;
 import org.tctalent.server.service.db.LanguageService;
+import org.tctalent.server.service.db.MatchingService;
 import org.tctalent.server.service.db.PartnerService;
 import org.tctalent.server.service.db.PublicIDService;
 import org.tctalent.server.service.db.SalesforceJobOppService;
@@ -156,6 +159,7 @@ class SavedSearchServiceImplUnitTest {
   @Mock private EducationLevelRepository educationLevelRepository;
   @Mock private PersistenceContextHelper persistenceContextHelper;
   @Mock private AuthService authService;
+  @Mock private MatchingService matchingService;
   @Mock private EntityManager entityManager;
   @Mock private Query idsQuery;
   @Mock private Query countQuery;
@@ -191,8 +195,15 @@ class SavedSearchServiceImplUnitTest {
         educationMajorRepository,
         educationLevelRepository,
         persistenceContextHelper,
-        authService
+        authService,
+        matchingService
     );
+
+    //Behave like the real MatchingService, without persistence.
+    lenient().when(matchingService.createMatching(any()))
+        .thenAnswer(invocation -> new Matching(invocation.getArgument(0)));
+    lenient().when(matchingService.getOrCreateJobMatching(any(), any()))
+        .thenAnswer(invocation -> new Matching(invocation.getArgument(1)));
 
     setPrivateField(service, "entityManager", entityManager);
     setPrivateField(service, "adminUrl", "https://admin.example.org");

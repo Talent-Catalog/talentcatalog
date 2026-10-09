@@ -18,18 +18,15 @@ package org.tctalent.server.model.db;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.time.temporal.ChronoUnit;
 import java.util.Objects;
 import lombok.Getter;
-import lombok.ToString;
+import org.jsoup.Jsoup;
 import org.springframework.lang.Nullable;
-import org.springframework.util.StringUtils;
 
 /**
  * A matching context: the natural language description that candidates are matched against
@@ -44,24 +41,17 @@ import org.springframework.util.StringUtils;
  * whether it was derived from the current description. For that reason, it is not a general
  * audit field: it is only changed by {@link #updateMatchingDescription}, and only when the
  * description actually changes.
- * <p>
- * Unlike most entities, this does not extend {@link AbstractDomainObject} because it uses an
- * IDENTITY id (see ADR 005) rather than a sequence.
  */
 @Getter
-@ToString
 @Entity
 @Table(name = "matching")
-public class Matching {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
-    private Long id;
+@SequenceGenerator(name = "seq_gen", sequenceName = "matching_id_seq", allocationSize = 1)
+public class Matching extends AbstractDomainObject<Long> {
 
     /**
-     * Natural language matching description. Null if there is no description - a blank
-     * description is always stored as null.
+     * Natural language matching description - may be HTML from a rich text editor. Null if there
+     * is no description: a description without any text content (see {@link #hasTextContent})
+     * is always stored as null.
      */
     @Nullable
     @Column(name = "matching_description")
@@ -93,7 +83,7 @@ public class Matching {
     /**
      * Changes the matching description.
      * <p>
-     * A null or blank description means no description (stored as null). The
+     * A description without any text content means no description (stored as null). The
      * {@link #updatedDate} is only changed if the description actually changes - supplying
      * the same description again (or another blank one when there is no description) changes
      * nothing.
@@ -111,9 +101,25 @@ public class Matching {
         return true;
     }
 
+    /**
+     * Whether the given text - which may be HTML, eg from a rich text editor - has any visible
+     * text content, ie anything other than HTML tags, non-breaking spaces and whitespace.
+     * <p>
+     * For example "&lt;p&gt;&lt;/p&gt;", "&lt;p&gt;&amp;nbsp;&lt;/p&gt;" and "   " all have no
+     * text content. This matches {@code hasTextContent} in the admin portal's
+     * {@code util/string.ts}.
+     */
+    public static boolean hasTextContent(@Nullable String text) {
+        if (text == null || text.isBlank()) {
+            return false;
+        }
+        //Jsoup converts &nbsp; to U+00A0, which String.isBlank does not treat as whitespace.
+        return !Jsoup.parse(text).text().replace('\u00a0', ' ').isBlank();
+    }
+
     @Nullable
     private static String normalize(@Nullable String matchingDescription) {
-        return StringUtils.hasText(matchingDescription) ? matchingDescription : null;
+        return hasTextContent(matchingDescription) ? matchingDescription : null;
     }
 
     private static OffsetDateTime now() {

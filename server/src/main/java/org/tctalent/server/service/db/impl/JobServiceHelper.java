@@ -16,7 +16,12 @@
 
 package org.tctalent.server.service.db.impl;
 
+import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+import org.tctalent.server.model.db.JobOppIntake;
+import org.tctalent.server.model.db.SalesforceJobOpp;
 
 /**
  * Helper for Job Services
@@ -102,5 +107,49 @@ public class JobServiceHelper {
             }
         }
         return startRevision;
+    }
+
+    /**
+     * Extracts a textual description of the given job, which can be used to match candidates to
+     * the job.
+     * <p>
+     *     If there is a job summary, we just use that.
+     *     Otherwise, we extract text from the job opp intake and JD file text.
+     * </p>
+     * @param jobOpp Job opportunity
+     * @return Textual description of the job
+     */
+    public static String extractJobText(@NonNull SalesforceJobOpp jobOpp) {
+        final String jobSummary = jobOpp.getJobSummary();
+
+        //If we have a job summary, just use that.
+        if (StringUtils.hasText(jobSummary)) {
+            return jobSummary;
+        }
+
+        //No job summary, so extract text from the job opp intake and JD file text.
+        StringBuilder sb = new StringBuilder();
+
+        final JobOppIntake jobOppIntake = jobOpp.getJobOppIntake();
+        if (jobOppIntake != null) {
+            appendJobText(sb, jobOppIntake.getEmploymentExperience());
+            appendJobText(sb, jobOppIntake.getEducationRequirements());
+            appendJobText(sb, jobOppIntake.getSkillRequirements());
+        }
+
+        final String jdFileText = jobOpp.getJdFileText();
+        if (jdFileText != null) {
+            appendJobText(sb, jdFileText);
+        }
+
+        return sb.toString();
+    }
+
+    private static void appendJobText(@NonNull StringBuilder sb, @Nullable String text) {
+        if (StringUtils.hasText(text)) {
+            sb.append(text);
+            //We want whitespace surrounding delimiter so that word boundaries are detected.
+            sb.append("\n...\n");
+        }
     }
 }

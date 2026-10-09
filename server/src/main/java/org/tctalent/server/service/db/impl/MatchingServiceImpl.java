@@ -23,7 +23,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.model.db.Matching;
+import org.tctalent.server.model.db.SalesforceJobOpp;
 import org.tctalent.server.repository.db.MatchingRepository;
+import org.tctalent.server.repository.db.SalesforceJobOppRepository;
 import org.tctalent.server.service.db.MatchingService;
 
 /**
@@ -34,6 +36,7 @@ import org.tctalent.server.service.db.MatchingService;
 public class MatchingServiceImpl implements MatchingService {
 
     private final MatchingRepository matchingRepository;
+    private final SalesforceJobOppRepository salesforceJobOppRepository;
 
     @Override
     @NonNull
@@ -56,6 +59,34 @@ public class MatchingServiceImpl implements MatchingService {
         throws NoSuchObjectException {
         Matching matching = getMatching(id);
         if (matching.updateMatchingDescription(matchingDescription)) {
+            matching = matchingRepository.save(matching);
+        }
+        return matching;
+    }
+
+    @Override
+    @NonNull
+    @Transactional
+    public Matching getOrCreateJobMatching(
+        @NonNull SalesforceJobOpp job, @Nullable String preferredDescription) {
+        Matching matching = job.getMatching();
+        if (matching == null) {
+            String description = Matching.hasTextContent(preferredDescription)
+                ? preferredDescription : JobServiceHelper.extractJobText(job);
+            //Flushed so that the job can reference it in the update below.
+            matching = matchingRepository.saveAndFlush(new Matching(description));
+            if (salesforceJobOppRepository.setMatchingIfNone(job.getId(), matching.getId()) == 0) {
+                //Another request has just given the job its Matching - use that one instead.
+                matchingRepository.delete(matching);
+                final long jobMatchingId = salesforceJobOppRepository
+                    .findMatchingIdByJobId(job.getId()).orElseThrow();
+                matching = getMatching(jobMatchingId);
+            }
+            //The job's matching attribute is read only (see SalesforceJobOpp.matching), so this
+            //only updates the in memory job.
+            job.setMatching(matching);
+        } else if (matching.getMatchingDescription() == null
+            && matching.updateMatchingDescription(preferredDescription)) {
             matching = matchingRepository.save(matching);
         }
         return matching;

@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.tctalent.server.model.db.SalesforceJobOpp;
@@ -35,6 +36,22 @@ public interface SalesforceJobOppRepository extends JpaRepository<SalesforceJobO
     @Query(" select j from SalesforceJobOpp j "
         + " where j.sfId = :sfId ")
     Optional<SalesforceJobOpp> findBySfId(@Param("sfId") String sfId);
+
+    /**
+     * Sets the job's Matching - but only if it doesn't already have one. This is the only way
+     * a job's Matching is set: doing it in a single conditional update means that two concurrent
+     * requests can never give a job two different Matchings.
+     *
+     * @return 1 if the Matching was set, 0 if the job already had a Matching
+     */
+    @Modifying
+    @Query(value = "update salesforce_job_opp set matching_id = :matchingId "
+        + " where id = :jobId and matching_id is null", nativeQuery = true)
+    int setMatchingIfNone(@Param("jobId") long jobId, @Param("matchingId") long matchingId);
+
+    @Query(value = "select matching_id from salesforce_job_opp where id = :jobId",
+        nativeQuery = true)
+    Optional<Long> findMatchingIdByJobId(@Param("jobId") long jobId);
 
     @Query(value = """
         select chats.id from

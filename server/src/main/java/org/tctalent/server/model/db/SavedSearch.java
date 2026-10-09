@@ -33,6 +33,7 @@ import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -143,10 +144,31 @@ public class SavedSearch extends AbstractCandidateSource {
 
     private String regoReferrerParam;
 
+    //TODO JC Not sure about this.
     /**
-     * Natural language candidate requirements (e.g. from a job description).
+     * Legacy storage of the natural language candidate requirements - now stored as the
+     * description of the search's {@link #matching}.
+     * <p>
+     * Only meaningful for a search which does not yet have a Matching. It is used to initialise
+     * the Matching when one is created lazily, and is cleared whenever the requirements are
+     * written, so that there are never two competing requirements values.
+     * See {@link #getRequirements()}.
      */
+    @Getter(AccessLevel.NONE)
+    @Setter(AccessLevel.NONE)
     private String requirements;
+
+    /**
+     * The search's matching context, whose description is the search's natural language
+     * candidate requirements. Shared with the other candidate sources taking part in the same
+     * matching activity - in particular, a search associated with a job uses the job's Matching.
+     * <p>
+     * Null for searches which have not needed a Matching yet - see {@link #getRequirements()}.
+     */
+    @Nullable
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "matching_id")
+    private Matching matching;
 
     private String unhcrStatuses;
 
@@ -294,5 +316,30 @@ public class SavedSearch extends AbstractCandidateSource {
     @Override
     public Set<SavedSearch> getUsersCollection(User user) {
         return user.getSharedSearches();
+    }
+
+    /**
+     * Natural language candidate requirements (e.g. from a job description): the description of
+     * this search's {@link #matching} or, if it doesn't have a Matching yet, any legacy
+     * requirements stored before Matchings were introduced.
+     */
+    @Nullable
+    public String getRequirements() {
+        return matching != null ? matching.getMatchingDescription() : requirements;
+    }
+
+    /**
+     * See {@link #requirements}
+     */
+    @Nullable
+    public String getLegacyRequirements() {
+        return requirements;
+    }
+
+    /**
+     * See {@link #requirements}
+     */
+    public void setLegacyRequirements(@Nullable String legacyRequirements) {
+        this.requirements = legacyRequirements;
     }
 }

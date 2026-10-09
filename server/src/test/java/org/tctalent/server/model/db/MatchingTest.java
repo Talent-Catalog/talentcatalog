@@ -43,7 +43,7 @@ class MatchingTest {
 
     @ParameterizedTest
     @NullAndEmptySource
-    @ValueSource(strings = {"   ", "\n\t "})
+    @ValueSource(strings = {"   ", "\n\t ", "<p></p>", "<p>&nbsp;</p>", "<p> </p><br>"})
     @DisplayName("new Matching with null or blank description has no description")
     void newMatching_blankDescriptionIsNull(String description) {
         Matching matching = new Matching(description);
@@ -91,7 +91,7 @@ class MatchingTest {
 
     @ParameterizedTest
     @NullAndEmptySource
-    @ValueSource(strings = {"   ", "\n\t "})
+    @ValueSource(strings = {"   ", "\n\t ", "<p></p>", "<p>&nbsp;</p>", "<p> </p><br>"})
     @DisplayName("updateMatchingDescription with a blank description when there is none changes nothing")
     void updateMatchingDescription_blankToBlank_changesNothing(String description) {
         Matching matching = matchingUpdatedEarlier(null);
@@ -112,6 +112,20 @@ class MatchingTest {
 
         assertThat(changed).isTrue();
         assertThat(matching.getMatchingDescription()).isEqualTo("Original ");
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"Nurses", "<p>Nurses</p>", "<p>&nbsp;x</p>"})
+    @DisplayName("hasTextContent is true for plain or HTML text with visible content")
+    void hasTextContent_visibleContent(String text) {
+        assertThat(Matching.hasTextContent(text)).isTrue();
+    }
+
+    @Test
+    @DisplayName("a non-blank HTML description is stored as supplied")
+    void htmlDescription_storedAsSupplied() {
+        assertThat(new Matching("<p>Nurses</p>").getMatchingDescription())
+            .isEqualTo("<p>Nurses</p>");
     }
 
     /**
