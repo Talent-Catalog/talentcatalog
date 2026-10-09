@@ -17,6 +17,7 @@
 import {Component, OnInit} from '@angular/core';
 import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
 import {UntypedFormBuilder, UntypedFormGroup} from '@angular/forms';
+import {DtoType} from '../../../model/base';
 import {isSubmissionList, SavedList, SearchSavedListRequest} from '../../../model/saved-list';
 import {SavedListService} from '../../../services/saved-list.service';
 import {CandidateStatus, UpdateCandidateStatusInfo} from "../../../model/candidate";
@@ -101,6 +102,7 @@ export class SelectListComponent implements OnInit {
     /*load all our non fixed lists */
     this.loading = true;
     const request: SearchSavedListRequest = {
+      dtoType: DtoType.MINIMAL,
       owned: true,
       shared: !this.readOnly,
       global: !this.employerPartner && !this.readOnly,
