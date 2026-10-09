@@ -16,7 +16,7 @@ targeted releases like this one from the team going forward.
 <div class="card-container">
 
   <a href="./v270/match_explanations" class="card">
-    <img src="./assets/images/v270/MatchExplanation.png" alt="Match Explanations" class="card-image">
+    <img src="./assets/images/v270/MatchExplanationsCover.png" alt="Match Explanations" class="card-image">
     <div class="card-body">
       <div class="card-title">Match Explanations</div>
       <div class="card-description">
