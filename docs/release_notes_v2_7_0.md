@@ -125,11 +125,12 @@ targeted releases like this one from the team going forward.
 
 * Partner and role-based visibility now works as intended in candidate search and list results.
   Admins from non-default partners were previously limited to only the most restricted, publicly
-  visible view of a candidate's details — such as phone and email — in these results, even when
+  visible view of a candidate's details in these results, even when
   their partner and role entitled them to see more. They now see exactly what their partner and
   role authorise.
-* A Vanta compliance review has been completed, with tickets raised to track any outstanding gaps.
-* A **Data Inventory Map** has been created in Vanta, recording where user data is held across the
+* A Vanta compliance review has been completed, with work planned to remediate any outstanding 
+  security gaps.
+* A **Data Inventory Map** has been created for Vanta, recording where user data is held across the
   platform, with user-data classification applied to those resources. Supporting this, databases
   and test candidate data are now tagged with data-classification labels in our infrastructure.
 
