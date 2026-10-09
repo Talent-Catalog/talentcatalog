@@ -156,8 +156,6 @@ after conversion, the `flush_candidate_cache` admin action is available.
 
 ## Test Coverage
 
-## Test Coverage
-
 * Started the Performance Regression Testing project to catch slowdowns on staging before they
   reach production. Staging validation now runs only after deployment completes.
 * Coming in v2.8.0: each staging deployment will run Playwright and Gatling performance checks
