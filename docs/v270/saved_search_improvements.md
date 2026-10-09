@@ -40,7 +40,7 @@ filter changes without affecting the saved search until you're sure — be aware
 </div>
 
 If you change a saved search's filters and then try to navigate away without clicking **Search**,
-you'll now see a clearer prompt:
+you'll now see a clearer prompt.
 
 ## 📊 Exports Match What You See
 
@@ -54,6 +54,6 @@ system-generated name such as "List: DefaultSearch-&lt;username&gt;".
 
 ## ⚡ Faster Save-to-List
 
-Saving search results to a new list no longer times out for users with many saved lists. The
-save-to-list dialog now requests lightweight list data instead of loading every saved list in
-full.
+Saving search results to a new list no longer times out (this was only an issue in test environments)
+for users with many saved lists. The save-to-list dialog now requests lightweight list data instead 
+of loading every saved list in full.
