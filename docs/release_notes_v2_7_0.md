@@ -71,9 +71,10 @@ targeted releases like this one from the team going forward.
       <div class="card-title">A Leaner, More Secure Platform</div>
       <div class="card-description">
         Partner and role-based permissions now work as intended in search and list results,
-        Elasticsearch has been fully retired, and infrastructure has been consolidated onto
-        Amazon Bedrock and our OPC AWS account. Behind the scenes, a Vanta compliance review
-        and a new data inventory map strengthen how we track and protect user data.
+        Elasticsearch has been fully retired, and infrastructure has been consolidated into our
+        OPC AWS account, with Amazon Bedrock now powering match explanations. Behind the scenes,
+        a Vanta compliance review and a new data inventory map strengthen how we track and
+        protect user data.
       </div>
       <div class="card-footer">
         <button class="btn btn-sm">Learn more</button>
@@ -97,6 +98,8 @@ targeted releases like this one from the team going forward.
   with the underlying technology change made back in v2.4.0.
 * Generic "Refugee ID card" wording now replaces partner-specific branding in the card-scanning
   feature.
+* CSV export is no longer offered for AI-matching searches, since export didn't properly support
+  matching searches. Exporting an ordinary, non-AI-matching search is unaffected.
 
 # General Improvements
 
@@ -115,8 +118,9 @@ targeted releases like this one from the team going forward.
 
 # Performance Improvements
 
-* Saving search results to a new list no longer times out on large accounts. The save-to-list
-  dialog now requests lightweight list data instead of loading every saved list in full.
+* Saving search results to a new list no longer times out for users with many saved lists. The
+  save-to-list dialog now requests lightweight list data instead of loading every saved list in
+  full.
 
 # Security Updates
 
@@ -136,15 +140,10 @@ targeted releases like this one from the team going forward.
 * The default search is now headed **Unsaved**, instead of a system-generated list name.
 * Saving a search with no job attached no longer clears its existing job association.
 * Candidate experience "full time" and "paid" values now display consistently.
-* CSV export is no longer offered for AI-matching searches, since export didn't properly support
-  matching searches. Exporting an ordinary, non-AI-matching search is unaffected.
 * AI matching now correctly detects when the requirements field is empty, even though it's stored
   as HTML, and candidates with a zero match score are no longer returned.
 * Candidates can now remove one occupation and replace it with another in a single update, without
   the error that previously blocked this combination.
-  <!-- TODO: confirm whether the on-screen error position was also moved to the top of the
-  registration form — not yet reflected in the source PR's diff as of this check, and that PR had
-  not merged to staging at the time of writing. -->
 
 # Developer Notes
 
@@ -186,6 +185,7 @@ after conversion, the `flush_candidate_cache` admin action is available.
   LLM access for match explanations.
 * AWS Amplify moved to the OPC AWS account.
 * Applied pending Redis ElastiCache service updates and reviewed auto-apply settings.
+* Fixed the skills-extraction service on AWS being unable to connect to Amazon Bedrock.
 * Elasticsearch fully removed from code, configuration and Terraform.
 * Terraform README now covers first-time environment setup.
 
