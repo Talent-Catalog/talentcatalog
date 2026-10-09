@@ -15,6 +15,8 @@ This release delivers that. For any candidate in a matching search or a job's su
 Talent Catalog can now generate a plain-English explanation of how well the candidate's
 experience fits the job — written by a large language model (LLM).
 
+🎬 [Watch a short video on using AI matching](VIDEO_LINK_TBD)
+
 ---
 
 ## 📝 Start From the Requirements
