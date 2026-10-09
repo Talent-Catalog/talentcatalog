@@ -154,6 +154,17 @@ converts existing experience descriptions to the new fields and triggers embeddi
 explanations require the ECS task to have Amazon Bedrock access. If candidate data looks stale
 after conversion, the `flush_candidate_cache` admin action is available.
 
+## Test Coverage
+
+This release starts the **Performance Regression Testing** project, which aims to catch performance
+problems on staging before they reach production.
+
+Coming in v2.8.0, each staging deployment will confirm the correct commit is live, run Playwright
+performance journeys and Gatling smoke tests, and compare the results against recent healthy runs,
+reporting **PASS**, **WARNING** or **REGRESSION** so slowdowns are spotted early.
+
+Alongside this, Playwright end-to-end runs in CI have been stabilised.
+
 ## Code Refactoring
 
 * Removed all TextParts code across server, admin portal and candidate portal — around 2,200
