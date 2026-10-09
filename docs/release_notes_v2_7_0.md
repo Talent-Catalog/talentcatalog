@@ -156,11 +156,12 @@ after conversion, the `flush_candidate_cache` admin action is available.
 
 ## Test Coverage
 
-* Started the Performance Regression Testing project to catch slowdowns on staging before they
-  reach production. Staging validation now runs only after deployment completes.
-* Coming in v2.8.0: each staging deployment will run Playwright and Gatling performance checks
-  and compare the results against recent healthy runs.
-* Stabilised Playwright end-to-end runs in CI.
+* This release starts the **Performance Regression Testing** project, which aims to catch performance
+  problems on staging before they reach production.
+* Coming in v2.8.0, each staging deployment will confirm the correct commit is live, run Playwright
+  performance journeys and Gatling smoke tests, and compare the results against recent healthy runs,
+  reporting **PASS**, **WARNING** or **REGRESSION** so slowdowns are spotted early.
+* Alongside this, Playwright end-to-end runs in CI have been stabilised.
 
 ## Code Refactoring
 
