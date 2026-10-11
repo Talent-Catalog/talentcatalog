@@ -43,7 +43,7 @@ describe('CandidateSourceResultsComponent', () => {
   const savedSearch = {
     id: 10,
     name: 'Test search',
-    savedSearchType: 2,
+    defaultSearch: false, //Any defaultSearch value makes it look like a saved search
     reviewable: false,
     users: []
   } as any;
@@ -115,7 +115,7 @@ describe('CandidateSourceResultsComponent', () => {
     fixture.detectChanges();
   });
 
-  
+
   it('should create and initialize short format', () => {
     component.longFormat = true;
 
