@@ -70,7 +70,6 @@ import org.tctalent.server.configuration.SystemAdminConfiguration;
 import org.tctalent.server.exception.EntityExistsException;
 import org.tctalent.server.exception.InvalidRequestException;
 import org.tctalent.server.exception.NoSuchObjectException;
-import org.tctalent.server.exception.RegisteredListException;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.CandidateSavedList;
 import org.tctalent.server.model.db.ExportColumn;
@@ -374,7 +373,7 @@ class SavedListServiceImplTest {
   @Test
   @DisplayName("createSavedList creates non-registered list with public id")
   void createSavedListCreatesNonRegisteredList() {
-    UpdateSavedListInfoRequest request = savedListInfoRequest("List", false, null, null);
+    UpdateSavedListInfoRequest request = savedListInfoRequest("List", null, null);
 
     given(savedListRepository.findByNameIgnoreCase("List", user.getId()))
         .willReturn(Optional.empty());
@@ -392,7 +391,7 @@ class SavedListServiceImplTest {
   @Test
   @DisplayName("createSavedList throws duplicate for same active name and user")
   void createSavedListThrowsDuplicateForSameName() {
-    UpdateSavedListInfoRequest request = savedListInfoRequest("List", false, null, null);
+    UpdateSavedListInfoRequest request = savedListInfoRequest("List", null, null);
     SavedList existing = savedList(99L, "List", user);
 
     given(savedListRepository.findByNameIgnoreCase("List", user.getId()))
@@ -404,7 +403,7 @@ class SavedListServiceImplTest {
   @Test
   @DisplayName("createSavedList ignores deleted duplicate")
   void createSavedListIgnoresDeletedDuplicate() {
-    UpdateSavedListInfoRequest request = savedListInfoRequest("List", false, null, null);
+    UpdateSavedListInfoRequest request = savedListInfoRequest("List", null, null);
     SavedList existing = savedList(99L, "List", user);
     existing.setStatus(Status.deleted);
 
@@ -419,52 +418,39 @@ class SavedListServiceImplTest {
   }
 
   @Test
-  @DisplayName("createSavedList throws when registered list has no Salesforce job")
-  void createSavedListThrowsWhenRegisteredMissingSalesforceJob() {
-    UpdateSavedListInfoRequest request = savedListInfoRequest("Registered", true, null, null);
-
-    assertThrows(
-        RegisteredListException.class,
-        () -> service.createSavedList(user, request)
-    );
-  }
-
-  @Test
-  @DisplayName("createSavedList returns existing registered list for same Salesforce job")
-  void createSavedListReturnsExistingRegisteredList() {
+  @DisplayName("getOrCreateSubmissionList returns the job's existing submission list unchanged")
+  void getOrCreateSubmissionListReturnsExisting() {
     SalesforceJobOpp job = jobOpp(1L, "SF-1", "Job");
-    UpdateSavedListInfoRequest request = savedListInfoRequest(null, true, null, job);
     SavedList existing = savedList(2L, "Job*", user);
 
-    given(savedListRepository.findRegisteredJobList("SF-1")).willReturn(Optional.of(existing));
+    given(savedListRepository.findSubmissionList(1L)).willReturn(Optional.of(existing));
 
-    SavedList result = service.createSavedList(user, request);
-
-    assertSame(existing, result);
+    assertSame(existing, service.getOrCreateSubmissionList(job));
     verify(savedListRepository, never()).save(any(SavedList.class));
   }
 
   @Test
-  @DisplayName("createSavedList creates registered list and appends registered suffix")
-  void createSavedListCreatesRegisteredList() {
+  @DisplayName("getOrCreateSubmissionList creates a submission list if the job has none")
+  void getOrCreateSubmissionListCreatesIfNone() {
     SalesforceJobOpp job = jobOpp(1L, "SF-1", "Job Name");
-    UpdateSavedListInfoRequest request = savedListInfoRequest(null, true, null, job);
 
-    given(savedListRepository.findRegisteredJobList("SF-1")).willReturn(Optional.empty());
+    given(userService.getLoggedInUser()).willReturn(user);
+    given(savedListRepository.findSubmissionList(1L)).willReturn(Optional.empty());
     given(publicIDService.generatePublicID()).willReturn("public-id");
     given(savedListRepository.save(any(SavedList.class))).willAnswer(invocation -> invocation.getArgument(0));
 
-    SavedList result = service.createSavedList(user, request);
+    SavedList result = service.getOrCreateSubmissionList(job);
 
     assertEquals("Job Name*", result.getName());
     assertTrue(result.getRegisteredJob());
+    assertTrue(result.getGlobal());
     assertSame(job, result.getSfJobOpp());
   }
 
   @Test
   @DisplayName("createSavedList overload uses logged in user")
   void createSavedListOverloadUsesLoggedInUser() {
-    UpdateSavedListInfoRequest request = savedListInfoRequest("List", false, null, null);
+    UpdateSavedListInfoRequest request = savedListInfoRequest("List", null, null);
 
     given(userService.getLoggedInUser()).willReturn(user);
     given(savedListRepository.findByNameIgnoreCase("List", user.getId()))
@@ -785,7 +771,7 @@ class SavedListServiceImplTest {
   void updateSavedListUpdatesFieldsAndJob() {
     SavedList list = savedList(1L, "Old", user);
     SalesforceJobOpp job = jobOpp(5L, "SF-5", "Job");
-    UpdateSavedListInfoRequest request = savedListInfoRequest("New", false, 5L, null);
+    UpdateSavedListInfoRequest request = savedListInfoRequest("New", 5L, null);
 
     given(userService.getLoggedInUser()).willReturn(user);
     given(savedListRepository.findByNameIgnoreCase("New", user.getId()))
@@ -807,7 +793,7 @@ class SavedListServiceImplTest {
     SavedList list = savedList(1L, "Old", user);
     list.setSfJobOpp(jobOpp(5L, "SF-5", "Job"));
 
-    UpdateSavedListInfoRequest request = savedListInfoRequest("Old", false, -1L, null);
+    UpdateSavedListInfoRequest request = savedListInfoRequest("Old", -1L, null);
 
     given(userService.getLoggedInUser()).willReturn(user);
     given(savedListRepository.findByNameIgnoreCase("Old", user.getId()))
@@ -825,7 +811,7 @@ class SavedListServiceImplTest {
   @DisplayName("updateSavedList throws duplicate when another active list has requested name")
   void updateSavedListThrowsDuplicate() {
     SavedList duplicate = savedList(2L, "New", user);
-    UpdateSavedListInfoRequest request = savedListInfoRequest("New", false, null, null);
+    UpdateSavedListInfoRequest request = savedListInfoRequest("New", null, null);
 
     given(userService.getLoggedInUser()).willReturn(user);
     given(savedListRepository.findByNameIgnoreCase("New", user.getId()))
@@ -1428,7 +1414,6 @@ class SavedListServiceImplTest {
 
   private UpdateSavedListInfoRequest savedListInfoRequest(
       String initialName,
-      Boolean registeredJob,
       Long jobId,
       SalesforceJobOpp sfJobOpp
   ) {
@@ -1437,7 +1422,6 @@ class SavedListServiceImplTest {
     final String[] name = new String[] {initialName};
 
     lenient().when(request.getName()).thenAnswer(invocation -> name[0]);
-    lenient().when(request.getRegisteredJob()).thenReturn(registeredJob);
     lenient().when(request.getJobId()).thenReturn(jobId);
     lenient().when(request.getSfJobOpp()).thenReturn(sfJobOpp);
 
@@ -1449,7 +1433,6 @@ class SavedListServiceImplTest {
     lenient().doAnswer(invocation -> {
       SavedList savedList = invocation.getArgument(0);
       savedList.setName(name[0]);
-      savedList.setRegisteredJob(registeredJob);
       return null;
     }).when(request).populateFromRequest(any(SavedList.class));
 

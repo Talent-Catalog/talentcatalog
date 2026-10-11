@@ -100,6 +100,7 @@ import org.tctalent.server.service.db.FileSystemService;
 import org.tctalent.server.service.db.JobChatService;
 import org.tctalent.server.service.db.JobOppIntakeService;
 import org.tctalent.server.service.db.JobService;
+import org.tctalent.server.service.db.MatchingService;
 import org.tctalent.server.service.db.NextStepProcessingService;
 import org.tctalent.server.service.db.PartnerService;
 import org.tctalent.server.service.db.SalesforceBridgeService;
@@ -156,6 +157,7 @@ public class JobServiceImpl implements JobService {
     private final SavedSearchService savedSearchService;
     private final SkillsService skillsService;
     private final JobOppIntakeService jobOppIntakeService;
+    private final MatchingService matchingService;
     private final NextStepProcessingService nextStepProcessingService;
 
     /**
@@ -322,7 +324,9 @@ public class JobServiceImpl implements JobService {
         }
 
         //Create submission list
-        final SavedList submissionList = createSubmissionListForJob(job);
+        final Long jobToCopyId = request.getJobToCopyId();
+        final SavedList submissionList = getOrCreateSubmissionListForJob(job,
+            jobToCopyId == null ? null : salesforceJobOppService.getJobOpp(jobToCopyId));
         job.setSubmissionList(submissionList);
 
         String exclusionListName = submissionList.getName() + EXCLUSION_LIST_SUFFIX;
@@ -374,12 +378,30 @@ public class JobServiceImpl implements JobService {
         }
     }
 
-    private SavedList createSubmissionListForJob(SalesforceJobOpp job) {
-        UpdateSavedListInfoRequest savedListInfoRequest = new UpdateSavedListInfoRequest();
-        savedListInfoRequest.setRegisteredJob(true);
-        savedListInfoRequest.setSfJobOpp(job);
-        SavedList submissionList = savedListService.createSavedList(savedListInfoRequest);
-        return submissionList;
+    /**
+     * Gets or creates the submission list of a new job. A new list shares the job's single
+     * Matching, which is created here if the job doesn't have one yet.
+     *
+     * @param job New job
+     * @param sourceJob Job that the new job is a copy of (eg the parent of an evergreen child)
+     *                  - null if none. The new job's Matching is initialised from the source
+     *                  job's current Matching description, so that refinements users made there
+     *                  carry over. The new job still gets its own Matching.
+     * @return Submission list
+     */
+    private SavedList getOrCreateSubmissionListForJob(
+        SalesforceJobOpp job, @Nullable SalesforceJobOpp sourceJob) {
+        if (sourceJob != null) {
+            final Matching sourceMatching = sourceJob.getMatching();
+            final String sourceDescription =
+                sourceMatching != null && sourceMatching.getMatchingDescription() != null
+                    ? sourceMatching.getMatchingDescription()
+                    : JobServiceHelper.extractJobText(sourceJob);
+            matchingService.getOrCreateJobMatching(job, sourceDescription);
+        }
+
+        //Get rather than create: createJob may be given an existing job (see createUpdateJob)
+        return savedListService.getOrCreateSubmissionList(job);
     }
 
     @Override
@@ -964,7 +986,7 @@ public class JobServiceImpl implements JobService {
         child = salesforceJobOppRepository.save(child);
 
         //Child has its own new submission list
-        final SavedList childSubmissionList = createSubmissionListForJob(child);
+        final SavedList childSubmissionList = getOrCreateSubmissionListForJob(child, job);
 
         //Copy Job Description and interview guidance fields across from existing submission list
         SavedList jobSubmissionList = job.getSubmissionList();

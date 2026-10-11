@@ -60,10 +60,14 @@ public interface SavedListRepository extends CacheEvictingRepository<SavedList, 
             @Param("savedSearchId")long savedSearchId,
             @Param("userId")Long userId);
 
+    /**
+     * Finds the Submission List of the given job - ie its list with registeredJob set.
+     * A job has at most one.
+     */
     @Query(" select distinct s from SavedList s " +
         " where s.registeredJob = true " +
-        " and s.sfJobOpp.sfId = :sfId" )
-    Optional<SavedList> findRegisteredJobList(@Param("sfId") String sfJoblink);
+        " and s.sfJobOpp.id = :jobId" )
+    Optional<SavedList> findSubmissionList(@Param("jobId") long jobId);
 
     @Query(" select distinct s from SavedList s "
             + " where lower(s.tcShortName) = lower(:tcShortName)")

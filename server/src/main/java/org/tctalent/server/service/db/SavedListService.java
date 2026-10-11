@@ -27,7 +27,6 @@ import org.springframework.lang.Nullable;
 import org.springframework.web.reactive.function.client.WebClientException;
 import org.tctalent.server.exception.EntityExistsException;
 import org.tctalent.server.exception.NoSuchObjectException;
-import org.tctalent.server.exception.RegisteredListException;
 import org.tctalent.server.exception.SalesforceException;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.SalesforceJobOpp;
@@ -155,31 +154,44 @@ public interface SavedListService {
         throws NoSuchObjectException, IOException;
 
     /**
-     * Creates a new SavedList unless it is a registered list and a registered list for that
-     * job, as defined by {@link SavedList#getSfJobOpp()}, already exists, in which case
-     * nothing new is created, and the existing list is returned.
-     * @param request Request defining new list (including whether it is a registered list
-     *                ({@link UpdateSavedListInfoRequest#getRegisteredJob()})
+     * Creates a new ordinary Saved List.
+     * <p>
+     * A job may have many ordinary Saved Lists (eg maintained by different teams sourcing
+     * candidates for the job) but only one Submission List, which is shared by everyone providing
+     * candidates for the job. This never creates a Submission List - see
+     * {@link #getOrCreateSubmissionList}.
+     * <p>
+     * A new list associated with a job gets the job's single Matching (created if the job
+     * doesn't have one yet).
+     * @param request Request defining new list
      * @return Created saved list
      * @throws EntityExistsException if a list with this name already exists.
-     * @throws RegisteredListException if request is for a registered list but sfJoblink or name is missing
      */
     SavedList createSavedList(UpdateSavedListInfoRequest request)
-            throws EntityExistsException, RegisteredListException;
+            throws EntityExistsException;
 
     /**
-     * Creates a new SavedList unless it is a registered list and a registered list for that
-     * job, as defined by {@link SavedList#getSfJobOpp()} already exists, in which case
-     * nothing new is created, and the existing list is returned.
+     * Creates a new ordinary Saved List - see
+     * {@link #createSavedList(UpdateSavedListInfoRequest)}.
      * @param user User to be recorded as creator of saved list
-     * @param request Request defining new list (including whether it is a registered list
-     *                ({@link UpdateSavedListInfoRequest#getRegisteredJob()})
+     * @param request Request defining new list
      * @return Created saved list
      * @throws EntityExistsException if a list with this name already exists.
-     * @throws RegisteredListException if request is for a registered list but sfJoblink or name is missing
      */
     SavedList createSavedList(User user, UpdateSavedListInfoRequest request)
-        throws EntityExistsException, RegisteredListException;
+        throws EntityExistsException;
+
+    /**
+     * Returns the given job's Submission List, creating it if the job doesn't have one yet.
+     * This is the only way that Submission Lists are created - by the job workflow.
+     * <p>
+     * An existing Submission List is returned unchanged. A new one is a global list named after
+     * the job, and gets the job's single Matching (created if the job doesn't have one yet).
+     * @param job Job
+     * @return The job's Submission List
+     */
+    @NonNull
+    SavedList getOrCreateSubmissionList(@NonNull SalesforceJobOpp job);
 
     /**
      * Creates/updates Salesforce records corresponding to candidates in a given list

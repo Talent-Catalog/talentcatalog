@@ -109,6 +109,7 @@ import org.tctalent.server.service.db.EmployerService;
 import org.tctalent.server.service.db.FileSystemService;
 import org.tctalent.server.service.db.JobChatService;
 import org.tctalent.server.service.db.JobOppIntakeService;
+import org.tctalent.server.service.db.MatchingService;
 import org.tctalent.server.service.db.NextStepProcessingService;
 import org.tctalent.server.service.db.PartnerService;
 import org.tctalent.server.service.db.SalesforceBridgeService;
@@ -157,6 +158,7 @@ class JobServiceImplTest {
     private static final Specification<SalesforceJobOpp> FAKE_SPEC = (root, query, cb) -> null;
 
     @Mock private ChatPolicy chatPolicy;
+    @Mock private MatchingService matchingService;
     @Mock private UserService userService;
     @Mock private SalesforceJobOppRepository salesforceJobOppRepository;
     @Mock private SkillsService skillsService;
@@ -405,6 +407,8 @@ class JobServiceImplTest {
             .willThrow(RuntimeException.class);
         given(savedListService.createSavedList(any(UpdateSavedListInfoRequest.class)))
             .willReturn(SUBMISSION_LIST);
+        given(savedListService.getOrCreateSubmissionList(any(SalesforceJobOpp.class)))
+            .willReturn(SUBMISSION_LIST);
         given(partnerService.listActiveSourcePartners()).willReturn(List.of(getSourcePartner()));
 
         jobService.createJob(createJobRequest);
@@ -471,7 +475,7 @@ class JobServiceImplTest {
         given(salesforceJobOppRepository.save(any(SalesforceJobOpp.class))).willReturn(longJob);
         given(salesforceService.createOrUpdateJobOpportunity(longJob))
             .willReturn(SF_JOB_ID);
-        given(savedListService.createSavedList(any(UpdateSavedListInfoRequest.class)))
+        given(savedListService.getOrCreateSubmissionList(any(SalesforceJobOpp.class)))
             .willReturn(SUBMISSION_LIST);
         given(salesforceBridgeService.findSeenCandidates(anyString(), anyString()))
             .willReturn(EXCLUSION_LIST);
@@ -984,7 +988,7 @@ class JobServiceImplTest {
         adminUser.setPartner(getEmployerPartner());
         given(userService.getLoggedInUser()).willReturn(adminUser);
         given(salesforceJobOppRepository.save(any(SalesforceJobOpp.class))).willReturn(shortJob);
-        given(savedListService.createSavedList(any(UpdateSavedListInfoRequest.class)))
+        given(savedListService.getOrCreateSubmissionList(any(SalesforceJobOpp.class)))
             .willReturn(SUBMISSION_LIST);
         given(salesforceBridgeService.findSeenCandidates(anyString(), anyString()))
             .willReturn(EXCLUSION_LIST);
@@ -1021,7 +1025,7 @@ class JobServiceImplTest {
         given(salesforceJobOppRepository.findById(JOB_ID)).willReturn(Optional.of(shortJob));
         given(salesforceJobOppRepository.save(any(SalesforceJobOpp.class))).willReturn(emptyJob1);
         given(salesforceJobOppRepository.save(shortJob)).willReturn(shortJob);
-        given(savedListService.createSavedList(any(UpdateSavedListInfoRequest.class)))
+        given(savedListService.getOrCreateSubmissionList(any(SalesforceJobOpp.class)))
             .willReturn(SUBMISSION_LIST);
 
         SalesforceJobOpp result = jobService.updateJob(JOB_ID, updateJobRequest);

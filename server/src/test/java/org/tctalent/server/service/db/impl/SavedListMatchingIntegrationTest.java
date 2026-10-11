@@ -17,8 +17,13 @@
 package org.tctalent.server.service.db.impl;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.when;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.EntityManager;
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -34,19 +39,27 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.transaction.annotation.Transactional;
+import org.tctalent.server.api.admin.SavedListAdminApi;
 import org.tctalent.server.api.admin.SavedListCandidateAdminApi;
 import org.tctalent.server.api.admin.SavedSearchAdminApi;
 import org.tctalent.server.integration.helper.BaseDBIntegrationTest;
 import org.tctalent.server.integration.helper.TestDataFactory;
 import org.tctalent.server.model.db.Candidate;
+import org.tctalent.server.model.db.Employer;
+import org.tctalent.server.model.db.JobOppIntake;
+import org.tctalent.server.model.db.JobOpportunityStage;
 import org.tctalent.server.model.db.Matching;
+import org.tctalent.server.model.db.PartnerImpl;
 import org.tctalent.server.model.db.SalesforceJobOpp;
 import org.tctalent.server.model.db.SavedList;
 import org.tctalent.server.model.db.SavedSearch;
 import org.tctalent.server.model.db.SavedSearchType;
 import org.tctalent.server.model.db.User;
 import org.tctalent.server.repository.db.CandidateRepository;
+import org.tctalent.server.repository.db.EmployerRepository;
+import org.tctalent.server.repository.db.JobOppIntakeRepository;
 import org.tctalent.server.repository.db.MatchingRepository;
+import org.tctalent.server.repository.db.PartnerRepository;
 import org.tctalent.server.repository.db.SalesforceJobOppRepository;
 import org.tctalent.server.repository.db.SavedListRepository;
 import org.tctalent.server.repository.db.SavedSearchRepository;
@@ -54,12 +67,15 @@ import org.tctalent.server.repository.db.UserRepository;
 import org.tctalent.server.repository.db.read.cache.CandidateRedisCache;
 import org.tctalent.server.request.candidate.SearchCandidateRequest;
 import org.tctalent.server.request.candidate.source.CopySourceContentsRequest;
+import org.tctalent.server.request.job.UpdateJobRequest;
 import org.tctalent.server.request.list.ContentUpdateType;
 import org.tctalent.server.request.list.UpdateExplicitSavedListContentsRequest;
 import org.tctalent.server.request.list.UpdateSavedListInfoRequest;
 import org.tctalent.server.request.search.UpdateSavedSearchJobRequest;
 import org.tctalent.server.request.search.UpdateSavedSearchRequest;
 import org.tctalent.server.security.TcUserDetails;
+import org.tctalent.server.service.db.JobService;
+import org.tctalent.server.service.db.SalesforceService;
 import org.tctalent.server.service.db.SavedListService;
 import org.tctalent.server.service.db.SavedSearchService;
 
@@ -97,7 +113,15 @@ class SavedListMatchingIntegrationTest extends BaseDBIntegrationTest {
     @Autowired private UserRepository userRepository;
     @Autowired private EntityManager entityManager;
 
+    @Autowired private JobService jobService;
+    @Autowired private SavedListAdminApi savedListAdminApi;
+    @Autowired private ObjectMapper objectMapper;
+    @Autowired private PartnerRepository partnerRepository;
+    @Autowired private EmployerRepository employerRepository;
+    @Autowired private JobOppIntakeRepository jobOppIntakeRepository;
+
     @MockitoBean private CandidateRedisCache candidateRedisCache;
+    @MockitoBean private SalesforceService salesforceService;
 
     private User user;
     private Candidate candidate;
@@ -109,14 +133,20 @@ class SavedListMatchingIntegrationTest extends BaseDBIntegrationTest {
         user.setUsername(token);
         user.setEmail(token + "@example.com");
         user = userRepository.saveAndFlush(user);
-        //A new context rather than modifying the current one, which may be left over from
-        //an earlier test on this thread.
-        SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
-        securityContext.setAuthentication(
-            new UsernamePasswordAuthenticationToken(new TcUserDetails(user), null, List.of()));
-        SecurityContextHolder.setContext(securityContext);
+        logIn(user);
 
         candidate = createCandidate("candidate");
+    }
+
+    private void logIn(User user) {
+        //A new context rather than modifying the current one, which may be left over from
+        //an earlier test on this thread.
+        TcUserDetails userDetails = new TcUserDetails(user);
+        userDetails.setAuthorities(List.of());
+        SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
+        securityContext.setAuthentication(
+            new UsernamePasswordAuthenticationToken(userDetails, null, List.of()));
+        SecurityContextHolder.setContext(securityContext);
     }
 
     private Candidate createCandidate(String name) {
@@ -272,7 +302,7 @@ class SavedListMatchingIntegrationTest extends BaseDBIntegrationTest {
     void listWithJobNoMatching_getsOwnJobMatching() {
         SalesforceJobOpp listJob = createJob();
         SalesforceJobOpp sourceJob = createJob();
-        SavedList list = createList("job-only", listJob.getId());
+        SavedList list = createLegacyList("job-only", listJob);
 
         saveSearchSelection(defaultJobSearch(sourceJob, "<p>Source job text</p>"),
             list.getId(), false);
@@ -405,7 +435,7 @@ class SavedListMatchingIntegrationTest extends BaseDBIntegrationTest {
     @DisplayName("a legacy list with no Matching remains valid, and reading it creates nothing")
     void legacyList_readingHasNoSideEffect() {
         SalesforceJobOpp job = createJob();
-        SavedList list = createList("legacy", job.getId());
+        SavedList list = createLegacyList("legacy", job);
         entityManager.flush();
         entityManager.clear();
         long matchingCount = matchingRepository.count();
@@ -416,6 +446,287 @@ class SavedListMatchingIntegrationTest extends BaseDBIntegrationTest {
         assertThat(read.getSfJobOpp().getId()).isEqualTo(job.getId());
         assertThat(matchingRepository.count()).isEqualTo(matchingCount);
         assertThat(jobMatchingId(job)).isNull();
+    }
+
+    @Test
+    @DisplayName("new list explicitly associated with a job: gets the job's Matching immediately")
+    void newJobList_getsJobMatchingImmediately() {
+        SalesforceJobOpp job = createJob();
+        assertThat(jobMatchingId(job)).isNull();
+
+        SavedList list = createList("new-job-list", job.getId());
+
+        SavedList reloaded = reload(list);
+        Long jobMatchingId = jobMatchingId(job);
+        assertThat(jobMatchingId).isNotNull();
+        assertThat(reloaded.getMatching().getId()).isEqualTo(jobMatchingId);
+        assertThat(reloaded.getSfJobOpp().getId()).isEqualTo(job.getId());
+        //Initialised from the job's text
+        assertThat(matchingDescription(reloaded)).isEqualTo(JOB_TEXT);
+    }
+
+    @Test
+    @DisplayName("new lists for a job with a refined Matching share it, unchanged, and no second Matching is created")
+    void newJobLists_shareExistingJobMatching() {
+        SalesforceJobOpp job = createJob();
+        //Refine the job's Matching through its default search
+        defaultJobSearch(job, "<p>Refined</p>");
+        Long jobMatchingId = jobMatchingId(job);
+        long matchingCount = matchingRepository.count();
+
+        SavedList first = createList("job-list-1", job.getId());
+        SavedList second = createList("job-list-2", job.getId());
+
+        assertThat(reload(first).getMatching().getId()).isEqualTo(jobMatchingId);
+        assertThat(reload(second).getMatching().getId()).isEqualTo(jobMatchingId);
+        assertThat(matchingDescription(reload(first))).isEqualTo("<p>Refined</p>");
+        assertThat(matchingRepository.count()).isEqualTo(matchingCount);
+    }
+
+    @Test
+    @DisplayName("new list with no job: no Matching is created")
+    void newListWithoutJob_hasNoMatching() {
+        long matchingCount = matchingRepository.count();
+
+        SavedList list = createList("no-job-list", null);
+
+        assertThat(reload(list).getMatching()).isNull();
+        assertThat(matchingRepository.count()).isEqualTo(matchingCount);
+    }
+
+    @Test
+    @DisplayName("creating a job: its new submission list gets the job's Matching")
+    void createJob_submissionListGetsJobMatching() {
+        logInAsEmployerPartner();
+
+        UpdateJobRequest request = new UpdateJobRequest();
+        request.setRoleName("ICU nurse " + System.nanoTime());
+        SalesforceJobOpp job = jobService.createJob(request);
+
+        SalesforceJobOpp reloadedJob = reloadJob(job);
+        SavedList submissionList = reloadedJob.getSubmissionList();
+        assertThat(submissionList.getRegisteredJob()).isTrue();
+        assertThat(submissionList.getSfJobOpp().getId()).isEqualTo(job.getId());
+        assertThat(jobMatchingId(job)).isNotNull();
+        assertThat(submissionList.getMatching().getId()).isEqualTo(jobMatchingId(job));
+    }
+
+    @Test
+    @DisplayName("copying a job: the new job gets its own Matching, initialised from the source job's refined description")
+    void copyJob_newJobMatchingInitialisedFromSourceMatching() {
+        logInAsEmployerPartner();
+        SalesforceJobOpp source = createJobWithSubmissionList();
+        defaultJobSearch(source, "<p>Refined</p>");
+        Long sourceMatchingId = jobMatchingId(source);
+
+        UpdateJobRequest request = new UpdateJobRequest();
+        request.setRoleName("Copied ICU nurse " + System.nanoTime());
+        request.setJobToCopyId(source.getId());
+        SalesforceJobOpp copy = jobService.createJob(request);
+
+        SavedList submissionList = reloadJob(copy).getSubmissionList();
+        Long copyMatchingId = jobMatchingId(copy);
+        assertThat(copyMatchingId).isNotNull().isNotEqualTo(sourceMatchingId);
+        assertThat(submissionList.getMatching().getId()).isEqualTo(copyMatchingId);
+        assertThat(matchingDescription(submissionList)).isEqualTo("<p>Refined</p>");
+        //The source job's Matching is unchanged
+        assertThat(matchingRepository.findById(sourceMatchingId).orElseThrow()
+            .getMatchingDescription()).isEqualTo("<p>Refined</p>");
+    }
+
+    @Test
+    @DisplayName("spawning an evergreen child job: the child gets its own Matching, initialised from the parent's refined description")
+    void evergreenChild_newJobMatchingInitialisedFromParentMatching() {
+        when(salesforceService.createOrUpdateJobOpportunity(any()))
+            .thenReturn("LISTMATCHINGSF" + System.nanoTime());
+        SalesforceJobOpp parent = createJobWithSubmissionList();
+        parent.setEvergreen(true);
+        parent.setEmployerEntity(createEmployer());
+        parent.setStage(JobOpportunityStage.candidateSearch);
+        parent.setJobOppIntake(jobOppIntakeRepository.saveAndFlush(new JobOppIntake()));
+        salesforceJobOppRepository.saveAndFlush(parent);
+        defaultJobSearch(parent, "<p>Refined</p>");
+        Long parentMatchingId = jobMatchingId(parent);
+
+        UpdateJobRequest request = new UpdateJobRequest();
+        request.setStage(JobOpportunityStage.recruitmentProcess);
+        jobService.updateJob(parent.getId(), request);
+
+        SalesforceJobOpp child = reloadJob(parent).getEvergreenChild();
+        assertThat(child).isNotNull();
+        Long childMatchingId = jobMatchingId(child);
+        assertThat(childMatchingId).isNotNull().isNotEqualTo(parentMatchingId);
+        SavedList childSubmissionList = child.getSubmissionList();
+        assertThat(childSubmissionList.getMatching().getId()).isEqualTo(childMatchingId);
+        assertThat(matchingDescription(childSubmissionList)).isEqualTo("<p>Refined</p>");
+    }
+
+    @Test
+    @DisplayName("ordinary list creation cannot create a submission list, even if the client asks for one")
+    void ordinaryListCreation_cannotCreateSubmissionList() throws Exception {
+        SalesforceJobOpp job = createJobWithSubmissionList();
+        Long submissionListId = reloadJob(job).getSubmissionList().getId();
+
+        UpdateSavedListInfoRequest request = objectMapper.readValue(
+            "{\"name\": \"sneaky-" + System.nanoTime() + "\", \"jobId\": " + job.getId()
+                + ", \"registeredJob\": true}",
+            UpdateSavedListInfoRequest.class);
+        long listId = (Long) savedListAdminApi.create(request).get("id");
+
+        SavedList created = reloadList(listId);
+        assertThat(created.getRegisteredJob()).isFalse();
+        assertThat(created.getSfJobOpp().getId()).isEqualTo(job.getId());
+        assertThat(savedListRepository.findSubmissionList(job.getId()).orElseThrow().getId())
+            .isEqualTo(submissionListId);
+    }
+
+    @Test
+    @DisplayName("ordinary list update cannot convert a list into a submission list")
+    void ordinaryListUpdate_cannotConvertToSubmissionList() throws Exception {
+        SalesforceJobOpp job = createJob();
+        SavedList list = createList("to-convert", job.getId());
+
+        UpdateSavedListInfoRequest request = objectMapper.readValue(
+            "{\"name\": \"converted-" + System.nanoTime() + "\", \"jobId\": " + job.getId()
+                + ", \"registeredJob\": true}",
+            UpdateSavedListInfoRequest.class);
+        savedListAdminApi.update(list.getId(), request);
+
+        SavedList updated = reload(list);
+        assertThat(updated.getName()).startsWith("converted-");
+        assertThat(updated.getRegisteredJob()).isFalse();
+        assertThat(savedListRepository.findSubmissionList(job.getId())).isEmpty();
+    }
+
+    @Test
+    @DisplayName("getOrCreateSubmissionList creates a job's submission list, with the job's Matching, then returns that same list")
+    void getOrCreateSubmissionList_createsThenReturnsSame() {
+        SalesforceJobOpp job = createJob();
+
+        SavedList created = savedListService.getOrCreateSubmissionList(job);
+        SavedList again = savedListService.getOrCreateSubmissionList(reloadJob(job));
+
+        assertThat(again.getId()).isEqualTo(created.getId());
+        SavedList reloaded = reload(created);
+        assertThat(reloaded.getRegisteredJob()).isTrue();
+        assertThat(reloaded.getSfJobOpp().getId()).isEqualTo(job.getId());
+        assertThat(reloaded.getMatching().getId()).isEqualTo(jobMatchingId(job));
+    }
+
+    @Test
+    @DisplayName("getOrCreateSubmissionList returns an existing (legacy) submission list unchanged - no backfill")
+    void getOrCreateSubmissionList_existingNotBackfilled() {
+        SalesforceJobOpp job = createJob();
+        SavedList legacy = createLegacyList("legacy-submission", job);
+        legacy.setRegisteredJob(true);
+        legacy = savedListRepository.saveAndFlush(legacy);
+        long matchingCount = matchingRepository.count();
+
+        SavedList result = savedListService.getOrCreateSubmissionList(job);
+
+        assertThat(result.getId()).isEqualTo(legacy.getId());
+        assertThat(reload(legacy).getMatching()).isNull();
+        assertThat(jobMatchingId(job)).isNull();
+        assertThat(matchingRepository.count()).isEqualTo(matchingCount);
+    }
+
+    @Test
+    @DisplayName("several ordinary lists for the same job are distinct lists sharing the job and its Matching, alongside its submission list")
+    void ordinaryJobLists_distinctButShareJobAndMatching() {
+        SalesforceJobOpp job = createJobWithSubmissionList();
+
+        //Eg lists maintained by different teams sourcing candidates for the same job
+        SavedList pakistan = createList("pakistan", job.getId());
+        SavedList jordan = createList("jordan", job.getId());
+
+        SavedList reloadedPakistan = reload(pakistan);
+        SavedList reloadedJordan = reload(jordan);
+        assertThat(reloadedPakistan.getId()).isNotEqualTo(reloadedJordan.getId());
+        assertThat(reloadedPakistan.getRegisteredJob()).isFalse();
+        assertThat(reloadedJordan.getRegisteredJob()).isFalse();
+        assertThat(reloadedPakistan.getSfJobOpp().getId()).isEqualTo(job.getId());
+        assertThat(reloadedJordan.getSfJobOpp().getId()).isEqualTo(job.getId());
+        Long jobMatchingId = jobMatchingId(job);
+        assertThat(reloadedPakistan.getMatching().getId()).isEqualTo(jobMatchingId);
+        assertThat(reloadedJordan.getMatching().getId()).isEqualTo(jobMatchingId);
+        assertThat(reloadJob(job).getSubmissionList().getMatching().getId())
+            .isEqualTo(jobMatchingId);
+    }
+
+    @Test
+    @DisplayName("matching search results -> list, when the search has no selection list yet: selection list is created and the list inherits the Matching")
+    void matchingSearchResults_withoutSelectionList() {
+        SalesforceJobOpp job = createJob();
+        SavedSearch search = createSearch("no-selection", job.getId(), null);
+        removeSelectionList(search);
+        SavedList existing = createList("existing-no-selection", null);
+
+        saveSearchResults(search, existing.getId(), false);
+
+        SavedList reloaded = reload(existing);
+        assertThat(reloaded.getMatching().getId()).isEqualTo(jobMatchingId(job));
+        assertThat(reloaded.getSfJobOpp()).isNull();
+        assertThat(reloaded.getCandidates()).extracting(Candidate::getId)
+            .contains(candidate.getId());
+        SavedList selection =
+            savedListRepository.findSelectionList(search.getId(), user.getId()).orElseThrow();
+        assertThat(selection.getMatching().getId()).isEqualTo(jobMatchingId(job));
+    }
+
+    @Test
+    @DisplayName("matching search results -> new list, when the search has no selection list yet")
+    void matchingSearchResults_toNewList_withoutSelectionList() {
+        SavedSearch search = createSearch("no-selection-new", null, "<p>Welders</p>");
+        removeSelectionList(search);
+
+        newRequest();
+        UpdateExplicitSavedListContentsRequest request = resultsRequest(search, false);
+        request.setName("new-no-selection-" + System.nanoTime());
+        long listId = (Long) savedListCandidateAdminApi.create(request).get("id");
+
+        SavedList reloaded = reloadList(listId);
+        assertThat(reloaded.getMatching().getId())
+            .isEqualTo(reloadSearch(search).getMatching().getId());
+        assertThat(reloaded.getSfJobOpp()).isNull();
+        assertThat(reloaded.getCandidates()).extracting(Candidate::getId)
+            .contains(candidate.getId());
+    }
+
+    /**
+     * Logs the user in as a member of an employer job creator partner, with Salesforce mocked -
+     * so that jobs can be created through JobService.
+     */
+    private void logInAsEmployerPartner() {
+        PartnerImpl partner = TestDataFactory.createPartner();
+        partner.setName("Employer partner " + System.nanoTime());
+        partner.setEmployer(createEmployer());
+        partner = partnerRepository.saveAndFlush(partner);
+        user.setPartner(partner);
+        user = userRepository.saveAndFlush(user);
+        logIn(user);
+        when(salesforceService.createOrUpdateJobOpportunity(any()))
+            .thenAnswer(invocation -> "LISTMATCHINGSF" + System.nanoTime());
+        when(salesforceService.findCandidateOpportunities(anyString())).thenReturn(List.of());
+    }
+
+    private Employer createEmployer() {
+        Employer employer = new Employer();
+        employer.setName("Employer " + System.nanoTime());
+        employer.setCreatedBy(user);
+        employer.setCreatedDate(OffsetDateTime.now());
+        return employerRepository.saveAndFlush(employer);
+    }
+
+    private SalesforceJobOpp createJobWithSubmissionList() {
+        SalesforceJobOpp job = createJob();
+        job.setSubmissionList(savedListService.getOrCreateSubmissionList(job));
+        return salesforceJobOppRepository.saveAndFlush(job);
+    }
+
+    private SalesforceJobOpp reloadJob(SalesforceJobOpp job) {
+        entityManager.flush();
+        entityManager.clear();
+        return salesforceJobOppRepository.findById(job.getId()).orElseThrow();
     }
 
     private SalesforceJobOpp createJob() {
@@ -478,6 +789,32 @@ class SavedListMatchingIntegrationTest extends BaseDBIntegrationTest {
         request.setName(name + "-" + System.nanoTime());
         request.setJobId(jobId);
         return savedListService.createSavedList(request);
+    }
+
+    /**
+     * Removes the user's selection list for the search - eg a search that the user has never
+     * selected candidates in.
+     */
+    private void removeSelectionList(SavedSearch search) {
+        entityManager.flush();
+        savedListRepository.findSelectionList(search.getId(), user.getId())
+            .ifPresent(selection -> savedListRepository.delete(selection));
+        entityManager.flush();
+        assertThat(savedListRepository.findSelectionList(search.getId(), user.getId())).isEmpty();
+    }
+
+    /**
+     * A list as created before lists had Matchings - eg a job list with no Matching.
+     */
+    private SavedList createLegacyList(String name, @Nullable SalesforceJobOpp job) {
+        SavedList list = TestDataFactory.createSavedList();
+        list.setName(name + "-" + System.nanoTime());
+        list.setRegisteredJob(false);
+        list.setFixed(false);
+        list.setGlobal(false);
+        list.setSfJobOpp(job);
+        list.setCreatedBy(user);
+        return savedListRepository.saveAndFlush(list);
     }
 
     /**

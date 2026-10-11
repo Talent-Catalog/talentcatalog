@@ -51,7 +51,6 @@ import org.tctalent.server.configuration.GoogleDriveConfig;
 import org.tctalent.server.exception.EntityExistsException;
 import org.tctalent.server.exception.InvalidRequestException;
 import org.tctalent.server.exception.NoSuchObjectException;
-import org.tctalent.server.exception.RegisteredListException;
 import org.tctalent.server.exception.SalesforceException;
 import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.model.db.Candidate;
@@ -478,7 +477,7 @@ public class SavedListServiceImpl implements SavedListService {
 
     @Override
     public SavedList createSavedList(User user, UpdateSavedListInfoRequest request)
-        throws EntityExistsException, RegisteredListException {
+        throws EntityExistsException {
 
         SalesforceJobOpp sfJobOpp = request.getSfJobOpp();
         if (sfJobOpp == null) {
@@ -488,36 +487,51 @@ public class SavedListServiceImpl implements SavedListService {
             }
         }
 
-        final boolean isRegisteredList =
-            request.getRegisteredJob() != null && request.getRegisteredJob();
-        if (isRegisteredList) {
-            if (sfJobOpp == null) {
-                throw new RegisteredListException("Missing Salesforce link for registered job list");
-            }
-            String jobName = request.getName();
-            if (jobName == null) {
-                jobName = sfJobOpp.getName();
-            }
-
-            //Check for a registered list with same sfJobOpp (owned any user)
-            SavedList registeredList = savedListRepository.findRegisteredJobList(sfJobOpp.getSfId())
-                .orElse(null);
-            //If we already have a registered list for this job, just return it
-            if (registeredList != null) {
-                return registeredList;
-            }
-
-            //Modify registered name to avoid clashes with unregistered list names
-            request.setName(jobName + REGISTERED_NAME_SUFFIX);
-        } else {
-            if (user != null) {
-                checkDuplicates(null, request.getName(), user);
-            }
+        if (user != null) {
+            checkDuplicates(null, request.getName(), user);
         }
 
         SavedList savedList = new SavedList();
         request.populateFromRequest(savedList);
-        savedList.setSfJobOpp(sfJobOpp);
+        return saveNewList(savedList, sfJobOpp, user);
+    }
+
+    @Override
+    @NonNull
+    @Transactional
+    public SavedList getOrCreateSubmissionList(@NonNull SalesforceJobOpp job) {
+        final SavedList existing = savedListRepository.findSubmissionList(job.getId())
+            .orElse(null);
+        if (existing != null) {
+            return existing;
+        }
+
+        SavedList submissionList = new SavedList();
+        submissionList.setRegisteredJob(true);
+        //Shared by everyone providing candidates for the job
+        submissionList.setGlobal(true);
+        //Suffix avoids clashes with ordinary list names
+        submissionList.setName(job.getName() + REGISTERED_NAME_SUFFIX);
+        return saveNewList(submissionList, job, userService.getLoggedInUser());
+    }
+
+    /**
+     * Completes and saves a newly created list.
+     *
+     * @param savedList New list
+     * @param job Job the list is associated with - null if none
+     * @param user User to be recorded as the list's creator
+     * @return Saved list
+     */
+    private SavedList saveNewList(
+        SavedList savedList, @Nullable SalesforceJobOpp job, @Nullable User user) {
+        savedList.setSfJobOpp(job);
+
+        //A new list associated with a job takes part in the job's matching activity, so it
+        //shares the job's single Matching from the start.
+        if (job != null) {
+            savedList.setMatching(matchingService.getOrCreateJobMatching(job, null));
+        }
 
         //Populate publicID
         savedList.setPublicId(publicIDService.generatePublicID());
