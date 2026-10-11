@@ -1480,7 +1480,7 @@ describe('ShowCandidatesComponent', () => {
 
     it('should identify a matching search source by sourceSearchId, not sourceListId', () => {
       spyOn((component as any).candidateSourceResultsCacheService, 'removeFromCache');
-      component.candidateSource = {id: 1, name: 'Search', autoUpdateOnSearch: true} as any;
+      component.candidateSource = {id: 1, name: 'Search', defaultSearch: false} as any;
       component.isMatchingSearch = true;
       component.results = {content: [new MockCandidate()]} as any;
       mockSavedListService.get.and.returnValue(of({id: 7, name: 'Existing'} as any));
