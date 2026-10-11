@@ -199,6 +199,9 @@ public class SavedSearchAdminApi implements
                               @Valid @RequestBody CopySourceContentsRequest request)
             throws EntityExistsException, InvalidRequestException, NoSuchObjectException {
 
+        //Resolve the search's matching context, so that the target list can inherit it.
+        savedSearchService.resolveMatching(id);
+
         //Get the selection list for this user and saved search.
         SavedList selectionList = savedSearchService.getSelectionListForLoggedInUser(id);
 

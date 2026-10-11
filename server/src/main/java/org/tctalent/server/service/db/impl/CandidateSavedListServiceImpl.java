@@ -166,6 +166,9 @@ public class CandidateSavedListServiceImpl implements CandidateSavedListService 
             }
         }
 
+        //Fill in any missing matching context from the source
+        savedListService.inheritMatching(targetList, sourceList);
+
         //Copy across list contents (which includes context notes)
         copyContents(sourceList, targetList, replace);
 
@@ -205,6 +208,9 @@ public class CandidateSavedListServiceImpl implements CandidateSavedListService 
                 destination.setSavedSearchSource(savedSearchSource);
             }
         }
+
+        //Fill in any missing matching context from the source
+        savedListService.inheritMatching(destination, sourceList);
 
         //Retrieve candidates
         Set<Candidate> candidates = savedListService.fetchCandidates(request);

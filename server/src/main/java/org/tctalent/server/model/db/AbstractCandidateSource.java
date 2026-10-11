@@ -21,6 +21,7 @@ import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.MappedSuperclass;
 import jakarta.persistence.OneToOne;
 import jakarta.validation.constraints.NotNull;
@@ -121,6 +122,19 @@ public abstract class AbstractCandidateSource extends AbstractAuditableDomainObj
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "job_id")
     private SalesforceJobOpp sfJobOpp;
+
+    /**
+     * The source's matching context: the natural language description that its candidates are
+     * matched against. Independent of {@link #sfJobOpp}, although a source taking part in a
+     * job's matching activity shares the job's single Matching. Shared by the candidate sources
+     * taking part in the same matching activity - eg a search and its selection list.
+     * <p>
+     * Null for sources which have not needed a Matching yet.
+     */
+    @Nullable
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "matching_id")
+    private Matching matching;
 
     /**
      * Stored as comma separated list of watching user ids

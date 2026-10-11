@@ -105,6 +105,7 @@ import org.tctalent.server.service.db.CandidateOpportunityService;
 import org.tctalent.server.service.db.DocPublisherService;
 import org.tctalent.server.service.db.ExportColumnsService;
 import org.tctalent.server.service.db.FileSystemService;
+import org.tctalent.server.service.db.MatchingService;
 import org.tctalent.server.service.db.PublicIDService;
 import org.tctalent.server.service.db.SalesforceJobOppService;
 import org.tctalent.server.service.db.SalesforceService;
@@ -132,6 +133,7 @@ class SavedListServiceImplTest {
   @Mock private TaskAssignmentService taskAssignmentService;
   @Mock private UserRepository userRepository;
   @Mock private UserService userService;
+  @Mock private MatchingService matchingService;
 
   private SavedListServiceImpl service;
   private User user;
@@ -153,7 +155,8 @@ class SavedListServiceImplTest {
         salesforceJobOppService,
         taskAssignmentService,
         userRepository,
-        userService
+        userService,
+        matchingService
     );
 
     user = user(10L);

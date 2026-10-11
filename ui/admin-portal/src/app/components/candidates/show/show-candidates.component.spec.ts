@@ -1464,6 +1464,35 @@ describe('ShowCandidatesComponent', () => {
       expect((component as any).cacheTargetList).toHaveBeenCalled();
     }));
 
+    it('should identify a list source by sourceListId when saving a selection', () => {
+      spyOn((component as any).candidateSourceResultsCacheService, 'removeFromCache');
+      component.candidateSource = new MockCandidateSource();
+      component.selectedCandidates = [new MockCandidate()];
+      mockSavedListService.get.and.returnValue(of({id: 7, name: 'Existing'} as any));
+      mockSavedListCandidateService.saveSelection.and.returnValue(of(null));
+
+      (component as any).doSaveSelection({savedListId: 7, replace: false});
+
+      const request = mockSavedListCandidateService.saveSelection.calls.mostRecent().args[1];
+      expect(request.sourceListId).toBe(component.candidateSource.id);
+      expect(request.sourceSearchId).toBeUndefined();
+    });
+
+    it('should identify a matching search source by sourceSearchId, not sourceListId', () => {
+      spyOn((component as any).candidateSourceResultsCacheService, 'removeFromCache');
+      component.candidateSource = {id: 1, name: 'Search', autoUpdateOnSearch: true} as any;
+      component.isMatchingSearch = true;
+      component.results = {content: [new MockCandidate()]} as any;
+      mockSavedListService.get.and.returnValue(of({id: 7, name: 'Existing'} as any));
+      mockSavedListCandidateService.saveSelection.and.returnValue(of(null));
+
+      (component as any).doSaveSelection({savedListId: 7, replace: false});
+
+      const request = mockSavedListCandidateService.saveSelection.calls.mostRecent().args[1];
+      expect(request.sourceSearchId).toBe(component.candidateSource.id);
+      expect(request.sourceListId).toBeUndefined();
+    });
+
     it('should expose merge and create list failures', fakeAsync(() => {
       component.selectedCandidates = [new MockCandidate()];
       mockSavedListService.get.and.returnValue(of({id: 7, name: 'Existing'} as any));

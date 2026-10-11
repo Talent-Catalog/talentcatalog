@@ -147,7 +147,7 @@ public class SavedSearch extends AbstractCandidateSource {
     /**
      * Original storage for the natural language candidate requirements, retained for searches
      * that have not yet been associated with a {@link Matching}. Requirements are now stored
-     * as the description of the search's {@link #matching}.
+     * as the description of the search's {@link #getMatching() Matching}.
      * <p>
      * Only meaningful for a search which does not yet have a Matching. It is used to initialise
      * the Matching when one is created lazily, and is cleared whenever the requirements are
@@ -157,18 +157,6 @@ public class SavedSearch extends AbstractCandidateSource {
     @Getter(AccessLevel.NONE)
     @Setter(AccessLevel.NONE)
     private String requirements;
-
-    /**
-     * The search's matching context, whose description is the search's natural language
-     * candidate requirements. Shared with the other candidate sources taking part in the same
-     * matching activity - in particular, a search associated with a job uses the job's Matching.
-     * <p>
-     * Null for searches which have not needed a Matching yet - see {@link #getRequirements()}.
-     */
-    @Nullable
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "matching_id")
-    private Matching matching;
 
     private String unhcrStatuses;
 
@@ -320,11 +308,12 @@ public class SavedSearch extends AbstractCandidateSource {
 
     /**
      * Natural language candidate requirements (e.g. from a job description): the description of
-     * this search's {@link #matching} or, if it doesn't have a Matching yet, any legacy
-     * requirements stored before Matchings were introduced.
+     * this search's {@link #getMatching() Matching} or, if it doesn't have a Matching yet, any
+     * legacy requirements stored before Matchings were introduced.
      */
     @Nullable
     public String getRequirements() {
+        final Matching matching = getMatching();
         return matching != null ? matching.getMatchingDescription() : requirements;
     }
 

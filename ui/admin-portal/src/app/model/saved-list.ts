@@ -87,6 +87,11 @@ export interface UpdateSavedListContentsRequest extends UpdateSavedListInfoReque
 
   sourceListId?: number;
 
+  /**
+   * Saved search the candidates came from, if they didn't come from a list (sourceListId).
+   */
+  sourceSearchId?: number;
+
   statusUpdateInfo?: UpdateCandidateStatusInfo;
 
   updateType?: ContentUpdateType;

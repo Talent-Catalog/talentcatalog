@@ -1243,9 +1243,14 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
         statusUpdateInfo: targetListSelection.statusUpdateInfo,
         updateType: targetListSelection.replace ? ContentUpdateType.replace : ContentUpdateType.add,
         jobId: targetListSelection.jobId,
-        candidateIds: candidatesToSave.map(c => c.id),
-        sourceListId: this.candidateSource.id
+        candidateIds: candidatesToSave.map(c => c.id)
       };
+      //The source may be a list - or a (matching) saved search.
+      if (isSavedSearch(this.candidateSource)) {
+        request.sourceSearchId = this.candidateSource.id;
+      } else {
+        request.sourceListId = this.candidateSource.id;
+      }
       // If request has a savedListId, merge or replace. Otherwise create a new list.
       if (savedListId > 0) {
         this.replaceOrMergeList(savedListId, request);

@@ -359,6 +359,36 @@ public interface SavedListService {
         throws NoSuchObjectException;
 
     /**
+     * Fills in the matching context of a list that candidates are being added to (or replacing
+     * its contents), if it doesn't have one yet, from the candidates' source.
+     * <p>
+     * Only missing context is filled in - an existing Matching is never replaced, since
+     * changing which candidates are in a list doesn't change what the list is about.
+     * <ul>
+     *     <li>
+     *         A destination associated with a job uses the job's single Matching - never an
+     *         unrelated source Matching.
+     *     </li>
+     *     <li>
+     *         Otherwise it uses the source's Matching (a source associated with a job uses the
+     *         job's Matching) - except that the working Matching of a default search with no
+     *         job is copied rather than shared, since the default search's requirements keep
+     *         changing as the user explores.
+     *     </li>
+     *     <li>
+     *         Selection lists are never changed - they always follow their search
+     *         (see {@link SavedSearchService#getSelectionList}).
+     *     </li>
+     * </ul>
+     * The destination's job is not changed.
+     *
+     * @param destination List that candidates are being added to. Not saved here.
+     * @param source List that the candidates come from - for a saved search, its selection
+     *               list. Null if not known, in which case nothing changes.
+     */
+    void inheritMatching(@NonNull SavedList destination, @Nullable SavedList source);
+
+    /**
      * Merge the contents of the SavedList with the given id with the
      * candidates whose candidate numbers (NOT ids) or publicIds appear in the given input stream.
      * @param savedListId ID of the saved list to be updated

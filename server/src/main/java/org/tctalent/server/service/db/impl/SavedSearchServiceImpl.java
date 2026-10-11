@@ -996,6 +996,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             savedList.setCreatedDate(OffsetDateTime.now());
             savedList.setName(constructSelectionListName(user, savedSearch));
             savedList.setSfJobOpp(savedSearch.getSfJobOpp());
+            savedList.setMatching(savedSearch.getMatching());
 
             savedList = savedListRepository.save(savedList);
         } else {
@@ -1015,6 +1016,16 @@ public class SavedSearchServiceImpl implements SavedSearchService {
                     savedList = savedListRepository.save(savedList);
                 }
             }
+
+            //Similarly keep the selection list's matching context the same as its search's.
+            //(Compared by id - Matching equality is not reliable for lazily loaded proxies)
+            final Matching searchMatching = savedSearch.getMatching();
+            final Matching listMatching = savedList.getMatching();
+            if (!Objects.equals(searchMatching == null ? null : searchMatching.getId(),
+                listMatching == null ? null : listMatching.getId())) {
+                savedList.setMatching(searchMatching);
+                savedList = savedListRepository.save(savedList);
+            }
         }
 
         return savedList;
@@ -1030,6 +1041,19 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         }
 
         return getSelectionList(id, loggedInUser.getId());
+    }
+
+    @Override
+    @Transactional
+    public @Nullable Matching resolveMatching(long id) throws NoSuchObjectException {
+        SavedSearch savedSearch = savedSearchRepository.findById(id)
+            .orElseThrow(() -> new NoSuchObjectException(SavedSearch.class, id));
+        if (savedSearch.getMatching() == null && (savedSearch.getSfJobOpp() != null
+            || Matching.hasTextContent(savedSearch.getLegacyRequirements()))) {
+            getOrCreateMatching(savedSearch);
+            savedSearchRepository.save(savedSearch);
+        }
+        return savedSearch.getMatching();
     }
 
     public boolean includesElasticSearch(long savedSearchId) {

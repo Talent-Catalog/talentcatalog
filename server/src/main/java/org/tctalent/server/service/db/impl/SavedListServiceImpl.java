@@ -57,8 +57,10 @@ import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.CandidateSavedList;
 import org.tctalent.server.model.db.ExportColumn;
+import org.tctalent.server.model.db.Matching;
 import org.tctalent.server.model.db.SalesforceJobOpp;
 import org.tctalent.server.model.db.SavedList;
+import org.tctalent.server.model.db.SavedSearch;
 import org.tctalent.server.model.db.Status;
 import org.tctalent.server.model.db.TaskAssignmentImpl;
 import org.tctalent.server.model.db.TaskImpl;
@@ -97,6 +99,7 @@ import org.tctalent.server.service.db.CandidateOpportunityService;
 import org.tctalent.server.service.db.DocPublisherService;
 import org.tctalent.server.service.db.ExportColumnsService;
 import org.tctalent.server.service.db.FileSystemService;
+import org.tctalent.server.service.db.MatchingService;
 import org.tctalent.server.service.db.PublicIDService;
 import org.tctalent.server.service.db.SalesforceJobOppService;
 import org.tctalent.server.service.db.SalesforceService;
@@ -135,6 +138,7 @@ public class SavedListServiceImpl implements SavedListService {
     private final TaskAssignmentService taskAssignmentService;
     private final UserRepository userRepository;
     private final UserService userService;
+    private final MatchingService matchingService;
 
     private static final String PUBLISHED_DOC_CANDIDATE_NUMBER_RANGE_NAME = "CandidateNumber";
 
@@ -151,7 +155,8 @@ public class SavedListServiceImpl implements SavedListService {
         SalesforceService salesforceService,
         SalesforceJobOppService salesforceJobOppService, TaskAssignmentService taskAssignmentService,
         UserRepository userRepository,
-        UserService userService) {
+        UserService userService,
+        MatchingService matchingService) {
         this.candidateRepository = candidateRepository;
         this.candidateDtoFetchService = candidateDtoFetchService;
         this.candidateSavedListRepository = candidateSavedListRepository;
@@ -167,6 +172,7 @@ public class SavedListServiceImpl implements SavedListService {
         this.taskAssignmentService = taskAssignmentService;
         this.userRepository = userRepository;
         this.userService = userService;
+        this.matchingService = matchingService;
     }
 
     @Override
@@ -694,8 +700,40 @@ public class SavedListServiceImpl implements SavedListService {
         SavedList sourceList = fetchSourceList(request);
         Set<Candidate> candidates = fetchCandidates(request);
         addCandidatesToList(savedList, candidates, sourceList);
+        inheritMatching(savedList, sourceList);
 
         saveIt(savedList);
+    }
+
+    @Override
+    public void inheritMatching(@NonNull SavedList destination, @Nullable SavedList source) {
+        if (source == null || destination.getMatching() != null
+            || destination.getSavedSearch() != null) {
+            return;
+        }
+
+        Matching sourceMatching = source.getMatching();
+        final SalesforceJobOpp sourceJob = source.getSfJobOpp();
+        if (sourceMatching == null && sourceJob != null && source.getSavedSearch() == null) {
+            //A list taking part in a job's matching activity has the job's Matching.
+            sourceMatching = matchingService.getOrCreateJobMatching(sourceJob, null);
+        }
+        if (sourceMatching == null) {
+            return;
+        }
+
+        final SalesforceJobOpp destinationJob = destination.getSfJobOpp();
+        final SavedSearch sourceSearch = source.getSavedSearch();
+        if (destinationJob != null) {
+            destination.setMatching(matchingService.getOrCreateJobMatching(destinationJob, null));
+        } else if (sourceJob == null && sourceSearch != null && sourceSearch.isDefaultSearch()) {
+            final String description = sourceMatching.getMatchingDescription();
+            if (description != null) {
+                destination.setMatching(matchingService.createMatching(description));
+            }
+        } else {
+            destination.setMatching(sourceMatching);
+        }
     }
 
     @Override
