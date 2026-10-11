@@ -159,7 +159,7 @@ describe('CandidateSourceComponent', () => {
 
     // Create a MockCandidateSource that already includes savedSearchType
     const mockCandidateSource = new MockCandidateSource();
-    mockCandidateSource['savedSearchType'] = 'MockSavedSearch'; // Already included in the mock definition
+    mockCandidateSource['defaultSearch'] = false; //This makes it look like a saved search
 
     // Set the candidateSource on the component
     component.candidateSource = mockCandidateSource;
@@ -181,7 +181,7 @@ describe('CandidateSourceComponent', () => {
   it('should handle errors when fetching saved search', () => {
     // Create a MockCandidateSource that already includes savedSearchType
     const mockCandidateSource = new MockCandidateSource();
-    mockCandidateSource['savedSearchType'] = 'MockSavedSearch'; // Already included in the mock definition
+    mockCandidateSource['defaultSearch'] = false; //This makes it look like a saved search
 
     // Set the candidateSource on the component
     component.candidateSource = mockCandidateSource;
@@ -253,7 +253,7 @@ describe('CandidateSourceComponent', () => {
   it('should fetch saved search on init', () => {
 
     const mockCandidateSource = new MockCandidateSource();
-    mockCandidateSource['savedSearchType'] = 'MockSavedSearch'; // Already included in the mock definition
+    mockCandidateSource['defaultSearch'] = false; //This makes it look like a saved search
 
     // Set the candidateSource on the component
     component.candidateSource = mockCandidateSource;
