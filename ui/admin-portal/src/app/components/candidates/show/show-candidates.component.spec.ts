@@ -42,7 +42,6 @@ import {AuthenticationService} from "../../../services/authentication.service";
 import {SalesforceService} from "../../../services/salesforce.service";
 import {MockCandidateSource} from "../../../MockData/MockCandidateSource";
 import {MockUser} from "../../../MockData/MockUser";
-import {SavedSearchType} from "../../../model/saved-search";
 import {of, Subject, Subscription, throwError} from "rxjs";
 import {JobService} from "../../../services/job.service";
 import {JobMatchingInfo} from "../../../model/JobMatchingInfo";
@@ -174,7 +173,7 @@ describe('ShowCandidatesComponent', () => {
     component.loggedInUser = new MockUser();
     mockSavedSearchService.clearSelection.and.returnValue(throwError('Selection clear error'));
     const mockCandidateSource = new MockCandidateSource();
-    (mockCandidateSource as any).savedSearchType = SavedSearchType.other;
+    (mockCandidateSource as any).defaultSearch = false; //Any value makes it look like a saved search
     component.candidateSource = mockCandidateSource;
     component.clearSelectionAndDoSearch();
 
