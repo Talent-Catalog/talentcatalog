@@ -16,6 +16,8 @@
 
 package org.tctalent.server.service.db.impl;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.LockModeType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
@@ -23,6 +25,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.model.db.Matching;
+import org.tctalent.server.model.db.MatchingSnapshot;
 import org.tctalent.server.model.db.SalesforceJobOpp;
 import org.tctalent.server.repository.db.MatchingRepository;
 import org.tctalent.server.repository.db.SalesforceJobOppRepository;
@@ -37,6 +40,7 @@ public class MatchingServiceImpl implements MatchingService {
 
     private final MatchingRepository matchingRepository;
     private final SalesforceJobOppRepository salesforceJobOppRepository;
+    private final EntityManager entityManager;
 
     @Override
     @NonNull
@@ -50,6 +54,33 @@ public class MatchingServiceImpl implements MatchingService {
     public Matching getMatching(long id) throws NoSuchObjectException {
         return matchingRepository.findById(id)
             .orElseThrow(() -> new NoSuchObjectException(Matching.class, id));
+    }
+
+    @Override
+    @NonNull
+    @Transactional
+    public MatchingSnapshot resolveDescription(long id) throws NoSuchObjectException {
+        final MatchingSnapshot snapshot = matchingRepository.findSnapshot(id)
+            .orElseThrow(() -> new NoSuchObjectException(Matching.class, id));
+        if (snapshot.matchingDescription() != null) {
+            return snapshot;
+        }
+
+        final SalesforceJobOpp job = salesforceJobOppRepository.findByMatchingId(id).orElse(null);
+        if (job == null) {
+            return snapshot;
+        }
+
+        //Initialise the job's blank Matching from the job's text. Refreshed and locked first, so
+        //that a description given to the Matching meanwhile (eg by another request) is never
+        //overwritten.
+        Matching matching = getMatching(id);
+        entityManager.refresh(matching, LockModeType.PESSIMISTIC_WRITE);
+        if (matching.getMatchingDescription() == null
+            && matching.updateMatchingDescription(JobServiceHelper.extractJobText(job))) {
+            matching = matchingRepository.save(matching);
+        }
+        return MatchingSnapshot.of(matching);
     }
 
     @Override

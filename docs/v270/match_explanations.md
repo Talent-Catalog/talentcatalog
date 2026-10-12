@@ -1,6 +1,6 @@
 ---
 title: Match Explanations
-description: AI-generated explanations of why each candidate matches a job
+description: AI-generated explanations of why each candidate matches the requirements
 sass:
   style: compressed
 ---
@@ -11,9 +11,10 @@ sass:
 candidates by how closely their experience fits a job description. It also promised that users
 would be able to see *why* a candidate was matched, not just that they were.
 
-This release delivers that. For any candidate in a matching search or a job's submission list,
-Talent Catalog can now generate a plain-English explanation of how well the candidate's
-experience fits the job — written by a large language model (LLM).
+This release delivers that. For any candidate in a matching search, or in a list with matching
+requirements such as a job's submission list, Talent Catalog can now generate a plain-English
+explanation of how well the candidate's experience fits the requirements — written by a large
+language model (LLM).
 
 ---
 
@@ -24,6 +25,11 @@ experience fits the job — written by a large language model (LLM).
 Explanations compare a candidate against the **AI match requirements** text on the search screen.
 That might be a job description pulled in from a job (as in the example above), or anything you
 type yourself describing the experience you're looking for.
+
+Explanations always use the requirements as last saved, not unsaved edits. If you change the
+requirements, run the search (or, for a named search that doesn't update automatically, save
+it) before showing explanations — until then Talent Catalog tells you that the requirements have
+changed instead of showing an explanation of the old ones.
 
 ## 👁️ Show a Match Explanation
 
@@ -47,8 +53,11 @@ Each explanation includes:
   too thin to judge.
 
 Explanations are dated, and show the name of the LLM that generated them (a Qwen model in this
-case). Click **Regenerate explanation** to generate a fresh one — for example after the candidate
-has updated their experience.
+case).
+
+Click **Regenerate explanation** to generate a fresh one — for example after the candidate has
+updated their experience. Changes to the requirements are picked up automatically (see below),
+but changes to a candidate's experience are not yet.
 
 The LLM brings its general world knowledge to the comparison. In this example the candidate never
 actually mentioned "cloud" experience, but she did mention AWS, and the LLM knew that AWS is a
@@ -62,19 +71,27 @@ Hover over any experience heading to see the candidate's own description of that
 including dates, role type and location, with search keywords highlighted. The popup stays open
 while you move into it, so long descriptions can be scrolled.
 
-## 📋 Explanations on Submission Lists
+## 📋 Saved, Shared and Kept Up to Date
 
 ![A match explanation on a job's submission list](../assets/images/v270/MatchExplanationSubmissionList.png)
 
-When a search is associated with a job, each candidate's explanation is saved against that job.
-Next time anyone shows the explanation for that candidate and job — from a search or from the
-job's submission list — the saved explanation is displayed straight away, with no new AI call.
+Each explanation is saved for the candidate and the requirements it explains. Next time anyone
+shows the explanation for that candidate — from the same search or list, or from any other
+search or list sharing the same requirements — the saved explanation is displayed straight away,
+with no new AI call.
 
-New or updated explanations can also be generated directly from a job's submission list, using
-the job's description as the requirements.
+All the searches and lists associated with a job share the job's requirements, so an explanation
+generated from a job search is also shown on the job's submission list (as above), and vice
+versa. Searches and lists that aren't associated with a job work just the same, using their own
+requirements. (A list without a job gets requirements when candidates are saved into it from a
+search with requirements.)
 
-Searches that aren't associated with a job still show explanations, but these are generated on
-request and not saved.
+When the requirements change, saved explanations of the old requirements are no longer shown.
+Instead, a fresh explanation is generated from the new requirements the next time one is shown,
+and replaces the old one.
+
+A job's submission list uses the job's description as its requirements until someone refines
+them in a job search.
 
 ## ⚠️ A Word of Caution
 
@@ -88,5 +105,9 @@ profile, not as a substitute for reviewing it.
   **Qwen3 235B** model. The cost is roughly 30 explanations per US cent.
 - Only the requirements text and the candidate's job experience (job title and description) are
   sent to the LLM — not the candidate's name, contact details or other profile information.
-- Saved explanations are stored per candidate and job, recording when they were generated and
-  which model generated them. Regenerating an explanation replaces the saved one.
+- Explanations are a disposable cache, not a history: at most one explanation is kept per
+  candidate and set of requirements, recording when it was generated and which model generated
+  it. Regenerating an explanation, or generating one from changed requirements, replaces it.
+- The requirements are always read on the server from the saved requirements — never taken from
+  the browser. An explanation generated while the requirements were being changed is discarded
+  rather than saved, so it can never replace an explanation of the new requirements.

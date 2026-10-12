@@ -15,8 +15,8 @@
  */
 
 /**
- * On-demand, LLM-generated explanation of how a candidate's job experience relates to a
- * supplied opportunity description. Mirrors the server's CandidateMatchExplanation response DTO.
+ * On-demand, LLM-generated explanation of how a candidate's job experience relates to the
+ * description of a Matching. Mirrors the server's CandidateMatchExplanation response DTO.
  */
 export interface CandidateMatchExplanation {
   /**
@@ -34,7 +34,7 @@ export interface CandidateMatchExplanation {
   limitations: string[];
 }
 
-/** Explanation of how a single candidate job experience relates to a supplied opportunity. */
+/** Explanation of how a single candidate job experience relates to the Matching's description. */
 export interface ExperienceMatchExplanation {
   experienceId: number;
   /**
@@ -46,16 +46,17 @@ export interface ExperienceMatchExplanation {
 }
 
 /**
- * Request to generate an on-demand explanation of how a candidate relates to an opportunity.
- * The candidate is identified separately (by path/method parameter), not by this request body.
+ * Request for the explanation of how a candidate relates to the description of a Matching. The
+ * candidate is identified separately (by path/method parameter), not by this request body. The
+ * server obtains the description from the Matching itself.
  */
 export interface CandidateMatchExplanationRequest {
+  /** ID of the Matching whose description the candidate is compared against. */
+  matchingId: number;
   /**
-   * ID of the Talent Catalog job this request relates to, or undefined if not associated with
-   * a specific job. When present, the backend persists/replaces the explanation for
-   * (candidateId, jobId); when absent, the explanation is generated but not persisted.
+   * True to always generate a new explanation, replacing any cached one. Otherwise (the default)
+   * a cached explanation is returned if it is still current - ie the Matching's description
+   * hasn't changed since it was generated.
    */
-  jobId?: number;
-  /** Description of the job/opportunity to compare the candidate's experience against. */
-  opportunityDescription: string;
+  regenerate?: boolean;
 }

@@ -127,57 +127,56 @@ describe('CandidateSearchCardComponent', () => {
       return fixture.debugElement.query(By.css('app-candidate-match-explanation'));
     }
 
-    it('should pass the current candidate id', () => {
-      component.candidate = {id: 42, candidateOpportunities: []} as Candidate;
-      component.candidateSource = {sfJobOpp: {id: 7}} as CandidateSource;
-      fixture.detectChanges();
+    const matching = {id: 5, matchingDescription: '<p>ICU nurse</p>', updatedDate: '2026-10-01T10:15:30Z'};
 
-      expect(findMatchExplanationEl().properties['candidateId']).toBe(42);
-    });
-
-    it('should pass candidateSource.sfJobOpp?.id as the job id - the default search now has it explicitly persisted', () => {
-      component.candidate = {id: 42, candidateOpportunities: []} as Candidate;
-      component.candidateSource = {sfJobOpp: {id: 7}} as CandidateSource;
-      fixture.detectChanges();
-
-      expect(findMatchExplanationEl().properties['jobId']).toBe(7);
-    });
-
-    it('should pass opportunityDescription through when supplied', () => {
-      component.candidate = {id: 42, candidateOpportunities: []} as Candidate;
-      component.candidateSource = {sfJobOpp: {id: 7}} as CandidateSource;
-      component.opportunityDescription = 'A supplied opportunity description';
-      fixture.detectChanges();
-
-      expect(findMatchExplanationEl().properties['opportunityDescription'])
-        .toBe('A supplied opportunity description');
-    });
-
-    it('should show the match explanation when only a usable opportunityDescription exists (no job)', () => {
+    it('should pass the candidate id and the Matching\'s id and updatedDate', () => {
       component.candidate = {id: 42, candidateOpportunities: []} as Candidate;
       component.candidateSource = {} as CandidateSource;
-      component.opportunityDescription = 'A supplied opportunity description';
+      component.matching = matching;
+      fixture.detectChanges();
+
+      const el = findMatchExplanationEl();
+      expect(el.properties['candidateId']).toBe(42);
+      expect(el.properties['matchingId']).toBe(5);
+      expect(el.properties['matchingUpdatedDate']).toBe('2026-10-01T10:15:30Z');
+    });
+
+    it('should show the match explanation for a source with no job, as long as its Matching has a description', () => {
+      component.candidate = {id: 42, candidateOpportunities: []} as Candidate;
+      component.candidateSource = {} as CandidateSource;
+      component.matching = matching;
       fixture.detectChanges();
 
       expect(findMatchExplanationEl()).toBeTruthy();
     });
 
-    it('should NOT instantiate the match explanation component when there is no sfJobOpp and no usable opportunityDescription', () => {
+    it('should NOT instantiate the match explanation component for a job source with no matching context', () => {
       component.candidate = {id: 42, candidateOpportunities: []} as Candidate;
-      component.candidateSource = {} as CandidateSource;
-      component.opportunityDescription = undefined;
+      component.candidateSource = {sfJobOpp: {id: 7}} as CandidateSource;
+      component.matching = null;
       fixture.detectChanges();
 
       expect(findMatchExplanationEl()).toBeFalsy();
     });
 
-    it('should NOT instantiate the match explanation component when opportunityDescription is blank', () => {
+    it('should NOT instantiate the match explanation component when the Matching has no description', () => {
       component.candidate = {id: 42, candidateOpportunities: []} as Candidate;
       component.candidateSource = {} as CandidateSource;
-      component.opportunityDescription = '   ';
+      component.matching = {...matching, matchingDescription: '<p></p>'};
       fixture.detectChanges();
 
       expect(findMatchExplanationEl()).toBeFalsy();
+    });
+
+    it('should show the match explanation, passing the message, when the requirements have unsaved changes', () => {
+      component.candidate = {id: 42, candidateOpportunities: []} as Candidate;
+      component.candidateSource = {} as CandidateSource;
+      component.matching = null;
+      component.requirementsPendingMessage = 'Save the search';
+      fixture.detectChanges();
+
+      expect(findMatchExplanationEl().properties['requirementsPendingMessage'])
+        .toBe('Save the search');
     });
   });
 

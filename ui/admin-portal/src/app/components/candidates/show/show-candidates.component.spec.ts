@@ -43,8 +43,6 @@ import {SalesforceService} from "../../../services/salesforce.service";
 import {MockCandidateSource} from "../../../MockData/MockCandidateSource";
 import {MockUser} from "../../../MockData/MockUser";
 import {of, Subject, Subscription, throwError} from "rxjs";
-import {JobService} from "../../../services/job.service";
-import {JobMatchingInfo} from "../../../model/JobMatchingInfo";
 import {LocalStorageService} from "../../../services/local-storage.service";
 import {MockCandidate} from "../../../MockData/MockCandidate";
 import {MockSavedSearch} from "../../../MockData/MockSavedSearch";
@@ -70,8 +68,8 @@ describe('ShowCandidatesComponent', () => {
   // Mock services
   const mockCandidateService = jasmine.createSpyObj('CandidateService', ['searchOrMatch', 'findByCandidateNumberOrName', 'downloadCv', 'createUpdateOppsFromCandidates', 'createUpdateOppsFromCandidateList', 'updateStatus', 'resolveOutstandingTasks']);
   const mockCandidateSourceService = jasmine.createSpyObj('CandidateSourceService', ['copy', 'starSourceForUser', 'unstarSourceForUser']);
-  const mockSavedSearchService = jasmine.createSpyObj('SavedSearchService', ['clearSelection', 'selectCandidate', 'getSelectionCount', 'updateSelectedStatuses', 'getSavedSearchTypeInfos', 'addWatcher', 'removeWatcher', 'saveSelection']);
-  const mockSavedListService = jasmine.createSpyObj('SavedListService', ['publish', 'importEmployerFeedback', 'createFolder', 'get']);
+  const mockSavedSearchService = jasmine.createSpyObj('SavedSearchService', ['clearSelection', 'selectCandidate', 'getSelectionCount', 'updateSelectedStatuses', 'getSavedSearchTypeInfos', 'addWatcher', 'removeWatcher', 'saveSelection', 'resolveMatching']);
+  const mockSavedListService = jasmine.createSpyObj('SavedListService', ['publish', 'importEmployerFeedback', 'createFolder', 'get', 'resolveMatching']);
   const mockLocalStorageService = jasmine.createSpyObj('LocalStorageService', ['get', 'set']);
   const mockNgbModal = jasmine.createSpyObj('NgbModal', ['open']);
   const mockNgbOffcanvas = jasmine.createSpyObj('NgbOffcanvas', ['open', 'dismiss']);
@@ -154,6 +152,8 @@ describe('ShowCandidatesComponent', () => {
     mockAuthorizationService.isStarredByMe.and.returnValue(false);
     mockCasiAdminService.getServiceList.and.returnValue(of(null));
     mockCasiAdminService.performServiceListAction.and.returnValue(of(null));
+    mockSavedSearchService.resolveMatching.and.returnValue(of(null));
+    mockSavedListService.resolveMatching.and.returnValue(of(null));
 
     // Detect changes after a short delay to ensure template binding
     setTimeout(() => {
@@ -644,20 +644,9 @@ describe('ShowCandidatesComponent', () => {
       expect(component.candidateSelection.emit).toHaveBeenCalledWith(candidate);
     });
 
-    it('should pass opportunityDescription through to the candidate search card', () => {
-      component.candidateSource = new MockCandidateSource();
-      fixture.detectChanges(); // triggers ngOnInit, which resets currentCandidate to null
-
-      component.setCurrentCandidate(new MockCandidate());
-      component.opportunityDescription = 'A supplied opportunity description';
-      fixture.detectChanges();
-
-      const searchCardEl = fixture.debugElement.query(By.css('app-candidate-search-card'));
-      expect(searchCardEl.properties['opportunityDescription'])
-        .toBe('A supplied opportunity description');
-    });
-
-    it('should leave opportunityDescription undefined when the parent does not supply one', () => {
+    it('should pass the resolved matching context through to the candidate search card', () => {
+      const matching = {id: 5, matchingDescription: '<p>ICU nurse</p>', updatedDate: '2026-10-01T10:15:30Z'};
+      mockSavedListService.resolveMatching.and.returnValue(of(matching));
       component.candidateSource = new MockCandidateSource();
       fixture.detectChanges(); // triggers ngOnInit, which resets currentCandidate to null
 
@@ -665,7 +654,8 @@ describe('ShowCandidatesComponent', () => {
       fixture.detectChanges();
 
       const searchCardEl = fixture.debugElement.query(By.css('app-candidate-search-card'));
-      expect(searchCardEl.properties['opportunityDescription']).toBeUndefined();
+      expect(searchCardEl.properties['matching']).toEqual(matching);
+      expect(searchCardEl.properties['requirementsPendingMessage']).toBeUndefined();
     });
 
     it('should apply review filter and search without page number', () => {
@@ -1842,17 +1832,23 @@ describe('ShowCandidatesComponent', () => {
     });
   });
 
-  describe('opportunity description for match explanations', () => {
-    let jobService: JobService;
+  describe('matching context for match explanations', () => {
 
-    const jobInfo = (description: string): JobMatchingInfo =>
-      ({description, skillNames: [], jobName: 'Job'});
+    const matching = (id: number, description: string, updatedDate = '2026-10-01T10:15:30Z') =>
+      ({id, matchingDescription: description, updatedDate});
 
-    function jobListSource(id: number, jobId: number): any {
+    function listSource(id: number): any {
       const source = new MockCandidateSource();
       source.id = id;
-      source.sfJobOpp = {id: jobId, sfId: 'SF-' + jobId};
       return source;
+    }
+
+    function searchSource(id: number, defaultSearch: boolean, autoUpdateOnSearch = false): any {
+      const search: any = new MockSavedSearch();
+      search.id = id;
+      search.defaultSearch = defaultSearch;
+      search.autoUpdateOnSearch = autoUpdateOnSearch;
+      return search;
     }
 
     function changeSource(source: any) {
@@ -1863,122 +1859,162 @@ describe('ShowCandidatesComponent', () => {
       });
     }
 
-    function searchCardDescription(): string | undefined {
-      component.setCurrentCandidate(new MockCandidate());
-      fixture.detectChanges();
-      return fixture.debugElement.query(By.css('app-candidate-search-card'))
-        .properties['opportunityDescription'];
+    function runSearch() {
+      component.searchRequest = {} as any;
+      (component as any).updatedSearch();
     }
 
     beforeEach(() => {
-      jobService = TestBed.inject(JobService);
       mockCandidateSourceCandidateService.searchPaged.and.returnValue(
         of({content: [], totalElements: 0, number: 0, size: 10}));
+      mockCandidateService.searchOrMatch.and.returnValue(
+        of({content: [], totalElements: 0, number: 0, size: 10}));
       mockCasiAdminService.getServiceList.and.returnValue(of([]));
+      mockSavedListService.resolveMatching.calls.reset();
+      mockSavedSearchService.resolveMatching.calls.reset();
       fixture.detectChanges(); // ngOnInit
     });
 
-    it('should use the job description of a job-linked saved list, without writing the input', fakeAsync(() => {
-      spyOn(jobService, 'getJobMatchingInfo').and.returnValue(of(jobInfo('List job description')));
+    it('should not resolve the matching context just because a source is shown', () => {
+      changeSource(listSource(1));
 
-      changeSource(jobListSource(1, 8));
-      tick();
+      expect(mockSavedListService.resolveMatching).not.toHaveBeenCalled();
+      expect(component.sourceMatching).toBeUndefined();
+    });
 
-      expect(jobService.getJobMatchingInfo).toHaveBeenCalledWith(8);
-      expect(component.opportunityDescription).toBeUndefined();
-      expect(component.explanationOpportunityDescription).toBe('List job description');
-      expect(searchCardDescription()).toBe('List job description');
-    }));
+    it('should resolve a list\'s matching context once, when a candidate is first selected', () => {
+      mockSavedListService.resolveMatching.and.returnValue(of(matching(5, '<p>ICU nurse</p>')));
+      changeSource(listSource(1));
 
-    it('should prefer a description supplied by the parent over the fetched job description', fakeAsync(() => {
-      spyOn(jobService, 'getJobMatchingInfo').and.returnValue(of(jobInfo('List job description')));
-      component.opportunityDescription = 'Parent description';
+      component.setCurrentCandidate(new MockCandidate());
+      component.setCurrentCandidate(new MockCandidate());
 
-      changeSource(jobListSource(1, 8));
-      tick();
+      expect(mockSavedListService.resolveMatching).toHaveBeenCalledOnceWith(1);
+      expect(component.sourceMatching).toEqual(matching(5, '<p>ICU nurse</p>'));
+    });
 
-      expect(component.opportunityDescription).toBe('Parent description');
-      expect(searchCardDescription()).toBe('Parent description');
-    }));
+    it('should resolve a search\'s matching context through the saved search service', () => {
+      mockSavedSearchService.resolveMatching.and.returnValue(of(matching(6, '<p>Welder</p>')));
+      changeSource(searchSource(3, false));
 
-    it('should fall back to the job description when the parent description has no text content', fakeAsync(() => {
-      spyOn(jobService, 'getJobMatchingInfo').and.returnValue(of(jobInfo('List job description')));
-      changeSource(jobListSource(1, 8));
-      tick();
+      component.setCurrentCandidate(new MockCandidate());
 
-      for (const blank of ['', '   ', '<p></p>', '<p><br></p>']) {
-        component.opportunityDescription = blank;
-        expect(component.explanationOpportunityDescription)
-          .withContext(JSON.stringify(blank))
-          .toBe('List job description');
-      }
-    }));
+      expect(mockSavedSearchService.resolveMatching).toHaveBeenCalledOnceWith(3);
+      expect(mockSavedListService.resolveMatching).not.toHaveBeenCalled();
+      expect(component.sourceMatching).toEqual(matching(6, '<p>Welder</p>'));
+    });
 
-    it('should clear the fetched description when the source changes to one without a job', fakeAsync(() => {
-      spyOn(jobService, 'getJobMatchingInfo').and.returnValue(of(jobInfo('List job description')));
-      changeSource(jobListSource(1, 8));
-      tick();
+    it('should record a source with no matching context as null', () => {
+      mockSavedListService.resolveMatching.and.returnValue(of(null));
+      changeSource(listSource(1));
 
-      const noJobList = jobListSource(2, 9);
-      noJobList.sfJobOpp = null;
-      changeSource(noJobList);
-      tick();
+      component.setCurrentCandidate(new MockCandidate());
 
-      expect(component.explanationOpportunityDescription).toBeUndefined();
-      expect(searchCardDescription()).toBeUndefined();
-    }));
+      expect(component.sourceMatching).toBeNull();
+    });
 
-    it('should also use the job description of a saved search associated with a job', fakeAsync(() => {
-      spyOn(jobService, 'getJobMatchingInfo').and.returnValue(of(jobInfo('Search job description')));
-      const search: any = new MockSavedSearch();
-      search.id = 3;
-      search.sfJobOpp = {id: 8};
+    it('should discard the matching context when the source changes, ignoring a slow response for the old source', () => {
+      const slowFirst = new Subject<any>();
+      mockSavedListService.resolveMatching.and.callFake((id: number) =>
+        id === 1 ? slowFirst : of(matching(9, '<p>Second</p>')));
+      changeSource(listSource(1));
+      component.setCurrentCandidate(new MockCandidate());
 
-      changeSource(search);
-      tick();
+      changeSource(listSource(2));
+      expect(component.sourceMatching).toBeUndefined();
+      component.setCurrentCandidate(new MockCandidate());
+      slowFirst.next(matching(8, '<p>First</p>'));
 
-      expect(jobService.getJobMatchingInfo).toHaveBeenCalledWith(8);
-      expect(component.explanationOpportunityDescription).toBe('Search job description');
-    }));
+      expect(component.sourceMatching).toEqual(matching(9, '<p>Second</p>'));
+    });
 
-    it('should not fetch a job description for a saved search without a job', fakeAsync(() => {
-      spyOn(jobService, 'getJobMatchingInfo');
-      const search: any = new MockSavedSearch();
-      search.id = 3;
-      search.sfJobOpp = null;
+    it('should refresh the matching context after a default search is run, since running it saves its requirements', () => {
+      mockSavedSearchService.resolveMatching.and.returnValues(
+        of(matching(6, '<p>First</p>', '2026-10-01T10:00:00Z')),
+        of(matching(6, '<p>Second</p>', '2026-10-01T11:00:00Z')));
+      changeSource(searchSource(3, true));
+      component.setCurrentCandidate(new MockCandidate());
 
-      changeSource(search);
-      tick();
+      runSearch();
 
-      expect(jobService.getJobMatchingInfo).not.toHaveBeenCalled();
-      expect(component.explanationOpportunityDescription).toBeUndefined();
-    }));
+      expect(mockSavedSearchService.resolveMatching).toHaveBeenCalledTimes(2);
+      expect(component.sourceMatching).toEqual(
+        matching(6, '<p>Second</p>', '2026-10-01T11:00:00Z'));
+    });
 
-    it('should ignore a slow response for a previous source', fakeAsync(() => {
-      const slowFirst = new Subject<JobMatchingInfo>();
-      spyOn(jobService, 'getJobMatchingInfo').and.callFake((jobId: number) =>
-        jobId === 8 ? slowFirst : of(jobInfo('Second list job description')));
+    it('should not refresh the matching context after running a named search which doesn\'t update automatically', () => {
+      mockSavedSearchService.resolveMatching.and.returnValue(of(matching(6, '<p>First</p>')));
+      changeSource(searchSource(3, false));
+      component.setCurrentCandidate(new MockCandidate());
 
-      changeSource(jobListSource(1, 8));
-      changeSource(jobListSource(2, 9));
-      tick();
-      slowFirst.next(jobInfo('First list job description'));
-      tick();
+      runSearch();
 
-      expect(component.explanationOpportunityDescription).toBe('Second list job description');
-    }));
+      expect(mockSavedSearchService.resolveMatching).toHaveBeenCalledTimes(1);
+    });
 
-    it('should not surface a page error when the job description cannot be loaded', fakeAsync(() => {
-      spyOn(jobService, 'getJobMatchingInfo').and.returnValue(throwError(() => 'lookup failed'));
+    it('should not resolve the matching context after a search run if it is not yet in use', () => {
+      changeSource(searchSource(3, true));
+
+      runSearch();
+
+      expect(mockSavedSearchService.resolveMatching).not.toHaveBeenCalled();
+    });
+
+    it('should not report pending requirements when they have the same text content as the Matching', () => {
+      mockSavedSearchService.resolveMatching.and.returnValue(of(matching(6, '<p>ICU nurse</p>')));
+      changeSource(searchSource(3, true));
+      component.setCurrentCandidate(new MockCandidate());
+
+      component.requirements = 'ICU  nurse';
+
+      expect(component.requirementsPendingMessage).toBeUndefined();
+    });
+
+    it('should ask the user to run a default search whose requirements have changed', () => {
+      mockSavedSearchService.resolveMatching.and.returnValue(of(matching(6, '<p>ICU nurse</p>')));
+      changeSource(searchSource(3, true));
+      component.setCurrentCandidate(new MockCandidate());
+
+      component.requirements = '<p>Paediatric nurse</p>';
+
+      expect(component.requirementsPendingMessage).toContain('Run the search');
+    });
+
+    it('should ask the user to save a named search whose requirements have unsaved changes', () => {
+      mockSavedSearchService.resolveMatching.and.returnValue(of(null));
+      changeSource(searchSource(3, false));
+      component.setCurrentCandidate(new MockCandidate());
+
+      component.requirements = '<p>Paediatric nurse</p>';
+
+      expect(component.requirementsPendingMessage).toContain('Save the search');
+    });
+
+    it('should never report pending requirements for a list, or when no requirements are being edited', () => {
+      mockSavedListService.resolveMatching.and.returnValue(of(matching(5, '<p>ICU nurse</p>')));
+      changeSource(listSource(1));
+      component.setCurrentCandidate(new MockCandidate());
+      component.requirements = '<p>Paediatric nurse</p>';
+      expect(component.requirementsPendingMessage).toBeUndefined();
+
+      mockSavedSearchService.resolveMatching.and.returnValue(of(matching(6, '<p>ICU nurse</p>')));
+      changeSource(searchSource(3, true));
+      component.setCurrentCandidate(new MockCandidate());
+      component.requirements = undefined;
+      expect(component.requirementsPendingMessage).toBeUndefined();
+    });
+
+    it('should not surface a page error when the matching context cannot be resolved', () => {
+      mockSavedListService.resolveMatching.and.returnValue(throwError('lookup failed'));
       spyOn(console, 'warn');
       component.error = null;
+      changeSource(listSource(1));
 
-      changeSource(jobListSource(1, 8));
-      tick();
+      component.setCurrentCandidate(new MockCandidate());
 
       expect(component.error).toBeNull();
-      expect(component.explanationOpportunityDescription).toBeUndefined();
+      expect(component.sourceMatching).toBeUndefined();
       expect(console.warn).toHaveBeenCalled();
-    }));
+    });
   });
 });

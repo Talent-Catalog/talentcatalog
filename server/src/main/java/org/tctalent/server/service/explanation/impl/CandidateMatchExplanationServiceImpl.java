@@ -1,5 +1,6 @@
 package org.tctalent.server.service.explanation.impl;
 
+import io.hypersistence.utils.hibernate.type.util.ObjectMapperWrapper;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -8,26 +9,27 @@ import java.util.Map;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.AuditorAware;
 import org.springframework.lang.NonNull;
-import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
+import org.tctalent.server.exception.InvalidRequestException;
 import org.tctalent.server.exception.MatchExplanationException;
 import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.CandidateJobExperience;
-import org.tctalent.server.model.db.SalesforceJobOpp;
-import org.tctalent.server.model.db.explanation.CandidateJobMatchExplanation;
-import org.tctalent.server.model.db.explanation.CandidateJobMatchExplanationData;
-import org.tctalent.server.model.db.explanation.CandidateJobMatchExplanationKey;
-import org.tctalent.server.model.db.mapper.CandidateJobMatchExplanationMapper;
+import org.tctalent.server.model.db.MatchingSnapshot;
+import org.tctalent.server.model.db.User;
+import org.tctalent.server.model.db.explanation.CandidateMatchingExplanation;
+import org.tctalent.server.model.db.explanation.CandidateMatchingExplanationKey;
+import org.tctalent.server.model.db.mapper.CandidateMatchingExplanationMapper;
 import org.tctalent.server.repository.db.CandidateJobExperienceRepository;
-import org.tctalent.server.repository.db.CandidateJobMatchExplanationRepository;
+import org.tctalent.server.repository.db.CandidateMatchingExplanationRepository;
 import org.tctalent.server.response.CandidateMatchExplanation;
 import org.tctalent.server.response.ExperienceMatchExplanation;
 import org.tctalent.server.service.db.CandidateService;
-import org.tctalent.server.service.db.SalesforceJobOppService;
+import org.tctalent.server.service.db.MatchingService;
 import org.tctalent.server.service.explanation.CandidateMatchExplanationService;
 import org.tctalent.server.service.explanation.dto.CandidateMatchExplanationServiceClient;
 import org.tctalent.server.service.explanation.dto.ExperienceExplanationItem;
@@ -38,29 +40,112 @@ import org.tctalent.server.service.explanation.dto.ExplanationResult;
 import org.tctalent.server.service.explanation.dto.ExplanationsRequest;
 import org.tctalent.server.service.explanation.dto.ExplanationsResponse;
 
+/**
+ * Implementation of {@link CandidateMatchExplanationService}.
+ * <p>
+ * No database transaction is held open while the explanation service (an LLM) is called. Instead,
+ * the Matching's description and updatedDate are read together before generation, and the
+ * generated explanation is only saved if the Matching's updatedDate is still the same - see
+ * {@link CandidateMatchingExplanationRepository#saveIfMatchingUnchanged}.
+ */
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class CandidateMatchExplanationServiceImpl implements CandidateMatchExplanationService {
 
+    /**
+     * Maximum number of times an explanation is generated for one request. If the Matching's
+     * description changes while an explanation is being generated, the explanation is discarded
+     * and generated again from the new description - but only this many times in total.
+     */
+    static final int MAX_GENERATION_ATTEMPTS = 2;
+
     private final CandidateService candidateService;
-    private final SalesforceJobOppService salesforceJobOppService;
+    private final MatchingService matchingService;
     private final CandidateJobExperienceRepository candidateJobExperienceRepository;
-    private final CandidateJobMatchExplanationRepository candidateJobMatchExplanationRepository;
-    private final CandidateJobMatchExplanationMapper candidateJobMatchExplanationMapper;
+    private final CandidateMatchingExplanationRepository candidateMatchingExplanationRepository;
+    private final CandidateMatchingExplanationMapper candidateMatchingExplanationMapper;
     private final CandidateMatchExplanationServiceClient candidateMatchExplanationServiceClient;
+    private final AuditorAware<User> auditorAware;
 
     @Override
-    public @NonNull CandidateMatchExplanation generateExplanation(
-        long candidateId, @Nullable Long jobId, @NonNull String opportunityDescription)
-        throws NoSuchObjectException, MatchExplanationException {
+    public @NonNull CandidateMatchExplanation getOrGenerateExplanation(
+        long candidateId, long matchingId)
+        throws NoSuchObjectException, InvalidRequestException, MatchExplanationException {
+        return getOrGenerate(candidateId, matchingId, false);
+    }
 
-        Candidate candidate = candidateService.getCandidate(candidateId);
+    @Override
+    public @NonNull CandidateMatchExplanation regenerateExplanation(
+        long candidateId, long matchingId)
+        throws NoSuchObjectException, InvalidRequestException, MatchExplanationException {
+        return getOrGenerate(candidateId, matchingId, true);
+    }
 
-        // Loaded up front (before calling the explanation service) so that an invalid jobId
-        // fails fast, consistent with how a missing candidate is already handled, rather than
-        // wasting an LLM call before discovering the job doesn't exist.
-        SalesforceJobOpp job = jobId == null ? null : salesforceJobOppService.getJobOpp(jobId);
+    private @NonNull CandidateMatchExplanation getOrGenerate(
+        long candidateId, long matchingId, boolean regenerate) {
+
+        final Candidate candidate = candidateService.getCandidate(candidateId);
+        final CandidateMatchingExplanationKey key =
+            new CandidateMatchingExplanationKey(candidate.getId(), matchingId);
+
+        boolean useCachedExplanation = !regenerate;
+        for (int attempt = 1; ; attempt++) {
+            //Read the description and updatedDate together, before generating anything.
+            final MatchingSnapshot snapshot = matchingService.resolveDescription(matchingId);
+
+            if (useCachedExplanation) {
+                final CandidateMatchingExplanation cached =
+                    candidateMatchingExplanationRepository.findById(key).orElse(null);
+                if (cached != null && cached.isCurrent(snapshot.updatedDate())) {
+                    return candidateMatchingExplanationMapper.toResponse(cached.getExplanation());
+                }
+            }
+
+            final String description = snapshot.matchingDescription();
+            if (description == null) {
+                throw new InvalidRequestException("Matching " + matchingId
+                    + " has no description to explain candidate matches against");
+            }
+
+            final CandidateMatchExplanation explanation =
+                generateExplanation(candidate, matchingId, description);
+
+            final int saved = candidateMatchingExplanationRepository.saveIfMatchingUnchanged(
+                candidate.getId(), matchingId, snapshot.updatedDate(),
+                ObjectMapperWrapper.INSTANCE.toString(
+                    candidateMatchingExplanationMapper.toData(explanation)),
+                auditorAware.getCurrentAuditor().map(User::getId).orElse(null));
+            if (saved > 0) {
+                return explanation;
+            }
+
+            //The Matching's description changed during generation, so the explanation is out of
+            //date. Discard it rather than return an explanation of a description which is no
+            //longer current.
+            LogBuilder.builder(log)
+                .candidateId(candidate.getId())
+                .action("getOrGenerateExplanation")
+                .message("Matching " + matchingId + " changed while generating explanation"
+                    + " (attempt " + attempt + " of " + MAX_GENERATION_ATTEMPTS + ")")
+                .logWarn();
+            if (attempt >= MAX_GENERATION_ATTEMPTS) {
+                throw new MatchExplanationException("The matching description changed while the "
+                    + "match explanation was being generated. Please try again.");
+            }
+
+            //An explanation of the new description saved meanwhile (eg by another request) was
+            //generated after this request started, so it is good enough even when regenerating.
+            useCachedExplanation = true;
+        }
+    }
+
+    /**
+     * Generates an explanation of the candidate's match against the given description, and
+     * validates the explanation service's response.
+     */
+    private @NonNull CandidateMatchExplanation generateExplanation(
+        Candidate candidate, long matchingId, String opportunityDescription) {
 
         List<CandidateJobExperience> experiences =
             candidateJobExperienceRepository.findByCandidateId(candidate.getId());
@@ -98,9 +183,9 @@ public class CandidateMatchExplanationServiceImpl implements CandidateMatchExpla
         } catch (RestClientException e) {
             LogBuilder.builder(log)
                 .candidateId(candidate.getId())
-                .jobId(jobId)
                 .action("generateExplanation")
-                .message("Call to match explanation service failed")
+                .message("Matching " + matchingId + ": "
+                    + "Call to match explanation service failed")
                 .logError(e);
             throw new MatchExplanationException(
                 "Failed to call match explanation service for candidate " + candidateIdString, e);
@@ -109,9 +194,9 @@ public class CandidateMatchExplanationServiceImpl implements CandidateMatchExpla
         if (response == null || response.getResults() == null || response.getResults().isEmpty()) {
             LogBuilder.builder(log)
                 .candidateId(candidate.getId())
-                .jobId(jobId)
                 .action("generateExplanation")
-                .message("Match explanation service returned no result")
+                .message("Matching " + matchingId + ": "
+                    + "Match explanation service returned no result")
                 .logError();
             throw new MatchExplanationException(
                 "Match explanation service returned no result for candidate " + candidateIdString);
@@ -122,9 +207,9 @@ public class CandidateMatchExplanationServiceImpl implements CandidateMatchExpla
         if (!candidateIdString.equals(result.getCandidateId())) {
             LogBuilder.builder(log)
                 .candidateId(candidate.getId())
-                .jobId(jobId)
                 .action("generateExplanation")
-                .message("Match explanation service returned mismatched candidate ID: "
+                .message("Matching " + matchingId + ": "
+                    + "Match explanation service returned mismatched candidate ID: "
                     + result.getCandidateId())
                 .logError();
             throw new MatchExplanationException(
@@ -136,9 +221,9 @@ public class CandidateMatchExplanationServiceImpl implements CandidateMatchExpla
             ExplanationError error = result.getError();
             LogBuilder.builder(log)
                 .candidateId(candidate.getId())
-                .jobId(jobId)
                 .action("generateExplanation")
-                .message("Match explanation service reported an error: ["
+                .message("Matching " + matchingId + ": "
+                    + "Match explanation service reported an error: ["
                     + error.getCode() + "] " + error.getMessage())
                 .logError();
             throw new MatchExplanationException(
@@ -164,9 +249,9 @@ public class CandidateMatchExplanationServiceImpl implements CandidateMatchExpla
         if (!duplicateExperienceIds.isEmpty()) {
             LogBuilder.builder(log)
                 .candidateId(candidate.getId())
-                .jobId(jobId)
                 .action("generateExplanation")
-                .message("Match explanation service returned duplicate experience ID(s): "
+                .message("Matching " + matchingId + ": "
+                    + "Match explanation service returned duplicate experience ID(s): "
                     + duplicateExperienceIds)
                 .logError();
             throw new MatchExplanationException(
@@ -183,9 +268,9 @@ public class CandidateMatchExplanationServiceImpl implements CandidateMatchExpla
 
             LogBuilder.builder(log)
                 .candidateId(candidate.getId())
-                .jobId(jobId)
                 .action("generateExplanation")
-                .message("Match explanation service returned experience explanations that do "
+                .message("Matching " + matchingId + ": "
+                    + "Match explanation service returned experience explanations that do "
                     + "not match the experiences sent. Missing: " + missingExperienceIds
                     + ", unexpected: " + unexpectedExperienceIds)
                 .logError();
@@ -214,41 +299,6 @@ public class CandidateMatchExplanationServiceImpl implements CandidateMatchExpla
             .limitations(result.getLimitations())
             .build();
 
-        if (job != null) {
-            persistExplanation(candidate, job, explanation);
-        }
-
         return explanation;
-    }
-
-    /**
-     * Persists the given explanation against the (candidate, job) pair, replacing any
-     * explanation already persisted for that pair rather than inserting a second record.
-     */
-    private void persistExplanation(
-        Candidate candidate, SalesforceJobOpp job, CandidateMatchExplanation explanation) {
-
-        CandidateJobMatchExplanationKey key =
-            new CandidateJobMatchExplanationKey(candidate.getId(), job.getId());
-        CandidateJobMatchExplanationData data = candidateJobMatchExplanationMapper.toData(explanation);
-
-        CandidateJobMatchExplanation entity = candidateJobMatchExplanationRepository.findById(key)
-            .orElseGet(() -> new CandidateJobMatchExplanation(candidate, job));
-        entity.setExplanation(data);
-
-        candidateJobMatchExplanationRepository.save(entity);
-    }
-
-    @Override
-    public @NonNull CandidateMatchExplanation getPersistedExplanation(long candidateId, long jobId)
-        throws NoSuchObjectException {
-
-        CandidateJobMatchExplanationKey key =
-            new CandidateJobMatchExplanationKey(candidateId, jobId);
-        CandidateJobMatchExplanation entity = candidateJobMatchExplanationRepository.findById(key)
-            .orElseThrow(() -> new NoSuchObjectException(
-                "No match explanation found for candidate " + candidateId + " and job " + jobId));
-
-        return candidateJobMatchExplanationMapper.toResponse(entity.getExplanation());
     }
 }

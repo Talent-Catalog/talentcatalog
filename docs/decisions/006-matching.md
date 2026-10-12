@@ -3,7 +3,7 @@
 **Project:** Talent Catalog
 **Issue:** TC-1552
 **Date:** October 2026
-**Status:** In progress. PR1–PR3 implemented; explanation and remaining Angular work to follow.
+**Status:** PR1–PR4 implemented. PR4 (explanations) awaiting review.
 
 This document records the design of `Matching` and the decisions behind it. It replaces the
 working plans (`matching-plan.md`, `matching-plan-v2.md`) used while the design was being agreed.
@@ -211,24 +211,108 @@ The server first resolves the search's Matching (`SavedSearchService.resolveMatc
 the user's selection list for that search as the source list, creating it if needed. This also
 fixed a bug: the search id used to be sent as `sourceListId` and looked up as a list id.
 
-## 7. Explanations (planned)
+## 7. Explanations (PR4)
 
-- Persistence moves from `candidateId + jobId` to `candidateId + matchingId`.
-  `candidate_matching_explanation`: PK `(candidate_id, matching_id)`, `matching_id` FK with
-  `ON DELETE CASCADE`, `matching_updated_date timestamptz not null`, `explanation jsonb`, audit
-  columns. Old job keyed explanations are not migrated (regenerate).
-- The server reads the text from `Matching.matchingDescription`. Angular no longer supplies the
-  description.
-- **Staleness:** generation snapshots `(description, updatedDate)` before calling the Python
-  service and stores the snapshot date. An explanation is current when
-  `explanation.matchingUpdatedDate == matching.updatedDate`. `generatedAt` alone is not used,
-  because the Matching could change during the LLM call.
-- A null or blank description is rejected cleanly (400), and the UI does not offer generation.
-  A persisted explanation can still be viewed, and shows as stale once the text changes.
-- Explanation UI is gated on the source's Matching having a description, not on `sfJobOpp`.
-- For sources which still have no Matching (eg old Job lists), the Job's Matching should be
-  resolved lazily when explanations are needed. If the Job Matching's description is still
-  blank at that point, it is initialised from the Job's current text (section 2, principle 4).
+### Principles
+
+- **A `CandidateMatchExplanation` belongs to a Matching and a Candidate** - nothing else. It does
+  not depend on a Job, Saved Search or Saved List. Jobs, searches, lists (and future GRN
+  services) reference Matchings; the explanation service only operates on Matching ids.
+- **Explanations are a disposable cache of LLM output, not history.** At most one per
+  (candidate, Matching). Generated individually, on demand - no batch generation. A current
+  explanation is reused; a stale one is regenerated and replaced.
+- **The server obtains the description from the Matching.** Angular never supplies it.
+
+### Persistence
+
+- `candidate_matching_explanation` (V2_32): PK `(candidate_id, matching_id)`, `matching_id` FK
+  with `ON DELETE CASCADE` (plus an index on it), `matching_updated_date timestamptz not null`,
+  `explanation jsonb not null` (same JSON structure as before), audit columns.
+- `candidate_job_match_explanation` (V2_28) is dropped by V2_32. Its rows were discarded rather
+  than migrated: the feature was unreleased, the rows were generated from text supplied by
+  Angular with no record of which text, and mapping them would have needed a Job Matching
+  backfill. V2_28 itself is unchanged.
+- Entity, key, repository, mapper and jsonb data class renamed from `CandidateJobMatchExplanation*`
+  to `CandidateMatchingExplanation*`. The entity is read only (`@Immutable`); rows are only
+  written by the conditional upsert below, which also sets the audit columns.
+
+### Staleness and concurrency
+
+- Generation first takes a `MatchingSnapshot` - the description and `updatedDate`, read together
+  from the database (`MatchingService.resolveDescription`). No transaction is held open during
+  the LLM call.
+- An explanation is current while its `matching_updated_date` equals the Matching's
+  `updatedDate`. In Java this is compared with `isEqual` (instants), never `equals`, which also
+  compares offsets. Precision is exact: `updatedDate` is truncated to microseconds (section 3).
+- `CandidateMatchingExplanationRepository.saveIfMatchingUnchanged` is a single PostgreSQL upsert
+  that only writes if the Matching's `updated_date` still equals the snapshot. It share locks the
+  Matching row while saving, so the description can't change between the check and the write.
+  So **an explanation generated from an older description is never saved**, and can never
+  replace an explanation of the current description. Initial inserts and updates are handled by
+  the same statement. Concurrent requests for the same pair are both saved; the last one wins,
+  and both are equally current.
+- If the Matching changed during generation, the result is discarded and the request is retried
+  once from a new snapshot (first returning an explanation of the new description saved
+  meanwhile by another request, if there is one). If it changes again, the request fails with a
+  "please try again" error and nothing is saved. A bounded retry keeps the common case (one
+  edit during generation) invisible to the user, without looping.
+- **Candidate experience changes are not tracked.** Only Matching changes make an explanation
+  stale. So the UI keeps a **Regenerate** action, which bypasses the cache (`regenerate: true`)
+  and replaces the explanation, subject to the same concurrency protection.
+
+### Blank descriptions
+
+- A Matching with no description is rejected (400, `InvalidRequestException`), without calling
+  the LLM.
+- Section 2 principle 4 is applied in `MatchingService.resolveDescription`, not in the
+  explanation service: if the Matching is a Job's and has no description, it is first
+  initialised from the Job's current text. The Matching row is refreshed and locked first, so a
+  description given meanwhile is never overwritten. Non-Job Matchings are never changed.
+
+### API
+
+- `POST /api/admin/candidate/{id}/match-explanation` with `{matchingId, regenerate?}` returns the
+  current explanation, generating one if needed. The response structure is unchanged. The old
+  `jobId` / `opportunityDescription` request properties and the `GET .../{jobId}` endpoint are
+  gone (no backward compatibility, since unreleased).
+
+### Matching resolution for Angular
+
+- `POST /api/admin/saved-search/{id}/matching` and `POST /api/admin/saved-list/{id}/matching`
+  return the source's `MatchingSnapshot` (`{id, matchingDescription, updatedDate}`), or an empty
+  response if it has no matching context. They use `SavedSearchService.resolveMatching` and the
+  new `SavedListService.resolveMatching`, then `MatchingService.resolveDescription`. POST, since
+  they may create or change a Matching:
+  - a legacy Job list (or Job search) with no Matching gets the Job's Matching;
+  - a list with no Job and no Matching gets nothing;
+  - a selection list returns its (search synced) Matching and never creates one.
+- **Why endpoints rather than DTO fields.** Including the Matching in the source DTOs was
+  considered, but was not practical: the id and `updatedDate` go stale when a search run creates
+  or changes the default search's Matching; legacy lists need lazy creation, which reading a DTO
+  must never do (section 4); a blank Job Matching needs initialising; and list DTOs are used for
+  pages of lists (N+1). One small resolution call per source covers all of these.
+- To avoid unnecessary calls and lazy creation on mere viewing, `show-candidates` only resolves
+  the Matching when it is first needed - when a candidate is first selected (only the selected
+  candidate's card shows explanations) - and then again after each run of a default or
+  auto-update search, since running those saves their requirements.
+
+### Angular
+
+- `candidate-match-explanation` takes `candidateId`, `matchingId`, `matchingUpdatedDate` and
+  `requirementsPendingMessage`. The click-to-show interaction is kept (nothing is requested
+  until "Show match explanation" is clicked). States: closed, loading, loaded (with Regenerate),
+  error (with "Try again"). A change of candidate, Matching or `updatedDate` discards the
+  displayed explanation (and any request in flight) and returns to closed.
+- The search card shows the explanation UI when the source's Matching has a description, no
+  longer based on `sfJobOpp`.
+- **Unsaved requirement edits.** When the requirements being edited on the search page differ
+  (by text content, so editor reformatting doesn't count) from the Matching's saved description,
+  no explanation is offered; instead the user is told to run the search (default and auto-update
+  searches) or save it (other named searches). Explanations are never generated against text
+  that differs from the persisted Matching.
+- Removed: the `opportunityDescription` inputs, `explanationOpportunityDescription` and
+  `loadSourceJobDescription` (Job text fallback) from `show-candidates`, and the four
+  jobId/description modes of the explanation component.
 
 ## 8. Accepted consequences
 
@@ -245,14 +329,13 @@ fixed a bug: the search id used to be sent as `sourceListId` and looked up as a 
 | 1 | Matching core: entity, repository, service, V2_29 | Done |
 | 2 | Search lifecycle, Job Matching invariant, `?job=` and save search fixes (V2_30) | Done |
 | 3 | List lifecycle: list Matching, inheritance, selection lists, `sourceSearchId` (V2_31) | Done |
-| 3a | New Job lists and Submission Lists get the Job's Matching at creation; copied / evergreen Jobs start from the source Job's description; Submission Lists only created by `getOrCreateSubmissionList`, and `registeredJob` removed from list requests | Implemented, awaiting review |
-| 4/5 | Explanations: persistence, API, staleness | To do |
-| 6 | Angular: explanation component, stale banner, gating on Matching, `ShowCandidates` cleanup | To do |
-| Later | Drop `saved_search.requirements` and `candidate_job_match_explanation`; consider making `salesforce_job_opp.matching_id` NOT NULL once every Job creation path creates one | To do |
+| 3a | New Job lists and Submission Lists get the Job's Matching at creation; copied / evergreen Jobs start from the source Job's description; Submission Lists only created by `getOrCreateSubmissionList`, and `registeredJob` removed from list requests | Done |
+| 4 | Explanations: persistence per Matching (V2_32), staleness, conditional upsert, Matching resolution endpoints, Angular explanation component and gating on Matching, `ShowCandidates` cleanup | Implemented, awaiting review |
+| Later | Drop `saved_search.requirements`; consider making `salesforce_job_opp.matching_id` NOT NULL once every Job creation path creates one; consider tracking candidate experience changes for explanation staleness | To do |
 
 ## 10. Open items
 
-- **Blank Job Matchings (decided; implementation with the explanation PR).** A Job's Matching
+- **Blank Job Matchings (decided; implemented in PR4 - see section 7).** A Job's Matching
   is created with its Submission List, usually before the Job has any text, so it often starts
   blank. Running a Job search fills it (Angular falls back to the Job text), and
   `JobMatchingInfo` falls back to the Job text meanwhile. Decision: an operation that explicitly
@@ -265,5 +348,5 @@ fixed a bug: the search id used to be sent as `sourceListId` and looked up as a 
 - Creating a suggested search clears the default search.
 - Avoid N+1 fetching of `matching` (fetch join in `findByIdLoadSearchJoins`; include `matching`
   only in the full search DTO).
-- Unsaved requirement edits on a non auto-update search: explanations use the saved text; show
-  "Save the search to update explanations" when the form differs from the Matching.
+- Unsaved requirement edits: implemented in PR4 (section 7).
+- Candidate experience changes don't make explanations stale; users regenerate manually.

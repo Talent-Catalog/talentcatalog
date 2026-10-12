@@ -8,15 +8,15 @@ import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
-import org.tctalent.server.model.db.explanation.CandidateJobMatchExplanationData;
+import org.tctalent.server.model.db.explanation.CandidateMatchingExplanationData;
 import org.tctalent.server.model.db.explanation.ExperienceMatchExplanationData;
 import org.tctalent.server.response.CandidateMatchExplanation;
 import org.tctalent.server.response.ExperienceMatchExplanation;
 
-class CandidateJobMatchExplanationMapperTest {
+class CandidateMatchingExplanationMapperTest {
 
-    private final CandidateJobMatchExplanationMapper mapper =
-        Mappers.getMapper(CandidateJobMatchExplanationMapper.class);
+    private final CandidateMatchingExplanationMapper mapper =
+        Mappers.getMapper(CandidateMatchingExplanationMapper.class);
 
     private static final OffsetDateTime GENERATED_AT = OffsetDateTime.parse("2026-10-02T03:30:00Z");
     private static final String MODEL_NAME = "qwen.qwen3-235b-a22b-2507-v1:0";
@@ -24,7 +24,7 @@ class CandidateJobMatchExplanationMapperTest {
     @Test
     @DisplayName("should map persisted data to the REST response, including summary, experiences and limitations")
     void toResponse_shouldMapAllFields() {
-        CandidateJobMatchExplanationData data = CandidateJobMatchExplanationData.builder()
+        CandidateMatchingExplanationData data = CandidateMatchingExplanationData.builder()
             .generatedAt(GENERATED_AT)
             .modelName(MODEL_NAME)
             .summary("Strong match")
@@ -74,7 +74,7 @@ class CandidateJobMatchExplanationMapperTest {
             .limitations(List.of("Limited detail"))
             .build();
 
-        CandidateJobMatchExplanationData data = mapper.toData(response);
+        CandidateMatchingExplanationData data = mapper.toData(response);
 
         assertEquals(GENERATED_AT, data.getGeneratedAt());
         assertEquals(MODEL_NAME, data.getModelName());
@@ -89,7 +89,7 @@ class CandidateJobMatchExplanationMapperTest {
     @Test
     @DisplayName("should map legacy persisted data without metadata or job titles, leaving them null")
     void toResponse_shouldLeaveMissingMetadataNull() {
-        CandidateJobMatchExplanationData data = CandidateJobMatchExplanationData.builder()
+        CandidateMatchingExplanationData data = CandidateMatchingExplanationData.builder()
             .summary("Strong match")
             .experienceExplanations(List.of(
                 ExperienceMatchExplanationData.builder()

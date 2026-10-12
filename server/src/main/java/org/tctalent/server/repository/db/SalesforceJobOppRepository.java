@@ -53,6 +53,13 @@ public interface SalesforceJobOppRepository extends JpaRepository<SalesforceJobO
         nativeQuery = true)
     Optional<Long> findMatchingIdByJobId(@Param("jobId") long jobId);
 
+    /**
+     * Finds the job whose Matching is the given Matching, if any. (A Matching belongs to at
+     * most one job.)
+     */
+    @Query("select j from SalesforceJobOpp j where j.matching.id = :matchingId")
+    Optional<SalesforceJobOpp> findByMatchingId(@Param("matchingId") long matchingId);
+
     @Query(value = """
         select chats.id from
 

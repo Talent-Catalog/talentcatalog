@@ -29,6 +29,7 @@ import org.tctalent.server.exception.EntityExistsException;
 import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.exception.SalesforceException;
 import org.tctalent.server.model.db.Candidate;
+import org.tctalent.server.model.db.Matching;
 import org.tctalent.server.model.db.SalesforceJobOpp;
 import org.tctalent.server.model.db.SavedList;
 import org.tctalent.server.model.db.TaskImpl;
@@ -399,6 +400,23 @@ public interface SavedListService {
      *               list. Null if not known, in which case nothing changes.
      */
     void inheritMatching(@NonNull SavedList destination, @Nullable SavedList source);
+
+    /**
+     * Returns the matching context of the given list, giving it its job's Matching if it doesn't
+     * have one yet but is associated with a job. (Lists created before Matchings were introduced
+     * don't have one until it is needed.)
+     * <p>
+     * Used when a matching context is actually needed - eg for match explanations. Simply
+     * reading a list never creates a Matching. A list with no job and no Matching is unchanged,
+     * and so is a selection list, which always follows its search
+     * (see {@link SavedSearchService#getSelectionList}).
+     *
+     * @param id Saved list ID
+     * @return The list's Matching - null if it has none and has no job
+     * @throws NoSuchObjectException if there is no such saved list
+     */
+    @Nullable
+    Matching resolveMatching(long id) throws NoSuchObjectException;
 
     /**
      * Merge the contents of the SavedList with the given id with the

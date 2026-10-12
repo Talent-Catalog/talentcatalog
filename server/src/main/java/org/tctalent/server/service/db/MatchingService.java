@@ -20,6 +20,7 @@ import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.model.db.Matching;
+import org.tctalent.server.model.db.MatchingSnapshot;
 import org.tctalent.server.model.db.SalesforceJobOpp;
 
 /**
@@ -45,6 +46,25 @@ public interface MatchingService {
      */
     @NonNull
     Matching getMatching(long id) throws NoSuchObjectException;
+
+    /**
+     * Returns a snapshot of the given Matching's current description and updatedDate, for an
+     * operation which needs its description - eg generating a match explanation.
+     * <p>
+     * If the Matching has no description and it is a job's Matching, it is first initialised
+     * with the job's current text (see {@code JobServiceHelper#extractJobText}), if that has text
+     * content. A Matching which already has a description is never changed, and a Matching
+     * which doesn't belong to a job is never changed.
+     * <p>
+     * The snapshot is always read from the database, so calling this again returns the latest
+     * values, even within the same request.
+     *
+     * @param id Matching id
+     * @return Snapshot of the Matching. Its description is null if there still is none.
+     * @throws NoSuchObjectException if there is no such Matching
+     */
+    @NonNull
+    MatchingSnapshot resolveDescription(long id) throws NoSuchObjectException;
 
     /**
      * Changes the description of the given Matching - see

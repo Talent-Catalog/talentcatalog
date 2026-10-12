@@ -55,6 +55,31 @@ export function hasTextContent(text: string | null | undefined): boolean {
   return pureText.length > 0;
 }
 
+/**
+ * Whether the two texts - either of which may be HTML, eg from a rich text editor - have the same
+ * visible text content, ignoring markup and differences in whitespace. Texts without any text
+ * content (see hasTextContent) are all the same.
+ * <p/>
+ * For example "&lt;p&gt;Nurse&lt;/p&gt;" and "Nurse " have the same text content, so a rich text
+ * editor reformatting text which it was given does not count as a change.
+ */
+export function hasSameTextContent(
+  text1: string | null | undefined, text2: string | null | undefined): boolean {
+  return normalizedTextContent(text1) === normalizedTextContent(text2);
+}
+
+function normalizedTextContent(text: string | null | undefined): string {
+  if (!text) {
+    return '';
+  }
+  const tempElement = document.createElement('div');
+  tempElement.innerHTML = text;
+  //\s includes non-breaking spaces.
+  return (tempElement.textContent ?? tempElement.innerText ?? '')
+  .replace(/\s+/g, ' ')
+  .trim();
+}
+
 export function isNumeric(str: string): boolean {
   if (typeof str !== 'string' || str.trim() === '') {
     return false; // Not a string or an empty string after trimming

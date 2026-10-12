@@ -25,10 +25,10 @@ import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -69,6 +69,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.tctalent.server.api.dto.CandidateBuilderSelector;
 import org.tctalent.server.api.dto.CandidateIntakeDataBuilderSelector;
+import org.tctalent.server.exception.InvalidRequestException;
 import org.tctalent.server.exception.MatchExplanationException;
 import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.model.db.Candidate;
@@ -86,7 +87,6 @@ import org.tctalent.server.request.candidate.CandidateEmailSearchRequest;
 import org.tctalent.server.request.candidate.CandidateExternalIdSearchRequest;
 import org.tctalent.server.request.candidate.CandidateIntakeAuditRequest;
 import org.tctalent.server.request.candidate.CandidateIntakeDataUpdate;
-import org.tctalent.server.request.candidate.CandidateMatchExplanationRequest;
 import org.tctalent.server.request.candidate.CandidateNumberOrNameSearchRequest;
 import org.tctalent.server.request.candidate.CandidatePublicIdSearchRequest;
 import org.tctalent.server.request.candidate.DownloadCvRequest;
@@ -172,9 +172,7 @@ class CandidateAdminApiTest extends ApiTestBase {
     private static final String FETCH_CANDIDATES_WITH_CHAT_PATH = "/fetch-candidates-with-chat";
     private static final String FETCH_DUPLICATES_BY_ID_PATH =
         "/{id}/fetch-potential-duplicates-of-given-candidate";
-    private static final String GENERATE_MATCH_EXPLANATION_PATH = "/{id}/match-explanation";
-    private static final String GET_PERSISTED_MATCH_EXPLANATION_PATH =
-        "/{id}/match-explanation/{jobId}";
+    private static final String MATCH_EXPLANATION_PATH = "/{id}/match-explanation";
     private final Page<Candidate> candidates =
             new PageImpl<>(
                     getListOfCandidates(),
@@ -1058,13 +1056,9 @@ class CandidateAdminApiTest extends ApiTestBase {
     }
 
     @Test
-    @DisplayName("generate match explanation succeeds with jobId")
-    void generateMatchExplanationWithJobIdSucceeds() throws Exception {
+    @DisplayName("get or generate match explanation succeeds for a Matching")
+    void getOrGenerateMatchExplanationSucceeds() throws Exception {
         long id = 99L;
-        CandidateMatchExplanationRequest request = new CandidateMatchExplanationRequest();
-        request.setJobId(7L);
-        request.setOpportunityDescription("Senior welder role in Melbourne");
-
         CandidateMatchExplanation explanation = CandidateMatchExplanation.builder()
             .summary("Strong match")
             .experienceExplanations(List.of(
@@ -1076,15 +1070,14 @@ class CandidateAdminApiTest extends ApiTestBase {
             .limitations(List.of("No formal certification on file"))
             .build();
 
-        given(candidateMatchExplanationService
-            .generateExplanation(eq(id), eq(7L), eq("Senior welder role in Melbourne")))
+        given(candidateMatchExplanationService.getOrGenerateExplanation(id, 7L))
             .willReturn(explanation);
 
-        mockMvc.perform(post(BASE_PATH + GENERATE_MATCH_EXPLANATION_PATH.replace("{id}", Long.toString(id)))
+        mockMvc.perform(post(BASE_PATH + MATCH_EXPLANATION_PATH.replace("{id}", Long.toString(id)))
                 .with(csrf())
                 .header("Authorization", "Bearer " + "jwt-token")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(request))
+                .content("{\"matchingId\": 7}")
                 .accept(MediaType.APPLICATION_JSON))
 
             .andDo(print())
@@ -1097,79 +1090,68 @@ class CandidateAdminApiTest extends ApiTestBase {
             .andExpect(jsonPath("$.limitations", hasSize(1)))
             .andExpect(jsonPath("$.limitations[0]", is("No formal certification on file")));
 
-        verify(candidateMatchExplanationService)
-            .generateExplanation(id, 7L, "Senior welder role in Melbourne");
+        verify(candidateMatchExplanationService).getOrGenerateExplanation(id, 7L);
+        verify(candidateMatchExplanationService, never()).regenerateExplanation(anyLong(), anyLong());
     }
 
     @Test
-    @DisplayName("generate match explanation succeeds without jobId")
-    void generateMatchExplanationWithoutJobIdSucceeds() throws Exception {
+    @DisplayName("match explanation with regenerate requested regenerates the explanation")
+    void regenerateMatchExplanationSucceeds() throws Exception {
         long id = 99L;
-        CandidateMatchExplanationRequest request = new CandidateMatchExplanationRequest();
-        request.setOpportunityDescription("Ad-hoc opportunity description");
-
         CandidateMatchExplanation explanation = CandidateMatchExplanation.builder()
-            .summary("Reasonable match")
+            .summary("Regenerated")
             .experienceExplanations(List.of())
             .limitations(List.of())
             .build();
 
-        given(candidateMatchExplanationService
-            .generateExplanation(eq(id), isNull(), eq("Ad-hoc opportunity description")))
+        given(candidateMatchExplanationService.regenerateExplanation(id, 7L))
             .willReturn(explanation);
 
-        mockMvc.perform(post(BASE_PATH + GENERATE_MATCH_EXPLANATION_PATH.replace("{id}", Long.toString(id)))
+        mockMvc.perform(post(BASE_PATH + MATCH_EXPLANATION_PATH.replace("{id}", Long.toString(id)))
                 .with(csrf())
                 .header("Authorization", "Bearer " + "jwt-token")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(request))
+                .content("{\"matchingId\": 7, \"regenerate\": true}")
                 .accept(MediaType.APPLICATION_JSON))
 
             .andDo(print())
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.summary", is("Reasonable match")));
+            .andExpect(jsonPath("$.summary", is("Regenerated")));
 
-        verify(candidateMatchExplanationService)
-            .generateExplanation(id, null, "Ad-hoc opportunity description");
+        verify(candidateMatchExplanationService).regenerateExplanation(id, 7L);
+        verify(candidateMatchExplanationService, never()).getOrGenerateExplanation(anyLong(), anyLong());
     }
 
     @Test
-    @DisplayName("generate match explanation rejects blank opportunity description")
-    void generateMatchExplanationRejectsBlankOpportunityDescription() throws Exception {
+    @DisplayName("match explanation rejects a request with no matchingId")
+    void matchExplanationRejectsMissingMatchingId() throws Exception {
         long id = 99L;
-        CandidateMatchExplanationRequest request = new CandidateMatchExplanationRequest();
-        request.setOpportunityDescription("   ");
 
-        mockMvc.perform(post(BASE_PATH + GENERATE_MATCH_EXPLANATION_PATH.replace("{id}", Long.toString(id)))
+        mockMvc.perform(post(BASE_PATH + MATCH_EXPLANATION_PATH.replace("{id}", Long.toString(id)))
                 .with(csrf())
                 .header("Authorization", "Bearer " + "jwt-token")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(request))
+                .content("{\"opportunityDescription\": \"Senior welder\", \"jobId\": 7}")
                 .accept(MediaType.APPLICATION_JSON))
 
             .andDo(print())
             .andExpect(status().isBadRequest());
 
-        verify(candidateMatchExplanationService, never())
-            .generateExplanation(anyLong(), any(), anyString());
+        verifyNoInteractions(candidateMatchExplanationService);
     }
 
     @Test
-    @DisplayName("generate match explanation returns 404 when candidate is not found")
-    void generateMatchExplanationReturnsNotFound() throws Exception {
+    @DisplayName("match explanation returns 404 when candidate or Matching is not found")
+    void matchExplanationReturnsNotFound() throws Exception {
         long id = 99L;
-        CandidateMatchExplanationRequest request = new CandidateMatchExplanationRequest();
-        request.setOpportunityDescription("Some opportunity description");
-
-        given(candidateMatchExplanationService
-            .generateExplanation(eq(id), isNull(), anyString()))
+        given(candidateMatchExplanationService.getOrGenerateExplanation(id, 7L))
             .willThrow(new NoSuchObjectException(Candidate.class, id));
 
-        mockMvc.perform(post(BASE_PATH + GENERATE_MATCH_EXPLANATION_PATH.replace("{id}", Long.toString(id)))
+        mockMvc.perform(post(BASE_PATH + MATCH_EXPLANATION_PATH.replace("{id}", Long.toString(id)))
                 .with(csrf())
                 .header("Authorization", "Bearer " + "jwt-token")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(request))
+                .content("{\"matchingId\": 7}")
                 .accept(MediaType.APPLICATION_JSON))
 
             .andDo(print())
@@ -1178,82 +1160,41 @@ class CandidateAdminApiTest extends ApiTestBase {
     }
 
     @Test
-    @DisplayName("generate match explanation returns 400 when the explanation service fails")
-    void generateMatchExplanationReturnsBadRequestOnServiceFailure() throws Exception {
+    @DisplayName("match explanation returns 400 when the Matching has no description")
+    void matchExplanationReturnsBadRequestWhenNoDescription() throws Exception {
         long id = 99L;
-        CandidateMatchExplanationRequest request = new CandidateMatchExplanationRequest();
-        request.setOpportunityDescription("Some opportunity description");
+        given(candidateMatchExplanationService.getOrGenerateExplanation(id, 7L))
+            .willThrow(new InvalidRequestException("Matching 7 has no description"));
 
-        given(candidateMatchExplanationService
-            .generateExplanation(eq(id), isNull(), anyString()))
-            .willThrow(new MatchExplanationException("Explanation service returned no result"));
-
-        mockMvc.perform(post(BASE_PATH + GENERATE_MATCH_EXPLANATION_PATH.replace("{id}", Long.toString(id)))
+        mockMvc.perform(post(BASE_PATH + MATCH_EXPLANATION_PATH.replace("{id}", Long.toString(id)))
                 .with(csrf())
                 .header("Authorization", "Bearer " + "jwt-token")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(request))
+                .content("{\"matchingId\": 7}")
+                .accept(MediaType.APPLICATION_JSON))
+
+            .andDo(print())
+            .andExpect(status().isBadRequest())
+            .andExpect(jsonPath("$.code", is("invalid_request")));
+    }
+
+    @Test
+    @DisplayName("match explanation returns 400 when the explanation service fails")
+    void matchExplanationReturnsBadRequestOnServiceFailure() throws Exception {
+        long id = 99L;
+        given(candidateMatchExplanationService.getOrGenerateExplanation(id, 7L))
+            .willThrow(new MatchExplanationException("Explanation service returned no result"));
+
+        mockMvc.perform(post(BASE_PATH + MATCH_EXPLANATION_PATH.replace("{id}", Long.toString(id)))
+                .with(csrf())
+                .header("Authorization", "Bearer " + "jwt-token")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"matchingId\": 7}")
                 .accept(MediaType.APPLICATION_JSON))
 
             .andDo(print())
             .andExpect(status().isBadRequest())
             .andExpect(jsonPath("$.code", is("match_explanation_error")));
-    }
-
-    @Test
-    @DisplayName("get persisted match explanation succeeds")
-    void getPersistedMatchExplanationSucceeds() throws Exception {
-        long id = 99L;
-        long jobId = 7L;
-
-        CandidateMatchExplanation explanation = CandidateMatchExplanation.builder()
-            .summary("Persisted explanation")
-            .experienceExplanations(List.of(
-                ExperienceMatchExplanation.builder()
-                    .experienceId(2L)
-                    .explanation("Persisted experience explanation")
-                    .build()
-            ))
-            .limitations(List.of())
-            .build();
-
-        given(candidateMatchExplanationService.getPersistedExplanation(id, jobId))
-            .willReturn(explanation);
-
-        mockMvc.perform(get(BASE_PATH + GET_PERSISTED_MATCH_EXPLANATION_PATH
-                    .replace("{id}", Long.toString(id))
-                    .replace("{jobId}", Long.toString(jobId)))
-                .header("Authorization", "Bearer " + "jwt-token")
-                .accept(MediaType.APPLICATION_JSON))
-
-            .andDo(print())
-            .andExpect(status().isOk())
-            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-            .andExpect(jsonPath("$.summary", is("Persisted explanation")))
-            .andExpect(jsonPath("$.experienceExplanations[0].experienceId", is(2)));
-
-        verify(candidateMatchExplanationService).getPersistedExplanation(id, jobId);
-    }
-
-    @Test
-    @DisplayName("get persisted match explanation returns 404 when none has been persisted")
-    void getPersistedMatchExplanationReturnsNotFound() throws Exception {
-        long id = 99L;
-        long jobId = 7L;
-
-        given(candidateMatchExplanationService.getPersistedExplanation(id, jobId))
-            .willThrow(new NoSuchObjectException(
-                "No persisted explanation for candidate " + id + " and job " + jobId));
-
-        mockMvc.perform(get(BASE_PATH + GET_PERSISTED_MATCH_EXPLANATION_PATH
-                    .replace("{id}", Long.toString(id))
-                    .replace("{jobId}", Long.toString(jobId)))
-                .header("Authorization", "Bearer " + "jwt-token")
-                .accept(MediaType.APPLICATION_JSON))
-
-            .andDo(print())
-            .andExpect(status().isNotFound())
-            .andExpect(jsonPath("$.code", is("missing_object")));
     }
 
     private void postApiRequest(String path, String body) throws Exception {

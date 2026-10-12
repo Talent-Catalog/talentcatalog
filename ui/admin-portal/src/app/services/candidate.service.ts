@@ -31,7 +31,7 @@ import {
 } from '../model/candidate';
 import {Observable, Subject} from 'rxjs';
 import {environment} from '../../environments/environment';
-import {HttpClient, HttpContext} from '@angular/common/http';
+import {HttpClient} from '@angular/common/http';
 import {SearchResults} from '../model/search-results';
 import {map} from "rxjs/operators";
 import {CandidateSource, FetchCandidatesWithChatRequest} from "../model/base";
@@ -41,7 +41,6 @@ import {
   CandidateMatchExplanation,
   CandidateMatchExplanationRequest
 } from "../model/candidate-match-explanation";
-import {PRESERVE_HTTP_ERROR_RESPONSE} from "./error.interceptor";
 
 export type CvFormat = 'PDF' | 'DOCX' | 'GOOGLE_DOC';
 
@@ -294,25 +293,11 @@ export class CandidateService implements IntakeService {
   }
 
   /**
-   * Retrieves the previously persisted candidate/job match explanation, if any.
-   * Does NOT generate one - a 404 means none has been generated/persisted yet.
-   * <p/>
-   * The context token preserves the raw HttpErrorResponse (instead of the usual
-   * interceptor-normalized error string) so that callers can distinguish a 404 "not generated
-   * yet" response from a genuine error.
+   * Returns the explanation of how the candidate relates to the description of the requested
+   * Matching. The server returns its cached explanation if that is still current, otherwise it
+   * generates (and caches) a new one - as it always does if request.regenerate is true.
    */
-  getMatchExplanation(candidateId: number, jobId: number): Observable<CandidateMatchExplanation> {
-    return this.http.get<CandidateMatchExplanation>(
-      `${this.apiUrl}/${candidateId}/match-explanation/${jobId}`,
-      {context: new HttpContext().set(PRESERVE_HTTP_ERROR_RESPONSE, true)}
-    );
-  }
-
-  /**
-   * Generates (or regenerates) a candidate/job match explanation. When request.jobId is
-   * supplied, the backend persists/replaces the explanation for (candidateId, jobId).
-   */
-  generateMatchExplanation(
+  getOrGenerateMatchExplanation(
     candidateId: number, request: CandidateMatchExplanationRequest
   ): Observable<CandidateMatchExplanation> {
     return this.http.post<CandidateMatchExplanation>(

@@ -1,56 +1,66 @@
 package org.tctalent.server.service.explanation;
 
 import org.springframework.lang.NonNull;
-import org.springframework.lang.Nullable;
+import org.tctalent.server.exception.InvalidRequestException;
 import org.tctalent.server.exception.MatchExplanationException;
 import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.response.CandidateMatchExplanation;
 
+/**
+ * On-demand LLM explanations of how a candidate's existing job experience relates to the
+ * description of a {@link org.tctalent.server.model.db.Matching}.
+ * <p>Explanations are generated one candidate at a time, and only operate on a Matching: they
+ * don't depend on whether the Matching is used by a job, a search or a list. The explanation
+ * compares the Matching's description with the candidate's job experience text. It does not
+ * perform candidate matching or rerun any Best-N matching algorithm.</p>
+ * <p>Generated explanations are cached - at most one per (candidate, Matching) - and reused
+ * while the Matching's description is unchanged, ie while the Matching's updatedDate still
+ * equals its updatedDate when the explanation's generation started. Changes to the candidate's
+ * job experience are not tracked, so {@link #regenerateExplanation} is provided to refresh an
+ * explanation explicitly.</p>
+ * <p>An explanation generated from a description which changed during generation is never
+ * saved, so it can never replace an explanation of the current description.</p>
+ */
 public interface CandidateMatchExplanationService {
 
     /**
-     * Generates an on-demand explanation of how a candidate's existing job experience relates to
-     * the given opportunity description.
-     * <p>This compares the supplied opportunity description with the candidate's existing job
-     * experience text. It does not perform candidate matching or rerun any Best-N matching
-     * algorithm.</p>
-     * <p>If {@code jobId} is supplied, the corresponding Talent Catalog job is loaded (throwing
-     * {@link NoSuchObjectException} if it doesn't exist) and the generated explanation is
-     * persisted against the (candidate, job) pair, replacing any explanation already persisted
-     * for that pair. If {@code jobId} is null, the explanation is generated and returned but not
-     * persisted. Either way, {@code opportunityDescription} - not anything derived from the job -
-     * is always the text sent to the explanation service.</p>
+     * Returns the cached explanation of the candidate's match against the Matching's
+     * description, if it is current. Otherwise, generates a new explanation from the Matching's
+     * current description, replacing any cached one.
+     * <p>The Matching's description is obtained by the server - see
+     * {@link org.tctalent.server.service.db.MatchingService#resolveDescription}, which also
+     * initialises a job's blank Matching from the job's text.</p>
      *
      * @param candidateId ID of the candidate to explain
-     * @param jobId ID of the Talent Catalog job this request relates to, or null if the request
-     * is not associated with a specific Talent Catalog job. This is carried through as TC context
-     * for persistence purposes - it is not sent to the Python explanation service and is not used
-     * to look up or derive {@code opportunityDescription}.
-     * @param opportunityDescription description of the opportunity/job to compare against
-     * @return generated match explanation
-     * @throws NoSuchObjectException if no candidate is found with the given id, or if a non-null
-     * {@code jobId} does not correspond to an existing Talent Catalog job
+     * @param matchingId ID of the Matching whose description the candidate is compared against
+     * @return current match explanation
+     * @throws NoSuchObjectException if there is no such candidate or Matching
+     * @throws InvalidRequestException if the Matching has no description
      * @throws MatchExplanationException if the explanation could not be generated, for example
-     * because the Python match explanation service returned no result, an item-level error, a
-     * mismatched candidate ID, or could not be reached
+     * because the Python match explanation service returned no result, an item-level error or a
+     * mismatched candidate ID, could not be reached, or the Matching's description kept changing
+     * during generation
      */
     @NonNull
-    CandidateMatchExplanation generateExplanation(long candidateId, @Nullable Long jobId,
-        @NonNull String opportunityDescription) throws NoSuchObjectException, MatchExplanationException;
+    CandidateMatchExplanation getOrGenerateExplanation(long candidateId, long matchingId)
+        throws NoSuchObjectException, InvalidRequestException, MatchExplanationException;
 
     /**
-     * Retrieves a previously persisted candidate/job match explanation.
-     * <p>This does NOT regenerate the explanation - it is a pure lookup of whatever was last
-     * persisted by {@link #generateExplanation}, and does not call the Python explanation
-     * service.</p>
+     * Same as {@link #getOrGenerateExplanation}, except that any cached explanation is ignored:
+     * a new explanation is always generated, replacing the cached one. Used when the cached
+     * explanation may be out of date for reasons which are not tracked, such as changes to the
+     * candidate's job experience.
      *
-     * @param candidateId ID of the candidate
-     * @param jobId ID of the Talent Catalog job
-     * @return the persisted match explanation for that candidate/job pair
-     * @throws NoSuchObjectException if no explanation has been persisted for that candidate/job
-     * pair
+     * @param candidateId ID of the candidate to explain
+     * @param matchingId ID of the Matching whose description the candidate is compared against
+     * @return newly generated match explanation - or, if the Matching's description changed
+     * during generation, the current explanation of the new description
+     * @throws NoSuchObjectException if there is no such candidate or Matching
+     * @throws InvalidRequestException if the Matching has no description
+     * @throws MatchExplanationException if the explanation could not be generated - see
+     * {@link #getOrGenerateExplanation}
      */
     @NonNull
-    CandidateMatchExplanation getPersistedExplanation(long candidateId, long jobId)
-        throws NoSuchObjectException;
+    CandidateMatchExplanation regenerateExplanation(long candidateId, long matchingId)
+        throws NoSuchObjectException, InvalidRequestException, MatchExplanationException;
 }

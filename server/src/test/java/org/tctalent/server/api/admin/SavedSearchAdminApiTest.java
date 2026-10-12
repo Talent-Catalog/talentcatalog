@@ -22,6 +22,8 @@ import static org.hamcrest.Matchers.notNullValue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -38,6 +40,7 @@ import static org.tctalent.server.data.SavedSearchTestData.getSavedSearch;
 import static org.tctalent.server.model.db.SavedSearchType.other;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.time.OffsetDateTime;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -53,6 +56,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.tctalent.server.model.db.Matching;
+import org.tctalent.server.model.db.MatchingSnapshot;
 import org.tctalent.server.api.dto.ExportColumnsBuilderSelector;
 import org.tctalent.server.api.dto.SavedListBuilderSelector;
 import org.tctalent.server.model.db.CandidateStatus;
@@ -77,6 +82,7 @@ import org.tctalent.server.request.search.UpdateSharingRequest;
 import org.tctalent.server.request.search.UpdateWatchingRequest;
 import org.tctalent.server.service.db.CandidateSavedListService;
 import org.tctalent.server.service.db.CandidateService;
+import org.tctalent.server.service.db.MatchingService;
 import org.tctalent.server.service.db.SavedListService;
 import org.tctalent.server.service.db.SavedSearchService;
 
@@ -132,6 +138,8 @@ class SavedSearchAdminApiTest extends ApiTestBase {
   SavedListService savedListService;
   @MockitoBean
   SavedSearchService savedSearchService;
+  @MockitoBean
+  MatchingService matchingService;
 
   @Autowired
   MockMvc mockMvc;
@@ -756,4 +764,45 @@ class SavedSearchAdminApiTest extends ApiTestBase {
         .andExpect(jsonPath("$.occupationIds", is("8577,8484")));
   }
 
+
+  @Test
+  @DisplayName("resolve matching returns the resolved Matching's description and updatedDate")
+  void resolveMatchingSucceeds() throws Exception {
+    Matching matching = mock(Matching.class);
+    given(matching.getId()).willReturn(5L);
+    given(savedSearchService.resolveMatching(SAVED_SEARCH_ID)).willReturn(matching);
+    given(matchingService.resolveDescription(5L)).willReturn(new MatchingSnapshot(
+      5L, "<p>ICU nurse</p>", OffsetDateTime.parse("2026-10-01T10:15:30.123456Z")));
+
+    mockMvc.perform(post(BASE_PATH + "/{id}/matching".replace("{id}", Long.toString(SAVED_SEARCH_ID)))
+      .with(csrf())
+      .header("Authorization", "Bearer " + "jwt-token")
+      .accept(MediaType.APPLICATION_JSON))
+
+      .andDo(print())
+      .andExpect(status().isOk())
+      .andExpect(jsonPath("$.id", is(5)))
+      .andExpect(jsonPath("$.matchingDescription", is("<p>ICU nurse</p>")))
+      .andExpect(jsonPath("$.updatedDate", notNullValue()));
+
+    verify(savedSearchService).resolveMatching(SAVED_SEARCH_ID);
+    verify(matchingService).resolveDescription(5L);
+  }
+
+  @Test
+  @DisplayName("resolve matching returns an empty response when there is no matching context")
+  void resolveMatchingReturnsEmptyWhenNone() throws Exception {
+    given(savedSearchService.resolveMatching(SAVED_SEARCH_ID)).willReturn(null);
+
+    mockMvc.perform(post(BASE_PATH + "/{id}/matching".replace("{id}", Long.toString(SAVED_SEARCH_ID)))
+      .with(csrf())
+      .header("Authorization", "Bearer " + "jwt-token")
+      .accept(MediaType.APPLICATION_JSON))
+
+      .andDo(print())
+      .andExpect(status().isOk())
+      .andExpect(content().string(""));
+
+    verify(matchingService, never()).resolveDescription(anyLong());
+  }
 }

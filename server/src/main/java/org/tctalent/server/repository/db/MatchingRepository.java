@@ -16,12 +16,24 @@
 
 package org.tctalent.server.repository.db;
 
+import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.tctalent.server.model.db.Matching;
+import org.tctalent.server.model.db.MatchingSnapshot;
 
 /**
  * See doc for {@link Matching}
  */
 public interface MatchingRepository extends JpaRepository<Matching, Long> {
 
+    /**
+     * Reads the Matching's current description and updatedDate from the database - unlike
+     * findById, which returns any copy of the Matching already loaded by the current
+     * persistence context, which may be out of date.
+     */
+    @Query("select new org.tctalent.server.model.db.MatchingSnapshot("
+        + " m.id, m.matchingDescription, m.updatedDate) from Matching m where m.id = :id")
+    Optional<MatchingSnapshot> findSnapshot(@Param("id") long id);
 }

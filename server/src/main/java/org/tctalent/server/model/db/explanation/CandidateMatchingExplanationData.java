@@ -25,8 +25,8 @@ import lombok.extern.jackson.Jacksonized;
 import org.springframework.lang.Nullable;
 
 /**
- * Persisted (jsonb) representation of a generated candidate/job match explanation.
- * <p>Stored as one {@code jsonb} column on {@link CandidateJobMatchExplanation} - the individual
+ * Persisted (jsonb) representation of a generated candidate match explanation.
+ * <p>Stored as one {@code jsonb} column on {@link CandidateMatchingExplanation} - the individual
  * experience explanations are not normalized into their own table.</p>
  * <p>This is a database/domain value class, independent of the {@code response} package's REST
  * DTOs - the two happen to look similar today but are separate contracts that may diverge.</p>
@@ -34,7 +34,7 @@ import org.springframework.lang.Nullable;
 @Value
 @Builder
 @Jacksonized
-public class CandidateJobMatchExplanationData {
+public class CandidateMatchingExplanationData {
 
     /**
      * When the explanation was generated, as reported by the explanation service - not to be

@@ -20,10 +20,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.LockModeType;
 import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -34,6 +38,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.model.db.Matching;
+import org.tctalent.server.model.db.MatchingSnapshot;
 import org.tctalent.server.model.db.SalesforceJobOpp;
 import org.tctalent.server.repository.db.MatchingRepository;
 import org.tctalent.server.repository.db.SalesforceJobOppRepository;
@@ -46,6 +51,9 @@ class MatchingServiceImplTest {
 
     @Mock
     private SalesforceJobOppRepository salesforceJobOppRepository;
+
+    @Mock
+    private EntityManager entityManager;
 
     @InjectMocks
     private MatchingServiceImpl matchingService;
@@ -190,6 +198,86 @@ class MatchingServiceImplTest {
         ArgumentCaptor<Matching> deleted = ArgumentCaptor.forClass(Matching.class);
         verify(matchingRepository).delete(deleted.capture());
         assertThat(deleted.getValue().getId()).isEqualTo(7L);
+    }
+
+    @Test
+    @DisplayName("resolveDescription returns a Matching's description, without looking for a job")
+    void resolveDescription_hasDescription_returnsIt() {
+        Matching matching = matching(7L, "Refined");
+        given(matchingRepository.findSnapshot(7L))
+            .willReturn(Optional.of(MatchingSnapshot.of(matching)));
+
+        MatchingSnapshot result = matchingService.resolveDescription(7L);
+
+        assertThat(result.matchingDescription()).isEqualTo("Refined");
+        assertThat(result.updatedDate()).isEqualTo(matching.getUpdatedDate());
+        verify(salesforceJobOppRepository, never()).findByMatchingId(anyLong());
+    }
+
+    @Test
+    @DisplayName("resolveDescription leaves a blank Matching with no job unchanged")
+    void resolveDescription_blankNoJob_unchanged() {
+        Matching matching = matching(7L, null);
+        given(matchingRepository.findSnapshot(7L))
+            .willReturn(Optional.of(MatchingSnapshot.of(matching)));
+        given(salesforceJobOppRepository.findByMatchingId(7L)).willReturn(Optional.empty());
+
+        MatchingSnapshot result = matchingService.resolveDescription(7L);
+
+        assertThat(result.matchingDescription()).isNull();
+        verify(matchingRepository, never()).save(any(Matching.class));
+    }
+
+    @Test
+    @DisplayName("resolveDescription initialises a job's blank Matching from the job's text, refreshing and locking it first")
+    void resolveDescription_blankJobMatching_initialisedFromJobText() {
+        Matching matching = matching(7L, null);
+        given(matchingRepository.findSnapshot(7L))
+            .willReturn(Optional.of(MatchingSnapshot.of(matching)));
+        given(salesforceJobOppRepository.findByMatchingId(7L))
+            .willReturn(Optional.of(job(1L, "Job summary")));
+        given(matchingRepository.findById(7L)).willReturn(Optional.of(matching));
+        given(matchingRepository.save(matching)).willReturn(matching);
+
+        MatchingSnapshot result = matchingService.resolveDescription(7L);
+
+        assertThat(result.matchingDescription()).isEqualTo("Job summary");
+        assertThat(result.updatedDate()).isEqualTo(matching.getUpdatedDate());
+        verify(entityManager).refresh(matching, LockModeType.PESSIMISTIC_WRITE);
+    }
+
+    @Test
+    @DisplayName("resolveDescription never overwrites a description given to a job's Matching meanwhile")
+    void resolveDescription_describedMeanwhile_notOverwritten() {
+        Matching matching = matching(7L, null);
+        given(matchingRepository.findSnapshot(7L))
+            .willReturn(Optional.of(MatchingSnapshot.of(matching)));
+        given(salesforceJobOppRepository.findByMatchingId(7L))
+            .willReturn(Optional.of(job(1L, "Job summary")));
+        given(matchingRepository.findById(7L)).willReturn(Optional.of(matching));
+        //Refreshing reveals that another request has just described the Matching.
+        doAnswer(invocation -> matching.updateMatchingDescription("Described meanwhile"))
+            .when(entityManager).refresh(eq(matching), eq(LockModeType.PESSIMISTIC_WRITE));
+
+        MatchingSnapshot result = matchingService.resolveDescription(7L);
+
+        assertThat(result.matchingDescription()).isEqualTo("Described meanwhile");
+        verify(matchingRepository, never()).save(any(Matching.class));
+    }
+
+    @Test
+    @DisplayName("resolveDescription throws for an unknown Matching")
+    void resolveDescription_unknownId_throws() {
+        given(matchingRepository.findSnapshot(7L)).willReturn(Optional.empty());
+
+        assertThatThrownBy(() -> matchingService.resolveDescription(7L))
+            .isInstanceOf(NoSuchObjectException.class);
+    }
+
+    private static Matching matching(long id, String description) {
+        Matching matching = new Matching(description);
+        matching.setId(id);
+        return matching;
     }
 
     private void givenSavedMatchingGetsId(long id) {

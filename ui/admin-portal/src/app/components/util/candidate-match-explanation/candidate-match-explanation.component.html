@@ -1,4 +1,8 @@
-<ng-container *ngIf="hasContext()">
+<p *ngIf="requirementsPendingMessage" class="text-muted small mb-0 match-explanation-pending">
+  <i class="fas fa-info-circle"></i> {{requirementsPendingMessage}}
+</p>
+
+<ng-container *ngIf="matchingId != null && !requirementsPendingMessage">
 
   <div *ngIf="!opened">
     <tc-button type="plain" size="sm" color="secondary" (onClick)="show()">
@@ -14,28 +18,24 @@
       </tc-button>
     </div>
 
-    <div *ngIf="checking">
+    <div *ngIf="loading">
       <tc-loading [loading]="true"></tc-loading>
-      <p class="text-muted small">Checking for an existing match explanation...</p>
-    </div>
-
-    <div *ngIf="generating">
-      <tc-loading [loading]="true"></tc-loading>
-      <p class="text-muted small">Generating match explanation...</p>
+      <p class="text-muted small">Getting match explanation...</p>
     </div>
 
     <tc-alert type="danger" *ngIf="error">{{error}}</tc-alert>
 
-    <p *ngIf="loaded && !explanation && !error && !checking && !generating" class="text-muted small">
-      No match explanation has been generated for this candidate.
-    </p>
+    <div *ngIf="error && !explanation && !loading" class="mb-2">
+      <tc-button type="outline" size="sm" color="secondary" (onClick)="retry()">
+        <i class="fas fa-redo"></i> Try again
+      </tc-button>
+    </div>
 
-    <tc-card *ngIf="explanation && !checking && !generating">
+    <tc-card *ngIf="explanation && !loading">
       <tc-card-header>
         <div class="d-flex align-items-center justify-content-between w-100">
           <span>Match Explanation</span>
           <tc-button
-            *ngIf="hasUsableDescription()"
             type="outline"
             size="sm"
             color="secondary"

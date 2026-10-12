@@ -25,7 +25,7 @@ import lombok.Setter;
 import lombok.ToString;
 
 /**
- * Primary key for {@link CandidateJobMatchExplanation}.
+ * Primary key for {@link CandidateMatchingExplanation}.
  * See doc for that class.
  */
 @Getter
@@ -33,19 +33,19 @@ import lombok.ToString;
 @ToString
 @EqualsAndHashCode
 @Embeddable
-public class CandidateJobMatchExplanationKey implements Serializable {
+public class CandidateMatchingExplanationKey implements Serializable {
 
     @Column(name = "candidate_id")
     private Long candidateId;
 
-    @Column(name = "job_id")
-    private Long jobId;
+    @Column(name = "matching_id")
+    private Long matchingId;
 
-    public CandidateJobMatchExplanationKey() {
+    public CandidateMatchingExplanationKey() {
     }
 
-    public CandidateJobMatchExplanationKey(Long candidateId, Long jobId) {
+    public CandidateMatchingExplanationKey(Long candidateId, Long matchingId) {
         this.candidateId = candidateId;
-        this.jobId = jobId;
+        this.matchingId = matchingId;
     }
 }

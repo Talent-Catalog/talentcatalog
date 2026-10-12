@@ -24,6 +24,7 @@ import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -41,6 +42,8 @@ import org.tctalent.server.exception.InvalidSessionException;
 import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.logging.LogBuilder;
 import org.tctalent.server.model.db.Candidate;
+import org.tctalent.server.model.db.Matching;
+import org.tctalent.server.model.db.MatchingSnapshot;
 import org.tctalent.server.model.db.SavedList;
 import org.tctalent.server.model.db.SavedSearch;
 import org.tctalent.server.request.IdsRequest;
@@ -62,6 +65,7 @@ import org.tctalent.server.request.search.UpdateSharingRequest;
 import org.tctalent.server.request.search.UpdateWatchingRequest;
 import org.tctalent.server.service.db.CandidateSavedListService;
 import org.tctalent.server.service.db.CandidateService;
+import org.tctalent.server.service.db.MatchingService;
 import org.tctalent.server.service.db.SavedListService;
 import org.tctalent.server.service.db.SavedSearchService;
 import org.tctalent.server.util.dto.DtoBuilder;
@@ -80,6 +84,7 @@ public class SavedSearchAdminApi implements
     private final SavedSearchService savedSearchService;
     private final SavedListBuilderSelector savedListBuilderSelector;
     private final ExportColumnsBuilderSelector exportColumnsBuilderSelector;
+    private final MatchingService matchingService;
 
     /*
         Standard ITableApi methods
@@ -137,6 +142,27 @@ public class SavedSearchAdminApi implements
     /*
         End standard ITableApi methods
      */
+
+    /**
+     * Returns the search's current matching context, for operations which need it - eg match
+     * explanations. If the search doesn't have a Matching yet, one is created (or the job's
+     * Matching is used) where the search has enough context for one - see
+     * {@link SavedSearchService#resolveMatching}. A job's Matching with no description is initialised
+     * from the job's text - see {@link MatchingService#resolveDescription}.
+     * <p/>
+     * A POST, since it may create or change a Matching.
+     *
+     * @param id ID of search
+     * @return The search's Matching, as at now - null (an empty response) if the search has no
+     * matching context
+     * @throws NoSuchObjectException if there is no such search
+     */
+    @PostMapping("{id}/matching")
+    public @Nullable MatchingSnapshot resolveMatching(@PathVariable("id") long id)
+        throws NoSuchObjectException {
+        final Matching matching = savedSearchService.resolveMatching(id);
+        return matching == null ? null : matchingService.resolveDescription(matching.getId());
+    }
 
     /**
      * Clears the given user's selections for the given saved search.
@@ -402,6 +428,7 @@ public class SavedSearchAdminApi implements
             .add("id")
             .add("publicId")
             .add("name")
+            .add("defaultSearch")
             .add("savedSearchType")
             .add("savedSearchSubtype")
             .add("displayedFieldsLong")
@@ -410,7 +437,6 @@ public class SavedSearchAdminApi implements
             .add("watcherUserIds")
             .add("createdBy", userDto())
             .add("global")
-            .add("autoUpdateOnSearch")
             ;
     }
 

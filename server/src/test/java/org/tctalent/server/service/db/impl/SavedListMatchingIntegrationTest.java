@@ -49,6 +49,7 @@ import org.tctalent.server.model.db.Employer;
 import org.tctalent.server.model.db.JobOppIntake;
 import org.tctalent.server.model.db.JobOpportunityStage;
 import org.tctalent.server.model.db.Matching;
+import org.tctalent.server.model.db.MatchingSnapshot;
 import org.tctalent.server.model.db.PartnerImpl;
 import org.tctalent.server.model.db.SalesforceJobOpp;
 import org.tctalent.server.model.db.SavedList;
@@ -696,6 +697,125 @@ class SavedListMatchingIntegrationTest extends BaseDBIntegrationTest {
      * Logs the user in as a member of an employer job creator partner, with Salesforce mocked -
      * so that jobs can be created through JobService.
      */
+    @Test
+    @DisplayName("resolving a legacy job list's Matching gives it the job's Matching, initialised from the job's text")
+    void resolveMatching_legacyJobList_getsJobMatching() {
+        SalesforceJobOpp job = createJob();
+        SavedList list = createLegacyList("legacy", job);
+        newRequest();
+
+        MatchingSnapshot resolved = savedListAdminApi.resolveMatching(list.getId());
+
+        assertThat(resolved).isNotNull();
+        assertThat(resolved.id()).isEqualTo(jobMatchingId(job));
+        assertThat(resolved.matchingDescription()).isEqualTo(JOB_TEXT);
+        assertThat(reload(list).getMatching().getId()).isEqualTo(resolved.id());
+        assertThat(reload(list).getSfJobOpp().getId()).isEqualTo(job.getId());
+    }
+
+    @Test
+    @DisplayName("resolving a job list's Matching initialises a blank job Matching from the job's text, never overwriting a description")
+    void resolveMatching_blankJobMatching_initialisedFromJobText() {
+        SalesforceJobOpp job = createJob();
+        job.setJobSummary(null);
+        job = salesforceJobOppRepository.saveAndFlush(job);
+        SavedList list = createList("job list", job.getId());
+        assertThat(matchingDescription(list)).isNull();
+        job.setJobSummary("<p>Summary added later</p>");
+        salesforceJobOppRepository.saveAndFlush(job);
+        newRequest();
+
+        MatchingSnapshot resolved = savedListAdminApi.resolveMatching(list.getId());
+        assertThat(resolved.matchingDescription()).isEqualTo("<p>Summary added later</p>");
+
+        job = reloadJob(job);
+        job.setJobSummary("<p>Changed summary</p>");
+        salesforceJobOppRepository.saveAndFlush(job);
+        newRequest();
+        MatchingSnapshot again = savedListAdminApi.resolveMatching(list.getId());
+        assertThat(again.matchingDescription()).isEqualTo("<p>Summary added later</p>");
+        assertThat(again.updatedDate()).isEqualTo(resolved.updatedDate());
+    }
+
+    @Test
+    @DisplayName("resolving the Matching of a list with no job and no Matching creates nothing")
+    void resolveMatching_listWithNoContext_createsNothing() {
+        SavedList list = createList("no context", null);
+        newRequest();
+        long matchingCount = matchingRepository.count();
+
+        assertThat(savedListAdminApi.resolveMatching(list.getId())).isNull();
+
+        assertThat(matchingRepository.count()).isEqualTo(matchingCount);
+        assertThat(reload(list).getMatching()).isNull();
+    }
+
+    @Test
+    @DisplayName("resolving the Matching of a list with no job returns its own Matching, unchanged")
+    void resolveMatching_nonJobList_returnsItsMatching() {
+        Matching matching = matchingRepository.saveAndFlush(new Matching("<p>Own context</p>"));
+        SavedList list = createList("own context", null);
+        list.setMatching(matching);
+        savedListRepository.saveAndFlush(list);
+        newRequest();
+
+        MatchingSnapshot resolved = savedListAdminApi.resolveMatching(list.getId());
+
+        assertThat(resolved.id()).isEqualTo(matching.getId());
+        assertThat(resolved.matchingDescription()).isEqualTo("<p>Own context</p>");
+        assertThat(resolved.updatedDate()).isEqualTo(matching.getUpdatedDate());
+    }
+
+    @Test
+    @DisplayName("resolving a selection list's Matching returns its search's Matching without creating one")
+    void resolveMatching_selectionList_followsSearch() {
+        SalesforceJobOpp job = createJob();
+        SavedSearch defaultSearch = defaultJobSearch(job, "<p>Refined</p>");
+        SavedList selection =
+            savedSearchService.getSelectionListForLoggedInUser(defaultSearch.getId());
+        newRequest();
+        long matchingCount = matchingRepository.count();
+
+        MatchingSnapshot resolved = savedListAdminApi.resolveMatching(selection.getId());
+
+        assertThat(resolved.id()).isEqualTo(jobMatchingId(job));
+        assertThat(resolved.matchingDescription()).isEqualTo("<p>Refined</p>");
+        assertThat(matchingRepository.count()).isEqualTo(matchingCount);
+    }
+
+    @Test
+    @DisplayName("resolving a job search's Matching shares the job's Matching with the job's lists")
+    void resolveMatching_jobSearch_sharesJobMatching() {
+        SalesforceJobOpp job = createJob();
+        SavedList list = createList("job list", job.getId());
+        SavedSearch search = createSearch("job search", job.getId(), null);
+        newRequest();
+
+        MatchingSnapshot searchMatching = savedSearchAdminApi.resolveMatching(search.getId());
+        MatchingSnapshot listMatching = savedListAdminApi.resolveMatching(list.getId());
+
+        assertThat(searchMatching.id()).isEqualTo(jobMatchingId(job));
+        assertThat(listMatching.id()).isEqualTo(searchMatching.id());
+        assertThat(searchMatching.matchingDescription()).isEqualTo(JOB_TEXT);
+    }
+
+    @Test
+    @DisplayName("resolving the default search's Matching reflects a Matching changed by a search run")
+    void resolveMatching_defaultSearch_reflectsSearchRun() {
+        SavedSearch defaultSearch = savedSearchService.getDefaultSavedSearch();
+        runDefaultSearch(defaultSearch, "<p>First</p>");
+        newRequest();
+        MatchingSnapshot first = savedSearchAdminApi.resolveMatching(defaultSearch.getId());
+
+        runDefaultSearch(reloadSearch(defaultSearch), "<p>Second</p>");
+        newRequest();
+        MatchingSnapshot second = savedSearchAdminApi.resolveMatching(defaultSearch.getId());
+
+        assertThat(first.matchingDescription()).isEqualTo("<p>First</p>");
+        assertThat(second.matchingDescription()).isEqualTo("<p>Second</p>");
+        assertThat(second.updatedDate()).isAfter(first.updatedDate());
+    }
+
     private void logInAsEmployerPartner() {
         PartnerImpl partner = TestDataFactory.createPartner();
         partner.setName("Employer partner " + System.nanoTime());

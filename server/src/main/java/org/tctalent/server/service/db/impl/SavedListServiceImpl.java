@@ -751,6 +751,19 @@ public class SavedListServiceImpl implements SavedListService {
     }
 
     @Override
+    @Nullable
+    @Transactional
+    public Matching resolveMatching(long id) throws NoSuchObjectException {
+        final SavedList savedList = get(id);
+        final SalesforceJobOpp job = savedList.getSfJobOpp();
+        if (savedList.getMatching() == null && job != null && savedList.getSavedSearch() == null) {
+            savedList.setMatching(matchingService.getOrCreateJobMatching(job, null));
+            savedListRepository.save(savedList);
+        }
+        return savedList.getMatching();
+    }
+
+    @Override
     public void mergeSavedListFromInputStream(long savedListId, InputStream is)
         throws NoSuchObjectException, IOException {
 
