@@ -1913,6 +1913,16 @@ describe('ShowCandidatesComponent', () => {
       expect(component.sourceMatching).toBeNull();
     });
 
+    it('should not resolve a matching context when a candidate is selected without a source', () => {
+      component.candidateSource = undefined;
+
+      component.setCurrentCandidate(new MockCandidate());
+
+      expect(mockSavedListService.resolveMatching).not.toHaveBeenCalled();
+      expect(mockSavedSearchService.resolveMatching).not.toHaveBeenCalled();
+      expect(component.sourceMatching).toBeUndefined();
+    });
+
     it('should discard the matching context when the source changes, ignoring a slow response for the old source', () => {
       const slowFirst = new Subject<any>();
       mockSavedListService.resolveMatching.and.callFake((id: number) =>
@@ -1978,6 +1988,21 @@ describe('ShowCandidatesComponent', () => {
       component.requirements = '<p>Paediatric nurse</p>';
 
       expect(component.requirementsPendingMessage).toContain('Run the search');
+    });
+
+    it('should keep reporting pending requirements consistently until the requirements change', () => {
+      mockSavedSearchService.resolveMatching.and.returnValue(of(matching(6, '<p>ICU nurse</p>')));
+      changeSource(searchSource(3, true));
+      component.setCurrentCandidate(new MockCandidate());
+      component.requirements = '<p>Paediatric nurse</p>';
+
+      const first = component.requirementsPendingMessage;
+      const second = component.requirementsPendingMessage;
+      expect(first).toContain('Run the search');
+      expect(second).toBe(first);
+
+      component.requirements = '<p>ICU nurse</p>';
+      expect(component.requirementsPendingMessage).toBeUndefined();
     });
 
     it('should ask the user to save a named search whose requirements have unsaved changes', () => {
