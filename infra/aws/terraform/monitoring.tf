@@ -167,11 +167,16 @@ resource "aws_cloudwatch_metric_alarm" "alb_5xx_elb" {
 }
 
 # --- RDS alarms ------------------------------------------------------------------------------
-# DBInstanceIdentifier is read from module.database's db_instance_id output (the actual
-# aws_db_instance.id, which AWS sets to the instance identifier) rather than reconstructed as
-# "${var.app}-${var.env}", so these alarms can't silently drift if the identifier logic changes.
-# These alarms only exist when rds_alarms_enabled, which requires var.db_enable - so
-# module.database[0] is guaranteed to exist whenever this index is evaluated.
+# DBInstanceIdentifier uses local.db_identifier (declared in database.tf, next to
+# module.database's own `identifier` argument) rather than a module.database output. With
+# terraform-aws-modules/rds/aws 5.1.0 and AWS provider v5+ (we're pinned to 6.x - see
+# opc-staging/.terraform.lock.hcl), the module's only identifier-shaped output, db_instance_id, is
+# aws_db_instance.id - which since provider v5 is the DBI resource ID ("db-XXXX"), NOT the
+# instance identifier (see the provider's v5 upgrade guide: "aws_db_instance.id is no longer the
+# identifier"). The module exposes no separate db_instance_identifier output. Using db_instance_id
+# here would silently set CloudWatch's DBInstanceIdentifier dimension to a value no RDS metric is
+# ever published under, so these alarms would never fire. local.db_identifier is the same literal
+# value passed as module.database's `identifier` argument, so it's guaranteed to match.
 
 resource "aws_cloudwatch_metric_alarm" "rds_cpu" {
   count = local.rds_alarms_enabled ? 1 : 0
@@ -182,7 +187,7 @@ resource "aws_cloudwatch_metric_alarm" "rds_cpu" {
   namespace   = "AWS/RDS"
   metric_name = "CPUUtilization"
   dimensions = {
-    DBInstanceIdentifier = module.database[0].db_instance_id
+    DBInstanceIdentifier = local.db_identifier
   }
 
   statistic           = "Average"
@@ -212,7 +217,7 @@ resource "aws_cloudwatch_metric_alarm" "rds_freeable_memory" {
   namespace   = "AWS/RDS"
   metric_name = "FreeableMemory"
   dimensions = {
-    DBInstanceIdentifier = module.database[0].db_instance_id
+    DBInstanceIdentifier = local.db_identifier
   }
 
   statistic           = "Average"
@@ -261,7 +266,7 @@ resource "aws_cloudwatch_metric_alarm" "rds_free_storage_space" {
   namespace   = "AWS/RDS"
   metric_name = "FreeStorageSpace"
   dimensions = {
-    DBInstanceIdentifier = module.database[0].db_instance_id
+    DBInstanceIdentifier = local.db_identifier
   }
 
   statistic           = "Minimum"
@@ -291,7 +296,7 @@ resource "aws_cloudwatch_metric_alarm" "rds_disk_queue_depth" {
   namespace   = "AWS/RDS"
   metric_name = "DiskQueueDepth"
   dimensions = {
-    DBInstanceIdentifier = module.database[0].db_instance_id
+    DBInstanceIdentifier = local.db_identifier
   }
 
   statistic           = "Average"
