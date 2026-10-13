@@ -557,3 +557,9 @@ variable "candidate_files_bucket" {
   default     = ""
   description = "S3 bucket name for candidate file attachments (required when cloudfront_enable=true)"
 }
+
+variable "candidate_files_vanta_tags" {
+  type        = map(string)
+  description = "Vanta user data classification tags (e.g. VantaContainsUserData, VantaUserDataStored) applied to the candidate files S3 bucket. Set per environment."
+  default     = {}
+}
