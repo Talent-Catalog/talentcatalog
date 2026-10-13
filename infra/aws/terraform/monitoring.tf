@@ -167,8 +167,11 @@ resource "aws_cloudwatch_metric_alarm" "alb_5xx_elb" {
 }
 
 # --- RDS alarms ------------------------------------------------------------------------------
-# DBInstanceIdentifier matches the `identifier` argument passed to module.database below
-# ("${var.app}-${var.env}") - there is no module output exposing it directly.
+# DBInstanceIdentifier is read from module.database's db_instance_id output (the actual
+# aws_db_instance.id, which AWS sets to the instance identifier) rather than reconstructed as
+# "${var.app}-${var.env}", so these alarms can't silently drift if the identifier logic changes.
+# These alarms only exist when rds_alarms_enabled, which requires var.db_enable - so
+# module.database[0] is guaranteed to exist whenever this index is evaluated.
 
 resource "aws_cloudwatch_metric_alarm" "rds_cpu" {
   count = local.rds_alarms_enabled ? 1 : 0
@@ -179,7 +182,7 @@ resource "aws_cloudwatch_metric_alarm" "rds_cpu" {
   namespace   = "AWS/RDS"
   metric_name = "CPUUtilization"
   dimensions = {
-    DBInstanceIdentifier = local.name_prefix
+    DBInstanceIdentifier = module.database[0].db_instance_id
   }
 
   statistic           = "Average"
@@ -209,7 +212,7 @@ resource "aws_cloudwatch_metric_alarm" "rds_freeable_memory" {
   namespace   = "AWS/RDS"
   metric_name = "FreeableMemory"
   dimensions = {
-    DBInstanceIdentifier = local.name_prefix
+    DBInstanceIdentifier = module.database[0].db_instance_id
   }
 
   statistic           = "Average"
@@ -258,7 +261,7 @@ resource "aws_cloudwatch_metric_alarm" "rds_free_storage_space" {
   namespace   = "AWS/RDS"
   metric_name = "FreeStorageSpace"
   dimensions = {
-    DBInstanceIdentifier = local.name_prefix
+    DBInstanceIdentifier = module.database[0].db_instance_id
   }
 
   statistic           = "Minimum"
@@ -288,7 +291,7 @@ resource "aws_cloudwatch_metric_alarm" "rds_disk_queue_depth" {
   namespace   = "AWS/RDS"
   metric_name = "DiskQueueDepth"
   dimensions = {
-    DBInstanceIdentifier = local.name_prefix
+    DBInstanceIdentifier = module.database[0].db_instance_id
   }
 
   statistic           = "Average"
