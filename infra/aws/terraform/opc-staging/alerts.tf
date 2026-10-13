@@ -25,13 +25,13 @@ resource "aws_sns_topic" "alarms" {
   )
 }
 
-# Email addresses to notify on alarm. Left empty by default - fill in and apply.
-# Each address must confirm the subscription by clicking the link AWS emails it; until confirmed,
-# it will not receive notifications.
+# Email addresses to notify on alarm. Each address must confirm the subscription after apply.
+# Confirm using `aws sns confirm-subscription` with --authenticate-on-unsubscribe true, not by
+# clicking the link, so a stray unsubscribe click can't remove the group.
 variable "alarm_email_subscriptions" {
   type        = list(string)
   description = "Email addresses to subscribe to the opc-staging-alarms SNS topic"
-  default     = []
+  default     = ["aws-alerts@openpathwaycollective.org"]
 }
 
 resource "aws_sns_topic_subscription" "alarm_emails" {
