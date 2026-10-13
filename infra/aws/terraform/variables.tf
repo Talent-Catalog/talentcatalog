@@ -563,3 +563,66 @@ variable "candidate_files_vanta_tags" {
   description = "Vanta user data classification tags (e.g. VantaContainsUserData, VantaUserDataStored) applied to the candidate files S3 bucket. Set per environment."
   default     = {}
 }
+
+### CloudWatch alarm variables (TC-1526 - Vanta CloudWatch alarm coverage):
+### See monitoring.tf. When alarm_sns_topic_arn is null (the default), no alarms are created.
+
+variable "alarm_sns_topic_arn" {
+  type        = string
+  description = "ARN of the SNS topic CloudWatch alarms publish to. When null, this module creates no alarms."
+  default     = null
+}
+
+variable "alb_unhealthy_host_count_threshold" {
+  type        = number
+  description = "ALB UnHealthyHostCount alarm threshold (strictly greater than this count of unhealthy targets)"
+  default     = 0
+}
+
+variable "alb_target_response_time_p95_threshold_seconds" {
+  type        = number
+  description = "ALB TargetResponseTime p95 alarm threshold, in seconds"
+  default     = 2
+}
+
+variable "alb_target_5xx_count_threshold" {
+  type        = number
+  description = "ALB HTTPCode_Target_5XX_Count alarm threshold (sum per period)"
+  default     = 10
+}
+
+variable "alb_elb_5xx_count_threshold" {
+  type        = number
+  description = "ALB HTTPCode_ELB_5XX_Count alarm threshold (sum per period)"
+  default     = 10
+}
+
+variable "rds_cpu_utilization_threshold_percent" {
+  type        = number
+  description = "RDS CPUUtilization alarm threshold, in percent"
+  default     = 80
+}
+
+variable "rds_freeable_memory_threshold_percent" {
+  type        = number
+  description = "RDS FreeableMemory alarm threshold, as a fraction of the instance class's total RAM (e.g. 0.10 = 10%). Ignored when rds_freeable_memory_threshold_bytes_override is set."
+  default     = 0.10
+}
+
+variable "rds_freeable_memory_threshold_bytes_override" {
+  type        = number
+  description = "Explicit FreeableMemory alarm threshold in bytes, overriding the value computed from rds_freeable_memory_threshold_percent and db_instance_class. Required when db_instance_class is not listed in local.rds_instance_memory_bytes (monitoring.tf)."
+  default     = null
+}
+
+variable "rds_free_storage_space_threshold_percent" {
+  type        = number
+  description = "RDS FreeStorageSpace alarm threshold, as a fraction of db_capacity (allocated storage, in GB)"
+  default     = 0.15
+}
+
+variable "rds_disk_queue_depth_threshold" {
+  type        = number
+  description = "RDS DiskQueueDepth alarm threshold"
+  default     = 10
+}
