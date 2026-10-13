@@ -1,16 +1,23 @@
 # CloudWatch alarms for the ALB and RDS instance created above (TC-1526 - Vanta CloudWatch alarm
 # coverage for ALB, RDS and Lambda).
 #
-# Alarms are only created when the calling root passes alarm_sns_topic_arn (non-null). Roots that
-# don't set it (e.g. prod/, test/) get zero alarms and are otherwise unaffected.
+# Alarms are only created when the calling root sets cloudwatch_alarms_enabled = true. Roots that
+# don't (e.g. prod/, test/) get zero alarms and are otherwise unaffected.
+#
+# Gating is on cloudwatch_alarms_enabled, NOT on alarm_sns_topic_arn != null: a resource's `count`
+# must be decidable at plan time, but in opc-prod/opc-staging the topic is created in the same
+# root (aws_sns_topic.alarms), so its ARN is unknown until apply - using it directly in `count`
+# produced "Invalid count argument" plan failures there. alarm_sns_topic_arn is still required
+# (enforced by a precondition below, checked at apply) and is used only for alarm_actions/
+# ok_actions, where an apply-time-known value is fine.
 #
 # Lambda: the OPC accounts have no failing Lambda functions, so no Lambda alarms are added here.
 
 locals {
   name_prefix = "${var.app}-${var.env}"
 
-  alb_alarms_enabled = var.alarm_sns_topic_arn != null
-  rds_alarms_enabled = var.alarm_sns_topic_arn != null && var.db_enable
+  alb_alarms_enabled = var.cloudwatch_alarms_enabled
+  rds_alarms_enabled = var.cloudwatch_alarms_enabled && var.db_enable
 
   # RDS instance class -> total instance memory in bytes, used to derive the FreeableMemory alarm
   # threshold as a percentage of RAM. Extend this when a new db_instance_class is used with alarms
@@ -24,9 +31,9 @@ locals {
   # That's fine to compute unconditionally - including for roots with RDS alarms disabled, e.g. a
   # legacy TBB class in prod/, test/ - because leniency here is purely "don't error while building
   # this value"; whether an unresolved value is actually ACCEPTABLE is decided separately below,
-  # and is only lenient when alarm_sns_topic_arn is null (no alarms being created). When alarms
-  # are enabled, the precondition on aws_cloudwatch_metric_alarm.rds_freeable_memory hard-fails the
-  # plan for an unlisted class instead of silently using a wrong or null threshold.
+  # and is only lenient when cloudwatch_alarms_enabled is false (no alarms being created). When
+  # alarms are enabled, the precondition on aws_cloudwatch_metric_alarm.rds_freeable_memory
+  # hard-fails the plan for an unlisted class instead of silently using a wrong or null threshold.
   rds_instance_memory_bytes_resolved = lookup(local.rds_instance_memory_bytes, var.db_instance_class, null)
 
   rds_freeable_memory_threshold_bytes = (
@@ -68,6 +75,18 @@ resource "aws_cloudwatch_metric_alarm" "alb_unhealthy_hosts" {
 
   alarm_actions = [var.alarm_sns_topic_arn]
   ok_actions    = [var.alarm_sns_topic_arn]
+
+  lifecycle {
+    # Checked once here (this alarm always exists whenever any alarms do) rather than on every
+    # alarm resource. alarm_sns_topic_arn may be unknown at plan time (e.g. it's an in-root
+    # aws_sns_topic ARN in opc-prod/opc-staging), so this can't gate `count` - but a precondition
+    # is fine with an apply-time-known value: Terraform defers checking it until the value is
+    # known, i.e. at apply, and fails the apply with this message if it's still null then.
+    precondition {
+      condition     = var.alarm_sns_topic_arn != null
+      error_message = "cloudwatch_alarms_enabled is true but alarm_sns_topic_arn is null (TC-1526). Pass the SNS topic ARN alarms should notify (directly, or via a data \"aws_sns_topic\" lookup) when enabling alarms."
+    }
+  }
 
   tags = merge(
     { Name = "${local.name_prefix}-alb-unhealthy-hosts" },
@@ -233,8 +252,8 @@ resource "aws_cloudwatch_metric_alarm" "rds_freeable_memory" {
 
   lifecycle {
     # Leniency for an unlisted db_instance_class applies ONLY when no alarm is being created for
-    # this root (var.alarm_sns_topic_arn == null); this resource only exists at all when that's
-    # non-null (see count above), so in practice that first disjunct is always true here and is
+    # this root (!var.cloudwatch_alarms_enabled); this resource only exists at all when that's
+    # true (see count above), so in practice that first disjunct is always true here and is
     # included only so the condition reads correctly as a standalone statement of intent. Once
     # alarms are enabled, either the class must be known or an explicit override must be set -
     # otherwise this hard-fails the plan, naming the offending class, instead of silently applying
@@ -242,7 +261,7 @@ resource "aws_cloudwatch_metric_alarm" "rds_freeable_memory" {
     # risk being silently omitted/defaulted rather than erroring).
     precondition {
       condition = (
-        var.alarm_sns_topic_arn == null
+        !var.cloudwatch_alarms_enabled
         || var.rds_freeable_memory_threshold_bytes_override != null
         || local.rds_instance_memory_bytes_resolved != null
       )

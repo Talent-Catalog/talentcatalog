@@ -235,7 +235,8 @@ module "tc-plus-prod" {
   availability_zones = ["eu-west-2a", "eu-west-2b", "eu-west-2c"]
 
   # CloudWatch alarm notifications (TC-1526)
-  alarm_sns_topic_arn = aws_sns_topic.alarms.arn
+  cloudwatch_alarms_enabled = true
+  alarm_sns_topic_arn       = aws_sns_topic.alarms.arn
 
   # Redis cache configuration (todo: enable for production)
   cache_enable          = true

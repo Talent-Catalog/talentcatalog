@@ -235,7 +235,8 @@ module "grn_prod" {
   availability_zones = ["eu-west-2a", "eu-west-2b", "eu-west-2c"]
 
   # CloudWatch alarm notifications (TC-1526)
-  alarm_sns_topic_arn = data.aws_sns_topic.opc_prod_alarms.arn
+  cloudwatch_alarms_enabled = true
+  alarm_sns_topic_arn       = data.aws_sns_topic.opc_prod_alarms.arn
 
   # Redis cache (unique cluster id in same account)
   cache_enable          = true

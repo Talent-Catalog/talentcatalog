@@ -565,11 +565,21 @@ variable "candidate_files_vanta_tags" {
 }
 
 ### CloudWatch alarm variables (TC-1526 - Vanta CloudWatch alarm coverage):
-### See monitoring.tf. When alarm_sns_topic_arn is null (the default), no alarms are created.
+### See monitoring.tf. When cloudwatch_alarms_enabled is false (the default), no alarms are
+### created. Gating is on this bool, not on alarm_sns_topic_arn being non-null, because in roots
+### where the SNS topic is created in the same root (opc-prod, opc-staging) its ARN is unknown
+### until apply - a resource's `count` must be decidable at plan time, so it can't depend on that
+### ARN directly.
+
+variable "cloudwatch_alarms_enabled" {
+  type        = bool
+  description = "Whether this module creates CloudWatch alarms (TC-1526). RDS alarms additionally require db_enable = true. Keep false for callers that shouldn't get alarms (e.g. prod/, test/)."
+  default     = false
+}
 
 variable "alarm_sns_topic_arn" {
   type        = string
-  description = "ARN of the SNS topic CloudWatch alarms publish to. When null, this module creates no alarms."
+  description = "ARN of the SNS topic CloudWatch alarms publish/resolve to (used only for alarm_actions/ok_actions). Must be set (non-null) whenever cloudwatch_alarms_enabled is true - enforced by a precondition in monitoring.tf, checked at apply since the ARN may be unknown at plan time."
   default     = null
 }
 
