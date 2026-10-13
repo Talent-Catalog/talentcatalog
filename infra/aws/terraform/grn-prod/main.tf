@@ -188,6 +188,12 @@ locals {
   }
 }
 
+# CloudWatch alarm notifications (TC-1526): looked up by name since the opc-prod root owns the
+# topic for this account. The opc-prod root must be applied first.
+data "aws_sns_topic" "opc_prod_alarms" {
+  name = "opc-prod-alarms"
+}
+
 # GRN prod: parallel deployment in OPC prod account, domain globalrefugee.net
 module "grn_prod" {
   source = "../"
@@ -227,6 +233,9 @@ module "grn_prod" {
   }
 
   availability_zones = ["eu-west-2a", "eu-west-2b", "eu-west-2c"]
+
+  # CloudWatch alarm notifications (TC-1526)
+  alarm_sns_topic_arn = data.aws_sns_topic.opc_prod_alarms.arn
 
   # Redis cache (unique cluster id in same account)
   cache_enable          = true
