@@ -14,16 +14,20 @@ locals {
 
   # RDS instance class -> total instance memory in bytes, used to derive the FreeableMemory alarm
   # threshold as a percentage of RAM. Extend this when a new db_instance_class is used with alarms
-  # enabled. An unlisted class fails the precondition on the FreeableMemory alarm below instead of
-  # silently alarming on a wrong value.
+  # enabled.
   rds_instance_memory_bytes = {
     "db.t3.medium" = 4 * 1024 * 1024 * 1024 # 4 GiB
     "db.m6g.large" = 8 * 1024 * 1024 * 1024 # 8 GiB
   }
 
-  # try() keeps this safe to evaluate even for roots with RDS alarms disabled (rds_alarms_enabled
-  # = false) whose db_instance_class isn't listed above (e.g. a legacy TBB class in prod/, test/).
-  rds_instance_memory_bytes_resolved = try(local.rds_instance_memory_bytes[var.db_instance_class], null)
+  # lookup() (never errors, unlike map[key] indexing) resolves to null for an unlisted class.
+  # That's fine to compute unconditionally - including for roots with RDS alarms disabled, e.g. a
+  # legacy TBB class in prod/, test/ - because leniency here is purely "don't error while building
+  # this value"; whether an unresolved value is actually ACCEPTABLE is decided separately below,
+  # and is only lenient when alarm_sns_topic_arn is null (no alarms being created). When alarms
+  # are enabled, the precondition on aws_cloudwatch_metric_alarm.rds_freeable_memory hard-fails the
+  # plan for an unlisted class instead of silently using a wrong or null threshold.
+  rds_instance_memory_bytes_resolved = lookup(local.rds_instance_memory_bytes, var.db_instance_class, null)
 
   rds_freeable_memory_threshold_bytes = (
     var.rds_freeable_memory_threshold_bytes_override != null
@@ -220,9 +224,21 @@ resource "aws_cloudwatch_metric_alarm" "rds_freeable_memory" {
   ok_actions    = [var.alarm_sns_topic_arn]
 
   lifecycle {
+    # Leniency for an unlisted db_instance_class applies ONLY when no alarm is being created for
+    # this root (var.alarm_sns_topic_arn == null); this resource only exists at all when that's
+    # non-null (see count above), so in practice that first disjunct is always true here and is
+    # included only so the condition reads correctly as a standalone statement of intent. Once
+    # alarms are enabled, either the class must be known or an explicit override must be set -
+    # otherwise this hard-fails the plan, naming the offending class, instead of silently applying
+    # threshold = null (which, since `threshold` is an Optional provider argument, would otherwise
+    # risk being silently omitted/defaulted rather than erroring).
     precondition {
-      condition     = local.rds_freeable_memory_threshold_bytes != null
-      error_message = "Unknown db_instance_class '${var.db_instance_class}' for the FreeableMemory alarm threshold. Add it to local.rds_instance_memory_bytes in monitoring.tf, or set rds_freeable_memory_threshold_bytes_override explicitly."
+      condition = (
+        var.alarm_sns_topic_arn == null
+        || var.rds_freeable_memory_threshold_bytes_override != null
+        || local.rds_instance_memory_bytes_resolved != null
+      )
+      error_message = "Unknown db_instance_class '${var.db_instance_class}' for the FreeableMemory alarm threshold (TC-1526). Add it to local.rds_instance_memory_bytes in monitoring.tf, or set rds_freeable_memory_threshold_bytes_override explicitly."
     }
   }
 
