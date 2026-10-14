@@ -16,35 +16,32 @@
 
 package org.tctalent.server.request.candidate;
 
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.lang.Nullable;
 
-/** Request to generate an on-demand LLM explanation of a candidate/opportunity match. */
+/**
+ * Request for the LLM explanation of a candidate's match against the description of a
+ * {@link org.tctalent.server.model.db.Matching}. The candidate is identified by the request path.
+ * <p>
+ * The description is always obtained by the server from the Matching - it is not supplied by
+ * the request.
+ */
 @Getter
 @Setter
 public class CandidateMatchExplanationRequest {
 
     /**
-     * ID of the Talent Catalog job associated with this explanation request.
-     * <p>
-     * This is optional contextual information. A null value means that the explanation
-     * request is not associated with a specific Talent Catalog job.
-     * <p>
-     * The job ID is not used to obtain the opportunity description. The explanation is
-     * generated using the {@link #opportunityDescription} supplied in this request.
+     * ID of the Matching whose description the candidate is compared against.
      */
-    @Nullable
-    private Long jobId;
+    @NotNull
+    private Long matchingId;
 
     /**
-     * Description of the job or other opportunity against which the candidate's
-     * experience should be compared.
-     * <p>
-     * This is the text supplied to the explanation service and is required regardless
-     * of whether {@link #jobId} is supplied.
+     * True to always generate a new explanation, replacing any cached one - eg because the
+     * candidate's job experience has changed, which does not make a cached explanation out of
+     * date. False (the default) to return the cached explanation if it is current, only
+     * generating a new one if needed.
      */
-    @NotBlank
-    private String opportunityDescription;
+    private boolean regenerate;
 }

@@ -21,12 +21,14 @@ import java.io.PrintWriter;
 import java.util.List;
 import java.util.Set;
 import org.springframework.data.domain.Page;
+import org.springframework.lang.Nullable;
 import org.tctalent.server.exception.EntityExistsException;
 import org.tctalent.server.exception.ExportFailedException;
 import org.tctalent.server.exception.InvalidRequestException;
 import org.tctalent.server.exception.InvalidSessionException;
 import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.model.db.Candidate;
+import org.tctalent.server.model.db.Matching;
 import org.tctalent.server.model.db.SalesforceJobOpp;
 import org.tctalent.server.model.db.SavedList;
 import org.tctalent.server.model.db.SavedSearch;
@@ -323,6 +325,20 @@ public interface SavedSearchService {
      */
     @NotNull SavedList getSelectionListForLoggedInUser(long id)
             throws NoSuchObjectException, InvalidSessionException;
+
+    /**
+     * Returns the matching context of the given saved search, creating it if the search doesn't
+     * have one yet but has enough context for one - ie it is associated with a job (in which case
+     * it uses the job's Matching), or it has legacy requirements.
+     * <p>
+     * Used when a matching context is actually needed - eg when candidates are saved from the
+     * search to a list. Simply reading a search never creates a Matching.
+     *
+     * @param id Saved search ID
+     * @return The search's Matching - null if it has none and there is no context to create one
+     * @throws NoSuchObjectException if there is no such saved search.
+     */
+    @Nullable Matching resolveMatching(long id) throws NoSuchObjectException;
 
     /**
      * Returns true if the given search involves an Elastic search - either itself or in its

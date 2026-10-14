@@ -12,17 +12,17 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 /**
- * Verifies the jsonb (de)serialization of {@link CandidateJobMatchExplanationData} using the same
+ * Verifies the jsonb (de)serialization of {@link CandidateMatchingExplanationData} using the same
  * ObjectMapper that {@code JsonBinaryType} uses to read and write the {@code explanation} column.
  */
-class CandidateJobMatchExplanationDataJacksonTest {
+class CandidateMatchingExplanationDataJacksonTest {
 
     private final ObjectMapper objectMapper = ObjectMapperWrapper.INSTANCE.getObjectMapper();
 
     @Test
     @DisplayName("should round-trip generatedAt, modelName and jobTitle, storing generatedAt as an ISO-8601 string")
     void shouldRoundTripMetadata() throws Exception {
-        CandidateJobMatchExplanationData data = CandidateJobMatchExplanationData.builder()
+        CandidateMatchingExplanationData data = CandidateMatchingExplanationData.builder()
             .generatedAt(OffsetDateTime.parse("2026-10-02T03:30:00Z"))
             .modelName("qwen.qwen3-235b-a22b-2507-v1:0")
             .summary("Strong match")
@@ -42,8 +42,8 @@ class CandidateJobMatchExplanationDataJacksonTest {
         assertTrue(json.contains("\"modelName\":\"qwen.qwen3-235b-a22b-2507-v1:0\""), json);
         assertTrue(json.contains("\"jobTitle\":\"Senior Software Engineer\""), json);
 
-        CandidateJobMatchExplanationData read =
-            objectMapper.readValue(json, CandidateJobMatchExplanationData.class);
+        CandidateMatchingExplanationData read =
+            objectMapper.readValue(json, CandidateMatchingExplanationData.class);
         assertEquals(data, read);
     }
 
@@ -60,8 +60,8 @@ class CandidateJobMatchExplanationDataJacksonTest {
             }
             """;
 
-        CandidateJobMatchExplanationData data =
-            objectMapper.readValue(legacyJson, CandidateJobMatchExplanationData.class);
+        CandidateMatchingExplanationData data =
+            objectMapper.readValue(legacyJson, CandidateMatchingExplanationData.class);
 
         assertNull(data.getGeneratedAt());
         assertNull(data.getModelName());

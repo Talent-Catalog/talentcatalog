@@ -420,11 +420,23 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit, 
       this.searchForm.controls.listAnyIds.patchValue([listId]);
   }
 
-  private setUpJobMatch(jobMatchingInfo: JobMatchingInfo) {
+  /**
+   * Clears the form and runs a search matching the job.
+   * <p/>
+   * The job's own text only initialises the job's matching requirements. Once the job has
+   * requirements (possibly refined by users), they take precedence - so that simply opening a
+   * search for the job doesn't overwrite them.
+   * @param jobMatchingInfo Matching info for the job. Its description is the job's current
+   * matching requirements, if any, otherwise the job's own text.
+   * @param jobRequirements Requirements already associated with the job by the search being
+   * opened, if any.
+   */
+  private setUpJobMatch(jobMatchingInfo: JobMatchingInfo, jobRequirements?: string | null) {
     this.clearForm();
     this.jobName = jobMatchingInfo.jobName;
     this.jobNameSourceId = this.jobId;
-    this.initializeRequirementsWithDescription(jobMatchingInfo.description);
+    this.initializeRequirementsWithDescription(
+      hasTextContent(jobRequirements) ? jobRequirements : jobMatchingInfo.description);
     this.setExtractedSkills(jobMatchingInfo.skillNames);
     this.onSubmit();
   }
@@ -760,11 +772,15 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit, 
         if (this.jobId || this.listId) {
 
           if (this.jobId) {
+            //If this search is already associated with the job, its requirements are the
+            //job's shared matching requirements.
+            const jobRequirements =
+              this.savedSearch?.sfJobOpp?.id === this.jobId ? request.requirements : null;
             this.loadingJobMatchingInfo = true;
             //Load the job-matching info
             this.jobService.getJobMatchingInfo(this.jobId).subscribe({
                 next: (jobMatchingInfo) => {
-                  this.setUpJobMatch(jobMatchingInfo);
+                  this.setUpJobMatch(jobMatchingInfo, jobRequirements);
                   this.loadingJobMatchingInfo = false;
                 },
                 error: (error) => {
@@ -862,6 +878,8 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit, 
   openSavedSearchModal(create: boolean) {
     const showSaveModal = this.modalService.open(CreateUpdateSearchComponent);
     showSaveModal.componentInstance.savedSearch = this.savedSearch;
+    //Keep any job association - eg when saving a default search for a job as a named search.
+    showSaveModal.componentInstance.jobId = this.savedSearch?.sfJobOpp?.id;
 
     //Load search parameters.
     // Convert ids as we do for searches

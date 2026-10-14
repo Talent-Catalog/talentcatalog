@@ -15,19 +15,11 @@
  */
 
 import {Injectable} from '@angular/core';
-import {HttpContextToken, HttpEvent, HttpHandler, HttpInterceptor, HttpRequest} from '@angular/common/http';
+import {HttpEvent, HttpHandler, HttpInterceptor, HttpRequest} from '@angular/common/http';
 import {Observable, throwError} from 'rxjs';
 import {catchError} from 'rxjs/operators';
 import {AuthenticationService} from "./authentication.service";
 
-/**
- * By default this interceptor normalizes every HTTP error into a plain message string (see
- * below), which discards the original status code. Some callers need to distinguish specific
- * statuses (e.g. 404 meaning "not yet created" rather than a real error) - setting this context
- * token to true on a request preserves the original HttpErrorResponse instead, for that request
- * only. All other requests are completely unaffected.
- */
-export const PRESERVE_HTTP_ERROR_RESPONSE = new HttpContextToken<boolean>(() => false);
 
 @Injectable()
 export class ErrorInterceptor implements HttpInterceptor {
@@ -41,11 +33,6 @@ export class ErrorInterceptor implements HttpInterceptor {
         this.authenticationService.logout();
       }
       console.log(err);
-
-      if (request.context.get(PRESERVE_HTTP_ERROR_RESPONSE)) {
-        return throwError(err);
-      }
-
       let error: string;
       if (err.error != null && err.error.message) {
         error = err.error.message;

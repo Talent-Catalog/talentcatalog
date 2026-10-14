@@ -19,6 +19,7 @@ import {environment} from "../../environments/environment";
 import {HttpClient, HttpParams} from "@angular/common/http";
 import {Observable} from "rxjs";
 import {SearchResults} from "../model/search-results";
+import {Matching} from "../model/matching";
 import {
   ClearSelectionRequest,
   SavedSearch,
@@ -141,6 +142,18 @@ export class SavedSearchService {
       .pipe(
         map(savedSearch => SavedSearchService.convertSavedSearchEnums(savedSearch))
       );
+  }
+
+  /**
+   * Resolves the search's current matching context - its Matching's description and updatedDate -
+   * for features which need it, such as match explanations. The server creates the search's
+   * Matching, if it doesn't have one yet but has the context for one (eg a job), and initialises a
+   * job's blank Matching from the job's text.
+   * @param id ID of search
+   * @return The search's Matching, or null if it has no matching context
+   */
+  resolveMatching(id: number): Observable<Matching | null> {
+    return this.http.post<Matching | null>(`${this.apiUrl}/${id}/matching`, null);
   }
 
   getDefault(): Observable<SavedSearch> {

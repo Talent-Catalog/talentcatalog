@@ -53,6 +53,7 @@ import org.tctalent.server.request.candidate.UpdateCandidateStatusInfo;
 import org.tctalent.server.request.candidate.UpdateCandidateStatusRequest;
 import org.tctalent.server.request.list.ContentUpdateType;
 import org.tctalent.server.request.list.UpdateExplicitSavedListContentsRequest;
+import org.tctalent.server.request.list.UpdateSavedListContentsRequest;
 import org.tctalent.server.service.db.CandidateDtoService;
 import org.tctalent.server.service.db.CandidateSavedListService;
 import org.tctalent.server.service.db.CandidateService;
@@ -119,6 +120,7 @@ public class SavedListCandidateAdminApi implements
     @Override
     public void merge(long savedListId, @Valid UpdateExplicitSavedListContentsRequest request)
             throws NoSuchObjectException {
+        resolveSourceSearch(request);
         savedListService.mergeSavedList(savedListId, request);
     }
 
@@ -148,6 +150,7 @@ public class SavedListCandidateAdminApi implements
     @Override
     public void replace(long savedListId, @Valid UpdateExplicitSavedListContentsRequest request)
             throws NoSuchObjectException {
+        resolveSourceSearch(request);
         candidateSavedListService.clearSavedList(savedListId);
         savedListService.mergeSavedList(savedListId, request);
     }
@@ -242,6 +245,7 @@ public class SavedListCandidateAdminApi implements
     @PostMapping
     public @NotNull Map<String, Object> create(
         @Valid @RequestBody UpdateExplicitSavedListContentsRequest request) throws EntityExistsException {
+        resolveSourceSearch(request);
         SavedList savedList = savedListService.createSavedList(request);
 
         //Now copy any contents across
@@ -292,6 +296,7 @@ public class SavedListCandidateAdminApi implements
     public void saveSelection(@PathVariable("id") long savedListId,
         @Valid @RequestBody UpdateExplicitSavedListContentsRequest request) throws NoSuchObjectException {
 
+        resolveSourceSearch(request);
         if (request.getUpdateType() == ContentUpdateType.replace) {
             candidateSavedListService.clearSavedList(savedListId);
         }
@@ -322,5 +327,19 @@ public class SavedListCandidateAdminApi implements
         SavedList selectionList = savedSearchService.getSelectionListForLoggedInUser(id);
         DtoBuilder builder = candidateBuilderSelector.selectBuilder(DtoType.MINIMAL);
         return builder.buildList(selectionList.getCandidates());
+    }
+
+    /**
+     * If the candidates came from a saved search, makes the search's selection list the source
+     * list - after resolving the search's matching context, so that the destination list can
+     * inherit it.
+     */
+    private void resolveSourceSearch(UpdateSavedListContentsRequest request) {
+        final Long sourceSearchId = request.getSourceSearchId();
+        if (sourceSearchId != null) {
+            savedSearchService.resolveMatching(sourceSearchId);
+            request.setSourceListId(
+                savedSearchService.getSelectionListForLoggedInUser(sourceSearchId).getId());
+        }
     }
 }

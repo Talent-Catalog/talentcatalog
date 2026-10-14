@@ -2,9 +2,10 @@ package org.tctalent.server.request.candidate;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
@@ -32,60 +33,41 @@ class CandidateMatchExplanationRequestTest {
     }
 
     @Test
-    @DisplayName("should reject blank opportunity description")
-    void shouldReject_whenOpportunityDescriptionBlank() {
+    @DisplayName("should reject a request with no matchingId")
+    void shouldReject_whenMatchingIdNull() {
         CandidateMatchExplanationRequest request = new CandidateMatchExplanationRequest();
-        request.setOpportunityDescription("   ");
 
         Set<ConstraintViolation<CandidateMatchExplanationRequest>> violations =
             validator.validate(request);
 
         assertFalse(violations.isEmpty());
         assertTrue(violations.stream()
-            .anyMatch(v -> v.getPropertyPath().toString().equals("opportunityDescription")));
+            .anyMatch(v -> v.getPropertyPath().toString().equals("matchingId")));
     }
 
     @Test
-    @DisplayName("should reject null opportunity description")
-    void shouldReject_whenOpportunityDescriptionNull() {
+    @DisplayName("should accept a request with a matchingId, not regenerating by default")
+    void shouldAccept_whenMatchingIdSupplied() {
         CandidateMatchExplanationRequest request = new CandidateMatchExplanationRequest();
-
-        Set<ConstraintViolation<CandidateMatchExplanationRequest>> violations =
-            validator.validate(request);
-
-        assertFalse(violations.isEmpty());
-    }
-
-    @Test
-    @DisplayName("should accept a nonblank opportunity description")
-    void shouldAccept_whenOpportunityDescriptionNonBlank() {
-        CandidateMatchExplanationRequest request = new CandidateMatchExplanationRequest();
-        request.setOpportunityDescription("We are looking for an experienced Java developer.");
-
-        Set<ConstraintViolation<CandidateMatchExplanationRequest>> violations =
-            validator.validate(request);
-
-        assertEquals(0, violations.size());
-    }
-
-    @Test
-    @DisplayName("should accept a request with no jobId")
-    void shouldAccept_whenJobIdAbsent() {
-        CandidateMatchExplanationRequest request = new CandidateMatchExplanationRequest();
-        request.setOpportunityDescription("We are looking for an experienced Java developer.");
+        request.setMatchingId(12345L);
 
         assertEquals(0, validator.validate(request).size());
-        assertNull(request.getJobId());
+        assertFalse(request.isRegenerate());
     }
 
     @Test
-    @DisplayName("should accept a request with a jobId supplied")
-    void shouldAccept_whenJobIdSupplied() {
-        CandidateMatchExplanationRequest request = new CandidateMatchExplanationRequest();
-        request.setJobId(12345L);
-        request.setOpportunityDescription("We are looking for an experienced Java developer.");
+    @DisplayName("should ignore any opportunityDescription or jobId supplied by a client")
+    void shouldIgnoreDescriptionAndJobId() throws Exception {
+        //Same as the application's ObjectMapper, which ignores unknown properties.
+        ObjectMapper objectMapper = new ObjectMapper()
+            .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
-        assertEquals(0, validator.validate(request).size());
-        assertEquals(12345L, request.getJobId());
+        CandidateMatchExplanationRequest request = objectMapper.readValue(
+            "{\"matchingId\": 3, \"regenerate\": true, \"jobId\": 7,"
+                + " \"opportunityDescription\": \"Text from the client\"}",
+            CandidateMatchExplanationRequest.class);
+
+        assertEquals(3L, request.getMatchingId());
+        assertTrue(request.isRegenerate());
     }
 }

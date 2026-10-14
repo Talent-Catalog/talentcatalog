@@ -74,7 +74,6 @@ describe('UpdateSavedListContentsRequest Interface Tests', () => {
     updateRequest = {
       name: 'Updated Saved List Name',
       fixed: true,
-      registeredJob: false,
       jobId: 123,
       sourceListId: 456,
       statusUpdateInfo: { status: CandidateStatus.active },
@@ -86,7 +85,6 @@ describe('UpdateSavedListContentsRequest Interface Tests', () => {
     expect(updateRequest).toBeDefined();
     expect(updateRequest.name).toBe('Updated Saved List Name');
     expect(updateRequest.fixed).toBe(true);
-    expect(updateRequest.registeredJob).toBe(false);
     expect(updateRequest.jobId).toBe(123);
     expect(updateRequest.sourceListId).toBe(456);
     expect(updateRequest.statusUpdateInfo!.status).toBe(CandidateStatus.active);

@@ -99,6 +99,22 @@ describe('SavedListService', () => {
     req.flush(mockResponse);
   });
 
+  it('should resolve the matching context of a saved list', () => {
+    const savedListId = 1;
+    const mockResponse = {
+      id: 5, matchingDescription: '<p>ICU nurse</p>', updatedDate: '2026-10-01T10:00:00Z'
+    };
+
+    service.resolveMatching(savedListId).subscribe(response => {
+      expect(response).toEqual(mockResponse);
+    });
+
+    const req = httpMock.expectOne(`${apiUrl}/${savedListId}/matching`);
+    expect(req.request.method).toBe('POST');
+    expect(req.request.body).toBeNull();
+    req.flush(mockResponse);
+  });
+
   it('should publish a saved list', () => {
     const savedListId = 1;
     const request: PublishListRequest = { publishClosedOpps: true } as PublishListRequest;

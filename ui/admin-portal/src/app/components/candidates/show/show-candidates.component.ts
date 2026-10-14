@@ -124,8 +124,8 @@ import {
   listActionTooltips,
   ServiceList
 } from "../../../model/service-list";
-import {JobService} from "../../../services/job.service";
-import {hasTextContent} from "../../../util/string";
+import {hasSameTextContent} from "../../../util/string";
+import {Matching} from "../../../model/matching";
 
 export type CandidatePageSize = 20 | 50 | 100;
 
@@ -151,19 +151,33 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
   @Input() declare pageSize: CandidatePageSize;
 
   /**
-   * Opportunity/job description currently being matched/searched against, if the parent has one
-   * (typically only search-related parents do - saved-list parents generally do not supply
-   * this). Owned by the parent - never written by this component. See
-   * explanationOpportunityDescription for what is actually passed to the candidate search card.
+   * The search requirements currently being edited, if the parent has them (only the define
+   * search page does). Owned by the parent - never written by this component. Only used to tell
+   * whether they differ from the description saved in the search's Matching, which is what match
+   * explanations are of - see requirementsPendingMessage.
    */
-  @Input() opportunityDescription?: string;
+  @Input() requirements?: string;
 
   /**
-   * Description of the job associated with the current candidate source, fetched by this
-   * component when the source (saved list or saved search) is associated with a job. Cleared
-   * whenever the source changes.
+   * The current candidate source's matching context, used for match explanations. Undefined until
+   * resolved, null if the source has none.
+   * <p/>
+   * Only resolved when first needed - when a candidate is first selected, since only the selected
+   * candidate's card shows explanations - so that simply viewing a source never creates a
+   * Matching. Then refreshed after each run of a search whose runs save its requirements (see
+   * updatedSearch), since a run can change, or create, its Matching.
    */
-  private sourceJobDescription?: string;
+  sourceMatching: Matching | null | undefined;
+
+  /** Whether sourceMatching has been requested for the current source. */
+  private sourceMatchingRequested = false;
+
+  /** Incremented by each resolution request, so that only the latest response is applied. */
+  private sourceMatchingRequestNumber = 0;
+
+  /** Cache for requirementsPendingMessage, which is evaluated on every change detection. */
+  private requirementsPendingCache?:
+    {requirements?: string, description?: string, pending: boolean};
 
   readonly pageSizeOptions: CandidatePageSize[] = [20, 50, 100];
   @Input() searchRequest: SearchCandidateRequestPaged;
@@ -241,7 +255,6 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
               private candidateService: CandidateService,
               private casiAdminService: CasiAdminService,
               private candidateSourceService: CandidateSourceService,
-              private jobService: JobService,
               private savedSearchService: SavedSearchService,
               private savedListCandidateService: SavedListCandidateService,
               private savedListService: SavedListService,
@@ -447,7 +460,10 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
 
           this.loadServiceList();
 
-          this.loadSourceJobDescription();
+          //Any matching context belonged to the old source.
+          this.sourceMatching = undefined;
+          this.sourceMatchingRequested = false;
+          this.sourceMatchingRequestNumber++;
         }
       }
     }
@@ -493,46 +509,68 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
     }
 
   /**
-   * The opportunity description that candidate match explanations are generated against: the
-   * description supplied by the parent if it has any text content, otherwise the description of
-   * the job associated with the current candidate source (saved list or saved search), if any.
+   * Message explaining that match explanations don't reflect the requirements being edited, if
+   * they differ from the description saved in the search's Matching - ie the user has changed them
+   * but not yet run (or saved) the search. Undefined if there is no such difference, or no edited
+   * requirements (eg when viewing a list).
    * <p/>
-   * The parent's description can be blank or empty HTML (eg "&lt;p&gt;&lt;/p&gt;" once the
-   * search's requirements editor has been cleared) - which is treated as not supplied.
+   * Compared by text content, so that a rich text editor reformatting the saved description
+   * doesn't count as a change.
    */
-  get explanationOpportunityDescription(): string | undefined {
-    return hasTextContent(this.opportunityDescription)
-      ? this.opportunityDescription
-      : this.sourceJobDescription;
+  get requirementsPendingMessage(): string | undefined {
+    const source = this.candidateSource;
+    if (this.requirements === undefined || !isSavedSearch(source)
+      || this.sourceMatching === undefined) {
+      return undefined;
+    }
+    const description = this.sourceMatching?.matchingDescription;
+    const cache = this.requirementsPendingCache;
+    if (cache?.requirements !== this.requirements || cache?.description !== description) {
+      this.requirementsPendingCache = {
+        requirements: this.requirements,
+        description,
+        pending: !hasSameTextContent(this.requirements, description)
+      };
+    }
+    if (!this.requirementsPendingCache.pending) {
+      return undefined;
+    }
+    return source.defaultSearch || source.autoUpdateOnSearch
+      ? 'The requirements have changed. Run the search to see match explanations for the new'
+        + ' requirements.'
+      : 'The requirements have unsaved changes. Save the search to see match explanations for the'
+        + ' new requirements.';
   }
 
   /**
-   * Replaces any previously fetched source job description with that of the current candidate
-   * source's job.
+   * Resolves the current source's matching context from the server, replacing sourceMatching.
    * <p/>
-   * A response that arrives after the source has changed again is ignored, so that a slow
-   * response for an earlier source can never be applied to the current one. A failed fetch just
-   * means no description is available (explanations can then only be retrieved, not generated) -
-   * it is logged rather than surfaced as an error, since the candidates themselves are unaffected.
+   * Only the latest request's response is applied, so that a slow response - eg for a source that
+   * is no longer current - can never replace a newer one. A failure just means no matching context
+   * is available (so no match explanations) - it is logged rather than surfaced as an error, since
+   * the candidates themselves are unaffected.
    */
-  private loadSourceJobDescription() {
-    this.sourceJobDescription = undefined;
-
+  private resolveSourceMatching() {
     const source = this.candidateSource;
-    if (source.sfJobOpp) {
-      this.jobService.getJobMatchingInfo(source.sfJobOpp.id).subscribe({
-        next: jobMatchingInfo => {
-          //Ignore a slow response for a source that is no longer current.
-          if (this.candidateSource === source) {
-            this.sourceJobDescription = jobMatchingInfo.description;
-          }
-        },
-        error: error => {
-          console.warn('Could not load job description for candidate source '
-            + source.id + ': ', error);
-        }
-      });
+    if (!source) {
+      return;
     }
+    this.sourceMatchingRequested = true;
+    const requestNumber = ++this.sourceMatchingRequestNumber;
+    const matching$ = isSavedSearch(source)
+      ? this.savedSearchService.resolveMatching(source.id)
+      : this.savedListService.resolveMatching(source.id);
+    matching$.subscribe({
+      next: matching => {
+        if (requestNumber === this.sourceMatchingRequestNumber) {
+          this.sourceMatching = matching ?? null;
+        }
+      },
+      error: error => {
+        console.warn('Could not resolve matching context of candidate source '
+          + source.id + ': ', error);
+      }
+    });
   }
 
   /**
@@ -563,12 +601,25 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
           this.results = results;
           this.cacheResults();
           this.searching = false;
+          this.refreshSourceMatchingAfterRun();
         },
         error: error => {
           this.error = error;
           this.searching = false;
         }
       });
+  }
+
+  /**
+   * Running a default search, or a search which updates automatically, saves its requirements -
+   * which can change (or create) its Matching. So refresh the Matching, if it is in use.
+   */
+  private refreshSourceMatchingAfterRun() {
+    const source = this.candidateSource;
+    if (this.sourceMatchingRequested && isSavedSearch(source)
+      && (source.defaultSearch || source.autoUpdateOnSearch)) {
+      this.resolveSourceMatching();
+    }
   }
 
   doSearch(refresh: boolean, usePageNumber = true) {
@@ -632,6 +683,9 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
 
   setCurrentCandidate(candidate: Candidate) {
     this.currentCandidate = candidate;
+    if (candidate && !this.sourceMatchingRequested) {
+      this.resolveSourceMatching();
+    }
     if (candidate && isSavedSearch(this.candidateSource)) {
       this.savedSearchSelectionChange = candidate.selected;
     }
@@ -1243,9 +1297,14 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
         statusUpdateInfo: targetListSelection.statusUpdateInfo,
         updateType: targetListSelection.replace ? ContentUpdateType.replace : ContentUpdateType.add,
         jobId: targetListSelection.jobId,
-        candidateIds: candidatesToSave.map(c => c.id),
-        sourceListId: this.candidateSource.id
+        candidateIds: candidatesToSave.map(c => c.id)
       };
+      //The source may be a list - or a (matching) saved search.
+      if (isSavedSearch(this.candidateSource)) {
+        request.sourceSearchId = this.candidateSource.id;
+      } else {
+        request.sourceListId = this.candidateSource.id;
+      }
       // If request has a savedListId, merge or replace. Otherwise create a new list.
       if (savedListId > 0) {
         this.replaceOrMergeList(savedListId, request);

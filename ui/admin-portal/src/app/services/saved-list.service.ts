@@ -19,6 +19,7 @@ import {environment} from "../../environments/environment";
 import {HttpClient} from "@angular/common/http";
 import {Observable} from "rxjs";
 import {SearchResults} from "../model/search-results";
+import {Matching} from "../model/matching";
 import {
   PublishedDocImportReport,
   PublishListRequest,
@@ -53,6 +54,18 @@ export class SavedListService {
 
   get(id: number): Observable<SavedList> {
     return this.http.get<SavedList>(`${this.apiUrl}/${id}`);
+  }
+
+  /**
+   * Resolves the list's current matching context - its Matching's description and updatedDate -
+   * for features which need it, such as match explanations. The server creates the list's
+   * Matching, if it doesn't have one yet but has the context for one (eg a job), and initialises a
+   * job's blank Matching from the job's text.
+   * @param id ID of list
+   * @return The list's Matching, or null if it has no matching context
+   */
+  resolveMatching(id: number): Observable<Matching | null> {
+    return this.http.post<Matching | null>(`${this.apiUrl}/${id}/matching`, null);
   }
 
   /**

@@ -17,25 +17,25 @@
 package org.tctalent.server.model.db.mapper;
 
 import org.mapstruct.Mapper;
-import org.tctalent.server.model.db.explanation.CandidateJobMatchExplanationData;
+import org.tctalent.server.model.db.explanation.CandidateMatchingExplanationData;
 import org.tctalent.server.model.db.explanation.ExperienceMatchExplanationData;
 import org.tctalent.server.response.CandidateMatchExplanation;
 import org.tctalent.server.response.ExperienceMatchExplanation;
 
 /**
- * Maps between the persisted (jsonb) {@link CandidateJobMatchExplanationData} representation of a
- * candidate/job match explanation and the {@link CandidateMatchExplanation} REST response
+ * Maps between the persisted (jsonb) {@link CandidateMatchingExplanationData} representation of a
+ * candidate match explanation and the {@link CandidateMatchExplanation} REST response
  * representation.
  * <p/>
- * These are kept as separate types (see the doc on {@link CandidateJobMatchExplanationData}) even
+ * These are kept as separate types (see the doc on {@link CandidateMatchingExplanationData}) even
  * though their fields currently align one-to-one.
  */
 @Mapper
-public interface CandidateJobMatchExplanationMapper {
+public interface CandidateMatchingExplanationMapper {
 
-    CandidateMatchExplanation toResponse(CandidateJobMatchExplanationData data);
+    CandidateMatchExplanation toResponse(CandidateMatchingExplanationData data);
 
-    CandidateJobMatchExplanationData toData(CandidateMatchExplanation response);
+    CandidateMatchingExplanationData toData(CandidateMatchExplanation response);
 
     ExperienceMatchExplanation toResponse(ExperienceMatchExplanationData data);
 

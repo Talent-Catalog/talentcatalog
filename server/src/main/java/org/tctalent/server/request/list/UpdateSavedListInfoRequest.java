@@ -19,38 +19,20 @@ package org.tctalent.server.request.list;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import org.springframework.lang.Nullable;
 import org.tctalent.server.model.db.SavedList;
 import org.tctalent.server.request.candidate.AbstractUpdateCandidateSourceRequest;
+import org.tctalent.server.service.db.SavedListService;
 
 /**
  * Request for modifying just the info associated with a SavedList (not the content)
  * - eg changing the name
+ * <p>
+ * Only for ordinary Saved Lists: it cannot make a list a Submission List
+ * (see {@link SavedList#getRegisteredJob()}). A job's Submission List is only created by the
+ * job workflow - see {@link SavedListService#getOrCreateSubmissionList}.
  */
 @Getter
 @Setter
 @ToString(callSuper = true)
 public class UpdateSavedListInfoRequest extends AbstractUpdateCandidateSourceRequest {
-
-  //TODO JC Should this go. Create jobs are done elsewhere. And you shouldnt be able to modify any old list to registered.
-  /**
-   * @see SavedList
-   */
-  @Nullable
-  private Boolean registeredJob;
-
-  /**
-   * Populates the given SavedList from this request
-   * @param savedList List to be populated
-   */
-  public void populateFromRequest(SavedList savedList) {
-    savedList.setRegisteredJob(registeredJob);
-
-    //Registered jobs are always global
-    if (registeredJob != null && registeredJob) {
-      savedList.setGlobal(true);
-    }
-
-    super.populateFromRequest(savedList);
-  }
 }

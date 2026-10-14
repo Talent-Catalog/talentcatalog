@@ -258,50 +258,31 @@ public class CandidateAdminApi {
     }
 
     /**
-     * Generates an on-demand LLM explanation of how the given candidate's job experience relates
-     * to the supplied opportunity description.
+     * Returns the LLM explanation of how the given candidate's job experience relates to the
+     * description of the requested Matching.
      * <p/>
-     * This only compares the supplied opportunity description with the candidate's existing job
+     * A cached explanation is returned if it is current - ie the Matching's description hasn't
+     * changed since it was generated - unless regeneration is requested. Otherwise a new
+     * explanation is generated from the Matching's current description and cached, replacing
+     * any previous one.
+     * <p/>
+     * This only compares the Matching's description with the candidate's existing job
      * experience text - it does not perform candidate matching or rerun the Best-N matching
      * algorithm.
-     * <p/>
-     * If a {@link CandidateMatchExplanationRequest#getJobId() jobId} is supplied, the generated
-     * explanation is persisted against that candidate/job pair (replacing any explanation already
-     * persisted for it) and can later be retrieved with {@link #getPersistedMatchExplanation}. If
-     * no jobId is supplied, the explanation is generated and returned but not persisted.
      *
      * @param id ID of candidate
-     * @param request opportunity description to compare the candidate against, plus an optional
-     * jobId - it is not used to derive the opportunity description and is not sent to the
-     * explanation service
-     * @return generated match explanation
-     * @throws NoSuchObjectException if no candidate is found with that id, or if a supplied jobId
-     * does not correspond to an existing Talent Catalog job
+     * @param request ID of the Matching, and whether to regenerate the explanation
+     * @return current match explanation
+     * @throws NoSuchObjectException if there is no such candidate or Matching
      */
     @PostMapping("{id}/match-explanation")
-    public CandidateMatchExplanation generateMatchExplanation(
+    public CandidateMatchExplanation getOrGenerateMatchExplanation(
         @PathVariable("id") long id,
         @Valid @RequestBody CandidateMatchExplanationRequest request) throws NoSuchObjectException {
-        return candidateMatchExplanationService.generateExplanation(
-            id, request.getJobId(), request.getOpportunityDescription());
-    }
-
-    /**
-     * Retrieves a previously persisted candidate/job match explanation.
-     * <p/>
-     * This does NOT regenerate the explanation - see {@link #generateMatchExplanation}.
-     *
-     * @param id ID of candidate
-     * @param jobId ID of the Talent Catalog job
-     * @return the persisted match explanation for that candidate/job pair
-     * @throws NoSuchObjectException if no explanation has been persisted for that candidate/job
-     * pair
-     */
-    @GetMapping("{id}/match-explanation/{jobId}")
-    public CandidateMatchExplanation getPersistedMatchExplanation(
-        @PathVariable("id") long id,
-        @PathVariable("jobId") long jobId) throws NoSuchObjectException {
-        return candidateMatchExplanationService.getPersistedExplanation(id, jobId);
+        final long matchingId = request.getMatchingId();
+        return request.isRegenerate()
+            ? candidateMatchExplanationService.regenerateExplanation(id, matchingId)
+            : candidateMatchExplanationService.getOrGenerateExplanation(id, matchingId);
     }
 
     @PutMapping("{id}/links")

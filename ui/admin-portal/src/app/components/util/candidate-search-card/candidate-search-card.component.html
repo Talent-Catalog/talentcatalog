@@ -118,13 +118,14 @@
       ></app-candidate-shareable-notes>
     </div>
 
-    <!-- CANDIDATE/JOB MATCH EXPLANATION -->
+    <!-- CANDIDATE MATCH EXPLANATION -->
     <div *ngIf="shouldShowMatchExplanation()" class="mt-2">
       <app-candidate-match-explanation
         [candidateId]="candidate.id"
         [candidate]="candidate"
-        [jobId]="candidateSource?.sfJobOpp?.id"
-        [opportunityDescription]="opportunityDescription"
+        [matchingId]="matching?.id"
+        [matchingUpdatedDate]="matching?.updatedDate"
+        [requirementsPendingMessage]="requirementsPendingMessage"
       ></app-candidate-match-explanation>
     </div>
 

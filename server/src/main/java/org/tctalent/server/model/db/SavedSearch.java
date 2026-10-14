@@ -33,6 +33,7 @@ import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -144,8 +145,17 @@ public class SavedSearch extends AbstractCandidateSource {
     private String regoReferrerParam;
 
     /**
-     * Natural language candidate requirements (e.g. from a job description).
+     * Original storage for the natural language candidate requirements, retained for searches
+     * that have not yet been associated with a {@link Matching}. Requirements are now stored
+     * as the description of the search's {@link #getMatching() Matching}.
+     * <p>
+     * Only meaningful for a search which does not yet have a Matching. It is used to initialise
+     * the Matching when one is created lazily, and is cleared whenever the requirements are
+     * written, so that there are never two competing requirements values.
+     * See {@link #getRequirements()}.
      */
+    @Getter(AccessLevel.NONE)
+    @Setter(AccessLevel.NONE)
     private String requirements;
 
     private String unhcrStatuses;
@@ -294,5 +304,31 @@ public class SavedSearch extends AbstractCandidateSource {
     @Override
     public Set<SavedSearch> getUsersCollection(User user) {
         return user.getSharedSearches();
+    }
+
+    /**
+     * Natural language candidate requirements (e.g. from a job description): the description of
+     * this search's {@link #getMatching() Matching} or, if it doesn't have a Matching yet, any
+     * legacy requirements stored before Matchings were introduced.
+     */
+    @Nullable
+    public String getRequirements() {
+        final Matching matching = getMatching();
+        return matching != null ? matching.getMatchingDescription() : requirements;
+    }
+
+    /**
+     * See {@link #requirements}
+     */
+    @Nullable
+    public String getLegacyRequirements() {
+        return requirements;
+    }
+
+    /**
+     * See {@link #requirements}
+     */
+    public void setLegacyRequirements(@Nullable String legacyRequirements) {
+        this.requirements = legacyRequirements;
     }
 }

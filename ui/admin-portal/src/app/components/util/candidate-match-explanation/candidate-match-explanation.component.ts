@@ -14,14 +14,12 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, DestroyRef, Input, OnChanges, OnDestroy, SimpleChanges} from '@angular/core';
+import {Component, Input, OnChanges, OnDestroy, SimpleChanges} from '@angular/core';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
-import {HttpErrorResponse} from '@angular/common/http';
 import {Observable, of, Subject} from 'rxjs';
 import {NgbPopover} from '@ng-bootstrap/ng-bootstrap';
-import {catchError, map, switchMap, takeUntil} from 'rxjs/operators';
+import {catchError, map, switchMap} from 'rxjs/operators';
 import {CandidateService} from '../../../services/candidate.service';
-import {hasTextContent} from '../../../util/string';
 import {Candidate} from '../../../model/candidate';
 import {CandidateJobExperience} from '../../../model/candidate-job-experience';
 import {
@@ -29,55 +27,42 @@ import {
   ExperienceMatchExplanation
 } from '../../../model/candidate-match-explanation';
 
-interface CandidateJobKey {
+interface ExplanationRequest {
   candidateId: number;
-  jobId?: number;
+  matchingId: number;
+  regenerate: boolean;
 }
 
 interface ExplanationOutcome {
-  key: CandidateJobKey;
   explanation?: CandidateMatchExplanation;
   error?: string;
 }
 
 /**
- * Displays the on-demand LLM-generated match explanation for a candidate, optionally scoped to
- * a specific Talent Catalog job and/or an opportunity description. Both jobId and
- * opportunityDescription are optional and independently affect behaviour.
+ * Displays the LLM-generated explanation of how a candidate's job experience relates to the
+ * description of a Matching - the matching context of the candidate source being viewed.
  * <p/>
- * **This component never performs a GET or POST merely because it was instantiated or its
- * inputs changed.** All network activity is deferred until the user explicitly clicks
- * "Show match explanation" via {@link #show}. This matters because a search can render many
- * candidate cards at once - we must not retrieve/generate an explanation for every one of them
- * just because they were rendered.
+ * **This component never makes a request merely because it was instantiated or its inputs
+ * changed.** Nothing is requested until the user explicitly clicks "Show match explanation" (see
+ * {@link #show}). This matters because a search can render many candidate cards - we must not
+ * request an explanation for each of them just because they were rendered.
  * <p/>
- * Once opened, behaviour depends on which of jobId/opportunityDescription are present:
+ * When shown, the server returns its cached explanation for the candidate and Matching if that is
+ * still current, otherwise it generates a new one from the Matching's current description. The
+ * server always obtains the description itself - this component never supplies it.
  * <p/>
- * - **jobId + opportunityDescription**: retrieves any already-persisted explanation for that
- *   (candidate, job) pair; if none exists yet (404), generates one using the supplied
- *   description - the backend persists it because jobId is present. Regenerate is available.
- * <p/>
- * - **opportunityDescription only** (no jobId): nothing could have been persisted without a
- *   job, so retrieval is skipped entirely and an explanation is generated directly from the
- *   description (transient - not persisted). Regenerate is available.
- * <p/>
- * - **jobId only** (no opportunityDescription): retrieves any already-persisted explanation for
- *   that (candidate, job) pair; if none exists (404), does nothing further - there is no
- *   description to generate from, and a "no explanation generated" message is shown instead.
- *   Regenerate is NOT available. This matters for candidates viewed from a job-associated saved
- *   list: opening the explanation can show a previously-generated one, but can never itself
- *   cause an LLM call.
- * <p/>
- * - **neither**: nothing to retrieve and nothing to generate from - no explanation UI at all
- *   (not even the "Show" action).
+ * Regenerate always generates a new explanation, replacing the cached one. Explanations are only
+ * automatically refreshed when the Matching's description changes, not when the candidate's job
+ * experience changes, so this lets users refresh an explanation themselves.
  * <p/>
  * Closing the explanation (see {@link #close}) never discards what was loaded - reopening it
- * (for the same candidate/job context) simply redisplays it without a new GET/POST. If
- * candidateId/jobId change, any previously loaded explanation belonged to the old context and is
- * discarded, returning to the closed state; the user must explicitly open it again for the new
- * context. Changing only opportunityDescription never automatically triggers retrieval or
- * generation - the new value is simply used the next time generation is (explicitly) triggered
- * via {@link #regenerate}, which itself requires a usable (non-blank) description.
+ * simply redisplays it. But if the candidate, the Matching or the Matching's updatedDate changes,
+ * any loaded explanation (or request in flight) belongs to the old context, so it is discarded and
+ * the component returns to the closed state.
+ * <p/>
+ * If requirementsPendingMessage is set - the search's requirements have been edited but not yet
+ * saved to the Matching - that message is shown instead, since an explanation would be of the
+ * saved requirements, not the edited ones.
  */
 @Component({
   selector: 'app-candidate-match-explanation',
@@ -89,16 +74,24 @@ export class CandidateMatchExplanationComponent implements OnChanges, OnDestroy 
   /** ID of the candidate being explained. */
   @Input({required: true}) candidateId!: number;
 
-  /** Optional ID of the Talent Catalog job the explanation is persisted/retrieved against. */
-  @Input() jobId?: number;
+  /**
+   * ID of the Matching whose description the candidate is explained against. No explanation can
+   * be requested without one.
+   */
+  @Input() matchingId?: number;
 
   /**
-   * Opportunity description to send to the explanation service when (re)generating. This is the
-   * actual text used - it is never derived from the job by this component. Optional: without a
-   * usable (non-blank) description, no generation (automatic or explicit) can occur - see the
-   * class doc for the resulting behaviour modes.
+   * The Matching's updatedDate. Only used to detect that the Matching's description has changed,
+   * which makes any displayed explanation out of date.
    */
-  @Input() opportunityDescription?: string;
+  @Input() matchingUpdatedDate?: string;
+
+  /**
+   * Set when the requirements have been edited but not yet saved to the Matching, explaining what
+   * the user needs to do before explanations reflect their changes. Shown instead of the
+   * explanation UI.
+   */
+  @Input() requirementsPendingMessage?: string;
 
   /**
    * The candidate's already-loaded data, if available. Used only to look up (by ID) the current
@@ -110,28 +103,16 @@ export class CandidateMatchExplanationComponent implements OnChanges, OnDestroy 
   /** Whether the user has opened (expanded) the explanation UI. */
   opened = false;
 
-  /**
-   * Whether a retrieval/generation attempt has already completed for the current
-   * candidateId/jobId context - whether it found/generated an explanation, found nothing to
-   * generate from, or failed. Used so that closing and reopening (without the context changing)
-   * simply redisplays the result rather than making a new GET/POST.
-   */
-  loaded = false;
-
   explanation: CandidateMatchExplanation | null = null;
   error: string | null = null;
 
-  /** Checking for a persisted explanation. */
-  checking = false;
-  /** Automatically generating because none was persisted yet. */
-  generating = false;
-  /** Explicitly regenerating an already-displayed explanation. */
+  /** Getting an explanation (cached or newly generated) because none is displayed yet. */
+  loading = false;
+  /** Explicitly regenerating the displayed explanation. */
   regenerating = false;
 
-  /** Triggers a retrieval/generation for a key, or (when null) cancels one already in flight. */
-  private candidateJobKey$ = new Subject<CandidateJobKey | null>();
-  /** Emits whenever candidateId/jobId change, to cancel any still in-flight explicit regenerate(). */
-  private cancelRegenerate$ = new Subject<void>();
+  /** Triggers a request, or (when null) cancels one already in flight. */
+  private request$ = new Subject<ExplanationRequest | null>();
 
   /** The candidate's current job experiences, indexed by ID - rebuilt whenever candidate changes. */
   private experiencesById = new Map<number, CandidateJobExperience>();
@@ -152,14 +133,13 @@ export class CandidateMatchExplanationComponent implements OnChanges, OnDestroy 
   private experiencePopoverCloseTimer: ReturnType<typeof setTimeout> | null = null;
 
   /**
-   * @param candidateService Used to retrieve/generate explanations.
-   * @param destroyRef Needed for takeUntilDestroyed() outside the injection context (eg in
-   * regenerate()) - inside it (eg this constructor), takeUntilDestroyed() finds it itself.
+   * @param candidateService Used to get explanations.
    */
-  constructor(private candidateService: CandidateService,
-              private destroyRef: DestroyRef) {
-    this.candidateJobKey$.pipe(
-      switchMap(candidateJobKey => candidateJobKey ? this.retrieveOrGenerate(candidateJobKey) : of(null)),
+  constructor(private candidateService: CandidateService) {
+    //switchMap means that a new request, or a cancellation (null), discards the response to any
+    //request still in flight - so a response for an old context can never be displayed.
+    this.request$.pipe(
+      switchMap(request => request ? this.fetch(request) : of(null)),
       takeUntilDestroyed()
     ).subscribe(outcome => {
       if (outcome) {
@@ -172,39 +152,21 @@ export class CandidateMatchExplanationComponent implements OnChanges, OnDestroy 
     if (changes['candidate']) {
       this.experiencesById = this.indexExperiences(this.candidate);
     }
-    if (changes['candidateId'] || changes['jobId']) {
-      // A new candidate/job context - any previously loaded explanation belongs to the old
-      // context and must not be shown here. Return to the closed state; the user must
-      // explicitly open the explanation again for this new context - no automatic GET/POST.
+    if (changes['candidateId'] || changes['matchingId'] || changes['matchingUpdatedDate']) {
+      // A new candidate, Matching or Matching description - any previously loaded explanation
+      // belongs to the old context and must not be shown. Return to the closed state; the user
+      // must explicitly open the explanation again - no automatic request.
       this.opened = false;
-      this.loaded = false;
       this.explanation = null;
       this.error = null;
-      this.checking = false;
-      this.generating = false;
+      this.loading = false;
       this.regenerating = false;
-      this.cancelRegenerate$.next();
-      this.candidateJobKey$.next(null); // cancel any retrieval still in flight for the old context
+      this.request$.next(null);
     }
   }
 
   ngOnDestroy(): void {
     this.cancelExperiencePopoverCloseCheck();
-  }
-
-  /** Whether there is any useful context at all - if not, no UI (not even "Show") is offered. */
-  hasContext(): boolean {
-    return this.jobId != null || this.hasUsableDescription();
-  }
-
-  /**
-   * Whether a usable opportunityDescription - one with some text content - is currently
-   * available. Drives whether Regenerate is offered. A blank description, or one that is only
-   * empty HTML (eg from a cleared rich text editor), is treated the same as an absent one
-   * throughout this component (see hasTextContent).
-   */
-  hasUsableDescription(): boolean {
-    return this.currentDescription() !== undefined;
   }
 
   /**
@@ -323,17 +285,15 @@ export class CandidateMatchExplanationComponent implements OnChanges, OnDestroy 
   }
 
   /**
-   * Opens the explanation UI. Only retrieves/generates if there isn't already a result (or a
-   * request already in flight) for the current candidateId/jobId context.
+   * Opens the explanation UI, getting the explanation unless it is already displayed or being
+   * requested.
    */
   show(): void {
     this.opened = true;
-    if (this.loaded || this.checking || this.generating) {
+    if (this.explanation || this.loading || this.regenerating) {
       return;
     }
-    this.checking = true;
-    this.error = null;
-    this.candidateJobKey$.next({candidateId: this.candidateId, jobId: this.jobId});
+    this.request(false);
   }
 
   /** Collapses the explanation UI. Nothing already loaded is discarded. */
@@ -341,105 +301,48 @@ export class CandidateMatchExplanationComponent implements OnChanges, OnDestroy 
     this.opened = false;
   }
 
-  regenerate(): void {
-    const opportunityDescription = this.currentDescription();
-    if (this.generating || this.regenerating || opportunityDescription === undefined) {
-      // Either a generation request is already in flight, or there is nothing usable to send -
-      // regenerate() must never be able to make a request with a blank/missing description.
-      return;
+  /** Tries again to get the explanation, after a failure. */
+  retry(): void {
+    if (!this.loading && !this.regenerating) {
+      this.request(false);
     }
-    this.regenerating = true;
-    this.error = null;
-    this.candidateService.generateMatchExplanation(this.candidateId, {
-      jobId: this.jobId,
-      opportunityDescription
-    }).pipe(
-      // Cancelled by ngOnChanges if candidateId/jobId change before this completes, so a stale
-      // response (success or error) can never reach these handlers for a pair that is no
-      // longer current.
-      takeUntil(this.cancelRegenerate$),
-      takeUntilDestroyed(this.destroyRef)
-    ).subscribe({
-      next: (explanation) => {
-        this.regenerating = false;
-        this.loaded = true;
-        this.explanation = explanation;
-      },
-      error: (error) => {
-        this.regenerating = false;
-        // Keep the previously displayed explanation - just surface the error.
-        this.error = error;
-      }
-    });
   }
 
   /**
-   * Retrieves/generates according to which of the four jobId/opportunityDescription modes
-   * (see class doc) the given key and the currently available description put us in:
-   * - jobId present: always attempt retrieval first; on 404, generate only if a description is
-   *   available (otherwise merely opening this candidate's explanation must never cause an LLM
-   *   call);
-   * - jobId absent: nothing could have been persisted, so skip retrieval - generate directly if
-   *   a description is available, otherwise there is nothing to show at all.
-   * The retrieval and any resulting generation are part of this single inner observable, so a
-   * subsequent candidateId/jobId change (which pushes `null` through the same trigger, cancelling
-   * via switchMap) cancels whichever of the two is still in flight.
+   * Generates a new explanation, replacing the displayed (and cached) one, which remains
+   * displayed until the new one arrives.
    */
-  private retrieveOrGenerate(key: CandidateJobKey): Observable<ExplanationOutcome> {
-    if (key.jobId == null) {
-      const description = this.currentDescription();
-      if (description === undefined) {
-        // Neither jobId nor a usable description - nothing to retrieve or generate from.
-        this.checking = false;
-        this.generating = false;
-        return of({key});
-      }
-      this.checking = false;
-      this.generating = true;
-      return this.generateOutcome(key, description);
+  regenerate(): void {
+    if (!this.loading && !this.regenerating) {
+      this.request(true);
     }
-
-    return this.candidateService.getMatchExplanation(key.candidateId, key.jobId).pipe(
-      map((explanation): ExplanationOutcome => ({key, explanation})),
-      catchError((err: HttpErrorResponse) => {
-        if (err.status === 404) {
-          const description = this.currentDescription();
-          if (description === undefined) {
-            // Nothing persisted, and no description to generate from - stop here. Opening this
-            // candidate's explanation (e.g. from a saved list) must never itself cause an LLM call.
-            this.checking = false;
-            this.generating = false;
-            return of({key});
-          }
-          this.checking = false;
-          this.generating = true;
-          return this.generateOutcome(key, description);
-        }
-        return of({key, error: this.extractErrorMessage(err)} as ExplanationOutcome);
-      })
-    );
   }
 
-  /** Generates using the given (already checked as usable) opportunity description. */
-  private generateOutcome(
-    key: CandidateJobKey, opportunityDescription: string): Observable<ExplanationOutcome> {
-    return this.candidateService.generateMatchExplanation(key.candidateId, {
-      jobId: key.jobId,
-      opportunityDescription
+  private request(regenerate: boolean): void {
+    if (this.matchingId == null || this.requirementsPendingMessage) {
+      return;
+    }
+    this.loading = !regenerate;
+    this.regenerating = regenerate;
+    this.error = null;
+    this.request$.next({candidateId: this.candidateId, matchingId: this.matchingId, regenerate});
+  }
+
+  private fetch(request: ExplanationRequest): Observable<ExplanationOutcome> {
+    return this.candidateService.getOrGenerateMatchExplanation(request.candidateId, {
+      matchingId: request.matchingId,
+      regenerate: request.regenerate
     }).pipe(
-      map((explanation): ExplanationOutcome => ({key, explanation})),
-      catchError((genErr) => of({key, error: genErr} as ExplanationOutcome))
+      map((explanation): ExplanationOutcome => ({explanation})),
+      catchError(error => of({error} as ExplanationOutcome))
     );
   }
 
   private applyOutcome(outcome: ExplanationOutcome): void {
-    // No need to check the outcome is for the current candidateId/jobId: a change of either
-    // emits a null trigger (see ngOnChanges), and switchMap then cancels the stale retrieval
-    // before it can emit.
-    this.checking = false;
-    this.generating = false;
-    this.loaded = true;
+    this.loading = false;
+    this.regenerating = false;
     if (outcome.error) {
+      // Any previously displayed explanation is kept - just surface the error.
       this.error = outcome.error;
     } else {
       this.explanation = outcome.explanation ?? null;
@@ -464,21 +367,5 @@ export class CandidateMatchExplanationComponent implements OnChanges, OnDestroy 
       }
     }
     return byId;
-  }
-
-  /** Returns the current opportunityDescription if it has text content, otherwise undefined. */
-  private currentDescription(): string | undefined {
-    const value = this.opportunityDescription;
-    return hasTextContent(value) ? value : undefined;
-  }
-
-  private extractErrorMessage(err: HttpErrorResponse): string {
-    if (err.error != null && err.error.message) {
-      return err.error.message;
-    }
-    if (err.message != null) {
-      return err.message;
-    }
-    return `${err.status} ${err.statusText}`;
   }
 }
