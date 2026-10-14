@@ -21,9 +21,8 @@ targeted releases like this one from the team going forward.
       <div class="card-title">Match Explanations</div>
       <div class="card-description">
         See why a candidate was matched. An AI-generated explanation summarises how well the
-        candidate fits the requirements, assesses each of their experiences, and lists what's
-        missing — dated, saved and reused until the requirements change, and available from
-        searches and lists, with or without a job.
+        candidate fits the job, assesses each of their experiences, and lists what's missing —
+        dated, saved against the job, and available from both searches and submission lists.
       </div>
       <div class="card-footer">
         <button class="btn btn-sm">Learn more</button>
