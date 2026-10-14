@@ -17,7 +17,7 @@
 import {TestBed} from '@angular/core/testing';
 import {CandidateSourceCacheService} from './candidate-source-cache.service';
 import {CandidateSource} from "../model/base";
-import {SavedSearch, SavedSearchType} from "../model/saved-search";
+import {SavedSearch} from "../model/saved-search";
 
 describe('CandidateSourceCacheService', () => {
   let service: CandidateSourceCacheService;
@@ -39,7 +39,8 @@ describe('CandidateSourceCacheService', () => {
 
   describe('cacheKey', () => {
     it('should generate the correct cache key for a saved search', () => {
-      const source: SavedSearch = { id: 123, savedSearchType: SavedSearchType.other } as SavedSearch;
+      //Having defaultSearch with any value makes it look like a saved search
+      const source: SavedSearch = { id: 123, defaultSearch: false } as SavedSearch;
 
       const expectedKey = 'SearchInfo123';
       const result = service.cacheKey(source);
