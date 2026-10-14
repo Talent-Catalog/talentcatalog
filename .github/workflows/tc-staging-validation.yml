@@ -23,7 +23,7 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v7
-        
+
       # Give TC time to settle after deployment and Redis reboots.
       - name: Wait 3 minutes for staging to settle
         run: sleep 180

@@ -128,6 +128,13 @@ spring:
         temp:
           use_jdbc_metadata_defaults: false
 
+# Expose only health and safe build information.
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+
 jwt:
   secret: ${JWT_SECRET}
   # This equates to 24 hours in milliseconds
