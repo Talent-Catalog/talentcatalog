@@ -50,9 +50,12 @@ Explanations are dated, and show the name of the LLM that generated them (a Qwen
 case). Click **Regenerate explanation** to generate a fresh one — for example after the candidate
 has updated their experience.
 
-The LLM brings its general world knowledge to the comparison. In this example the candidate never
-actually mentioned "cloud" experience, but she did mention AWS, and the LLM knew that AWS is a
-cloud platform.
+Both parts of our hybrid approach bring general world knowledge to the comparison. In this example
+the candidate never actually mentioned “cloud” experience, but she did mention AWS. The vector
+embeddings that made the match knew that AWS is a cloud platform, and so did the LLM that
+explained it. The embeddings find the right candidates quickly across the whole database, and the
+LLM then explains each match in plain language, so each does the job it’s best at rather than
+asking an LLM to do everything.
 
 ## 🔎 See the Experience Behind Each Explanation
 
