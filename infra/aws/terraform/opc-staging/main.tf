@@ -234,6 +234,10 @@ module "tc-plus-staging" {
 
   availability_zones = ["eu-west-2a", "eu-west-2b", "eu-west-2c"]
 
+  # CloudWatch alarm notifications (TC-1526)
+  cloudwatch_alarms_enabled = true
+  alarm_sns_topic_arn       = aws_sns_topic.alarms.arn
+
   # Redis cache configuration
   cache_enable          = true
   cache_cluster_id      = "tc-test-cache"

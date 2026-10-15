@@ -563,3 +563,76 @@ variable "candidate_files_vanta_tags" {
   description = "Vanta user data classification tags (e.g. VantaContainsUserData, VantaUserDataStored) applied to the candidate files S3 bucket. Set per environment."
   default     = {}
 }
+
+### CloudWatch alarm variables (TC-1526 - Vanta CloudWatch alarm coverage):
+### See monitoring.tf. When cloudwatch_alarms_enabled is false (the default), no alarms are
+### created. Gating is on this bool, not on alarm_sns_topic_arn being non-null, because in roots
+### where the SNS topic is created in the same root (opc-prod, opc-staging) its ARN is unknown
+### until apply - a resource's `count` must be decidable at plan time, so it can't depend on that
+### ARN directly.
+
+variable "cloudwatch_alarms_enabled" {
+  type        = bool
+  description = "Whether this module creates CloudWatch alarms (TC-1526). RDS alarms additionally require db_enable = true. Keep false for callers that shouldn't get alarms (e.g. prod/, test/)."
+  default     = false
+}
+
+variable "alarm_sns_topic_arn" {
+  type        = string
+  description = "ARN of the SNS topic CloudWatch alarms publish/resolve to (used only for alarm_actions/ok_actions). Must be set (non-null) whenever cloudwatch_alarms_enabled is true - enforced by a precondition in monitoring.tf, checked at apply since the ARN may be unknown at plan time."
+  default     = null
+}
+
+variable "alb_unhealthy_host_count_threshold" {
+  type        = number
+  description = "ALB UnHealthyHostCount alarm threshold (strictly greater than this count of unhealthy targets)"
+  default     = 0
+}
+
+variable "alb_target_response_time_p95_threshold_seconds" {
+  type        = number
+  description = "ALB TargetResponseTime p95 alarm threshold, in seconds"
+  default     = 2
+}
+
+variable "alb_target_5xx_count_threshold" {
+  type        = number
+  description = "ALB HTTPCode_Target_5XX_Count alarm threshold (sum per period)"
+  default     = 10
+}
+
+variable "alb_elb_5xx_count_threshold" {
+  type        = number
+  description = "ALB HTTPCode_ELB_5XX_Count alarm threshold (sum per period)"
+  default     = 10
+}
+
+variable "rds_cpu_utilization_threshold_percent" {
+  type        = number
+  description = "RDS CPUUtilization alarm threshold, in percent"
+  default     = 80
+}
+
+variable "rds_freeable_memory_threshold_percent" {
+  type        = number
+  description = "RDS FreeableMemory alarm threshold, as a fraction of the instance class's total RAM (e.g. 0.10 = 10%). Ignored when rds_freeable_memory_threshold_bytes_override is set."
+  default     = 0.10
+}
+
+variable "rds_freeable_memory_threshold_bytes_override" {
+  type        = number
+  description = "Explicit FreeableMemory alarm threshold in bytes, overriding the value computed from rds_freeable_memory_threshold_percent and db_instance_class. Required when db_instance_class is not listed in local.rds_instance_memory_bytes (monitoring.tf)."
+  default     = null
+}
+
+variable "rds_free_storage_space_threshold_percent" {
+  type        = number
+  description = "RDS FreeStorageSpace alarm threshold, as a fraction of db_capacity (allocated storage, in GB)"
+  default     = 0.15
+}
+
+variable "rds_disk_queue_depth_threshold" {
+  type        = number
+  description = "RDS DiskQueueDepth alarm threshold"
+  default     = 10
+}

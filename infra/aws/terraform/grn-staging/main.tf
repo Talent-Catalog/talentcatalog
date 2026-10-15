@@ -188,6 +188,12 @@ locals {
   }
 }
 
+# CloudWatch alarm notifications (TC-1526): looked up by name since the opc-staging root owns
+# the topic for this account. The opc-staging root must be applied first.
+data "aws_sns_topic" "opc_staging_alarms" {
+  name = "opc-staging-alarms"
+}
+
 # GRN staging: parallel deployment in OPC staging account, domain test.globalrefugee.net
 module "grn_staging" {
   source = "../"
@@ -227,6 +233,10 @@ module "grn_staging" {
   }
 
   availability_zones = ["eu-west-2a", "eu-west-2b", "eu-west-2c"]
+
+  # CloudWatch alarm notifications (TC-1526)
+  cloudwatch_alarms_enabled = true
+  alarm_sns_topic_arn       = data.aws_sns_topic.opc_staging_alarms.arn
 
   # Redis cache (unique cluster id in same account)
   cache_enable          = true
