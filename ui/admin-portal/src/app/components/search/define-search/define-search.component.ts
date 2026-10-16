@@ -407,7 +407,7 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit, 
   }
 
   displayJobNameAsSource(): string {
-    return this.jobName ? `(Autopopulated from job ${this.jobNameSourceId}: ${this.jobName})` : '';
+    return this.jobName ? `Linked to job ${this.jobNameSourceId}: ${this.jobName}` : '';
   }
 
   private runSearchWithListConstraint(listId: number) {
