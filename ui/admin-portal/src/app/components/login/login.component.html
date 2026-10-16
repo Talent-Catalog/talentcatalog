@@ -15,7 +15,7 @@
   -->
 
 <div class="background-image-wrapper" [ngStyle]="{'background-image': backgroundImage}"></div>
-<img [src]="loginImage" alt="Login">
+<img *ngIf="loginImage" class="login-logo" [src]="loginImage" alt="Login">
 <tc-loading [loading]="loading"></tc-loading>
 <tc-alert *ngIf="error" type="danger">{{error}}</tc-alert>
 
