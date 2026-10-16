@@ -86,15 +86,27 @@ request and not saved.
 This three-part video series walks through AI matching in Talent Catalog — start with Part 1 for
 an overview, then go deeper with Parts 2 and 3.
 
-**Part 1: Getting Started with AI Matching**
-
-<div class="card-image-container">
-  <iframe src="https://www.youtube-nocookie.com/embed/2vEAV6BP05M"
-          title="Part 1: Getting Started with AI Matching"
-          style="width: 90%; max-width: 720px; aspect-ratio: 16 / 9; border: 0;
-                 border-radius: 8px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);"
-          allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-          allowfullscreen></iframe>
+<div class="card-container">
+  <div class="card" style="width: 100%;">
+    <iframe src="https://www.youtube-nocookie.com/embed/2vEAV6BP05M"
+            title="Part 1: Getting Started with AI Matching"
+            style="width: 100%; aspect-ratio: 16 / 9; border: 0; border-radius: 4px;
+                   margin-bottom: 12px;"
+            allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowfullscreen></iframe>
+    <div class="card-body">
+      <div class="card-title">Part 1: Getting Started with AI Matching</div>
+      <div class="card-description">
+        Run an AI matching search and see how candidates are ranked, with the top matches
+        returned by default.
+      </div>
+      <div class="card-footer">
+        <a href="https://www.youtube.com/watch?v=2vEAV6BP05M" target="_blank" rel="noopener">
+          <button class="btn btn-sm">Watch on YouTube</button>
+        </a>
+      </div>
+    </div>
+  </div>
 </div>
 
 <div class="card-container">
@@ -104,7 +116,8 @@ an overview, then go deeper with Parts 2 and 3.
     <div class="card-body">
       <div class="card-title">Part 2: AI Matching: Best of Both Worlds</div>
       <div class="card-description">
-        An inside look at how AI matching gets the best of both worlds.
+        How AI matching works alongside the standard search filters to zoom in on the most
+        relevant candidates.
       </div>
       <div class="card-footer">
         <button class="btn btn-sm">Watch on YouTube</button>
@@ -117,7 +130,8 @@ an overview, then go deeper with Parts 2 and 3.
     <div class="card-body">
       <div class="card-title">Part 3: Behind the Scenes of AI Matching</div>
       <div class="card-description">
-        An inside look at what happens behind the scenes of AI matching.
+        A look under the hood, including how new AI models can be added and tested for better or
+        faster matching.
       </div>
       <div class="card-footer">
         <button class="btn btn-sm">Watch on YouTube</button>
