@@ -150,6 +150,8 @@ public class SecurityConfiguration {
                 .requestMatchers("/public-portal", "/public-portal/**").permitAll()
                 .requestMatchers("/favicon.ico").permitAll()
                 .requestMatchers("/actuator/health").permitAll()
+                // Allow deployment validation to read the running build version.
+                .requestMatchers(HttpMethod.GET, "/actuator/info").permitAll()
                 .requestMatchers("/api/public/**").permitAll()
 
                 .requestMatchers("/websocket","/websocket/**").permitAll()

@@ -21,6 +21,14 @@ jobs:
     timeout-minutes: 5
 
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+
       # Give TC time to settle after deployment and Redis reboots.
       - name: Wait 3 minutes for staging to settle
         run: sleep 180
+
+      - name: Verify staging Git SHA
+        env:
+          EXPECTED_SHA: ${{ github.sha }}
+        run: bash .github/scripts/verify-staging-sha.sh
