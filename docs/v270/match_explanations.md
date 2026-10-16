@@ -111,8 +111,13 @@ an overview, then go deeper with Parts 2 and 3.
 
 <div class="card-container">
 
-  <a href="https://www.youtube.com/watch?v=j31wSDvwHro" class="card" target="_blank" rel="noopener">
-    <img src="https://img.youtube.com/vi/j31wSDvwHro/hqdefault.jpg" alt="Part 2: AI Matching: Best of Both Worlds" class="card-image" style="width: 100%; aspect-ratio: 16 / 9; object-fit: cover;">
+  <div class="card">
+    <iframe src="https://www.youtube-nocookie.com/embed/j31wSDvwHro"
+            title="Part 2: AI Matching: Best of Both Worlds"
+            style="width: 100%; aspect-ratio: 16 / 9; border: 0; border-radius: 4px;
+                   margin-bottom: 12px;"
+            allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowfullscreen></iframe>
     <div class="card-body">
       <div class="card-title">Part 2: AI Matching: Best of Both Worlds</div>
       <div class="card-description">
@@ -120,13 +125,20 @@ an overview, then go deeper with Parts 2 and 3.
         relevant candidates.
       </div>
       <div class="card-footer">
-        <button class="btn btn-sm">Watch on YouTube</button>
+        <a href="https://www.youtube.com/watch?v=j31wSDvwHro" target="_blank" rel="noopener">
+          <button class="btn btn-sm">Watch on YouTube</button>
+        </a>
       </div>
     </div>
-  </a>
+  </div>
 
-  <a href="https://www.youtube.com/watch?v=93V5SrPc60k" class="card" target="_blank" rel="noopener">
-    <img src="https://img.youtube.com/vi/93V5SrPc60k/hqdefault.jpg" alt="Part 3: Behind the Scenes of AI Matching" class="card-image" style="width: 100%; aspect-ratio: 16 / 9; object-fit: cover;">
+  <div class="card">
+    <iframe src="https://www.youtube-nocookie.com/embed/93V5SrPc60k"
+            title="Part 3: Behind the Scenes of AI Matching"
+            style="width: 100%; aspect-ratio: 16 / 9; border: 0; border-radius: 4px;
+                   margin-bottom: 12px;"
+            allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowfullscreen></iframe>
     <div class="card-body">
       <div class="card-title">Part 3: Behind the Scenes of AI Matching</div>
       <div class="card-description">
@@ -134,10 +146,12 @@ an overview, then go deeper with Parts 2 and 3.
         faster matching.
       </div>
       <div class="card-footer">
-        <button class="btn btn-sm">Watch on YouTube</button>
+        <a href="https://www.youtube.com/watch?v=93V5SrPc60k" target="_blank" rel="noopener">
+          <button class="btn btn-sm">Watch on YouTube</button>
+        </a>
       </div>
     </div>
-  </a>
+  </div>
 
 </div>
 
