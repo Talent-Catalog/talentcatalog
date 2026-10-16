@@ -17,6 +17,46 @@ experience fits the job — written by a large language model (LLM).
 
 ---
 
+## 🎬 Watch the Videos
+
+New to AI matching in Talent Catalog? These short videos are a quick orientation to how it works.
+
+### Getting Started with AI Matching (Part 1)
+
+<div class="card-image-container">
+  <iframe src="https://www.youtube-nocookie.com/embed/2vEAV6BP05M"
+          title="Getting Started with AI Matching (Part 1)"
+          style="width: 100%; max-width: 720px; aspect-ratio: 16 / 9; border: 0;"
+          allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowfullscreen></iframe>
+</div>
+
+[Watch on YouTube](https://www.youtube.com/watch?v=2vEAV6BP05M)
+
+### AI Matching: Best of Both Worlds (Part 2)
+
+<div class="card-image-container">
+  <iframe src="https://www.youtube-nocookie.com/embed/j31wSDvwHro"
+          title="AI Matching: Best of Both Worlds (Part 2)"
+          style="width: 100%; max-width: 720px; aspect-ratio: 16 / 9; border: 0;"
+          allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowfullscreen></iframe>
+</div>
+
+[Watch on YouTube](https://www.youtube.com/watch?v=j31wSDvwHro)
+
+### Behind the Scenes of AI Matching (Part 3)
+
+<div class="card-image-container">
+  <iframe src="https://www.youtube-nocookie.com/embed/93V5SrPc60k"
+          title="Behind the Scenes of AI Matching (Part 3)"
+          style="width: 100%; max-width: 720px; aspect-ratio: 16 / 9; border: 0;"
+          allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowfullscreen></iframe>
+</div>
+
+[Watch on YouTube](https://www.youtube.com/watch?v=93V5SrPc60k)
+
 ## 📝 Start From the Requirements
 
 ![AI match requirements on the New Search screen](../assets/images/v270/MatchExplanationRequirements.png)

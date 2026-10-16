@@ -19,6 +19,8 @@ sass:
 release tunes that engine based on the first few weeks of real usage — clearer controls, extracted
 skills that are easier to see, and cleaner input for the engine to work with.
 
+New to AI matching? See it in action in our [short videos](./match_explanations#-watch-the-videos).
+
 ## 🎚️ Clearer Slider Labels
 
 <div class="card-image-container">
