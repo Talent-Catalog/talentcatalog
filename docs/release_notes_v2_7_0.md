@@ -11,7 +11,7 @@ introduced in v2.6.0 based on the first few weeks of real usage. We've deliberat
 shorter than usual so these improvements reach you sooner, and you can expect more frequent,
 targeted releases like this one from the team going forward.
 
-New to AI matching? Start with our [short videos](./v270/match_explanations#-watch-the-videos).
+New to AI matching? Start with our [short videos](./v270/match_explanations#videos).
 
 # New Features
 

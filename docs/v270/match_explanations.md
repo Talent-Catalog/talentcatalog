@@ -15,47 +15,9 @@ This release delivers that. For any candidate in a matching search or a job's su
 Talent Catalog can now generate a plain-English explanation of how well the candidate's
 experience fits the job — written by a large language model (LLM).
 
+New to AI matching? A [short video series](#videos) introduces how it works.
+
 ---
-
-## 🎬 Watch the Videos
-
-New to AI matching in Talent Catalog? These short videos are a quick orientation to how it works.
-
-### Getting Started with AI Matching (Part 1)
-
-<div class="card-image-container">
-  <iframe src="https://www.youtube-nocookie.com/embed/2vEAV6BP05M"
-          title="Getting Started with AI Matching (Part 1)"
-          style="width: 100%; max-width: 720px; aspect-ratio: 16 / 9; border: 0;"
-          allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-          allowfullscreen></iframe>
-</div>
-
-[Watch on YouTube](https://www.youtube.com/watch?v=2vEAV6BP05M)
-
-### AI Matching: Best of Both Worlds (Part 2)
-
-<div class="card-image-container">
-  <iframe src="https://www.youtube-nocookie.com/embed/j31wSDvwHro"
-          title="AI Matching: Best of Both Worlds (Part 2)"
-          style="width: 100%; max-width: 720px; aspect-ratio: 16 / 9; border: 0;"
-          allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-          allowfullscreen></iframe>
-</div>
-
-[Watch on YouTube](https://www.youtube.com/watch?v=j31wSDvwHro)
-
-### Behind the Scenes of AI Matching (Part 3)
-
-<div class="card-image-container">
-  <iframe src="https://www.youtube-nocookie.com/embed/93V5SrPc60k"
-          title="Behind the Scenes of AI Matching (Part 3)"
-          style="width: 100%; max-width: 720px; aspect-ratio: 16 / 9; border: 0;"
-          allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-          allowfullscreen></iframe>
-</div>
-
-[Watch on YouTube](https://www.youtube.com/watch?v=93V5SrPc60k)
 
 ## 📝 Start From the Requirements
 
@@ -118,6 +80,52 @@ the job's description as the requirements.
 
 Searches that aren't associated with a job still show explanations, but these are generated on
 request and not saved.
+
+## 🎬 See AI Matching in Action {#videos}
+
+This three-part video series walks through AI matching in Talent Catalog — start with Part 1 for
+an overview, then go deeper with Parts 2 and 3.
+
+**Part 1: Getting Started with AI Matching**
+
+<div class="card-image-container">
+  <iframe src="https://www.youtube-nocookie.com/embed/2vEAV6BP05M"
+          title="Part 1: Getting Started with AI Matching"
+          style="width: 90%; max-width: 720px; aspect-ratio: 16 / 9; border: 0;
+                 border-radius: 8px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);"
+          allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowfullscreen></iframe>
+</div>
+
+<div class="card-container">
+
+  <a href="https://www.youtube.com/watch?v=j31wSDvwHro" class="card" target="_blank" rel="noopener">
+    <img src="https://img.youtube.com/vi/j31wSDvwHro/hqdefault.jpg" alt="Part 2: AI Matching: Best of Both Worlds" class="card-image" style="width: 100%; aspect-ratio: 16 / 9; object-fit: cover;">
+    <div class="card-body">
+      <div class="card-title">Part 2: AI Matching: Best of Both Worlds</div>
+      <div class="card-description">
+        An inside look at how AI matching gets the best of both worlds.
+      </div>
+      <div class="card-footer">
+        <button class="btn btn-sm">Watch on YouTube</button>
+      </div>
+    </div>
+  </a>
+
+  <a href="https://www.youtube.com/watch?v=93V5SrPc60k" class="card" target="_blank" rel="noopener">
+    <img src="https://img.youtube.com/vi/93V5SrPc60k/hqdefault.jpg" alt="Part 3: Behind the Scenes of AI Matching" class="card-image" style="width: 100%; aspect-ratio: 16 / 9; object-fit: cover;">
+    <div class="card-body">
+      <div class="card-title">Part 3: Behind the Scenes of AI Matching</div>
+      <div class="card-description">
+        An inside look at what happens behind the scenes of AI matching.
+      </div>
+      <div class="card-footer">
+        <button class="btn btn-sm">Watch on YouTube</button>
+      </div>
+    </div>
+  </a>
+
+</div>
 
 ## ⚠️ A Word of Caution
 
