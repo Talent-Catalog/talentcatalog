@@ -74,7 +74,19 @@ export default defineConfig({
 
   forbidOnly: Boolean(process.env.CI),
 
-  retries: process.env.CI ? 2 : 0,
+  retries: process.env.CI ? 1 : 0,
+
+  /*
+ * Stop a CI run when several tests fail for the same underlying reason.
+ *
+ * Without this limit, a shared failure such as the Services page not loading
+ * can cause dozens of tests across all browser projects to wait for their
+ * individual timeouts and retries until the GitHub Actions job itself times out.
+ *
+ * Local development remains unlimited so developers can see the complete
+ * result when running the suite manually.
+ */
+  maxFailures: process.env.CI ? 10 : 0,
 
   /*
    * Run projects sequentially by default. Override with

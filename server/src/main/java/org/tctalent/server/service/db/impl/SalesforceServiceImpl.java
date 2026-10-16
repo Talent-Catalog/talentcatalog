@@ -2380,7 +2380,8 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
     ) {
         Optional<CandidateOpportunity> candidateOpp = job.getCandidateOpportunities()
             .stream()
-            .filter(opp -> opp.getCandidate().getId().equals(candidate.getId()))
+            .filter(opp -> opp.getCandidate() != null
+                && opp.getCandidate().getId().equals(candidate.getId()))
             .findFirst();
 
         return candidateOpp.orElse(null);

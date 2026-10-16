@@ -51,24 +51,6 @@ resource "aws_ssm_parameter" "duolingo_api_secret" {
   value = var.duolingo_api_secret
 }
 
-resource "aws_ssm_parameter" "es_password" {
-  name  = "/${var.app}/${var.env}/ELASTICSEARCH_PASSWORD"
-  type  = "SecureString"
-  value = var.es_password
-}
-
-resource "aws_ssm_parameter" "es_url" {
-  name  = "/${var.app}/${var.env}/ELASTICSEARCH_URL"
-  type  = "String"
-  value = var.es_url
-}
-
-resource "aws_ssm_parameter" "es_username" {
-  name  = "/${var.app}/${var.env}/ELASTICSEARCH_USERNAME"
-  type  = "String"
-  value = var.es_username
-}
-
 resource "aws_ssm_parameter" "email_default" {
   name  = "/${var.app}/${var.env}/EMAIL_DEFAULTEMAIL"
   type  = "String"

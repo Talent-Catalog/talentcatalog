@@ -46,9 +46,6 @@ module "website" {
   s3_bucket                       = var.s3_bucket
   translations_bucket             = var.translations_bucket
   translations_folder             = var.translations_folder
-  es_password                     = var.es_password
-  es_url                          = var.es_url
-  es_username                     = var.es_username
   email_default                   = var.email_default
   email_password                  = var.email_password
   email_test_override             = var.email_test_override

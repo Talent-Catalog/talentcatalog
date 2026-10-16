@@ -268,16 +268,15 @@ $candidate-card-width: 375px;
   @include paragraph-sm;
   display: flex;
   flex-wrap: wrap;
+  align-items: center;
   gap: 0.375rem;
+  margin-top: 0.75rem;
 }
 
 .ai-extracted-skills-label {
   @include label-sm;
   @include text-color-body;
-}
-
-.ai-extracted-skills-value {
-  @include text-color-secondary;
+  font-weight: 600;
 }
 
 .ai-source-note {

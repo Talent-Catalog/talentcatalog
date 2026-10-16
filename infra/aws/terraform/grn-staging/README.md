@@ -26,7 +26,23 @@ Internet -> Route53 (test.globalrefugee.net)
 
 ## Prerequisites
 
-- AWS CLI configured with credentials that can assume `arn:aws:iam::164804461258:role/opc-staging-terraform-exec`
+- Once per machine, create the shared runner profile with the runner user's access key. Use region
+  `eu-west-2`:
+
+  ```bash
+  aws configure --profile opc-shared-terraform-runner
+  ```
+
+- In the shell you run Terraform from, select that profile. This is the same profile in every
+  environment directory:
+
+  ```bash
+  export AWS_PROFILE=opc-shared-terraform-runner
+  ```
+
+  Terraform's provider then assumes `arn:aws:iam::164804461258:role/opc-staging-terraform-exec` for 
+  resource changes. The S3 backend keeps using the runner user for state and locks. The export 
+  lasts for that shell only.
 - Terraform >= 1.3
 - The S3 backend bucket (`opc-shared-terraform-state`) and DynamoDB lock table (`opc-terraform-locks`) 
   must already exist in the OPC account
@@ -37,6 +53,21 @@ Internet -> Route53 (test.globalrefugee.net)
 cd infra/aws/terraform/grn-staging
 terraform init
 ```
+
+Run this once per environment directory in each checkout. Run it again when providers or modules
+change, or when Terraform reports that initialization is required. Repeating `terraform init` with
+the same backend settings is harmless: it does not change infrastructure or remote state.
+
+If the `backend "s3"` block changes (bucket, key, region, or lock table), plain `terraform init`
+stops and asks you to choose:
+
+- `terraform init -migrate-state` copies the existing state to the new backend. Use this when
+  moving state.
+- `terraform init -reconfigure` points this directory at the new backend without copying state.
+  Use this only when the new backend already holds the correct state. Otherwise Terraform will
+  see no existing resources there.
+
+Confirm which one you need before running either.
 
 ## 2. Set secrets
 

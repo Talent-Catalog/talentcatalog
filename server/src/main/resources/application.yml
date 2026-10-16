@@ -81,17 +81,13 @@ spring:
     redis:
       host: ${REDIS_HOST:localhost}
       port: ${REDIS_PORT:6379}
-    # We explicitly enable repositories with @EnableJpaRepositories and
-    # @EnableElasticsearchRepositories.
+    # We explicitly enable repositories with @EnableJpaRepositories.
     # Turn off default enabling to avoid errors
     # jpa has to be enabled otherwise unit tests fail
     # - see https://stackoverflow.com/questions/47002094/spring-multiple-spring-data-modules-found-entering-strict-repository-configur
     jpa:
       repositories:
         enabled: true
-    elasticsearch:
-      repositories:
-        enabled: false
 
   flyway:
     enabled: true
@@ -131,11 +127,6 @@ spring:
         order_by.default_null_ordering: last
         temp:
           use_jdbc_metadata_defaults: false
-
-management:
-  health:
-    elasticsearch:
-      enabled: false
 
 jwt:
   secret: ${JWT_SECRET}

@@ -1,0 +1,26 @@
+# Run Staging Validation Only After Deployment Completes.
+name: TC Staging Validation
+
+on:
+  # Called automatically by tc-test-build-deploy.yml after deployment succeeds.
+  workflow_call:
+
+  # Keep manual execution available if required.
+  #
+  # This is useful while building/debugging the validation pipeline.
+  # Later tickets can add the real readiness and performance checks here.
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  staging-validation:
+    name: Staging Validation
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      # Give TC time to settle after deployment and Redis reboots.
+      - name: Wait 3 minutes for staging to settle
+        run: sleep 180

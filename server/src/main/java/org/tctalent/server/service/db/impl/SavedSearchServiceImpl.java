@@ -82,6 +82,7 @@ import org.tctalent.server.model.db.Country;
 import org.tctalent.server.model.db.EducationLevel;
 import org.tctalent.server.model.db.Language;
 import org.tctalent.server.model.db.LanguageLevel;
+import org.tctalent.server.model.db.Matching;
 import org.tctalent.server.model.db.PartnerImpl;
 import org.tctalent.server.model.db.ReviewStatus;
 import org.tctalent.server.model.db.SalesforceJobOpp;
@@ -120,6 +121,7 @@ import org.tctalent.server.request.candidate.UpdateDisplayedFieldPathsRequest;
 import org.tctalent.server.request.candidate.source.UpdateCandidateSourceDescriptionRequest;
 import org.tctalent.server.request.search.CreateFromDefaultSavedSearchRequest;
 import org.tctalent.server.request.search.SearchSavedSearchRequest;
+import org.tctalent.server.request.search.UpdateSavedSearchJobRequest;
 import org.tctalent.server.request.search.UpdateSavedSearchRequest;
 import org.tctalent.server.request.search.UpdateSharingRequest;
 import org.tctalent.server.request.search.UpdateWatchingRequest;
@@ -128,6 +130,7 @@ import org.tctalent.server.service.db.CandidateDtoFetchService;
 import org.tctalent.server.service.db.CandidateSavedListService;
 import org.tctalent.server.service.db.CandidateService;
 import org.tctalent.server.service.db.LanguageService;
+import org.tctalent.server.service.db.MatchingService;
 import org.tctalent.server.service.db.PartnerService;
 import org.tctalent.server.service.db.PublicIDService;
 import org.tctalent.server.service.db.SalesforceJobOppService;
@@ -176,6 +179,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
     private final EducationLevelRepository educationLevelRepository;
     private final PersistenceContextHelper persistenceContextHelper;
     private final AuthService authService;
+    private final MatchingService matchingService;
 
     private long ENGLISH_LANGUAGE_ID;
 
@@ -412,22 +416,20 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             candidates = doSearchCandidates(request);
         } else {
             SavedSearch savedSearch = getSavedSearch(request.getSavedSearchId());
-            // If searching a default search, update the default search with every search (aka Autosave).
-            // Else it is a saved search and those are updated upon 'Update Search' button only.
-            if (savedSearch.getDefaultSearch()) {
+            // Automatically persist the latest filters when configured for this search.
+            if (savedSearch.isDefaultSearch() || savedSearch.isAutoUpdateOnSearch()) {
                 UpdateSavedSearchRequest updateRequest = new UpdateSavedSearchRequest();
                 updateRequest.setSearchCandidateRequest(request);
                 //Set other fields - no changes there
                 updateRequest.setName(savedSearch.getName());
-                updateRequest.setDefaultSearch(savedSearch.getDefaultSearch());
+                updateRequest.setDefaultSearch(savedSearch.isDefaultSearch());
                 updateRequest.setFixed(savedSearch.getFixed());
-                updateRequest.setReviewable(savedSearch.getReviewable());
+                updateRequest.setReviewable(savedSearch.isReviewable());
                 updateRequest.setSavedSearchType(savedSearch.getSavedSearchType());
                 updateRequest.setSavedSearchSubtype(savedSearch.getSavedSearchSubtype());
                 //todo Need special method which only updates search part. Then don't need the above "no changes there" stuff
                 updateSavedSearch(savedSearch.getId(), updateRequest);
             }
-
             //Do the search
             candidates = doSearchCandidates(request);
 
@@ -461,16 +463,16 @@ public class SavedSearchServiceImpl implements SavedSearchService {
     public void updateUserDefaultSavedSearchIfNeeded(@NotNull SearchCandidateRequest request) {
         final Long savedSearchId = request.getSavedSearchId();
         SavedSearch savedSearch = getSavedSearch(savedSearchId);
-        // If searching a default search, update the default search with every search (aka Autosave).
-        // Else it is a saved search and those are updated upon 'Update Search' button only.
-        if (savedSearch.getDefaultSearch()) {
+        // Default searches always auto-update.
+        // Named saved searches auto-update when configured to do so.
+        if (savedSearch.isDefaultSearch() || savedSearch.isAutoUpdateOnSearch()) {
             UpdateSavedSearchRequest updateRequest = new UpdateSavedSearchRequest();
             updateRequest.setSearchCandidateRequest(request);
             //Set other fields - no changes there
             updateRequest.setName(savedSearch.getName());
-            updateRequest.setDefaultSearch(true);
+            updateRequest.setDefaultSearch(savedSearch.isDefaultSearch());
             updateRequest.setFixed(savedSearch.getFixed());
-            updateRequest.setReviewable(savedSearch.getReviewable());
+            updateRequest.setReviewable(savedSearch.isReviewable());
             updateRequest.setSavedSearchType(savedSearch.getSavedSearchType());
             updateRequest.setSavedSearchSubtype(savedSearch.getSavedSearchSubtype());
             updateSavedSearch(savedSearchId, updateRequest);
@@ -585,6 +587,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
     }
 
     @Override
+    @Transactional
     public SavedSearch createFromDefaultSavedSearch(
             CreateFromDefaultSavedSearchRequest request)
             throws NoSuchObjectException {
@@ -642,6 +645,14 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         //Clear search attributes by passing in an empty SearchCandidateRequest
         populateSearchAttributes(savedSearch, new SearchCandidateRequest());
 
+        //Clear requirements without changing the Matching's description - it may also be in use
+        //by other candidate sources. A search with a job keeps the job's Matching. Otherwise,
+        //the search's working Matching is just dropped - a new one is created when needed.
+        savedSearch.setLegacyRequirements(null);
+        if (savedSearch.getSfJobOpp() == null) {
+            savedSearch.setMatching(null);
+        }
+
         savedSearchRepository.save(savedSearch);
     }
 
@@ -664,6 +675,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
     private SavedSearch createSavedSearchBase(
         UpdateSavedSearchRequest request, @Nullable SavedSearch template) {
         SavedSearch savedSearch = convertToSavedSearch(template, request);
+        updateRequirements(savedSearch, request.getSearchCandidateRequest(), true);
 
         //Set PublicId
         savedSearch.setPublicId(publicIDService.generatePublicID());
@@ -728,11 +740,13 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             if (!savedSearch.getFixed() || savedSearch.getCreatedBy().getId().equals(loggedInUser.getId())) {
                 savedSearch.setName(request.getName());
                 savedSearch.setFixed(request.getFixed());
-                savedSearch.setReviewable(request.getReviewable());
+                savedSearch.setReviewable(request.isReviewable());
 
                 final Long jobId = request.getJobId();
                 if (jobId != null) {
+                    final SalesforceJobOpp oldJob = savedSearch.getSfJobOpp();
                     savedSearch.setSfJobOpp(salesforceJobOppService.getJobOpp(jobId));
+                    updateMatchingIfJobChanged(savedSearch, oldJob);
                 }
 
                 savedSearch.setType(request.getSavedSearchType(), request.getSavedSearchSubtype());
@@ -750,6 +764,20 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         }
 
         SavedSearch newSavedSearch = convertToSavedSearch(savedSearch, request);
+        //convertToSavedSearch builds a new SavedSearch, so a null jobId would otherwise clear the
+        //existing job association. A null jobId means "no change" (see
+        //AbstractUpdateCandidateSourceRequest.jobId) - eg auto-updates of the default search
+        //on every search run must not wipe a job assigned via updateSavedSearchJob.
+        if (request.getJobId() == null) {
+            newSavedSearch.setSfJobOpp(savedSearch.getSfJobOpp());
+        }
+
+        //Similarly, carry across the search's matching context, then apply any change of job and
+        //the requested requirements to it.
+        newSavedSearch.setMatching(savedSearch.getMatching());
+        newSavedSearch.setLegacyRequirements(savedSearch.getLegacyRequirements());
+        updateMatchingIfJobChanged(newSavedSearch, savedSearch.getSfJobOpp());
+        updateRequirements(newSavedSearch, request.getSearchCandidateRequest(), false);
 
         //delete and recreate all joined searches
         searchJoinRepository.deleteBySearchId(id);
@@ -892,6 +920,36 @@ public class SavedSearchServiceImpl implements SavedSearchService {
     }
 
     @Override
+    @Transactional
+    public SavedSearch updateSavedSearchJob(long id, UpdateSavedSearchJobRequest request) {
+        final User loggedInUser = userService.getLoggedInUser();
+        if (loggedInUser == null) {
+            throw new InvalidSessionException("Not logged in");
+        }
+
+        SavedSearch savedSearch = savedSearchRepository.findById(id)
+                .orElseThrow(() -> new NoSuchObjectException(SavedSearch.class, id));
+
+        if (!savedSearch.getCreatedBy().getId().equals(loggedInUser.getId())) {
+            throw new InvalidRequestException("You can't modify another user's saved search.");
+        }
+
+        final Long jobId = request.getJobId();
+        final SalesforceJobOpp currentJobOpp = savedSearch.getSfJobOpp();
+        if (jobId == null) {
+            savedSearch.setSfJobOpp(null);
+        } else {
+            if (currentJobOpp != null && jobId.equals(currentJobOpp.getId())) {
+                return savedSearch;
+            }
+            savedSearch.setSfJobOpp(salesforceJobOppService.getJobOpp(jobId));
+        }
+        updateMatchingIfJobChanged(savedSearch, currentJobOpp);
+
+        return savedSearchRepository.save(savedSearch);
+    }
+
+    @Override
     public @NotNull SavedSearch getDefaultSavedSearch()
             throws NoSuchObjectException {
         //Check that we have a logged in user.
@@ -938,6 +996,7 @@ public class SavedSearchServiceImpl implements SavedSearchService {
             savedList.setCreatedDate(OffsetDateTime.now());
             savedList.setName(constructSelectionListName(user, savedSearch));
             savedList.setSfJobOpp(savedSearch.getSfJobOpp());
+            savedList.setMatching(savedSearch.getMatching());
 
             savedList = savedListRepository.save(savedList);
         } else {
@@ -957,6 +1016,16 @@ public class SavedSearchServiceImpl implements SavedSearchService {
                     savedList = savedListRepository.save(savedList);
                 }
             }
+
+            //Similarly keep the selection list's matching context the same as its search's.
+            //(Compared by id - Matching equality is not reliable for lazily loaded proxies)
+            final Matching searchMatching = savedSearch.getMatching();
+            final Matching listMatching = savedList.getMatching();
+            if (!Objects.equals(searchMatching == null ? null : searchMatching.getId(),
+                listMatching == null ? null : listMatching.getId())) {
+                savedList.setMatching(searchMatching);
+                savedList = savedListRepository.save(savedList);
+            }
         }
 
         return savedList;
@@ -972,6 +1041,19 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         }
 
         return getSelectionList(id, loggedInUser.getId());
+    }
+
+    @Override
+    @Transactional
+    public @Nullable Matching resolveMatching(long id) throws NoSuchObjectException {
+        SavedSearch savedSearch = savedSearchRepository.findById(id)
+            .orElseThrow(() -> new NoSuchObjectException(SavedSearch.class, id));
+        if (savedSearch.getMatching() == null && (savedSearch.getSfJobOpp() != null
+            || Matching.hasTextContent(savedSearch.getLegacyRequirements()))) {
+            getOrCreateMatching(savedSearch);
+            savedSearchRepository.save(savedSearch);
+        }
+        return savedSearch.getMatching();
     }
 
     public boolean includesElasticSearch(long savedSearchId) {
@@ -1152,8 +1234,11 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         SavedSearch savedSearch = new SavedSearch();
         savedSearch.setName(request.getName());
         savedSearch.setFixed(request.getFixed());
-        savedSearch.setDefaultSearch(request.getDefaultSearch());
-        savedSearch.setReviewable(request.getReviewable());
+        savedSearch.setDefaultSearch(request.isDefaultSearch());
+        savedSearch.setReviewable(request.isReviewable());
+        savedSearch.setAutoUpdateOnSearch(
+            savedSearch.isDefaultSearch() || request.isAutoUpdateOnSearch()
+        );
         if (origSavedSearch != null) {
             savedSearch.setDescription(origSavedSearch.getDescription());
             savedSearch.setDisplayedFieldsLong(origSavedSearch.getDisplayedFieldsLong());
@@ -1361,11 +1446,108 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         return url;
     }
 
+    /**
+     * Returns the given search's Matching, creating it if the search doesn't have one yet.
+     * <p>
+     * Searches created before Matchings were introduced don't have one until it is needed.
+     * A search associated with a job uses the job's single Matching. Any other search gets its
+     * own new Matching. Either way, a new Matching is initialised from any legacy requirements
+     * stored on the search - which are then cleared, since the Matching now holds the
+     * requirements.
+     */
+    @NonNull
+    private Matching getOrCreateMatching(@NonNull SavedSearch savedSearch) {
+        Matching matching = savedSearch.getMatching();
+        if (matching == null) {
+            final String legacyRequirements = savedSearch.getLegacyRequirements();
+            final SalesforceJobOpp job = savedSearch.getSfJobOpp();
+            matching = job == null
+                ? matchingService.createMatching(legacyRequirements)
+                : matchingService.getOrCreateJobMatching(job, legacyRequirements);
+            savedSearch.setMatching(matching);
+        }
+        savedSearch.setLegacyRequirements(null);
+        return matching;
+    }
+
+    /**
+     * Writes the requirements from the given search request (if any) as the description of the
+     * search's Matching - creating the Matching if needed.
+     * <p>
+     * A search associated with a job always ends up with the job's single Matching. A search
+     * with no job only needs a Matching once it has some requirements.
+     *
+     * @param savedSearch Search being created or updated
+     * @param request Search request containing the requirements. Null when no search attributes
+     *                are being set - which is treated as having no requirements.
+     * @param creating True if the search is being created. A new search with no requirements
+     *                 leaves the description of any (job) Matching it shares unchanged, rather
+     *                 than clearing it. When updating a search, no requirements means that the
+     *                 requirements have been cleared.
+     */
+    private void updateRequirements(@NonNull SavedSearch savedSearch,
+        @Nullable SearchCandidateRequest request, boolean creating) {
+        final String requirements = request == null ? null : request.getRequirements();
+        final boolean hasRequirements = Matching.hasTextContent(requirements);
+        if (savedSearch.getMatching() == null && savedSearch.getSfJobOpp() == null
+            && !hasRequirements) {
+            //No Matching needed yet.
+            savedSearch.setLegacyRequirements(null);
+            return;
+        }
+        final Matching matching = getOrCreateMatching(savedSearch);
+        if (hasRequirements || !creating) {
+            matching.updateMatchingDescription(requirements);
+        }
+    }
+
+    /**
+     * Keeps the given search's Matching consistent with its job, if the job has changed from
+     * the given old job.
+     * <ul>
+     *     <li>
+     *         A search which now has a job uses the job's single Matching. If the job doesn't have
+     *         a Matching yet, it is created from the search's current requirements (if any) -
+     *         except for the default search, whose requirements are just transient working state
+     *         unrelated to the job, so the job's own text is used.
+     *     </li>
+     *     <li>
+     *         A search whose job has been removed no longer shares the old job's Matching: it
+     *         continues with its own copy of the current requirements, so that editing them no
+     *         longer changes the old job's matching context.
+     *     </li>
+     * </ul>
+     */
+    private void updateMatchingIfJobChanged(
+        @NonNull SavedSearch savedSearch, @Nullable SalesforceJobOpp oldJob) {
+        final SalesforceJobOpp newJob = savedSearch.getSfJobOpp();
+        if (Objects.equals(getId(oldJob), getId(newJob))) {
+            return;
+        }
+        final Matching matching = savedSearch.getMatching();
+        if (newJob != null) {
+            final String preferredDescription =
+                savedSearch.isDefaultSearch() ? null : savedSearch.getRequirements();
+            savedSearch.setMatching(
+                matchingService.getOrCreateJobMatching(newJob, preferredDescription));
+            savedSearch.setLegacyRequirements(null);
+        } else if (matching != null && oldJob.getMatching() != null
+            && Objects.equals(matching.getId(), oldJob.getMatching().getId())) {
+            final String description = matching.getMatchingDescription();
+            savedSearch.setMatching(
+                description == null ? null : matchingService.createMatching(description));
+        }
+    }
+
+    @Nullable
+    private static Long getId(@Nullable SalesforceJobOpp job) {
+        return job == null ? null : job.getId();
+    }
+
     private void populateSearchAttributes(
             SavedSearch savedSearch, SearchCandidateRequest request) {
         if (request != null) {
             savedSearch.setSimpleQueryString(request.getSimpleQueryString());
-            savedSearch.setRequirements(request.getRequirements());
             savedSearch.setKeyword(request.getKeyword());
             savedSearch.setCandidateNumbers(getStringListAsString(request.getCandidateNumbers()));
             savedSearch.setStatuses(getStatusListAsString(request.getStatuses()));

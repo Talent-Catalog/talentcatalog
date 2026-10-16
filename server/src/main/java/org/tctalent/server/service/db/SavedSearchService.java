@@ -21,12 +21,14 @@ import java.io.PrintWriter;
 import java.util.List;
 import java.util.Set;
 import org.springframework.data.domain.Page;
+import org.springframework.lang.Nullable;
 import org.tctalent.server.exception.EntityExistsException;
 import org.tctalent.server.exception.ExportFailedException;
 import org.tctalent.server.exception.InvalidRequestException;
 import org.tctalent.server.exception.InvalidSessionException;
 import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.model.db.Candidate;
+import org.tctalent.server.model.db.Matching;
 import org.tctalent.server.model.db.SalesforceJobOpp;
 import org.tctalent.server.model.db.SavedList;
 import org.tctalent.server.model.db.SavedSearch;
@@ -39,6 +41,7 @@ import org.tctalent.server.request.candidate.UpdateDisplayedFieldPathsRequest;
 import org.tctalent.server.request.candidate.source.UpdateCandidateSourceDescriptionRequest;
 import org.tctalent.server.request.search.CreateFromDefaultSavedSearchRequest;
 import org.tctalent.server.request.search.SearchSavedSearchRequest;
+import org.tctalent.server.request.search.UpdateSavedSearchJobRequest;
 import org.tctalent.server.request.search.UpdateSavedSearchRequest;
 import org.tctalent.server.request.search.UpdateSharingRequest;
 import org.tctalent.server.request.search.UpdateWatchingRequest;
@@ -273,6 +276,24 @@ public interface SavedSearchService {
     SavedSearch removeWatcher(long id, UpdateWatchingRequest request);
 
     /**
+     * Explicitly assigns or clears the job associated with the given saved search.
+     * <p/>
+     * If the request's jobId is non null, the corresponding job is looked up and assigned -
+     * unless the saved search is already associated with that same job, in which case nothing
+     * is persisted.
+     * <p/>
+     * If the request's jobId is null, any existing job association is cleared.
+     * @param id Id of saved search
+     * @param request Request specifying the job to assign, or null to clear any association
+     * @return The updated saved search
+     * @throws NoSuchObjectException if there is no saved search or job with the given id
+     * @throws InvalidRequestException if the saved search does not belong to the logged in user
+     * @throws InvalidSessionException if there is no logged in user
+     */
+    SavedSearch updateSavedSearchJob(long id, UpdateSavedSearchJobRequest request)
+            throws NoSuchObjectException, InvalidRequestException, InvalidSessionException;
+
+    /**
      * Returns the scratch saved search for the logged in user,
      * creating one if necessary (there should only ever be one)
      * @return A saved search to be used by the given user for defining
@@ -304,6 +325,20 @@ public interface SavedSearchService {
      */
     @NotNull SavedList getSelectionListForLoggedInUser(long id)
             throws NoSuchObjectException, InvalidSessionException;
+
+    /**
+     * Returns the matching context of the given saved search, creating it if the search doesn't
+     * have one yet but has enough context for one - ie it is associated with a job (in which case
+     * it uses the job's Matching), or it has legacy requirements.
+     * <p>
+     * Used when a matching context is actually needed - eg when candidates are saved from the
+     * search to a list. Simply reading a search never creates a Matching.
+     *
+     * @param id Saved search ID
+     * @return The search's Matching - null if it has none and there is no context to create one
+     * @throws NoSuchObjectException if there is no such saved search.
+     */
+    @Nullable Matching resolveMatching(long id) throws NoSuchObjectException;
 
     /**
      * Returns true if the given search involves an Elastic search - either itself or in its

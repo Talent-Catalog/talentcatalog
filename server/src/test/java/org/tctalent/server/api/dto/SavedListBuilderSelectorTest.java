@@ -54,6 +54,7 @@ class SavedListBuilderSelectorTest {
         "id", 1L,
         "publicId", "pub-1",
         "name", "My List",
+        "registeredJob", true,
         "displayedFieldsLong", "long",
         "displayedFieldsShort", "short",
         "sfJobOpp", jobOpp(101L, "SF-101"),
@@ -72,6 +73,7 @@ class SavedListBuilderSelectorTest {
     assertEquals(1L, out.get("id"));
     assertEquals("pub-1", out.get("publicId"));
     assertEquals("My List", out.get("name"));
+    assertEquals(true, out.get("registeredJob"));
     assertEquals("long", out.get("displayedFieldsLong"));
     assertEquals("short", out.get("displayedFieldsShort"));
 

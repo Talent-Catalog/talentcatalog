@@ -179,10 +179,10 @@ public abstract class CandidateSearchUtils {
      * surrounding SQL statement.
      * <p>
      * We intentionally use to_tsquery() rather than plainto_tsquery() because candidate search
-     * supports boolean / Elasticsearch-style search syntax. Replacing this with plainto_tsquery()
+     * supports boolean / keyword-search syntax. Replacing this with plainto_tsquery()
      * would change existing search behavior by treating those operators as plain text.
      *
-     * @param esQuery Elasticsearch simple query. If null, it will return an empty string.
+     * @param esQuery Keyword-search simple query. If null, it will return an empty string.
      * @return to_tsquery function call suitable for inserting into Postgres SQL
      */
     public static @NonNull String buildToTsQueryFunction(@Nullable String esQuery) {
@@ -190,11 +190,11 @@ public abstract class CandidateSearchUtils {
     }
 
     /**
-     * Builds a Postgres tsQuery string which corresponds to the given Elasticsearch Simple Query.
+     * Builds a Postgres tsQuery string which corresponds to the given keyword-search simple query.
      * <p>
      *     See <a href="https://www.postgresql.org/docs/18/textsearch-intro.html">Postgres Text Search</a>
      * </p>
-     * @param esQuery Elasticsearch simple query. If null, it will return an empty string.
+     * @param esQuery Keyword-search simple query. If null, it will return an empty string.
      * @return Postgres tsQuery SQL
      */
     public static @NonNull String buildTsQuerySQL(@Nullable String esQuery) {

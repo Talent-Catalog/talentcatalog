@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -35,6 +36,8 @@ import org.tctalent.server.api.dto.SavedListBuilderSelector;
 import org.tctalent.server.exception.EntityExistsException;
 import org.tctalent.server.exception.InvalidRequestException;
 import org.tctalent.server.exception.NoSuchObjectException;
+import org.tctalent.server.model.db.Matching;
+import org.tctalent.server.model.db.MatchingSnapshot;
 import org.tctalent.server.model.db.SavedList;
 import org.tctalent.server.request.IdsRequest;
 import org.tctalent.server.request.candidate.PublishListRequest;
@@ -50,6 +53,7 @@ import org.tctalent.server.request.list.UpdateSavedListInfoRequest;
 import org.tctalent.server.request.search.UpdateSharingRequest;
 import org.tctalent.server.service.db.CandidateSavedListService;
 import org.tctalent.server.service.db.CandidateService;
+import org.tctalent.server.service.db.MatchingService;
 import org.tctalent.server.service.db.SavedListService;
 import org.tctalent.server.util.dto.DtoBuilder;
 
@@ -63,17 +67,16 @@ public class SavedListAdminApi implements
     private final SavedListService savedListService;
     private final CandidateSavedListService candidateSavedListService;
     private final SavedListBuilderSelector builderSelector;
+    private final MatchingService matchingService;
 
     /*
         Standard ITableApi methods
      */
 
     /**
-     * Creates a new SavedList unless it is a registered list and a registered list for that
-     * job, as defined by {@link SavedList#getSfJobOpp()}, already exists, in which case
-     * nothing new is created, and the existing list is returned.
-     * @param request Request defining new list (including whether it is a registered list
-     *                ({@link UpdateSavedListInfoRequest#getRegisteredJob()})
+     * Creates a new ordinary SavedList - see
+     * {@link SavedListService#createSavedList(UpdateSavedListInfoRequest)}.
+     * @param request Request defining new list
      * @return The details about the list.
      * @throws EntityExistsException if a list with this name already exists.
      */
@@ -162,6 +165,27 @@ public class SavedListAdminApi implements
     /*
         End standard ITableApi methods
      */
+
+    /**
+     * Returns the list's current matching context, for operations which need it - eg match
+     * explanations. If the list doesn't have a Matching yet, one is created (or the job's
+     * Matching is used) where the list has enough context for one - see
+     * {@link SavedListService#resolveMatching}. A job's Matching with no description is initialised
+     * from the job's text - see {@link MatchingService#resolveDescription}.
+     * <p/>
+     * A POST, since it may create or change a Matching.
+     *
+     * @param id ID of list
+     * @return The list's Matching, as at now - null (an empty response) if the list has no
+     * matching context
+     * @throws NoSuchObjectException if there is no such list
+     */
+    @PostMapping("{id}/matching")
+    public @Nullable MatchingSnapshot resolveMatching(@PathVariable("id") long id)
+        throws NoSuchObjectException {
+        final Matching matching = savedListService.resolveMatching(id);
+        return matching == null ? null : matchingService.resolveDescription(matching.getId());
+    }
 
     /**
      * Copies the given list to the list specified in the given request (which

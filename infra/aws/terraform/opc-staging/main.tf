@@ -23,13 +23,6 @@ variable "duolingo_api_secret" {
   default     = ""
 }
 
-variable "es_password" {
-  description = "Elasticsearch password (todo: retire elasticsearch)"
-  type        = string
-  sensitive   = true
-  default     = ""
-}
-
 variable "email_password" {
   description = "Email password"
   type        = string
@@ -233,7 +226,17 @@ module "tc-plus-staging" {
   db_major_engine_version = "17"
   db_name                 = "tcplus"
 
+  # Vanta user data classification (TC-1524)
+  db_vanta_tags = {
+    VantaContainsUserData = "true"
+    VantaUserDataStored   = "Empty - migration target for TBB staging database"
+  }
+
   availability_zones = ["eu-west-2a", "eu-west-2b", "eu-west-2c"]
+
+  # CloudWatch alarm notifications (TC-1526)
+  cloudwatch_alarms_enabled = true
+  alarm_sns_topic_arn       = aws_sns_topic.alarms.arn
 
   # Redis cache configuration
   cache_enable          = true
@@ -254,8 +257,6 @@ module "tc-plus-staging" {
   email_test_override                   = "john@cameronfoundation.org"                        # todo: change to shared address
   email_user                            = "UPDATE_EMAIL_USER_HERE"                            # todo: confirm if used/needed
   email_type                            = "SMTP"                                              # todo: confirm value
-  es_url                                = "https://tc-staging.es.us-east-1.aws.found.io:9243" # todo: retire elasticsearch
-  es_username                           = "elastic"                                           # todo: retire elasticsearch
   gradle_home                           = "/usr/local/gradle"
   java_home                             = "/usr/lib/jvm/java"
   logbuilder_include_cpu_utilization    = "true"
@@ -277,7 +278,7 @@ module "tc-plus-staging" {
   spring_servlet_max_file_size    = "10MB"
   spring_servlet_max_request_size = "10MB"
   tc_api_url                      = "https://test.api.tctalent.org"
-  tc_cors_urls                    = "https://tctalent-test.org,https://*.d2jx6ziu0w8kq9.amplifyapp.com,https://*.d1bt868vpd541m.amplifyapp.com"
+  tc_cors_urls                    = "https://tctalent-test.org,https://*.d1y6boungf42dt.amplifyapp.com,https://*.d1xx9vnl0oax4v.amplifyapp.com"
   tc_db_copy_config               = "data.sharing/tcCopies.xml"                                                                         # todo: can this be retired?
   tc_destinations                 = "Australia,Belgium,Canada,France,Germany,Ireland,Italy,Slovakia,Spain,United Kingdom,United States" # todo: set TC destinations
   tc_skills_extraction_api_url    = "https://test.skills.tctalent.org"
@@ -290,7 +291,6 @@ module "tc-plus-staging" {
   aws_access_key             = var.aws_access_key
   aws_secret_key             = var.aws_secret_key
   duolingo_api_secret        = var.duolingo_api_secret
-  es_password                = var.es_password
   email_password             = var.email_password
   drive_id                   = var.drive_id
   drive_rootfolder           = var.drive_rootfolder

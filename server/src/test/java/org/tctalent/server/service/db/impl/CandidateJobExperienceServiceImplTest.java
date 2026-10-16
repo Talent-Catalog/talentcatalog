@@ -138,7 +138,7 @@ class CandidateJobExperienceServiceImplTest {
         List<CandidateJobExperience> experienceList = List.of(experience, experience);
         experiencePage = new PageImpl<>(experienceList);
         updateRequest = new UpdateJobExperienceRequest();
-        updateRequest.setId(EXPERIENCE_ID);
+        updateRequest.setExperienceId(EXPERIENCE_ID);
         updateRequest.setCountryId(COUNTRY_ID);
         updateRequest.setCandidateOccupationId(ALT_OCCUPATION_ID);
         searchRequest = new SearchJobExperienceRequest();
@@ -288,7 +288,7 @@ class CandidateJobExperienceServiceImplTest {
     void updateCandidateJobExperience_shouldThrow_whenExperienceNotFound() {
         given(authService.getLoggedInCandidate()).willReturn(candidate);
         given(jobExperienceRepository.findByIdLoadCandidateOccupation(
-            updateRequest.getId())).willReturn(Optional.empty());
+            updateRequest.getExperienceId())).willReturn(Optional.empty());
 
         Exception ex = assertThrows(NoSuchObjectException.class,
             () -> jobExperienceService.updateCandidateJobExperience(updateRequest));
@@ -301,7 +301,7 @@ class CandidateJobExperienceServiceImplTest {
     void updateCandidateJobExperience_shouldThrow_whenCountryNotFound() {
         given(authService.getLoggedInCandidate()).willReturn(candidate);
         given(jobExperienceRepository.findByIdLoadCandidateOccupation(
-            updateRequest.getId())).willReturn(Optional.of(experience));
+            updateRequest.getExperienceId())).willReturn(Optional.of(experience));
         given(countryRepository.findById(updateRequest.getCountryId()))
             .willReturn(Optional.empty());
 
@@ -316,7 +316,7 @@ class CandidateJobExperienceServiceImplTest {
     void updateCandidateJobExperience_shouldThrow_whenOccupationNotFound() {
         given(authService.getLoggedInCandidate()).willReturn(candidate);
         given(jobExperienceRepository.findByIdLoadCandidateOccupation(
-            updateRequest.getId())).willReturn(Optional.of(experience));
+            updateRequest.getExperienceId())).willReturn(Optional.of(experience));
         given(countryRepository.findById(updateRequest.getCountryId()))
             .willReturn(Optional.of(COUNTRY));
         given(occupationRepository.findById(updateRequest.getCandidateOccupationId()))
@@ -341,7 +341,7 @@ class CandidateJobExperienceServiceImplTest {
 
         given(authService.getLoggedInCandidate()).willReturn(candidate);
         given(jobExperienceRepository.findByIdLoadCandidateOccupation(
-            updateRequest.getId())).willReturn(Optional.of(experience));
+            updateRequest.getExperienceId())).willReturn(Optional.of(experience));
         given(countryRepository.findById(updateRequest.getCountryId()))
             .willReturn(Optional.of(COUNTRY));
         given(occupationRepository.findById(updateRequest.getCandidateOccupationId()))

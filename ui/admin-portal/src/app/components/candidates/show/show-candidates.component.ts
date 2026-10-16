@@ -124,6 +124,8 @@ import {
   listActionTooltips,
   ServiceList
 } from "../../../model/service-list";
+import {hasSameTextContent} from "../../../util/string";
+import {Matching} from "../../../model/matching";
 
 export type CandidatePageSize = 20 | 50 | 100;
 
@@ -147,6 +149,35 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
   @Input() isMatchingSearch: boolean = false;
   @Input() declare pageNumber: number;
   @Input() declare pageSize: CandidatePageSize;
+
+  /**
+   * The search requirements currently being edited, if the parent has them (only the define
+   * search page does). Owned by the parent - never written by this component. Only used to tell
+   * whether they differ from the description saved in the search's Matching, which is what match
+   * explanations are of - see requirementsPendingMessage.
+   */
+  @Input() requirements?: string;
+
+  /**
+   * The current candidate source's matching context, used for match explanations. Undefined until
+   * resolved, null if the source has none.
+   * <p/>
+   * Only resolved when first needed - when a candidate is first selected, since only the selected
+   * candidate's card shows explanations - so that simply viewing a source never creates a
+   * Matching. Then refreshed after each run of a search whose runs save its requirements (see
+   * updatedSearch), since a run can change, or create, its Matching.
+   */
+  sourceMatching: Matching | null | undefined;
+
+  /** Whether sourceMatching has been requested for the current source. */
+  private sourceMatchingRequested = false;
+
+  /** Incremented by each resolution request, so that only the latest response is applied. */
+  private sourceMatchingRequestNumber = 0;
+
+  /** Cache for requirementsPendingMessage, which is evaluated on every change detection. */
+  private requirementsPendingCache?:
+    {requirements?: string, description?: string, pending: boolean};
 
   readonly pageSizeOptions: CandidatePageSize[] = [20, 50, 100];
   @Input() searchRequest: SearchCandidateRequestPaged;
@@ -428,6 +459,11 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
           this.selectedCandidates = [];
 
           this.loadServiceList();
+
+          //Any matching context belonged to the old source.
+          this.sourceMatching = undefined;
+          this.sourceMatchingRequested = false;
+          this.sourceMatchingRequestNumber++;
         }
       }
     }
@@ -470,6 +506,71 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
     if (this.subscription) {
       this.subscription.unsubscribe();
     }
+    }
+
+  /**
+   * Message explaining that match explanations don't reflect the requirements being edited, if
+   * they differ from the description saved in the search's Matching - ie the user has changed them
+   * but not yet run (or saved) the search. Undefined if there is no such difference, or no edited
+   * requirements (eg when viewing a list).
+   * <p/>
+   * Compared by text content, so that a rich text editor reformatting the saved description
+   * doesn't count as a change.
+   */
+  get requirementsPendingMessage(): string | undefined {
+    const source = this.candidateSource;
+    if (this.requirements === undefined || !isSavedSearch(source)
+      || this.sourceMatching === undefined) {
+      return undefined;
+    }
+    const description = this.sourceMatching?.matchingDescription;
+    const cache = this.requirementsPendingCache;
+    if (cache?.requirements !== this.requirements || cache?.description !== description) {
+      this.requirementsPendingCache = {
+        requirements: this.requirements,
+        description,
+        pending: !hasSameTextContent(this.requirements, description)
+      };
+    }
+    if (!this.requirementsPendingCache.pending) {
+      return undefined;
+    }
+    return source.defaultSearch || source.autoUpdateOnSearch
+      ? 'The requirements have changed. Run the search to see match explanations for the new'
+        + ' requirements.'
+      : 'The requirements have unsaved changes. Save the search to see match explanations for the'
+        + ' new requirements.';
+  }
+
+  /**
+   * Resolves the current source's matching context from the server, replacing sourceMatching.
+   * <p/>
+   * Only the latest request's response is applied, so that a slow response - eg for a source that
+   * is no longer current - can never replace a newer one. A failure just means no matching context
+   * is available (so no match explanations) - it is logged rather than surfaced as an error, since
+   * the candidates themselves are unaffected.
+   */
+  private resolveSourceMatching() {
+    const source = this.candidateSource;
+    if (!source) {
+      return;
+    }
+    this.sourceMatchingRequested = true;
+    const requestNumber = ++this.sourceMatchingRequestNumber;
+    const matching$ = isSavedSearch(source)
+      ? this.savedSearchService.resolveMatching(source.id)
+      : this.savedListService.resolveMatching(source.id);
+    matching$.subscribe({
+      next: matching => {
+        if (requestNumber === this.sourceMatchingRequestNumber) {
+          this.sourceMatching = matching ?? null;
+        }
+      },
+      error: error => {
+        console.warn('Could not resolve matching context of candidate source '
+          + source.id + ': ', error);
+      }
+    });
   }
 
   /**
@@ -500,12 +601,25 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
           this.results = results;
           this.cacheResults();
           this.searching = false;
+          this.refreshSourceMatchingAfterRun();
         },
         error: error => {
           this.error = error;
           this.searching = false;
         }
       });
+  }
+
+  /**
+   * Running a default search, or a search which updates automatically, saves its requirements -
+   * which can change (or create) its Matching. So refresh the Matching, if it is in use.
+   */
+  private refreshSourceMatchingAfterRun() {
+    const source = this.candidateSource;
+    if (this.sourceMatchingRequested && isSavedSearch(source)
+      && (source.defaultSearch || source.autoUpdateOnSearch)) {
+      this.resolveSourceMatching();
+    }
   }
 
   doSearch(refresh: boolean, usePageNumber = true) {
@@ -569,6 +683,9 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
 
   setCurrentCandidate(candidate: Candidate) {
     this.currentCandidate = candidate;
+    if (candidate && !this.sourceMatchingRequested) {
+      this.resolveSourceMatching();
+    }
     if (candidate && isSavedSearch(this.candidateSource)) {
       this.savedSearchSelectionChange = candidate.selected;
     }
@@ -1180,9 +1297,14 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
         statusUpdateInfo: targetListSelection.statusUpdateInfo,
         updateType: targetListSelection.replace ? ContentUpdateType.replace : ContentUpdateType.add,
         jobId: targetListSelection.jobId,
-        candidateIds: candidatesToSave.map(c => c.id),
-        sourceListId: this.candidateSource.id
+        candidateIds: candidatesToSave.map(c => c.id)
       };
+      //The source may be a list - or a (matching) saved search.
+      if (isSavedSearch(this.candidateSource)) {
+        request.sourceSearchId = this.candidateSource.id;
+      } else {
+        request.sourceListId = this.candidateSource.id;
+      }
       // If request has a savedListId, merge or replace. Otherwise create a new list.
       if (savedListId > 0) {
         this.replaceOrMergeList(savedListId, request);
@@ -1588,6 +1710,12 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
     }
   }
 
+  doShowJob() {
+    if (this.candidateSource?.sfJobOpp != null) {
+      this.router.navigate(['/job', this.candidateSource.sfJobOpp.id]);
+    }
+  }
+
   doShowSearch() {
     const savedSearchSource = this.getSavedSearchSource();
     if (savedSearchSource != null) {
@@ -1814,7 +1942,7 @@ export class ShowCandidatesComponent extends CandidateSourceBaseComponent implem
   hasTasksAssigned() {
     if (isSavedList(this.candidateSource)) {
       this.tasksAssignedToList = this.candidateSource.tasks;
-      return this.candidateSource.tasks.length > 0;
+      return this.candidateSource?.tasks?.length > 0;
     }
   }
 

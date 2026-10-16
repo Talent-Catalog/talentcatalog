@@ -79,13 +79,17 @@ export function isSubmissionList(source: CandidateSource): source is SavedList {
 export interface UpdateSavedListInfoRequest {
   name?: string;
   fixed?: boolean;
-  registeredJob?: boolean;
   jobId?: number;
 }
 
 export interface UpdateSavedListContentsRequest extends UpdateSavedListInfoRequest {
 
   sourceListId?: number;
+
+  /**
+   * Saved search the candidates came from, if they didn't come from a list (sourceListId).
+   */
+  sourceSearchId?: number;
 
   statusUpdateInfo?: UpdateCandidateStatusInfo;
 

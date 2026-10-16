@@ -1,4 +1,5 @@
 import {Component, Input} from '@angular/core';
+import {CommonModule} from '@angular/common';
 
 /**
  * @component LabelComponent
@@ -28,7 +29,9 @@ import {Component, Input} from '@angular/core';
 @Component({
   selector: 'tc-label',
   templateUrl: './label.component.html',
-  styleUrls: ['./label.component.scss']
+  styleUrls: ['./label.component.scss'],
+  standalone: true,
+  imports: [CommonModule]
 })
 export class LabelComponent {
   @Input() for?: string; // to associate with input by id

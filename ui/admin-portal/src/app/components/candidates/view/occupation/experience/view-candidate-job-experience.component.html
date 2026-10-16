@@ -74,26 +74,8 @@
 
       <hr *ngIf="i > 0">
 
-      <div class="row">
-
-        <div class="col-10">
-          <h6 class="card-title"
-              [innerHtml]="experience.role"
-              appHighlightSearch>
-          </h6>
-          <div *ngIf="experience.description">
-            <app-text-parts-view  [text]="experience.description" appHighlightSearch></app-text-parts-view>
-          </div>
-          <small class="text-muted">
-            {{experience.startDate | date: 'customMonthYear' }} - {{experience.endDate | date: 'customMonthYear' }}
-          </small>
-          <small class="text-muted">
-            {{experience.fullTime ? 'Full Time' : 'Part Time'}}
-            {{experience.paid ? 'Paid' : 'Voluntary'}}
-          </small>
-        </div>
-
-        <div class="col-2" *ngIf="editable">
+      <app-candidate-job-experience [experience]="experience">
+        <div experienceActions class="col-2" *ngIf="editable">
           <div class="d-flex gap-2 justify-content-end">
             <tc-button (onClick)="editCandidateJobExperience(experience)"
                        [type]="'plain'"
@@ -110,23 +92,7 @@
             </tc-button>
           </div>
         </div>
-
-        <div class="col-12">
-          <span class="font-italic"
-                [innerHtml]="experience.companyName + ', ' + experience.country.name"
-                appHighlightSearch>
-          </span>
-        </div>
-
-        <div class="col-12">
-
-        </div>
-
-        <div class="col-12">
-
-        </div>
-
-      </div>
+      </app-candidate-job-experience>
 
     </ng-container>
 </tc-card>

@@ -87,6 +87,8 @@ public class CandidateJobExperienceAdminApi {
                 .add("fullTime")
                 .add("paid")
                 .add("description")
+                .add("tidiedDescription")
+                .add("keywordsInDescription")
                 .add("country", countryService.selectBuilder())
                 .add("candidateOccupation", candidateOccupationDto())
                 ;

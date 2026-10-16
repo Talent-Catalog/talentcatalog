@@ -78,8 +78,8 @@ public class HtmlSanitizer {
     }
 
     /**
-     * Similar to the sanitize method above except that it does not process TextParts json.
-     * It is only intended for use sanitizing text in Chat posts.
+     * Similar to the sanitize method above except that it is only intended for use sanitizing
+     * text in Chat posts.
      * <p>
      * It does not strip <a> tags of 'target=' or 'rel=' to allow links to open in a new tab.
      * As adding this target attribute back can open up a site to risks, also adding the attribute

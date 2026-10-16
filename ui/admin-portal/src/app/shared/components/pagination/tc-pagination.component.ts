@@ -1,4 +1,6 @@
 import {Component, EventEmitter, Input, Output, ViewEncapsulation} from '@angular/core';
+import {CommonModule} from '@angular/common';
+import {NgbPaginationModule} from '@ng-bootstrap/ng-bootstrap';
 
 /**
  * @component TcPaginationComponent
@@ -38,7 +40,9 @@ import {Component, EventEmitter, Input, Output, ViewEncapsulation} from '@angula
   selector: 'tc-pagination',
   templateUrl: './tc-pagination.component.html',
   styleUrls: ['./tc-pagination.component.scss'],
-  encapsulation: ViewEncapsulation.None
+  encapsulation: ViewEncapsulation.None,
+  standalone: true,
+  imports: [CommonModule, NgbPaginationModule]
 })
 export class TcPaginationComponent {
   /** Total number of results to be paged */

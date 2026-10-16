@@ -1,4 +1,5 @@
 import {Component, Input} from '@angular/core';
+import {CommonModule} from '@angular/common';
 
 /**
  * @component CardComponent
@@ -44,7 +45,9 @@ import {Component, Input} from '@angular/core';
 @Component({
   selector: 'tc-card',
   templateUrl: './tc-card.component.html',
-  styleUrls: ['./tc-card.component.scss']
+  styleUrls: ['./tc-card.component.scss'],
+  standalone: true,
+  imports: [CommonModule]
 })
 export class TcCardComponent {
   @Input() header: boolean = true;

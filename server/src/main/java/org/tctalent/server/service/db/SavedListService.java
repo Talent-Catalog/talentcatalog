@@ -27,9 +27,9 @@ import org.springframework.lang.Nullable;
 import org.springframework.web.reactive.function.client.WebClientException;
 import org.tctalent.server.exception.EntityExistsException;
 import org.tctalent.server.exception.NoSuchObjectException;
-import org.tctalent.server.exception.RegisteredListException;
 import org.tctalent.server.exception.SalesforceException;
 import org.tctalent.server.model.db.Candidate;
+import org.tctalent.server.model.db.Matching;
 import org.tctalent.server.model.db.SalesforceJobOpp;
 import org.tctalent.server.model.db.SavedList;
 import org.tctalent.server.model.db.TaskImpl;
@@ -155,31 +155,44 @@ public interface SavedListService {
         throws NoSuchObjectException, IOException;
 
     /**
-     * Creates a new SavedList unless it is a registered list and a registered list for that
-     * job, as defined by {@link SavedList#getSfJobOpp()}, already exists, in which case
-     * nothing new is created, and the existing list is returned.
-     * @param request Request defining new list (including whether it is a registered list
-     *                ({@link UpdateSavedListInfoRequest#getRegisteredJob()})
+     * Creates a new ordinary Saved List.
+     * <p>
+     * A job may have many ordinary Saved Lists (eg maintained by different teams sourcing
+     * candidates for the job) but only one Submission List, which is shared by everyone providing
+     * candidates for the job. This never creates a Submission List - see
+     * {@link #getOrCreateSubmissionList}.
+     * <p>
+     * A new list associated with a job gets the job's single Matching (created if the job
+     * doesn't have one yet).
+     * @param request Request defining new list
      * @return Created saved list
      * @throws EntityExistsException if a list with this name already exists.
-     * @throws RegisteredListException if request is for a registered list but sfJoblink or name is missing
      */
     SavedList createSavedList(UpdateSavedListInfoRequest request)
-            throws EntityExistsException, RegisteredListException;
+            throws EntityExistsException;
 
     /**
-     * Creates a new SavedList unless it is a registered list and a registered list for that
-     * job, as defined by {@link SavedList#getSfJobOpp()} already exists, in which case
-     * nothing new is created, and the existing list is returned.
+     * Creates a new ordinary Saved List - see
+     * {@link #createSavedList(UpdateSavedListInfoRequest)}.
      * @param user User to be recorded as creator of saved list
-     * @param request Request defining new list (including whether it is a registered list
-     *                ({@link UpdateSavedListInfoRequest#getRegisteredJob()})
+     * @param request Request defining new list
      * @return Created saved list
      * @throws EntityExistsException if a list with this name already exists.
-     * @throws RegisteredListException if request is for a registered list but sfJoblink or name is missing
      */
     SavedList createSavedList(User user, UpdateSavedListInfoRequest request)
-        throws EntityExistsException, RegisteredListException;
+        throws EntityExistsException;
+
+    /**
+     * Returns the given job's Submission List, creating it if the job doesn't have one yet.
+     * This is the only way that Submission Lists are created - by the job workflow.
+     * <p>
+     * An existing Submission List is returned unchanged. A new one is a global list named after
+     * the job, and gets the job's single Matching (created if the job doesn't have one yet).
+     * @param job Job
+     * @return The job's Submission List
+     */
+    @NonNull
+    SavedList getOrCreateSubmissionList(@NonNull SalesforceJobOpp job);
 
     /**
      * Creates/updates Salesforce records corresponding to candidates in a given list
@@ -357,6 +370,53 @@ public interface SavedListService {
      */
     void mergeSavedList(long savedListId, UpdateExplicitSavedListContentsRequest request)
         throws NoSuchObjectException;
+
+    /**
+     * Fills in the matching context of a list that candidates are being added to (or replacing
+     * its contents), if it doesn't have one yet, from the candidates' source.
+     * <p>
+     * Only missing context is filled in - an existing Matching is never replaced, since
+     * changing which candidates are in a list doesn't change what the list is about.
+     * <ul>
+     *     <li>
+     *         A destination associated with a job uses the job's single Matching - never an
+     *         unrelated source Matching.
+     *     </li>
+     *     <li>
+     *         Otherwise it uses the source's Matching (a source associated with a job uses the
+     *         job's Matching) - except that the working Matching of a default search with no
+     *         job is copied rather than shared, since the default search's requirements keep
+     *         changing as the user explores.
+     *     </li>
+     *     <li>
+     *         Selection lists are never changed - they always follow their search
+     *         (see {@link SavedSearchService#getSelectionList}).
+     *     </li>
+     * </ul>
+     * The destination's job is not changed.
+     *
+     * @param destination List that candidates are being added to. Not saved here.
+     * @param source List that the candidates come from - for a saved search, its selection
+     *               list. Null if not known, in which case nothing changes.
+     */
+    void inheritMatching(@NonNull SavedList destination, @Nullable SavedList source);
+
+    /**
+     * Returns the matching context of the given list, giving it its job's Matching if it doesn't
+     * have one yet but is associated with a job. (Lists created before Matchings were introduced
+     * don't have one until it is needed.)
+     * <p>
+     * Used when a matching context is actually needed - eg for match explanations. Simply
+     * reading a list never creates a Matching. A list with no job and no Matching is unchanged,
+     * and so is a selection list, which always follows its search
+     * (see {@link SavedSearchService#getSelectionList}).
+     *
+     * @param id Saved list ID
+     * @return The list's Matching - null if it has none and has no job
+     * @throws NoSuchObjectException if there is no such saved list
+     */
+    @Nullable
+    Matching resolveMatching(long id) throws NoSuchObjectException;
 
     /**
      * Merge the contents of the SavedList with the given id with the

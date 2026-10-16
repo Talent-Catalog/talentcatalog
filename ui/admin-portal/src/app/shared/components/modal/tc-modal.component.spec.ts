@@ -6,6 +6,7 @@ import {By} from "@angular/platform-browser";
 import {ButtonComponent} from "../button/button.component";
 import {Component} from "@angular/core";
 import {TcIconComponent} from "../icon-component/tc-icon.component";
+import {provideRouter} from '@angular/router';
 
 @Component({
   template: `
@@ -43,8 +44,9 @@ describe('TcModalComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [TcModalComponent, TestHostComponent, ButtonComponent, TcIconComponent],
-      providers: [NgbActiveModal],
+      declarations: [TestHostComponent],
+      imports: [TcModalComponent, ButtonComponent, TcIconComponent],
+      providers: [NgbActiveModal, provideRouter([])],
     }).compileComponents();
 
     fixture = TestBed.createComponent(TestHostComponent);

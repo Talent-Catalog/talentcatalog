@@ -143,6 +143,35 @@ resource "aws_iam_role_policy_attachment" "ecs_task_role_policy_attachment_s3" {
   policy_arn = aws_iam_policy.ecs_task_s3_policy.arn
 }
 
+# Allow the application running in ECS to invoke the configured Bedrock LLM.
+#
+# Bedrock authentication uses the ECS task role through the standard AWS
+# credential provider chain. No static AWS credentials or Bedrock API key
+# are required by the application.
+resource "aws_iam_policy" "ecs_task_bedrock_policy" {
+  name = "${var.app}-${var.env}-fargate-task-bedrock-policy"
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+          "bedrock:InvokeModel"
+        ]
+        Resource = [
+          "arn:aws:bedrock:${data.aws_region.current.id}::foundation-model/*"
+        ]
+      }
+    ]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "ecs_task_role_policy_attachment_bedrock" {
+  role       = aws_iam_role.ecs_task_role.name
+  policy_arn = aws_iam_policy.ecs_task_bedrock_policy.arn
+}
+
 # ALB
 module "alb" {
   source             = "terraform-aws-modules/alb/aws"

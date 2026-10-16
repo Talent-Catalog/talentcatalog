@@ -44,6 +44,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -1029,7 +1030,7 @@ public class Candidate extends AbstractCandidateDataDomainObject<Long> implement
     }
 
     /**
-     * Used alongside @Formula for updating the elasticsearch record of number of
+     * Used alongside @Formula for keeping the derived search value for number of
      * dependants.
      * @return Long of total up-to-date number of dependants belonging to Candidate.
      */
@@ -2712,17 +2713,29 @@ public class Candidate extends AbstractCandidateDataDomainObject<Long> implement
     public void updateText() {
         String combinedJobText = getCandidateJobExperiences().stream()
             .map(CandidateJobExperience::getDescription)
+            .filter(Objects::nonNull)
             .collect(Collectors.joining(" || "));
+        String combinedJobTextTidied = getCandidateJobExperiences().stream()
+            .map(CandidateJobExperience::getTidiedDescription)
+            .filter(Objects::nonNull)
+            .collect(Collectors.joining(" || "));
+        String combinedJobKeywords = getCandidateJobExperiences().stream()
+            .map(CandidateJobExperience::getKeywordsInDescription)
+            .filter(Objects::nonNull)
+            .flatMap(List::stream)
+            .collect(Collectors.joining(","));
         String combinedCvText = getCandidateAttachments().stream()
             .filter(CandidateAttachment::isCv)
             .map(CandidateAttachment::getTextExtract)
+            .filter(Objects::nonNull)
             .collect(Collectors.joining(" || "));
         String notesText = getShareableNotes();
         String combinedMigratedSkillsText = getCandidateSkills().stream()
             .map(CandidateSkill::getSkill)
             .collect(Collectors.joining(","));
         setText(Stream.of(
-            combinedJobText, combinedCvText, notesText, combinedMigratedSkillsText)
+            combinedJobText, combinedJobTextTidied, combinedJobKeywords, combinedCvText, notesText,
+            combinedMigratedSkillsText)
             .filter(s -> s != null && !s.isBlank())
             .collect(Collectors.joining(" || ")));
     }

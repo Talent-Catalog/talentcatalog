@@ -35,6 +35,8 @@ import {LocalStorageService} from "../../../services/local-storage.service";
 import {CandidateService} from "../../../services/candidate.service";
 import {takeUntil} from "rxjs/operators";
 import {Subject} from "rxjs";
+import {Matching} from "../../../model/matching";
+import {hasTextContent} from "../../../util/string";
 
 @Component({
   selector: 'app-candidate-search-card',
@@ -50,6 +52,16 @@ export class CandidateSearchCardComponent implements OnInit, OnDestroy, AfterVie
   @Input() defaultSearch: boolean;
   @Input() savedSearchSelectionChange: boolean;
   @Input() isKeywordSearch: boolean;
+  /**
+   * The candidate source's matching context, if it has one - resolved by the parent. Match
+   * explanations are of the candidate against its description.
+   */
+  @Input() matching?: Matching | null;
+  /**
+   * Set by the parent when the search's requirements have been edited but not yet saved to the
+   * Matching - see CandidateMatchExplanationComponent.
+   */
+  @Input() requirementsPendingMessage?: string;
 
   @Output() closeEvent = new EventEmitter();
   @Output() onSearchCardRendered = new EventEmitter();
@@ -194,6 +206,17 @@ export class CandidateSearchCardComponent implements OnInit, OnDestroy, AfterVie
    */
   getCandidateOppForJobSource(): CandidateOpportunity {
     return this.candidate.candidateOpportunities.find(o => o.jobOpp.id === this.candidateSource.sfJobOpp?.id);
+  }
+
+  /**
+   * Only show the match explanation when the source has a Matching with a description to explain
+   * the candidate against - or when the requirements have unsaved changes, so that the user can
+   * be told why explanations don't reflect them yet. Otherwise there is nothing to explain, so the
+   * explanation UI is omitted entirely rather than shown empty.
+   */
+  shouldShowMatchExplanation(): boolean {
+    return (this.matching != null && hasTextContent(this.matching.matchingDescription))
+      || !!this.requirementsPendingMessage;
   }
 
   isAnAdmin(): boolean {

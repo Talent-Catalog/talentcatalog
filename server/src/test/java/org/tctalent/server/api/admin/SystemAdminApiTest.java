@@ -1164,7 +1164,7 @@ class SystemAdminApiTest {
     when(candidateRepository.findByStatuses(any()))
         .thenReturn(List.of(ineligible, staysPending));
 
-    assertEquals("Done. Now run esload to update elasticsearch.", systemAdminApi.updateStatusesIneligible());
+    assertEquals("Done.", systemAdminApi.updateStatusesIneligible());
 
     assertEquals(CandidateStatus.ineligible, ineligible.getStatus());
     assertNull(staysPending.getStatus());
@@ -1632,7 +1632,7 @@ class SystemAdminApiTest {
 
     String result = systemAdminApi.updateStatusesIneligible();
 
-    assertEquals("Done. Now run esload to update elasticsearch.", result);
+    assertEquals("Done.", result);
     assertEquals(CandidateStatus.ineligible, candidate.getStatus());
     verify(candidateRepository).save(candidate);
     verify(candidateNoteRepository, never()).save(any(CandidateNote.class));
@@ -1654,7 +1654,7 @@ class SystemAdminApiTest {
 
     String result = systemAdminApi.updateStatusesIneligible();
 
-    assertEquals("Done. Now run esload to update elasticsearch.", result);
+    assertEquals("Done.", result);
     assertEquals(CandidateStatus.ineligible, candidate.getStatus());
     verify(candidateRepository).save(candidate);
     verify(candidateNoteRepository).save(any(CandidateNote.class));

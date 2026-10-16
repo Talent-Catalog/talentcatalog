@@ -33,7 +33,7 @@ import {NO_ERRORS_SCHEMA, SimpleChange} from "@angular/core";
 import {MockCandidate} from "../../../../../MockData/MockCandidate";
 import {CandidateJobExperience} from "../../../../../model/candidate-job-experience";
 import {CandidateService} from "../../../../../services/candidate.service";
-import {of} from "rxjs";
+import {of, throwError} from "rxjs";
 import {SkillsService} from "../../../../../services/skills.service";
 import {EditCandidateOccupationComponent} from "../edit/edit-candidate-occupation.component";
 import {
@@ -41,6 +41,11 @@ import {
 } from "./create/create-candidate-job-experience.component";
 import {EditCandidateJobExperienceComponent} from "./edit/edit-candidate-job-experience.component";
 import {ConfirmationComponent} from "../../../../util/confirm/confirmation.component";
+import {
+  CandidateJobExperienceComponent
+} from "./candidate-job-experience/candidate-job-experience.component";
+import {ExtendDatePipe} from "../../../../../util/date-adapter/extend-date-pipe";
+import {By} from "@angular/platform-browser";
 
 describe('ViewCandidateJobExperienceComponent', () => {
   let component: ViewCandidateJobExperienceComponent;
@@ -63,7 +68,7 @@ describe('ViewCandidateJobExperienceComponent', () => {
     const skillsServiceSpy = jasmine.createSpyObj('SkillsService', ['extractSkills']);
 
     await TestBed.configureTestingModule({
-      declarations: [ViewCandidateJobExperienceComponent],
+      declarations: [ViewCandidateJobExperienceComponent, CandidateJobExperienceComponent, ExtendDatePipe],
       imports: [HttpClientTestingModule,FormsModule,ReactiveFormsModule, NgSelectModule,NgxWigModule],
       providers: [
         UntypedFormBuilder,
@@ -223,13 +228,9 @@ describe('ViewCandidateJobExperienceComponent', () => {
   it('should edit experience, extract skills and refresh after success', fakeAsync(() => {
     const experience = {
       id: 5,
-      description: JSON.stringify({
-        parts: {
-          original: 'Original text',
-          tidied: 'Tidied text',
-          keywords: ['Java', 'Spring']
-        }
-      })
+      description: 'Original text',
+      tidiedDescription: 'Tidied text',
+      keywordsInDescription: ['Java', 'Spring']
     } as any;
 
     const modalRef = {
@@ -275,13 +276,9 @@ describe('ViewCandidateJobExperienceComponent', () => {
   it('should ignore edit experience modal dismissal', fakeAsync(() => {
     const experience = {
       id: 5,
-      description: JSON.stringify({
-        parts: {
-          original: '',
-          tidied: '',
-          keywords: []
-        }
-      })
+      description: '',
+      tidiedDescription: '',
+      keywordsInDescription: []
     } as any;
 
     const modalRef = {
@@ -305,6 +302,34 @@ describe('ViewCandidateJobExperienceComponent', () => {
 
     expect(mockCandidateService.updateCandidate)
     .not.toHaveBeenCalled();
+  }));
+
+  it('should safely build skill extraction text when description fields are missing', fakeAsync(() => {
+    const experience = {
+      id: 9,
+      description: undefined,
+      tidiedDescription: undefined,
+      keywordsInDescription: undefined
+    } as any;
+
+    const modalRef = {
+      componentInstance: {},
+      result: Promise.resolve(experience)
+    } as any;
+
+    mockNgbModal.open.and.returnValue(modalRef);
+    mockSkillsService.extractSkills.and.returnValue(of([]));
+
+    expect(() => component.editCandidateJobExperience(experience)).not.toThrow();
+    tick();
+
+    expect(mockSkillsService.extractSkills).toHaveBeenCalledWith({
+      lang: 'en',
+      text: '  '
+    });
+
+    expect(mockCandidateService.updateCandidate)
+    .toHaveBeenCalled();
   }));
 
   it('should emit delete occupation immediately when there are no experiences', () => {
@@ -390,6 +415,29 @@ describe('ViewCandidateJobExperienceComponent', () => {
     .toHaveBeenCalled();
   }));
 
+  it('should set error and stop loading when deleting a job experience fails', fakeAsync(() => {
+    const experience = {id: 7} as any;
+    const error = 'Delete failed';
+
+    const modalRef = {
+      componentInstance: {},
+      result: Promise.resolve(true)
+    } as any;
+
+    mockNgbModal.open.and.returnValue(modalRef);
+    mockCandidateJobExperienceService.delete
+    .and.returnValue(throwError(error));
+
+    component.loading = true;
+    component.deleteCandidateJobExperience(experience);
+    tick();
+
+    expect(component.error).toBe(error);
+    expect(component.loading).toBeFalse();
+    expect(mockCandidateService.updateCandidate)
+    .not.toHaveBeenCalled();
+  }));
+
   it('should not delete a job experience when confirmation is false', fakeAsync(() => {
     const experience = {id: 7} as any;
 
@@ -442,6 +490,85 @@ describe('ViewCandidateJobExperienceComponent', () => {
   it('should expose the isHtml helper', () => {
     expect(component.isHtml('<p>Hello</p>')).toBeTrue();
     expect(component.isHtml('Plain text')).toBeFalse();
+  });
+
+  describe('rendering (via the reusable CandidateJobExperienceComponent)', () => {
+
+    function experienceComponents() {
+      return fixture.debugElement.queryAll(By.directive(CandidateJobExperienceComponent));
+    }
+
+    it('should render one reusable experience component per experience, in order', () => {
+      fixture.detectChanges();
+
+      const rendered = experienceComponents()
+        .map(de => (de.componentInstance as CandidateJobExperienceComponent).experience);
+      expect(rendered).toEqual(component.candidateOccupation.candidateJobExperiences);
+      expect(fixture.nativeElement.textContent).toContain('Developer');
+      expect(fixture.nativeElement.textContent).toContain('Project Manager');
+    });
+
+    it('should still render the occupation heading', () => {
+      fixture.detectChanges();
+
+      expect(fixture.nativeElement.textContent).toContain('Software Engineer (5 years)');
+    });
+
+    it('should render separators only between experiences', () => {
+      fixture.detectChanges();
+
+      expect(fixture.nativeElement.querySelectorAll('hr').length).toBe(experienceComponents().length - 1);
+    });
+
+    it('should keep edit and delete controls in the parent alongside each experience when editable', () => {
+      fixture.detectChanges();
+
+      experienceComponents().forEach(de => {
+        const buttons = de.queryAll(By.css('[experienceActions] tc-button'));
+        expect(buttons.length).toBe(2);
+      });
+    });
+
+    it('should call the parent edit/delete handlers for the corresponding experience', () => {
+      spyOn(component, 'editCandidateJobExperience');
+      spyOn(component, 'deleteCandidateJobExperience');
+      fixture.detectChanges();
+
+      const second = experienceComponents()[1];
+      const [editButton, deleteButton] = second.queryAll(By.css('[experienceActions] tc-button'));
+      editButton.triggerEventHandler('onClick', null);
+      deleteButton.triggerEventHandler('onClick', null);
+
+      const secondExperience = component.candidateOccupation.candidateJobExperiences[1];
+      expect(component.editCandidateJobExperience).toHaveBeenCalledWith(secondExperience);
+      expect(component.deleteCandidateJobExperience).toHaveBeenCalledWith(secondExperience);
+    });
+
+    it('should show edit but not delete for non-admin users', () => {
+      component.adminUser = false;
+      fixture.detectChanges();
+
+      experienceComponents().forEach(de => {
+        expect(de.queryAll(By.css('[experienceActions] tc-button')).length).toBe(1);
+      });
+    });
+
+    it('should show no experience controls when not editable', () => {
+      component.editable = false;
+      fixture.detectChanges();
+
+      expect(fixture.nativeElement.querySelector('[experienceActions]')).toBeNull();
+      expect(experienceComponents().length).toBe(2);
+    });
+
+    it('should show the empty state when there are no experiences', () => {
+      component.experiences = [];
+      fixture.detectChanges();
+
+      expect(experienceComponents().length).toBe(0);
+      expect(fixture.nativeElement.textContent)
+        .toContain('No job experience data has been entered by this candidate.');
+    });
   });
 
 });

@@ -33,6 +33,7 @@ import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -51,15 +52,26 @@ public class SavedSearch extends AbstractCandidateSource {
     private String type;
 
     /**
+     * Controls whether changes to this saved search's filter criteria are persisted automatically
+     * when the search is run.
+     * <p>
+     * The default is {@code true}, meaning that changing filters and clicking Search updates the
+     * stored search criteria before the search results are returned.
+     * <p>
+     * When set to {@code false}, running the search does not modify its persisted criteria.
+     */
+    private boolean autoUpdateOnSearch = true;
+
+    /**
      * Every user has one default search. It is opened every time they use the 'New Search' tab
      * and overwritten with any different new search they initiate. In effect, this means a user
      * opening the 'New Search' tab will always see their most recently initiated new search.
      */
-    private Boolean defaultSearch = false;
+    private boolean defaultSearch = false;
 
     /**
      * This is the query string that will be used to search text related to candidates.
-     * Currently, it is based on Elasticsearch style simple query string syntax.
+     * It uses the keyword-search simple query syntax used by candidate text search.
      */
     private String simpleQueryString;
 
@@ -133,8 +145,17 @@ public class SavedSearch extends AbstractCandidateSource {
     private String regoReferrerParam;
 
     /**
-     * Natural language candidate requirements (e.g. from a job description).
+     * Original storage for the natural language candidate requirements, retained for searches
+     * that have not yet been associated with a {@link Matching}. Requirements are now stored
+     * as the description of the search's {@link #getMatching() Matching}.
+     * <p>
+     * Only meaningful for a search which does not yet have a Matching. It is used to initialise
+     * the Matching when one is created lazily, and is cleared whenever the requirements are
+     * written, so that there are never two competing requirements values.
+     * See {@link #getRequirements()}.
      */
+    @Getter(AccessLevel.NONE)
+    @Setter(AccessLevel.NONE)
     private String requirements;
 
     private String unhcrStatuses;
@@ -167,7 +188,7 @@ public class SavedSearch extends AbstractCandidateSource {
      * <p/>
      * When a search is marked as not reviewable, the front end will not supply review filters.
      */
-    private Boolean reviewable = false;
+    private boolean reviewable = false;
 
     //TODO JC There is only ever one "SearchJoin" per search - this is legacy code where each search
     //could be based on a boolean expression of base searches. Too complex and was dropped ages ago.
@@ -212,13 +233,6 @@ public class SavedSearch extends AbstractCandidateSource {
     public void setExportColumns(@Nullable List<ExportColumn> exportColumns) {
         modifyColumnIndices(exportColumns);
         this.exportColumns = exportColumns;
-    }
-
-
-    public void setDefaultSearch(Boolean defaultSearch) {
-        if (defaultSearch != null) {
-            this.defaultSearch = defaultSearch;
-        }
     }
 
 
@@ -287,14 +301,34 @@ public class SavedSearch extends AbstractCandidateSource {
     }
 
 
-    public void setReviewable(Boolean reviewable) {
-        if (reviewable != null) {
-            this.reviewable = reviewable;
-        }
-    }
-
     @Override
     public Set<SavedSearch> getUsersCollection(User user) {
         return user.getSharedSearches();
+    }
+
+    /**
+     * Natural language candidate requirements (e.g. from a job description): the description of
+     * this search's {@link #getMatching() Matching} or, if it doesn't have a Matching yet, any
+     * legacy requirements stored before Matchings were introduced.
+     */
+    @Nullable
+    public String getRequirements() {
+        final Matching matching = getMatching();
+        return matching != null ? matching.getMatchingDescription() : requirements;
+    }
+
+    /**
+     * See {@link #requirements}
+     */
+    @Nullable
+    public String getLegacyRequirements() {
+        return requirements;
+    }
+
+    /**
+     * See {@link #requirements}
+     */
+    public void setLegacyRequirements(@Nullable String legacyRequirements) {
+        this.requirements = legacyRequirements;
     }
 }

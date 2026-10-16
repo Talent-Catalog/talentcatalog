@@ -24,6 +24,8 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.mock;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -37,6 +39,7 @@ import static org.tctalent.server.data.SavedListTestData.getSavedList;
 import static org.tctalent.server.data.SavedListTestData.getSavedLists;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -53,6 +56,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.tctalent.server.model.db.Matching;
+import org.tctalent.server.model.db.MatchingSnapshot;
 import org.tctalent.server.api.dto.ExportColumnsBuilderSelector;
 import org.tctalent.server.api.dto.SavedListBuilderSelector;
 import org.tctalent.server.model.db.SavedList;
@@ -67,6 +72,7 @@ import org.tctalent.server.request.list.SearchSavedListRequest;
 import org.tctalent.server.request.list.UpdateSavedListInfoRequest;
 import org.tctalent.server.request.search.UpdateSharingRequest;
 import org.tctalent.server.service.db.CandidateSavedListService;
+import org.tctalent.server.service.db.MatchingService;
 import org.tctalent.server.service.db.CandidateService;
 import org.tctalent.server.service.db.SalesforceService;
 import org.tctalent.server.service.db.SavedListService;
@@ -104,6 +110,8 @@ class SavedListAdminApiTest extends ApiTestBase {
 
     @MockitoBean
     SavedListService savedListService;
+    @MockitoBean
+    MatchingService matchingService;
     @MockitoBean
     CandidateService candidateService;
     @MockitoBean
@@ -541,5 +549,46 @@ class SavedListAdminApiTest extends ApiTestBase {
                 .andExpect(status().isOk());
 
         verify(savedListService).updateTcShortName(any(UpdateShortNameRequest.class));
+    }
+
+    @Test
+    @DisplayName("resolve matching returns the resolved Matching's description and updatedDate")
+    void resolveMatchingSucceeds() throws Exception {
+        Matching matching = mock(Matching.class);
+        given(matching.getId()).willReturn(5L);
+        given(savedListService.resolveMatching(SAVED_LIST_ID)).willReturn(matching);
+        given(matchingService.resolveDescription(5L)).willReturn(new MatchingSnapshot(
+            5L, "<p>ICU nurse</p>", OffsetDateTime.parse("2026-10-01T10:15:30.123456Z")));
+
+        mockMvc.perform(post(BASE_PATH + "/{id}/matching".replace("{id}", Long.toString(SAVED_LIST_ID)))
+            .with(csrf())
+            .header("Authorization", "Bearer " + "jwt-token")
+            .accept(MediaType.APPLICATION_JSON))
+
+            .andDo(print())
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.id", is(5)))
+            .andExpect(jsonPath("$.matchingDescription", is("<p>ICU nurse</p>")))
+            .andExpect(jsonPath("$.updatedDate", notNullValue()));
+
+        verify(savedListService).resolveMatching(SAVED_LIST_ID);
+        verify(matchingService).resolveDescription(5L);
+    }
+
+    @Test
+    @DisplayName("resolve matching returns an empty response when there is no matching context")
+    void resolveMatchingReturnsEmptyWhenNone() throws Exception {
+        given(savedListService.resolveMatching(SAVED_LIST_ID)).willReturn(null);
+
+        mockMvc.perform(post(BASE_PATH + "/{id}/matching".replace("{id}", Long.toString(SAVED_LIST_ID)))
+            .with(csrf())
+            .header("Authorization", "Bearer " + "jwt-token")
+            .accept(MediaType.APPLICATION_JSON))
+
+            .andDo(print())
+            .andExpect(status().isOk())
+            .andExpect(content().string(""));
+
+        verify(matchingService, never()).resolveDescription(anyLong());
     }
 }

@@ -45,7 +45,7 @@ public interface SkillsService {
      * @param skills List of skill names to add.
      * @param languageCode Language code.
      */
-    void addTcSkillsIfNew(@NonNull List<String> skills, @NonNull String languageCode);
+    void addTcSkillsIfNew(List<String> skills, @NonNull String languageCode);
 
     /**
      * Extracts skill names from the given text.

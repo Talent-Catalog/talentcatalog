@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {isHtml, truncate} from "./string";
+import {hasSameTextContent, hasTextContent, isHtml, truncate} from "./string";
 
 describe('Utility Functions', () => {
   describe('truncate', () => {
@@ -84,6 +84,50 @@ describe('Utility Functions', () => {
       const text = '<img src="image.jpg" />';
       const result = isHtml(text);
       expect(result).toBe(true);
+    });
+  });
+
+  describe('hasTextContent', () => {
+    it('should be false for null, undefined and empty text', () => {
+      expect(hasTextContent(null)).toBeFalse();
+      expect(hasTextContent(undefined)).toBeFalse();
+      expect(hasTextContent('')).toBeFalse();
+    });
+
+    it('should be false for whitespace only', () => {
+      expect(hasTextContent('   \n\t ')).toBeFalse();
+    });
+
+    it('should be false for HTML with no visible text', () => {
+      expect(hasTextContent('<p></p>')).toBeFalse();
+      expect(hasTextContent('<p><br></p>')).toBeFalse();
+      expect(hasTextContent('<p>&nbsp;</p>')).toBeFalse();
+      expect(hasTextContent('<div> <p>  </p> </div>')).toBeFalse();
+    });
+
+    it('should be true for plain text', () => {
+      expect(hasTextContent('Java developer')).toBeTrue();
+    });
+
+    it('should be true for HTML containing text', () => {
+      expect(hasTextContent('<p>Java <b>developer</b></p>')).toBeTrue();
+    });
+  });
+
+  describe('hasSameTextContent', () => {
+    it('should be true for the same text with different markup or whitespace', () => {
+      expect(hasSameTextContent('<p>ICU  nurse</p>', 'ICU nurse ')).toBeTrue();
+      expect(hasSameTextContent('<p>ICU&nbsp;nurse</p>', '<div>ICU nurse</div>')).toBeTrue();
+    });
+
+    it('should be true for texts with no text content', () => {
+      expect(hasSameTextContent(null, '<p></p>')).toBeTrue();
+      expect(hasSameTextContent(undefined, '  ')).toBeTrue();
+    });
+
+    it('should be false for different text', () => {
+      expect(hasSameTextContent('<p>ICU nurse</p>', '<p>Paediatric nurse</p>')).toBeFalse();
+      expect(hasSameTextContent(null, '<p>ICU nurse</p>')).toBeFalse();
     });
   });
 });

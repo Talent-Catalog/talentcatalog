@@ -15,6 +15,7 @@
  */
 import {CandidateSearchCardComponent} from "./candidate-search-card.component";
 import {ComponentFixture, TestBed} from "@angular/core/testing";
+import {By} from "@angular/platform-browser";
 import {AuthorizationService} from "../../../services/authorization.service";
 import {CUSTOM_ELEMENTS_SCHEMA} from "@angular/core";
 import {NgbNavModule} from "@ng-bootstrap/ng-bootstrap";
@@ -35,7 +36,9 @@ describe('CandidateSearchCardComponent', () => {
 
   beforeEach(async () => {
     const localStorageSpy = jasmine.createSpyObj('LocalStorageService', ['get', 'set']);
-    const authSpy = jasmine.createSpyObj('AuthorizationService', ['canViewPrivateCandidateInfo']);
+    const authSpy = jasmine.createSpyObj('AuthorizationService', [
+      'canViewPrivateCandidateInfo', 'canSeeJobDetails', 'isAnAdmin', 'isEditableCandidate'
+    ]);
     const candidateServiceSpy = jasmine.createSpyObj('CandidateService', ['updateCandidate']);
 
     await TestBed.configureTestingModule({
@@ -116,6 +119,65 @@ describe('CandidateSearchCardComponent', () => {
     authService.canViewPrivateCandidateInfo.and.returnValue(true);
     expect(component.canViewPrivateInfo()).toBeTrue();
     expect(authService.canViewPrivateCandidateInfo).toHaveBeenCalledWith(component.candidate);
+  });
+
+  describe('match explanation integration', () => {
+
+    function findMatchExplanationEl() {
+      return fixture.debugElement.query(By.css('app-candidate-match-explanation'));
+    }
+
+    const matching = {id: 5, matchingDescription: '<p>ICU nurse</p>', updatedDate: '2026-10-01T10:15:30Z'};
+
+    it('should pass the candidate id and the Matching\'s id and updatedDate', () => {
+      component.candidate = {id: 42, candidateOpportunities: []} as Candidate;
+      component.candidateSource = {} as CandidateSource;
+      component.matching = matching;
+      fixture.detectChanges();
+
+      const el = findMatchExplanationEl();
+      expect(el.properties['candidateId']).toBe(42);
+      expect(el.properties['matchingId']).toBe(5);
+      expect(el.properties['matchingUpdatedDate']).toBe('2026-10-01T10:15:30Z');
+    });
+
+    it('should show the match explanation for a source with no job, as long as its Matching has a description', () => {
+      component.candidate = {id: 42, candidateOpportunities: []} as Candidate;
+      component.candidateSource = {} as CandidateSource;
+      component.matching = matching;
+      fixture.detectChanges();
+
+      expect(findMatchExplanationEl()).toBeTruthy();
+    });
+
+    it('should NOT instantiate the match explanation component for a job source with no matching context', () => {
+      component.candidate = {id: 42, candidateOpportunities: []} as Candidate;
+      component.candidateSource = {sfJobOpp: {id: 7}} as CandidateSource;
+      component.matching = null;
+      fixture.detectChanges();
+
+      expect(findMatchExplanationEl()).toBeFalsy();
+    });
+
+    it('should NOT instantiate the match explanation component when the Matching has no description', () => {
+      component.candidate = {id: 42, candidateOpportunities: []} as Candidate;
+      component.candidateSource = {} as CandidateSource;
+      component.matching = {...matching, matchingDescription: '<p></p>'};
+      fixture.detectChanges();
+
+      expect(findMatchExplanationEl()).toBeFalsy();
+    });
+
+    it('should show the match explanation, passing the message, when the requirements have unsaved changes', () => {
+      component.candidate = {id: 42, candidateOpportunities: []} as Candidate;
+      component.candidateSource = {} as CandidateSource;
+      component.matching = null;
+      component.requirementsPendingMessage = 'Save the search';
+      fixture.detectChanges();
+
+      expect(findMatchExplanationEl().properties['requirementsPendingMessage'])
+        .toBe('Save the search');
+    });
   });
 
 });

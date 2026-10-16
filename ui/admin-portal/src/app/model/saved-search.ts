@@ -70,6 +70,7 @@ export interface SavedSearchRef extends HasId {
 
 export interface SavedSearch extends CandidateSource, SearchCandidateRequest, SavedSearchRef {
   defaultSearch: boolean;
+  autoUpdateOnSearch?: boolean;
   reviewable: boolean;
   savedSearchType: SavedSearchType;
   savedSearchSubtype: SavedSearchSubtype;
@@ -105,7 +106,10 @@ export function getCandidateSourceType(source: CandidateSource) {
 }
 
 export function isSavedSearch(source: CandidateSource): source is SavedSearch {
-  return source ? 'savedSearchType' in source : false;
+  //We check for the presence of  a SavedSearch only property (ie not shared with Lists)
+  //that is guaranteed to be present in the source object no matter what DTO has been used.
+  //If it is present, then the source is a SavedSearch.
+  return source ? 'defaultSearch' in source : false;
 }
 
 export function getSavedSearchBreadcrumb(savedSearch: SavedSearch, infos: SavedSearchTypeInfo[]): string {
@@ -155,6 +159,7 @@ export interface SavedSearchRequest {
   name?: string;
   fixed?: boolean;
   reviewable?: boolean;
+  autoUpdateOnSearch?: boolean;
   jobId?: number;
   savedSearchType?: SavedSearchType;
   savedSearchSubtype?: SavedSearchSubtype;
@@ -192,6 +197,7 @@ export function convertToSavedSearchRequest
   savedSearchRequest.fixed = savedSearch.fixed;
   savedSearchRequest.jobId = jobId;
   savedSearchRequest.reviewable = savedSearch.reviewable;
+  savedSearchRequest.autoUpdateOnSearch = savedSearch.autoUpdateOnSearch;
   savedSearchRequest.savedSearchType = savedSearch.savedSearchType;
   savedSearchRequest.savedSearchSubtype = savedSearch.savedSearchSubtype;
   savedSearchRequest.searchCandidateRequest = searchCandidateRequest;

@@ -26,6 +26,8 @@ import {JobNameAndId} from "../../../model/job";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {MockJob} from "../../../MockData/MockJob";
 import {SavedList} from "../../../model/saved-list";
+import {DtoType} from "../../../model/base";
+import {AuthorizationService} from "../../../services/authorization.service";
 
 describe('SelectListComponent', () => {
   let component: SelectListComponent;
@@ -37,6 +39,8 @@ describe('SelectListComponent', () => {
   beforeEach(async () => {
     const activeModalSpyObj = jasmine.createSpyObj('NgbActiveModal', ['close', 'dismiss']);
     const savedListServiceSpyObj = jasmine.createSpyObj('SavedListService', ['search']);
+    const authorizationServiceSpyObj = jasmine.createSpyObj('AuthorizationService', ['isCandidateSourceMine']);
+    authorizationServiceSpyObj.isCandidateSourceMine.and.returnValue(true);
 
     await TestBed.configureTestingModule({
       declarations: [SelectListComponent],
@@ -44,7 +48,8 @@ describe('SelectListComponent', () => {
       providers: [
         UntypedFormBuilder,
         { provide: NgbActiveModal, useValue: activeModalSpyObj },
-        { provide: SavedListService, useValue: savedListServiceSpyObj }
+        { provide: SavedListService, useValue: savedListServiceSpyObj },
+        { provide: AuthorizationService, useValue: authorizationServiceSpyObj }
       ]
     }).compileComponents();
 
@@ -71,6 +76,16 @@ describe('SelectListComponent', () => {
     expect(component.newList).toBeFalse();
     expect(component.replace).toBeFalse();
     expect(component.changeStatuses).toBeFalse();
+  });
+
+  it('should request minimal non-fixed list data when loading lists', () => {
+    expect(savedListServiceSpy.search).toHaveBeenCalledWith(jasmine.objectContaining({
+      dtoType: DtoType.MINIMAL,
+      fixed: false,
+      owned: true,
+      shared: true,
+      global: true
+    }));
   });
 
   it('should handle error while loading lists', fakeAsync(() => {

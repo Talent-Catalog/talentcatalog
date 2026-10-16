@@ -52,5 +52,9 @@
   </div>
 </div>
 
-<app-text-parts-view [hideKeywords]="true" [hideTidied]="true"
-                     [text]="experience?.description"></app-text-parts-view>
+<div class="text-parts-view">
+  <div class="mb-3">
+    <label class="form-label">Original</label>
+    <div class="form-control-plaintext" [innerHTML]="experience?.description"></div>
+  </div>
+</div>

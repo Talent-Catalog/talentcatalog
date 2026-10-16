@@ -28,6 +28,7 @@ import {MockCandidate} from "../../../../../../../MockData/MockCandidate";
 import {CandidateVisa, CandidateVisaJobCheck} from "../../../../../../../model/candidate";
 import {of} from "rxjs";
 import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {provideRouter} from "@angular/router";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {CandidateService} from "../../../../../../../services/candidate.service";
@@ -56,12 +57,13 @@ describe('VisaJobCheckAuComponent', () => {
     const candidateOccupationServiceSpy = jasmine.createSpyObj('CandidateOccupationService', ['get']);
     const occupationServiceSpy = jasmine.createSpyObj('OccupationService', ['listOccupations']);
     await TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule,FormsModule,ReactiveFormsModule,NgSelectModule],
-      declarations: [ VisaJobCheckAuComponent,UpdatedByComponent,
+      imports: [HttpClientTestingModule,FormsModule,ReactiveFormsModule,NgSelectModule,
         TcAccordionComponent,
         TcAccordionItemComponent
       ],
+      declarations: [ VisaJobCheckAuComponent,UpdatedByComponent],
       providers: [
+        provideRouter([]),
         { provide: CandidateEducationService, useValue: candidateEducationServiceSpy },
         { provide: CandidateOccupationService, useValue: candidateOccupationServiceSpy },
         { provide: OccupationService, useValue: occupationServiceSpy },

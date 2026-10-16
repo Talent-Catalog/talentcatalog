@@ -16,6 +16,7 @@
 
 package org.tctalent.server.model.db;
 
+import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
@@ -25,9 +26,11 @@ import jakarta.persistence.PreUpdate;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import java.time.LocalDate;
+import java.util.List;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.lang.Nullable;
 
 @Getter
 @Setter
@@ -72,6 +75,20 @@ public class CandidateJobExperience extends AbstractCandidateDataDomainObject<Lo
     private Boolean fullTime;
     private Boolean paid;
     private String description;
+
+    /**
+     * Optional tidied-up version of the original text.
+     * This could be used for constructing a CV.
+     */
+    @Nullable
+    private String tidiedDescription;
+
+    /**
+     * User supplied keywords (skills) associated with the description.
+     */
+    @Convert(converter = CommaDelimitedStringsConverter.class)
+    @Nullable
+    private List<String> keywordsInDescription;
 
     public CandidateJobExperience(Candidate candidate, Country country, CandidateOccupation candidateOccupation,
                                   String companyName, String role, LocalDate startDate, LocalDate endDate,

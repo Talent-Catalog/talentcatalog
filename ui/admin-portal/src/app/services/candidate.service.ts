@@ -37,6 +37,10 @@ import {map} from "rxjs/operators";
 import {CandidateSource, FetchCandidatesWithChatRequest} from "../model/base";
 import {IntakeService} from "../components/util/intake/IntakeService";
 import {JobChatUserInfo} from "../model/chat";
+import {
+  CandidateMatchExplanation,
+  CandidateMatchExplanationRequest
+} from "../model/candidate-match-explanation";
 
 export type CvFormat = 'PDF' | 'DOCX' | 'GOOGLE_DOC';
 
@@ -285,6 +289,19 @@ export class CandidateService implements IntakeService {
   fetchPotentialDuplicates(id: number): Observable<Candidate[]> {
     return this.http.get<Candidate[]>(
       `${this.apiUrl}/${id}/fetch-potential-duplicates-of-given-candidate`
+    );
+  }
+
+  /**
+   * Returns the explanation of how the candidate relates to the description of the requested
+   * Matching. The server returns its cached explanation if that is still current, otherwise it
+   * generates (and caches) a new one - as it always does if request.regenerate is true.
+   */
+  getOrGenerateMatchExplanation(
+    candidateId: number, request: CandidateMatchExplanationRequest
+  ): Observable<CandidateMatchExplanation> {
+    return this.http.post<CandidateMatchExplanation>(
+      `${this.apiUrl}/${candidateId}/match-explanation`, request
     );
   }
 

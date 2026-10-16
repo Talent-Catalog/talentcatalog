@@ -232,11 +232,11 @@ git clone https://github.com/Talent-Catalog/talentcatalog.git
 
 ### Using Docker-Compose to Start Services ###
 
-With Docker and Docker Compose installed, you can now use docker-compose to set up the required 
-services: PostgreSQL, Redis, Elasticsearch, and optionally, Kibana.
+With Docker and Docker Compose installed, you can now use docker-compose to set up the required
+services: PostgreSQL and Redis.
 
-- The TC repository includes a docker-compose.yml file in the docker-compose folder, 
-with preconfigured services for PostgreSQL, Redis, Elasticsearch, and Kibana. This file is ready 
+- The TC repository includes a docker-compose.yml file in the docker-compose folder,
+with preconfigured services for PostgreSQL and Redis. This file is ready
 for you to use.
 - To start the services, navigate to the docker-compose folder and run the following command:
 ```shell
@@ -269,8 +269,6 @@ The following services will all run from the Docker container:
 
 - **PostgreSQL** (listening on port 5432)
 - **Redis** (6379)
-- **Elasticsearch** (9200)
-- **Kibana** (5601)
 
 Verify with the following terminal command: 
 ```shell
@@ -531,10 +529,6 @@ into the server and serve through Apache Tomcat._
   log in to the admin portal in development.
 - Details about this user can be found in
   `org/talentcatalog/server/configuration/SystemAdminConfiguration.java`
-
-### Populate ElasticSearch from Postgres Database ###
-
-- Log in to Admin Portal as SystemAdmin, go to Settings | Admin API and make API call `esload`
 
 ## Upgrades ##
 

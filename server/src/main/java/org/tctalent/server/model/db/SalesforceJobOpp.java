@@ -255,6 +255,18 @@ public class SalesforceJobOpp extends AbstractOpportunity {
     private JobOppIntake jobOppIntake;
 
     /**
+     * The job's single matching context, shared by the candidate sources operating in the context
+     * of this job. Null until one is needed.
+     * <p>
+     * Read only here: a job must never get a second Matching, so the column is only ever set
+     * (once) by {@link org.tctalent.server.service.db.MatchingService#getOrCreateJobMatching}.
+     */
+    @Nullable
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "matching_id", insertable = false, updatable = false)
+    private Matching matching;
+
+    /**
      * Salesforce field: hiring commitment of job opportunity
      * As of 22/5/23 this may change to a text field, stored in database as text but currently a number from SF.
      */

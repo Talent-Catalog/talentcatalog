@@ -43,7 +43,7 @@ export class SearchQueryService {
   }
 
   /*
-   * Parses the input search query string based on elastic search syntax. Extracts and returns an
+   * Parses the input search query string based on keyword-search syntax. Extracts and returns an
    * array of search terms and phrases.
    *
    * Example input: 'accountant + (excel powerpoint) "hospital director"'

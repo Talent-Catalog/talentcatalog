@@ -118,6 +118,17 @@
       ></app-candidate-shareable-notes>
     </div>
 
+    <!-- CANDIDATE MATCH EXPLANATION -->
+    <div *ngIf="shouldShowMatchExplanation()" class="mt-2">
+      <app-candidate-match-explanation
+        [candidateId]="candidate.id"
+        [candidate]="candidate"
+        [matchingId]="matching?.id"
+        [matchingUpdatedDate]="matching?.updatedDate"
+        [requirementsPendingMessage]="requirementsPendingMessage"
+      ></app-candidate-match-explanation>
+    </div>
+
     <!-- GENERIC CANDIDATE PROFILE TABS -->
     <div class="mt-2">
       <tc-tabs [activeTabId]="activeTabId"

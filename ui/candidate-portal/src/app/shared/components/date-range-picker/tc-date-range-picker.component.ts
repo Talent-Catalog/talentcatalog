@@ -15,8 +15,10 @@
  */
 
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {NgbDate, NgbDateStruct} from "@ng-bootstrap/ng-bootstrap";
+import {NgbDate, NgbDateStruct, NgbInputDatepicker} from "@ng-bootstrap/ng-bootstrap";
 import {LanguageService} from "../../../services/language.service";
+import {ButtonComponent} from "../button/button.component";
+import {TcIconComponent} from "../icon-component/tc-icon.component";
 
 /**
  * @component TcDateRangePickerComponent
@@ -72,7 +74,13 @@ import {LanguageService} from "../../../services/language.service";
 @Component({
   selector: 'tc-date-range-picker',
   templateUrl: './tc-date-range-picker.component.html',
-  styleUrls: ['./tc-date-range-picker.component.scss']
+  styleUrls: ['./tc-date-range-picker.component.scss'],
+  standalone: true,
+  imports: [
+    NgbInputDatepicker,
+    ButtonComponent,
+    TcIconComponent
+  ]
 })
 export class TcDateRangePickerComponent implements OnInit {
 

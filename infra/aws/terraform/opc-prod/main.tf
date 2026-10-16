@@ -23,13 +23,6 @@ variable "duolingo_api_secret" {
   default     = ""
 }
 
-variable "es_password" {
-  description = "Elasticsearch password (todo: retire elasticsearch)"
-  type        = string
-  sensitive   = true
-  default     = ""
-}
-
 variable "email_password" {
   description = "Email password"
   type        = string
@@ -233,7 +226,17 @@ module "tc-plus-prod" {
   db_major_engine_version = "17"
   db_name                 = "tcplus"
 
+  # Vanta user data classification (TC-1524)
+  db_vanta_tags = {
+    VantaContainsUserData = "true"
+    VantaUserDataStored   = "Empty - migration target for TBB production TC database"
+  }
+
   availability_zones = ["eu-west-2a", "eu-west-2b", "eu-west-2c"]
+
+  # CloudWatch alarm notifications (TC-1526)
+  cloudwatch_alarms_enabled = true
+  alarm_sns_topic_arn       = aws_sns_topic.alarms.arn
 
   # Redis cache configuration (todo: enable for production)
   cache_enable          = true
@@ -254,8 +257,6 @@ module "tc-plus-prod" {
   email_test_override                   = "-" # todo: set prod value
   email_user                            = "-" # todo: confirm if used/needed
   email_type                            = "SMTP"
-  es_url                                = "https://tc-prod.es.us-east-1.aws.found.io:9243" # todo: retire elasticsearch
-  es_username                           = "elastic"                                        # todo: retire elasticsearch
   gradle_home                           = "/usr/local/gradle"
   java_home                             = "/usr/lib/jvm/java"
   logbuilder_include_cpu_utilization    = "true"
@@ -288,7 +289,6 @@ module "tc-plus-prod" {
   aws_access_key             = var.aws_access_key
   aws_secret_key             = var.aws_secret_key
   duolingo_api_secret        = var.duolingo_api_secret
-  es_password                = var.es_password
   email_password             = var.email_password
   drive_id                   = var.drive_id
   drive_rootfolder           = var.drive_rootfolder

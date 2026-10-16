@@ -7,7 +7,9 @@ import {
   Output,
   QueryList
 } from '@angular/core';
+import {CommonModule} from '@angular/common';
 import {TcAccordionItemComponent} from "./accordion-item/tc-accordion-item.component";
+import {ButtonComponent} from "../button/button.component";
 
 /**
  * @component TcAccordionComponent
@@ -84,7 +86,9 @@ import {TcAccordionItemComponent} from "./accordion-item/tc-accordion-item.compo
 @Component({
   selector: 'tc-accordion',
   templateUrl: './tc-accordion.component.html',
-  styleUrls: ['./tc-accordion.component.scss']
+  styleUrls: ['./tc-accordion.component.scss'],
+  standalone: true,
+  imports: [CommonModule, ButtonComponent]
 })
 export class TcAccordionComponent implements AfterContentInit {
   /** Initialise with all panels opened - default false */

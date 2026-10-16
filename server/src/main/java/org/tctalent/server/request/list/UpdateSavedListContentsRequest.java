@@ -91,6 +91,13 @@ public class UpdateSavedListContentsRequest extends UpdateSavedListInfoRequest {
   private Long sourceListId;
 
   /**
+   * If present, indicates that the candidates came from this saved search. The search's
+   * selection list then acts as the {@link #sourceListId source list}.
+   */
+  @Nullable
+  private Long sourceSearchId;
+
+  /**
    * If present, the statuses of all updated candidates list should be set according to this.
    */
   @Nullable

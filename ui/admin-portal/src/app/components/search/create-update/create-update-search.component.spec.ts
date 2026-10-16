@@ -86,6 +86,17 @@ describe('CreateUpdateSearchComponent', () => {
     expect(mockActiveModal.close).toHaveBeenCalled();
   });
 
+  it('should send the job association with the create request', () => {
+    component.savedSearch.id = 0; // Set to create mode
+    component.jobId = 3;
+    mockSavedSearchService.create.and.returnValue(of({}));
+
+    component.save();
+
+    expect(mockSavedSearchService.create).toHaveBeenCalledWith(
+      jasmine.objectContaining({jobId: 3}));
+  });
+
   it('should call update method on save when in update mode', () => {
     component.savedSearch.id = 1; // Set to update mode
     component.savedSearch.defaultSearch = false;

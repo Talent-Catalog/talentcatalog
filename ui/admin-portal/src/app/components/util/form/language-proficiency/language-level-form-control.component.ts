@@ -127,7 +127,7 @@ export class LanguageLevelFormControlComponent implements OnInit, OnChanges {
   ngOnChanges(c: SimpleChanges) {
     //This is needed to grey out the language-label element (constructed by renderLevel below)
     //when this whole component is disabled (as controlled by the @Input disable - generally when
-    //elastic search is being used).
+    //keyword search is being used).
     //If it is not present, the label does not appear as disabled.
     this.disabledClasses = {
       'disable': this.disable

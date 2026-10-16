@@ -19,6 +19,7 @@ import {environment} from "../../environments/environment";
 import {HttpClient, HttpParams} from "@angular/common/http";
 import {Observable} from "rxjs";
 import {SearchResults} from "../model/search-results";
+import {Matching} from "../model/matching";
 import {
   ClearSelectionRequest,
   SavedSearch,
@@ -143,6 +144,18 @@ export class SavedSearchService {
       );
   }
 
+  /**
+   * Resolves the search's current matching context - its Matching's description and updatedDate -
+   * for features which need it, such as match explanations. The server creates the search's
+   * Matching, if it doesn't have one yet but has the context for one (eg a job), and initialises a
+   * job's blank Matching from the job's text.
+   * @param id ID of search
+   * @return The search's Matching, or null if it has no matching context
+   */
+  resolveMatching(id: number): Observable<Matching | null> {
+    return this.http.post<Matching | null>(`${this.apiUrl}/${id}/matching`, null);
+  }
+
   getDefault(): Observable<SavedSearch> {
     return this.http.get<SavedSearch>(`${this.apiUrl}/default`)
       .pipe(
@@ -196,6 +209,18 @@ export class SavedSearchService {
 
   removeWatcher(id: number, request: { userId: number }): Observable<SavedSearch> {
     return this.http.put<SavedSearch>(`${this.apiUrl}/watcher-remove/${id}`, request)
+      .pipe(
+        map(savedSearch => SavedSearchService.convertSavedSearchEnums(savedSearch))
+      );
+  }
+
+  /**
+   * Explicitly assigns or clears the job associated with the given saved search.
+   * @param id ID of saved search
+   * @param jobId ID of job to assign, or null to clear any existing association
+   */
+  updateJob(id: number, jobId: number | null): Observable<SavedSearch> {
+    return this.http.put<SavedSearch>(`${this.apiUrl}/job/${id}`, {jobId})
       .pipe(
         map(savedSearch => SavedSearchService.convertSavedSearchEnums(savedSearch))
       );

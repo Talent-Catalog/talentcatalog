@@ -23,13 +23,6 @@ variable "duolingo_api_secret" {
   default     = ""
 }
 
-variable "es_password" {
-  description = "Elasticsearch password (todo: retire elasticsearch)"
-  type        = string
-  sensitive   = true
-  default     = ""
-}
-
 variable "email_password" {
   description = "Email password"
   type        = string
@@ -195,6 +188,12 @@ locals {
   }
 }
 
+# CloudWatch alarm notifications (TC-1526): looked up by name since the opc-prod root owns the
+# topic for this account. The opc-prod root must be applied first.
+data "aws_sns_topic" "opc_prod_alarms" {
+  name = "opc-prod-alarms"
+}
+
 # GRN prod: parallel deployment in OPC prod account, domain globalrefugee.net
 module "grn_prod" {
   source = "../"
@@ -227,7 +226,17 @@ module "grn_prod" {
   db_major_engine_version = "17"
   db_name                 = "grn"
 
+  # Vanta user data classification (TC-1524)
+  db_vanta_tags = {
+    VantaContainsUserData = "true"
+    VantaUserDataStored   = "GRN candidate and user records"
+  }
+
   availability_zones = ["eu-west-2a", "eu-west-2b", "eu-west-2c"]
+
+  # CloudWatch alarm notifications (TC-1526)
+  cloudwatch_alarms_enabled = true
+  alarm_sns_topic_arn       = data.aws_sns_topic.opc_prod_alarms.arn
 
   # Redis cache (unique cluster id in same account)
   cache_enable          = true
@@ -249,8 +258,6 @@ module "grn_prod" {
   email_test_override                   = "-"
   email_user                            = "noreply@globalrefugee.net"
   email_type                            = "SMTP"
-  es_url                                = "https://tc-prod.es.us-east-1.aws.found.io:9243" # todo: retire or set GRN
-  es_username                           = "elastic"
   gradle_home                           = "/usr/local/gradle"
   java_home                             = "/usr/lib/jvm/java"
   logbuilder_include_cpu_utilization    = "true"
@@ -259,6 +266,12 @@ module "grn_prod" {
   m2_home                               = "/usr/local/apache-maven"
   server_port                           = "8080"
   server_url                            = "https://globalrefugee.net/"
+
+  # Vanta user data classification (TC-1524)
+  candidate_files_vanta_tags = {
+    VantaContainsUserData = "true"
+    VantaUserDataStored   = "GRN candidate folders and documents"
+  }
 
   # todo: retire or point to GRN SF
   sf_base_classic_url   = "https://talentbeyondboundaries.my.salesforce.com/"
@@ -293,7 +306,6 @@ module "grn_prod" {
   aws_access_key             = var.aws_access_key
   aws_secret_key             = var.aws_secret_key
   duolingo_api_secret        = var.duolingo_api_secret
-  es_password                = var.es_password
   email_password             = var.email_password
   drive_id                   = var.drive_id
   drive_rootfolder           = var.drive_rootfolder

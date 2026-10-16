@@ -61,6 +61,7 @@ import org.tctalent.server.request.candidate.CandidateEmailSearchRequest;
 import org.tctalent.server.request.candidate.CandidateExternalIdSearchRequest;
 import org.tctalent.server.request.candidate.CandidateIntakeAuditRequest;
 import org.tctalent.server.request.candidate.CandidateIntakeDataUpdate;
+import org.tctalent.server.request.candidate.CandidateMatchExplanationRequest;
 import org.tctalent.server.request.candidate.CandidateNumberOrNameSearchRequest;
 import org.tctalent.server.request.candidate.CandidatePublicIdSearchRequest;
 import org.tctalent.server.request.candidate.DownloadCvRequest;
@@ -83,6 +84,7 @@ import org.tctalent.server.request.candidate.UpdateCandidateShareableNotesReques
 import org.tctalent.server.request.candidate.UpdateCandidateStatusRequest;
 import org.tctalent.server.request.candidate.UpdateCandidateSurveyRequest;
 import org.tctalent.server.request.chat.FetchCandidatesWithChatRequest;
+import org.tctalent.server.response.CandidateMatchExplanation;
 import org.tctalent.server.response.EraseCandidateResponse;
 import org.tctalent.server.security.CandidateTokenProvider;
 import org.tctalent.server.security.CvClaims;
@@ -93,6 +95,7 @@ import org.tctalent.server.service.db.CandidateSavedListService;
 import org.tctalent.server.service.db.CandidateService;
 import org.tctalent.server.service.db.SavedListService;
 import org.tctalent.server.service.db.SavedSearchService;
+import org.tctalent.server.service.explanation.CandidateMatchExplanationService;
 import org.tctalent.server.util.dto.DtoBuilder;
 
 @RestController
@@ -111,6 +114,7 @@ public class CandidateAdminApi {
     private final CandidateIntakeDataBuilderSelector intakeDataBuilderSelector;
     private final CandidateTokenProvider candidateTokenProvider;
     private final CandidateErasureService candidateErasureService;
+    private final CandidateMatchExplanationService candidateMatchExplanationService;
 
     /**
      * Match always returns a single page of results, sorted by score, the highest score first,
@@ -251,6 +255,34 @@ public class CandidateAdminApi {
         candidate = candidateService.addMissingDestinations(candidate);
         DtoBuilder builder = intakeDataBuilderSelector.selectBuilder();
         return builder.build(candidate);
+    }
+
+    /**
+     * Returns the LLM explanation of how the given candidate's job experience relates to the
+     * description of the requested Matching.
+     * <p/>
+     * A cached explanation is returned if it is current - ie the Matching's description hasn't
+     * changed since it was generated - unless regeneration is requested. Otherwise a new
+     * explanation is generated from the Matching's current description and cached, replacing
+     * any previous one.
+     * <p/>
+     * This only compares the Matching's description with the candidate's existing job
+     * experience text - it does not perform candidate matching or rerun the Best-N matching
+     * algorithm.
+     *
+     * @param id ID of candidate
+     * @param request ID of the Matching, and whether to regenerate the explanation
+     * @return current match explanation
+     * @throws NoSuchObjectException if there is no such candidate or Matching
+     */
+    @PostMapping("{id}/match-explanation")
+    public CandidateMatchExplanation getOrGenerateMatchExplanation(
+        @PathVariable("id") long id,
+        @Valid @RequestBody CandidateMatchExplanationRequest request) throws NoSuchObjectException {
+        final long matchingId = request.getMatchingId();
+        return request.isRegenerate()
+            ? candidateMatchExplanationService.regenerateExplanation(id, matchingId)
+            : candidateMatchExplanationService.getOrGenerateExplanation(id, matchingId);
     }
 
     @PutMapping("{id}/links")
@@ -496,8 +528,7 @@ public class CandidateAdminApi {
                                 @RequestParam(name="candidateOccupationIds", defaultValue = "")
                                 List<Long> candidateOccupationIds) {
          CvClaims cvClaims = new CvClaims(candidateNumber, restrictCandidateOccupations, candidateOccupationIds);
-         String token = candidateTokenProvider.generateCvToken(cvClaims, 365L);
-         return token;
+         return candidateTokenProvider.generateCvToken(cvClaims, 365L);
     }
 
     /**

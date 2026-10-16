@@ -95,7 +95,7 @@ export class CandidateJobExperienceFormComponent implements OnInit, AfterViewIni
       });
 
     this.form = this.fb.group({
-      id: [this.candidateJobExperience ? this.candidateJobExperience.id : null],
+      experienceId: [this.candidateJobExperience ? this.candidateJobExperience.id : null],
       companyName: [this.candidateJobExperience ? this.candidateJobExperience.companyName : '', Validators.required],
       country: [this.candidateJobExperience ? this.candidateJobExperience.countryId : null, Validators.required],
       candidateOccupationId: [this.candidateJobExperience ? this.candidateJobExperience.candidateOccupationId : '', Validators.required],
@@ -106,7 +106,7 @@ export class CandidateJobExperienceFormComponent implements OnInit, AfterViewIni
       paid: [this.candidateJobExperience ? this.candidateJobExperience.paid : null, Validators.required],
       description: [
         this.candidateJobExperience ? this.candidateJobExperience.description : '',
-        this.textPartsDescriptionRequired
+        this.descriptionRequired
       ]
     }, {validator: this.startDateBeforeEndDate('startDate', 'endDate')});
 
@@ -147,7 +147,8 @@ export class CandidateJobExperienceFormComponent implements OnInit, AfterViewIni
 
   save() {
     this.saving = true;
-    if (this.form.value.id) {
+    //Note that candidate portal does not keywordsInDescription, tidiedDescription
+    if (this.form.value.experienceId) {
       this.jobExperienceService.updateJobExperience(this.form.value).subscribe(
         (response) => this.emitSaveEvent(response),
         (error) => {
@@ -178,20 +179,10 @@ export class CandidateJobExperienceFormComponent implements OnInit, AfterViewIni
     this.formClosed.emit();
   }
 
-  private textPartsDescriptionRequired(control: AbstractControl): ValidationErrors | null {
-    const value = control.value;
-    if (typeof value !== 'string' || !value.trim()) {
+  private descriptionRequired(control: AbstractControl): ValidationErrors | null {
+    const description = control.value;
+    if (typeof description !== 'string' || !description.trim()) {
       return {required: true};
-    }
-
-    let description = value;
-    try {
-      const parsed = JSON.parse(value);
-      if (typeof parsed?.parts?.original === 'string') {
-        description = parsed.parts.original;
-      }
-    } catch {
-      // Legacy plain text descriptions are valid input, so validate the raw value.
     }
 
     const visibleText = description

@@ -1,4 +1,7 @@
 import {Component, EventEmitter, Input, Output} from '@angular/core';
+import {CommonModule} from '@angular/common';
+import {RouterLink} from '@angular/router';
+import {NgbDropdownItem} from '@ng-bootstrap/ng-bootstrap';
 
 /**
  * @component TcDropdownItemComponent
@@ -37,6 +40,8 @@ import {Component, EventEmitter, Input, Output} from '@angular/core';
 @Component({
   selector: 'tc-dropdown-item',
   templateUrl: './tc-dropdown-item.component.html',
+  standalone: true,
+  imports: [CommonModule, RouterLink, NgbDropdownItem]
 })
 export class TcDropdownItemComponent {
   @Input() href?: string;

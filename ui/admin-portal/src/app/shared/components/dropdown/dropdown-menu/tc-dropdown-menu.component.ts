@@ -49,7 +49,9 @@ import {Component, Input} from '@angular/core';
 @Component({
   selector: 'tc-dropdown-menu',
   templateUrl: './tc-dropdown-menu.component.html',
-  styleUrls: ['./tc-dropdown-menu.component.scss']
+  styleUrls: ['./tc-dropdown-menu.component.scss'],
+  standalone: true,
+  imports: []
 })
 export class TcDropdownMenuComponent {
   @Input() menuClass: string | string[] = '';

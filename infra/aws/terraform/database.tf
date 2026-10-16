@@ -18,12 +18,19 @@ resource "aws_security_group" "db" {
   }
 }
 
+locals {
+  # Canonical RDS instance identifier, referenced both by module.database below and by the
+  # CloudWatch alarms in monitoring.tf, so the two can never disagree. See monitoring.tf for why
+  # the alarms don't instead read this back from a module.database output.
+  db_identifier = "${var.app}-${var.env}"
+}
+
 module "database" {
   count   = var.db_enable ? 1 : 0
   source  = "terraform-aws-modules/rds/aws"
   version = "5.1.0"
 
-  identifier        = "${var.app}-${var.env}"
+  identifier        = local.db_identifier
   engine            = "postgres"
   engine_version    = var.db_engine_version
   instance_class    = var.db_instance_class
@@ -63,4 +70,8 @@ module "database" {
       Component = "rds"
     }
   )
+
+  # Vanta user data classification, set per environment. The module merges these
+  # with the tags above and applies them to the DB instance only.
+  db_instance_tags = var.db_vanta_tags
 }
