@@ -1,0 +1,23 @@
+{
+  "version": 1,
+  "description": "Updates the occupation question in all supported languages to ask about a field the candidate has skills in, reflecting that they can add multiple occupations (TC-1505).",
+  "languages": ["en", "ar", "fa", "ps", "es", "fr", "tr", "ru", "uk", "nl", "pt"],
+  "entries": [
+    {
+      "key": "REGISTRATION.OCCUPATION.LABEL.OCCUPATION",
+      "values": {
+        "en": "Which field do you have skills in?",
+        "ar": "ما هو المجال الذي تمتلك مهارات فيه؟",
+        "fa": "در چه زمینه‌ای مهارت دارید؟",
+        "ps": "تاسو په کوم برخه کې مهارت لرئ؟",
+        "es": "¿En qué campo tienes habilidades?",
+        "fr": "Dans quel domaine avez-vous des compétences ?",
+        "tr": "Hangi alanda becerileriniz var?",
+        "ru": "В какой области у вас есть навыки?",
+        "uk": "У якій галузі у вас є навички?",
+        "nl": "Op welk gebied heeft u vaardigheden?",
+        "pt": "Em que área você tem habilidades?"
+      }
+    }
+  ]
+}

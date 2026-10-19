@@ -351,6 +351,61 @@ describe('RegistrationCandidateOccupationComponent', () => {
       expect(filteredIds).toContain(1);
       expect(filteredIds).not.toContain(2);
     });
+
+    it('should not offer a removed saved occupation again until changes are saved', async () => {
+      await configureAndCreate({
+        candidateOccupations: [makeCandidateOccupation(1, 2, 5)],
+        jobExperiences: []
+      });
+
+      component.deleteOccupation(0, 2);
+
+      expect(component.candidateOccupations.length).toBe(0);
+      expect(component.filteredOccupations.map(occupation => occupation.id)).not.toContain(2);
+    });
+
+    it('should not offer a removed saved occupation when editing another saved row', async () => {
+      await configureAndCreate({
+        candidateOccupations: [makeCandidateOccupation(1, 1, 5), makeCandidateOccupation(2, 2, 3)],
+        jobExperiences: []
+      });
+
+      component.deleteOccupation(1, 2);
+      component.editOccupation(0);
+
+      const filteredIds = component.filteredOccupations.map(occupation => occupation.id);
+      // The row being edited keeps its own occupation; the removed one stays unavailable.
+      expect(filteredIds).toContain(1);
+      expect(filteredIds).not.toContain(2);
+    });
+
+    it('should not offer the original occupation of a saved row that was changed', async () => {
+      await configureAndCreate({
+        candidateOccupations: [makeCandidateOccupation(1, 1, 5)],
+        occupations: [
+          makeOccupation(1, 'Teacher'),
+          makeOccupation(2, 'Engineer'),
+          makeOccupation(3, 'Nurse')
+        ]
+      });
+
+      component.editOccupation(0);
+      component.form.patchValue({occupationId: 3});
+      component.saveDraft();
+
+      const filteredIds = component.filteredOccupations.map(occupation => occupation.id);
+      expect(filteredIds).toEqual([2]);
+    });
+
+    it('should offer a removed occupation again if it had not been saved yet', async () => {
+      await configureAndCreate();
+      component.form.setValue({id: null, occupationId: 2, yearsExperience: 4});
+      component.saveDraft();
+
+      component.deleteOccupation(0, 2);
+
+      expect(component.filteredOccupations.map(occupation => occupation.id)).toContain(2);
+    });
   });
 
   describe('draft add/edit/save/discard', () => {
