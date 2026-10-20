@@ -32,7 +32,7 @@ java {
 // Note: rootProject.projectDir always resolves to the root project directory
 // regardless of which task triggers the build (e.g., ./gradlew server:build)
 def nvmrcFile = file("${rootProject.projectDir}/.nvmrc")
-def nodeVersion = nvmrcFile.exists() ? nvmrcFile.text.trim() : '18.20.7'
+def nodeVersion = nvmrcFile.exists() ? nvmrcFile.text.trim() : '24.22.0'
 
 // Log the Node.js version being used (always visible)
 afterEvaluate {
