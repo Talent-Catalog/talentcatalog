@@ -18,7 +18,6 @@ package org.tctalent.server.integration.repo;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.tctalent.server.integration.helper.TestDataFactory.createAndSaveCountry;
 import static org.tctalent.server.integration.helper.TestDataFactory.createCandidate;
 import static org.tctalent.server.integration.helper.TestDataFactory.createUser;
 
@@ -66,7 +65,8 @@ public class CandidateRepositoryIntegrationTest extends BaseJpaIntegrationTest {
    */
   @BeforeEach
   void setUp() {
-    Country country = createAndSaveCountry(countryRepository);
+    Country country = countryRepository.findById(6178L)
+        .orElseThrow(() -> new IllegalStateException("Expected seeded country with id 6178"));
     sourceCountries = Set.of(country);
 
     activeCandidate = saveNamedCandidate("active-user", CandidateStatus.active, country);
