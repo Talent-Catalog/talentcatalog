@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {ActivatedRoute} from "@angular/router";
 import {CvService} from "../../services/cv.service";
 import {Candidate} from "../../model/candidate";
@@ -22,7 +22,9 @@ import {Candidate} from "../../model/candidate";
 @Component({
   selector: 'app-cv-landing',
   templateUrl: './cv-landing.component.html',
-  styleUrls: ['./cv-landing.component.scss']
+  styleUrls: ['./cv-landing.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class CvLandingComponent implements OnInit {
 

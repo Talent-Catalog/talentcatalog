@@ -15,7 +15,7 @@
  */
 
 import {CommonModule} from '@angular/common';
-import {Component, Input} from '@angular/core';
+import {Component, Input, ChangeDetectionStrategy} from '@angular/core';
 import {ComponentFixture, TestBed, waitForAsync} from '@angular/core/testing';
 import {ActivatedRoute, convertToParamMap, ParamMap} from '@angular/router';
 import {Subject} from 'rxjs';
@@ -26,7 +26,9 @@ import {CvLandingComponent} from './cv-landing.component';
 
 @Component({
   selector: 'app-cv-display',
-  template: ''
+  template: '',
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 class CvDisplayStubComponent {
   @Input() candidate: Candidate;
