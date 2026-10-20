@@ -22,7 +22,8 @@ import {
   Input,
   OnInit,
   Output,
-  ViewChild
+  ViewChild,
+  ChangeDetectionStrategy
 } from '@angular/core';
 import {CandidateJobExperience} from "../../../model/candidate-job-experience";
 import {
@@ -41,7 +42,9 @@ import {CandidateJobExperienceService} from "../../../services/candidate-job-exp
 @Component({
   selector: 'app-candidate-job-experience-form',
   templateUrl: './candidate-job-experience-form.component.html',
-  styleUrls: ['./candidate-job-experience-form.component.scss']
+  styleUrls: ['./candidate-job-experience-form.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class CandidateJobExperienceFormComponent implements OnInit, AfterViewInit {
 

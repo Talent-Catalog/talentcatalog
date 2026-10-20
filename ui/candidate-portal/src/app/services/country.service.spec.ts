@@ -22,7 +22,7 @@ describe('CountryService', () => {
   beforeEach(() => TestBed.configureTestingModule({}));
 
   it('should be created', () => {
-    const service: CountryService = TestBed.get(CountryService);
+    const service: CountryService = TestBed.inject(CountryService);
     expect(service).toBeTruthy();
   });
 });

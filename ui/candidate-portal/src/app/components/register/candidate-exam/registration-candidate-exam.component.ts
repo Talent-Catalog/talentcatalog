@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output, ChangeDetectionStrategy} from '@angular/core';
 import {UntypedFormBuilder, UntypedFormGroup, Validators} from '@angular/forms';
 import {CandidateExamService} from '../../../services/candidate-exam.service';
 import {CandidateExam} from '../../../model/candidate';
@@ -26,7 +26,9 @@ import {DeleteExamComponent} from "./delete/delete-exam.component";
 @Component({
   selector: 'app-registration-candidate-exam',
   templateUrl: './registration-candidate-exam.component.html',
-  styleUrls: ['./registration-candidate-exam.component.scss']
+  styleUrls: ['./registration-candidate-exam.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class RegistrationCandidateExamComponent implements OnInit {
 

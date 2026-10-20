@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, EventEmitter, Input} from '@angular/core';
+import {Component, EventEmitter, Input, ChangeDetectionStrategy} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {ActivatedRoute} from '@angular/router';
 import {By} from '@angular/platform-browser';
@@ -43,7 +43,9 @@ import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
   selector: 'app-error',
-  template: ''
+  template: '',
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 class ErrorStubComponent {
   @Input() error: unknown;
@@ -51,7 +53,9 @@ class ErrorStubComponent {
 
 @Component({
   selector: 'tc-loading',
-  template: ''
+  template: '',
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 class TcLoadingStubComponent {
   @Input() loading: unknown;
@@ -59,19 +63,25 @@ class TcLoadingStubComponent {
 
 @Component({
   selector: 'app-tab-header',
-  template: '<ng-content></ng-content>'
+  template: '<ng-content></ng-content>',
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 class TabHeaderStubComponent {}
 
 @Component({
   selector: 'app-download-cv',
-  template: ''
+  template: '',
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 class DownloadCvStubComponent {}
 
 @Component({
   selector: 'tc-button',
-  template: '<ng-content></ng-content>'
+  template: '<ng-content></ng-content>',
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 class TcButtonStubComponent {
   @Input() type?: string;
@@ -81,7 +91,9 @@ class TcButtonStubComponent {
 
 @Component({
   selector: 'tc-description-list',
-  template: '<ng-content></ng-content>'
+  template: '<ng-content></ng-content>',
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 class TcDescriptionListStubComponent {
   @Input() direction?: string;
@@ -91,7 +103,9 @@ class TcDescriptionListStubComponent {
 
 @Component({
   selector: 'tc-description-item',
-  template: '<ng-content></ng-content>'
+  template: '<ng-content></ng-content>',
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 class TcDescriptionItemStubComponent {
   @Input() label?: string;
@@ -99,7 +113,9 @@ class TcDescriptionItemStubComponent {
 
 @Component({
   selector: 'app-candidate-occupation-card',
-  template: ''
+  template: '',
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 class CandidateOccupationCardStubComponent {
   @Input() candidateOccupation: unknown;
@@ -110,7 +126,9 @@ class CandidateOccupationCardStubComponent {
 
 @Component({
   selector: 'app-candidate-job-experience-card',
-  template: ''
+  template: '',
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 class CandidateJobExperienceCardStubComponent {
   @Input() experience: unknown;
@@ -120,7 +138,9 @@ class CandidateJobExperienceCardStubComponent {
 
 @Component({
   selector: 'app-candidate-education-card',
-  template: ''
+  template: '',
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 class CandidateEducationCardStubComponent {
   @Input() candidateEducation: unknown;
@@ -131,7 +151,9 @@ class CandidateEducationCardStubComponent {
 
 @Component({
   selector: 'app-candidate-exam-card',
-  template: ''
+  template: '',
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 class CandidateExamCardStubComponent {
   @Input() exam: unknown;
@@ -140,7 +162,9 @@ class CandidateExamCardStubComponent {
 
 @Component({
   selector: 'app-candidate-certification-card',
-  template: ''
+  template: '',
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 class CandidateCertificationCardStubComponent {
   @Input() certificate: unknown;
@@ -149,7 +173,9 @@ class CandidateCertificationCardStubComponent {
 
 @Component({
   selector: 'app-candidate-language-card',
-  template: ''
+  template: '',
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 class CandidateLanguageCardStubComponent {
   @Input() language: unknown;
@@ -160,7 +186,9 @@ class CandidateLanguageCardStubComponent {
 
 @Component({
   selector: 'app-candidate-attachments',
-  template: ''
+  template: '',
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 class CandidateAttachmentsStubComponent {
   @Input() preview?: boolean;

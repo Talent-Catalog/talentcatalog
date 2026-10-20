@@ -21,7 +21,8 @@ import {
   OnInit,
   Output,
   QueryList,
-  ViewChildren
+  ViewChildren,
+  ChangeDetectionStrategy
 } from '@angular/core';
 import {UntypedFormBuilder, UntypedFormGroup} from "@angular/forms";
 import {Candidate, CandidateDestination, YesNoUnsureLearn} from "../../../model/candidate";
@@ -40,7 +41,9 @@ import {
 @Component({
   selector: 'app-registration-destinations',
   templateUrl: './registration-destinations.component.html',
-  styleUrls: ['./registration-destinations.component.scss']
+  styleUrls: ['./registration-destinations.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class RegistrationDestinationsComponent implements OnInit {
   /* A flag to indicate if the component is being used on the profile component */

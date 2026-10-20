@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {Candidate} from '../../../../../model/candidate';
 import {Agreement} from '../../../../../model/agreement';
 import {AgreementService} from '../../../../../services/agreement.service';
@@ -38,7 +38,9 @@ import {AgreementService} from '../../../../../services/agreement.service';
 @Component({
   selector: 'app-candidate-agreements',
   templateUrl: './candidate-agreements.component.html',
-  styleUrls: ['./candidate-agreements.component.scss']
+  styleUrls: ['./candidate-agreements.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class CandidateAgreementsComponent implements OnInit {
   @Input() candidate: Candidate;

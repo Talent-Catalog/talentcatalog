@@ -14,13 +14,15 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, Input} from '@angular/core';
+import {Component, Input, ChangeDetectionStrategy} from '@angular/core';
 import {AbstractControl} from "@angular/forms";
 
 @Component({
   selector: 'app-form-control-error',
   templateUrl: './form-control-error.component.html',
-  styleUrls: ['./form-control-error.component.scss']
+  styleUrls: ['./form-control-error.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class FormControlErrorComponent {
 

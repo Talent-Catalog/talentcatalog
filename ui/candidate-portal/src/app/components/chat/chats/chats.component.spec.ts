@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, Input, SimpleChange, SimpleChanges} from '@angular/core';
+import {Component, Input, SimpleChange, SimpleChanges, ChangeDetectionStrategy} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 
@@ -23,7 +23,9 @@ import {JobChat} from '../../../model/chat';
 
 @Component({
   selector: 'app-view-chat',
-  template: ''
+  template: '',
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 class ViewChatStubComponent {
   @Input() chat: JobChat;

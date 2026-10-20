@@ -5,6 +5,10 @@
   To learn more about this file see: https://angular.io/config/solution-tsconfig.
 */
 {
+  "compilerOptions": {
+    "esModuleInterop": true,
+    "moduleResolution": "bundler"
+  },
   "files": [],
   "references": [
     {
@@ -12,9 +16,6 @@
     },
     {
       "path": "./src/tsconfig.spec.json"
-    },
-    {
-      "path": "./e2e/tsconfig.e2e.json"
     }
   ]
 }

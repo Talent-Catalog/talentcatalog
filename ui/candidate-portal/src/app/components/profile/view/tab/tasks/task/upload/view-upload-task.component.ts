@@ -14,10 +14,9 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output, ChangeDetectionStrategy} from '@angular/core';
 import {forkJoin, Observable} from "rxjs";
 import {Candidate} from "../../../../../../../model/candidate";
-import {CandidateAttachment} from "../../../../../../../model/candidate-attachment";
 import {UntypedFormGroup} from "@angular/forms";
 import {TaskAssignmentService} from "../../../../../../../services/task-assignment.service";
 import {TaskAssignment} from "../../../../../../../model/task-assignment";
@@ -25,7 +24,9 @@ import {TaskAssignment} from "../../../../../../../model/task-assignment";
 @Component({
   selector: 'app-view-upload-task',
   templateUrl: './view-upload-task.component.html',
-  styleUrls: ['./view-upload-task.component.scss']
+  styleUrls: ['./view-upload-task.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class ViewUploadTaskComponent implements OnInit {
   @Input() form: UntypedFormGroup;
@@ -68,7 +69,7 @@ export class ViewUploadTaskComponent implements OnInit {
     }
 
     forkJoin(...uploads).subscribe(
-      (results: CandidateAttachment[]) => {
+      (results: TaskAssignment[]) => {
         this.uploading = false;
       },
       error => {

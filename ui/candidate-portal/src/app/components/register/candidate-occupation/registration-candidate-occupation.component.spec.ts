@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, EventEmitter, forwardRef, Input, NO_ERRORS_SCHEMA, Output} from '@angular/core';
+import {Component, EventEmitter, forwardRef, Input, NO_ERRORS_SCHEMA, Output, ChangeDetectionStrategy} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 import {
@@ -46,7 +46,9 @@ import {RegistrationService} from '../../../services/registration.service';
     provide: NG_VALUE_ACCESSOR,
     useExisting: forwardRef(() => TcInputStubComponent),
     multi: true
-  }]
+  }],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 class TcInputStubComponent implements ControlValueAccessor {
   @Input() id?: string;
@@ -67,7 +69,9 @@ class TcInputStubComponent implements ControlValueAccessor {
     provide: NG_VALUE_ACCESSOR,
     useExisting: forwardRef(() => NgSelectStubComponent),
     multi: true
-  }]
+  }],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 class NgSelectStubComponent implements ControlValueAccessor {
   @Input() id?: string;
@@ -93,7 +97,9 @@ class NgSelectStubComponent implements ControlValueAccessor {
     provide: NG_VALUE_ACCESSOR,
     useExisting: forwardRef(() => TcRadioStubComponent),
     multi: true
-  }]
+  }],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 class TcRadioStubComponent implements ControlValueAccessor {
   @Input() id?: string;

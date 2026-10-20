@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output, ChangeDetectionStrategy} from '@angular/core';
 import {UntypedFormBuilder, UntypedFormGroup, Validators} from "@angular/forms";
 import {Router} from "@angular/router";
 import {CandidateService} from "../../../services/candidate.service";
@@ -26,7 +26,9 @@ import {AuthenticationService} from "../../../services/authentication.service";
 @Component({
   selector: 'app-registration-additional-info',
   templateUrl: './registration-additional-info.component.html',
-  styleUrls: ['./registration-additional-info.component.scss']
+  styleUrls: ['./registration-additional-info.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class RegistrationAdditionalInfoComponent implements OnInit {
 

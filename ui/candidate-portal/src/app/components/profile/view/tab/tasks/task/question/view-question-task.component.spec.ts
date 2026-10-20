@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, forwardRef, Input} from '@angular/core';
+import {Component, forwardRef, Input, ChangeDetectionStrategy} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 import {
@@ -31,7 +31,7 @@ import {TaskAssignment} from '../../../../../../../model/task-assignment';
 import {TaskType} from '../../../../../../../model/task';
 import {Status} from '../../../../../../../model/base';
 
-@Component({selector: 'tc-label', template: '<ng-content></ng-content>'})
+@Component({selector: 'tc-label', template: '<ng-content></ng-content>', changeDetection: ChangeDetectionStrategy.Eager, standalone: false})
 class TcLabelStubComponent {
   @Input() for?: string;
 }
@@ -43,7 +43,9 @@ class TcLabelStubComponent {
     provide: NG_VALUE_ACCESSOR,
     useExisting: forwardRef(() => NgSelectStubComponent),
     multi: true
-  }]
+  }],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 class NgSelectStubComponent implements ControlValueAccessor {
   @Input() id?: string;
@@ -64,7 +66,9 @@ class NgSelectStubComponent implements ControlValueAccessor {
     provide: NG_VALUE_ACCESSOR,
     useExisting: forwardRef(() => TcTextareaStubComponent),
     multi: true
-  }]
+  }],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 class TcTextareaStubComponent implements ControlValueAccessor {
   @Input() id?: string;

@@ -22,7 +22,7 @@ describe('EducationTypeService', () => {
   beforeEach(() => TestBed.configureTestingModule({}));
 
   it('should be created', () => {
-    const service: EducationTypeService = TestBed.get(EducationTypeService);
+    const service: EducationTypeService = TestBed.inject(EducationTypeService);
     expect(service).toBeTruthy();
   });
 });

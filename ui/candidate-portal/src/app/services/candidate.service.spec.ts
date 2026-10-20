@@ -15,15 +15,15 @@
  */
 
 import {TestBed} from '@angular/core/testing';
-import {HttpClientTestingModule} from '@angular/common/http/testing';
+import {provideHttpClientTesting} from '@angular/common/http/testing';
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from '@angular/common/http';
 
 import {CandidateService} from './candidate.service';
 
 describe('CandidateService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
-      providers: [CandidateService]
+      providers: [CandidateService, provideHttpClient(withXhr(), withInterceptorsFromDi()), provideHttpClientTesting()]
     });
   });
 

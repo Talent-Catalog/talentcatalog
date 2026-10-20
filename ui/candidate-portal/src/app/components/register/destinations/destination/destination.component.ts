@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {CandidateDestination, YesNoUnsureLearn} from '../../../../model/candidate';
 import {UntypedFormBuilder, UntypedFormGroup, Validators} from '@angular/forms';
 import {Country} from '../../../../model/country';
@@ -24,7 +24,9 @@ import {EnumOption, enumOptions} from "../../../util/enum";
 @Component({
   selector: 'app-destination',
   templateUrl: './destination.component.html',
-  styleUrls: ['./destination.component.scss']
+  styleUrls: ['./destination.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class DestinationComponent implements OnInit {
   @Input() candidateDestination: CandidateDestination;

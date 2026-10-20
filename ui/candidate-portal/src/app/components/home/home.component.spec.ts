@@ -15,7 +15,7 @@
  */
 
 import {CommonModule} from '@angular/common';
-import {Component, Input, Pipe, PipeTransform} from '@angular/core';
+import {Component, Input, Pipe, PipeTransform, ChangeDetectionStrategy} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 import {Router} from '@angular/router';
@@ -34,7 +34,7 @@ import {VerifyEmailComponent} from '../account/verify-email/verify-email.compone
 
 // ─── Stubs ────────────────────────────────────────────────────────────────────
 
-@Pipe({name: 'translate'})
+@Pipe({name: 'translate', standalone: false})
 class MockTranslatePipe implements PipeTransform {
   transform(value: string): string { return value; }
 }
@@ -45,7 +45,7 @@ class MockTranslatePipe implements PipeTransform {
  * works reliably, unlike with NO_ERRORS_SCHEMA where bound inputs on unknown
  * elements are not reflected as DOM attributes.
  */
-@Component({selector: 'tc-button', template: '<ng-content></ng-content>'})
+@Component({selector: 'tc-button', template: '<ng-content></ng-content>', changeDetection: ChangeDetectionStrategy.Eager, standalone: false})
 class TcButtonStub {
   @Input() href: string;
   @Input() target: string;
@@ -53,18 +53,18 @@ class TcButtonStub {
   @Input() routerLink: string;
 }
 
-@Component({selector: 'tc-loading', template: ''})
+@Component({selector: 'tc-loading', template: '', changeDetection: ChangeDetectionStrategy.Eager, standalone: false})
 class TcLoadingStub {
   @Input() loading: boolean;
 }
 
-@Component({selector: 'tc-icon', template: '<ng-content></ng-content>'})
+@Component({selector: 'tc-icon', template: '<ng-content></ng-content>', changeDetection: ChangeDetectionStrategy.Eager, standalone: false})
 class TcIconStub {
   @Input() size: string;
   @Input() color: string;
 }
 
-@Component({selector: 'tc-alert', template: '<ng-content></ng-content>'})
+@Component({selector: 'tc-alert', template: '<ng-content></ng-content>', changeDetection: ChangeDetectionStrategy.Eager, standalone: false})
 class TcAlertStub {
   @Input() type: string;
 }

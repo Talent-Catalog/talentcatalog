@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, EventEmitter, forwardRef, Input, Output} from '@angular/core';
+import {Component, EventEmitter, forwardRef, Input, Output, ChangeDetectionStrategy} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 import {
@@ -37,7 +37,9 @@ import {Candidate} from "../../../model/candidate";
 
 @Component({
   selector: 'tc-button',
-  template: '<ng-content></ng-content>'
+  template: '<ng-content></ng-content>',
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 class TcButtonStubComponent {
   @Input() color?: string;
@@ -46,7 +48,9 @@ class TcButtonStubComponent {
 
 @Component({
   selector: 'tc-label',
-  template: '<ng-content></ng-content>'
+  template: '<ng-content></ng-content>',
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 class TcLabelStubComponent {
   @Input() for?: string;
@@ -54,7 +58,9 @@ class TcLabelStubComponent {
 
 @Component({
   selector: 'tc-description-list',
-  template: '<ng-content></ng-content>'
+  template: '<ng-content></ng-content>',
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 class TcDescriptionListStubComponent {
   @Input() direction?: string;
@@ -64,7 +70,9 @@ class TcDescriptionListStubComponent {
 
 @Component({
   selector: 'tc-description-item',
-  template: '<ng-content></ng-content>'
+  template: '<ng-content></ng-content>',
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 class TcDescriptionItemStubComponent {
   @Input() label?: string;
@@ -77,7 +85,9 @@ class TcDescriptionItemStubComponent {
     provide: NG_VALUE_ACCESSOR,
     useExisting: forwardRef(() => TcInputStubComponent),
     multi: true
-  }]
+  }],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 class TcInputStubComponent implements ControlValueAccessor {
   @Input() type?: string;
@@ -89,7 +99,9 @@ class TcInputStubComponent implements ControlValueAccessor {
 
 @Component({
   selector: 'app-file-upload',
-  template: ''
+  template: '',
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 class FileUploadStubComponent {
   @Input() uploading?: boolean;
@@ -98,7 +110,9 @@ class FileUploadStubComponent {
 
 @Component({
   selector: 'app-error',
-  template: ''
+  template: '',
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 class ErrorStubComponent {
   @Input() error: unknown;

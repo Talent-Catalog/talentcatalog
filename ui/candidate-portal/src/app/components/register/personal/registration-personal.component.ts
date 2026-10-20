@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, EventEmitter, Input, OnDestroy, OnInit, Output} from '@angular/core';
+import {Component, EventEmitter, Input, OnDestroy, OnInit, Output, ChangeDetectionStrategy} from '@angular/core';
 import {UntypedFormBuilder, UntypedFormGroup, Validators} from "@angular/forms";
 import {Candidate} from "../../../model/candidate";
 import {CandidateService} from "../../../services/candidate.service";
@@ -31,7 +31,9 @@ import {TcInstanceType} from "../../../model/tc-instance-type";
 @Component({
   selector: 'app-registration-personal',
   templateUrl: './registration-personal.component.html',
-  styleUrls: ['./registration-personal.component.scss']
+  styleUrls: ['./registration-personal.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class RegistrationPersonalComponent implements OnInit, OnDestroy {
 

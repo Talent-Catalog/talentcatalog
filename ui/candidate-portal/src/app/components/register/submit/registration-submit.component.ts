@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {Candidate, CandidateStatus, SubmitRegistrationRequest} from "../../../model/candidate";
 import {CandidateService} from "../../../services/candidate.service";
 import {AuthenticationService} from "../../../services/authentication.service";
@@ -13,7 +13,9 @@ import {TermsInfoService} from "../../../services/terms-info.service";
 @Component({
   selector: 'app-registration-submit',
   templateUrl: './registration-submit.component.html',
-  styleUrls: ['./registration-submit.component.scss']
+  styleUrls: ['./registration-submit.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class RegistrationSubmitComponent implements OnInit {
   error: any;

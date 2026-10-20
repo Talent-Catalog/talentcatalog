@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, EventEmitter, Input, Output} from '@angular/core';
+import {Component, EventEmitter, Input, Output, ChangeDetectionStrategy} from '@angular/core';
 import {Candidate} from '../../../../../model/candidate';
 import {ServiceProvider} from '../../../../../model/services';
 import {TaskAssignment} from "../../../../../model/task-assignment";
@@ -24,7 +24,9 @@ import {environment} from "../../../../../../environments/environment";
 @Component({
     selector: 'app-services',
     templateUrl: './services.component.html',
-    styleUrls: ['./services.component.scss']
+    styleUrls: ['./services.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
+    standalone: false
 })
 export class ServicesComponent {
   protected readonly Service = ServiceProvider;

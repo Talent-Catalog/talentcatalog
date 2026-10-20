@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, EventEmitter, Input, Output, ViewChild} from '@angular/core';
+import {Component, EventEmitter, Input, Output, ViewChild, ChangeDetectionStrategy} from '@angular/core';
 import {finalize} from 'rxjs/operators';
 import {Candidate} from '../../../../../../model/candidate';
 import {VerifyPlusScannerComponent} from '../../../../../common/verify-plus-scanner/verify-plus-scanner.component';
@@ -32,7 +32,9 @@ import {VerifyPlusScanResult, VerifyPlusService} from '../../../../../../service
 @Component({
   selector: 'app-verify-plus',
   templateUrl: './verify-plus.component.html',
-  styleUrl: './verify-plus.component.scss'
+  styleUrl: './verify-plus.component.scss',
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class VerifyPlusComponent {
   @Input() candidate!: Candidate;

@@ -14,13 +14,15 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 
 @Component({
   selector: 'app-delete',
   templateUrl: './delete-exam.component.html',
-  styleUrls: ['./delete-exam.component.scss']
+  styleUrls: ['./delete-exam.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class DeleteExamComponent implements OnInit {
 

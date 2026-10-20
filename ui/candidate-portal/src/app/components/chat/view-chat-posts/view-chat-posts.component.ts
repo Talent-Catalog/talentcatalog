@@ -23,7 +23,8 @@ import {
   QueryList,
   SimpleChanges,
   ViewChild,
-  ViewChildren
+  ViewChildren,
+  ChangeDetectionStrategy
 } from '@angular/core';
 import {CreateChatRequest, JobChatType} from "../../../model/chat";
 import {Partner} from "../../../model/partner";
@@ -36,7 +37,9 @@ import {ViewPostComponent} from "../view-post/view-post.component";
 @Component({
   selector: 'app-view-chat-posts',
   templateUrl: './view-chat-posts.component.html',
-  styleUrls: ['./view-chat-posts.component.scss']
+  styleUrls: ['./view-chat-posts.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class ViewChatPostsComponent extends PostsComponentBase
   implements OnInit, OnChanges, OnDestroy {

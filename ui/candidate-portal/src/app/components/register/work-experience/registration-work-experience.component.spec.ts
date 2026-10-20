@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, EventEmitter, Input, NO_ERRORS_SCHEMA, Output} from '@angular/core';
+import {Component, EventEmitter, Input, NO_ERRORS_SCHEMA, Output, ChangeDetectionStrategy} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 import {Router} from '@angular/router';
@@ -34,7 +34,9 @@ import {RegistrationService} from '../../../services/registration.service';
 
 @Component({
   selector: 'app-candidate-job-experience-form',
-  template: ''
+  template: '',
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 class CandidateJobExperienceFormStubComponent {
   @Input() countries?: Country[];
@@ -47,7 +49,9 @@ class CandidateJobExperienceFormStubComponent {
 
 @Component({
   selector: 'app-candidate-job-experience-card',
-  template: ''
+  template: '',
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 class CandidateJobExperienceCardStubComponent {
   @Input() experience?: CandidateJobExperience;

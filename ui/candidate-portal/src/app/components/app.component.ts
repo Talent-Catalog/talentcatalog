@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, HostBinding, OnInit} from '@angular/core';
+import {Component, HostBinding, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {TranslateService} from '@ngx-translate/core';
 import {LanguageService} from '../services/language.service';
 import {LanguageLoader} from "../services/language.loader";
@@ -30,7 +30,9 @@ import {TcInstanceType} from "../model/tc-instance-type";
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.scss']
+  styleUrls: ['./app.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class AppComponent implements OnInit {
 

@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Input, Output} from '@angular/core';
+import {Component, EventEmitter, Input, Output, ChangeDetectionStrategy} from '@angular/core';
 import {Candidate} from "../../../../../../../model/candidate";
 import {DuolingoCouponService} from "../../../../../../../services/duolingo-coupon.service";
 import {
@@ -11,6 +11,8 @@ import {TaskAssignment} from "../../../../../../../model/task-assignment";
   selector: 'app-duolingo-coupon',
   templateUrl: './duolingo-coupon.component.html',
   styleUrls: ['./duolingo-coupon.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class DuolingoCouponComponent {
   @Input() selectedCoupon: Object;

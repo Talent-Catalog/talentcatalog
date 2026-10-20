@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, forwardRef, Input} from '@angular/core';
+import {Component, forwardRef, Input, ChangeDetectionStrategy} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 import {ControlValueAccessor, FormsModule, NG_VALUE_ACCESSOR} from '@angular/forms';
@@ -26,7 +26,9 @@ import {Occupation} from '../../../model/occupation';
 
 @Component({
   selector: 'tc-button',
-  template: '<ng-content></ng-content>'
+  template: '<ng-content></ng-content>',
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 class TcButtonStubComponent {
   @Input() color?: string;
@@ -35,7 +37,9 @@ class TcButtonStubComponent {
 
 @Component({
   selector: 'tc-label',
-  template: '<ng-content></ng-content>'
+  template: '<ng-content></ng-content>',
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 class TcLabelStubComponent {}
 
@@ -46,7 +50,9 @@ class TcLabelStubComponent {}
     provide: NG_VALUE_ACCESSOR,
     useExisting: forwardRef(() => TcInputStubComponent),
     multi: true
-  }]
+  }],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 class TcInputStubComponent implements ControlValueAccessor {
   @Input() type?: string;
@@ -63,7 +69,9 @@ class TcInputStubComponent implements ControlValueAccessor {
     provide: NG_VALUE_ACCESSOR,
     useExisting: forwardRef(() => NgSelectStubComponent),
     multi: true
-  }]
+  }],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 class NgSelectStubComponent implements ControlValueAccessor {
   @Input() id?: string;
@@ -76,7 +84,9 @@ class NgSelectStubComponent implements ControlValueAccessor {
 
 @Component({
   selector: 'ng-option',
-  template: '<ng-content></ng-content>'
+  template: '<ng-content></ng-content>',
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 class NgOptionStubComponent {
   @Input() value?: unknown;
@@ -84,7 +94,9 @@ class NgOptionStubComponent {
 
 @Component({
   selector: 'tc-badge',
-  template: '<ng-content></ng-content>'
+  template: '<ng-content></ng-content>',
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 class TcBadgeStubComponent {
   @Input() color?: string;

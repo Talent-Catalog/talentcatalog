@@ -1,4 +1,4 @@
-import {Component, Input} from '@angular/core';
+import {Component, Input, ChangeDetectionStrategy} from '@angular/core';
 import {CommonModule} from '@angular/common';
 
 /**
@@ -38,7 +38,7 @@ import {CommonModule} from '@angular/common';
   selector: 'tc-loading',
   templateUrl: './tc-loading.component.html',
   styleUrls: ['./tc-loading.component.scss'],
-  standalone: true,
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [CommonModule]
 })
 export class TcLoadingComponent {

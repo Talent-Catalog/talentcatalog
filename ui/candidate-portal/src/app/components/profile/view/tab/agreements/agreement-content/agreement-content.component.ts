@@ -14,12 +14,14 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, EventEmitter, Input, Output} from '@angular/core';
+import {Component, EventEmitter, Input, Output, ChangeDetectionStrategy} from '@angular/core';
 
 @Component({
   selector: 'app-agreement-content',
   templateUrl: './agreement-content.component.html',
-  styleUrls: ['./agreement-content.component.scss']
+  styleUrls: ['./agreement-content.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class AgreementContentComponent {
   @Input() content: string;

@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, EventEmitter, Input, Output} from '@angular/core';
+import {Component, EventEmitter, Input, Output, ChangeDetectionStrategy} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 import {TranslateModule} from '@ngx-translate/core';
@@ -29,7 +29,9 @@ import {TermsInfoService} from '../../../services/terms-info.service';
 
 @Component({
   selector: 'tc-loading',
-  template: ''
+  template: '',
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 class TcLoadingStubComponent {
   @Input() loading?: boolean;
@@ -37,7 +39,9 @@ class TcLoadingStubComponent {
 
 @Component({
   selector: 'tc-button',
-  template: '<ng-content></ng-content>'
+  template: '<ng-content></ng-content>',
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 class TcButtonStubComponent {
   @Input() color?: string;
@@ -47,7 +51,9 @@ class TcButtonStubComponent {
 
 @Component({
   selector: 'app-show-terms',
-  template: '<ng-content></ng-content>'
+  template: '<ng-content></ng-content>',
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 class ShowTermsStubComponent {
   @Input() requestTermsRead?: boolean;
@@ -56,7 +62,9 @@ class ShowTermsStubComponent {
 
 @Component({
   selector: 'app-error',
-  template: ''
+  template: '',
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 class ErrorStubComponent {
   @Input() error?: unknown;

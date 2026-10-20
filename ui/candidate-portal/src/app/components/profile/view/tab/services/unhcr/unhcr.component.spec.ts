@@ -20,7 +20,7 @@ import {of, throwError} from 'rxjs';
 import {UnhcrComponent} from './unhcr.component';
 import {CasiPortalService} from "../../../../../../services/casi-portal.service";
 
-@Pipe({name: 'translate'})
+@Pipe({name: 'translate', standalone: false})
 class MockTranslatePipe implements PipeTransform {
   transform(value: string): string {
     return value;

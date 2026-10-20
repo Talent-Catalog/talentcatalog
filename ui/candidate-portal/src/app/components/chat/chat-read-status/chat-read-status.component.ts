@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges} from '@angular/core';
+import {Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges, ChangeDetectionStrategy} from '@angular/core';
 import {Observable, Subscription} from "rxjs";
 import {ChatService} from "../../../services/chat.service";
 import {JobChat} from "../../../model/chat";
@@ -34,7 +34,9 @@ import {JobChat} from "../../../model/chat";
 @Component({
   selector: 'app-chat-read-status',
   templateUrl: './chat-read-status.component.html',
-  styleUrls: ['./chat-read-status.component.scss']
+  styleUrls: ['./chat-read-status.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class ChatReadStatusComponent implements OnInit, OnChanges, OnDestroy {
 

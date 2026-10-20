@@ -21,7 +21,8 @@ import {
   OnChanges,
   OnInit,
   Output,
-  SimpleChanges
+  SimpleChanges,
+  ChangeDetectionStrategy
 } from '@angular/core';
 import {Candidate} from "../../../../../../model/candidate";
 import {CandidateOpportunity} from "../../../../../../model/candidate-opportunity";
@@ -33,7 +34,9 @@ import {AuthorizationService} from "../../../../../../services/authorization.ser
 @Component({
   selector: 'app-candidate-opps',
   templateUrl: './candidate-opps.component.html',
-  styleUrls: ['./candidate-opps.component.scss']
+  styleUrls: ['./candidate-opps.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class CandidateOppsComponent implements OnInit, OnChanges {
   error: string;

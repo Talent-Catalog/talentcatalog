@@ -22,7 +22,8 @@ import {Directive, ElementRef, HostListener, Input} from '@angular/core';
 **/
 
 @Directive({
-  selector: '[appInputFilter]'
+  selector: '[appInputFilter]',
+  standalone: false
 })
 export class InputFilterDirective {
 

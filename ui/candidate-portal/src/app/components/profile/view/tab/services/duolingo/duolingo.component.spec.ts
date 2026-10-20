@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Input, Output, Pipe, PipeTransform} from '@angular/core';
+import {Component, EventEmitter, Input, Output, Pipe, PipeTransform, ChangeDetectionStrategy} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 import {of, throwError} from 'rxjs';
@@ -6,24 +6,24 @@ import {DuolingoComponent} from './duolingo.component';
 import {DuolingoCouponService} from '../../../../../../services/duolingo-coupon.service';
 import {DuolingoCouponStatus} from '../../../../../../model/duolingo-coupon';
 
-@Pipe({name: 'translate'})
+@Pipe({name: 'translate', standalone: false})
 class TranslatePipeStub implements PipeTransform {
   transform(value: string): string {
     return value;
   }
 }
 
-@Component({selector: 'app-error', template: ''})
+@Component({selector: 'app-error', template: '', changeDetection: ChangeDetectionStrategy.Eager, standalone: false})
 class ErrorStubComponent {
   @Input() error: unknown;
 }
 
-@Component({selector: 'tc-loading', template: ''})
+@Component({selector: 'tc-loading', template: '', changeDetection: ChangeDetectionStrategy.Eager, standalone: false})
 class TcLoadingStubComponent {
   @Input() loading = false;
 }
 
-@Component({selector: 'app-duolingo-coupon', template: ''})
+@Component({selector: 'app-duolingo-coupon', template: '', changeDetection: ChangeDetectionStrategy.Eager, standalone: false})
 class DuolingoCouponStubComponent {
   @Input() candidate: unknown;
   @Input() selectedCoupon: unknown;

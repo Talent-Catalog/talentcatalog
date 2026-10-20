@@ -5,7 +5,7 @@ import {ReferenceComponent} from './reference.component';
 import {CasiPortalService} from "../../../../../../services/casi-portal.service";
 import {ResourceStatus} from "../../../../../../model/services";
 
-@Pipe({name: 'translate'})
+@Pipe({name: 'translate', standalone: false})
 class MockTranslatePipe implements PipeTransform {
   transform(value: string): string {
     return value;

@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, EventEmitter, Input, Output} from '@angular/core';
+import {Component, EventEmitter, Input, Output, ChangeDetectionStrategy} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 import {FormGroup, ReactiveFormsModule} from '@angular/forms';
@@ -27,18 +27,18 @@ import {TaskAssignment} from '../../../../../../../model/task-assignment';
 import {TaskType} from '../../../../../../../model/task';
 import {Status} from '../../../../../../../model/base';
 
-@Component({selector: 'app-error', template: ''})
+@Component({selector: 'app-error', template: '', changeDetection: ChangeDetectionStrategy.Eager, standalone: false})
 class ErrorStubComponent {
   @Input() error?: unknown;
 }
 
-@Component({selector: 'app-file-upload', template: ''})
+@Component({selector: 'app-file-upload', template: '', changeDetection: ChangeDetectionStrategy.Eager, standalone: false})
 class FileUploadStubComponent {
   @Input() uploading?: boolean;
   @Output() uploadStarted = new EventEmitter<{files: File[]; type: string}>();
 }
 
-@Component({selector: 'tc-button', template: '<ng-content></ng-content>'})
+@Component({selector: 'tc-button', template: '<ng-content></ng-content>', changeDetection: ChangeDetectionStrategy.Eager, standalone: false})
 class TcButtonStubComponent {
   @Input() size?: string;
   @Input() type?: string;

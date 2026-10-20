@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output, ChangeDetectionStrategy} from '@angular/core';
 import {UntypedFormGroup} from "@angular/forms";
 import {RegistrationService} from "../../../services/registration.service";
 import {TranslateService} from '@ngx-translate/core';
@@ -22,7 +22,9 @@ import {TranslateService} from '@ngx-translate/core';
 @Component({
   selector: 'app-registration-upload-file',
   templateUrl: './registration-upload-file.component.html',
-  styleUrls: ['./registration-upload-file.component.scss']
+  styleUrls: ['./registration-upload-file.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class RegistrationUploadFileComponent implements OnInit {
 

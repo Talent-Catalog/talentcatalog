@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, EventEmitter, Input, Output} from '@angular/core';
+import {Component, EventEmitter, Input, Output, ChangeDetectionStrategy} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {TranslateModule, TranslateService} from '@ngx-translate/core';
 import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
@@ -23,7 +23,9 @@ import {DeleteExamComponent} from './delete-exam.component';
 
 @Component({
   selector: 'tc-button',
-  template: '<ng-content></ng-content>'
+  template: '<ng-content></ng-content>',
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 class TcButtonStubComponent {
   @Input() color?: string;

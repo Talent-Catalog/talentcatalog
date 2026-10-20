@@ -1,4 +1,4 @@
-import {Component, ContentChild, ElementRef, Input} from '@angular/core';
+import {Component, ContentChild, ElementRef, Input, ChangeDetectionStrategy} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {TcAccordionComponent} from "../tc-accordion.component";
 import {TcIconComponent} from "../../icon-component/tc-icon.component";
@@ -51,7 +51,7 @@ import {TcIconComponent} from "../../icon-component/tc-icon.component";
   selector: 'tc-accordion-item',
   templateUrl: './tc-accordion-item.component.html',
   styleUrls: ['./tc-accordion-item.component.scss'],
-  standalone: true,
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [CommonModule, TcIconComponent]
 })
 export class TcAccordionItemComponent {

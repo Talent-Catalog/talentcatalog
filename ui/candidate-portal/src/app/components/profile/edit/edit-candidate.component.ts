@@ -14,14 +14,16 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {ActivatedRoute, Router} from "@angular/router";
 import {LanguageService} from "../../../services/language.service";
 
 @Component({
   selector: 'app-edit-candidate',
   templateUrl: './edit-candidate.component.html',
-  styleUrls: ['./edit-candidate.component.scss']
+  styleUrls: ['./edit-candidate.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class EditCandidateComponent implements OnInit {
 

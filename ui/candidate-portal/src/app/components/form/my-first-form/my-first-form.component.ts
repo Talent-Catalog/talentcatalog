@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output, ChangeDetectionStrategy} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {CandidateFormService} from "../../../services/candidate-form.service";
 import {MyFirstFormData} from "../../../model/form";
@@ -11,7 +11,9 @@ MODEL: Best practice Angular form
 @Component({
   selector: 'app-my-first-form',
   templateUrl: './my-first-form.component.html',
-  styleUrls: ['./my-first-form.component.scss']
+  styleUrls: ['./my-first-form.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class MyFirstFormComponent implements OnInit, ICandidateFormComponent<MyFirstFormData> {
   //When present and true, the form can't be modified or submitted

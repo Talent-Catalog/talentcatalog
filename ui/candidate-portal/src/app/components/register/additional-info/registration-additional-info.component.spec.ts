@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, EventEmitter, forwardRef, Input, Output} from '@angular/core';
+import {Component, EventEmitter, forwardRef, Input, Output, ChangeDetectionStrategy} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR, ReactiveFormsModule} from '@angular/forms';
@@ -32,7 +32,9 @@ import {TcInstanceType} from "../../../model/tc-instance-type";
 
 @Component({
   selector: 'tc-loading',
-  template: ''
+  template: '',
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 class TcLoadingStubComponent {
   @Input() loading?: boolean;
@@ -40,7 +42,9 @@ class TcLoadingStubComponent {
 
 @Component({
   selector: 'app-error',
-  template: ''
+  template: '',
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 class ErrorStubComponent {
   @Input() error?: unknown;
@@ -48,7 +52,9 @@ class ErrorStubComponent {
 
 @Component({
   selector: 'app-registration-footer',
-  template: ''
+  template: '',
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 class RegistrationFooterStubComponent {
   @Input() nextDisabled?: boolean;
@@ -59,7 +65,9 @@ class RegistrationFooterStubComponent {
 
 @Component({
   selector: 'tc-label',
-  template: '<ng-content></ng-content>'
+  template: '<ng-content></ng-content>',
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 class TcLabelStubComponent {
   @Input() for?: string;
@@ -72,7 +80,9 @@ class TcLabelStubComponent {
     provide: NG_VALUE_ACCESSOR,
     useExisting: forwardRef(() => TcInputStubComponent),
     multi: true
-  }]
+  }],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 class TcInputStubComponent implements ControlValueAccessor {
   @Input() id?: string;
@@ -92,7 +102,9 @@ class TcInputStubComponent implements ControlValueAccessor {
     provide: NG_VALUE_ACCESSOR,
     useExisting: forwardRef(() => TcTextareaStubComponent),
     multi: true
-  }]
+  }],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 class TcTextareaStubComponent implements ControlValueAccessor {
   @Input() id?: string;
@@ -111,7 +123,9 @@ class TcTextareaStubComponent implements ControlValueAccessor {
     provide: NG_VALUE_ACCESSOR,
     useExisting: forwardRef(() => NgSelectStubComponent),
     multi: true
-  }]
+  }],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 class NgSelectStubComponent implements ControlValueAccessor {
   @Input() id?: string;

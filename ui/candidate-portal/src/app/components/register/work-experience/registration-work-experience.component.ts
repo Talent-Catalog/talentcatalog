@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, EventEmitter, Input, OnDestroy, OnInit, Output} from '@angular/core';
+import {Component, EventEmitter, Input, OnDestroy, OnInit, Output, ChangeDetectionStrategy} from '@angular/core';
 import {UntypedFormBuilder, UntypedFormGroup} from "@angular/forms";
 import {Router} from "@angular/router";
 import {CandidateService} from "../../../services/candidate.service";
@@ -30,7 +30,9 @@ import {LangChangeEvent, TranslateService} from "@ngx-translate/core";
 @Component({
   selector: 'app-registration-work-experience',
   templateUrl: './registration-work-experience.component.html',
-  styleUrls: ['./registration-work-experience.component.scss']
+  styleUrls: ['./registration-work-experience.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class RegistrationWorkExperienceComponent implements OnInit, OnDestroy {
 

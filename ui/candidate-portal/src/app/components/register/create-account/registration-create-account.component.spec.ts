@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, forwardRef, NO_ERRORS_SCHEMA} from '@angular/core';
+import {Component, forwardRef, NO_ERRORS_SCHEMA, ChangeDetectionStrategy} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR, ReactiveFormsModule} from '@angular/forms';
 import {ActivatedRoute, convertToParamMap} from '@angular/router';
@@ -37,7 +37,9 @@ import {US_AFGHAN_SURVEY_TYPE} from '../../../model/survey-type';
     provide: NG_VALUE_ACCESSOR,
     useExisting: forwardRef(() => TcInputStubComponent),
     multi: true
-  }]
+  }],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 class TcInputStubComponent implements ControlValueAccessor {
   writeValue(): void {}

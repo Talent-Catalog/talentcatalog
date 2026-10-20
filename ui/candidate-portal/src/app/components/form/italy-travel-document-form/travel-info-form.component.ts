@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output, ChangeDetectionStrategy} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {Router} from '@angular/router';
 
@@ -22,6 +22,8 @@ import {Country} from '../../../model/country';
   selector: 'app-travel-info-form',
   templateUrl: './travel-info-form.component.html',
   styleUrls: ['./travel-info-form.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class TravelInfoFormComponent
   implements OnInit, ICandidateFormComponent<TravelInfoFormData> {

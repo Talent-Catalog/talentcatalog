@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output, ChangeDetectionStrategy} from '@angular/core';
 import {Candidate} from '../../../../../../model/candidate';
 import {ServiceAssignment} from '../../../../../../model/services';
 import {CasiPortalService} from '../../../../../../services/casi-portal.service';
@@ -25,7 +25,9 @@ import {CasiPortalService} from '../../../../../../services/casi-portal.service'
 @Component({
   selector: 'app-pifi',
   templateUrl: './pifi.component.html',
-  styleUrl: './pifi.component.scss'
+  styleUrl: './pifi.component.scss',
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class PifiComponent implements OnInit {
   @Input() candidate!: Candidate;

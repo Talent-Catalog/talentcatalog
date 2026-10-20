@@ -1,5 +1,6 @@
 import {TestBed} from '@angular/core/testing';
-import {HttpClientTestingModule, HttpTestingController} from '@angular/common/http/testing';
+import {HttpTestingController, provideHttpClientTesting} from '@angular/common/http/testing';
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from '@angular/common/http';
 import {LinkedinService} from './linkedin.service';
 import {environment} from '../../environments/environment';
 import {IssueReportRequest, ResourceStatus, ServiceAssignment, ServiceProvider, AssignmentStatus} from '../model/services';
@@ -32,8 +33,7 @@ describe('LinkedinService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
-      providers: [LinkedinService],
+      providers: [LinkedinService, provideHttpClient(withXhr(), withInterceptorsFromDi()), provideHttpClientTesting()],
     });
     service = TestBed.inject(LinkedinService);
     httpMock = TestBed.inject(HttpTestingController);

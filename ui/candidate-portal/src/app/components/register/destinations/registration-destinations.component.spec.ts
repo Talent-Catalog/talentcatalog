@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, EventEmitter, Input, Output, QueryList} from '@angular/core';
+import {Component, EventEmitter, Input, Output, QueryList, ChangeDetectionStrategy} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {UntypedFormControl, UntypedFormGroup} from '@angular/forms';
 import {By} from '@angular/platform-browser';
@@ -32,7 +32,9 @@ import {CandidateDestinationService} from '../../../services/candidate-destinati
 
 @Component({
   selector: 'tc-loading',
-  template: ''
+  template: '',
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 class TcLoadingStubComponent {
   @Input() loading?: boolean;
@@ -40,7 +42,9 @@ class TcLoadingStubComponent {
 
 @Component({
   selector: 'app-error',
-  template: ''
+  template: '',
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 class ErrorStubComponent {
   @Input() error?: unknown;
@@ -48,7 +52,9 @@ class ErrorStubComponent {
 
 @Component({
   selector: 'app-registration-footer',
-  template: ''
+  template: '',
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 class RegistrationFooterStubComponent {
   @Input() nextDisabled?: boolean;
@@ -59,7 +65,9 @@ class RegistrationFooterStubComponent {
 
 @Component({
   selector: 'tc-button',
-  template: '<button type="button" [disabled]="disabled" (click)="onClick.emit()"><ng-content></ng-content></button>'
+  template: '<button type="button" [disabled]="disabled" (click)="onClick.emit()"><ng-content></ng-content></button>',
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 class TcButtonStubComponent {
   @Input() disabled?: boolean;
@@ -69,7 +77,9 @@ class TcButtonStubComponent {
 
 @Component({
   selector: 'app-destination',
-  template: ''
+  template: '',
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 class DestinationStubComponent {
   @Input() candidateDestination?: CandidateDestination;

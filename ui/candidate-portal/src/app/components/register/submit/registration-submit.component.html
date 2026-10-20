@@ -41,7 +41,7 @@
         [requestTermsRead]=true
         (termsRead)="setReadTerms()"
       >
-        <div [innerHtml]=currentPrivacyPolicy?.content></div>
+        <div [innerHtml]=$safeNavigationMigration(currentPrivacyPolicy?.content)></div>
       </app-show-terms>
 
     </div>

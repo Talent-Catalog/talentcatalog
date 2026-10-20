@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output, ChangeDetectionStrategy} from '@angular/core';
 import {Candidate} from "../../../../../../model/candidate";
 import {UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators} from "@angular/forms";
 import {
@@ -31,7 +31,9 @@ import {TaskType} from "../../../../../../model/task";
 @Component({
   selector: 'app-candidate-task',
   templateUrl: './candidate-task.component.html',
-  styleUrls: ['./candidate-task.component.scss']
+  styleUrls: ['./candidate-task.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class CandidateTaskComponent implements OnInit {
   @Input() selectedTask: TaskAssignment;

@@ -22,7 +22,7 @@ describe('LanguageLevelService', () => {
   beforeEach(() => TestBed.configureTestingModule({}));
 
   it('should be created', () => {
-    const service: LanguageLevelService = TestBed.get(LanguageLevelService);
+    const service: LanguageLevelService = TestBed.inject(LanguageLevelService);
     expect(service).toBeTruthy();
   });
 });

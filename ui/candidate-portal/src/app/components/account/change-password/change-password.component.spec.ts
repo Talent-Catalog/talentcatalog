@@ -13,7 +13,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-import {Component, forwardRef, Input, Pipe, PipeTransform} from '@angular/core';
+import {Component, forwardRef, Input, Pipe, PipeTransform, ChangeDetectionStrategy} from '@angular/core';
 import {ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 import {
@@ -29,26 +29,28 @@ import {BehaviorSubject, of, throwError} from 'rxjs';
 import {ChangePasswordComponent} from './change-password.component';
 import {UserService} from '../../../services/user.service';
 
-@Pipe({name: 'translate'})
+@Pipe({name: 'translate', standalone: false})
 class TranslatePipeStub implements PipeTransform {
   transform(value: string): string {
     return value;
   }
 }
 
-@Component({selector: 'app-error', template: ''})
+@Component({selector: 'app-error', template: '', changeDetection: ChangeDetectionStrategy.Eager, standalone: false})
 class AppErrorStubComponent {
   @Input() error: any;
 }
 
-@Component({selector: 'tc-loading', template: ''})
+@Component({selector: 'tc-loading', template: '', changeDetection: ChangeDetectionStrategy.Eager, standalone: false})
 class TcLoadingStubComponent {
   @Input() loading: boolean;
 }
 
 @Component({
   selector: 'tc-alert',
-  template: '<ng-content></ng-content>'
+  template: '<ng-content></ng-content>',
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 class TcAlertStubComponent {
   @Input() type: string;
@@ -56,14 +58,18 @@ class TcAlertStubComponent {
 
 @Component({
   selector: 'tc-field',
-  template: '<ng-content></ng-content>'
+  template: '<ng-content></ng-content>',
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 class TcFieldStubComponent {
 }
 
 @Component({
   selector: 'tc-label',
-  template: '<ng-content></ng-content>'
+  template: '<ng-content></ng-content>',
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 class TcLabelStubComponent {
   @Input() for: string;
@@ -76,7 +82,9 @@ class TcLabelStubComponent {
     provide: NG_VALUE_ACCESSOR,
     useExisting: forwardRef(() => TcInputStubComponent),
     multi: true
-  }]
+  }],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 class TcInputStubComponent implements ControlValueAccessor {
   @Input() id: string;
@@ -97,7 +105,9 @@ class TcInputStubComponent implements ControlValueAccessor {
 
 @Component({
   selector: 'tc-button',
-  template: '<ng-content></ng-content>'
+  template: '<ng-content></ng-content>',
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 class TcButtonStubComponent {
   @Input() disabled: boolean;

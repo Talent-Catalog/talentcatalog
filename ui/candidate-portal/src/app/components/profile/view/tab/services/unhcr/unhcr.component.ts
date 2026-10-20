@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output, ChangeDetectionStrategy} from '@angular/core';
 import {Candidate} from "../../../../../../model/candidate";
 import {ServiceAssignment} from "../../../../../../model/services";
 import {CasiPortalService} from "../../../../../../services/casi-portal.service";
@@ -29,7 +29,9 @@ import {CasiPortalService} from "../../../../../../services/casi-portal.service"
 @Component({
   selector: 'app-unhcr',
   templateUrl: './unhcr.component.html',
-  styleUrl: './unhcr.component.scss'
+  styleUrl: './unhcr.component.scss',
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class UnhcrComponent implements OnInit {
   @Input() candidate!: Candidate;

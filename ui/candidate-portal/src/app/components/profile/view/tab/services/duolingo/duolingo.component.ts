@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output, ChangeDetectionStrategy} from '@angular/core';
 import {Candidate} from '../../../../../../model/candidate';
 import {DuolingoCouponService} from '../../../../../../services/duolingo-coupon.service';
 import {DuolingoCouponStatus} from '../../../../../../model/duolingo-coupon';
@@ -8,7 +8,9 @@ import { CandidateExam, Exam } from '../../../../../../model/candidate'
 @Component({
     selector: 'app-duolingo',
     templateUrl: './duolingo.component.html',
-    styleUrls: ['./duolingo.component.scss']
+    styleUrls: ['./duolingo.component.scss'],
+    changeDetection: ChangeDetectionStrategy.Eager,
+    standalone: false
 })
 export class DuolingoComponent implements OnInit {
     @Input() candidate: Candidate;

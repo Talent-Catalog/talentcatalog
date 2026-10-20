@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Input, Output, Pipe, PipeTransform} from '@angular/core';
+import {Component, EventEmitter, Input, Output, Pipe, PipeTransform, ChangeDetectionStrategy} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 import {of, throwError} from 'rxjs';
@@ -6,29 +6,29 @@ import {DuolingoCouponComponent} from './duolingo-coupon.component';
 import {DuolingoCouponService} from '../../../../../../../services/duolingo-coupon.service';
 import {TaskAssignmentService} from '../../../../../../../services/task-assignment.service';
 
-@Pipe({name: 'translate'})
+@Pipe({name: 'translate', standalone: false})
 class TranslatePipeStub implements PipeTransform {
   transform(value: string): string {
     return value;
   }
 }
 
-@Component({selector: 'app-error', template: ''})
+@Component({selector: 'app-error', template: '', changeDetection: ChangeDetectionStrategy.Eager, standalone: false})
 class ErrorStubComponent {
   @Input() error: unknown;
 }
 
-@Component({selector: 'tc-loading', template: ''})
+@Component({selector: 'tc-loading', template: '', changeDetection: ChangeDetectionStrategy.Eager, standalone: false})
 class TcLoadingStubComponent {
   @Input() loading = false;
 }
 
-@Component({selector: 'tc-accordion', template: '<ng-content></ng-content>'})
+@Component({selector: 'tc-accordion', template: '<ng-content></ng-content>', changeDetection: ChangeDetectionStrategy.Eager, standalone: false})
 class TcAccordionStubComponent {
   @Input() showOpenCloseAll = true;
 }
 
-@Component({selector: 'tc-accordion-item', template: '<ng-content></ng-content>'})
+@Component({selector: 'tc-accordion-item', template: '<ng-content></ng-content>', changeDetection: ChangeDetectionStrategy.Eager, standalone: false})
 class TcAccordionItemStubComponent {
   @Input() header?: string;
 }
@@ -36,6 +36,8 @@ class TcAccordionItemStubComponent {
 @Component({
   selector: 'tc-button',
   template: '<button (click)="onClick.emit()"><ng-content></ng-content></button>',
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 class TcButtonStubComponent {
   @Input() type?: string;

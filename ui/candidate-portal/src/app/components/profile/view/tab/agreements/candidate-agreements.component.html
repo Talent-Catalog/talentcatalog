@@ -36,14 +36,14 @@
           <div class="d-flex justify-content-between align-items-center">
             <span class="fw-bold">
               {{ ('AGREEMENTS.LABEL.' + (agreement.termsInfo?.type || 'DEFAULT'))
-                | translate:{displayName: agreement.counterparty?.displayName} }}
+                | translate:{displayName: $safeNavigationMigration(agreement.counterparty?.displayName)} }}
             </span>
             <span class="badge" [ngClass]="isActive(agreement) ? 'bg-success' : 'bg-secondary'">
               {{ isActive(agreement) ? ('AGREEMENTS.ACTIVE' | translate) : ('AGREEMENTS.SUPERSEDED' | translate) }}
             </span>
           </div>
           <div class="text-muted small mt-1">
-            {{ 'AGREEMENTS.COUNTERPARTY_TYPE.' + agreement.counterparty?.type | translate }}
+            {{ 'AGREEMENTS.COUNTERPARTY_TYPE.' + $safeNavigationMigration(agreement.counterparty?.type) | translate }}
           </div>
           <div class="mt-1">
             {{ 'AGREEMENTS.TERMS_VERSION' | translate }}: {{ agreement.termsInfoId }}
@@ -60,8 +60,8 @@
 
     <app-agreement-content
       *ngIf="selectedAgreement"
-      [content]="selectedAgreement.termsInfo?.content"
-      [counterpartyName]="selectedAgreement.counterparty?.displayName"
+      [content]="$safeNavigationMigration(selectedAgreement.termsInfo?.content)"
+      [counterpartyName]="$safeNavigationMigration(selectedAgreement.counterparty?.displayName)"
       [acceptedId]="selectedAgreement.termsInfoId"
       [acceptedDate]="selectedAgreement.start"
       (back)="clearSelection()">

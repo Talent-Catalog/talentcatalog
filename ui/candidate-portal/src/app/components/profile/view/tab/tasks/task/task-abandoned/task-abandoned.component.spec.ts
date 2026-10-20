@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Input, Output} from '@angular/core';
+import {Component, EventEmitter, Input, Output, ChangeDetectionStrategy} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 import {TranslateModule} from '@ngx-translate/core';
@@ -6,7 +6,7 @@ import {TranslateModule} from '@ngx-translate/core';
 import {TaskAbandonedComponent} from './task-abandoned.component';
 import {TaskAssignment} from '../../../../../../../model/task-assignment';
 
-@Component({selector: 'tc-button', template: '<ng-content></ng-content>'})
+@Component({selector: 'tc-button', template: '<ng-content></ng-content>', changeDetection: ChangeDetectionStrategy.Eager, standalone: false})
 class TcButtonStubComponent {
   @Input() size?: string;
   @Output() onClick = new EventEmitter<void>();

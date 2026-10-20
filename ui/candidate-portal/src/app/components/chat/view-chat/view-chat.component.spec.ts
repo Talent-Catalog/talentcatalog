@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, Input, Pipe, PipeTransform} from '@angular/core';
+import {Component, Input, Pipe, PipeTransform, ChangeDetectionStrategy} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
@@ -24,7 +24,8 @@ import {ChatService} from '../../../services/chat.service';
 import {ViewChatComponent} from './view-chat.component';
 
 @Pipe({
-  name: 'translate'
+  name: 'translate',
+  standalone: false
 })
 class TranslatePipeStub implements PipeTransform {
   transform(value: string): string {
@@ -34,7 +35,9 @@ class TranslatePipeStub implements PipeTransform {
 
 @Component({
   selector: 'app-chat-read-status',
-  template: ''
+  template: '',
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 class ChatReadStatusStubComponent {
   @Input() chats: JobChat[];

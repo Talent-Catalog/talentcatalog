@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, forwardRef, Input, Pipe, PipeTransform} from '@angular/core';
+import {Component, forwardRef, Input, Pipe, PipeTransform, ChangeDetectionStrategy} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR, ReactiveFormsModule} from '@angular/forms';
@@ -32,7 +32,8 @@ import {ChangePasswordComponent} from '../change-password/change-password.compon
 import {LoginComponent} from './login.component';
 
 @Pipe({
-  name: 'translate'
+  name: 'translate',
+  standalone: false
 })
 class TranslatePipeStub implements PipeTransform {
   transform(value: string): string {
@@ -42,7 +43,9 @@ class TranslatePipeStub implements PipeTransform {
 
 @Component({
   selector: 'app-error',
-  template: ''
+  template: '',
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 class AppErrorStubComponent {
   @Input() error: any;
@@ -50,14 +53,18 @@ class AppErrorStubComponent {
 
 @Component({
   selector: 'tc-field',
-  template: '<ng-content></ng-content>'
+  template: '<ng-content></ng-content>',
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 class TcFieldStubComponent {
 }
 
 @Component({
   selector: 'tc-label',
-  template: '<ng-content></ng-content>'
+  template: '<ng-content></ng-content>',
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 class TcLabelStubComponent {
   @Input() for: string;
@@ -72,7 +79,9 @@ class TcLabelStubComponent {
       useExisting: forwardRef(() => TcInputStubComponent),
       multi: true
     }
-  ]
+  ],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 class TcInputStubComponent implements ControlValueAccessor {
   @Input() id: string;
@@ -94,7 +103,9 @@ class TcInputStubComponent implements ControlValueAccessor {
 
 @Component({
   selector: 'tc-button',
-  template: '<ng-content></ng-content>'
+  template: '<ng-content></ng-content>',
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 class TcButtonStubComponent {
   @Input() disabled: boolean;

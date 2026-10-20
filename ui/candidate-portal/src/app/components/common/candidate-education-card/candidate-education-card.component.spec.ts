@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, Input} from '@angular/core';
+import {Component, Input, ChangeDetectionStrategy} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 import {TranslateModule} from '@ngx-translate/core';
@@ -26,7 +26,9 @@ import {EducationMajor} from '../../../model/education-major';
 
 @Component({
   selector: 'tc-button',
-  template: '<ng-content></ng-content>'
+  template: '<ng-content></ng-content>',
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 class TcButtonStubComponent {
   @Input() color?: string;
@@ -35,7 +37,9 @@ class TcButtonStubComponent {
 
 @Component({
   selector: 'tc-description-list',
-  template: '<ng-content></ng-content>'
+  template: '<ng-content></ng-content>',
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 class TcDescriptionListStubComponent {
   @Input() direction?: string;
@@ -45,7 +49,9 @@ class TcDescriptionListStubComponent {
 
 @Component({
   selector: 'tc-description-item',
-  template: '<ng-content></ng-content>'
+  template: '<ng-content></ng-content>',
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 class TcDescriptionItemStubComponent {
   @Input() label?: string;

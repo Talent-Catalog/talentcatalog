@@ -21,7 +21,7 @@ import {SharedModule} from './shared/shared.module';
 import {AppComponent} from './components/app.component';
 import {LandingComponent} from './components/landing/landing.component';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
-import {HTTP_INTERCEPTORS, HttpClient, HttpClientModule} from '@angular/common/http';
+import {HTTP_INTERCEPTORS, HttpClient, provideHttpClient, withInterceptorsFromDi, withXhr} from '@angular/common/http';
 import {
   NgbCollapseModule,
   NgbDateAdapter,
@@ -366,7 +366,6 @@ export function HttpLoaderFactory(http: HttpClient) {
     BrowserModule,
     AppRoutingModule,
     ReactiveFormsModule,
-    HttpClientModule,
     FormsModule,
     NgbModule,
     NgbCollapseModule,
@@ -404,7 +403,8 @@ export function HttpLoaderFactory(http: HttpClient) {
     {provide: NgbDatepickerI18n, useClass: CustomDatepickerI18n},
     {provide: RxStompService},
     DatePipe,
-    LanguageLoader
+    LanguageLoader,
+    provideHttpClient(withXhr(), withInterceptorsFromDi())
   ],
   exports: [
     CandidateOppsComponent,

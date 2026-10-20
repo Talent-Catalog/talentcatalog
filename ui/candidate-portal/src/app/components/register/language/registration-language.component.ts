@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, EventEmitter, Input, OnDestroy, OnInit, Output} from '@angular/core';
+import {Component, EventEmitter, Input, OnDestroy, OnInit, Output, ChangeDetectionStrategy} from '@angular/core';
 import {UntypedFormBuilder, UntypedFormGroup, Validators} from "@angular/forms";
 import {Router} from "@angular/router";
 import {CandidateLanguage} from "../../../model/candidate-language";
@@ -32,7 +32,9 @@ import {Occupation} from "../../../model/occupation";
 @Component({
   selector: 'app-registration-language',
   templateUrl: './registration-language.component.html',
-  styleUrls: ['./registration-language.component.scss']
+  styleUrls: ['./registration-language.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class RegistrationLanguageComponent implements OnInit, OnDestroy {
 

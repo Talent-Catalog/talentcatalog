@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {IssueReportRequest, ServiceAssignment} from "../../../../../../../model/services";
 import {Candidate} from "../../../../../../../model/candidate";
 import {LinkedinService} from "../../../../../../../services/linkedin.service";
@@ -6,7 +6,9 @@ import {LinkedinService} from "../../../../../../../services/linkedin.service";
 @Component({
   selector: 'app-linkedin-redeemed',
   templateUrl: './linkedin-redeemed.component.html',
-  styleUrl: './linkedin-redeemed.component.scss'
+  styleUrl: './linkedin-redeemed.component.scss',
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class LinkedinRedeemedComponent implements OnInit {
   @Input() assignment: ServiceAssignment;

@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {AfterViewChecked, Component, ElementRef, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild} from '@angular/core';
+import {AfterViewChecked, Component, ElementRef, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild, ChangeDetectionStrategy} from '@angular/core';
 import {UntypedFormBuilder, UntypedFormGroup, Validators} from '@angular/forms';
 import {Subscription} from 'rxjs';
 import {CandidateService} from '../../../services/candidate.service';
@@ -31,7 +31,9 @@ import {CandidateJobExperience} from '../../../model/candidate-job-experience';
 @Component({
   selector: 'app-registration-candidate-occupation',
   templateUrl: './registration-candidate-occupation.component.html',
-  styleUrls: ['./registration-candidate-occupation.component.scss']
+  styleUrls: ['./registration-candidate-occupation.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class RegistrationCandidateOccupationComponent implements OnInit, OnDestroy, AfterViewChecked {
 

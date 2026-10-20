@@ -1,5 +1,5 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
-import {Component} from '@angular/core';
+import {Component, ChangeDetectionStrategy} from '@angular/core';
 import {By} from '@angular/platform-browser';
 import {TcTabsComponent} from './tc-tabs.component';
 import {TcTabComponent} from './tab/tc-tab.component';
@@ -18,7 +18,9 @@ import {TcTabContentComponent} from "./tab/content/tc-tab-content.component";
         <tc-tab-content>Second Tab Content</tc-tab-content>
       </tc-tab>
     </tc-tabs>
-  `
+  `,
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 class TestHostComponent {
   activeTabId = 'FirstTab';

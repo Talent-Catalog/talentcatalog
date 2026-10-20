@@ -14,14 +14,16 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, EventEmitter, Input, OnChanges, Output, SimpleChanges} from '@angular/core';
+import {Component, EventEmitter, Input, OnChanges, Output, SimpleChanges, ChangeDetectionStrategy} from '@angular/core';
 import {CandidateOccupation} from '../../../model/candidate-occupation';
 import {Occupation} from '../../../model/occupation';
 
 @Component({
   selector: 'app-candidate-occupation-card',
   templateUrl: './candidate-occupation-card.component.html',
-  styleUrls: ['./candidate-occupation-card.component.scss']
+  styleUrls: ['./candidate-occupation-card.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class CandidateOccupationCardComponent implements OnChanges {
 

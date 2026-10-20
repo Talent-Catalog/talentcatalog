@@ -1,4 +1,4 @@
-import {Component, forwardRef, Input} from '@angular/core';
+import {Component, forwardRef, Input, ChangeDetectionStrategy} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {
   ControlValueAccessor,
@@ -7,7 +7,8 @@ import {
   UntypedFormControl
 } from '@angular/forms';
 import {By} from '@angular/platform-browser';
-import {HttpClientTestingModule} from '@angular/common/http/testing';
+import {provideHttpClientTesting} from '@angular/common/http/testing';
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from '@angular/common/http';
 import {NgSelectModule} from '@ng-select/ng-select';
 import {of, throwError} from 'rxjs';
 import {PhoneNumber} from 'libphonenumber-js';
@@ -33,7 +34,9 @@ import {Country} from '../../../model/country';
       useExisting: forwardRef(() => TcInputStubComponent),
       multi: true
     }
-  ]
+  ],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 class TcInputStubComponent implements ControlValueAccessor {
   @Input() type: string;
@@ -71,7 +74,9 @@ class TcInputStubComponent implements ControlValueAccessor {
 
 @Component({
   selector: 'tc-error-message',
-  template: '<ng-content></ng-content>'
+  template: '<ng-content></ng-content>',
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 class TcErrorMessageStubComponent {
 }
@@ -112,14 +117,15 @@ describe('IntlPhoneInputComponent', () => {
       ],
       imports: [
         FormsModule,
-        NgSelectModule,
-        HttpClientTestingModule
+        NgSelectModule
       ],
       providers: [
         {
           provide: CountryService,
           useValue: countryServiceSpy
-        }
+        },
+        provideHttpClient(withXhr(), withInterceptorsFromDi()),
+        provideHttpClientTesting()
       ]
     }).compileComponents();
   });

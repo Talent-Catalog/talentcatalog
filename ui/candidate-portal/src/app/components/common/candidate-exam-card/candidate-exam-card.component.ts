@@ -14,14 +14,16 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, EventEmitter, Input, Output,} from '@angular/core';
+import {Component, EventEmitter, Input, Output, ChangeDetectionStrategy} from '@angular/core';
 import {CandidateExam, Exam} from '../../../model/candidate';
 import {generateYearArray} from "../../../util/year-helper";
 
 @Component({
   selector: 'app-candidate-exam-card',
   templateUrl: './candidate-exam-card.component.html',
-  styleUrls: ['./candidate-exam-card.component.scss']
+  styleUrls: ['./candidate-exam-card.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class CandidateExamCardComponent {
 

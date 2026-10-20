@@ -5,7 +5,8 @@ import {
   EventEmitter,
   Input,
   Output,
-  QueryList
+  QueryList,
+  ChangeDetectionStrategy
 } from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {TcAccordionItemComponent} from "./accordion-item/tc-accordion-item.component";
@@ -87,7 +88,7 @@ import {ButtonComponent} from "../button/button.component";
   selector: 'tc-accordion',
   templateUrl: './tc-accordion.component.html',
   styleUrls: ['./tc-accordion.component.scss'],
-  standalone: true,
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [CommonModule, ButtonComponent]
 })
 export class TcAccordionComponent implements AfterContentInit {

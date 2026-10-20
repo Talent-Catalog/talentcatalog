@@ -18,7 +18,8 @@ import {Pipe, PipeTransform} from '@angular/core';
 import {User} from "../model/user";
 
 @Pipe({
-  name: 'user'
+  name: 'user',
+  standalone: false
 })
 export class UserPipe implements PipeTransform {
 

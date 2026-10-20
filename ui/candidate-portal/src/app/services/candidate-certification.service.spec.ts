@@ -22,7 +22,7 @@ describe('CertificationService', () => {
   beforeEach(() => TestBed.configureTestingModule({}));
 
   it('should be created', () => {
-    const service: CandidateCertificationService = TestBed.get(CandidateCertificationService);
+    const service: CandidateCertificationService = TestBed.inject(CandidateCertificationService);
     expect(service).toBeTruthy();
   });
 });

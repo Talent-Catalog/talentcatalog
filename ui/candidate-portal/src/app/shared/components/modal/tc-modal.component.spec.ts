@@ -4,7 +4,7 @@ import {TcModalComponent} from './tc-modal.component';
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {By} from "@angular/platform-browser";
 import {ButtonComponent} from "../button/button.component";
-import {Component} from "@angular/core";
+import {Component, ChangeDetectionStrategy} from "@angular/core";
 import {provideRouter} from '@angular/router';
 
 @Component({
@@ -19,7 +19,9 @@ import {provideRouter} from '@angular/router';
     >
       <p>Modal body content</p>
     </tc-modal>
-  `
+  `,
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 class TestHostComponent {
   heading = 'Test Modal';
