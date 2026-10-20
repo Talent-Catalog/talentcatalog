@@ -19,7 +19,8 @@
           "options": {
             "outputPath": {
               "base": "dist/public-portal",
-              "browser": ""
+              "browser": "",
+              "media": "."
             },
             "index": "src/index.html",
             "polyfills": [

@@ -19,7 +19,8 @@
           "options": {
             "outputPath": {
               "base": "dist/admin-portal",
-              "browser": ""
+              "browser": "",
+              "media": "."
             },
             "index": "src/index.html",
             "polyfills": [

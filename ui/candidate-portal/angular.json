@@ -19,7 +19,8 @@
           "options": {
             "outputPath": {
               "base": "dist/candidate-portal",
-              "browser": ""
+              "browser": "",
+              "media": "."
             },
             "index": "src/index.html",
             "polyfills": [
