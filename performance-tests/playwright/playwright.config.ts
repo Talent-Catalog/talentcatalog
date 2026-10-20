@@ -6,15 +6,15 @@ import {defineConfig, devices} from '@playwright/test';
  * /admin-portal/search rather than /search.
  */
 function getBaseURL(): string {
-  const configured = process.env.PERF_BASE_URL?.trim();
+  const configured = process.env.PLAYWRIGHT_PERF_BASE_URL?.trim();
   const url = new URL(configured || 'https://tctalent-test.org/admin-portal/');
 
   if (url.protocol !== 'https:' && url.protocol !== 'http:') {
-    throw new Error('PERF_BASE_URL must use http:// or https://');
+    throw new Error('PLAYWRIGHT_PERF_BASE_URL must use http:// or https://');
   }
 
   if (url.username || url.password || url.search || url.hash) {
-    throw new Error('PERF_BASE_URL must not contain credentials, query, or fragment');
+    throw new Error('PLAYWRIGHT_PERF_BASE_URL must not contain credentials, query, or fragment');
   }
 
   if (!url.pathname.endsWith('/')) {
