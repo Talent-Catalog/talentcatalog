@@ -15,7 +15,8 @@
  */
 
 import {TestBed} from '@angular/core/testing';
-import {HttpClientTestingModule, HttpTestingController} from '@angular/common/http/testing';
+import {HttpTestingController, provideHttpClientTesting} from '@angular/common/http/testing';
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from '@angular/common/http';
 import {SalesforceService} from './salesforce.service';
 import {EnvService} from './env.service';
 import {environment} from '../../environments/environment';
@@ -31,10 +32,11 @@ describe('SalesforceService', () => {
     const spy = jasmine.createSpyObj('EnvService', ['sfLightningUrl']);
 
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
       providers: [
         SalesforceService,
-        { provide: EnvService, useValue: spy }
+        { provide: EnvService, useValue: spy },
+        provideHttpClient(withXhr(), withInterceptorsFromDi()),
+        provideHttpClientTesting()
       ]
     });
 

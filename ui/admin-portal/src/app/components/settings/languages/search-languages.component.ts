@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {UntypedFormBuilder, UntypedFormGroup} from "@angular/forms";
 import {SystemLanguage} from "../../../model/language";
 import {LanguageService} from "../../../services/language.service";
@@ -26,7 +26,9 @@ import {AuthorizationService} from "../../../services/authorization.service";
 @Component({
   selector: 'app-search-languages',
   templateUrl: './search-languages.component.html',
-  styleUrls: ['./search-languages.component.scss']
+  styleUrls: ['./search-languages.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class SearchLanguagesComponent implements OnInit {
 

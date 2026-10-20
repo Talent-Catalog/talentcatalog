@@ -1,4 +1,4 @@
-import {Component, Input} from '@angular/core';
+import {Component, Input, ChangeDetectionStrategy} from '@angular/core';
 
 /**
  * Reusable component to display loading status of parent - uses translation key and provides option
@@ -7,7 +7,9 @@ import {Component, Input} from '@angular/core';
 @Component({
   selector: 'app-loading-indicator',
   templateUrl: './loading-indicator.component.html',
-  styleUrls: ['./loading-indicator.component.scss']
+  styleUrls: ['./loading-indicator.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class LoadingIndicatorComponent {
   @Input() loading: boolean = false;

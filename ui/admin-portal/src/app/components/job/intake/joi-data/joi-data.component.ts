@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {JobIntakeComponentBase} from "../../../util/intake/JobIntakeComponentBase";
 import {UntypedFormBuilder} from "@angular/forms";
 import {JobService} from "../../../../services/job.service";
@@ -37,7 +37,9 @@ import {CUSTOM_CLEAR_FORMAT_BUTTON} from "../../../../util/clear-format";
       },
       deps: [NgxWigToolbarService],
     },
-  ]
+  ],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class JoiDataComponent extends JobIntakeComponentBase implements OnInit {
   @Input() formFieldName: string;

@@ -19,7 +19,8 @@ import {ReactiveFormsModule, UntypedFormBuilder} from '@angular/forms';
 import {EligiblePathwaysComponent} from './eligible-pathways.component';
 import {CandidateVisaCheckService} from '../../../../../services/candidate-visa-check.service';
 import {AutosaveStatusComponent} from "../../../../util/autosave-status/autosave-status.component";
-import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {provideHttpClientTesting} from "@angular/common/http/testing";
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 
 describe('EligiblePathwaysComponent', () => {
   let component: EligiblePathwaysComponent;
@@ -28,8 +29,8 @@ describe('EligiblePathwaysComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [EligiblePathwaysComponent,AutosaveStatusComponent],
-      imports: [HttpClientTestingModule,ReactiveFormsModule],
-      providers: [UntypedFormBuilder, CandidateVisaCheckService]
+      imports: [ReactiveFormsModule],
+      providers: [UntypedFormBuilder, CandidateVisaCheckService, provideHttpClient(withXhr(), withInterceptorsFromDi()), provideHttpClientTesting()]
     }).compileComponents();
   });
 

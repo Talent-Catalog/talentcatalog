@@ -22,7 +22,8 @@ import {
   OnDestroy,
   OnInit,
   Output,
-  SimpleChanges
+  SimpleChanges,
+  ChangeDetectionStrategy
 } from '@angular/core';
 import {
   getCandidateSourceExternalHref,
@@ -60,6 +61,8 @@ import {CandidateSourceCacheService} from "../../../services/candidate-source-ca
   selector: 'app-candidate-source',
   templateUrl: './candidate-source.component.html',
   styleUrls: ['./candidate-source.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class CandidateSourceComponent implements OnInit, OnChanges, OnDestroy {
 

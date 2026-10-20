@@ -22,7 +22,8 @@ import {NgbModal, NgbTypeaheadModule} from "@ng-bootstrap/ng-bootstrap";
 import {SavedList} from "../../../model/saved-list";
 import {MockSavedList} from "../../../MockData/MockSavedList";
 import {ShowCandidatesComponent} from "../show/show-candidates.component";
-import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {provideHttpClientTesting} from "@angular/common/http/testing";
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {FormsModule, ReactiveFormsModule, UntypedFormBuilder} from "@angular/forms";
 import {CommonModule, DatePipe, TitleCasePipe} from "@angular/common";
 import {SortedByComponent} from "../../util/sort/sorted-by.component";
@@ -55,7 +56,7 @@ describe('CandidatesListComponent', () => {
     mockSavedListService.get.and.returnValue(of(MockSavedList));
     TestBed.configureTestingModule({
       declarations: [CandidatesListComponent, CandidateSourceDescriptionComponent, AutosaveStatusComponent, RouterLinkStubDirective ,ShowCandidatesComponent, SortedByComponent],
-      imports: [HttpClientTestingModule, NgbTypeaheadModule,CommonModule, FormsModule, ReactiveFormsModule,NgSelectModule
+      imports: [NgbTypeaheadModule,CommonModule, FormsModule, ReactiveFormsModule,NgSelectModule
       ],
       providers: [
         UntypedFormBuilder,
@@ -65,7 +66,9 @@ describe('CandidatesListComponent', () => {
         { provide: Router, useValue: mockRouter },
         { provide: SavedListService, useValue: mockSavedListService },
         { provide: NgbModal, useValue: mockModalService },
-        { provide: Location, useValue: mockLocation }
+        { provide: Location, useValue: mockLocation },
+        provideHttpClient(withXhr(), withInterceptorsFromDi()),
+        provideHttpClientTesting()
       ]
     })
     .compileComponents();

@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, EventEmitter, Input, OnInit, Output, ViewChild} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output, ViewChild, ChangeDetectionStrategy} from '@angular/core';
 import {SearchOppsBy} from "../../../model/base";
 import {CandidateOpportunity} from "../../../model/candidate-opportunity";
 import {MainSidePanelBase} from "../../util/split/MainSidePanelBase";
@@ -24,7 +24,9 @@ import {BehaviorSubject} from "rxjs";
 @Component({
   selector: 'app-candidate-opps-with-detail',
   templateUrl: './candidate-opps-with-detail.component.html',
-  styleUrls: ['./candidate-opps-with-detail.component.scss']
+  styleUrls: ['./candidate-opps-with-detail.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class CandidateOppsWithDetailComponent extends MainSidePanelBase implements OnInit {
   /**

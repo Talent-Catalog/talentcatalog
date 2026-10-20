@@ -32,12 +32,12 @@
                        [compact]="compact"
   >
     <tc-description-item label="Source:">
-      <span [innerHtml]="candidate?.surveyType?.name"
+      <span [innerHtml]="$safeNavigationMigration(candidate?.surveyType?.name)"
             appHighlightSearch
       ></span>
     </tc-description-item>
     <tc-description-item label="Comment:">
-      <span [innerHtml]="candidate?.surveyComment"
+      <span [innerHtml]="$safeNavigationMigration(candidate?.surveyComment)"
             appHighlightSearch
       ></span>
     </tc-description-item>

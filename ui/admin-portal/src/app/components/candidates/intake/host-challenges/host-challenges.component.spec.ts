@@ -18,7 +18,8 @@ import {FormsModule, ReactiveFormsModule, UntypedFormBuilder} from '@angular/for
 import {HostChallengesComponent} from './host-challenges.component';
 import {CandidateService} from '../../../../services/candidate.service';
 import {AutosaveStatusComponent} from "../../../util/autosave-status/autosave-status.component";
-import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {provideHttpClientTesting} from "@angular/common/http/testing";
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {MockCandidate} from "../../../../MockData/MockCandidate";
 
@@ -29,10 +30,12 @@ describe('HostChallengesComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [ HostChallengesComponent,AutosaveStatusComponent ],
-      imports: [HttpClientTestingModule,NgSelectModule,FormsModule,ReactiveFormsModule],
+      imports: [NgSelectModule,FormsModule,ReactiveFormsModule],
       providers: [
         UntypedFormBuilder,
         { provide: CandidateService },
+        provideHttpClient(withXhr(), withInterceptorsFromDi()),
+        provideHttpClientTesting(),
       ]
     })
     .compileComponents();

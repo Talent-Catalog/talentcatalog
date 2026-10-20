@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { ChatMuteToggleButtonComponent } from './chat-mute-toggle-button.component';
-import {HttpClientModule} from "@angular/common/http";
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 
 describe('MuteToggleButtonComponent', () => {
   let component: ChatMuteToggleButtonComponent;
@@ -10,7 +10,7 @@ describe('MuteToggleButtonComponent', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       declarations: [ChatMuteToggleButtonComponent],
-      imports: [HttpClientModule]
+      providers: [provideHttpClient(withXhr(), withInterceptorsFromDi())]
     });
     fixture = TestBed.createComponent(ChatMuteToggleButtonComponent);
     component = fixture.componentInstance;

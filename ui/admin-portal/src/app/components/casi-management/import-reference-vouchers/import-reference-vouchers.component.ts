@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, Input} from '@angular/core';
+import {Component, Input, ChangeDetectionStrategy} from '@angular/core';
 import {User} from "../../../model/user";
 import {CasiAdminService} from "../../../services/casi-admin.service";
 import {BaseCsvImportComponent} from "../base-csv-import.component";
@@ -26,6 +26,8 @@ import {BaseCsvImportComponent} from "../base-csv-import.component";
   selector: 'app-import-reference-vouchers',
   templateUrl: './import-reference-vouchers.component.html',
   styleUrls: ['./import-reference-vouchers.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class ImportReferenceVouchersComponent extends BaseCsvImportComponent {
   availableVouchersCount = 0;

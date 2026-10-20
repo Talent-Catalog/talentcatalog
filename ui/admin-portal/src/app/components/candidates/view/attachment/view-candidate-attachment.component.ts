@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {Candidate} from '../../../../model/candidate';
 import {UntypedFormBuilder} from '@angular/forms';
@@ -29,7 +29,9 @@ import {UploadType} from "../../../../model/task";
 @Component({
   selector: 'app-view-candidate-attachment',
   templateUrl: './view-candidate-attachment.component.html',
-  styleUrls: ['./view-candidate-attachment.component.scss']
+  styleUrls: ['./view-candidate-attachment.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class ViewCandidateAttachmentComponent implements OnInit {
 

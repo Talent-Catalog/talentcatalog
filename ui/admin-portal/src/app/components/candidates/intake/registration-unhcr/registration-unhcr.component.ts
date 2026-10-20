@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {EnumOption, enumOptions} from '../../../../util/enum';
 import {NotRegisteredStatus, UnhcrStatus, YesNo} from '../../../../model/candidate';
 import {UntypedFormBuilder} from '@angular/forms';
@@ -24,7 +24,9 @@ import {IntakeComponentBase} from '../../../util/intake/IntakeComponentBase';
 @Component({
   selector: 'app-registration-unhcr',
   templateUrl: './registration-unhcr.component.html',
-  styleUrls: ['./registration-unhcr.component.scss']
+  styleUrls: ['./registration-unhcr.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class RegistrationUnhcrComponent extends IntakeComponentBase implements OnInit {
 

@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {UntypedFormBuilder, UntypedFormGroup} from "@angular/forms";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {CandidateService} from "../../../../../services/candidate.service";
@@ -24,7 +24,9 @@ import {Candidate} from "../../../../../model/candidate";
 @Component({
   selector: 'app-edit-candidate-media-willingness',
   templateUrl: './edit-candidate-media-willingness.component.html',
-  styleUrls: ['./edit-candidate-media-willingness.component.scss']
+  styleUrls: ['./edit-candidate-media-willingness.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class EditCandidateMediaWillingnessComponent implements OnInit {
 

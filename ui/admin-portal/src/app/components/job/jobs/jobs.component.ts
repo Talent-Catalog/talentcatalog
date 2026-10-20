@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, Inject, LOCALE_ID, ViewChild} from '@angular/core';
+import {Component, Inject, LOCALE_ID, ViewChild, ChangeDetectionStrategy} from '@angular/core';
 import {AuthorizationService} from "../../../services/authorization.service";
 import {UntypedFormBuilder} from "@angular/forms";
 import {Job, JobOpportunityStage, SearchJobRequest} from "../../../model/job";
@@ -36,7 +36,9 @@ import {InputComponent} from "../../../shared/components/input/input.component";
 @Component({
   selector: 'app-jobs',
   templateUrl: './jobs.component.html',
-  styleUrls: ['./jobs.component.scss']
+  styleUrls: ['./jobs.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class JobsComponent extends FilteredOppsComponentBase<Job> {
 

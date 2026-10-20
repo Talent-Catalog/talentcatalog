@@ -1,4 +1,4 @@
-import {Component, Input} from '@angular/core';
+import {Component, Input, ChangeDetectionStrategy} from '@angular/core';
 import {UserService} from '../../../services/user.service';
 import {SendVerifyEmailRequest} from '../../../model/user';
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
@@ -7,6 +7,8 @@ import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
   selector: 'app-verify-email',
   templateUrl: './verify-email.component.html',
   styleUrls: ['./verify-email.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 
 export class VerifyEmailComponent {

@@ -20,7 +20,8 @@ import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {TaskService} from "../../../services/task.service";
 import {TaskAssignmentService} from "../../../services/task-assignment.service";
 import {FormsModule, ReactiveFormsModule, UntypedFormBuilder} from "@angular/forms";
-import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {provideHttpClientTesting} from "@angular/common/http/testing";
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {of, throwError} from "rxjs";
 import {MockCandidate} from "../../../MockData/MockCandidate";
@@ -42,12 +43,14 @@ describe('AssignTasksCandidateComponent', () => {
 
     await TestBed.configureTestingModule({
       declarations: [AssignTasksCandidateComponent],
-      imports: [HttpClientTestingModule,FormsModule,ReactiveFormsModule,NgSelectModule],
+      imports: [FormsModule,ReactiveFormsModule,NgSelectModule],
       providers: [
         UntypedFormBuilder,
         { provide: NgbActiveModal, useValue: activeModalSpyObj },
         { provide: TaskService, useValue: taskServiceSpyObj },
-        { provide: TaskAssignmentService, useValue: taskAssignmentServiceSpyObj }
+        { provide: TaskAssignmentService, useValue: taskAssignmentServiceSpyObj },
+        provideHttpClient(withXhr(), withInterceptorsFromDi()),
+        provideHttpClientTesting()
       ]
     }).compileComponents();
 

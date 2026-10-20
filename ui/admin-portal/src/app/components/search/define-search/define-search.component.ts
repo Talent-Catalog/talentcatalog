@@ -25,7 +25,8 @@ import {
   OnInit,
   Output,
   SimpleChanges,
-  ViewChild
+  ViewChild,
+  ChangeDetectionStrategy
 } from '@angular/core';
 
 import {Candidate, CandidateStatus, Gender, UnhcrStatus} from '../../../model/candidate';
@@ -114,7 +115,9 @@ import {ExtractSkillsRequest, SkillsService} from "../../../services/skills.serv
 @Component({
   selector: 'app-define-search',
   templateUrl: './define-search.component.html',
-  styleUrls: ['./define-search.component.scss']
+  styleUrls: ['./define-search.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit, OnDestroy {
   @ViewChild('modifiedDate', {static: true}) modifiedDatePicker: DateRangePickerComponent;

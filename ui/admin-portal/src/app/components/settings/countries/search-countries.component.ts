@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnInit, ChangeDetectionStrategy} from '@angular/core';
 
 
 import {SearchResults} from '../../../model/search-results';
@@ -33,7 +33,9 @@ import {AuthorizationService} from "../../../services/authorization.service";
 @Component({
   selector: 'app-search-countries',
   templateUrl: './search-countries.component.html',
-  styleUrls: ['./search-countries.component.scss']
+  styleUrls: ['./search-countries.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class SearchCountriesComponent implements OnInit {
 

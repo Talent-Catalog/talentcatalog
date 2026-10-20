@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {JobService} from "../../../../services/job.service";
 import {ActivatedRoute} from "@angular/router";
 import {Job} from "../../../../model/job";
@@ -35,7 +35,9 @@ import {Job} from "../../../../model/job";
 @Component({
   selector: 'app-view-job-from-url',
   templateUrl: './view-job-from-url.component.html',
-  styleUrls: ['./view-job-from-url.component.scss']
+  styleUrls: ['./view-job-from-url.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class ViewJobFromUrlComponent implements OnInit {
 

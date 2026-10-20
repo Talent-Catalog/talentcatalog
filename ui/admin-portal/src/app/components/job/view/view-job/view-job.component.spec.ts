@@ -24,7 +24,8 @@ import {Router} from '@angular/router';
 import {CommonModule, Location} from '@angular/common';
 import {of, Subject} from 'rxjs';
 import {Job} from '../../../../model/job';
-import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {provideHttpClientTesting} from "@angular/common/http/testing";
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {MockUser} from "../../../../MockData/MockUser";
 import {MockJob} from "../../../../MockData/MockJob";
 import {JobGeneralTabComponent} from "../tab/job-general-tab/job-general-tab.component";
@@ -58,7 +59,7 @@ describe('ViewJobComponent', () => {
     mockLocation = jasmine.createSpyObj('Location', ['back']);
 
     await TestBed.configureTestingModule({
-      imports:[HttpClientTestingModule,NgbNavModule,ReactiveFormsModule,CommonModule,NgbTooltipModule],
+      imports:[NgbNavModule,ReactiveFormsModule,CommonModule,NgbTooltipModule],
       declarations: [ViewJobComponent,AutosaveStatusComponent,RouterLinkStubDirective,JobGeneralTabComponent,ViewJobInfoComponent,ViewJobSummaryComponent,ChatReadStatusComponent],
       providers: [
         UntypedFormBuilder,
@@ -67,7 +68,9 @@ describe('ViewJobComponent', () => {
         { provide: JobService, useValue: mockJobService },
         { provide: SlackService, useValue: mockSlackService },
         { provide: Router, useValue: mockRouter },
-        { provide: Location, useValue: mockLocation }
+        { provide: Location, useValue: mockLocation },
+        provideHttpClient(withXhr(), withInterceptorsFromDi()),
+        provideHttpClientTesting()
       ]
     })
     .compileComponents();

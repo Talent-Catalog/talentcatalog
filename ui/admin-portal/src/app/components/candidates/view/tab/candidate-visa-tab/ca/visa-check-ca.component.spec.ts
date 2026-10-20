@@ -15,14 +15,15 @@
  */
 import {VisaCheckCaComponent} from "./visa-check-ca.component";
 import {ComponentFixture, TestBed} from "@angular/core/testing";
-import {Component, CUSTOM_ELEMENTS_SCHEMA} from "@angular/core";
+import {Component, CUSTOM_ELEMENTS_SCHEMA, ChangeDetectionStrategy} from "@angular/core";
 import {MockCandidate} from "../../../../../../MockData/MockCandidate";
 import {
   mockCandidateIntakeData
 } from "../../candidate-intake-tab/candidate-intake-tab.component.spec";
 import {CandidateVisa, CandidateVisaJobCheck} from "../../../../../../model/candidate";
 import {NgbAccordionModule, NgbModal} from "@ng-bootstrap/ng-bootstrap";
-import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {provideHttpClientTesting} from "@angular/common/http/testing";
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {AuthorizationService} from "../../../../../../services/authorization.service";
 import {ReadOnlyInputsDirective} from "../../../../../../directives/read-only-inputs.directive";
 import {LocalStorageService} from "../../../../../../services/local-storage.service";
@@ -36,7 +37,9 @@ import {LocalStorageService} from "../../../../../../services/local-storage.serv
     <textarea></textarea>
     <app-date-picker></app-date-picker>
     <ngx-wig></ngx-wig>
-  `
+  `,
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 class MockIntProtectionComponent {
   // No isEditable method; inputs are controlled by parent directive
@@ -51,12 +54,14 @@ describe('VisaCheckCaComponent', () => {
   beforeEach(async () => {
     const authServiceSpyObj = jasmine.createSpyObj('AuthorizationService', ['isEditableCandidate']);
     await TestBed.configureTestingModule({
-      imports: [NgbAccordionModule, HttpClientTestingModule],
+      imports: [NgbAccordionModule],
       declarations: [VisaCheckCaComponent, ReadOnlyInputsDirective, MockIntProtectionComponent],
       providers: [
         {provide: NgbModal, useValue: {}},
         {provide: LocalStorageService, useValue: {}},
-        {provide: AuthorizationService, useValue: authServiceSpyObj}
+        {provide: AuthorizationService, useValue: authServiceSpyObj},
+        provideHttpClient(withXhr(), withInterceptorsFromDi()),
+        provideHttpClientTesting()
       ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA]
     }).compileComponents();

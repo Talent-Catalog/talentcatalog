@@ -1,4 +1,4 @@
-import {Component, TemplateRef, ViewChild} from '@angular/core';
+import {Component, TemplateRef, ViewChild, ChangeDetectionStrategy} from '@angular/core';
 
 /**
  * @component TcTabContentComponent
@@ -32,7 +32,7 @@ import {Component, TemplateRef, ViewChild} from '@angular/core';
   selector: 'tc-tab-content',
   templateUrl: './tc-tab-content.component.html',
   styleUrls: ['./tc-tab-content.component.scss'],
-  standalone: true,
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: []
 })
 export class TcTabContentComponent {

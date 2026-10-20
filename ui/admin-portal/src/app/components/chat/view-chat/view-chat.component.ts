@@ -14,14 +14,16 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {JobChat} from "../../../model/chat";
 import {ChatService} from "../../../services/chat.service";
 
 @Component({
   selector: 'app-view-chat',
   templateUrl: './view-chat.component.html',
-  styleUrls: ['./view-chat.component.scss']
+  styleUrls: ['./view-chat.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class ViewChatComponent implements OnInit {
 

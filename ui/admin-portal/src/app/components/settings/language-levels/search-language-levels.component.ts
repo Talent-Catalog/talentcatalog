@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnInit, ChangeDetectionStrategy} from '@angular/core';
 
 
 import {SearchResults} from '../../../model/search-results';
@@ -34,7 +34,9 @@ import {FileSelectorComponent} from "../../util/file-selector/file-selector.comp
 @Component({
   selector: 'app-search-language-levels',
   templateUrl: './search-language-levels.component.html',
-  styleUrls: ['./search-language-levels.component.scss']
+  styleUrls: ['./search-language-levels.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class SearchLanguageLevelsComponent implements OnInit {
 

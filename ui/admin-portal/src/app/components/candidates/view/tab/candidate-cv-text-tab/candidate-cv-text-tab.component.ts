@@ -1,4 +1,4 @@
-import {Component, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
+import {Component, Input, OnChanges, OnInit, SimpleChanges, ChangeDetectionStrategy} from '@angular/core';
 import {Candidate} from "../../../../../model/candidate";
 import {CandidateAttachmentService} from "../../../../../services/candidate-attachment.service";
 import {CvText} from "../../../../../model/cv-text";
@@ -6,7 +6,9 @@ import {CvText} from "../../../../../model/cv-text";
 @Component({
   selector: 'app-candidate-cv-text-tab',
   templateUrl: './candidate-cv-text-tab.component.html',
-  styleUrls: ['./candidate-cv-text-tab.component.scss']
+  styleUrls: ['./candidate-cv-text-tab.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class CandidateCvTextTabComponent implements OnInit, OnChanges {
   @Input() candidate: Candidate;

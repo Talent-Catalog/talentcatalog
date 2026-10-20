@@ -1,4 +1,4 @@
-import {Component, EventEmitter, HostBinding, Input, Output} from '@angular/core';
+import {Component, EventEmitter, HostBinding, Input, Output, ChangeDetectionStrategy} from '@angular/core';
 import {QueryParamsHandling, RouterLink} from '@angular/router';
 import {CommonModule} from '@angular/common';
 
@@ -85,7 +85,7 @@ import {CommonModule} from '@angular/common';
   selector: 'tc-button',
   templateUrl: './button.component.html',
   styleUrls: ['./button.component.scss'],
-  standalone: true,
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [CommonModule, RouterLink]
 })
 export class ButtonComponent {

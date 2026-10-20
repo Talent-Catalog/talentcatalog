@@ -15,7 +15,8 @@
  */
 
 import {TestBed} from '@angular/core/testing';
-import {HttpClientTestingModule, HttpTestingController} from '@angular/common/http/testing';
+import {HttpTestingController, provideHttpClientTesting} from '@angular/common/http/testing';
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from '@angular/common/http';
 import {CandidateSavedListService} from './candidate-saved-list.service';
 import {environment} from '../../environments/environment';
 import {IHasSetOfSavedLists, SavedList, SearchSavedListRequest} from '../model/saved-list';
@@ -28,8 +29,7 @@ describe('CandidateSavedListService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
-      providers: [CandidateSavedListService]
+      providers: [CandidateSavedListService, provideHttpClient(withXhr(), withInterceptorsFromDi()), provideHttpClientTesting()]
     });
 
     service = TestBed.inject(CandidateSavedListService);

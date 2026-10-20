@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {
   AbstractControl,
@@ -111,7 +111,9 @@ export const crossFieldValidator: ValidatorFn = (
 @Component({
   selector: 'app-create-update-partner',
   templateUrl: './create-update-partner.component.html',
-  styleUrls: ['./create-update-partner.component.scss']
+  styleUrls: ['./create-update-partner.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class CreateUpdatePartnerComponent extends FormComponentBase implements OnInit {
 

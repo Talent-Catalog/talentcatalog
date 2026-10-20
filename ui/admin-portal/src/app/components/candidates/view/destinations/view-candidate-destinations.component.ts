@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, Input, OnInit, SimpleChanges} from '@angular/core';
+import {Component, Input, OnInit, SimpleChanges, ChangeDetectionStrategy} from '@angular/core';
 import {Candidate} from "../../../../model/candidate";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {
@@ -27,7 +27,9 @@ import {CandidateService} from "../../../../services/candidate.service";
 @Component({
   selector: 'app-view-candidate-destinations',
   templateUrl: './view-candidate-destinations.component.html',
-  styleUrls: ['./view-candidate-destinations.component.scss']
+  styleUrls: ['./view-candidate-destinations.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class ViewCandidateDestinationsComponent implements OnInit {
 

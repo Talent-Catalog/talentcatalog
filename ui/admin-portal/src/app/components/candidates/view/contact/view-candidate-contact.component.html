@@ -67,7 +67,7 @@
         <span class="field"
               *ngIf="candidate.country"
               [innerHtml]="candidate.address1 || candidate.city || candidate.state ?
-                ', ' + candidate.country?.name : candidate.country?.name"
+                ', ' + $safeNavigationMigration(candidate.country?.name) : $safeNavigationMigration(candidate.country?.name)"
               appHighlightSearch
         ></span>
     </tc-description-item>
@@ -99,7 +99,7 @@
     <tc-description-item label="Country of Nationality"
                          icon="fas fa-globe"
     >
-      <span [innerHtml]="candidate.nationality?.name" appHighlightSearch></span>
+      <span [innerHtml]="$safeNavigationMigration(candidate.nationality?.name)" appHighlightSearch></span>
     </tc-description-item>
 
     <tc-description-item label="Year of arrival"
@@ -147,7 +147,7 @@
 
       <span class="field" *ngIf="candidate.relocatedCountry"
             [innerHtml]="candidate.relocatedAddress || candidate.relocatedCity || candidate.relocatedState ?
-              ', ' + candidate.relocatedCountry?.name : candidate.relocatedCountry?.name"
+              ', ' + $safeNavigationMigration(candidate.relocatedCountry?.name) : $safeNavigationMigration(candidate.relocatedCountry?.name)"
             appHighlightSearch
       ></span>
     </tc-description-item>

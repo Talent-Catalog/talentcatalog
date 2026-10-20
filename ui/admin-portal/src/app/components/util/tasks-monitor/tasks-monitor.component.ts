@@ -14,14 +14,16 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {Candidate} from "../../../model/candidate";
 import {checkForAbandoned, checkForOverdue, TaskAssignment} from "../../../model/task-assignment";
 
 @Component({
   selector: 'app-tasks-monitor',
   templateUrl: './tasks-monitor.component.html',
-  styleUrls: ['./tasks-monitor.component.scss']
+  styleUrls: ['./tasks-monitor.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class TasksMonitorComponent implements OnInit {
   // Required Input

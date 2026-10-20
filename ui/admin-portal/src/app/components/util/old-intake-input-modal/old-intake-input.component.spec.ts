@@ -20,7 +20,8 @@ import {CandidateNoteService} from "../../../services/candidate-note.service";
 import {NgbActiveModal, NgbDatepickerModule, NgbModule} from "@ng-bootstrap/ng-bootstrap";
 import {ComponentFixture, TestBed} from "@angular/core/testing";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
-import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {provideHttpClientTesting} from "@angular/common/http/testing";
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {By} from "@angular/platform-browser";
 import {of, throwError} from "rxjs";
 import {MockCandidate} from "../../../MockData/MockCandidate";
@@ -40,11 +41,13 @@ describe('OldIntakeInputComponent', () => {
 
     await TestBed.configureTestingModule({
       declarations: [OldIntakeInputComponent,DatePickerComponent],
-      imports: [FormsModule, ReactiveFormsModule, NgbModule, NgbDatepickerModule ,HttpClientTestingModule],
+      imports: [FormsModule, ReactiveFormsModule, NgbModule, NgbDatepickerModule],
       providers: [
         { provide: CandidateService, useValue: candidateSpy },
         { provide: CandidateNoteService, useValue: noteSpy },
-        { provide: NgbActiveModal, useValue: modalSpy }
+        { provide: NgbActiveModal, useValue: modalSpy },
+        provideHttpClient(withXhr(), withInterceptorsFromDi()),
+        provideHttpClientTesting()
       ]
     }).compileComponents();
 

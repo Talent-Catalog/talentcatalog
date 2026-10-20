@@ -83,7 +83,7 @@
 
       <div *ngIf="editable" class="d-flex flex-fill justify-content-between">
         <div [ngbPopover]="ta.candidateNotes" triggers="mouseenter:mouseleave" container="body"
-             [disablePopover]="ta.candidateNotes?.length <=80">
+             [disablePopover]="$safeNavigationMigration(ta.candidateNotes?.length) <=80">
           <span *ngIf="ta.candidateNotes" class="font-r80">{{ta.candidateNotes | slice: 0 : 80}}
             <span *ngIf="ta.candidateNotes?.length >=80">...</span>
           </span>
@@ -154,7 +154,7 @@
              triggers="mouseenter:mouseleave"
              container="body"
              class="custom-flex-25 pe-3"
-             [disablePopover]="ta.answer?.length <=40"
+             [disablePopover]="$safeNavigationMigration(ta.answer?.length) <=40"
         >
           <i class="fas fa-angle-right"></i>
           <span *ngIf="ta.answer" class="font-r80 font-italic font-weight-normal ms-1">
@@ -187,13 +187,13 @@
       <!-- IF EDITABLE SHOW FULL RESULTS (COMMENTS, ANSWERS AND EDIT BUTTONS) -->
       <ng-container *ngIf="editable">
         <div [ngbPopover]="ta.candidateNotes" triggers="mouseenter:mouseleave" container="body" class="custom-flex-25 pe-3"
-             [disablePopover]="ta.candidateNotes?.length <=40">
+             [disablePopover]="$safeNavigationMigration(ta.candidateNotes?.length) <=40">
           <span *ngIf="ta.candidateNotes" class="font-r80">{{ta.candidateNotes | slice: 0 : 40}}
             <span *ngIf="ta.candidateNotes?.length >=40">...</span>
           </span>
         </div>
         <div [ngbPopover]="ta.answer" triggers="mouseenter:mouseleave" container="body" class="custom-flex-25 pe-3"
-             [disablePopover]="ta.answer?.length <=40">
+             [disablePopover]="$safeNavigationMigration(ta.answer?.length) <=40">
         <span *ngIf="ta.answer" class="font-r80">{{ta.answer | slice: 0 : 40}}
           <span *ngIf="ta.answer?.length >=40">...</span>
         </span>

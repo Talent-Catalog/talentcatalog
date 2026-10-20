@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {UntypedFormBuilder} from "@angular/forms";
 import {VisaCheckComponentBase} from "../../../../util/intake/VisaCheckComponentBase";
 import {CandidateVisaCheckService} from "../../../../../services/candidate-visa-check.service";
@@ -22,7 +22,9 @@ import {CandidateVisaCheckService} from "../../../../../services/candidate-visa-
 @Component({
   selector: 'app-preferred-pathways',
   templateUrl: './preferred-pathways.component.html',
-  styleUrls: ['./preferred-pathways.component.scss']
+  styleUrls: ['./preferred-pathways.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class PreferredPathwaysComponent extends VisaCheckComponentBase implements OnInit {
   helpLink: string;

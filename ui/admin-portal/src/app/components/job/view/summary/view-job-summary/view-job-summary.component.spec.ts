@@ -16,7 +16,7 @@
 
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {ReactiveFormsModule} from '@angular/forms';
-import {HttpClientModule} from '@angular/common/http';
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from '@angular/common/http';
 import {of} from 'rxjs';
 import {ViewJobSummaryComponent} from './view-job-summary.component';
 import {JobService} from '../../../../../services/job.service';
@@ -34,8 +34,8 @@ describe('ViewJobSummaryComponent', () => {
 
     await TestBed.configureTestingModule({
       declarations: [ViewJobSummaryComponent, AutosaveStatusComponent],
-      imports: [ReactiveFormsModule, HttpClientModule],
-      providers: [{ provide: JobService, useValue: jobServiceSpyObj }]
+      imports: [ReactiveFormsModule],
+      providers: [{ provide: JobService, useValue: jobServiceSpyObj }, provideHttpClient(withXhr(), withInterceptorsFromDi())]
     }).compileComponents();
 
     jobServiceSpy = TestBed.inject(JobService) as jasmine.SpyObj<JobService>;

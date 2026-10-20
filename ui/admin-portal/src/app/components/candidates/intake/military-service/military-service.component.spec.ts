@@ -17,7 +17,8 @@ import {MilitaryServiceComponent} from "./military-service.component";
 import {ComponentFixture, TestBed, waitForAsync} from "@angular/core/testing";
 import {FormsModule, ReactiveFormsModule, UntypedFormBuilder} from "@angular/forms";
 import {AutosaveStatusComponent} from "../../../util/autosave-status/autosave-status.component";
-import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {provideHttpClientTesting} from "@angular/common/http/testing";
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {NgSelectModule} from "@ng-select/ng-select";
 
 describe('MilitaryServiceComponent', () => {
@@ -28,7 +29,8 @@ describe('MilitaryServiceComponent', () => {
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ MilitaryServiceComponent,AutosaveStatusComponent ],
-      imports: [HttpClientTestingModule, NgSelectModule, FormsModule, ReactiveFormsModule ],
+      imports: [NgSelectModule, FormsModule, ReactiveFormsModule ],
+      providers: [provideHttpClient(withXhr(), withInterceptorsFromDi()), provideHttpClientTesting()],
     })
     .compileComponents();
   }));

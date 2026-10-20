@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {TranslationService} from '../../../../services/translation.service';
 import {User} from '../../../../model/user';
 import {AuthorizationService} from "../../../../services/authorization.service";
@@ -51,7 +51,9 @@ import {CandidateOpportunityStage} from "../../../../model/candidate-opportunity
 @Component({
   selector: 'app-general-translations',
   templateUrl: './general-translations.component.html',
-  styleUrls: ['./general-translations.component.scss']
+  styleUrls: ['./general-translations.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class GeneralTranslationsComponent implements OnInit {
 

@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {Candidate} from "../../../../model/candidate";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {
@@ -25,7 +25,9 @@ import {CandidateService} from "../../../../services/candidate.service";
 @Component({
   selector: 'app-view-candidate-media-willingness',
   templateUrl: './view-candidate-media-willingness.component.html',
-  styleUrls: ['./view-candidate-media-willingness.component.scss']
+  styleUrls: ['./view-candidate-media-willingness.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class ViewCandidateMediaWillingnessComponent implements OnInit {
 

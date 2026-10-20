@@ -19,7 +19,8 @@ import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {ReactiveFormsModule, UntypedFormBuilder} from "@angular/forms";
 import {ComponentFixture, fakeAsync, TestBed, tick} from "@angular/core/testing";
 import {NgSelectModule} from "@ng-select/ng-select";
-import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {provideHttpClientTesting} from "@angular/common/http/testing";
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {of, throwError} from "rxjs";
 import {Task} from "../../../../model/task";
 import {NgxWigModule} from "ngx-wig";
@@ -56,10 +57,12 @@ describe('EditTaskComponent', () => {
 
     await TestBed.configureTestingModule({
       declarations: [EditTaskComponent],
-      imports: [ReactiveFormsModule,NgSelectModule,HttpClientTestingModule, NgxWigModule],
+      imports: [ReactiveFormsModule,NgSelectModule,NgxWigModule],
       providers: [
         { provide: TaskService, useValue: taskServiceSpyObj },
-        { provide: NgbActiveModal, useValue: ngbActiveModalSpyObj }
+        { provide: NgbActiveModal, useValue: ngbActiveModalSpyObj },
+        provideHttpClient(withXhr(), withInterceptorsFromDi()),
+        provideHttpClientTesting()
       ]
     }).compileComponents();
 

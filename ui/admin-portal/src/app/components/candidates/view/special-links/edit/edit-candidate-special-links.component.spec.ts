@@ -18,7 +18,8 @@ import {CandidateService} from "../../../../../services/candidate.service";
 import {EnvService} from "../../../../../services/env.service";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {ComponentFixture, fakeAsync, TestBed, tick} from "@angular/core/testing";
-import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {provideHttpClientTesting} from "@angular/common/http/testing";
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {FormsModule, ReactiveFormsModule, UntypedFormBuilder} from "@angular/forms";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {MockCandidate} from "../../../../../MockData/MockCandidate";
@@ -40,12 +41,14 @@ describe('EditCandidateSpecialLinksComponent', () => {
 
     await TestBed.configureTestingModule({
       declarations: [EditCandidateSpecialLinksComponent],
-      imports: [HttpClientTestingModule,FormsModule,ReactiveFormsModule, NgSelectModule],
+      imports: [FormsModule,ReactiveFormsModule, NgSelectModule],
       providers: [
         UntypedFormBuilder,
         { provide: CandidateService, useValue: candidateServiceSpy },
         { provide: EnvService, useValue: envServiceSpy },
-        { provide: NgbActiveModal, useValue: activeModalSpy }
+        { provide: NgbActiveModal, useValue: activeModalSpy },
+        provideHttpClient(withXhr(), withInterceptorsFromDi()),
+        provideHttpClientTesting()
       ]
     }).compileComponents();
 

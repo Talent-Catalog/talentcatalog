@@ -19,7 +19,8 @@ import {ReactiveFormsModule, UntypedFormBuilder} from '@angular/forms';
 import {NgSelectModule} from '@ng-select/ng-select';
 import {AgeRequirementComponent} from './age-requirement.component';
 import {MockCandidateVisaJobCheck} from "../../../../../MockData/MockCandidateVisaCheck";
-import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {provideHttpClientTesting} from "@angular/common/http/testing";
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {AutosaveStatusComponent} from "../../../../util/autosave-status/autosave-status.component";
 
 describe('AgeRequirementComponent', () => {
@@ -30,8 +31,8 @@ describe('AgeRequirementComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [AgeRequirementComponent,AutosaveStatusComponent],
-      imports: [HttpClientTestingModule,ReactiveFormsModule, NgSelectModule],
-      providers: [UntypedFormBuilder]
+      imports: [ReactiveFormsModule, NgSelectModule],
+      providers: [UntypedFormBuilder, provideHttpClient(withXhr(), withInterceptorsFromDi()), provideHttpClientTesting()]
     })
     .compileComponents();
   });

@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {UntypedFormBuilder} from '@angular/forms';
 import {CandidateService} from '../../../../../services/candidate.service';
 import {IntakeComponentBase} from '../../../../util/intake/IntakeComponentBase';
@@ -23,7 +23,9 @@ import {CandidateExam} from "../../../../../model/candidate";
 @Component({
   selector: 'app-ielts-level',
   templateUrl: './ielts-level.component.html',
-  styleUrls: ['./ielts-level.component.scss']
+  styleUrls: ['./ielts-level.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class IeltsLevelComponent extends IntakeComponentBase implements OnInit {
 

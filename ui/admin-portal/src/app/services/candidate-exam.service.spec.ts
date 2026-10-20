@@ -15,7 +15,8 @@
  */
 
 import {TestBed} from '@angular/core/testing';
-import {HttpClientTestingModule, HttpTestingController} from '@angular/common/http/testing';
+import {HttpTestingController, provideHttpClientTesting} from '@angular/common/http/testing';
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from '@angular/common/http';
 import {CandidateExamService, CreateCandidateExamRequest} from './candidate-exam.service';
 import {environment} from '../../environments/environment';
 import {CandidateExam, Exam} from '../model/candidate';
@@ -27,8 +28,7 @@ describe('CandidateExamService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
-      providers: [CandidateExamService]
+      providers: [CandidateExamService, provideHttpClient(withXhr(), withInterceptorsFromDi()), provideHttpClientTesting()]
     });
     service = TestBed.inject(CandidateExamService);
     httpMock = TestBed.inject(HttpTestingController);

@@ -14,14 +14,16 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {CreateChatRequest, JobChat} from "../../../model/chat";
 import {ChatService} from "../../../services/chat.service";
 
 @Component({
   selector: 'app-manage-chats',
   templateUrl: './manage-chats.component.html',
-  styleUrls: ['./manage-chats.component.scss']
+  styleUrls: ['./manage-chats.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class ManageChatsComponent implements OnInit {
   chats: JobChat[] = [];

@@ -17,7 +17,8 @@
 import {ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
 
 import {ShowCandidatesWithChatComponent} from './show-candidates-with-chat.component';
-import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {provideHttpClientTesting} from "@angular/common/http/testing";
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {FormsModule, ReactiveFormsModule, UntypedFormBuilder} from "@angular/forms";
 import {SortedByComponent} from "../../util/sort/sorted-by.component";
 import {NgbPagination} from "@ng-bootstrap/ng-bootstrap";
@@ -48,10 +49,12 @@ describe('ShowCandidatesWithChatComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [ ShowCandidatesWithChatComponent, RouterLinkStubDirective, SortedByComponent ],
-      imports: [ HttpClientTestingModule, FormsModule, ReactiveFormsModule, NgbPagination ],
+      imports: [ FormsModule, ReactiveFormsModule, NgbPagination ],
       providers: [
         { provide: UntypedFormBuilder },
-        { provide: CandidateService, useValue: candidateService }
+        { provide: CandidateService, useValue: candidateService },
+        provideHttpClient(withXhr(), withInterceptorsFromDi()),
+        provideHttpClientTesting()
       ]
     })
     .compileComponents();

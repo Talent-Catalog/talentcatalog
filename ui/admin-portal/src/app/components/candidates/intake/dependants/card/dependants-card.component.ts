@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, EventEmitter, OnInit, Output} from '@angular/core';
+import {Component, EventEmitter, OnInit, Output, ChangeDetectionStrategy} from '@angular/core';
 import {EnumOption, enumOptions} from '../../../../../util/enum';
 import {
   CandidateDependant,
@@ -31,7 +31,9 @@ import {IntakeComponentBase} from '../../../../util/intake/IntakeComponentBase';
 @Component({
   selector: 'app-dependants-card',
   templateUrl: './dependants-card.component.html',
-  styleUrls: ['./dependants-card.component.scss']
+  styleUrls: ['./dependants-card.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class DependantsCardComponent extends IntakeComponentBase implements OnInit {
 

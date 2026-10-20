@@ -14,14 +14,16 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output, ChangeDetectionStrategy} from '@angular/core';
 import {Job} from "../../../../../model/job";
 import {JobPrepItem} from "../../../../../model/job-prep-item";
 
 @Component({
   selector: 'app-job-general-tab',
   templateUrl: './job-general-tab.component.html',
-  styleUrls: ['./job-general-tab.component.scss']
+  styleUrls: ['./job-general-tab.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class JobGeneralTabComponent implements OnInit {
   @Input() job: Job;

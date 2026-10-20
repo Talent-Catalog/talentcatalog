@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {CandidateOpportunity} from "../../../model/candidate-opportunity";
 import {ActivatedRoute} from "@angular/router";
 import {CandidateOpportunityService} from "../../../services/candidate-opportunity.service";
@@ -22,7 +22,9 @@ import {CandidateOpportunityService} from "../../../services/candidate-opportuni
 @Component({
   selector: 'app-view-candidate-opp-from-url',
   templateUrl: './view-candidate-opp-from-url.component.html',
-  styleUrls: ['./view-candidate-opp-from-url.component.scss']
+  styleUrls: ['./view-candidate-opp-from-url.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class ViewCandidateOppFromUrlComponent implements OnInit {
   loading: boolean;

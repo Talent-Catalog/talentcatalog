@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output, ChangeDetectionStrategy} from '@angular/core';
 import {Job} from "../../../../../model/job";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {EditJobInfoComponent} from "../edit-job-info/edit-job-info.component";
@@ -30,7 +30,9 @@ import {AuthorizationService} from "../../../../../services/authorization.servic
 @Component({
   selector: 'app-view-job-info',
   templateUrl: './view-job-info.component.html',
-  styleUrls: ['./view-job-info.component.scss']
+  styleUrls: ['./view-job-info.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class ViewJobInfoComponent implements OnInit {
   @Input() job: Job;

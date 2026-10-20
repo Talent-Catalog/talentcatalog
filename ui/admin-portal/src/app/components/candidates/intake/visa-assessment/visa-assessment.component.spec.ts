@@ -19,7 +19,8 @@ import {ReactiveFormsModule} from "@angular/forms";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {CandidateService} from "../../../../services/candidate.service";
 import {AutosaveStatusComponent} from "../../../util/autosave-status/autosave-status.component";
-import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {provideHttpClientTesting} from "@angular/common/http/testing";
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {VisaEligibility} from "../../../../model/candidate";
 
 describe('VisaAssessmentComponent', () => {
@@ -29,9 +30,11 @@ describe('VisaAssessmentComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [ VisaAssessmentComponent,AutosaveStatusComponent ],
-      imports: [HttpClientTestingModule, ReactiveFormsModule, NgSelectModule ],
+      imports: [ReactiveFormsModule, NgSelectModule ],
       providers: [
-        { provide: CandidateService }
+        { provide: CandidateService },
+        provideHttpClient(withXhr(), withInterceptorsFromDi()),
+        provideHttpClientTesting()
       ]
     })
     .compileComponents();

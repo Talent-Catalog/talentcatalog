@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, DebugElement} from "@angular/core";
+import {Component, DebugElement, ChangeDetectionStrategy} from "@angular/core";
 import {ComponentFixture, TestBed, waitForAsync} from "@angular/core/testing";
 import {FormsModule, NgControl} from "@angular/forms";
 import {LowercaseDirective} from "./lowercase.directive";
@@ -23,7 +23,9 @@ import {By} from "@angular/platform-browser";
 @Component({
   template: `
     <input type="text" appLowercase [(ngModel)]="inputValue" />
-  `
+  `,
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 class TestComponent {
   inputValue = '';
@@ -42,6 +44,7 @@ describe('LowercaseDirective', () => {
       providers: [
         {
           provide: NgControl,
+          useValue: {}
         }
       ]
     })

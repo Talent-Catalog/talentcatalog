@@ -19,7 +19,8 @@ import {TaskService} from "../../../services/task.service";
 import {AuthenticationService} from "../../../services/authentication.service";
 import {MockCandidate} from "../../../MockData/MockCandidate";
 import {FormsModule, ReactiveFormsModule, UntypedFormBuilder} from "@angular/forms";
-import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {provideHttpClientTesting} from "@angular/common/http/testing";
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {of, throwError} from "rxjs";
 import {SearchResults} from "../../../model/search-results";
@@ -54,12 +55,14 @@ describe('BrowseTasksComponent', () => {
 
     await TestBed.configureTestingModule({
       declarations: [ BrowseTasksComponent, ViewTaskDetailsComponent, UpdatedByComponent ],
-      imports: [HttpClientTestingModule, RouterTestingModule,NgbPaginationModule,FormsModule,ReactiveFormsModule,NgSelectModule],
+      imports: [RouterTestingModule,NgbPaginationModule,FormsModule,ReactiveFormsModule,NgSelectModule],
       providers: [
         UntypedFormBuilder,
         { provide: TaskService, useValue: taskService },
         { provide: LocalStorageService, useValue: localStorageService },
-        { provide: AuthenticationService, useValue: authenticationService }
+        { provide: AuthenticationService, useValue: authenticationService },
+        provideHttpClient(withXhr(), withInterceptorsFromDi()),
+        provideHttpClientTesting()
       ]
     })
     .compileComponents();

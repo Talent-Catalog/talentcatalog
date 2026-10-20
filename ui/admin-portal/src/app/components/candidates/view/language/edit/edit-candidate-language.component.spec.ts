@@ -21,7 +21,8 @@ import {LanguageLevelService} from "../../../../../services/language-level.servi
 import {CandidateLanguageService} from "../../../../../services/candidate-language.service";
 import {CandidateLanguage} from "../../../../../model/candidate-language";
 import {MockCandidate} from "../../../../../MockData/MockCandidate";
-import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {provideHttpClientTesting} from "@angular/common/http/testing";
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {FormsModule, ReactiveFormsModule, UntypedFormBuilder} from "@angular/forms";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {of, throwError} from "rxjs";
@@ -58,13 +59,15 @@ describe('EditCandidateLanguageComponent', () => {
 
     await TestBed.configureTestingModule({
       declarations: [EditCandidateLanguageComponent],
-      imports: [HttpClientTestingModule,FormsModule,ReactiveFormsModule, NgSelectModule],
+      imports: [FormsModule,ReactiveFormsModule, NgSelectModule],
       providers: [
         { provide: NgbActiveModal, useValue: mockActiveModal },
         { provide: LanguageService, useValue: mockLanguageService },
         { provide: LanguageLevelService, useValue: mockLanguageLevelService },
         { provide: CandidateLanguageService, useValue: mockCandidateLanguageService },
-        UntypedFormBuilder
+        UntypedFormBuilder,
+        provideHttpClient(withXhr(), withInterceptorsFromDi()),
+        provideHttpClientTesting()
       ]
     })
     .compileComponents();

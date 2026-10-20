@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
+import {Component, Input, OnChanges, OnInit, SimpleChanges, ChangeDetectionStrategy} from '@angular/core';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {Candidate} from "../../../../model/candidate";
 import {CandidateOccupation} from "../../../../model/candidate-occupation";
@@ -29,7 +29,9 @@ import {CreateCandidateOccupationComponent} from "./create/create-candidate-occu
 @Component({
   selector: 'app-view-candidate-occupation',
   templateUrl: './view-candidate-occupation.component.html',
-  styleUrls: ['./view-candidate-occupation.component.scss']
+  styleUrls: ['./view-candidate-occupation.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class ViewCandidateOccupationComponent implements OnInit, OnChanges {
 

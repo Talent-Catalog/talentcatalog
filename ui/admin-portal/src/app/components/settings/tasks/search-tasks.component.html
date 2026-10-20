@@ -76,7 +76,7 @@
     <td class="text-center">{{ ta.uploadSubfolderName }}</td>
     <td>
       <div [ngbPopover]="ta.docLink" triggers="mouseenter:mouseleave" container="body"
-           [disablePopover]="ta.docLink?.length <=40">
+           [disablePopover]="$safeNavigationMigration(ta.docLink?.length) <=40">
         <a *ngIf="ta.docLink" [href]="ta.docLink" target="_blank">
           {{ ta.docLink | slice: 0 : 40 }}<span *ngIf="ta.docLink?.length >=40">...</span>
         </a>

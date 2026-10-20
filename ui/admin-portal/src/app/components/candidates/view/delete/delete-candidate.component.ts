@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
 import {CandidateService} from '../../../../services/candidate.service';
 import {Candidate} from '../../../../model/candidate';
@@ -22,7 +22,9 @@ import {Candidate} from '../../../../model/candidate';
 @Component({
   selector: 'app-delete-candidate',
   templateUrl: './delete-candidate.component.html',
-  styleUrls: ['./delete-candidate.component.scss']
+  styleUrls: ['./delete-candidate.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class DeleteCandidateComponent implements OnInit {
 

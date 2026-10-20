@@ -14,7 +14,7 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<span class=" text-color-green fw-bold" [ngbTooltip]="this.completed?.length + ' completed'">{{this.completed?.length}}</span>
-<span class=" text-color-yellow fw-bold" [ngbTooltip]="this.abandoned?.length + ' abandoned'">{{this.abandoned?.length}}</span>
-<span class=" text-color-primary fw-bold" [ngbTooltip]="this.outstandingNotOverdue?.length + ' outstanding not overdue'">{{this.outstandingNotOverdue?.length}}</span>
-<span class=" text-color-red fw-bold" [ngbTooltip]="this.outstandingOverdue?.length + ' outstanding overdue'">{{this.outstandingOverdue?.length}}</span>
+<span class=" text-color-green fw-bold" [ngbTooltip]="$safeNavigationMigration(this.completed?.length) + ' completed'">{{this.completed?.length}}</span>
+<span class=" text-color-yellow fw-bold" [ngbTooltip]="$safeNavigationMigration(this.abandoned?.length) + ' abandoned'">{{this.abandoned?.length}}</span>
+<span class=" text-color-primary fw-bold" [ngbTooltip]="$safeNavigationMigration(this.outstandingNotOverdue?.length) + ' outstanding not overdue'">{{this.outstandingNotOverdue?.length}}</span>
+<span class=" text-color-red fw-bold" [ngbTooltip]="$safeNavigationMigration(this.outstandingOverdue?.length) + ' outstanding overdue'">{{this.outstandingOverdue?.length}}</span>

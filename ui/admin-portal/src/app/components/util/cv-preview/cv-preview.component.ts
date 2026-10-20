@@ -14,14 +14,16 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
+import {Component, Input, OnChanges, OnInit, SimpleChanges, ChangeDetectionStrategy} from '@angular/core';
 import {AttachmentType, CandidateAttachment} from "../../../model/candidate-attachment";
 import {Candidate} from "../../../model/candidate";
 
 @Component({
   selector: 'app-cv-preview',
   templateUrl: './cv-preview.component.html',
-  styleUrls: ['./cv-preview.component.scss']
+  styleUrls: ['./cv-preview.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class CvPreviewComponent implements OnInit, OnChanges {
   @Input() candidate: Candidate;
@@ -77,7 +79,7 @@ export class CvPreviewComponent implements OnInit, OnChanges {
    */
   canPreviewCv(cv: CandidateAttachment): boolean {
     if(cv.type == AttachmentType.file) {
-      return cv.fileType != ('doc' && 'docx');
+      return cv.fileType != 'docx';
     } else {
       return true;
     }

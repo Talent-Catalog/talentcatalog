@@ -18,7 +18,8 @@ import {ComponentFixture, TestBed} from "@angular/core/testing";
 import {CandidateIntakeData} from "../../../../model/candidate";
 import {Country} from "../../../../model/country";
 import {NgSelectModule} from "@ng-select/ng-select";
-import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {provideHttpClientTesting} from "@angular/common/http/testing";
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {AutosaveStatusComponent} from "../../../util/autosave-status/autosave-status.component";
 import {CandidateDependantService} from "../../../../services/candidate-dependant.service";
@@ -40,9 +41,9 @@ describe('DependantsComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule,NgSelectModule,FormsModule,ReactiveFormsModule],
+      imports: [NgSelectModule,FormsModule,ReactiveFormsModule],
       declarations: [DependantsComponent, AutosaveStatusComponent],
-      providers: [CandidateDependantService],
+      providers: [CandidateDependantService, provideHttpClient(withXhr(), withInterceptorsFromDi()), provideHttpClientTesting()],
     }).compileComponents();
   });
 

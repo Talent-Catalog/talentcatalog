@@ -14,14 +14,16 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {LinkPreview} from "../../../model/link-preview";
 import {LinkPreviewService} from "../../../services/link-preview.service";
 
 @Component({
   selector: 'app-preview-link',
   templateUrl: './preview-link.component.html',
-  styleUrls: ['./preview-link.component.scss']
+  styleUrls: ['./preview-link.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class PreviewLinkComponent implements OnInit {
 

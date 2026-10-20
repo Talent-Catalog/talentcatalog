@@ -19,7 +19,8 @@ import {UserService} from "../../../../services/user.service";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {MockCandidate} from "../../../../MockData/MockCandidate";
 import {MockUser} from "../../../../MockData/MockUser";
-import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {provideHttpClientTesting} from "@angular/common/http/testing";
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {RouterLinkStubDirective} from "../../../login/login.component.spec";
 import {Candidate} from "../../../../model/candidate";
 import {User} from "../../../../model/user";
@@ -38,10 +39,11 @@ describe('ViewCandidateAccountComponent', () => {
 
     await TestBed.configureTestingModule({
       declarations: [ ViewCandidateAccountComponent,RouterLinkStubDirective ],
-      imports: [HttpClientTestingModule],
       providers: [
         { provide: UserService, useValue: mockUserService },
-        { provide: NgbModal, useValue: mockModalService }
+        { provide: NgbModal, useValue: mockModalService },
+        provideHttpClient(withXhr(), withInterceptorsFromDi()),
+        provideHttpClientTesting()
       ]
     })
     .compileComponents();

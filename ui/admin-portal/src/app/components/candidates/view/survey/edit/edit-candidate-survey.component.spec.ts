@@ -20,7 +20,8 @@ import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
 import {CandidateService} from '../../../../../services/candidate.service';
 import {SurveyTypeService} from '../../../../../services/survey-type.service';
 import {of} from 'rxjs';
-import {HttpClientTestingModule} from '@angular/common/http/testing';
+import {provideHttpClientTesting} from '@angular/common/http/testing';
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from '@angular/common/http';
 import {NO_ERRORS_SCHEMA} from '@angular/core';
 import {MockCandidate} from "../../../../../MockData/MockCandidate";
 import {NgSelectModule} from "@ng-select/ng-select";
@@ -47,12 +48,14 @@ describe('EditCandidateSurveyComponent', () => {
 
     await TestBed.configureTestingModule({
       declarations: [EditCandidateSurveyComponent],
-      imports: [ReactiveFormsModule, HttpClientTestingModule, NgSelectModule],
+      imports: [ReactiveFormsModule, NgSelectModule],
       providers: [
         UntypedFormBuilder,
         NgbActiveModal,
         {provide: CandidateService, useValue: candidateServiceSpy},
-        {provide: SurveyTypeService, useValue: surveyTypeServiceSpy}
+        {provide: SurveyTypeService, useValue: surveyTypeServiceSpy},
+        provideHttpClient(withXhr(), withInterceptorsFromDi()),
+        provideHttpClientTesting()
       ],
       schemas: [NO_ERRORS_SCHEMA]
     }).compileComponents();

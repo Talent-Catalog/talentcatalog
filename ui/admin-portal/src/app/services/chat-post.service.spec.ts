@@ -15,7 +15,8 @@
  */
 
 import {TestBed} from '@angular/core/testing';
-import {HttpClientTestingModule, HttpTestingController} from '@angular/common/http/testing';
+import {HttpTestingController, provideHttpClientTesting} from '@angular/common/http/testing';
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from '@angular/common/http';
 import {ChatPostService} from './chat-post.service';
 import {ChatPost} from '../model/chat';
 import {UrlDto} from '../model/url-dto';
@@ -27,8 +28,7 @@ describe('ChatPostService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
-      providers: [ChatPostService]
+      providers: [ChatPostService, provideHttpClient(withXhr(), withInterceptorsFromDi()), provideHttpClientTesting()]
     });
     service = TestBed.inject(ChatPostService);
     httpMock = TestBed.inject(HttpTestingController);

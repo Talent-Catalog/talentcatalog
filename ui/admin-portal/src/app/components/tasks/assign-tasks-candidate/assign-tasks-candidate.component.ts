@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {NgbActiveModal, NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {UntypedFormBuilder, UntypedFormGroup} from "@angular/forms";
 import {TaskService} from "../../../services/task.service";
@@ -30,7 +30,9 @@ import {AuthorizationService} from "../../../services/authorization.service";
 @Component({
   selector: 'app-assign-tasks-candidate',
   templateUrl: './assign-tasks-candidate.component.html',
-  styleUrls: ['./assign-tasks-candidate.component.scss']
+  styleUrls: ['./assign-tasks-candidate.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class AssignTasksCandidateComponent implements OnInit {
   assignForm: UntypedFormGroup;

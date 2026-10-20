@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Input, Output} from '@angular/core';
+import {Component, EventEmitter, Input, Output, ChangeDetectionStrategy} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {NgbAlert} from '@ng-bootstrap/ng-bootstrap';
 
@@ -79,7 +79,7 @@ import {NgbAlert} from '@ng-bootstrap/ng-bootstrap';
   selector: 'tc-alert',
   templateUrl: './alert.component.html',
   styleUrls: ['./alert.component.scss'],
-  standalone: true,
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [CommonModule, NgbAlert]
 })
 export class AlertComponent {

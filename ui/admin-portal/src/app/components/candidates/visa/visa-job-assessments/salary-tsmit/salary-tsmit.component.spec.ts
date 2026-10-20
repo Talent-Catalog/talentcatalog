@@ -23,7 +23,8 @@ import {NgSelectModule} from '@ng-select/ng-select';
 import {DebugElement} from '@angular/core';
 import {YesNo} from '../../../../../model/candidate';
 import {enumOptions} from '../../../../../util/enum';
-import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {provideHttpClientTesting} from "@angular/common/http/testing";
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {AutosaveStatusComponent} from "../../../../util/autosave-status/autosave-status.component";
 
 describe('SalaryTsmitComponent', () => {
@@ -37,10 +38,12 @@ describe('SalaryTsmitComponent', () => {
 
     await TestBed.configureTestingModule({
       declarations: [SalaryTsmitComponent,AutosaveStatusComponent],
-      imports: [HttpClientTestingModule,ReactiveFormsModule, NgSelectModule],
+      imports: [ReactiveFormsModule, NgSelectModule],
       providers: [
         UntypedFormBuilder,
-        { provide: CandidateVisaCheckService, useValue: candidateVisaCheckServiceSpy }
+        { provide: CandidateVisaCheckService, useValue: candidateVisaCheckServiceSpy },
+        provideHttpClient(withXhr(), withInterceptorsFromDi()),
+        provideHttpClientTesting()
       ]
     }).compileComponents();
 

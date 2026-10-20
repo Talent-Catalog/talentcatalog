@@ -15,7 +15,8 @@
  */
 
 import {TestBed} from '@angular/core/testing';
-import {HttpClientTestingModule, HttpTestingController} from '@angular/common/http/testing';
+import {HttpTestingController, provideHttpClientTesting} from '@angular/common/http/testing';
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from '@angular/common/http';
 import {CandidateSourceService} from './candidate-source.service';
 import {environment} from '../../environments/environment';
 import {
@@ -42,10 +43,11 @@ describe('CandidateSourceService', () => {
     const candidateFieldServiceSpy = jasmine.createSpyObj('CandidateFieldService', ['isDefault']);
 
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
       providers: [
         CandidateSourceService,
-        { provide: CandidateFieldService, useValue: candidateFieldServiceSpy }
+        { provide: CandidateFieldService, useValue: candidateFieldServiceSpy },
+        provideHttpClient(withXhr(), withInterceptorsFromDi()),
+        provideHttpClientTesting()
       ]
     });
 

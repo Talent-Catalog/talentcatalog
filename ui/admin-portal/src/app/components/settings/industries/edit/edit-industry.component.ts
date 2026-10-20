@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {UntypedFormBuilder, UntypedFormGroup, Validators} from '@angular/forms';
 import {Industry} from "../../../../model/industry";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
@@ -23,7 +23,9 @@ import {IndustryService} from "../../../../services/industry.service";
 @Component({
   selector: 'app-edit-industry',
   templateUrl: './edit-industry.component.html',
-  styleUrls: ['./edit-industry.component.scss']
+  styleUrls: ['./edit-industry.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class EditIndustryComponent implements OnInit {
 

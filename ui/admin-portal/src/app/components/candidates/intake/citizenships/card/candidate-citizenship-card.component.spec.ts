@@ -15,7 +15,8 @@
  */
 import {CandidateCitizenshipCardComponent} from "./candidate-citizenship-card.component";
 import {ComponentFixture, TestBed} from "@angular/core/testing";
-import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {provideHttpClientTesting} from "@angular/common/http/testing";
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {FormsModule, ReactiveFormsModule, UntypedFormBuilder} from "@angular/forms";
 import {AutosaveStatusComponent} from "../../../../util/autosave-status/autosave-status.component";
@@ -33,11 +34,13 @@ describe('CandidateCitizenshipCardComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [ CandidateCitizenshipCardComponent,AutosaveStatusComponent ],
-      imports: [HttpClientTestingModule, NgSelectModule,FormsModule,ReactiveFormsModule],
+      imports: [NgSelectModule,FormsModule,ReactiveFormsModule],
       providers: [
         UntypedFormBuilder,
         { provide: CandidateService},
-        { provide: CandidateCitizenshipService, useValue: jasmine.createSpyObj('CandidateCitizenshipService', ['delete']) }
+        { provide: CandidateCitizenshipService, useValue: jasmine.createSpyObj('CandidateCitizenshipService', ['delete']) },
+        provideHttpClient(withXhr(), withInterceptorsFromDi()),
+        provideHttpClientTesting()
       ]
     })
     .compileComponents();

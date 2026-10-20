@@ -42,7 +42,7 @@
           <tc-radio [value]="i"
                     name="jobIndex"
                     [id]="'radioJob'+i"
-                    [label]="visaJob?.jobOpp?.name"
+                    [label]="$safeNavigationMigration(visaJob?.jobOpp?.name)"
                     [formControlName]="'jobIndex'"
                     (change)="fetchUpdatedSelectedJob(visaJob)"
           >
@@ -55,8 +55,8 @@
             </tc-icon>
 
             <tc-icon [type]="'link'"
-                     *ngIf="fetchCandidateOppIdForJob(visaJob?.jobOpp?.id)"
-                     [routerLink]="visaJob?.jobOpp ? ['/opp', fetchCandidateOppIdForJob(visaJob?.jobOpp?.id)] : null"
+                     *ngIf="fetchCandidateOppIdForJob($safeNavigationMigration(visaJob?.jobOpp?.id))"
+                     [routerLink]="visaJob?.jobOpp ? ['/opp', fetchCandidateOppIdForJob($safeNavigationMigration(visaJob?.jobOpp?.id))] : null"
                      [color]="'secondary'"
             >
               <i class="fa-solid fa-address-book" title="Open case in new tab"></i>

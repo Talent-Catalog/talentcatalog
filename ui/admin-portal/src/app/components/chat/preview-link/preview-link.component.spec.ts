@@ -15,7 +15,8 @@
  */
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {PreviewLinkComponent} from './preview-link.component';
-import {HttpClientTestingModule} from '@angular/common/http/testing';
+import {provideHttpClientTesting} from '@angular/common/http/testing';
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from '@angular/common/http';
 import {LinkPreviewService} from '../../../services/link-preview.service';
 import {of} from 'rxjs';
 import {LinkPreview} from '../../../model/link-preview';
@@ -46,12 +47,13 @@ describe('PreviewLinkComponent', () => {
 
     await TestBed.configureTestingModule({
       declarations: [PreviewLinkComponent],
-      imports: [HttpClientTestingModule],
       providers: [
         {
           provide: LinkPreviewService,
           useValue: linkPreviewService
-        }
+        },
+        provideHttpClient(withXhr(), withInterceptorsFromDi()),
+        provideHttpClientTesting()
       ]
     }).compileComponents();
   });

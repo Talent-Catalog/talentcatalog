@@ -16,7 +16,8 @@
 
 import {ReactiveFormsModule, UntypedFormBuilder} from "@angular/forms";
 import {NgSelectModule} from "@ng-select/ng-select";
-import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {provideHttpClientTesting} from "@angular/common/http/testing";
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {of, throwError} from "rxjs";
 import {ComponentFixture, fakeAsync, TestBed, tick} from "@angular/core/testing";
 import {SystemLanguage} from "../../../../model/language";
@@ -39,10 +40,12 @@ describe('CreateLanguageComponent', () => {
 
     await TestBed.configureTestingModule({
       declarations: [CreateLanguageComponent],
-      imports: [ReactiveFormsModule,NgSelectModule,HttpClientTestingModule],
+      imports: [ReactiveFormsModule,NgSelectModule],
       providers: [
         { provide: LanguageService, useValue: languageServiceSpyObj },
-        { provide: NgbActiveModal, useValue: ngbActiveModalSpyObj }
+        { provide: NgbActiveModal, useValue: ngbActiveModalSpyObj },
+        provideHttpClient(withXhr(), withInterceptorsFromDi()),
+        provideHttpClientTesting()
       ]
     }).compileComponents();
 

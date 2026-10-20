@@ -45,7 +45,7 @@
                    bindLabel="name"
                    class="tc-select w-100">
           <ng-template ng-option-tmp let-item="item">
-            <span [ngbTooltip]="item?.name" container="body">{{ item?.name }}</span>
+            <span [ngbTooltip]="$safeNavigationMigration(item?.name)" container="body">{{ item?.name }}</span>
           </ng-template>
         </ng-select>
       </tc-field>
@@ -69,7 +69,7 @@
                    bindLabel="name"
                    class="tc-select w-100">
           <ng-template ng-option-tmp let-item="item">
-            <span [ngbTooltip]="item?.name" container="body">{{ item?.name }}</span>
+            <span [ngbTooltip]="$safeNavigationMigration(item?.name)" container="body">{{ item?.name }}</span>
           </ng-template>
         </ng-select>
       </tc-field>

@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {Occupation} from '../../../../../model/occupation';
 import {UntypedFormBuilder} from '@angular/forms';
 import {VisaCheckComponentBase} from "../../../../util/intake/VisaCheckComponentBase";
@@ -23,7 +23,9 @@ import {CandidateVisaCheckService} from "../../../../../services/candidate-visa-
 @Component({
   selector: 'app-job-occupation',
   templateUrl: './job-occupation.component.html',
-  styleUrls: ['./job-occupation.component.scss']
+  styleUrls: ['./job-occupation.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class JobOccupationComponent extends VisaCheckComponentBase implements OnInit {
 

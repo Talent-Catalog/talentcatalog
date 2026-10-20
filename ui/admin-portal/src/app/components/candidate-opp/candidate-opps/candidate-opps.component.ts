@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, Inject, Input, LOCALE_ID, SimpleChanges, ViewChild} from '@angular/core';
+import {Component, Inject, Input, LOCALE_ID, SimpleChanges, ViewChild, ChangeDetectionStrategy} from '@angular/core';
 import {
   CandidateOpportunity,
   CandidateOpportunityStage,
@@ -38,7 +38,9 @@ import {InputComponent} from "../../../shared/components/input/input.component";
 @Component({
   selector: 'app-candidate-opps',
   templateUrl: './candidate-opps.component.html',
-  styleUrls: ['./candidate-opps.component.scss']
+  styleUrls: ['./candidate-opps.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class CandidateOppsComponent extends FilteredOppsComponentBase<CandidateOpportunity> {
   /**

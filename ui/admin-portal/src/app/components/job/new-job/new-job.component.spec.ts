@@ -17,7 +17,8 @@
 import {ComponentFixture, fakeAsync, TestBed, tick, waitForAsync} from '@angular/core/testing';
 import {FormsModule, ReactiveFormsModule, UntypedFormBuilder} from '@angular/forms';
 import {NewJobComponent} from './new-job.component';
-import {HttpClientTestingModule} from '@angular/common/http/testing';
+import {provideHttpClientTesting} from '@angular/common/http/testing';
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from '@angular/common/http';
 import {NgbModal, NgbPaginationModule} from "@ng-bootstrap/ng-bootstrap";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {JobService} from '../../../services/job.service';
@@ -72,7 +73,6 @@ describe('NewJobComponent', () => {
       declarations: [NewJobComponent,RouterLinkStubDirective],
       imports: [
         ReactiveFormsModule,
-        HttpClientTestingModule,
         FormsModule,
         NgbPaginationModule,
         NgSelectModule
@@ -91,7 +91,9 @@ describe('NewJobComponent', () => {
             serializeUrl = jasmine.createSpy('serializeUrl');
           }
         },
-        { provide: Location, useValue: location }
+        { provide: Location, useValue: location },
+        provideHttpClient(withXhr(), withInterceptorsFromDi()),
+        provideHttpClientTesting()
       ]
     }).compileComponents();
 

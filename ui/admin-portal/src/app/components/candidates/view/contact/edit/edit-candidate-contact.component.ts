@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {UntypedFormBuilder, UntypedFormGroup, Validators} from '@angular/forms';
 import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
 import {CandidateService} from '../../../../../services/candidate.service';
@@ -27,7 +27,9 @@ import {EMAIL_REGEX} from "../../../../../model/base";
 @Component({
   selector: 'app-edit-candidate-contact',
   templateUrl: './edit-candidate-contact.component.html',
-  styleUrls: ['./edit-candidate-contact.component.scss']
+  styleUrls: ['./edit-candidate-contact.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class EditCandidateContactComponent implements OnInit {
 

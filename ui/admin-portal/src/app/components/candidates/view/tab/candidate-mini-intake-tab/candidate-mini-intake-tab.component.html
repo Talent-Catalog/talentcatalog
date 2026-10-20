@@ -27,7 +27,7 @@
       <div class="mb-3 d-flex flex-column">
         <h4>Mini Intake</h4>
         <p *ngIf="miniIntakeComplete" class="mb-1 intake-complete">
-          Completed on {{candidate?.miniIntakeCompletedDate | date}} by {{miniIntakeCompletedBy}}
+          Completed on {{$safeNavigationMigration(candidate?.miniIntakeCompletedDate) | date}} by {{miniIntakeCompletedBy}}
         </p>
       </div>
       <div class="d-flex">

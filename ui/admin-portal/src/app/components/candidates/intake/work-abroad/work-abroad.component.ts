@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {IntakeComponentBase} from '../../../util/intake/IntakeComponentBase';
 import {EnumOption, enumOptions} from '../../../../util/enum';
 import {YesNo} from '../../../../model/candidate';
@@ -24,7 +24,9 @@ import {CandidateService} from '../../../../services/candidate.service';
 @Component({
   selector: 'app-work-abroad',
   templateUrl: './work-abroad.component.html',
-  styleUrls: ['./work-abroad.component.scss']
+  styleUrls: ['./work-abroad.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class WorkAbroadComponent extends IntakeComponentBase implements OnInit {
 

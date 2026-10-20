@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Input, Output} from '@angular/core';
+import {Component, EventEmitter, Input, Output, ChangeDetectionStrategy} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {RouterLink} from '@angular/router';
 import {NgbDropdownItem} from '@ng-bootstrap/ng-bootstrap';
@@ -40,7 +40,7 @@ import {NgbDropdownItem} from '@ng-bootstrap/ng-bootstrap';
 @Component({
   selector: 'tc-dropdown-item',
   templateUrl: './tc-dropdown-item.component.html',
-  standalone: true,
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [CommonModule, RouterLink, NgbDropdownItem]
 })
 export class TcDropdownItemComponent {

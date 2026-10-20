@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {SearchResults} from "../../../model/search-results";
 import {UntypedFormBuilder, UntypedFormGroup} from "@angular/forms";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
@@ -33,7 +33,9 @@ import {JobOpportunityStage} from "../../../model/job";
 @Component({
   selector: 'app-search-help-links',
   templateUrl: './search-help-links.component.html',
-  styleUrls: ['./search-help-links.component.scss']
+  styleUrls: ['./search-help-links.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class SearchHelpLinksComponent implements OnInit {
   error: any;

@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {UntypedFormBuilder, UntypedFormGroup} from "@angular/forms";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {CandidateDestination} from "../../../../../../model/candidate-destination";
@@ -28,7 +28,9 @@ import {YesNoUnsureLearn} from "../../../../../../model/candidate";
 @Component({
   selector: 'app-edit-candidate-destinations',
   templateUrl: './edit-candidate-destinations.component.html',
-  styleUrls: ['./edit-candidate-destinations.component.scss']
+  styleUrls: ['./edit-candidate-destinations.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class EditCandidateDestinationsComponent implements OnInit {
   candidateDestination: CandidateDestination;

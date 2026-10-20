@@ -14,13 +14,15 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
+import {Component, Input, OnChanges, OnInit, SimpleChanges, ChangeDetectionStrategy} from '@angular/core';
 import {Task, UploadType} from "../../../model/task";
 
 @Component({
   selector: 'app-view-task-details',
   templateUrl: './view-task-details.component.html',
-  styleUrls: ['./view-task-details.component.scss']
+  styleUrls: ['./view-task-details.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class ViewTaskDetailsComponent implements OnInit, OnChanges {
   @Input() task: Task;

@@ -1,10 +1,12 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import {EnvService} from "../../services/env.service";
 
 @Component({
   selector: 'app-intelligence',
   templateUrl: './intelligence.component.html',
-  styleUrls: ['./intelligence.component.scss']
+  styleUrls: ['./intelligence.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class IntelligenceComponent {
 

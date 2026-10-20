@@ -16,7 +16,8 @@
 import {ComponentFixture, TestBed, waitForAsync} from '@angular/core/testing';
 import {RouterTestingModule} from '@angular/router/testing';
 import {AppComponent} from './app.component';
-import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {provideHttpClientTesting} from "@angular/common/http/testing";
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {AuthenticationService} from "../services/authentication.service";
 import {ActivatedRoute, Router} from "@angular/router";
 import {of, Subject} from "rxjs";
@@ -43,7 +44,6 @@ describe('AppComponent', () => {
     // TestBed configuration
     TestBed.configureTestingModule({
       imports: [
-        HttpClientTestingModule,
         RouterTestingModule // Add RouterTestingModule to imports
       ],
       declarations: [AppComponent],
@@ -51,6 +51,8 @@ describe('AppComponent', () => {
         { provide: AuthenticationService, useClass: AuthenticationServiceStub }, // Provide stubbed AuthenticationService
         { provide: Router, useClass: class { navigate = jasmine.createSpy('navigate'); events = of(); } }, // Mock Router
         { provide: ActivatedRoute, useValue: { queryParams: of({}), snapshot: { data: {} } } }, // Mock ActivatedRoute
+        provideHttpClient(withXhr(), withInterceptorsFromDi()),
+        provideHttpClientTesting(),
       ]
     }).compileComponents();
 

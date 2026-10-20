@@ -21,7 +21,8 @@ import {JobService} from "../../../services/job.service";
 import {NgbModal, NgbModule} from "@ng-bootstrap/ng-bootstrap";
 import {CandidateOpportunityService} from "../../../services/candidate-opportunity.service";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
-import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {provideHttpClientTesting} from "@angular/common/http/testing";
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {By} from "@angular/platform-browser";
 import {mockCandidateOpportunity} from "../../../MockData/MockCandidateOpportunity";
 import {OpportunityProgressParams} from "../../../model/opportunity";
@@ -44,12 +45,14 @@ describe('OpportunityStageNextStepComponent', () => {
 
     await TestBed.configureTestingModule({
       declarations: [OpportunityStageNextStepComponent],
-      imports: [FormsModule, ReactiveFormsModule, NgbModule, HttpClientTestingModule],
+      imports: [FormsModule, ReactiveFormsModule, NgbModule],
       providers: [
         { provide: AuthorizationService, useValue: authSpy },
         { provide: CandidateOpportunityService, useValue: candidateOppSpy },
         { provide: JobService, useValue: jobSpy },
-        { provide: NgbModal, useValue: modalSpy }
+        { provide: NgbModal, useValue: modalSpy },
+        provideHttpClient(withXhr(), withInterceptorsFromDi()),
+        provideHttpClientTesting()
       ]
     }).compileComponents();
 

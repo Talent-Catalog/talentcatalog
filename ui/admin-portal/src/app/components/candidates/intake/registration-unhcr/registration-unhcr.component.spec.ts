@@ -19,7 +19,8 @@ import {NgSelectModule} from '@ng-select/ng-select';
 import {RegistrationUnhcrComponent} from './registration-unhcr.component';
 import {CandidateService} from '../../../../services/candidate.service';
 import {UnhcrStatus, YesNo} from "../../../../model/candidate";
-import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {provideHttpClientTesting} from "@angular/common/http/testing";
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {AutosaveStatusComponent} from "../../../util/autosave-status/autosave-status.component";
 
 describe('RegistrationUnhcrComponent', () => {
@@ -29,9 +30,11 @@ describe('RegistrationUnhcrComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [ RegistrationUnhcrComponent,AutosaveStatusComponent ],
-      imports: [HttpClientTestingModule, NgSelectModule, FormsModule, ReactiveFormsModule ],
+      imports: [NgSelectModule, FormsModule, ReactiveFormsModule ],
       providers: [
-        { provide: CandidateService }
+        { provide: CandidateService },
+        provideHttpClient(withXhr(), withInterceptorsFromDi()),
+        provideHttpClientTesting()
       ]
     })
     .compileComponents();

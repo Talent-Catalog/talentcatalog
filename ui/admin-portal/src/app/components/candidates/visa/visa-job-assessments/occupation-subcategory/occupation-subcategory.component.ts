@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {getDestinationOccupationSubcatLink} from "../../../../../model/candidate";
 import {UntypedFormBuilder} from "@angular/forms";
 import {VisaCheckComponentBase} from "../../../../util/intake/VisaCheckComponentBase";
@@ -23,7 +23,9 @@ import {CandidateVisaCheckService} from "../../../../../services/candidate-visa-
 @Component({
   selector: 'app-occupation-subcategory',
   templateUrl: './occupation-subcategory.component.html',
-  styleUrls: ['./occupation-subcategory.component.scss']
+  styleUrls: ['./occupation-subcategory.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class OccupationSubcategoryComponent extends VisaCheckComponentBase implements OnInit {
   occupationSubcatLink: string;

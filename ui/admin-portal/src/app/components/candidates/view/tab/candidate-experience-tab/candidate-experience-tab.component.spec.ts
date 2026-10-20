@@ -21,7 +21,8 @@ import {ViewCandidateSkillComponent} from "../../skill/view-candidate-skill.comp
 import {
   ViewCandidateOccupationComponent
 } from "../../occupation/view-candidate-occupation.component";
-import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {provideHttpClientTesting} from "@angular/common/http/testing";
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {
@@ -34,7 +35,8 @@ describe('CandidateExperienceTabComponent', () => {
   const mockCandidate = new MockCandidate();
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule,FormsModule,ReactiveFormsModule, NgSelectModule],
+      imports: [FormsModule,ReactiveFormsModule, NgSelectModule],
+      providers: [provideHttpClient(withXhr(), withInterceptorsFromDi()), provideHttpClientTesting()],
       declarations: [ CandidateExperienceTabComponent,ViewCandidateSkillComponent,ViewCandidateJobExperienceComponent,ViewCandidateOccupationComponent ]
     })
     .compileComponents();

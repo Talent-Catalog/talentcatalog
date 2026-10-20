@@ -22,7 +22,8 @@ import {CandidateOpportunityService} from "../../../services/candidate-opportuni
 import {AuthenticationService} from "../../../services/authentication.service";
 import {ChatService} from "../../../services/chat.service";
 import {of} from "rxjs";
-import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {provideHttpClientTesting} from "@angular/common/http/testing";
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {mockCandidateOpportunity} from "../../../MockData/MockCandidateOpportunity";
 import {RouterLinkStubDirective} from "../../login/login.component.spec";
 import {MockPartner} from "../../../MockData/MockPartner";
@@ -56,13 +57,15 @@ describe('ViewCandidateOppComponent', () => {
 
     await TestBed.configureTestingModule({
       declarations: [ViewCandidateOppComponent,ChatReadStatusComponent,RouterLinkStubDirective,OpportunityStageNextStepComponent],
-      imports: [HttpClientTestingModule,NgbNavModule],
+      imports: [NgbNavModule],
       providers: [
         { provide: NgbModal, useValue: mockModalService },
         { provide: CandidateOpportunityService, useValue: mockCandidateOpportunityService },
         { provide: AuthenticationService, useValue: mockAuthService },
         { provide: AuthorizationService, useValue: authorizationSpy },
-        { provide: ChatService, useValue: chatService }
+        { provide: ChatService, useValue: chatService },
+        provideHttpClient(withXhr(), withInterceptorsFromDi()),
+        provideHttpClientTesting()
       ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA]
     }).compileComponents();

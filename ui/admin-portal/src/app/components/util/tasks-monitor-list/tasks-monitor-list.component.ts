@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {TaskAssignment} from "../../../model/task-assignment";
 import {Task} from "../../../model/task";
 import {SavedList} from "../../../model/saved-list";
@@ -23,7 +23,9 @@ import {TaskAssignmentService, TaskListRequest} from "../../../services/task-ass
 @Component({
   selector: 'app-tasks-monitor-list',
   templateUrl: './tasks-monitor-list.component.html',
-  styleUrls: ['./tasks-monitor-list.component.scss']
+  styleUrls: ['./tasks-monitor-list.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class TasksMonitorListComponent implements OnInit {
 // Required Input

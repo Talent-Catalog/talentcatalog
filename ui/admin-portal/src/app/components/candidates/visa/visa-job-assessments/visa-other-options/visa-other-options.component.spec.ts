@@ -19,7 +19,8 @@ import {VisaOtherOptionsComponent} from './visa-other-options.component';
 import {ReactiveFormsModule, UntypedFormBuilder} from '@angular/forms';
 import {AutosaveStatusComponent} from "../../../../util/autosave-status/autosave-status.component";
 import {NgSelectModule} from "@ng-select/ng-select";
-import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {provideHttpClientTesting} from "@angular/common/http/testing";
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 
 describe('VisaOtherOptionsComponent', () => {
   let component: VisaOtherOptionsComponent;
@@ -28,8 +29,8 @@ describe('VisaOtherOptionsComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [VisaOtherOptionsComponent,AutosaveStatusComponent],
-      imports: [HttpClientTestingModule,ReactiveFormsModule,NgSelectModule],
-      providers: [UntypedFormBuilder] // Provide the FormBuilder
+      imports: [ReactiveFormsModule,NgSelectModule],
+      providers: [UntypedFormBuilder, provideHttpClient(withXhr(), withInterceptorsFromDi()), provideHttpClientTesting()] // Provide the FormBuilder
     }).compileComponents();
   });
 

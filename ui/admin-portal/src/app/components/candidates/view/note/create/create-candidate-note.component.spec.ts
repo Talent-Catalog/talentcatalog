@@ -15,7 +15,8 @@
  */
 import {CreateCandidateNoteComponent} from "./create-candidate-note.component";
 import {ComponentFixture, TestBed, waitForAsync} from "@angular/core/testing";
-import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {provideHttpClientTesting} from "@angular/common/http/testing";
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {FormsModule, ReactiveFormsModule, UntypedFormBuilder} from "@angular/forms";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {NgxWigModule} from "ngx-wig";
@@ -38,12 +39,14 @@ describe('CreateCandidateNoteComponent', () => {
 
     TestBed.configureTestingModule({
       declarations: [ CreateCandidateNoteComponent ],
-      imports: [HttpClientTestingModule,FormsModule,ReactiveFormsModule, NgSelectModule,NgxWigModule],
+      imports: [FormsModule,ReactiveFormsModule, NgSelectModule,NgxWigModule],
       providers: [
         UntypedFormBuilder,
         { provide: NgbActiveModal, useValue: mockActiveModal },
         { provide: CandidateNoteService, useValue: mockCandidateNoteService },
-        { provide: CountryService, useValue: mockCountryService }
+        { provide: CountryService, useValue: mockCountryService },
+        provideHttpClient(withXhr(), withInterceptorsFromDi()),
+        provideHttpClientTesting()
       ]
     })
     .compileComponents();

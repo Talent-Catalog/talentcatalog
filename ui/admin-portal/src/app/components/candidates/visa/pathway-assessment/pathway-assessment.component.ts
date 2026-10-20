@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {EnumOption, enumOptions} from "../../../../util/enum";
 import {YesNoUnsure} from "../../../../model/candidate";
 import {UntypedFormBuilder} from "@angular/forms";
@@ -24,7 +24,9 @@ import {CandidateVisaCheckService} from "../../../../services/candidate-visa-che
 @Component({
   selector: 'app-pathway-assessment',
   templateUrl: './pathway-assessment.component.html',
-  styleUrls: ['./pathway-assessment.component.scss']
+  styleUrls: ['./pathway-assessment.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class PathwayAssessmentComponent extends VisaCheckComponentBase implements OnInit {
 

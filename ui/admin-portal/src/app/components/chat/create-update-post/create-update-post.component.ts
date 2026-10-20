@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, HostListener, Input, OnInit} from '@angular/core';
+import {Component, HostListener, Input, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {UntypedFormBuilder, UntypedFormGroup, Validators} from "@angular/forms";
 import {RxStompService} from "../../../services/rx-stomp.service";
 import {JobChat, Post} from "../../../model/chat";
@@ -30,7 +30,9 @@ import {EditorSelection} from "../../../model/base";
 @Component({
   selector: 'app-create-update-post',
   templateUrl: './create-update-post.component.html',
-  styleUrls: ['./create-update-post.component.scss']
+  styleUrls: ['./create-update-post.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class CreateUpdatePostComponent implements OnInit {
   @Input() chat: JobChat;

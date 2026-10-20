@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {UntypedFormBuilder, UntypedFormGroup, Validators} from '@angular/forms';
 import {EducationLevel} from "../../../../model/education-level";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
@@ -23,7 +23,9 @@ import {EducationLevelService} from "../../../../services/education-level.servic
 @Component({
   selector: 'app-create-education-level',
   templateUrl: './create-education-level.component.html',
-  styleUrls: ['./create-education-level.component.scss']
+  styleUrls: ['./create-education-level.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 
 export class CreateEducationLevelComponent implements OnInit {

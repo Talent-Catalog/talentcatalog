@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {CandidateOccupation} from "../../../../../model/candidate-occupation";
 import {UntypedFormBuilder, UntypedFormGroup, Validators} from "@angular/forms";
 import {Occupation} from "../../../../../model/occupation";
@@ -25,7 +25,9 @@ import {OccupationService} from "../../../../../services/occupation.service";
 @Component({
   selector: 'app-create-candidate-occupation',
   templateUrl: './create-candidate-occupation.component.html',
-  styleUrls: ['./create-candidate-occupation.component.scss']
+  styleUrls: ['./create-candidate-occupation.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class CreateCandidateOccupationComponent implements OnInit {
 

@@ -22,7 +22,8 @@ import {
   OnDestroy,
   OnInit,
   Output,
-  SimpleChanges
+  SimpleChanges,
+  ChangeDetectionStrategy
 } from '@angular/core';
 
 import {
@@ -139,7 +140,9 @@ interface CachedTargetList {
 @Component({
   selector: 'app-show-candidates',
   templateUrl: './show-candidates.component.html',
-  styleUrls: ['./show-candidates.component.scss']
+  styleUrls: ['./show-candidates.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class ShowCandidatesComponent extends CandidateSourceBaseComponent implements OnInit, OnChanges, OnDestroy {
 

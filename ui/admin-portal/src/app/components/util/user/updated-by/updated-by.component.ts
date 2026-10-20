@@ -14,12 +14,14 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnInit, ChangeDetectionStrategy} from '@angular/core';
 
 @Component({
   selector: 'app-updated-by',
   templateUrl: './updated-by.component.html',
-  styleUrls: ['./updated-by.component.scss']
+  styleUrls: ['./updated-by.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class UpdatedByComponent implements OnInit {
 

@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {UntypedFormBuilder, UntypedFormGroup} from "@angular/forms";
 import {AdminService} from "../../../services/admin.service";
 
@@ -27,7 +27,9 @@ interface AdminCommand {
 @Component({
   selector: 'app-admin-api',
   templateUrl: './admin-api.component.html',
-  styleUrls: ['./admin-api.component.scss']
+  styleUrls: ['./admin-api.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class AdminApiComponent implements OnInit {
 

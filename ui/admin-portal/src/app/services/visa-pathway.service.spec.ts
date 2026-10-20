@@ -15,7 +15,8 @@
  */
 
 import {TestBed} from '@angular/core/testing';
-import {HttpClientTestingModule, HttpTestingController} from '@angular/common/http/testing';
+import {HttpTestingController, provideHttpClientTesting} from '@angular/common/http/testing';
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from '@angular/common/http';
 import {VisaPathway, VisaPathwayService} from './visa-pathway.service';
 import {environment} from '../../environments/environment';
 import {Country} from "../model/country";
@@ -26,8 +27,7 @@ describe('VisaPathwayService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
-      providers: [VisaPathwayService]
+      providers: [VisaPathwayService, provideHttpClient(withXhr(), withInterceptorsFromDi()), provideHttpClientTesting()]
     });
     service = TestBed.inject(VisaPathwayService);
     httpMock = TestBed.inject(HttpTestingController);

@@ -23,7 +23,8 @@ import {NgbActiveModal, NgbPaginationModule} from '@ng-bootstrap/ng-bootstrap';
 import {SearchResults} from '../../../model/search-results';
 import {SavedSearch} from '../../../model/saved-search';
 import {MockSavedSearch} from "../../../MockData/MockSavedSearch";
-import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {provideHttpClientTesting} from "@angular/common/http/testing";
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {RouterTestingModule} from "@angular/router/testing";
 import {CandidateSourceComponent} from "../../util/candidate-source/candidate-source.component";
 
@@ -49,10 +50,12 @@ describe('SearchSavedSearchesComponent', () => {
 
     await TestBed.configureTestingModule({
       declarations: [SearchSavedSearchesComponent,CandidateSourceComponent],
-      imports: [HttpClientTestingModule,ReactiveFormsModule,RouterTestingModule,NgbPaginationModule],
+      imports: [ReactiveFormsModule,RouterTestingModule,NgbPaginationModule],
       providers: [
         { provide: SavedSearchService, useValue: searchServiceSpy },
-        { provide: NgbActiveModal, useValue: modalSpy }
+        { provide: NgbActiveModal, useValue: modalSpy },
+        provideHttpClient(withXhr(), withInterceptorsFromDi()),
+        provideHttpClientTesting()
       ]
     }).compileComponents();
 

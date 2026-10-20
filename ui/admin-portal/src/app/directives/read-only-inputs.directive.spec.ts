@@ -15,7 +15,7 @@
  */
 
 import {ReadOnlyInputsDirective} from './read-only-inputs.directive';
-import {Component, DebugElement, Renderer2} from "@angular/core";
+import {Component, DebugElement, Renderer2, ChangeDetectionStrategy} from "@angular/core";
 import {ComponentFixture, fakeAsync, TestBed, tick, waitForAsync} from "@angular/core/testing";
 import {AbstractControl, FormControl, FormsModule} from "@angular/forms";
 import {NgSelectModule} from "@ng-select/ng-select";
@@ -33,7 +33,9 @@ import {NgxWigModule} from "ngx-wig";
       <ngx-wig [control]="control"></ngx-wig>
     </div>
 
-  `
+  `,
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 class TestComponent {
   isReadOnly: boolean;

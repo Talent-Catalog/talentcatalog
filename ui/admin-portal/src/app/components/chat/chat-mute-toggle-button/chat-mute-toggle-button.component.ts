@@ -1,4 +1,4 @@
-import {Component, Input, Output, EventEmitter} from '@angular/core';
+import {Component, Input, Output, EventEmitter, ChangeDetectionStrategy} from '@angular/core';
 import {CandidateService} from "../../../services/candidate.service";
 import {UpdateCandidateMutedRequest} from "../../../model/candidate";
 
@@ -6,6 +6,8 @@ import {UpdateCandidateMutedRequest} from "../../../model/candidate";
 @Component({
   selector: 'app-chat-mute-toggle-button',
   templateUrl: './chat-mute-toggle-button.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class ChatMuteToggleButtonComponent {
   @Input() candidate: any;

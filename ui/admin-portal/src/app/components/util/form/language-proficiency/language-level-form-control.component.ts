@@ -21,7 +21,8 @@ import {
   OnChanges,
   OnInit,
   Output,
-  SimpleChanges
+  SimpleChanges,
+  ChangeDetectionStrategy
 } from '@angular/core';
 import {Language} from "../../../../model/language";
 import {LanguageService} from "../../../../services/language.service";
@@ -33,7 +34,9 @@ import {LanguageLevelFormControlModel} from "./language-level-form-control-model
 @Component({
   selector: 'app-language-level-form-control',
   templateUrl: './language-level-form-control.component.html',
-  styleUrls: ['./language-level-form-control.component.scss']
+  styleUrls: ['./language-level-form-control.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class LanguageLevelFormControlComponent implements OnInit, OnChanges {
 

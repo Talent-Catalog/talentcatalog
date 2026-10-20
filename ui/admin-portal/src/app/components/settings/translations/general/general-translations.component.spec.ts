@@ -20,7 +20,8 @@ import {LanguageService} from "../../../../services/language.service";
 import {ComponentFixture, TestBed} from "@angular/core/testing";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {NgSelectModule} from "@ng-select/ng-select";
-import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {provideHttpClientTesting} from "@angular/common/http/testing";
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {of, throwError} from "rxjs";
 import {By} from "@angular/platform-browser";
 import {SystemLanguage} from "../../../../model/language";
@@ -45,12 +46,14 @@ describe('GeneralTranslationsComponent', () => {
     const authSpy = jasmine.createSpyObj('AuthorizationService', ['isAnAdmin', 'isSystemAdminOnly']);
 
     await TestBed.configureTestingModule({
-      imports: [FormsModule,ReactiveFormsModule,NgSelectModule,HttpClientTestingModule],
+      imports: [FormsModule,ReactiveFormsModule,NgSelectModule],
       declarations: [GeneralTranslationsComponent],
       providers: [
         { provide: TranslationService, useValue: translationSpy },
         { provide: LanguageService, useValue: languageSpy },
-        { provide: AuthorizationService, useValue: authSpy }
+        { provide: AuthorizationService, useValue: authSpy },
+        provideHttpClient(withXhr(), withInterceptorsFromDi()),
+        provideHttpClientTesting()
       ]
     }).compileComponents();
 

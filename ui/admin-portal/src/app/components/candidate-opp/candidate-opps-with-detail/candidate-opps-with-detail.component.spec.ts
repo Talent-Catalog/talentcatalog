@@ -19,7 +19,8 @@ import {ComponentFixture, TestBed} from "@angular/core/testing";
 import {mockCandidateOpportunity} from "../../../MockData/MockCandidateOpportunity";
 import {CandidateOpportunity} from "../../../model/candidate-opportunity";
 import {SearchOppsBy} from "../../../model/base";
-import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {provideHttpClientTesting} from "@angular/common/http/testing";
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {CommonModule} from "@angular/common";
 import {CandidateOppsComponent} from "../candidate-opps/candidate-opps.component";
@@ -31,7 +32,8 @@ describe('CandidateOppsWithDetailComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [CandidateOppsWithDetailComponent,CandidateOppsComponent],
-      imports: [HttpClientTestingModule,ReactiveFormsModule,FormsModule,CommonModule],
+      imports: [ReactiveFormsModule,FormsModule,CommonModule],
+      providers: [provideHttpClient(withXhr(), withInterceptorsFromDi()), provideHttpClientTesting()],
 
     })
     .compileComponents();

@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {DragulaService} from "ng2-dragula";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {CandidateFieldInfo} from "../../../model/candidate-field-info";
@@ -25,7 +25,9 @@ import {CandidateSourceService} from "../../../services/candidate-source.service
 @Component({
   selector: 'app-candidate-column-selector',
   templateUrl: './candidate-column-selector.component.html',
-  styleUrls: ['./candidate-column-selector.component.scss']
+  styleUrls: ['./candidate-column-selector.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class CandidateColumnSelectorComponent implements OnInit {
 

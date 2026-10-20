@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {ChatService} from "../../../services/chat.service";
 import {MainSidePanelBase} from "../../util/split/MainSidePanelBase";
 import {Candidate} from "../../../model/candidate";
@@ -26,7 +26,9 @@ import {CandidateService} from "../../../services/candidate.service";
 @Component({
   selector: 'app-candidates-with-chat',
   templateUrl: './candidates-with-chat.component.html',
-  styleUrls: ['./candidates-with-chat.component.scss']
+  styleUrls: ['./candidates-with-chat.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class CandidatesWithChatComponent extends MainSidePanelBase implements OnInit {
 

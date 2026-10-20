@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
+import {Component, Input, OnChanges, OnInit, SimpleChanges, ChangeDetectionStrategy} from '@angular/core';
 import {Job} from "../../../../../model/job";
 import {CreateChatRequest, JobChat, JobChatType} from "../../../../../model/chat";
 import {ChatService} from "../../../../../services/chat.service";
@@ -24,7 +24,9 @@ import {AuthorizationService} from "../../../../../services/authorization.servic
 @Component({
   selector: 'app-job-group-chats-tab',
   templateUrl: './job-group-chats-tab.component.html',
-  styleUrls: ['./job-group-chats-tab.component.scss']
+  styleUrls: ['./job-group-chats-tab.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class JobGroupChatsTabComponent implements OnInit, OnChanges {
   @Input() job: Job;

@@ -21,7 +21,8 @@ import {
   OnChanges,
   OnInit,
   Output,
-  SimpleChanges
+  SimpleChanges,
+  ChangeDetectionStrategy
 } from '@angular/core';
 import {CandidateOpportunity, isCandidateOpportunity} from "../../../model/candidate-opportunity";
 import {EditCandidateOppComponent} from "../edit-candidate-opp/edit-candidate-opp.component";
@@ -46,7 +47,9 @@ import {LocalStorageService} from "../../../services/local-storage.service";
 @Component({
   selector: 'app-view-candidate-opp',
   templateUrl: './view-candidate-opp.component.html',
-  styleUrls: ['./view-candidate-opp.component.scss']
+  styleUrls: ['./view-candidate-opp.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class ViewCandidateOppComponent implements OnInit, OnChanges {
   @Input() opp: CandidateOpportunity;

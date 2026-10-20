@@ -18,7 +18,8 @@ import {ViewCandidateExamComponent} from "./view-candidate-exam.component";
 import {CandidateExamService} from "../../../../services/candidate-exam.service";
 import {ComponentFixture, TestBed} from "@angular/core/testing";
 import {NgbActiveModal, NgbModal, NgbModalModule} from "@ng-bootstrap/ng-bootstrap";
-import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {provideHttpClientTesting} from "@angular/common/http/testing";
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {CUSTOM_ELEMENTS_SCHEMA} from "@angular/core";
 import {MockCandidate} from "../../../../MockData/MockCandidate";
 import {of} from "rxjs";
@@ -42,12 +43,14 @@ describe('ViewCandidateExamComponent', () => {
 
     await TestBed.configureTestingModule({
       declarations: [ViewCandidateExamComponent],
-      imports: [HttpClientTestingModule, NgbModalModule],
+      imports: [NgbModalModule],
       providers: [
         { provide: CandidateExamService, useValue: mockCandidateExamService },
         { provide: CandidateService, useValue: mockCandidateService },
         { provide: NgbModal, useValue: mockModalService },
         NgbActiveModal,
+        provideHttpClient(withXhr(), withInterceptorsFromDi()),
+        provideHttpClientTesting(),
       ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
     }).compileComponents();

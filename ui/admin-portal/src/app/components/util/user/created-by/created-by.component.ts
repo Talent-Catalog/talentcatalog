@@ -14,12 +14,14 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnInit, ChangeDetectionStrategy} from '@angular/core';
 
 @Component({
   selector: 'app-created-by',
   templateUrl: './created-by.component.html',
-  styleUrls: ['./created-by.component.scss']
+  styleUrls: ['./created-by.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class CreatedByComponent implements OnInit {
   @Input() object: {[key: string]: any};

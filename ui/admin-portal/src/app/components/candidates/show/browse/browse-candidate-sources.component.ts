@@ -21,7 +21,8 @@ import {
   OnChanges,
   OnInit,
   Output,
-  SimpleChanges
+  SimpleChanges,
+  ChangeDetectionStrategy
 } from '@angular/core';
 import {SearchResults} from '../../../../model/search-results';
 import {UntypedFormBuilder, UntypedFormGroup} from '@angular/forms';
@@ -69,7 +70,9 @@ import {LocalStorageService} from "../../../../services/local-storage.service";
 @Component({
   selector: 'app-browse-candidate-sources',
   templateUrl: './browse-candidate-sources.component.html',
-  styleUrls: ['./browse-candidate-sources.component.scss']
+  styleUrls: ['./browse-candidate-sources.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class BrowseCandidateSourcesComponent implements OnInit, OnChanges {
 
@@ -130,7 +133,7 @@ export class BrowseCandidateSourcesComponent implements OnInit, OnChanges {
   }
 
   get selectedStages(): string[] {
-    return this.searchForm ? this.searchForm.value.selectedStages : "";
+    return this.searchForm ? this.searchForm.value.selectedStages : "" as any;
   }
 
   ngOnChanges(changes: SimpleChanges): void {

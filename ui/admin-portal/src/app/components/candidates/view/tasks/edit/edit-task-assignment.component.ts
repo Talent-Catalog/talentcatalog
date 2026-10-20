@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, Inject, LOCALE_ID, OnInit} from '@angular/core';
+import {Component, Inject, LOCALE_ID, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {UntypedFormBuilder, UntypedFormGroup} from "@angular/forms";
 import {formatDate} from '@angular/common';
@@ -28,7 +28,9 @@ import {Task} from "../../../../../model/task";
 @Component({
   selector: 'app-edit-task-assignment',
   templateUrl: './edit-task-assignment.component.html',
-  styleUrls: ['./edit-task-assignment.component.scss']
+  styleUrls: ['./edit-task-assignment.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class EditTaskAssignmentComponent implements OnInit {
 

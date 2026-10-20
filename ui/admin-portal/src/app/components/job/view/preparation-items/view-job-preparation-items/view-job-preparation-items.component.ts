@@ -14,13 +14,15 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output, ChangeDetectionStrategy} from '@angular/core';
 import {JobPrepItem} from "../../../../../model/job-prep-item";
 
 @Component({
   selector: 'app-view-job-preparation-items',
   templateUrl: './view-job-preparation-items.component.html',
-  styleUrls: ['./view-job-preparation-items.component.scss']
+  styleUrls: ['./view-job-preparation-items.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class ViewJobPreparationItemsComponent implements OnInit {
   @Input() jobPrepItems: JobPrepItem[];

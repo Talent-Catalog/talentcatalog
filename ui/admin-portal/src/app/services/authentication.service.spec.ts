@@ -15,14 +15,14 @@
  */
 
 import {TestBed} from '@angular/core/testing';
-import {HttpClientTestingModule, HttpTestingController} from '@angular/common/http/testing';
+import {HttpTestingController, provideHttpClientTesting} from '@angular/common/http/testing';
 import {AuthenticationService} from './authentication.service';
 import {User} from '../model/user';
 import {LoginRequest} from '../model/base';
 import {JwtAuthenticationResponse} from '../model/jwt-authentication-response';
 import {environment} from '../../environments/environment';
 import {of} from 'rxjs';
-import {HttpClient} from '@angular/common/http';
+import {HttpClient, provideHttpClient, withInterceptorsFromDi, withXhr} from '@angular/common/http';
 import {config_test} from "../../config-test";
 import {EncodedQrImage} from "../util/qr";
 import {LocalStorageService} from "./local-storage.service";
@@ -37,10 +37,11 @@ describe('AuthenticationService', () => {
     const localStorageSpy = jasmine.createSpyObj('LocalStorageService', ['get', 'set', 'remove']);
 
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
       providers: [
         AuthenticationService,
-        { provide: LocalStorageService, useValue: localStorageSpy }
+        { provide: LocalStorageService, useValue: localStorageSpy },
+        provideHttpClient(withXhr(), withInterceptorsFromDi()),
+        provideHttpClientTesting()
       ]
     });
 

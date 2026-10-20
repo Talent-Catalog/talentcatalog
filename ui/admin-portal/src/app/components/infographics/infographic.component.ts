@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {CandidateStatService, CandidateStatsRequest} from "../../services/candidate-stat.service";
 import {StatReport} from "../../model/stat-report";
 import {UntypedFormBuilder, UntypedFormGroup, Validators} from "@angular/forms";
@@ -31,7 +31,9 @@ import {Stat} from "../../model/stat";
 @Component({
   selector: 'app-infographic',
   templateUrl: './infographic.component.html',
-  styleUrls: ['./infographic.component.scss']
+  styleUrls: ['./infographic.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class InfographicComponent implements OnInit {
 

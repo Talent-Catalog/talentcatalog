@@ -14,12 +14,14 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnInit, ChangeDetectionStrategy} from '@angular/core';
 
 @Component({
   selector: 'app-fixed-input',
   templateUrl: './fixed-input.component.html',
-  styleUrls: ['./fixed-input.component.scss']
+  styleUrls: ['./fixed-input.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class FixedInputComponent implements OnInit {
   @Input() question: string;

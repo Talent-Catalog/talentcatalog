@@ -23,7 +23,8 @@ import {
   OnInit,
   SimpleChanges,
   ViewChild,
-  ViewEncapsulation
+  ViewEncapsulation,
+  ChangeDetectionStrategy
 } from '@angular/core';
 import {isHtml} from 'src/app/util/string';
 import {ChatPost} from "../../../model/chat";
@@ -38,7 +39,9 @@ import {AuthenticationService} from "../../../services/authentication.service";
   styleUrls: ['./view-post.component.scss'],
   //In order to add styling to the innerHtml post content, we need to set this to None.
   // See here: https://stackoverflow.com/a/44215795
-  encapsulation: ViewEncapsulation.None
+  encapsulation: ViewEncapsulation.None,
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class ViewPostComponent implements OnInit, OnChanges {
 

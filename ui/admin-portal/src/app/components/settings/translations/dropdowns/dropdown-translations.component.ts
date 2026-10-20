@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {SearchResults} from '../../../../model/search-results';
 import {UntypedFormArray, UntypedFormBuilder, UntypedFormGroup, Validators} from "@angular/forms";
 import {debounceTime, distinctUntilChanged} from "rxjs/operators";
@@ -29,7 +29,9 @@ import {User} from "../../../../model/user";
 @Component({
   selector: 'app-dropdown-translations',
   templateUrl: './dropdown-translations.component.html',
-  styleUrls: ['./dropdown-translations.component.scss']
+  styleUrls: ['./dropdown-translations.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class DropdownTranslationsComponent implements OnInit {
 

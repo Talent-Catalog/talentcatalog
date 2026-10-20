@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {UntypedFormBuilder, UntypedFormGroup} from "@angular/forms";
 import {Job, SearchJobRequest} from "../../../model/job";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
@@ -24,7 +24,9 @@ import {OpportunityOwnershipType} from "../../../model/opportunity";
 @Component({
   selector: 'app-select-job-copy',
   templateUrl: './select-job-copy.component.html',
-  styleUrls: ['./select-job-copy.component.scss']
+  styleUrls: ['./select-job-copy.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class SelectJobCopyComponent implements OnInit {
 

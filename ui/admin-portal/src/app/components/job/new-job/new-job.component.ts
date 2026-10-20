@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {SavedList} from "../../../model/saved-list";
 import {SavedListService} from "../../../services/saved-list.service";
 import {
@@ -41,7 +41,9 @@ import {SelectJobCopyComponent} from "../../util/select-job-copy/select-job-copy
 @Component({
   selector: 'app-new-job',
   templateUrl: './new-job.component.html',
-  styleUrls: ['./new-job.component.scss']
+  styleUrls: ['./new-job.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class NewJobComponent implements OnInit {
   employer: Employer;

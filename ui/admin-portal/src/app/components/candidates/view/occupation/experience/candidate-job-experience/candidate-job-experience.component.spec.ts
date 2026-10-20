@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, NO_ERRORS_SCHEMA} from '@angular/core';
+import {Component, NO_ERRORS_SCHEMA, ChangeDetectionStrategy} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 import {CandidateJobExperienceComponent} from './candidate-job-experience.component';
@@ -42,7 +42,9 @@ function experienceFixture(): CandidateJobExperience {
     <app-candidate-job-experience [experience]="experience">
       <div experienceActions class="col-2 test-actions">Actions</div>
     </app-candidate-job-experience>
-  `
+  `,
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 class ActionsHostComponent {
   experience = experienceFixture();

@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {Candidate, CandidateIntakeData} from '../../../../model/candidate';
 import {CandidateDependantService} from '../../../../services/candidate-dependant.service';
 import {Country} from "../../../../model/country";
@@ -22,7 +22,9 @@ import {Country} from "../../../../model/country";
 @Component({
   selector: 'app-dependants',
   templateUrl: './dependants.component.html',
-  styleUrls: ['./dependants.component.scss']
+  styleUrls: ['./dependants.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class DependantsComponent implements OnInit {
 

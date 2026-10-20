@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {
   Candidate,
   CandidateIntakeData,
@@ -26,7 +26,9 @@ import {AuthorizationService} from "../../../../../../services/authorization.ser
 @Component({
   selector: 'app-visa-check-au',
   templateUrl: './visa-check-au.component.html',
-  styleUrls: ['./visa-check-au.component.scss']
+  styleUrls: ['./visa-check-au.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class VisaCheckAuComponent implements OnInit {
 

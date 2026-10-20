@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {UntypedFormBuilder, UntypedFormGroup, Validators} from '@angular/forms';
 import {SavedList, UpdateSavedListInfoRequest} from '../../../model/saved-list';
 import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
@@ -25,7 +25,9 @@ import {JobNameAndId} from "../../../model/job";
 @Component({
   selector: 'app-create-update-list',
   templateUrl: './create-update-list.component.html',
-  styleUrls: ['./create-update-list.component.scss']
+  styleUrls: ['./create-update-list.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class CreateUpdateListComponent implements OnInit {
   error = null;

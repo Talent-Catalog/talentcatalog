@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {Candidate} from "../../../../../model/candidate";
 import {UntypedFormBuilder, UntypedFormGroup, Validators} from "@angular/forms";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
@@ -24,7 +24,9 @@ import {EnvService} from "../../../../../services/env.service";
 @Component({
   selector: 'app-edit-candidate-special-links',
   templateUrl: './edit-candidate-special-links.component.html',
-  styleUrls: ['./edit-candidate-special-links.component.scss']
+  styleUrls: ['./edit-candidate-special-links.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class EditCandidateSpecialLinksComponent implements OnInit {
 

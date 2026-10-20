@@ -21,7 +21,8 @@ import {
   OnChanges,
   OnInit,
   Output,
-  SimpleChanges
+  SimpleChanges,
+  ChangeDetectionStrategy
 } from '@angular/core';
 import {SearchResults} from '../../../model/search-results';
 import {UntypedFormBuilder, UntypedFormGroup} from "@angular/forms";
@@ -35,7 +36,9 @@ import {SearchCandidateSourcesRequest} from "../../../model/base";
 @Component({
   selector: 'app-join-saved-search',
   templateUrl: './join-saved-search.component.html',
-  styleUrls: ['./join-saved-search.component.scss']
+  styleUrls: ['./join-saved-search.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class JoinSavedSearchComponent implements OnInit, OnChanges {
 

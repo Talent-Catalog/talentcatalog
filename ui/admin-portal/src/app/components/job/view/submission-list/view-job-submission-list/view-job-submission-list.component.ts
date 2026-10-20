@@ -14,13 +14,15 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {Job} from "../../../../../model/job";
 
 @Component({
   selector: 'app-view-job-submission-list',
   templateUrl: './view-job-submission-list.component.html',
-  styleUrls: ['./view-job-submission-list.component.scss']
+  styleUrls: ['./view-job-submission-list.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class ViewJobSubmissionListComponent implements OnInit {
   @Input() job: Job;

@@ -1,11 +1,14 @@
 import { TestBed } from '@angular/core/testing';
 import {
   HTTP_INTERCEPTORS,
-  HttpClient
+  HttpClient,
+  provideHttpClient,
+  withInterceptorsFromDi,
+  withXhr
 } from '@angular/common/http';
 import {
-  HttpClientTestingModule,
-  HttpTestingController
+  HttpTestingController,
+  provideHttpClientTesting
 } from '@angular/common/http/testing';
 import { Router } from '@angular/router';
 import { AuthExpiryInterceptor } from './auth-expiry.interceptor';
@@ -29,11 +32,12 @@ describe('AuthExpiryInterceptor', () => {
     };
 
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
       providers: [
         { provide: Router, useValue: routerMock },
         { provide: AuthenticationService, useValue: authMock },
         { provide: HTTP_INTERCEPTORS, useClass: AuthExpiryInterceptor, multi: true },
+        provideHttpClient(withXhr(), withInterceptorsFromDi()),
+        provideHttpClientTesting(),
       ],
     });
 

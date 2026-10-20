@@ -19,7 +19,8 @@ import {ComponentFixture, TestBed} from "@angular/core/testing";
 import {PartnerService} from "../../../../services/partner.service";
 import {NgbModal, NgbModule} from "@ng-bootstrap/ng-bootstrap";
 import {AuthorizationService} from "../../../../services/authorization.service";
-import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {provideHttpClientTesting} from "@angular/common/http/testing";
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {FormsModule, ReactiveFormsModule, UntypedFormBuilder} from "@angular/forms";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {of} from "rxjs";
@@ -53,12 +54,14 @@ describe('SearchPartnersComponent', () => {
 
     await TestBed.configureTestingModule({
       declarations: [SearchPartnersComponent],
-      imports: [HttpClientTestingModule, FormsModule, ReactiveFormsModule, NgbModule, NgSelectModule],
+      imports: [FormsModule, ReactiveFormsModule, NgbModule, NgSelectModule],
       providers: [
         UntypedFormBuilder,
         { provide: PartnerService, useValue: partnerServiceSpy },
         { provide: NgbModal, useValue: modalServiceSpy },
-        { provide: AuthorizationService, useValue: authServiceSpy }
+        { provide: AuthorizationService, useValue: authServiceSpy },
+        provideHttpClient(withXhr(), withInterceptorsFromDi()),
+        provideHttpClientTesting()
       ]
     })
     .compileComponents();

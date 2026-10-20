@@ -19,7 +19,8 @@ import {ComponentFixture, TestBed} from "@angular/core/testing";
 import {DebugElement} from "@angular/core";
 import {FormsModule, ReactiveFormsModule, UntypedFormControl} from "@angular/forms";
 import {NgSelectModule} from "@ng-select/ng-select";
-import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {provideHttpClientTesting} from "@angular/common/http/testing";
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {generateYearArray} from "../../../util/year-helper";
 
 describe('MonthPickerComponent', () => {
@@ -30,7 +31,8 @@ describe('MonthPickerComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [MonthPickerComponent],
-      imports: [HttpClientTestingModule, FormsModule, ReactiveFormsModule, NgSelectModule]
+      imports: [FormsModule, ReactiveFormsModule, NgSelectModule],
+      providers: [provideHttpClient(withXhr(), withInterceptorsFromDi()), provideHttpClientTesting()]
     }).compileComponents();
   });
 

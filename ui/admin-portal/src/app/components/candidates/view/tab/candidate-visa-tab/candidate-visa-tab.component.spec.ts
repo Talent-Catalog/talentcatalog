@@ -25,7 +25,8 @@ import {
   HasNameSelectorComponent
 } from "../../../../util/has-name-selector/has-name-selector.component";
 import {FormsModule, ReactiveFormsModule, UntypedFormBuilder} from "@angular/forms";
-import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {provideHttpClientTesting} from "@angular/common/http/testing";
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {of} from "rxjs";
 import {MockJob} from "../../../../../MockData/MockJob";
@@ -50,7 +51,7 @@ describe('CandidateVisaTabComponent', () => {
     authServiceMock = jasmine.createSpyObj('AuthorizationService', ['isSystemAdminOnly', 'isEditableCandidate']);
 
     await TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule,FormsModule,ReactiveFormsModule, NgSelectModule],
+      imports: [FormsModule,ReactiveFormsModule, NgSelectModule],
       declarations: [CandidateVisaTabComponent,PrintPageComponent, HasNameSelectorComponent],
       providers: [
         UntypedFormBuilder,
@@ -60,6 +61,8 @@ describe('CandidateVisaTabComponent', () => {
         { provide: NgbModal, useValue: modalServiceMock },
         // { provide: LocalStorageService, useValue: {} },
         { provide: AuthorizationService, useValue: authServiceMock },
+        provideHttpClient(withXhr(), withInterceptorsFromDi()),
+        provideHttpClientTesting(),
       ]
     }).compileComponents();
   });

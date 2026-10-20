@@ -1,10 +1,12 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {Candidate} from "../../../../model/candidate";
 
 @Component({
   selector: 'app-view-privacy-policy-info',
   templateUrl: './view-privacy-policy-info.component.html',
-  styleUrls: ['./view-privacy-policy-info.component.scss']
+  styleUrls: ['./view-privacy-policy-info.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class ViewPrivacyPolicyInfoComponent implements OnInit {
   @Input() candidate: Candidate;

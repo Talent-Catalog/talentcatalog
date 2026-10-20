@@ -28,7 +28,7 @@
     </div>
   </tc-card-header>
 
-  <tc-description-item [innerHtml]="candidate?.additionalInfo"
+  <tc-description-item [innerHtml]="$safeNavigationMigration(candidate?.additionalInfo)"
                        appHighlightSearch
   ></tc-description-item>
 </tc-card>

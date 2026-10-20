@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, EventEmitter, OnInit, Output} from '@angular/core';
+import {Component, EventEmitter, OnInit, Output, ChangeDetectionStrategy} from '@angular/core';
 import {FormComponentBase} from "../form/FormComponentBase";
 import {
   AbstractControl,
@@ -32,7 +32,9 @@ import {SalesforceService} from "../../../services/salesforce.service";
 @Component({
   selector: 'app-sf-joblink',
   templateUrl: './sf-joblink.component.html',
-  styleUrls: ['./sf-joblink.component.scss']
+  styleUrls: ['./sf-joblink.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class SfJoblinkComponent extends FormComponentBase implements OnInit {
   form: UntypedFormGroup;

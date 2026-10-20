@@ -7,6 +7,7 @@ import {
   forwardRef,
   NgModule,
   NO_ERRORS_SCHEMA,
+  ChangeDetectionStrategy
 } from '@angular/core';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
 import {TestBed, TestModuleMetadata} from '@angular/core/testing';
@@ -67,6 +68,8 @@ class ValueAccessorStubBase extends GenericStubBase implements ControlValueAcces
   `,
   inputs: ['type', 'dismissible'],
   outputs: ['closed'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 class TcAlertStubComponent extends GenericStubBase {
   type: string;
@@ -93,6 +96,8 @@ class TcAlertStubComponent extends GenericStubBase {
   `,
   inputs: ['size', 'type', 'disabled', 'ariaLabel', 'title'],
   outputs: ['click'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 class TcButtonStubComponent extends GenericStubBase {
   ariaLabel: any;
@@ -135,6 +140,8 @@ class TcButtonStubComponent extends GenericStubBase {
   `,
   inputs: ['title', 'actionText', 'disableAction', 'showCancel', 'icon', 'isError', 'cancelText', 'message'],
   outputs: ['onAction', 'onCancel'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 class TcModalStubComponent extends GenericStubBase {
   title: string;
@@ -170,6 +177,8 @@ class TcModalStubComponent extends GenericStubBase {
       useExisting: forwardRef(() => TcInputStubComponent),
     },
   ],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 class TcInputStubComponent extends ValueAccessorStubBase {
   ariaLabel: any;
@@ -209,6 +218,8 @@ class TcInputStubComponent extends ValueAccessorStubBase {
       useExisting: forwardRef(() => TcTextareaStubComponent),
     },
   ],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 class TcTextareaStubComponent extends ValueAccessorStubBase {
   constructor() { super(['valueChange']); }
@@ -255,6 +266,8 @@ class TcTextareaStubComponent extends ValueAccessorStubBase {
     </ng-container>
   `,
   inputs: ['loading', 'type', 'holdTheLine'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 class TcLoadingStubComponent extends GenericStubBase {
   loading: boolean = false;
@@ -267,6 +280,8 @@ class TcLoadingStubComponent extends GenericStubBase {
   // one component can match multiple selectors separated by commas
   selector: 'tc-icon, tc-field, tc-label, tc-tab, tc-tab-header, tc-tab-content, tc-card, tc-card-header',
   template: '<ng-content></ng-content>',
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 class PassThroughTcStubComponent extends GenericStubBase {
   constructor() { super([]); }
@@ -277,6 +292,8 @@ class PassThroughTcStubComponent extends GenericStubBase {
   template: '<ng-content></ng-content>',
   inputs: ['activeTabId'],
   outputs: ['tabChanged'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 class TcTabsStubComponent extends GenericStubBase {
   constructor() { super(['tabChanged']); }
@@ -288,6 +305,8 @@ class TcTabsStubComponent extends GenericStubBase {
   template: '<ng-content></ng-content>',
   inputs: ['name', 'striped', 'hover', 'totalElements', 'pageSize', 'pageNumber'],
   outputs: ['pageNumberChange', 'pageChange'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 class TcTableStubComponent extends GenericStubBase {
   constructor() { super(['pageNumberChange', 'pageChange']); }
@@ -312,6 +331,8 @@ class TcTableStubComponent extends GenericStubBase {
   `,
   inputs: ['href', 'target', 'title'],
   outputs: ['click'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 class TcLinkStubComponent extends GenericStubBase {
   href: any;
@@ -324,6 +345,8 @@ class TcLinkStubComponent extends GenericStubBase {
   selector: 'tc-description-list',
   template: '<ng-content></ng-content>',
   inputs: ['direction'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 class TcDescriptionListStub extends GenericStubBase {
   constructor() { super([]); }
@@ -334,6 +357,8 @@ class TcDescriptionListStub extends GenericStubBase {
   selector: 'tc-description-item',
   template: '<ng-content></ng-content>',
   inputs: ['input', 'icon'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 class TcDescriptionItemStub extends GenericStubBase {
   constructor() { super([]); }
@@ -364,6 +389,8 @@ class TcDescriptionItemStub extends GenericStubBase {
       useExisting: forwardRef(() => TcRadioStubComponent),
     },
   ],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 class TcRadioStubComponent extends ValueAccessorStubBase {
   innerValue: any;
@@ -419,8 +446,10 @@ const REAL_COMPONENTS = new Set([
 
 const originalConfigure = TestBed.configureTestingModule.bind(TestBed);
 (TestBed.configureTestingModule as any) = (meta: TestModuleMetadata = {}) => {
+  // The esbuild-based test builder may rename classes with a numeric suffix (e.g. TcModalComponent2),
+  // so compare names without it.
   const hasReal = [...(meta.declarations ?? []), ...(meta.imports ?? [])]
-    .some(d => REAL_COMPONENTS.has((d as any)?.name));
+    .some(d => REAL_COMPONENTS.has((d as any)?.name?.replace(/\d+$/, '')));
   if (!hasReal) {
     meta.imports = [...(meta.imports ?? []), GlobalCustomStubsModule];
   }

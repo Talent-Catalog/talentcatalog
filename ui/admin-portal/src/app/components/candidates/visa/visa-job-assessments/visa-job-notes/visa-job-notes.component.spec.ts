@@ -17,7 +17,8 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {VisaJobNotesComponent} from './visa-job-notes.component';
 import {ReactiveFormsModule, UntypedFormBuilder} from '@angular/forms';
-import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {provideHttpClientTesting} from "@angular/common/http/testing";
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {AutosaveStatusComponent} from "../../../../util/autosave-status/autosave-status.component";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {MockCandidateVisaJobCheck} from "../../../../../MockData/MockCandidateVisaCheck";
@@ -29,8 +30,8 @@ describe('VisaJobNotesComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [VisaJobNotesComponent,AutosaveStatusComponent],
-      imports: [HttpClientTestingModule,ReactiveFormsModule,NgSelectModule],
-      providers: [UntypedFormBuilder] // Provide the FormBuilder
+      imports: [ReactiveFormsModule,NgSelectModule],
+      providers: [UntypedFormBuilder, provideHttpClient(withXhr(), withInterceptorsFromDi()), provideHttpClientTesting()] // Provide the FormBuilder
     }).compileComponents();
   });
 

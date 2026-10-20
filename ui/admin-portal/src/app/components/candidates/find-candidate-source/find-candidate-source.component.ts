@@ -22,6 +22,7 @@ import {
   OnInit,
   Output,
   SimpleChanges,
+  ChangeDetectionStrategy
 } from '@angular/core';
 import {Observable, of, Subject} from "rxjs";
 import {catchError, debounceTime, distinctUntilChanged, map, switchMap, tap} from "rxjs/operators";
@@ -43,7 +44,9 @@ import {
 @Component({
   selector: 'app-find-candidate-source',
   templateUrl: './find-candidate-source.component.html',
-  styleUrls: ['./find-candidate-source.component.scss']
+  styleUrls: ['./find-candidate-source.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class FindCandidateSourceComponent implements OnInit, OnChanges {
   //Whether single selection only - default is multiple selection allowed

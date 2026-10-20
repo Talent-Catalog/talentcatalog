@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
+import {Component, Input, OnChanges, OnInit, SimpleChanges, ChangeDetectionStrategy} from '@angular/core';
 import {UntypedFormBuilder} from '@angular/forms';
 import {Candidate} from '../../../model/candidate';
 import {Observable} from 'rxjs';
@@ -27,7 +27,9 @@ import {AuthorizationService} from "../../../services/authorization.service";
 @Component({
   selector: 'app-candidate-context-note',
   templateUrl: './candidate-context-note.component.html',
-  styleUrls: ['./candidate-context-note.component.scss']
+  styleUrls: ['./candidate-context-note.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class CandidateContextNoteComponent extends AutoSaveComponentBase
   implements OnInit, OnChanges {

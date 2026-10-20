@@ -16,7 +16,8 @@
 
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {EditCandidateExamComponent} from './edit-candidate-exam.component';
-import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {provideHttpClientTesting} from "@angular/common/http/testing";
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {NgbActiveModal, NgbModalModule} from "@ng-bootstrap/ng-bootstrap";
 import {ReactiveFormsModule, UntypedFormBuilder} from "@angular/forms";
 import {NgSelectModule} from "@ng-select/ng-select";
@@ -39,11 +40,13 @@ describe('EditCandidateExamComponent', () => {
 
     await TestBed.configureTestingModule({
       declarations: [ EditCandidateExamComponent ],
-      imports: [HttpClientTestingModule, NgbModalModule, ReactiveFormsModule, NgSelectModule],
+      imports: [NgbModalModule, ReactiveFormsModule, NgSelectModule],
       providers: [
         UntypedFormBuilder,
         { provide: NgbActiveModal, useValue: mockActiveModal },
-        { provide: CandidateExamService, useValue: mockCandidateExamService }
+        { provide: CandidateExamService, useValue: mockCandidateExamService },
+        provideHttpClient(withXhr(), withInterceptorsFromDi()),
+        provideHttpClientTesting()
       ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA]
     })

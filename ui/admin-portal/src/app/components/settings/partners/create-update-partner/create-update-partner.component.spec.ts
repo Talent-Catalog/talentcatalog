@@ -28,7 +28,8 @@ import {Country} from "../../../../model/country";
 import {MockJob} from "../../../../MockData/MockJob";
 import {of, throwError} from "rxjs";
 import {MockUser} from "../../../../MockData/MockUser";
-import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {provideHttpClientTesting} from "@angular/common/http/testing";
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 
 describe('CreateUpdatePartnerComponent', () => {
   let component: CreateUpdatePartnerComponent;
@@ -52,12 +53,14 @@ describe('CreateUpdatePartnerComponent', () => {
 
     await TestBed.configureTestingModule({
       declarations: [CreateUpdatePartnerComponent],
-      imports: [HttpClientTestingModule, FormsModule, ReactiveFormsModule, NgbModule, NgSelectModule],
+      imports: [FormsModule, ReactiveFormsModule, NgbModule, NgSelectModule],
       providers: [
         { provide: PartnerService, useValue: partnerSpy },
         { provide: CountryService, useValue: countrySpy },
         { provide: UserService, useValue: userSpy },
-        { provide: NgbActiveModal, useValue: modalSpy }
+        { provide: NgbActiveModal, useValue: modalSpy },
+        provideHttpClient(withXhr(), withInterceptorsFromDi()),
+        provideHttpClientTesting()
       ]
     }).compileComponents();
 

@@ -1,11 +1,13 @@
-import {Component, Input} from '@angular/core';
+import {Component, Input, ChangeDetectionStrategy} from '@angular/core';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {VerifyEmailComponent} from '../verify-email/verify-email.component';
 
 @Component({
   selector: 'app-verify-email-toast',
   templateUrl: './verify-email-toast.component.html',
-  styleUrls: ['./verify-email-toast.component.scss']
+  styleUrls: ['./verify-email-toast.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class VerifyEmailToastComponent {
   @Input() showToast: boolean = false;

@@ -15,7 +15,8 @@
  */
 
 import {TestBed} from '@angular/core/testing';
-import {HttpClientTestingModule, HttpTestingController} from '@angular/common/http/testing';
+import {HttpTestingController, provideHttpClientTesting} from '@angular/common/http/testing';
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from '@angular/common/http';
 import {of, Subject} from 'rxjs';
 import {ChatService} from './chat.service';
 import {RxStompService} from './rx-stomp.service';
@@ -36,11 +37,12 @@ describe('ChatService', () => {
     const authenticationServiceSpy = jasmine.createSpyObj('AuthenticationService', ['getLoggedInUser', 'getToken', 'logout'], { loggedInUser$: new Subject<any>() });
 
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
       providers: [
         ChatService,
         { provide: RxStompService, useValue: rxStompServiceSpy },
-        { provide: AuthenticationService, useValue: authenticationServiceSpy }
+        { provide: AuthenticationService, useValue: authenticationServiceSpy },
+        provideHttpClient(withXhr(), withInterceptorsFromDi()),
+        provideHttpClientTesting()
       ]
     });
 

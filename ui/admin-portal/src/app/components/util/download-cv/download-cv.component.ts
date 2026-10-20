@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {UntypedFormBuilder, UntypedFormGroup} from "@angular/forms";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {CandidateService, CvFormat, DownloadCVRequest} from "../../../services/candidate.service";
@@ -27,7 +27,9 @@ import {CandidateService, CvFormat, DownloadCVRequest} from "../../../services/c
 @Component({
   selector: 'app-download-cv',
   templateUrl: './download-cv.component.html',
-  styleUrls: ['./download-cv.component.scss']
+  styleUrls: ['./download-cv.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class DownloadCvComponent implements OnInit {
   error = null;

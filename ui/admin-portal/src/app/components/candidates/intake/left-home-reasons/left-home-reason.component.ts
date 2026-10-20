@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {enumKeysToEnumOptions, EnumOption, enumOptions} from '../../../../util/enum';
 import {LeftHomeReason} from '../../../../model/candidate';
 import {UntypedFormBuilder} from '@angular/forms';
@@ -24,7 +24,9 @@ import {IntakeComponentBase} from '../../../util/intake/IntakeComponentBase';
 @Component({
   selector: 'app-left-home-reason',
   templateUrl: './left-home-reason.component.html',
-  styleUrls: ['./left-home-reason.component.scss']
+  styleUrls: ['./left-home-reason.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class LeftHomeReasonComponent extends IntakeComponentBase implements OnInit {
   public leftHomeReasonOptions: EnumOption[] = enumOptions(LeftHomeReason);

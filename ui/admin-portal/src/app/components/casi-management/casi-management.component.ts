@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {User} from "../../model/user";
 import {AuthorizationService} from "../../services/authorization.service";
 import {AuthenticationService} from "../../services/authentication.service";
@@ -24,7 +24,9 @@ import {environment} from "../../../environments/environment";
 @Component({
   selector: 'app-casi-management',
   templateUrl: './casi-management.component.html',
-  styleUrls: ['./casi-management.component.scss']
+  styleUrls: ['./casi-management.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class CasiManagementComponent implements OnInit {
   loggedInUser: User;

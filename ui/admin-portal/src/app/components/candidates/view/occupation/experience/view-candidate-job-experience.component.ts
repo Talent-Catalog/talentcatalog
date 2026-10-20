@@ -21,7 +21,8 @@ import {
   OnChanges,
   OnInit,
   Output,
-  SimpleChanges
+  SimpleChanges,
+  ChangeDetectionStrategy
 } from '@angular/core';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {Candidate} from '../../../../../model/candidate';
@@ -45,7 +46,9 @@ import {SkillsService} from "../../../../../services/skills.service";
 @Component({
   selector: 'app-view-candidate-job-experience',
   templateUrl: './view-candidate-job-experience.component.html',
-  styleUrls: ['./view-candidate-job-experience.component.scss']
+  styleUrls: ['./view-candidate-job-experience.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class ViewCandidateJobExperienceComponent implements OnInit, OnChanges {
 

@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component} from '@angular/core';
+import {Component, ChangeDetectionStrategy} from '@angular/core';
 import {SavedSearchService} from "../../../services/saved-search.service";
 import {AuthorizationService} from "../../../services/authorization.service";
 import {AuthenticationService} from "../../../services/authentication.service";
@@ -27,7 +27,9 @@ import {ActivatedRoute} from "@angular/router";
 @Component({
   selector: 'app-list-home',
   templateUrl: './list-home.component.html',
-  styleUrls: ['./list-home.component.scss']
+  styleUrls: ['./list-home.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class ListHomeComponent extends HomeComponent {
 

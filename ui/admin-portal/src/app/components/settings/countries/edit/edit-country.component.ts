@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {UntypedFormBuilder, UntypedFormGroup, Validators} from '@angular/forms';
 import {Country} from "../../../../model/country";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
@@ -23,7 +23,9 @@ import {CountryService} from "../../../../services/country.service";
 @Component({
   selector: 'app-edit-country',
   templateUrl: './edit-country.component.html',
-  styleUrls: ['./edit-country.component.scss']
+  styleUrls: ['./edit-country.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class EditCountryComponent implements OnInit {
 

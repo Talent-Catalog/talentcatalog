@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {UntypedFormBuilder, UntypedFormGroup, Validators} from "@angular/forms";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {CandidateExam, Exam} from "../../../../../model/candidate";
@@ -28,7 +28,9 @@ import {generateYearArray} from "../../../../../util/year-helper";
 @Component({
   selector: 'app-create-candidate-exam',
   templateUrl: './create-candidate-exam.component.html',
-  styleUrls: ['./create-candidate-exam.component.scss']
+  styleUrls: ['./create-candidate-exam.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class CreateCandidateExamComponent implements OnInit {
   candidateCertification: CandidateExam;

@@ -1,4 +1,4 @@
-import {Component, Input} from '@angular/core';
+import {Component, Input, ChangeDetectionStrategy} from '@angular/core';
 import {Candidate} from "../../../../model/candidate";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {CandidateService} from "../../../../services/candidate.service";
@@ -7,7 +7,9 @@ import {EditCandidateAspirationsComponent} from "./edit/edit-candidate-aspiratio
 @Component({
   selector: 'app-view-candidate-aspirations',
   templateUrl: './view-candidate-aspirations.component.html',
-  styleUrl: './view-candidate-aspirations.component.scss'
+  styleUrl: './view-candidate-aspirations.component.scss',
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class ViewCandidateAspirationsComponent {
 

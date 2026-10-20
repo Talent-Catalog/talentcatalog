@@ -1,12 +1,14 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {IntelligenceComponent} from './intelligence.component';
 import {EnvService} from '../../services/env.service';
-import {Component, Input} from '@angular/core';
+import {Component, Input, ChangeDetectionStrategy} from '@angular/core';
 
 // Stub for <app-preset-embed>
 @Component({
   selector: 'app-preset-embed',
-  template: ''
+  template: '',
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 class MockPresetEmbedComponent {
   @Input() dashboardId!: string;

@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {
   CandidateOpportunity,
   CandidateOpportunityStage,
@@ -37,7 +37,9 @@ import {SearchHelpLinkRequest} from "../../../model/help-link";
 @Component({
   selector: 'app-edit-opp',
   templateUrl: './edit-opp.component.html',
-  styleUrls: ['./edit-opp.component.scss']
+  styleUrls: ['./edit-opp.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class EditOppComponent implements OnInit {
 

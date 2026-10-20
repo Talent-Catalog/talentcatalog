@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output, ChangeDetectionStrategy} from '@angular/core';
 import {MainSidePanelBase} from "../../util/split/MainSidePanelBase";
 import {JobChat} from "../../../model/chat";
 import {ChatService} from "../../../services/chat.service";
@@ -23,7 +23,9 @@ import {AuthorizationService} from "../../../services/authorization.service";
 @Component({
   selector: 'app-chats-with-posts',
   templateUrl: './chats-with-posts.component.html',
-  styleUrls: ['./chats-with-posts.component.scss']
+  styleUrls: ['./chats-with-posts.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class ChatsWithPostsComponent extends MainSidePanelBase implements OnInit {
   @Input() chats: JobChat[];

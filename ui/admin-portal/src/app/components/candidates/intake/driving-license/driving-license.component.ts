@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {EnumOption, enumOptions} from '../../../../util/enum';
 import {DrivingLicenseStatus, YesNo} from '../../../../model/candidate';
 import {UntypedFormBuilder} from '@angular/forms';
@@ -25,7 +25,9 @@ import {Country} from "../../../../model/country";
 @Component({
   selector: 'app-driving-license',
   templateUrl: './driving-license.component.html',
-  styleUrls: ['./driving-license.component.scss']
+  styleUrls: ['./driving-license.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class DrivingLicenseComponent extends IntakeComponentBase implements OnInit {
 

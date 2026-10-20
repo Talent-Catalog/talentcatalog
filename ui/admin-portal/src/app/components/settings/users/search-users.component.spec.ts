@@ -22,7 +22,8 @@ import {AuthenticationService} from "../../../services/authentication.service";
 import {NgbModal, NgbModalRef, NgbPaginationModule} from "@ng-bootstrap/ng-bootstrap";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {NgSelectModule} from "@ng-select/ng-select";
-import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {provideHttpClientTesting} from "@angular/common/http/testing";
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {of, throwError} from "rxjs";
 import {Role, User} from "../../../model/user";
 import {CreateUpdateUserComponent} from "./create-update-user/create-update-user.component";
@@ -55,12 +56,14 @@ describe('SearchUsersComponent', () => {
 
     TestBed.configureTestingModule({
       declarations: [SearchUsersComponent],
-      imports: [FormsModule,ReactiveFormsModule,NgSelectModule,NgbPaginationModule,HttpClientTestingModule],
+      imports: [FormsModule,ReactiveFormsModule,NgSelectModule,NgbPaginationModule],
       providers: [
         { provide: UserService, useValue: userServiceSpyObj },
         { provide: AuthorizationService, useValue: authorizeServiceSpyObj },
         { provide: AuthenticationService, useValue: authServiceSpyObj },
-        NgbModal
+        NgbModal,
+        provideHttpClient(withXhr(), withInterceptorsFromDi()),
+        provideHttpClientTesting()
       ]
     }).compileComponents();
 

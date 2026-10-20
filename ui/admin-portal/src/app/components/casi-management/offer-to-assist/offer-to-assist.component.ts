@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {UntypedFormBuilder, UntypedFormGroup} from "@angular/forms";
 import {CandidateAssistanceType, OfferToAssist} from "../../../model/offer-to-assist";
 import {OfferToAssistService} from "../../../services/offer-to-assist.service";
@@ -9,7 +9,9 @@ import {debounceTime, distinctUntilChanged} from "rxjs/operators";
 @Component({
   selector: 'app-offer-to-assist',
   templateUrl: './offer-to-assist.component.html',
-  styleUrls: ['./offer-to-assist.component.scss']
+  styleUrls: ['./offer-to-assist.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class OfferToAssistComponent implements OnInit {
   searchForm: UntypedFormGroup;

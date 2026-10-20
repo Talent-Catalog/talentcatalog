@@ -17,7 +17,8 @@ import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {ReactiveFormsModule, UntypedFormBuilder} from '@angular/forms';
 import {TravelDocumentComponent} from './travel-document.component';
 import {CandidateVisaCheckService} from '../../../../services/candidate-visa-check.service';
-import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {provideHttpClientTesting} from "@angular/common/http/testing";
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {AutosaveStatusComponent} from "../../../util/autosave-status/autosave-status.component";
 
@@ -27,14 +28,16 @@ describe('TravelDocumentComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule,ReactiveFormsModule, NgSelectModule],
+      imports: [ReactiveFormsModule, NgSelectModule],
       declarations: [TravelDocumentComponent,AutosaveStatusComponent],
       providers: [
         UntypedFormBuilder,
         {
           provide: CandidateVisaCheckService,
           useValue: jasmine.createSpyObj('CandidateVisaCheckService', ['someMethod'])
-        }
+        },
+        provideHttpClient(withXhr(), withInterceptorsFromDi()),
+        provideHttpClientTesting()
       ]
     }).compileComponents();
   });

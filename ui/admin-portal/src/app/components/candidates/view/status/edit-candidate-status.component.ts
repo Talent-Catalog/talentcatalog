@@ -14,14 +14,16 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component} from '@angular/core';
+import {Component, ChangeDetectionStrategy} from '@angular/core';
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {CandidateStatus, UpdateCandidateStatusInfo} from "../../../../model/candidate";
 
 @Component({
   selector: 'app-edit-candidate-status',
   templateUrl: './edit-candidate-status.component.html',
-  styleUrls: ['./edit-candidate-status.component.scss']
+  styleUrls: ['./edit-candidate-status.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class EditCandidateStatusComponent {
 

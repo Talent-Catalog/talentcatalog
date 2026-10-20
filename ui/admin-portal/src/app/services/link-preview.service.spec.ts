@@ -15,7 +15,8 @@
  */
 
 import {TestBed} from '@angular/core/testing';
-import {HttpClientTestingModule, HttpTestingController} from '@angular/common/http/testing';
+import {HttpTestingController, provideHttpClientTesting} from '@angular/common/http/testing';
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from '@angular/common/http';
 import {BuildLinkPreviewRequest, LinkPreviewService} from './link-preview.service';
 import {LinkPreview} from '../model/link-preview';
 import {environment} from '../../environments/environment';
@@ -26,8 +27,7 @@ describe('LinkPreviewService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
-      providers: [LinkPreviewService]
+      providers: [LinkPreviewService, provideHttpClient(withXhr(), withInterceptorsFromDi()), provideHttpClientTesting()]
     });
     service = TestBed.inject(LinkPreviewService);
     httpMock = TestBed.inject(HttpTestingController);

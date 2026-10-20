@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {Candidate, CandidateIntakeData} from "../../../../model/candidate";
 import {CandidateCitizenshipService} from "../../../../services/candidate-citizenship.service";
 import {Country} from "../../../../model/country";
@@ -22,7 +22,9 @@ import {Country} from "../../../../model/country";
 @Component({
   selector: 'app-citizenships',
   templateUrl: './citizenships.component.html',
-  styleUrls: ['./citizenships.component.scss']
+  styleUrls: ['./citizenships.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class CitizenshipsComponent implements OnInit {
   @Input() candidate: Candidate;

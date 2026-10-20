@@ -23,7 +23,8 @@ import {
 import {
   CandidateOppsComponent
 } from "../../../../candidate-opp/candidate-opps/candidate-opps.component";
-import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {provideHttpClientTesting} from "@angular/common/http/testing";
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {NgSelectModule} from "@ng-select/ng-select";
 
@@ -33,7 +34,8 @@ describe('CandidateJobsTabComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule,FormsModule,ReactiveFormsModule, NgSelectModule],
+      imports: [FormsModule,ReactiveFormsModule, NgSelectModule],
+      providers: [provideHttpClient(withXhr(), withInterceptorsFromDi()), provideHttpClientTesting()],
       declarations: [CandidateJobsTabComponent,ViewCandidateJobsComponent, CandidateOppsComponent]
     })
     .compileComponents();

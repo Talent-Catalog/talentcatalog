@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {CandidateAttachment} from "../../../../../model/candidate-attachment";
 import {UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators} from "@angular/forms";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
@@ -26,7 +26,9 @@ import {
 @Component({
   selector: 'app-edit-candidate-attachment',
   templateUrl: './edit-candidate-attachment.component.html',
-  styleUrls: ['./edit-candidate-attachment.component.scss']
+  styleUrls: ['./edit-candidate-attachment.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class EditCandidateAttachmentComponent implements OnInit {
 

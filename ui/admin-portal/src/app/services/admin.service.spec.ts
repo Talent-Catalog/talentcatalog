@@ -15,11 +15,11 @@
  */
 
 import {TestBed} from '@angular/core/testing';
-import {HttpClientTestingModule, HttpTestingController} from '@angular/common/http/testing';
+import {HttpTestingController, provideHttpClientTesting} from '@angular/common/http/testing';
 import {AdminService} from './admin.service';
 import {environment} from '../../environments/environment';
 import {of} from "rxjs";
-import {HttpClient} from "@angular/common/http";
+import {HttpClient, provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 
 describe('AdminService', () => {
   let service: AdminService;
@@ -28,8 +28,7 @@ describe('AdminService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
-      providers: [AdminService]
+      providers: [AdminService, provideHttpClient(withXhr(), withInterceptorsFromDi()), provideHttpClientTesting()]
     });
 
     service = TestBed.inject(AdminService);

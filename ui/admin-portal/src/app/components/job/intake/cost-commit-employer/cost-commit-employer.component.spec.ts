@@ -19,7 +19,8 @@ import {ComponentFixture, TestBed, waitForAsync} from "@angular/core/testing";
 import {ReactiveFormsModule} from "@angular/forms";
 import {AutosaveStatusComponent} from "../../../util/autosave-status/autosave-status.component";
 import {NgxWigModule} from "ngx-wig";
-import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {provideHttpClientTesting} from "@angular/common/http/testing";
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {TranslateModule} from "@ngx-translate/core";
 
 describe('CostCommitEmployerComponent', () => {
@@ -29,7 +30,8 @@ describe('CostCommitEmployerComponent', () => {
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ CostCommitEmployerComponent,AutosaveStatusComponent ],
-      imports: [ ReactiveFormsModule,NgxWigModule,HttpClientTestingModule,TranslateModule.forRoot() ],
+      imports: [ ReactiveFormsModule,NgxWigModule,TranslateModule.forRoot() ],
+      providers: [provideHttpClient(withXhr(), withInterceptorsFromDi()), provideHttpClientTesting()],
     })
     .compileComponents();
   }));

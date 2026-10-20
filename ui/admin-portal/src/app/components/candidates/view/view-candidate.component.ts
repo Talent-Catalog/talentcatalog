@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, OnDestroy, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {
   Candidate,
   CandidateStatus,
@@ -60,7 +60,9 @@ import {EraseCandidateDataComponent} from "./erase/erase-candidate-data.componen
 @Component({
   selector: 'app-view-candidate',
   templateUrl: './view-candidate.component.html',
-  styleUrls: ['./view-candidate.component.scss']
+  styleUrls: ['./view-candidate.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class ViewCandidateComponent extends MainSidePanelBase implements OnInit, OnDestroy {
 

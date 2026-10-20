@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {HelpLink, SearchHelpLinkRequest} from "../../model/help-link";
 import {HelpLinkService} from "../../services/help-link.service";
 
@@ -25,7 +25,9 @@ import {HelpLinkService} from "../../services/help-link.service";
 @Component({
   selector: 'app-help',
   templateUrl: './help.component.html',
-  styleUrls: ['./help.component.scss']
+  styleUrls: ['./help.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class HelpComponent implements OnInit {
   @Input() request: SearchHelpLinkRequest;

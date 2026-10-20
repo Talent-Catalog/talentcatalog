@@ -27,7 +27,7 @@
       <div class="mb-3 d-flex flex-column">
         <h4>Full Intake</h4>
         <p *ngIf="fullIntakeComplete" class="mb-1 intake-complete">
-          Completed on {{candidate?.fullIntakeCompletedDate | date}} by {{fullIntakeCompletedBy}}
+          Completed on {{$safeNavigationMigration(candidate?.fullIntakeCompletedDate) | date}} by {{fullIntakeCompletedBy}}
         </p>
       </div>
       <div class="d-flex">

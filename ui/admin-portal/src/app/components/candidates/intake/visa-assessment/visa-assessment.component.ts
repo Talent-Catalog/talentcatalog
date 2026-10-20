@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {IntakeComponentBase} from "../../../util/intake/IntakeComponentBase";
 import {UntypedFormBuilder} from "@angular/forms";
 import {CandidateService} from "../../../../services/candidate.service";
@@ -24,7 +24,9 @@ import {EnumOption, enumOptions} from "../../../../util/enum";
 @Component({
   selector: 'app-visa-assessment',
   templateUrl: './visa-assessment.component.html',
-  styleUrls: ['./visa-assessment.component.scss']
+  styleUrls: ['./visa-assessment.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class VisaAssessmentComponent extends IntakeComponentBase implements OnInit {
 

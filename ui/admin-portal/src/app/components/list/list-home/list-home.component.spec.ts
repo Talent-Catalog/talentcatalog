@@ -20,7 +20,8 @@ import {AuthorizationService} from "../../../services/authorization.service";
 import {AuthenticationService} from "../../../services/authentication.service";
 import {NgbActiveModal, NgbNavModule, NgbPaginationModule} from "@ng-bootstrap/ng-bootstrap";
 import {SalesforceService} from "../../../services/salesforce.service";
-import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {provideHttpClientTesting} from "@angular/common/http/testing";
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {MockPartner} from "../../../MockData/MockPartner";
 import {MockUser} from "../../../MockData/MockUser";
 import {SavedSearchSubtype, SavedSearchType} from "../../../model/saved-search";
@@ -55,7 +56,7 @@ describe('ListHomeComponent', () => {
 
     await TestBed.configureTestingModule({
       declarations: [ListHomeComponent,BrowseCandidateSourcesComponent,RouterLinkStubDirective],
-      imports: [HttpClientTestingModule,NgbNavModule,RouterTestingModule,NgbPaginationModule,ReactiveFormsModule],
+      imports: [NgbNavModule,RouterTestingModule,NgbPaginationModule,ReactiveFormsModule],
       providers: [
         UntypedFormBuilder,
         DatePipe,
@@ -65,7 +66,9 @@ describe('ListHomeComponent', () => {
         { provide: AuthorizationService, useValue: authorizationServiceSpyObj },
         { provide: AuthenticationService, useValue: authenticationServiceSpyObj },
         { provide: NgbActiveModal, useValue: activeModalSpyObj },
-        { provide: SalesforceService, useValue: salesforceServiceSpyObj }
+        { provide: SalesforceService, useValue: salesforceServiceSpyObj },
+        provideHttpClient(withXhr(), withInterceptorsFromDi()),
+        provideHttpClientTesting()
       ]
     }).compileComponents();
 

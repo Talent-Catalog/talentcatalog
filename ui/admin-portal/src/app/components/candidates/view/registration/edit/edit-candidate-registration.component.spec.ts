@@ -16,7 +16,8 @@
 import {EditCandidateRegistrationComponent} from "./edit-candidate-registration.component";
 import {ComponentFixture, TestBed} from "@angular/core/testing";
 import {CandidateService} from "../../../../../services/candidate.service";
-import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {provideHttpClientTesting} from "@angular/common/http/testing";
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {FormsModule, ReactiveFormsModule, UntypedFormBuilder} from "@angular/forms";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {NgxWigModule} from "ngx-wig";
@@ -39,12 +40,14 @@ describe('EditCandidateRegistrationComponent', () => {
 
     await TestBed.configureTestingModule({
       declarations: [EditCandidateRegistrationComponent],
-      imports: [HttpClientTestingModule,FormsModule,ReactiveFormsModule, NgSelectModule,NgxWigModule],
+      imports: [FormsModule,ReactiveFormsModule, NgSelectModule,NgxWigModule],
       providers: [
         UntypedFormBuilder,
         { provide: NgbActiveModal, useValue: modalServiceSpy },
         { provide: CandidateService, useValue: mockCandidateService },
-        { provide: CountryService, useValue: {} }
+        { provide: CountryService, useValue: {} },
+        provideHttpClient(withXhr(), withInterceptorsFromDi()),
+        provideHttpClientTesting()
       ]
     }).compileComponents();
     modalService = TestBed.inject(NgbActiveModal) as jasmine.SpyObj<NgbActiveModal>;

@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {Candidate, hasIeltsExam} from '../../../../model/candidate';
 import {CandidateLanguage} from '../../../../model/candidate-language';
@@ -27,7 +27,9 @@ import {CandidateService} from "../../../../services/candidate.service";
 @Component({
   selector: 'app-view-candidate-language',
   templateUrl: './view-candidate-language.component.html',
-  styleUrls: ['./view-candidate-language.component.scss']
+  styleUrls: ['./view-candidate-language.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class ViewCandidateLanguageComponent implements OnInit {
 

@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild} from '@angular/core';
+import {Component, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild, ChangeDetectionStrategy} from '@angular/core';
 import {Candidate} from "../../../model/candidate";
 import {SearchResults} from "../../../model/search-results";
 import {DtoType, FetchCandidatesWithChatRequest} from "../../../model/base";
@@ -40,7 +40,9 @@ import {InputComponent} from "../../../shared/components/input/input.component";
 @Component({
   selector: 'app-show-candidates-with-chat',
   templateUrl: './show-candidates-with-chat.component.html',
-  styleUrls: ['./show-candidates-with-chat.component.scss']
+  styleUrls: ['./show-candidates-with-chat.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class ShowCandidatesWithChatComponent implements OnInit, OnDestroy {
   // Using takeUntil(destroy$) ensures all form-related streams terminate when the component is destroyed, allowing the instance to be garbage-collected and stopping further logs.

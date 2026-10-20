@@ -21,7 +21,8 @@ import {BrandingInfo, BrandingService} from "../../services/branding.service";
 import {AuthenticationService} from "../../services/authentication.service";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {NgbCollapseModule, NgbTypeaheadModule} from "@ng-bootstrap/ng-bootstrap";
-import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {provideHttpClientTesting} from "@angular/common/http/testing";
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {of, throwError} from "rxjs";
 import {Candidate} from "../../model/candidate";
 import {MockCandidate} from "../../MockData/MockCandidate";
@@ -60,12 +61,14 @@ describe('HeaderComponent', () => {
 
     await TestBed.configureTestingModule({
       declarations: [HeaderComponent,RouterLinkStubDirective,CandidateNameNumSearchComponent, CreatedByComponent],
-      imports: [FormsModule, NgbTypeaheadModule,NgbCollapseModule, ReactiveFormsModule, HttpClientTestingModule, RouterTestingModule],
+      imports: [FormsModule, NgbTypeaheadModule,NgbCollapseModule, ReactiveFormsModule, RouterTestingModule],
       providers: [
         { provide: AuthorizationService, useValue: authServiceSpyObj },
         { provide: CandidateService, useValue: candidateServiceSpyObj },
         { provide: BrandingService, useValue: brandingServiceSpyObj },
-        { provide: AuthenticationService, useValue: authenticationServiceSpyObj }
+        { provide: AuthenticationService, useValue: authenticationServiceSpyObj },
+        provideHttpClient(withXhr(), withInterceptorsFromDi()),
+        provideHttpClientTesting()
       ],
       schemas: [NO_ERRORS_SCHEMA]  // To ignore subcomponent and directive errors
     }).compileComponents();

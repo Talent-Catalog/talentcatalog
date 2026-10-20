@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {UntypedFormBuilder, UntypedFormGroup} from "@angular/forms";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {
@@ -27,7 +27,9 @@ import {Candidate} from "../../../model/candidate";
 @Component({
   selector: 'app-old-intake-input',
   templateUrl: './old-intake-input.component.html',
-  styleUrls: ['./old-intake-input.component.scss']
+  styleUrls: ['./old-intake-input.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class OldIntakeInputComponent implements OnInit {
 

@@ -20,7 +20,8 @@ import {By} from "@angular/platform-browser";
 import {CUSTOM_ELEMENTS_SCHEMA, DebugElement} from "@angular/core";
 import {CandidateService} from "../../../../services/candidate.service";
 import {NgbNavModule} from "@ng-bootstrap/ng-bootstrap";
-import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {provideHttpClientTesting} from "@angular/common/http/testing";
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 
 describe('ViewCandidateSurveyComponent', () => {
   let component: ViewCandidateSurveyComponent;
@@ -34,9 +35,11 @@ describe('ViewCandidateSurveyComponent', () => {
     await TestBed.configureTestingModule({
       declarations: [ ViewCandidateSurveyComponent ],
       providers: [
-        { provide: CandidateService, userValue: candidateServiceSpy }
+        { provide: CandidateService, userValue: candidateServiceSpy },
+        provideHttpClient(withXhr(), withInterceptorsFromDi()),
+        provideHttpClientTesting()
       ],
-      imports: [NgbNavModule, HttpClientTestingModule],
+      imports: [NgbNavModule],
       schemas: [CUSTOM_ELEMENTS_SCHEMA]
     }).compileComponents();
 

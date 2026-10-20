@@ -13,7 +13,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {provideHttpClientTesting} from "@angular/common/http/testing";
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {FormsModule, ReactiveFormsModule, UntypedFormBuilder} from "@angular/forms";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {CreateCandidateEducationComponent} from "./create-candidate-education.component";
@@ -44,13 +45,15 @@ describe('CreateCandidateEducationComponent', () => {
 
     await TestBed.configureTestingModule({
       declarations: [CreateCandidateEducationComponent],
-      imports: [HttpClientTestingModule,FormsModule,ReactiveFormsModule, NgSelectModule],
+      imports: [FormsModule,ReactiveFormsModule, NgSelectModule],
       providers: [
         { provide: CandidateEducationService, useValue: candidateEducationServiceSpy },
         { provide: CountryService, useValue: countryServiceSpy },
         { provide: EducationMajorService, useValue: educationMajorServiceSpy },
         { provide: NgbActiveModal, useValue: activeModalSpy },
-        UntypedFormBuilder
+        UntypedFormBuilder,
+        provideHttpClient(withXhr(), withInterceptorsFromDi()),
+        provideHttpClientTesting()
       ]
     })
     .compileComponents();

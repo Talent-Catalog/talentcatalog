@@ -35,7 +35,7 @@
               (selectItem)="selected($event.item.id)"
               [ngbTypeahead]="doSavedSearchSearch"
               [resultTemplate]="rt"
-              [value]="this.selectedBaseSearch?.name"
+              [value]="$safeNavigationMigration(this.selectedBaseSearch?.name)"
               [inputFormatter]="renderSavedSearchRow"
               [readonly]="readonly"
               placeholder="Type the name of a base search..."

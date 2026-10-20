@@ -19,7 +19,8 @@ import {SavedListService} from "../../../services/saved-list.service";
 import {NgbActiveModal, NgbTypeaheadModule} from "@ng-bootstrap/ng-bootstrap";
 import {SalesforceService} from "../../../services/salesforce.service";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
-import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {provideHttpClientTesting} from "@angular/common/http/testing";
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {MockSavedList} from "../../../MockData/MockSavedList";
 import {of, throwError} from "rxjs";
 import {JoblinkComponent} from "../../util/joblink/joblink.component";
@@ -39,11 +40,13 @@ describe('CreateUpdateListComponent', () => {
 
     await TestBed.configureTestingModule({
       declarations: [CreateUpdateListComponent,JoblinkComponent],
-      imports: [HttpClientTestingModule,FormsModule,ReactiveFormsModule,NgbTypeaheadModule],
+      imports: [FormsModule,ReactiveFormsModule,NgbTypeaheadModule],
       providers: [
         { provide: SavedListService, useValue: savedListServiceSpyObj },
         { provide: NgbActiveModal, useValue: activeModalSpyObj },
-        { provide: SalesforceService, useValue: salesforceServiceSpyObj }
+        { provide: SalesforceService, useValue: salesforceServiceSpyObj },
+        provideHttpClient(withXhr(), withInterceptorsFromDi()),
+        provideHttpClientTesting()
       ]
     }).compileComponents();
 

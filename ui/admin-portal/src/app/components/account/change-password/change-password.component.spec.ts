@@ -15,7 +15,8 @@
  */
 
 import {ComponentFixture, TestBed} from '@angular/core/testing';
-import {HttpClientTestingModule} from '@angular/common/http/testing';
+import {provideHttpClientTesting} from '@angular/common/http/testing';
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from '@angular/common/http';
 import {ChangePasswordComponent} from './change-password.component';
 import {ReactiveFormsModule, UntypedFormBuilder} from '@angular/forms';
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
@@ -36,7 +37,6 @@ describe('ChangePasswordComponent', () => {
 
     await TestBed.configureTestingModule({
       imports: [
-        HttpClientTestingModule,
         ReactiveFormsModule
       ],
       declarations: [
@@ -45,7 +45,9 @@ describe('ChangePasswordComponent', () => {
       providers: [
         UntypedFormBuilder,
         { provide: UserService, useValue: userServiceSpy },
-        { provide: NgbActiveModal, useValue: activeModalSpy }
+        { provide: NgbActiveModal, useValue: activeModalSpy },
+        provideHttpClient(withXhr(), withInterceptorsFromDi()),
+        provideHttpClientTesting()
       ]
     }).compileComponents();
 

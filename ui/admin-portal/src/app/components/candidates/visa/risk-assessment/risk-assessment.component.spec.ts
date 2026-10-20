@@ -18,7 +18,8 @@ import {ReactiveFormsModule, UntypedFormBuilder} from '@angular/forms';
 import {RiskAssessmentComponent} from './risk-assessment.component';
 import {CandidateVisaCheckService} from '../../../../services/candidate-visa-check.service';
 import {AutosaveStatusComponent} from "../../../util/autosave-status/autosave-status.component";
-import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {provideHttpClientTesting} from "@angular/common/http/testing";
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {NgSelectModule} from "@ng-select/ng-select";
 
 describe('RiskAssessmentComponent', () => {
@@ -27,14 +28,16 @@ describe('RiskAssessmentComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule,ReactiveFormsModule, NgSelectModule],
+      imports: [ReactiveFormsModule, NgSelectModule],
       declarations: [RiskAssessmentComponent,AutosaveStatusComponent],
       providers: [
         UntypedFormBuilder,
         {
           provide: CandidateVisaCheckService,
           useValue: jasmine.createSpyObj('CandidateVisaCheckService', ['someMethod'])
-        }
+        },
+        provideHttpClient(withXhr(), withInterceptorsFromDi()),
+        provideHttpClientTesting()
       ]
     }).compileComponents();
   });

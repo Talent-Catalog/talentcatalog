@@ -14,12 +14,14 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnInit, ChangeDetectionStrategy} from '@angular/core';
 
 @Component({
   selector: 'app-autosave-status',
   templateUrl: './autosave-status.component.html',
-  styleUrls: ['./autosave-status.component.scss']
+  styleUrls: ['./autosave-status.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class AutosaveStatusComponent implements OnInit {
   @Input() saving: boolean;

@@ -586,7 +586,7 @@ describe('DefineSearchComponent', () => {
     component.savedSearch = {id: 7} as any;
     spyOn(component, 'loadSavedSearch');
 
-    component.ngOnChanges({savedSearch: new SimpleChange({id: 1}, component.savedSearch, false)});
+    component.ngOnChanges({savedSearch: new SimpleChange({id: 1} as any, component.savedSearch, false)});
 
     expect(component.savedSearchId).toBe(7);
     expect(component.loadSavedSearch).toHaveBeenCalledWith(7);

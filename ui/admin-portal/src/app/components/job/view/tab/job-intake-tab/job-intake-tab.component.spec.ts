@@ -29,7 +29,7 @@ import {MockPartner} from "../../../../../MockData/MockPartner";
 import {AutosaveStatusComponent} from "../../../../util/autosave-status/autosave-status.component";
 import {JobOppIntake} from "../../../../../model/job-opp-intake";
 import {MockJobOppIntake} from "../../../../../MockData/MockJobOppIntake";
-import {HttpClientModule} from "@angular/common/http";
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {TranslateModule} from "@ngx-translate/core";
 import {CUSTOM_ELEMENTS_SCHEMA} from "@angular/core";
 
@@ -43,12 +43,13 @@ describe('JobIntakeTabComponent', () => {
     const jobServiceObj = jasmine.createSpyObj('JobService', ['updateIntakeData', 'get']);
     await TestBed.configureTestingModule({
       declarations: [ JobIntakeTabComponent,CostCommitEmployerComponent,AutosaveStatusComponent],
-      imports:[HttpClientModule,NgbAccordionModule,NgbModule,NgxWigModule,FormsModule,
+      imports:[NgbAccordionModule,NgbModule,NgxWigModule,FormsModule,
         ReactiveFormsModule,TranslateModule.forRoot()],
       providers: [
         { provide: AuthenticationService, useValue: authServiceSpyObj },
         { provide: JobService, useValue: jobServiceObj  },
-        UntypedFormBuilder
+        UntypedFormBuilder,
+        provideHttpClient(withXhr(), withInterceptorsFromDi())
       ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA]
     })

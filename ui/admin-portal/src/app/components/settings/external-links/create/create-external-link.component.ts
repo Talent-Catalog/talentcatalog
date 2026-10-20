@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {UntypedFormBuilder, UntypedFormGroup, Validators} from "@angular/forms";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {SavedListService} from "../../../../services/saved-list.service";
@@ -24,7 +24,9 @@ import {environment} from "../../../../../environments/environment";
 @Component({
   selector: 'app-create-external-link',
   templateUrl: './create-external-link.component.html',
-  styleUrls: ['./create-external-link.component.scss']
+  styleUrls: ['./create-external-link.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class CreateExternalLinkComponent implements OnInit {
 

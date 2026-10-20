@@ -21,14 +21,17 @@ import {
   OnChanges,
   OnInit,
   Output,
-  SimpleChanges
+  SimpleChanges,
+  ChangeDetectionStrategy
 } from '@angular/core';
 import {Candidate} from "../../../../../model/candidate";
 
 @Component({
   selector: 'app-candidate-history-tab',
   templateUrl: './candidate-history-tab.component.html',
-  styleUrls: ['./candidate-history-tab.component.scss']
+  styleUrls: ['./candidate-history-tab.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class CandidateHistoryTabComponent implements OnInit, OnChanges {
 

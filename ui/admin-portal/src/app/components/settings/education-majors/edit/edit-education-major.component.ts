@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {UntypedFormBuilder, UntypedFormGroup, Validators} from '@angular/forms';
 import {EducationMajor} from "../../../../model/education-major";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
@@ -23,7 +23,9 @@ import {EducationMajorService} from "../../../../services/education-major.servic
 @Component({
   selector: 'app-edit-education-major',
   templateUrl: './edit-education-major.component.html',
-  styleUrls: ['./edit-education-major.component.scss']
+  styleUrls: ['./edit-education-major.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class EditEducationMajorComponent implements OnInit {
 

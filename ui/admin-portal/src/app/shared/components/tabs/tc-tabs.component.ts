@@ -8,7 +8,8 @@ import {
   Output,
   QueryList,
   SimpleChanges,
-  TemplateRef
+  TemplateRef,
+  ChangeDetectionStrategy
 } from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {TcTabComponent} from "./tab/tc-tab.component";
@@ -60,7 +61,7 @@ export interface Tab {
   selector: 'tc-tabs',
   templateUrl: './tc-tabs.component.html',
   styleUrls: ['./tc-tabs.component.scss'],
-  standalone: true,
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [CommonModule]
 })
 export class TcTabsComponent implements AfterContentInit, OnChanges {

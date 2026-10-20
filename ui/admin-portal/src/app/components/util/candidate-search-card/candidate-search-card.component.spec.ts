@@ -25,7 +25,8 @@ import {MockSavedSearch} from "../../../MockData/MockSavedSearch";
 import {mockCandidateOpportunity} from "../../../MockData/MockCandidateOpportunity";
 import {LocalStorageService} from "../../../services/local-storage.service";
 import {CandidateService} from "../../../services/candidate.service";
-import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {provideHttpClientTesting} from "@angular/common/http/testing";
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 
 describe('CandidateSearchCardComponent', () => {
   let component: CandidateSearchCardComponent;
@@ -46,9 +47,11 @@ describe('CandidateSearchCardComponent', () => {
       providers: [
         { provide: LocalStorageService, useValue: localStorageSpy },
         { provide: AuthorizationService, useValue: authSpy },
-        { provide: CandidateService, userValue: candidateServiceSpy }
+        { provide: CandidateService, userValue: candidateServiceSpy },
+        provideHttpClient(withXhr(), withInterceptorsFromDi()),
+        provideHttpClientTesting()
       ],
-      imports: [NgbNavModule, HttpClientTestingModule],
+      imports: [NgbNavModule],
       schemas: [CUSTOM_ELEMENTS_SCHEMA]
     }).compileComponents();
 
@@ -102,7 +105,7 @@ describe('CandidateSearchCardComponent', () => {
 
   it('should determine if submission list', () => {
     component.candidateSource = { sfJobOpp: {} } as CandidateSource;
-    spyOn(component, 'isList' as never).and.returnValue(true as never);
+    spyOnProperty(component, 'isList', 'get').and.returnValue(true);
     expect(component.isSubmissionList()).toBeTrue();
   });
 

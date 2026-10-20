@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {UntypedFormBuilder, UntypedFormGroup, Validators} from "@angular/forms";
 import {UserService} from "../../../services/user.service";
 import {ActivatedRoute, Router} from "@angular/router";
@@ -23,7 +23,9 @@ import {environment} from "../../../../environments/environment";
 @Component({
   selector: 'app-user-change-password',
   templateUrl: './user-change-password.component.html',
-  styleUrls: ['./user-change-password.component.scss']
+  styleUrls: ['./user-change-password.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class UserChangePasswordComponent implements OnInit {
 

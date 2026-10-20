@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {CandidateLanguage} from "../../../../../model/candidate-language";
 import {UntypedFormBuilder, UntypedFormGroup, Validators} from "@angular/forms";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
@@ -29,7 +29,9 @@ import {LanguageLevelService} from "../../../../../services/language-level.servi
 @Component({
   selector: 'app-create-candidate-language',
   templateUrl: './create-candidate-language.component.html',
-  styleUrls: ['./create-candidate-language.component.scss']
+  styleUrls: ['./create-candidate-language.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class CreateCandidateLanguageComponent implements OnInit {
 

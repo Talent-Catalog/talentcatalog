@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {UntypedFormBuilder} from "@angular/forms";
 import {CandidateDependant,} from "../../../../../model/candidate";
 import {AutoSaveComponentBase} from "../../../../util/autosave/AutoSaveComponentBase";
@@ -30,7 +30,9 @@ import {AuthorizationService} from "../../../../../services/authorization.servic
 @Component({
   selector: 'app-relocating-dependants',
   templateUrl: './relocating-dependants.component.html',
-  styleUrls: ['./relocating-dependants.component.scss']
+  styleUrls: ['./relocating-dependants.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class RelocatingDependantsComponent extends AutoSaveComponentBase implements OnInit {
 

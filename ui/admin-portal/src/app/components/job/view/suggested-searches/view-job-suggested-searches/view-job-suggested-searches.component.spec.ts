@@ -17,7 +17,8 @@
 import {ComponentFixture, TestBed, waitForAsync} from '@angular/core/testing';
 import {NgbModal, NgbModalRef} from '@ng-bootstrap/ng-bootstrap';
 import {InputTextComponent} from '../../../../util/input/input-text/input-text.component';
-import {HttpClientTestingModule} from '@angular/common/http/testing';
+import {provideHttpClientTesting} from '@angular/common/http/testing';
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from '@angular/common/http';
 import {ViewJobSuggestedSearchesComponent} from './view-job-suggested-searches.component';
 import {JobService} from '../../../../../services/job.service';
 import {SavedSearch} from "../../../../../model/saved-search";
@@ -39,12 +40,13 @@ describe('ViewJobSuggestedSearchesComponent', () => {
     const modalServiceSpy = jasmine.createSpyObj('NgbModal', ['open']);
      TestBed.configureTestingModule({
       declarations: [ViewJobSuggestedSearchesComponent,RouterLinkStubDirective ,InputTextComponent],
-      imports: [HttpClientTestingModule],
       providers: [
         { provide: JobService, useValue: jobServiceSpy },
         { provide: NgbModal, useValue: modalServiceSpy },
         { provide: ActivatedRoute, useValue: { queryParams: of({}) } },
         { provide: Router, useValue: { navigateByUrl: jasmine.createSpy('navigateByUrl') } },
+        provideHttpClient(withXhr(), withInterceptorsFromDi()),
+        provideHttpClientTesting(),
       ]
     }).compileComponents();
 

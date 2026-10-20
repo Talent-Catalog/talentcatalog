@@ -25,7 +25,8 @@ import {AuthorizationService} from "../../../services/authorization.service";
 import {
   ShowCandidatesWithChatComponent
 } from "../show-candidates-with-chat/show-candidates-with-chat.component";
-import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {provideHttpClientTesting} from "@angular/common/http/testing";
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {ReactiveFormsModule, UntypedFormBuilder} from "@angular/forms";
 import {SortedByComponent} from "../../util/sort/sorted-by.component";
 import {NgbPagination} from "@ng-bootstrap/ng-bootstrap";
@@ -55,11 +56,13 @@ describe('CandidatesWithChatComponent', () => {
     await TestBed.configureTestingModule({
       declarations: [CandidatesWithChatComponent, ShowCandidatesWithChatComponent,
         SortedByComponent, ViewChatPostsComponent, MockViewPostComponent],
-      imports: [HttpClientTestingModule, ReactiveFormsModule, NgbPagination],
+      imports: [ReactiveFormsModule, NgbPagination],
       providers: [
         { provide: ChatService, useValue: chatService },
         { provide: AuthorizationService, useValue: authorizationService },
-        { provide: UntypedFormBuilder }
+        { provide: UntypedFormBuilder },
+        provideHttpClient(withXhr(), withInterceptorsFromDi()),
+        provideHttpClientTesting()
       ]
     })
     .compileComponents();
@@ -125,6 +128,7 @@ describe('CandidatesWithChatComponent', () => {
   @Component({
     selector: "app-view-post",
     template: "",
+    standalone: false
   })
   class MockViewPostComponent {
     @Input() post: ChatPost;

@@ -30,7 +30,7 @@
   </tc-card-header>
 
   <div class="card-body">
-    <p [innerHtml]="candidate?.mediaWillingness"
+    <p [innerHtml]="$safeNavigationMigration(candidate?.mediaWillingness)"
        appHighlightSearch>
     </p>
   </div>

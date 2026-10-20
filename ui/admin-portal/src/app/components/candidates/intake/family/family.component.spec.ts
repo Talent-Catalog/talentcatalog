@@ -21,7 +21,8 @@ import {YesNo} from '../../../../model/candidate';
 import {NO_ERRORS_SCHEMA} from '@angular/core';
 import {CandidateService} from '../../../../services/candidate.service';
 import {By} from '@angular/platform-browser';
-import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {provideHttpClientTesting} from "@angular/common/http/testing";
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {NgSelectModule} from "@ng-select/ng-select";
 
 describe('FamilyComponent', () => {
@@ -34,9 +35,11 @@ describe('FamilyComponent', () => {
 
     await TestBed.configureTestingModule({
       declarations: [FamilyComponent],
-      imports: [HttpClientTestingModule,NgSelectModule,FormsModule,ReactiveFormsModule],
+      imports: [NgSelectModule,FormsModule,ReactiveFormsModule],
       providers: [
-        { provide: CandidateService, useValue: candidateServiceSpy }
+        { provide: CandidateService, useValue: candidateServiceSpy },
+        provideHttpClient(withXhr(), withInterceptorsFromDi()),
+        provideHttpClientTesting()
       ],
       schemas: [NO_ERRORS_SCHEMA]
     })

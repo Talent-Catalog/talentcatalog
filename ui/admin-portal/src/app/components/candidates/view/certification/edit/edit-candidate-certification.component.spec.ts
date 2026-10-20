@@ -22,7 +22,8 @@ import {
   CandidateCertificationService
 } from "../../../../../services/candidate-certification.service";
 import {DatePickerComponent} from "../../../../util/date-picker/date-picker.component";
-import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {provideHttpClientTesting} from "@angular/common/http/testing";
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {of, throwError} from "rxjs";
@@ -42,11 +43,13 @@ describe('EditCandidateCertificationComponent', () => {
 
     TestBed.configureTestingModule({
       declarations: [EditCandidateCertificationComponent, DatePickerComponent],
-      imports: [HttpClientTestingModule,FormsModule,ReactiveFormsModule, NgSelectModule, NgbDatepickerModule],
+      imports: [FormsModule,ReactiveFormsModule, NgSelectModule, NgbDatepickerModule],
       providers: [
         { provide: NgbActiveModal, useValue: activeModalMock },
         { provide: CandidateCertificationService, useValue: candidateCertificationSpy },
-        { provide: CountryService, useValue: countrySpy }
+        { provide: CountryService, useValue: countrySpy },
+        provideHttpClient(withXhr(), withInterceptorsFromDi()),
+        provideHttpClientTesting()
       ]
     }).compileComponents();
 

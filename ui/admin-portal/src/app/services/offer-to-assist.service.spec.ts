@@ -4,7 +4,8 @@ import {OfferToAssistService} from './offer-to-assist.service';
 import {SearchResults} from "../model/search-results";
 import {environment} from "../../environments/environment";
 import {CandidateAssistanceType, OfferToAssist} from "../model/offer-to-assist";
-import {HttpClientTestingModule, HttpTestingController} from "@angular/common/http/testing";
+import {HttpTestingController, provideHttpClientTesting} from "@angular/common/http/testing";
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {MockPartner} from "../MockData/MockPartner";
 
 describe('OfferToAssistService', () => {
@@ -13,8 +14,7 @@ describe('OfferToAssistService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
-      providers: [OfferToAssistService]
+      providers: [OfferToAssistService, provideHttpClient(withXhr(), withInterceptorsFromDi()), provideHttpClientTesting()]
     });
     service = TestBed.inject(OfferToAssistService);
     httpMock = TestBed.inject(HttpTestingController);

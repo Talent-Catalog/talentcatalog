@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, Input} from '@angular/core';
+import {Component, Input, ChangeDetectionStrategy} from '@angular/core';
 import {CandidateJobExperience} from '../../../../../../model/candidate-job-experience';
 
 /**
@@ -29,7 +29,9 @@ import {CandidateJobExperience} from '../../../../../../model/candidate-job-expe
 @Component({
   selector: 'app-candidate-job-experience',
   templateUrl: './candidate-job-experience.component.html',
-  styleUrls: ['./candidate-job-experience.component.scss']
+  styleUrls: ['./candidate-job-experience.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class CandidateJobExperienceComponent {
 

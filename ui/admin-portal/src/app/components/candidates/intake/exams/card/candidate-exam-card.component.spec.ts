@@ -21,7 +21,8 @@ import {NO_ERRORS_SCHEMA} from '@angular/core';
 import {CandidateExamService} from '../../../../../services/candidate-exam.service';
 import {of, throwError} from 'rxjs';
 import {By} from '@angular/platform-browser';
-import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {provideHttpClientTesting} from "@angular/common/http/testing";
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {AutosaveStatusComponent} from "../../../../util/autosave-status/autosave-status.component";
 
@@ -34,10 +35,12 @@ describe('CandidateExamCardComponent', () => {
     const candidateExamServiceSpy = jasmine.createSpyObj('CandidateExamService', ['delete']);
 
     await TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule,NgSelectModule,FormsModule,ReactiveFormsModule],
+      imports: [NgSelectModule,FormsModule,ReactiveFormsModule],
       declarations: [CandidateExamCardComponent,AutosaveStatusComponent],
       providers: [
-        { provide: CandidateExamService, useValue: candidateExamServiceSpy }
+        { provide: CandidateExamService, useValue: candidateExamServiceSpy },
+        provideHttpClient(withXhr(), withInterceptorsFromDi()),
+        provideHttpClientTesting()
       ],
       schemas: [NO_ERRORS_SCHEMA]
     })
