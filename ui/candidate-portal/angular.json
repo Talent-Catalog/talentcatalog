@@ -148,7 +148,6 @@
               }
             ],
             "codeCoverage": true,
-            "sourceMap": true,
             "stylePreprocessorOptions": {
               "includePaths": [
                 "."

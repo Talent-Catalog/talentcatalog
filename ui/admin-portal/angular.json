@@ -186,7 +186,6 @@
               "src/assets"
             ],
             "codeCoverage": true,
-            "sourceMap": true,
             "stylePreprocessorOptions": {
               "includePaths": [
                 "."
