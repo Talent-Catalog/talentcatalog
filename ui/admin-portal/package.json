@@ -42,7 +42,7 @@
     "core-js": "^3.25.3",
     "html2canvas": "^1.4.1",
     "jquery": "^3.6.1",
-    "jspdf": "^2.5.1",
+    "jspdf": "^4.2.1",
     "libphonenumber-js": "^1.12.8",
     "moment": "^2.29.4",
     "moment-timezone": "^0.5.37",
