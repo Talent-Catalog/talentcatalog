@@ -146,6 +146,18 @@ describe('AuthenticationService', () => {
     expect(service['loggedInUser$'].complete).toHaveBeenCalled();
   });
 
+  it('should fetch instance type from server and cache it in local storage', () => {
+    service.fetchTcInstanceType().subscribe(response => {
+      expect(response).toEqual(TcInstanceType.GRN);
+    });
+
+    const req = httpMock.expectOne(`${environment.apiUrl}/auth/instance-type`);
+    expect(req.request.method).toBe('GET');
+    req.flush({tcInstanceType: TcInstanceType.GRN});
+
+    expect(localStorageService.set).toHaveBeenCalledWith('tc_instance_type', TcInstanceType.GRN);
+  });
+
   it('should set up MFA and return encoded QR image', () => {
     const encodedQrImage:EncodedQrImage = { base64Encoding: 'test-image' };
 
