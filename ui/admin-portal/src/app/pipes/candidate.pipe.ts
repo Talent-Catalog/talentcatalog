@@ -18,7 +18,8 @@ import {Pipe, PipeTransform} from '@angular/core';
 import {Candidate} from "../model/candidate";
 
 @Pipe({
-  name: 'candidate'
+  name: 'candidate',
+  standalone: false
 })
 export class CandidatePipe implements PipeTransform {
 

@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {EnumOption, enumOptions} from '../../../../../util/enum';
 import {YesNo} from '../../../../../model/candidate';
 import {UntypedFormBuilder} from '@angular/forms';
@@ -24,7 +24,9 @@ import {CandidateVisaCheckService} from "../../../../../services/candidate-visa-
 @Component({
   selector: 'app-regional-area',
   templateUrl: './regional-area.component.html',
-  styleUrls: ['./regional-area.component.scss']
+  styleUrls: ['./regional-area.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class RegionalAreaComponent extends VisaCheckComponentBase implements OnInit {
   public regionalAreaOptions: EnumOption[] = enumOptions(YesNo);

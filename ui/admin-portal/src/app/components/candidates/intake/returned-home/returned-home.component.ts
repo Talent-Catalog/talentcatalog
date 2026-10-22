@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {UntypedFormBuilder} from '@angular/forms';
 import {IntakeComponentBase} from '../../../util/intake/IntakeComponentBase';
 import {CandidateService} from '../../../../services/candidate.service';
@@ -26,7 +26,9 @@ import {YesNo} from '../../../../model/candidate';
 @Component({
   selector: 'app-returned-home',
   templateUrl: './returned-home.component.html',
-  styleUrls: ['./returned-home.component.scss']
+  styleUrls: ['./returned-home.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class ReturnedHomeComponent extends IntakeComponentBase implements OnInit {
 

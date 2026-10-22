@@ -19,7 +19,8 @@ import {CandidateService} from "../../../../../services/candidate.service";
 import {CountryService} from "../../../../../services/country.service";
 import {FormsModule, ReactiveFormsModule, UntypedFormBuilder} from "@angular/forms";
 import {ComponentFixture, TestBed, waitForAsync} from "@angular/core/testing";
-import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {provideHttpClientTesting} from "@angular/common/http/testing";
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {of} from "rxjs";
 import {MockCandidate} from "../../../../../MockData/MockCandidate";
@@ -40,12 +41,14 @@ describe('EditCandidateContactComponent', () => {
 
     TestBed.configureTestingModule({
       declarations: [EditCandidateContactComponent, DatePickerComponent],
-      imports: [HttpClientTestingModule,FormsModule,ReactiveFormsModule, NgSelectModule, NgbDatepickerModule],
+      imports: [FormsModule,ReactiveFormsModule, NgSelectModule, NgbDatepickerModule],
       providers: [
         { provide: NgbActiveModal, useValue: activeModalSpyObj },
         { provide: CandidateService, useValue: candidateServiceSpyObj },
         { provide: CountryService, useValue: countryServiceSpyObj },
         UntypedFormBuilder,
+        provideHttpClient(withXhr(), withInterceptorsFromDi()),
+        provideHttpClientTesting(),
       ],
     }).compileComponents();
 

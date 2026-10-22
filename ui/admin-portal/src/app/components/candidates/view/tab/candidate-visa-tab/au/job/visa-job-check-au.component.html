@@ -90,7 +90,7 @@
             <li class="display" *ngFor="let edu of candQualifications">
               <app-fixed-input
                 *ngIf="edu.educationMajor"
-                [question]="edu.educationMajor?.name + ' ' + edu.courseName"
+                [question]="$safeNavigationMigration(edu.educationMajor?.name) + ' ' + edu.courseName"
                 [answer]="edu.educationType">
               </app-fixed-input>
               <app-fixed-input
@@ -113,7 +113,7 @@
             <li class="display" *ngFor="let co of candOccupations" >
               <app-fixed-input
                 *ngIf="co.occupation"
-                [question]="co.occupation?.name"
+                [question]="$safeNavigationMigration(co.occupation?.name)"
                 [answer]="co.yearsExperience.toString() + 'years'">
               </app-fixed-input>
               <app-fixed-input

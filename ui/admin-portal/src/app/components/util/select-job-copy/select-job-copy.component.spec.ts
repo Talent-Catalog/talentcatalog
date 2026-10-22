@@ -20,7 +20,8 @@ import {JobService} from "../../../services/job.service";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {FormsModule, ReactiveFormsModule, UntypedFormBuilder} from "@angular/forms";
 import {NgSelectModule} from "@ng-select/ng-select";
-import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {provideHttpClientTesting} from "@angular/common/http/testing";
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {MockJob} from "../../../MockData/MockJob";
 import {of, throwError} from "rxjs";
 import {Job} from "../../../model/job";
@@ -37,11 +38,13 @@ describe('SelectJobCopyComponent', () => {
 
     await TestBed.configureTestingModule({
       declarations: [SelectJobCopyComponent],
-      imports: [ReactiveFormsModule,FormsModule,NgSelectModule,HttpClientTestingModule],
+      imports: [ReactiveFormsModule,FormsModule,NgSelectModule],
       providers: [
         { provide: JobService, useValue: jobService },
         { provide: NgbActiveModal, useValue: activeModal },
         UntypedFormBuilder,
+        provideHttpClient(withXhr(), withInterceptorsFromDi()),
+        provideHttpClientTesting(),
       ],
     }).compileComponents();
 

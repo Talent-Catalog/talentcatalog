@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {Candidate} from "../../../../model/candidate";
 import {CandidateService} from "../../../../services/candidate.service";
@@ -23,7 +23,9 @@ import {EditCandidateContactComponent} from "./edit/edit-candidate-contact.compo
 @Component({
   selector: 'app-view-candidate-contact',
   templateUrl: './view-candidate-contact.component.html',
-  styleUrls: ['./view-candidate-contact.component.scss']
+  styleUrls: ['./view-candidate-contact.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class ViewCandidateContactComponent implements OnInit {
 

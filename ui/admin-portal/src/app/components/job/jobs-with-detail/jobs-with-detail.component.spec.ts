@@ -21,7 +21,8 @@ import {Job} from '../../../model/job';
 import {JobService} from '../../../services/job.service';
 import {AuthenticationService} from '../../../services/authentication.service';
 import {JobsComponent} from '../jobs/jobs.component';
-import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {provideHttpClientTesting} from "@angular/common/http/testing";
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {ReactiveFormsModule} from "@angular/forms";
 import {NgbPaginationModule} from "@ng-bootstrap/ng-bootstrap";
 import {NgSelectModule} from "@ng-select/ng-select";
@@ -45,7 +46,6 @@ describe('JobsWithDetailComponent', () => {
     TestBed.configureTestingModule({
       declarations: [SortedByComponent,ChatReadStatusComponent,JobsWithDetailComponent,JobsComponent],
       imports: [
-        HttpClientTestingModule,
         ReactiveFormsModule,
         NgbPaginationModule,
         NgSelectModule
@@ -54,6 +54,8 @@ describe('JobsWithDetailComponent', () => {
         { provide: JobService, useValue: jobServiceSpy },
         { provide: AuthenticationService, useValue: authServiceSpy },
         { provide: Router, useValue: { navigateByUrl: jasmine.createSpy('navigateByUrl') } },
+        provideHttpClient(withXhr(), withInterceptorsFromDi()),
+        provideHttpClientTesting(),
       ]
     })
     .compileComponents();

@@ -13,7 +13,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {provideHttpClientTesting} from "@angular/common/http/testing";
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {NO_ERRORS_SCHEMA} from "@angular/core";
 import {VisaCheckNzComponent} from "./visa-check-nz.component";
 import {MockCandidate} from "../../../../../../MockData/MockCandidate";
@@ -30,7 +31,7 @@ describe('VisaCheckNzComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [VisaCheckNzComponent],
-      imports: [HttpClientTestingModule],
+      providers: [provideHttpClient(withXhr(), withInterceptorsFromDi()), provideHttpClientTesting()],
       schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
   });

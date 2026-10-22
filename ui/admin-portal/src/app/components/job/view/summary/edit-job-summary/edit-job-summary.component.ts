@@ -14,12 +14,14 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ChangeDetectionStrategy} from '@angular/core';
 
 @Component({
   selector: 'app-edit-job-summary',
   templateUrl: './edit-job-summary.component.html',
-  styleUrls: ['./edit-job-summary.component.scss']
+  styleUrls: ['./edit-job-summary.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class EditJobSummaryComponent implements OnInit {
 

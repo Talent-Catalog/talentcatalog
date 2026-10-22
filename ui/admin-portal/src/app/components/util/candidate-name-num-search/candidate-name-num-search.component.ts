@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output, ChangeDetectionStrategy} from '@angular/core';
 import {Observable, of} from 'rxjs';
 import {catchError, debounceTime, distinctUntilChanged, map, switchMap, tap} from 'rxjs/operators';
 import {Candidate} from '../../../model/candidate';
@@ -26,7 +26,9 @@ import {AuthorizationService} from "../../../services/authorization.service";
 @Component({
   selector: 'app-candidate-name-num-search',
   templateUrl: './candidate-name-num-search.component.html',
-  styleUrls: ['./candidate-name-num-search.component.scss']
+  styleUrls: ['./candidate-name-num-search.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class CandidateNameNumSearchComponent implements OnInit {
 

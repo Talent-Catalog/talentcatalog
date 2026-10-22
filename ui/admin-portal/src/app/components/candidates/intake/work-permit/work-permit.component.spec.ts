@@ -16,7 +16,8 @@
 import {WorkPermitComponent} from "./work-permit.component";
 import {ComponentFixture, TestBed} from "@angular/core/testing";
 import {AutosaveStatusComponent} from "../../../util/autosave-status/autosave-status.component";
-import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {provideHttpClientTesting} from "@angular/common/http/testing";
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {ReactiveFormsModule} from "@angular/forms";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {CandidateService} from "../../../../services/candidate.service";
@@ -29,9 +30,11 @@ describe('WorkPermitComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [ WorkPermitComponent, AutosaveStatusComponent ],
-      imports: [HttpClientTestingModule, ReactiveFormsModule, NgSelectModule ],
+      imports: [ReactiveFormsModule, NgSelectModule ],
       providers: [
-        { provide: CandidateService }
+        { provide: CandidateService },
+        provideHttpClient(withXhr(), withInterceptorsFromDi()),
+        provideHttpClientTesting()
       ]
     })
     .compileComponents();

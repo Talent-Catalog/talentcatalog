@@ -15,7 +15,8 @@
  */
 
 import {TestBed} from '@angular/core/testing';
-import {HttpClientTestingModule, HttpTestingController} from '@angular/common/http/testing';
+import {HttpTestingController, provideHttpClientTesting} from '@angular/common/http/testing';
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from '@angular/common/http';
 import {CandidateSourceCandidateService} from './candidate-source-candidate.service';
 import {environment} from '../../environments/environment';
 import {Candidate} from '../model/candidate';
@@ -32,8 +33,7 @@ describe('CandidateSourceCandidateService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
-      providers: [CandidateSourceCandidateService]
+      providers: [CandidateSourceCandidateService, provideHttpClient(withXhr(), withInterceptorsFromDi()), provideHttpClientTesting()]
     });
     service = TestBed.inject(CandidateSourceCandidateService);
     httpMock = TestBed.inject(HttpTestingController);

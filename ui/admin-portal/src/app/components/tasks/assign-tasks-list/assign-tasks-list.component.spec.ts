@@ -21,7 +21,8 @@ import {TaskService} from "../../../services/task.service";
 import {TaskAssignmentService} from "../../../services/task-assignment.service";
 import {SavedListService} from "../../../services/saved-list.service";
 import {ConfirmationComponent} from "../../util/confirm/confirmation.component";
-import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {provideHttpClientTesting} from "@angular/common/http/testing";
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {FormsModule, ReactiveFormsModule, UntypedFormBuilder} from "@angular/forms";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {MockCandidate} from "../../../MockData/MockCandidate";
@@ -50,14 +51,16 @@ describe('AssignTasksListComponent', () => {
 
     await TestBed.configureTestingModule({
       declarations: [AssignTasksListComponent, ConfirmationComponent],
-      imports: [HttpClientTestingModule,FormsModule,ReactiveFormsModule,NgSelectModule],
+      imports: [FormsModule,ReactiveFormsModule,NgSelectModule],
       providers: [
         UntypedFormBuilder,
         { provide: NgbActiveModal, useValue: activeModalSpyObj },
         { provide: NgbModal, useValue: modalServiceSpyObj },
         { provide: TaskService, useValue: taskServiceSpyObj },
         { provide: TaskAssignmentService, useValue: taskAssignmentServiceSpyObj },
-        { provide: SavedListService, useValue: savedListServiceSpyObj }
+        { provide: SavedListService, useValue: savedListServiceSpyObj },
+        provideHttpClient(withXhr(), withInterceptorsFromDi()),
+        provideHttpClientTesting()
       ]
     }).compileComponents();
 

@@ -14,7 +14,8 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {provideHttpClientTesting} from "@angular/common/http/testing";
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {ViewCandidateJobsComponent} from "./view-candidate-jobs.component";
 import {ComponentFixture, TestBed} from "@angular/core/testing";
@@ -30,7 +31,8 @@ describe('ViewCandidateJobsComponent', () => {
   const mockCandidate = new MockCandidate();
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule,FormsModule,ReactiveFormsModule],
+      imports: [FormsModule,ReactiveFormsModule],
+      providers: [provideHttpClient(withXhr(), withInterceptorsFromDi()), provideHttpClientTesting()],
       declarations: [ ViewCandidateJobsComponent, CandidateOppsComponent ]
     })
     .compileComponents();

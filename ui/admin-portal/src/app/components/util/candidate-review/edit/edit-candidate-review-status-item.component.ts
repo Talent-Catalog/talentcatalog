@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {UntypedFormBuilder, UntypedFormGroup, Validators} from '@angular/forms';
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {SavedSearch} from "../../../../model/saved-search";
@@ -24,7 +24,9 @@ import {CandidateReviewStatusItem} from "../../../../model/candidate-review-stat
 @Component({
   selector: 'app-edit-candidate-review-status-item',
   templateUrl: './edit-candidate-review-status-item.component.html',
-  styleUrls: ['./edit-candidate-review-status-item.component.scss']
+  styleUrls: ['./edit-candidate-review-status-item.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class EditCandidateReviewStatusItemComponent implements OnInit {
 

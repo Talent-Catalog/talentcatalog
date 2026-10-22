@@ -1,5 +1,6 @@
 import {TestBed} from '@angular/core/testing';
-import {HttpClientTestingModule, HttpTestingController} from '@angular/common/http/testing';
+import {HttpTestingController, provideHttpClientTesting} from '@angular/common/http/testing';
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from '@angular/common/http';
 import {VerifyPlusScanResult, VerifyPlusService} from './verify-plus.service';
 import {environment} from '../../environments/environment';
 
@@ -11,8 +12,7 @@ describe('VerifyPlusService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
-      providers: [VerifyPlusService]
+      providers: [VerifyPlusService, provideHttpClient(withXhr(), withInterceptorsFromDi()), provideHttpClientTesting()]
     });
 
     service = TestBed.inject(VerifyPlusService);

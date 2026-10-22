@@ -1,4 +1,4 @@
-import { Component, Input, Pipe, PipeTransform } from '@angular/core';
+import { Component, Input, Pipe, PipeTransform, ChangeDetectionStrategy } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -9,22 +9,22 @@ import { AuthenticationService } from '../../services/authentication.service';
 import { BrandingService } from '../../services/branding.service';
 import { LanguageService } from '../../services/language.service';
 
-@Pipe({name: 'translate'})
+@Pipe({name: 'translate', standalone: false})
 class TranslatePipeStub implements PipeTransform {
   transform(value: string): string {
     return value;
   }
 }
 
-@Component({selector: 'app-login', template: ''})
+@Component({selector: 'app-login', template: '', changeDetection: ChangeDetectionStrategy.Eager, standalone: false})
 class AppLoginStubComponent {}
 
-@Component({selector: 'tc-card', template: '<ng-content></ng-content>'})
+@Component({selector: 'tc-card', template: '<ng-content></ng-content>', changeDetection: ChangeDetectionStrategy.Eager, standalone: false})
 class TcCardStubComponent {
   @Input() header: boolean;
 }
 
-@Component({selector: 'tc-button', template: '<ng-content></ng-content>'})
+@Component({selector: 'tc-button', template: '<ng-content></ng-content>', changeDetection: ChangeDetectionStrategy.Eager, standalone: false})
 class TcButtonStubComponent {
   @Input() color: string;
   @Input() type: string;

@@ -20,7 +20,8 @@ import {DatePipe} from '@angular/common';
 
 // See this stack overflow article explaining this code: https://stackoverflow.com/questions/56020473/override-angular-default-date-pipe
 @Pipe({
-  name: 'date'
+  name: 'date',
+  standalone: false
 })
 export class ExtendDatePipe extends DatePipe implements PipeTransform {
   readonly customFormats = {

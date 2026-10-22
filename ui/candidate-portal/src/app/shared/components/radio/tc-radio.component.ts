@@ -1,4 +1,4 @@
-import {Component, EventEmitter, forwardRef, HostBinding, Input, Output} from '@angular/core';
+import {Component, EventEmitter, forwardRef, HostBinding, Input, Output, ChangeDetectionStrategy} from '@angular/core';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from "@angular/forms";
 
 /**
@@ -38,6 +38,7 @@ import {ControlValueAccessor, NG_VALUE_ACCESSOR} from "@angular/forms";
       multi: true
     }
   ],
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrls: ['./tc-radio.component.scss']
 })
 export class TcRadioComponent implements

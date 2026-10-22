@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, EventEmitter, forwardRef, Input, Output} from '@angular/core';
+import {Component, EventEmitter, forwardRef, Input, Output, ChangeDetectionStrategy} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR, ReactiveFormsModule} from '@angular/forms';
@@ -27,12 +27,12 @@ import {TaskAssignment} from '../../../../../../model/task-assignment';
 import {TaskType} from '../../../../../../model/task';
 import {Status} from '../../../../../../model/base';
 
-@Component({selector: 'app-error', template: ''})
+@Component({selector: 'app-error', template: '', changeDetection: ChangeDetectionStrategy.Eager, standalone: false})
 class ErrorStubComponent {
   @Input() error?: unknown;
 }
 
-@Component({selector: 'tc-button', template: '<ng-content></ng-content>'})
+@Component({selector: 'tc-button', template: '<ng-content></ng-content>', changeDetection: ChangeDetectionStrategy.Eager, standalone: false})
 class TcButtonStubComponent {
   @Input() size?: string;
   @Input() color?: string;
@@ -40,7 +40,7 @@ class TcButtonStubComponent {
   @Output() onClick = new EventEmitter<void>();
 }
 
-@Component({selector: 'tc-label', template: '<ng-content></ng-content>'})
+@Component({selector: 'tc-label', template: '<ng-content></ng-content>', changeDetection: ChangeDetectionStrategy.Eager, standalone: false})
 class TcLabelStubComponent {
   @Input() for?: string;
 }
@@ -52,7 +52,9 @@ class TcLabelStubComponent {
     provide: NG_VALUE_ACCESSOR,
     useExisting: forwardRef(() => TcTextareaStubComponent),
     multi: true
-  }]
+  }],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 class TcTextareaStubComponent implements ControlValueAccessor {
   @Input() id?: string;
@@ -63,7 +65,7 @@ class TcTextareaStubComponent implements ControlValueAccessor {
   registerOnTouched(): void {}
 }
 
-@Component({selector: 'app-view-upload-task', template: ''})
+@Component({selector: 'app-view-upload-task', template: '', changeDetection: ChangeDetectionStrategy.Eager, standalone: false})
 class ViewUploadTaskStubComponent {
   @Input() form?: unknown;
   @Input() candidate?: unknown;
@@ -71,19 +73,19 @@ class ViewUploadTaskStubComponent {
   @Output() successfulUpload = new EventEmitter<any>();
 }
 
-@Component({selector: 'app-task-submitted', template: ''})
+@Component({selector: 'app-task-submitted', template: '', changeDetection: ChangeDetectionStrategy.Eager, standalone: false})
 class TaskSubmittedStubComponent {
   @Input() selectedTask?: unknown;
   @Output() onReturnToTasksClick = new EventEmitter<void>();
 }
 
-@Component({selector: 'app-task-abandoned', template: ''})
+@Component({selector: 'app-task-abandoned', template: '', changeDetection: ChangeDetectionStrategy.Eager, standalone: false})
 class TaskAbandonedStubComponent {
   @Input() selectedTask?: unknown;
   @Output() onReturnToTasksClick = new EventEmitter<void>();
 }
 
-@Component({selector: 'app-view-form-task', template: ''})
+@Component({selector: 'app-view-form-task', template: '', changeDetection: ChangeDetectionStrategy.Eager, standalone: false})
 class ViewFormTaskStubComponent {
   @Input() taskAssignment?: unknown;
   @Input() candidate?: unknown;
@@ -91,13 +93,13 @@ class ViewFormTaskStubComponent {
   @Output() taskCompleted = new EventEmitter<any>();
 }
 
-@Component({selector: 'app-view-simple-task', template: ''})
+@Component({selector: 'app-view-simple-task', template: '', changeDetection: ChangeDetectionStrategy.Eager, standalone: false})
 class ViewSimpleTaskStubComponent {
   @Input() form?: unknown;
   @Input() selectedTask?: unknown;
 }
 
-@Component({selector: 'app-view-question-task', template: ''})
+@Component({selector: 'app-view-question-task', template: '', changeDetection: ChangeDetectionStrategy.Eager, standalone: false})
 class ViewQuestionTaskStubComponent {
   @Input() form?: unknown;
   @Input() selectedTask?: unknown;

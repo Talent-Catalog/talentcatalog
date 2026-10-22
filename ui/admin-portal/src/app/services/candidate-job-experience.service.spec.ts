@@ -15,7 +15,8 @@
  */
 
 import {CandidateJobExperienceService} from "./candidate-job-experience.service";
-import {HttpClientTestingModule, HttpTestingController} from "@angular/common/http/testing";
+import {HttpTestingController, provideHttpClientTesting} from "@angular/common/http/testing";
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {TestBed} from "@angular/core/testing";
 import {CandidateJobExperience} from "../model/candidate-job-experience";
 import {environment} from "../../environments/environment";
@@ -28,8 +29,7 @@ describe('CandidateJobExperienceService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
-      providers: [CandidateJobExperienceService]
+      providers: [CandidateJobExperienceService, provideHttpClient(withXhr(), withInterceptorsFromDi()), provideHttpClientTesting()]
     });
 
     service = TestBed.inject(CandidateJobExperienceService);

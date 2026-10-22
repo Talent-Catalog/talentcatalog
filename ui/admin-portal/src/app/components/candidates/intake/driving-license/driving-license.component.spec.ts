@@ -15,7 +15,8 @@
  */
 import {DrivingLicenseComponent} from "./driving-license.component";
 import {ComponentFixture, TestBed} from "@angular/core/testing";
-import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {provideHttpClientTesting} from "@angular/common/http/testing";
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {FormsModule, ReactiveFormsModule, UntypedFormBuilder} from "@angular/forms";
 import {AutosaveStatusComponent} from "../../../util/autosave-status/autosave-status.component";
@@ -29,8 +30,8 @@ describe('DrivingLicenseComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [ DrivingLicenseComponent,AutosaveStatusComponent ],
-      imports: [HttpClientTestingModule,NgSelectModule,FormsModule,ReactiveFormsModule],
-      providers: [UntypedFormBuilder, CandidateService]
+      imports: [NgSelectModule,FormsModule,ReactiveFormsModule],
+      providers: [UntypedFormBuilder, CandidateService, provideHttpClient(withXhr(), withInterceptorsFromDi()), provideHttpClientTesting()]
     })
     .compileComponents();
   });

@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
+import {Component, Input, OnChanges, OnInit, SimpleChanges, ChangeDetectionStrategy} from '@angular/core';
 import {Candidate} from "../../../../model/candidate";
 import {CandidateService} from "../../../../services/candidate.service";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
@@ -38,7 +38,9 @@ import {AuthorizationService} from "../../../../services/authorization.service";
 @Component({
   selector: 'app-view-candidate-tasks',
   templateUrl: './view-candidate-tasks.component.html',
-  styleUrls: ['./view-candidate-tasks.component.scss']
+  styleUrls: ['./view-candidate-tasks.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class ViewCandidateTasksComponent implements OnInit, OnChanges {
 

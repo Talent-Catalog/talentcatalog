@@ -15,7 +15,8 @@
  */
 
 import {TestBed} from '@angular/core/testing';
-import {HttpClientTestingModule, HttpTestingController} from '@angular/common/http/testing';
+import {HttpTestingController, provideHttpClientTesting} from '@angular/common/http/testing';
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from '@angular/common/http';
 import {SlackService} from './slack.service';
 import {environment} from '../../environments/environment';
 import {PostJobToSlackRequest, PostJobToSlackResponse} from '../model/base';
@@ -27,8 +28,7 @@ describe('SlackService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
-      providers: [SlackService]
+      providers: [SlackService, provideHttpClient(withXhr(), withInterceptorsFromDi()), provideHttpClientTesting()]
     });
     service = TestBed.inject(SlackService);
     httpMock = TestBed.inject(HttpTestingController);

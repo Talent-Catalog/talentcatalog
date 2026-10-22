@@ -20,7 +20,8 @@ import {SavedList, SearchSavedListRequest} from "../../../../model/saved-list";
 import {EditExternalLinkComponent} from "./edit-external-link.component";
 import {ReactiveFormsModule, UntypedFormBuilder} from "@angular/forms";
 import {NgSelectModule} from "@ng-select/ng-select";
-import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {provideHttpClientTesting} from "@angular/common/http/testing";
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {SavedListService} from "../../../../services/saved-list.service";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {MockSavedList} from "../../../../MockData/MockSavedList";
@@ -38,10 +39,12 @@ describe('EditExternalLinkComponent', () => {
 
     await TestBed.configureTestingModule({
       declarations: [EditExternalLinkComponent],
-      imports: [ReactiveFormsModule,NgSelectModule,HttpClientTestingModule],
+      imports: [ReactiveFormsModule,NgSelectModule],
       providers: [
         { provide: SavedListService, useValue: savedListServiceSpyObj },
-        { provide: NgbActiveModal, useValue: ngbActiveModalSpyObj }
+        { provide: NgbActiveModal, useValue: ngbActiveModalSpyObj },
+        provideHttpClient(withXhr(), withInterceptorsFromDi()),
+        provideHttpClientTesting()
       ]
     }).compileComponents();
 

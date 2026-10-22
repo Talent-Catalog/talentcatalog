@@ -2,7 +2,7 @@ import {ComponentFixture, TestBed} from '@angular/core/testing';
 
 import {InputComponent} from './input.component';
 
-import {Component} from '@angular/core';
+import {Component, ChangeDetectionStrategy} from '@angular/core';
 import {By} from '@angular/platform-browser';
 
 @Component({
@@ -15,7 +15,9 @@ import {By} from '@angular/platform-browser';
     <label for="reviewable">
       Should result of searches be reviewable?
     </label>
-  `
+  `,
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 class HostComponent {}
 describe('InputComponent', () => {

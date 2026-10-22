@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {
   Candidate,
   CandidateIntakeData,
@@ -26,7 +26,9 @@ import {CandidateOpportunity} from "../../../../../../../model/candidate-opportu
 @Component({
   selector: 'app-visa-job-check-uk',
   templateUrl: './visa-job-check-uk.component.html',
-  styleUrls: ['./visa-job-check-uk.component.scss']
+  styleUrls: ['./visa-job-check-uk.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class VisaJobCheckUkComponent implements OnInit {
   @Input() selectedJobCheck: CandidateVisaJobCheck;

@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, ElementRef, EventEmitter, Input, OnDestroy, Output, ViewChild} from '@angular/core';
+import {Component, ElementRef, EventEmitter, Input, OnDestroy, Output, ViewChild, ChangeDetectionStrategy} from '@angular/core';
 import {from, interval, of, Subscription} from 'rxjs';
 import {exhaustMap, filter, take, tap} from 'rxjs/operators';
 import {VerifyPlusDecoderService} from '../../../services/verify-plus-decoder.service';
@@ -30,7 +30,9 @@ import {VerifyPlusDecoderService} from '../../../services/verify-plus-decoder.se
 @Component({
   selector: 'app-verify-plus-scanner',
   templateUrl: './verify-plus-scanner.component.html',
-  styleUrl: './verify-plus-scanner.component.scss'
+  styleUrl: './verify-plus-scanner.component.scss',
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class VerifyPlusScannerComponent implements OnDestroy {
   @Input() hideScanAgain = false;

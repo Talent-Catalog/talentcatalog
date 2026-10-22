@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output, ChangeDetectionStrategy} from '@angular/core';
 import {FormArray, FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {CandidateFormService} from '../../../services/candidate-form.service';
 import {ICandidateFormComponent} from '../../../model/candidate-form';
@@ -13,6 +13,8 @@ import {
   selector: 'app-dependants-refugee-status-info-form',
   templateUrl: './dependants-refugee-status-info-form.component.html',
   styleUrls: ['./dependants-refugee-status-info-form.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class DependantsRefugeeStatusInfoFormComponent
   implements OnInit, ICandidateFormComponent<DependantsInfoFormData> {

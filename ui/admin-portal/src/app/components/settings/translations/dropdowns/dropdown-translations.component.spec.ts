@@ -21,7 +21,8 @@ import {CountryService} from "../../../../services/country.service";
 import {TranslationService} from "../../../../services/translation.service";
 import {ReactiveFormsModule, UntypedFormArray, UntypedFormBuilder} from "@angular/forms";
 import {NgSelectModule} from "@ng-select/ng-select";
-import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {provideHttpClientTesting} from "@angular/common/http/testing";
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {NgbModal, NgbPaginationModule} from "@ng-bootstrap/ng-bootstrap";
 import {MockUser} from "../../../../MockData/MockUser";
 import {SystemLanguage} from "../../../../model/language";
@@ -62,13 +63,15 @@ describe('DropdownTranslationsComponent', () => {
 
     TestBed.configureTestingModule({
       declarations: [DropdownTranslationsComponent],
-      imports: [ReactiveFormsModule,NgSelectModule,HttpClientTestingModule,NgbPaginationModule],
+      imports: [ReactiveFormsModule,NgSelectModule,NgbPaginationModule],
       providers: [
         { provide: LanguageService, useValue: languageServiceSpyObj },
         { provide: CountryService, useValue: countryServiceSpyObj },
         { provide: TranslationService, useValue: translationServiceSpyObj },
         UntypedFormBuilder,
         NgbModal,
+        provideHttpClient(withXhr(), withInterceptorsFromDi()),
+        provideHttpClientTesting(),
       ]
     }).compileComponents();
 

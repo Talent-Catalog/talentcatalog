@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output, ChangeDetectionStrategy} from '@angular/core';
 import {CandidateCitizenship, HasPassport} from '../../../../../model/candidate';
 import {EnumOption, enumOptions} from '../../../../../util/enum';
 import {UntypedFormBuilder} from '@angular/forms';
@@ -26,7 +26,9 @@ import {Country} from "../../../../../model/country";
 @Component({
   selector: 'app-candidate-citizenship-card',
   templateUrl: './candidate-citizenship-card.component.html',
-  styleUrls: ['./candidate-citizenship-card.component.scss']
+  styleUrls: ['./candidate-citizenship-card.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class CandidateCitizenshipCardComponent extends IntakeComponentBase implements OnInit {
   @Output() delete = new EventEmitter();

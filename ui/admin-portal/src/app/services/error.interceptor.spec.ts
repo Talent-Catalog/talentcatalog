@@ -15,8 +15,8 @@
  */
 
 import {TestBed} from '@angular/core/testing';
-import {HttpClientTestingModule, HttpTestingController} from '@angular/common/http/testing';
-import {HttpErrorResponse, HttpHandler, HttpRequest} from '@angular/common/http';
+import {HttpTestingController, provideHttpClientTesting} from '@angular/common/http/testing';
+import {HttpErrorResponse, HttpHandler, HttpRequest, provideHttpClient, withInterceptorsFromDi, withXhr} from '@angular/common/http';
 import {throwError} from 'rxjs';
 import {Router} from '@angular/router';
 import {AuthenticationService} from './authentication.service';
@@ -33,11 +33,12 @@ describe('ErrorInterceptor', () => {
     const spyRouter = jasmine.createSpyObj('Router', ['navigate']);
 
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
       providers: [
         ErrorInterceptor,
         { provide: AuthenticationService, useValue: spyAuth },
-        { provide: Router, useValue: spyRouter }
+        { provide: Router, useValue: spyRouter },
+        provideHttpClient(withXhr(), withInterceptorsFromDi()),
+        provideHttpClientTesting()
       ]
     });
 

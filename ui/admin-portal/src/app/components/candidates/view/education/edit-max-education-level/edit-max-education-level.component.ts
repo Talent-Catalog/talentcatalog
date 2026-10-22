@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
 import {EducationLevel} from "../../../../../model/education-level";
 import {EducationLevelService} from "../../../../../services/education-level.service";
@@ -23,7 +23,9 @@ import {UntypedFormBuilder, UntypedFormGroup, Validators} from "@angular/forms";
 @Component({
   selector: 'app-edit-max-education-level',
   templateUrl: './edit-max-education-level.component.html',
-  styleUrls: ['./edit-max-education-level.component.scss']
+  styleUrls: ['./edit-max-education-level.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class EditMaxEducationLevelComponent implements OnInit {
   educationLevel: EducationLevel;

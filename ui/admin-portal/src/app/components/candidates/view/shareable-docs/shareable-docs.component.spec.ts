@@ -18,7 +18,8 @@ import {CandidateService} from "../../../../services/candidate.service";
 import {ComponentFixture, TestBed} from "@angular/core/testing";
 import {ReactiveFormsModule, UntypedFormBuilder} from "@angular/forms";
 import {NgbTooltipModule} from "@ng-bootstrap/ng-bootstrap";
-import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {provideHttpClientTesting} from "@angular/common/http/testing";
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {MockCandidate} from "../../../../MockData/MockCandidate";
 import {Candidate} from "../../../../model/candidate";
 import {CandidateSource} from "../../../../model/base";
@@ -35,10 +36,12 @@ describe('ShareableDocsComponent', () => {
 
     await TestBed.configureTestingModule({
       declarations: [ShareableDocsComponent],
-      imports: [ReactiveFormsModule, NgbTooltipModule, HttpClientTestingModule],
+      imports: [ReactiveFormsModule, NgbTooltipModule],
       providers: [
         UntypedFormBuilder,
-        { provide: CandidateService, useValue: mockCandidateService }
+        { provide: CandidateService, useValue: mockCandidateService },
+        provideHttpClient(withXhr(), withInterceptorsFromDi()),
+        provideHttpClientTesting()
       ]
     }).compileComponents();
   });

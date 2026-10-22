@@ -21,7 +21,8 @@ import {
   OnChanges,
   OnInit,
   Output,
-  SimpleChanges
+  SimpleChanges,
+  ChangeDetectionStrategy
 } from '@angular/core';
 import {getJobExternalHref, isJob, Job} from "../../../../model/job";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
@@ -62,7 +63,9 @@ import {LocalStorageService} from "../../../../services/local-storage.service";
 @Component({
   selector: 'app-view-job',
   templateUrl: './view-job.component.html',
-  styleUrls: ['./view-job.component.scss']
+  styleUrls: ['./view-job.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class ViewJobComponent extends MainSidePanelBase implements OnInit, OnChanges {
   @Input() job: Job;

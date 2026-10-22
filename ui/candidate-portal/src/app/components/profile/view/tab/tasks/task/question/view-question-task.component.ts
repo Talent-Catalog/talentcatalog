@@ -14,14 +14,16 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {UntypedFormGroup} from "@angular/forms";
 import {TaskAssignment} from "../../../../../../../model/task-assignment";
 
 @Component({
   selector: 'app-view-question-task',
   templateUrl: './view-question-task.component.html',
-  styleUrls: ['./view-question-task.component.scss']
+  styleUrls: ['./view-question-task.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class ViewQuestionTaskComponent implements OnInit {
   @Input() form: UntypedFormGroup;

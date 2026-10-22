@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {UntypedFormBuilder, UntypedFormGroup, Validators} from '@angular/forms';
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {
@@ -27,7 +27,9 @@ import {CountryService} from "../../../../../services/country.service";
 @Component({
   selector: 'app-create-candidate-certification',
   templateUrl: './create-candidate-certification.component.html',
-  styleUrls: ['./create-candidate-certification.component.scss']
+  styleUrls: ['./create-candidate-certification.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class CreateCandidateCertificationComponent implements OnInit {
 

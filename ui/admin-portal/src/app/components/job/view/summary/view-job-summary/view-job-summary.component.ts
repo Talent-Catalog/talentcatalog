@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
+import {Component, Input, OnChanges, OnInit, SimpleChanges, ChangeDetectionStrategy} from '@angular/core';
 import {Job} from "../../../../../model/job";
 import {AbstractControl, UntypedFormBuilder} from "@angular/forms";
 import {JobService} from "../../../../../services/job.service";
@@ -23,7 +23,9 @@ import {AutoSaveComponentBase} from "../../../../util/autosave/AutoSaveComponent
 @Component({
   selector: 'app-view-job-summary',
   templateUrl: './view-job-summary.component.html',
-  styleUrls: ['./view-job-summary.component.scss']
+  styleUrls: ['./view-job-summary.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class ViewJobSummaryComponent extends AutoSaveComponentBase implements OnInit, OnChanges {
   @Input() job: Job;

@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output, ChangeDetectionStrategy} from '@angular/core';
 import {NgbDate, NgbDateStruct, NgbInputDatepicker} from "@ng-bootstrap/ng-bootstrap";
 import {LanguageService} from "../../../services/language.service";
 import {ButtonComponent} from "../button/button.component";
@@ -75,7 +75,7 @@ import {TcIconComponent} from "../icon-component/tc-icon.component";
   selector: 'tc-date-range-picker',
   templateUrl: './tc-date-range-picker.component.html',
   styleUrls: ['./tc-date-range-picker.component.scss'],
-  standalone: true,
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [
     NgbInputDatepicker,
     ButtonComponent,

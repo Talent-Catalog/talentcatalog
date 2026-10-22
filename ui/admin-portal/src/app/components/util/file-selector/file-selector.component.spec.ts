@@ -18,7 +18,8 @@ import {FileSelectorComponent} from "./file-selector.component";
 import {ComponentFixture, TestBed} from "@angular/core/testing";
 import {NgbActiveModal, NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {FileUploadComponent} from "../file-upload/file-upload.component";
-import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {provideHttpClientTesting} from "@angular/common/http/testing";
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 
 describe('FileSelectorComponent', () => {
   let component: FileSelectorComponent;
@@ -31,11 +32,12 @@ describe('FileSelectorComponent', () => {
     };
     const modalSpy = jasmine.createSpyObj('NgbModal', ['close']);
     await TestBed.configureTestingModule({
-      imports:[HttpClientTestingModule],
       declarations: [FileSelectorComponent,FileUploadComponent],
       providers: [
         { provide: NgbActiveModal, useValue: modalMock },
-        { provide: NgbModal, useValue: modalSpy }
+        { provide: NgbModal, useValue: modalSpy },
+        provideHttpClient(withXhr(), withInterceptorsFromDi()),
+        provideHttpClientTesting()
       ]
     })
     .compileComponents();

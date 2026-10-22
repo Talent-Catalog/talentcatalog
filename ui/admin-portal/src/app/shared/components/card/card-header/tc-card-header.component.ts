@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component} from '@angular/core';
+import {Component, ChangeDetectionStrategy} from '@angular/core';
 
 /**
  * @component CardHeaderComponent
@@ -51,7 +51,7 @@ import {Component} from '@angular/core';
   selector: 'tc-card-header',
   templateUrl: './tc-card-header.component.html',
   styleUrls: ['./tc-card-header.component.scss'],
-  standalone: true,
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: []
 })
 export class TcCardHeaderComponent {

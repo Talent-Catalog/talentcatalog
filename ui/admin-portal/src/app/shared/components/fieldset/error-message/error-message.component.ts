@@ -1,4 +1,4 @@
-import {Component} from '@angular/core';
+import {Component, ChangeDetectionStrategy} from '@angular/core';
 
 /**
  * @component ErrorMessageComponent
@@ -41,6 +41,7 @@ import {Component} from '@angular/core';
   selector: 'tc-error-message',
   templateUrl: './error-message.component.html',
   styleUrls: ['./error-message.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: true
 })
 export class ErrorMessageComponent {

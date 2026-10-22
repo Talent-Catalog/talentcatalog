@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
+import {Component, Input, OnChanges, OnInit, SimpleChanges, ChangeDetectionStrategy} from '@angular/core';
 import {AutoSaveComponentBase} from "../autosave/AutoSaveComponentBase";
 import {Candidate, UpdateCandidateShareableNotesRequest} from "../../../model/candidate";
 import {UntypedFormBuilder} from "@angular/forms";
@@ -25,7 +25,9 @@ import {AuthorizationService} from "../../../services/authorization.service";
 @Component({
   selector: 'app-candidate-shareable-notes',
   templateUrl: './candidate-shareable-notes.component.html',
-  styleUrls: ['./candidate-shareable-notes.component.scss']
+  styleUrls: ['./candidate-shareable-notes.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class CandidateShareableNotesComponent extends AutoSaveComponentBase
   implements OnInit, OnChanges {

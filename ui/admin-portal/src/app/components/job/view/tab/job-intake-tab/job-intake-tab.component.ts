@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component} from '@angular/core';
+import {Component, ChangeDetectionStrategy} from '@angular/core';
 import {JobIntakeComponentTabBase} from "../../../../util/intake/JobIntakeComponentTabBase";
 import {JobService} from "../../../../../services/job.service";
 import {AuthenticationService} from "../../../../../services/authentication.service";
@@ -24,7 +24,9 @@ import {AuthorizationService} from "../../../../../services/authorization.servic
 @Component({
   selector: 'app-job-intake-tab',
   templateUrl: './job-intake-tab.component.html',
-  styleUrls: ['./job-intake-tab.component.scss']
+  styleUrls: ['./job-intake-tab.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class JobIntakeTabComponent extends JobIntakeComponentTabBase {
 

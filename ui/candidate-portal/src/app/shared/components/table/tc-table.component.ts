@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Input, Output, ViewEncapsulation} from '@angular/core';
+import {Component, EventEmitter, Input, Output, ViewEncapsulation, ChangeDetectionStrategy} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {SearchResults} from "../../../model/search-results";
 import {AlertComponent} from "../alert/alert.component";
@@ -51,7 +51,7 @@ import {TcPaginationComponent} from "../pagination/tc-pagination.component";
   // avoids styles bleeding out to the other <table> components not wrapped by <tc-table>. Also overrides any
   // existing <table> styles from bootstrap.
   encapsulation: ViewEncapsulation.None,
-  standalone: true,
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [CommonModule, AlertComponent, TcLoadingComponent, TcPaginationComponent]
 })
 export class TcTableComponent {

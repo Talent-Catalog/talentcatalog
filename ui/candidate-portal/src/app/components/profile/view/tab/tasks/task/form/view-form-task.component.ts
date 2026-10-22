@@ -8,7 +8,8 @@ import {
   SimpleChanges,
   Type,
   ViewChild,
-  ViewContainerRef
+  ViewContainerRef,
+  ChangeDetectionStrategy
 } from '@angular/core';
 import {TaskAssignment} from "../../../../../../../model/task-assignment";
 import {CandidateFormService} from "../../../../../../../services/candidate-form.service";
@@ -27,7 +28,9 @@ import {Candidate} from "../../../../../../../model/candidate";
   template: `
     <app-error [error]="error"></app-error>
     <ng-template #vc></ng-template>`,
-  styleUrls: ['./view-form-task.component.scss']
+  styleUrls: ['./view-form-task.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class ViewFormTaskComponent implements OnChanges {
   @Input() taskAssignment: TaskAssignment;

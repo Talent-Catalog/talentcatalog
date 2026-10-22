@@ -33,7 +33,8 @@ import {
   NgbDatepickerModule,
   NgbTooltipModule
 } from "@ng-bootstrap/ng-bootstrap";
-import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {provideHttpClientTesting} from "@angular/common/http/testing";
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {ExamsComponent} from "../../../intake/exams/exams.component";
@@ -186,7 +187,7 @@ describe('CandidateIntakeTabComponent', () => {
         HomeLocationComponent,ResettlementThirdComponent,HostEntryComponent,
         DatePickerComponent,WorkAbroadComponent,NclcScoreValidationComponent,IeltsScoreValidationComponent,DetScoreValidationComponent,
         AutosaveStatusComponent,FixedInputComponent,PrintPageComponent],
-      imports: [HttpClientTestingModule,NgbDatepickerModule,NgbTooltipModule,FormsModule,ReactiveFormsModule, NgSelectModule,NgbAccordionModule, DirectiveModule],
+      imports: [NgbDatepickerModule,NgbTooltipModule,FormsModule,ReactiveFormsModule, NgSelectModule,NgbAccordionModule, DirectiveModule],
       providers: [
         { provide: CandidateService, useValue: candidateSpy },
         { provide: CountryService, useValue: countrySpy },
@@ -198,7 +199,9 @@ describe('CandidateIntakeTabComponent', () => {
         { provide: CandidateCitizenshipService, useValue: citizenshipSpy },
         { provide: CandidateExamService, useValue: examSpy },
         { provide: CandidateDependantService, useValue: dependantSpy },
-        { provide: AuthorizationService, useValue: authorizationSpy }
+        { provide: AuthorizationService, useValue: authorizationSpy },
+        provideHttpClient(withXhr(), withInterceptorsFromDi()),
+        provideHttpClientTesting()
       ]
     }).compileComponents();
   });

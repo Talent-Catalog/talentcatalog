@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, ElementRef, Input, OnInit, ViewChild} from '@angular/core';
+import {Component, ElementRef, Input, OnInit, ViewChild, ChangeDetectionStrategy} from '@angular/core';
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {UntypedFormBuilder, UntypedFormGroup, Validators} from "@angular/forms";
 import {Link, URL_REGEX} from "../../model/base";
@@ -25,7 +25,9 @@ import {Link, URL_REGEX} from "../../model/base";
 @Component({
   selector: 'app-build-link',
   templateUrl: './build-link.component.html',
-  styleUrls: ['./build-link.component.scss']
+  styleUrls: ['./build-link.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class BuildLinkComponent implements OnInit {
 

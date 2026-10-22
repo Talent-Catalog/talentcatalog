@@ -19,7 +19,8 @@ import {AutosaveStatusComponent} from "../../../util/autosave-status/autosave-st
 import {CandidateCitizenshipService} from "../../../../services/candidate-citizenship.service";
 import {CandidateIntakeData, HasPassport} from "../../../../model/candidate";
 import {Country} from "../../../../model/country";
-import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {provideHttpClientTesting} from "@angular/common/http/testing";
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {CandidateCitizenshipCardComponent} from "./card/candidate-citizenship-card.component";
@@ -31,9 +32,11 @@ describe('CitizenshipsComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [CitizenshipsComponent, AutosaveStatusComponent, CandidateCitizenshipCardComponent],
-      imports: [HttpClientTestingModule,NgSelectModule,FormsModule,ReactiveFormsModule],
+      imports: [NgSelectModule,FormsModule,ReactiveFormsModule],
       providers: [
-        { provide: CandidateCitizenshipService }
+        { provide: CandidateCitizenshipService },
+        provideHttpClient(withXhr(), withInterceptorsFromDi()),
+        provideHttpClientTesting()
       ]
     }).compileComponents();
   });

@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output, ChangeDetectionStrategy} from '@angular/core';
 import {Candidate} from "../../../../../model/candidate";
 import {TaskAssignment, taskAssignmentSort} from "../../../../../model/task-assignment";
 import {Status} from "../../../../../model/base";
@@ -22,7 +22,9 @@ import {Status} from "../../../../../model/base";
 @Component({
   selector: 'app-candidate-tasks',
   templateUrl: './candidate-tasks.component.html',
-  styleUrls: ['./candidate-tasks.component.scss']
+  styleUrls: ['./candidate-tasks.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class CandidateTasksComponent implements OnInit {
 

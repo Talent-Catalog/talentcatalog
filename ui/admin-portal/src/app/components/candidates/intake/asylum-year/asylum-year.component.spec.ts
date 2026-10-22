@@ -17,7 +17,8 @@ import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {FormsModule, ReactiveFormsModule, UntypedFormBuilder} from '@angular/forms';
 import {AsylumYearComponent} from './asylum-year.component';
 import {CandidateService} from '../../../../services/candidate.service';
-import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {provideHttpClientTesting} from "@angular/common/http/testing";
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {AutosaveStatusComponent} from "../../../util/autosave-status/autosave-status.component";
 import {NgbDatepickerModule} from "@ng-bootstrap/ng-bootstrap";
@@ -31,10 +32,12 @@ describe('AsylumYearComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [AsylumYearComponent, AutosaveStatusComponent, DatePickerComponent],
-      imports: [HttpClientTestingModule,NgbDatepickerModule, NgSelectModule,FormsModule,ReactiveFormsModule],
+      imports: [NgbDatepickerModule, NgSelectModule,FormsModule,ReactiveFormsModule],
       providers: [
         UntypedFormBuilder,
-        { provide: CandidateService}
+        { provide: CandidateService},
+        provideHttpClient(withXhr(), withInterceptorsFromDi()),
+        provideHttpClientTesting()
       ]
     }).compileComponents();
 

@@ -31,7 +31,7 @@ import {LocalStorageService} from '../../../services/local-storage.service';
 import {AuthenticationService} from '../../../services/authentication.service';
 import {environment} from '../../../../environments/environment';
 
-@Pipe({name: 'translate'})
+@Pipe({name: 'translate', standalone: false})
 class TranslatePipeStub implements PipeTransform {
   transform(value: string): string {
     return value;

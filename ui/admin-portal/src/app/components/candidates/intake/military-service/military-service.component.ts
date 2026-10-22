@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {EnumOption, enumOptions} from '../../../../util/enum';
 import {YesNo, YesNoUnsure} from '../../../../model/candidate';
 import {UntypedFormBuilder} from '@angular/forms';
@@ -24,7 +24,9 @@ import {IntakeComponentBase} from '../../../util/intake/IntakeComponentBase';
 @Component({
   selector: 'app-military-service',
   templateUrl: './military-service.component.html',
-  styleUrls: ['./military-service.component.scss']
+  styleUrls: ['./military-service.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class MilitaryServiceComponent extends IntakeComponentBase implements OnInit {
 

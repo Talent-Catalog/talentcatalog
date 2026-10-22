@@ -20,7 +20,8 @@ import {ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing'
 import {ViewCandidateDestinationsComponent} from './view-candidate-destinations.component';
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {CandidateDestinationService} from "../../../../services/candidate-destination.service";
-import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {provideHttpClientTesting} from "@angular/common/http/testing";
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {MockCandidate} from "../../../../MockData/MockCandidate";
@@ -46,12 +47,14 @@ describe('ViewCandidateDestinationsComponent', () => {
     const modalServiceSpyObj = jasmine.createSpyObj('NgbModal', ['open']);
     const candidateServiceSpyObj = jasmine.createSpyObj('CandidateService', ['updateCandidate']);
     await TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule,FormsModule,ReactiveFormsModule, NgSelectModule],
+      imports: [FormsModule,ReactiveFormsModule, NgSelectModule],
       declarations: [ ViewCandidateDestinationsComponent ],
       providers: [
         { provide: CandidateDestinationService, useValue: candidateDestinationServiceSpyObj },
         { provide: NgbModal, useValue: modalServiceSpyObj },
-        { provide: CandidateService, useValue: candidateServiceSpyObj }
+        { provide: CandidateService, useValue: candidateServiceSpyObj },
+        provideHttpClient(withXhr(), withInterceptorsFromDi()),
+        provideHttpClientTesting()
       ]
     })
     .compileComponents();

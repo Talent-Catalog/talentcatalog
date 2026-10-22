@@ -21,7 +21,8 @@ import {FormsModule, ReactiveFormsModule, UntypedFormBuilder} from "@angular/for
 import {CandidateOpportunity} from "../../../model/candidate-opportunity";
 import {mockCandidateOpportunity} from "../../../MockData/MockCandidateOpportunity";
 import {HelpComponent} from "../../help/help.component";
-import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {provideHttpClientTesting} from "@angular/common/http/testing";
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {CommonModule} from "@angular/common";
 import {DatePickerComponent} from "../../util/date-picker/date-picker.component";
 import {NgxWigModule} from "ngx-wig";
@@ -37,10 +38,12 @@ describe('EditCandidateOppComponent', () => {
 
     await TestBed.configureTestingModule({
       declarations: [EditCandidateOppComponent,HelpComponent,DatePickerComponent],
-      imports: [HttpClientTestingModule,ReactiveFormsModule,FormsModule,CommonModule,NgbDatepickerModule,NgxWigModule,NgSelectModule,NgbTooltipModule],
+      imports: [ReactiveFormsModule,FormsModule,CommonModule,NgbDatepickerModule,NgxWigModule,NgSelectModule,NgbTooltipModule],
       providers: [
         UntypedFormBuilder,
-        { provide: NgbActiveModal, useValue: modalSpy }
+        { provide: NgbActiveModal, useValue: modalSpy },
+        provideHttpClient(withXhr(), withInterceptorsFromDi()),
+        provideHttpClientTesting()
       ]
     })
     .compileComponents();

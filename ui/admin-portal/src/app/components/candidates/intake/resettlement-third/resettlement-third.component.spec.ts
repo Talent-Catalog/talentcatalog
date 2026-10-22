@@ -15,7 +15,8 @@
  */
 import {ResettlementThirdComponent} from "./resettlement-third.component";
 import {ComponentFixture, TestBed} from "@angular/core/testing";
-import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {provideHttpClientTesting} from "@angular/common/http/testing";
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {AutosaveStatusComponent} from "../../../util/autosave-status/autosave-status.component";
@@ -29,9 +30,11 @@ describe('ResettlementThirdComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [ ResettlementThirdComponent,AutosaveStatusComponent ],
-      imports: [HttpClientTestingModule, NgSelectModule, FormsModule, ReactiveFormsModule ],
+      imports: [NgSelectModule, FormsModule, ReactiveFormsModule ],
       providers: [
-        { provide: CandidateService }
+        { provide: CandidateService },
+        provideHttpClient(withXhr(), withInterceptorsFromDi()),
+        provideHttpClientTesting()
       ]
     })
     .compileComponents();

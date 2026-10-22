@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {EnumOption, enumOptions} from '../../../../../util/enum';
 import {YesNo} from '../../../../../model/candidate';
 import {UntypedFormBuilder} from '@angular/forms';
@@ -24,7 +24,9 @@ import {CandidateVisaCheckService} from "../../../../../services/candidate-visa-
 @Component({
   selector: 'app-qualification-relevant',
   templateUrl: './qualification-relevant.component.html',
-  styleUrls: ['./qualification-relevant.component.scss']
+  styleUrls: ['./qualification-relevant.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class QualificationRelevantComponent extends VisaCheckComponentBase implements OnInit {
   public relevantQualificationOptions: EnumOption[] = enumOptions(YesNo);

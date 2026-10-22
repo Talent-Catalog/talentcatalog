@@ -19,7 +19,8 @@ import {ReactiveFormsModule, UntypedFormBuilder} from "@angular/forms";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {EducationLevelService} from "../../../../services/education-level.service";
 import {NgSelectModule} from "@ng-select/ng-select";
-import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {provideHttpClientTesting} from "@angular/common/http/testing";
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {EducationLevel} from "../../../../model/education-level";
 import {of, throwError} from "rxjs";
 
@@ -36,10 +37,12 @@ describe('CreateEducationLevelComponent', () => {
 
     await TestBed.configureTestingModule({
       declarations: [CreateEducationLevelComponent],
-      imports: [HttpClientTestingModule,ReactiveFormsModule,NgSelectModule],
+      imports: [ReactiveFormsModule,NgSelectModule],
       providers: [
         { provide: EducationLevelService, useValue: educationLevelServiceSpyObj },
-        { provide: NgbActiveModal, useValue: ngbActiveModalSpyObj }
+        { provide: NgbActiveModal, useValue: ngbActiveModalSpyObj },
+        provideHttpClient(withXhr(), withInterceptorsFromDi()),
+        provideHttpClientTesting()
       ]
     }).compileComponents();
 

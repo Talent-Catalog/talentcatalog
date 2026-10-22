@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, Input} from '@angular/core';
+import {Component, Input, ChangeDetectionStrategy} from '@angular/core';
 import {User} from "../../../model/user";
 import {LinkedinPremiumCouponService} from "../../../services/linkedin-premium-coupon.service";
 import {BaseCsvImportComponent} from "../base-csv-import.component";
@@ -23,6 +23,8 @@ import {BaseCsvImportComponent} from "../base-csv-import.component";
   selector: 'app-import-linkedin-premium-coupons',
   templateUrl: './import-linkedin-premium-coupons.component.html',
   styleUrls: ['./import-linkedin-premium-coupons.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class ImportLinkedinPremiumCouponsComponent extends BaseCsvImportComponent {
   availableCouponsCount: number = 0;

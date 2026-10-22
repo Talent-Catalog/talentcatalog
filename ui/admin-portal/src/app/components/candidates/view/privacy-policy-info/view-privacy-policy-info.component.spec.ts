@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { ViewPrivacyPolicyInfoComponent } from './view-privacy-policy-info.component';
-import {HttpClientModule} from "@angular/common/http";
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 
 describe('PrivacyPolicyInfoComponent', () => {
   let component: ViewPrivacyPolicyInfoComponent;
@@ -9,7 +9,7 @@ describe('PrivacyPolicyInfoComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientModule],
+      providers: [provideHttpClient(withXhr(), withInterceptorsFromDi())],
       declarations: [ViewPrivacyPolicyInfoComponent]
     });
     fixture = TestBed.createComponent(ViewPrivacyPolicyInfoComponent);

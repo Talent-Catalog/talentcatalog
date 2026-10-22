@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output, ChangeDetectionStrategy} from '@angular/core';
 import {CandidateAttachment} from '../../../model/candidate-attachment';
 import {CandidateAttachmentService} from '../../../services/candidate-attachment.service';
 import {Candidate} from '../../../model/candidate';
@@ -28,7 +28,9 @@ import {UploadType} from "../../../model/task";
 @Component({
   selector: 'app-cv-icon',
   templateUrl: './cv-icon.component.html',
-  styleUrls: ['./cv-icon.component.scss']
+  styleUrls: ['./cv-icon.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class CvIconComponent implements OnInit {
   // Required Input

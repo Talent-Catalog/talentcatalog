@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output, ChangeDetectionStrategy} from '@angular/core';
 import {ShortJob} from "../../../../../../model/job";
 import {
   HasNameSelectorComponent
@@ -37,7 +37,9 @@ import {AuthorizationService} from "../../../../../../services/authorization.ser
 @Component({
   selector: 'app-candidate-visa-job',
   templateUrl: './candidate-visa-job.component.html',
-  styleUrls: ['./candidate-visa-job.component.scss']
+  styleUrls: ['./candidate-visa-job.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class CandidateVisaJobComponent implements OnInit {
   @Input() candidate: Candidate;

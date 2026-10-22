@@ -22,19 +22,19 @@
         <span class="fw-bolder font-italic" *ngIf="!selectedTask.task.optional && !selectedTask.completedDate">{{ 'TASKS.TASK.REQUIRED' | translate }}</span>
         <span class="fw-bolder font-italic" *ngIf="selectedTask.task.optional && !selectedTask.completedDate">{{ 'TASKS.TASK.OPTIONAL' | translate }}</span>
       </h4>
-      <div *ngIf="selectedTask.task.taskType !== 'Question'" [innerHtml]="selectedTask?.task?.description"></div>
+      <div *ngIf="selectedTask.task.taskType !== 'Question'" [innerHtml]="$safeNavigationMigration(selectedTask?.task?.description)"></div>
     </div>
 
     <ng-container *ngIf="!selectedTask?.completedDate && !selectedTask?.abandonedDate">
-      <h5 [ngClass]="{'text-danger': isOverdue(selectedTask)}">{{ 'TASKS.TASK.DUEDATE' | translate }} {{selectedTask?.dueDate | date}}
+      <h5 [ngClass]="{'text-danger': isOverdue(selectedTask)}">{{ 'TASKS.TASK.DUEDATE' | translate }} {{$safeNavigationMigration(selectedTask?.dueDate) | date}}
         <span *ngIf="isOverdue(selectedTask)" class="text-danger">{{ 'TASKS.TASK.OVERDUE' | translate }}</span>
       </h5>
     </ng-container>
     <ng-container *ngIf="selectedTask?.completedDate">
-      <h5 class="text-success">{{ 'TASKS.TASK.COMPLETEDDATE' | translate }} {{selectedTask?.completedDate | date}}</h5>
+      <h5 class="text-success">{{ 'TASKS.TASK.COMPLETEDDATE' | translate }} {{$safeNavigationMigration(selectedTask?.completedDate) | date}}</h5>
     </ng-container>
     <ng-container *ngIf="selectedTask?.abandonedDate && !selectedTask?.completedDate">
-      <h5 class="text-alert">{{ 'TASKS.TASK.ABANDONEDDATE' | translate }} {{selectedTask?.abandonedDate | date}}</h5>
+      <h5 class="text-alert">{{ 'TASKS.TASK.ABANDONEDDATE' | translate }} {{$safeNavigationMigration(selectedTask?.abandonedDate) | date}}</h5>
     </ng-container>
 
   </div>

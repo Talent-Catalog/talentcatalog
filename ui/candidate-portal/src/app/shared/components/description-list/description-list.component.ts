@@ -1,4 +1,4 @@
-import {Component, Input} from '@angular/core';
+import {Component, Input, ChangeDetectionStrategy} from '@angular/core';
 import {CommonModule} from '@angular/common';
 
 /**
@@ -61,7 +61,7 @@ import {CommonModule} from '@angular/common';
   selector: 'tc-description-list',
   templateUrl: './description-list.component.html',
   styleUrls: ['./description-list.component.scss'],
-  standalone: true,
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [CommonModule]
 })
 export class DescriptionListComponent {

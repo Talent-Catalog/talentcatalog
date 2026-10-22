@@ -16,7 +16,8 @@
 
 
 import {TestBed} from '@angular/core/testing';
-import {HttpClientTestingModule, HttpTestingController} from '@angular/common/http/testing';
+import {HttpTestingController, provideHttpClientTesting} from '@angular/common/http/testing';
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from '@angular/common/http';
 import {CandidateNoteService, CreateCandidateNoteRequest} from './candidate-note.service';
 import {CandidateNote} from '../model/candidate-note';
 import {SearchResults} from '../model/search-results';
@@ -30,8 +31,7 @@ describe('CandidateNoteService', () => {
   const mockUser = new MockUser();
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
-      providers: [CandidateNoteService]
+      providers: [CandidateNoteService, provideHttpClient(withXhr(), withInterceptorsFromDi()), provideHttpClientTesting()]
     });
     service = TestBed.inject(CandidateNoteService);
     httpMock = TestBed.inject(HttpTestingController);

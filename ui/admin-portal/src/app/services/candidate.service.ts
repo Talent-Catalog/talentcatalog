@@ -279,7 +279,7 @@ export class CandidateService implements IntakeService {
   // But in candidate profile we fetch the updated object so we don't need the updated object,
   // just need to refetch the current candidate.
   updateCandidate(candidate?: Candidate) {
-    candidate ? this.candidateUpdatedSource.next(candidate) : this.candidateUpdatedSource.next();
+    candidate ? this.candidateUpdatedSource.next(candidate) : this.candidateUpdatedSource.next(undefined);
   }
 
   candidateUpdated() {

@@ -18,7 +18,8 @@ import {ViewChatComponent} from "./view-chat.component";
 import {ComponentFixture, TestBed} from "@angular/core/testing";
 import {NO_ERRORS_SCHEMA} from "@angular/core";
 import {JobChat, JobChatType} from "../../../model/chat";
-import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {provideHttpClientTesting} from "@angular/common/http/testing";
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {TranslateModule} from "@ngx-translate/core";
 
 describe('ViewChatComponent', () => {
@@ -27,7 +28,8 @@ describe('ViewChatComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule, TranslateModule.forRoot({})],
+      imports: [TranslateModule.forRoot({})],
+      providers: [provideHttpClient(withXhr(), withInterceptorsFromDi()), provideHttpClientTesting()],
       declarations: [ViewChatComponent],
       schemas: [NO_ERRORS_SCHEMA] // To ignore subcomponent and directive errors
     }).compileComponents();

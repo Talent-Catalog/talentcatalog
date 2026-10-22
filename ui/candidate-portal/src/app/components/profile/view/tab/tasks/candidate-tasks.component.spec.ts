@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, EventEmitter, Input, Output} from '@angular/core';
+import {Component, EventEmitter, Input, Output, ChangeDetectionStrategy} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 import {TranslateModule} from '@ngx-translate/core';
@@ -25,20 +25,20 @@ import {Status} from '../../../../../model/base';
 import {TaskAssignment} from '../../../../../model/task-assignment';
 import {TaskType} from '../../../../../model/task';
 
-@Component({selector: 'app-error', template: ''})
+@Component({selector: 'app-error', template: '', changeDetection: ChangeDetectionStrategy.Eager, standalone: false})
 class ErrorStubComponent {
   @Input() error?: unknown;
 }
 
-@Component({selector: 'tc-loading', template: ''})
+@Component({selector: 'tc-loading', template: '', changeDetection: ChangeDetectionStrategy.Eager, standalone: false})
 class TcLoadingStubComponent {
   @Input() loading?: boolean;
 }
 
-@Component({selector: 'app-tab-header', template: '<ng-content></ng-content>'})
+@Component({selector: 'app-tab-header', template: '<ng-content></ng-content>', changeDetection: ChangeDetectionStrategy.Eager, standalone: false})
 class TabHeaderStubComponent {}
 
-@Component({selector: 'tc-button', template: '<ng-content></ng-content>'})
+@Component({selector: 'tc-button', template: '<ng-content></ng-content>', changeDetection: ChangeDetectionStrategy.Eager, standalone: false})
 class TcButtonStubComponent {
   @Input() size?: string;
   @Input() color?: string;
@@ -46,14 +46,14 @@ class TcButtonStubComponent {
   @Input() target?: string;
 }
 
-@Component({selector: 'tc-table', template: '<ng-content></ng-content>'})
+@Component({selector: 'tc-table', template: '<ng-content></ng-content>', changeDetection: ChangeDetectionStrategy.Eager, standalone: false})
 class TcTableStubComponent {
   @Input() results?: unknown;
   @Input() loading?: boolean;
   @Input() striped?: boolean;
 }
 
-@Component({selector: 'app-candidate-task', template: ''})
+@Component({selector: 'app-candidate-task', template: '', changeDetection: ChangeDetectionStrategy.Eager, standalone: false})
 class CandidateTaskStubComponent {
   @Input() selectedTask?: TaskAssignment;
   @Input() candidate?: Candidate;

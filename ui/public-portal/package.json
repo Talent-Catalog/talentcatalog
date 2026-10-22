@@ -7,46 +7,44 @@
     "start": "ng serve --host=127.0.0.1",
     "build": "ng build",
     "test": "ng test",
-    "test:coverage": "ng test public-portal --watch=false --code-coverage=true --browsers=ChromeHeadless --source-map=true",
-    "lint": "ng lint"
+    "test:coverage": "ng test public-portal --watch=false --code-coverage=true --browsers=ChromeHeadless --source-map=true"
   },
   "private": true,
   "engines": {
-    "node": ">=20.9.0",
+    "node": "^22.22.3 || ^24.15.0 || >=26.0.0",
     "npm": ">=9.0.0"
   },
   "dependencies": {
-    "@angular/animations": "^17.3.12",
-    "@angular/common": "^17.3.12",
-    "@angular/compiler": "^17.3.12",
-    "@angular/core": "^17.3.12",
-    "@angular/forms": "^17.3.12",
-    "@angular/localize": "^17.3.12",
-    "@angular/platform-browser": "^17.3.12",
-    "@angular/platform-browser-dynamic": "^17.3.12",
-    "@angular/router": "^17.3.12",
+    "@angular/animations": "^22.2.3",
+    "@angular/common": "^22.2.3",
+    "@angular/compiler": "^22.2.3",
+    "@angular/core": "^22.2.3",
+    "@angular/forms": "^22.2.3",
+    "@angular/localize": "^22.2.3",
+    "@angular/platform-browser": "^22.2.3",
+    "@angular/platform-browser-dynamic": "^22.2.3",
+    "@angular/router": "^22.2.3",
     "@fortawesome/fontawesome-free": "^6.2.0",
-    "@ng-bootstrap/ng-bootstrap": "^16.0.0",
+    "@ng-bootstrap/ng-bootstrap": "^21.0.0",
     "@popperjs/core": "^2.10.2",
     "bootstrap": "^5.0.2",
-    "jquery": "^1.12.4",
-    "rxjs": "~6.5.5",
+    "rxjs": "~7.8.2",
     "tslib": "^2.4.0",
-    "zone.js": "^0.14.10"
+    "zone.js": "^0.16.3"
   },
   "devDependencies": {
-    "@angular-devkit/build-angular": "^17.3.17",
-    "@angular/cli": "^17.3.17",
-    "@angular/compiler-cli": "^17.3.12",
+    "@angular/build": "^22.2.3",
+    "@angular/cli": "^22.2.3",
+    "@angular/compiler-cli": "^22.2.3",
     "@types/jasmine": "^5.1.15",
-    "@types/node": "^20.0.0",
-    "codelyzer": "^6.0.2",
+    "@types/node": "^24.0.0",
+    "istanbul-lib-instrument": "^6.0.3",
+    "jasmine-core": "~4.6.1",
     "karma": "^6.4.4",
     "karma-chrome-launcher": "^3.2.0",
     "karma-coverage": "^2.2.1",
     "karma-jasmine": "^5.1.0",
     "karma-jasmine-html-reporter": "^2.2.0",
-    "tslint": "~6.1.0",
-    "typescript": "~5.2.0"
+    "typescript": "~6.0.3"
   }
 }

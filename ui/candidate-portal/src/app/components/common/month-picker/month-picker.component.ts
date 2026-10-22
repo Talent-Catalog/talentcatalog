@@ -14,14 +14,16 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {generateYearArray} from "../../../util/year-helper";
 import {UntypedFormControl} from "@angular/forms";
 
 @Component({
   selector: 'app-month-picker',
   templateUrl: './month-picker.component.html',
-  styleUrls: ['./month-picker.component.scss']
+  styleUrls: ['./month-picker.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class MonthPickerComponent implements OnInit {
 

@@ -28,7 +28,7 @@
     <ng-template #editable>
       <div *ngIf="selectedTask.task?.allowedAnswers?.length > 0; else textBox">
         <div class="mb-3">
-          <tc-label for="responseDropdown" [innerHtml]="selectedTask?.task?.description"></tc-label>
+          <tc-label for="responseDropdown" [innerHtml]="$safeNavigationMigration(selectedTask?.task?.description)"></tc-label>
           <ng-select  id="responseDropdown" [formControlName]="'response'" [clearable]="false" [items]="selectedTask.task.allowedAnswers"
                       class="tc-select"
                       bindLabel="displayName" bindValue="name" placeholder="Select...">
@@ -37,7 +37,7 @@
       </div>
       <ng-template #textBox>
         <div class="mb-3">
-          <tc-label for="responseAnswer" [innerHtml]="selectedTask?.task?.description"></tc-label>
+          <tc-label for="responseAnswer" [innerHtml]="$safeNavigationMigration(selectedTask?.task?.description)"></tc-label>
           <tc-textarea id="responseAnswer" rows="5"
                        [formControlName]="'response'"></tc-textarea>
         </div>

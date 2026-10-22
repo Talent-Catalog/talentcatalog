@@ -14,7 +14,8 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {provideHttpClientTesting} from "@angular/common/http/testing";
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {By} from "@angular/platform-browser";
 import {DatePipe, TitleCasePipe} from "@angular/common";
 import {
@@ -42,7 +43,6 @@ describe('PublishedDocColumnSelectorComponent', () => {
 
       declarations: [ PublishedDocColumnSelectorComponent],
       imports: [
-        HttpClientTestingModule,
         FormsModule,
         NgbDropdownModule,
         NgSelectModule,
@@ -55,7 +55,9 @@ describe('PublishedDocColumnSelectorComponent', () => {
         CandidateSourceService,
         { provide: NgbActiveModal, useValue: activeModal },
         NgbDropdownConfig,
-        DragulaService
+        DragulaService,
+        provideHttpClient(withXhr(), withInterceptorsFromDi()),
+        provideHttpClientTesting()
       ]
     })
     .compileComponents();

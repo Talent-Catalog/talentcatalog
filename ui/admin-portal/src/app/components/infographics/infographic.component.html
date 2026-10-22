@@ -108,7 +108,7 @@
     <nav class="navbar sticky-top navbar-expand-md second-nav">
       <span class="navbar-brand">Stats for {{statsName}}</span>
         <ul class="navbar-nav ms-auto">
-          <tc-dropdown [hasItems]="statReports?.length > 1">
+          <tc-dropdown [hasItems]="$safeNavigationMigration(statReports?.length) > 1">
             <tc-dropdown-button [type]="'solid'"
                                 [disabled]="!(statReports?.length > 1)"
             >

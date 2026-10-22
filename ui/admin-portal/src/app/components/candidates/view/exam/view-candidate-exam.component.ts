@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, Input, OnChanges, SimpleChanges} from '@angular/core';
+import {Component, Input, OnChanges, SimpleChanges, ChangeDetectionStrategy} from '@angular/core';
 import {Candidate, CandidateExam} from "../../../../model/candidate";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {CandidateExamService} from "../../../../services/candidate-exam.service";
@@ -26,7 +26,9 @@ import {CandidateService} from "../../../../services/candidate.service";
 @Component({
   selector: 'app-view-candidate-exam',
   templateUrl: './view-candidate-exam.component.html',
-  styleUrls: ['./view-candidate-exam.component.scss']
+  styleUrls: ['./view-candidate-exam.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class ViewCandidateExamComponent implements OnChanges {
 

@@ -19,7 +19,8 @@ import {CandidateExamService} from '../../../../services/candidate-exam.service'
 import {CandidateIntakeData, Exam} from '../../../../model/candidate';
 import {NO_ERRORS_SCHEMA} from '@angular/core';
 import {MockCandidate} from "../../../../MockData/MockCandidate";
-import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {provideHttpClientTesting} from "@angular/common/http/testing";
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {AutosaveStatusComponent} from "../../../util/autosave-status/autosave-status.component";
@@ -30,10 +31,12 @@ describe('ExamsComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule,NgSelectModule,FormsModule,ReactiveFormsModule],
+      imports: [NgSelectModule,FormsModule,ReactiveFormsModule],
       declarations: [ExamsComponent,AutosaveStatusComponent],
       providers: [
-        { provide: CandidateExamService, useValue: {} }
+        { provide: CandidateExamService, useValue: {} },
+        provideHttpClient(withXhr(), withInterceptorsFromDi()),
+        provideHttpClientTesting()
       ],
       schemas: [NO_ERRORS_SCHEMA]
     })

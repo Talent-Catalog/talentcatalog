@@ -15,7 +15,7 @@
  */
 
 import {ComponentFixture, TestBed} from '@angular/core/testing';
-import {Component, DebugElement} from '@angular/core';
+import {Component, DebugElement, ChangeDetectionStrategy} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {LowercaseDirective} from './lowercase.directive';
 import {HighlightSearchDirective} from './highlight-search.directive';
@@ -30,7 +30,9 @@ import {ReadOnlyInputsDirective} from "./read-only-inputs.directive";
     <div appLowercase></div>
     <div appHighlightSearch class="highlight">Angular</div>
     <input type="text" [appReadOnlyInputs]="true" value="Text input">
-  `
+  `,
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 class TestComponent {}
 
@@ -43,7 +45,7 @@ describe('DirectiveModule', () => {
     TestBed.configureTestingModule({
       declarations: [TestComponent],
       imports: [CommonModule, DirectiveModule],
-      providers: [NgControl]
+      providers: [{provide: NgControl, useValue: {}}]
     });
 
     fixture = TestBed.createComponent(TestComponent);

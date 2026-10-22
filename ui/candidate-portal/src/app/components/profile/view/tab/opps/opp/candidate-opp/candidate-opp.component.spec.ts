@@ -21,7 +21,8 @@ import {
   Output,
   Pipe,
   PipeTransform,
-  SimpleChange
+  SimpleChange,
+  ChangeDetectionStrategy
 } from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
@@ -34,19 +35,19 @@ import {JobChat, JobChatType} from '../../../../../../../model/chat';
 import {Candidate} from '../../../../../../../model/candidate';
 import {CandidateOpportunity} from '../../../../../../../model/candidate-opportunity';
 
-@Pipe({name: 'translate'})
+@Pipe({name: 'translate', standalone: false})
 class TranslatePipeStub implements PipeTransform {
   transform(value: string): string {
     return value;
   }
 }
 
-@Component({selector: 'app-error', template: ''})
+@Component({selector: 'app-error', template: '', changeDetection: ChangeDetectionStrategy.Eager, standalone: false})
 class ErrorStubComponent {
   @Input() error: unknown;
 }
 
-@Component({selector: 'tc-loading', template: ''})
+@Component({selector: 'tc-loading', template: '', changeDetection: ChangeDetectionStrategy.Eager, standalone: false})
 class TcLoadingStubComponent {
   @Input() loading = false;
 }
@@ -57,7 +58,9 @@ class TcLoadingStubComponent {
     <button (click)="onClick.emit()">
       <ng-content></ng-content>
     </button>
-  `
+  `,
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 class TcButtonStubComponent {
   @Input() size?: string;
@@ -68,7 +71,9 @@ class TcButtonStubComponent {
 
 @Component({
   selector: 'tc-label',
-  template: '<label><ng-content></ng-content></label>'
+  template: '<label><ng-content></ng-content></label>',
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 class TcLabelStubComponent {
   @Input() for?: string;
@@ -76,19 +81,21 @@ class TcLabelStubComponent {
 
 @Component({
   selector: 'tc-table',
-  template: '<ng-content></ng-content>'
+  template: '<ng-content></ng-content>',
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 class TcTableStubComponent {
   @Input() striped = false;
 }
 
-@Component({selector: 'app-view-chat-posts', template: ''})
+@Component({selector: 'app-view-chat-posts', template: '', changeDetection: ChangeDetectionStrategy.Eager, standalone: false})
 class ViewChatPostsStubComponent {
   @Input() chat: unknown;
   @Input() readOnly = false;
 }
 
-@Component({selector: 'app-chat-read-status', template: ''})
+@Component({selector: 'app-chat-read-status', template: '', changeDetection: ChangeDetectionStrategy.Eager, standalone: false})
 class ChatReadStatusStubComponent {
   @Input() chats: unknown;
 }

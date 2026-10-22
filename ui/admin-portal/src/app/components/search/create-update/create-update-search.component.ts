@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {
   AbstractControl,
   UntypedFormBuilder,
@@ -40,7 +40,9 @@ import {SalesforceService} from "../../../services/salesforce.service";
 @Component({
   selector: 'app-create-update-search',
   templateUrl: './create-update-search.component.html',
-  styleUrls: ['./create-update-search.component.scss']
+  styleUrls: ['./create-update-search.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 
 export class CreateUpdateSearchComponent implements OnInit {

@@ -15,7 +15,8 @@
  */
 
 import {TestBed} from '@angular/core/testing';
-import {HttpClientTestingModule, HttpTestingController} from '@angular/common/http/testing';
+import {HttpTestingController, provideHttpClientTesting} from '@angular/common/http/testing';
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from '@angular/common/http';
 import {CandidateStatService, CandidateStatsRequest} from './candidate-stat.service';
 import {environment} from '../../environments/environment';
 import {StatReport} from '../model/stat-report';
@@ -26,8 +27,7 @@ describe('CandidateStatService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
-      providers: [CandidateStatService]
+      providers: [CandidateStatService, provideHttpClient(withXhr(), withInterceptorsFromDi()), provideHttpClientTesting()]
     });
 
     service = TestBed.inject(CandidateStatService);

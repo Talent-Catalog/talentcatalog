@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output, ChangeDetectionStrategy} from '@angular/core';
 
 /**
  * Provides a tooltip displaying and enabling edit and removal of properties of link-formatted text.
@@ -22,7 +22,9 @@ import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 @Component({
   selector: 'app-link-tooltip',
   templateUrl: './link-tooltip.component.html',
-  styleUrls: ['./link-tooltip.component.scss']
+  styleUrls: ['./link-tooltip.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class LinkTooltipComponent implements OnInit {
 

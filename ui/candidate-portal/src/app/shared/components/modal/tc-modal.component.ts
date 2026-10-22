@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Input, Output} from '@angular/core';
+import {Component, EventEmitter, Input, Output, ChangeDetectionStrategy} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {ButtonComponent} from "../button/button.component";
@@ -94,7 +94,7 @@ import {TcIconComponent} from "../icon-component/tc-icon.component";
   selector: 'tc-modal',
   templateUrl: './tc-modal.component.html',
   styleUrls: ['./tc-modal.component.scss'],
-  standalone: true,
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [CommonModule, ButtonComponent, TcIconComponent]
 })
 export class TcModalComponent {

@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {UntypedFormBuilder, UntypedFormGroup} from "@angular/forms";
 import {EnumOption, enumOptions} from "../../../util/enum";
 import {CandidateOpportunityParams} from "../../../model/candidate";
@@ -28,7 +28,9 @@ import {SearchHelpLinkRequest} from "../../../model/help-link";
 @Component({
   selector: 'app-edit-candidate-opp',
   templateUrl: './edit-candidate-opp.component.html',
-  styleUrls: ['./edit-candidate-opp.component.scss']
+  styleUrls: ['./edit-candidate-opp.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class EditCandidateOppComponent implements OnInit {
 

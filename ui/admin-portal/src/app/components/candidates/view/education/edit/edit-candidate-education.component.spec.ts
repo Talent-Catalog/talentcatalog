@@ -24,7 +24,8 @@ import {CountryService} from '../../../../../services/country.service';
 import {EducationMajorService} from '../../../../../services/education-major.service';
 import {MockCandidate} from "../../../../../MockData/MockCandidate";
 import {MockJob} from "../../../../../MockData/MockJob";
-import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {provideHttpClientTesting} from "@angular/common/http/testing";
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {NgSelectModule} from "@ng-select/ng-select";
 
 describe('EditCandidateEducationComponent', () => {
@@ -44,13 +45,15 @@ describe('EditCandidateEducationComponent', () => {
 
     await TestBed.configureTestingModule({
       declarations: [EditCandidateEducationComponent],
-      imports: [HttpClientTestingModule,FormsModule,ReactiveFormsModule, NgSelectModule],
+      imports: [FormsModule,ReactiveFormsModule, NgSelectModule],
       providers: [
         UntypedFormBuilder,
         {provide: NgbActiveModal, useValue: mockActiveModal},
         {provide: CandidateEducationService, useValue: mockCandidateEducationService},
         {provide: CountryService, useValue: mockCountryService},
         {provide: EducationMajorService, useValue: mockEducationMajorService},
+        provideHttpClient(withXhr(), withInterceptorsFromDi()),
+        provideHttpClientTesting(),
       ]
     }).compileComponents();
   });

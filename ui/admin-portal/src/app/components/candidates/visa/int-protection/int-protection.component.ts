@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {UntypedFormBuilder} from '@angular/forms';
 import {EnumOption, enumOptions} from "../../../../util/enum";
 import {YesNo} from "../../../../model/candidate";
@@ -24,7 +24,9 @@ import {CandidateVisaCheckService} from "../../../../services/candidate-visa-che
 @Component({
   selector: 'app-int-protection',
   templateUrl: './int-protection.component.html',
-  styleUrls: ['./int-protection.component.scss']
+  styleUrls: ['./int-protection.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class IntProtectionComponent extends VisaCheckComponentBase implements OnInit {
   public visaProtectionOptions: EnumOption[] = enumOptions(YesNo);

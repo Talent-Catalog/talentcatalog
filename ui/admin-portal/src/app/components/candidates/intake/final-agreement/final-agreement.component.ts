@@ -14,14 +14,16 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {Partner} from "../../../../model/partner";
 import {AuthenticationService} from "../../../../services/authentication.service";
 
 @Component({
   selector: 'app-final-agreement',
   templateUrl: './final-agreement.component.html',
-  styleUrls: ['./final-agreement.component.scss']
+  styleUrls: ['./final-agreement.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class FinalAgreementComponent implements OnInit {
 

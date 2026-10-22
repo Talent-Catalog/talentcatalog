@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {UntypedFormBuilder, UntypedFormGroup} from "@angular/forms";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 
@@ -26,7 +26,9 @@ export interface UpdateLinkRequest {
 @Component({
   selector: 'app-input-link',
   templateUrl: './input-link.component.html',
-  styleUrls: ['./input-link.component.scss']
+  styleUrls: ['./input-link.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class InputLinkComponent implements OnInit {
   form: UntypedFormGroup;

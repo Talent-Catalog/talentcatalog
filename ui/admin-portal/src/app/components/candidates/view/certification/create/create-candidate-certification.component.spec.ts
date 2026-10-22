@@ -15,7 +15,8 @@
  */
 import {ComponentFixture, TestBed, waitForAsync} from "@angular/core/testing";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
-import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {provideHttpClientTesting} from "@angular/common/http/testing";
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {of, throwError} from "rxjs";
 import {CreateCandidateCertificationComponent} from "./create-candidate-certification.component";
@@ -38,11 +39,13 @@ describe('CreateCandidateCertificationComponent', () => {
 
     TestBed.configureTestingModule({
       declarations: [CreateCandidateCertificationComponent,DatePickerComponent],
-      imports: [HttpClientTestingModule,FormsModule,ReactiveFormsModule, NgSelectModule, NgbDatepickerModule],
+      imports: [FormsModule,ReactiveFormsModule, NgSelectModule, NgbDatepickerModule],
       providers: [
         NgbActiveModal,
         { provide: CandidateCertificationService, useValue: candidateCertificationSpy },
-        { provide: CountryService, useValue: countrySpy }
+        { provide: CountryService, useValue: countrySpy },
+        provideHttpClient(withXhr(), withInterceptorsFromDi()),
+        provideHttpClientTesting()
       ]
     }).compileComponents();
 

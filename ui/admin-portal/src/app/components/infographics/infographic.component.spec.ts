@@ -24,7 +24,8 @@ import {NgbDatepickerModule} from "@ng-bootstrap/ng-bootstrap";
 import {ActivatedRoute} from "@angular/router";
 import {DatePickerComponent} from "../util/date-picker/date-picker.component";
 import {RouterLinkStubDirective} from "../login/login.component.spec";
-import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {provideHttpClientTesting} from "@angular/common/http/testing";
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {SavedListService} from "../../services/saved-list.service";
 import {SavedSearchService} from "../../services/saved-search.service";
 import {MockSavedList} from "../../MockData/MockSavedList";
@@ -55,13 +56,15 @@ describe('InfographicComponent', () => {
 
     await TestBed.configureTestingModule({
       declarations: [InfographicComponent,DatePickerComponent,RouterLinkStubDirective],
-      imports: [HttpClientTestingModule,ReactiveFormsModule,FormsModule,NgSelectModule,NgbDatepickerModule],
+      imports: [ReactiveFormsModule,FormsModule,NgSelectModule,NgbDatepickerModule],
       providers: [
         UntypedFormBuilder,
         { provide: ActivatedRoute, useValue: mockActivatedRoute },
         { provide: CandidateStatService, useValue: mockCandidateStatService },
         { provide: SavedListService, useValue: mockSavedListService },
-        { provide: SavedSearchService, useValue: mockSavedSearchService }
+        { provide: SavedSearchService, useValue: mockSavedSearchService },
+        provideHttpClient(withXhr(), withInterceptorsFromDi()),
+        provideHttpClientTesting()
       ]
     }).compileComponents();
   });

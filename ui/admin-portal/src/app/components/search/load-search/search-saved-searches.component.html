@@ -43,7 +43,7 @@
     <ngb-pagination class="float-end"
                     [boundaryLinks]="true"
                     [pageSize]="pageSize"
-                    [collectionSize]="results?.totalElements"
+                    [collectionSize]="$safeNavigationMigration(results?.totalElements)"
                     [(page)]="pageNumber"
                     [maxSize]="5"
                     [ellipses]="true"

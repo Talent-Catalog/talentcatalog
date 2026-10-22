@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component} from '@angular/core';
+import {Component, ChangeDetectionStrategy} from '@angular/core';
 import {IntakeComponentTabBase} from '../../../../util/intake/IntakeComponentTabBase';
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {CandidateService} from "../../../../../services/candidate.service";
@@ -38,7 +38,9 @@ import {EditCandidateContactComponent} from "../../contact/edit/edit-candidate-c
 @Component({
   selector: 'app-candidate-mini-intake-tab',
   templateUrl: './candidate-mini-intake-tab.component.html',
-  styleUrls: ['./candidate-mini-intake-tab.component.scss']
+  styleUrls: ['./candidate-mini-intake-tab.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class CandidateMiniIntakeTabComponent extends IntakeComponentTabBase {
   clickedOldIntake: boolean;

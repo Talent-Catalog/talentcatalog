@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Input, Output, ViewEncapsulation} from '@angular/core';
+import {Component, EventEmitter, Input, Output, ViewEncapsulation, ChangeDetectionStrategy} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {NgbPaginationModule} from '@ng-bootstrap/ng-bootstrap';
 
@@ -41,7 +41,7 @@ import {NgbPaginationModule} from '@ng-bootstrap/ng-bootstrap';
   templateUrl: './tc-pagination.component.html',
   styleUrls: ['./tc-pagination.component.scss'],
   encapsulation: ViewEncapsulation.None,
-  standalone: true,
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [CommonModule, NgbPaginationModule]
 })
 export class TcPaginationComponent {

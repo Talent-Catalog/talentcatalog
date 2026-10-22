@@ -1,9 +1,11 @@
-import {AfterViewInit, Component, ElementRef, EventEmitter, Input, Output, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, ElementRef, EventEmitter, Input, Output, ViewChild, ChangeDetectionStrategy} from '@angular/core';
 
 @Component({
   selector: 'app-show-terms',
   templateUrl: './show-terms.component.html',
-  styleUrls: ['./show-terms.component.scss']
+  styleUrls: ['./show-terms.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class ShowTermsComponent implements AfterViewInit {
   @Input() requestTermsRead = false;

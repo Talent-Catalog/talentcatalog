@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
+import {Component, Input, OnChanges, OnInit, SimpleChanges, ChangeDetectionStrategy} from '@angular/core';
 import {AutoSaveComponentBase} from "../autosave/AutoSaveComponentBase";
 import {UntypedFormBuilder} from "@angular/forms";
 import {Observable} from "rxjs";
@@ -27,7 +27,9 @@ import {isSavedList, isSubmissionList} from "../../../model/saved-list";
 @Component({
   selector: 'app-candidate-source-description',
   templateUrl: './candidate-source-description.component.html',
-  styleUrls: ['./candidate-source-description.component.scss']
+  styleUrls: ['./candidate-source-description.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class CandidateSourceDescriptionComponent extends AutoSaveComponentBase
   implements OnInit, OnChanges {

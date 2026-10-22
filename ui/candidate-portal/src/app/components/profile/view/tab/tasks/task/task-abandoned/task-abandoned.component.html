@@ -1,7 +1,7 @@
 <div class="d-sm-flex flex-column align-items-end mt-4">
   <div>
     <ng-container *ngIf="selectedTask?.abandonedDate">
-      <h5 class="text-success">{{ 'TASKS.TASK.ABANDONEDDATE' | translate }} {{selectedTask?.abandonedDate | date}}</h5>
+      <h5 class="text-success">{{ 'TASKS.TASK.ABANDONEDDATE' | translate }} {{$safeNavigationMigration(selectedTask?.abandonedDate) | date}}</h5>
     </ng-container>
   </div>
 

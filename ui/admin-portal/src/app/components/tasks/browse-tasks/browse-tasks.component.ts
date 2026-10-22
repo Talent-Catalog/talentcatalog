@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {UntypedFormBuilder, UntypedFormGroup} from "@angular/forms";
 import {SearchResults} from "../../../model/search-results";
 import {SearchTaskRequest} from "../../../model/base";
@@ -29,7 +29,9 @@ import {LocalStorageService} from "../../../services/local-storage.service";
 @Component({
   selector: 'app-browse-tasks',
   templateUrl: './browse-tasks.component.html',
-  styleUrls: ['./browse-tasks.component.scss']
+  styleUrls: ['./browse-tasks.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class BrowseTasksComponent implements OnInit {
   private filterKeySuffix: string = 'Filter';

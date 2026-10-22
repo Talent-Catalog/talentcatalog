@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component} from '@angular/core';
+import {Component, ChangeDetectionStrategy} from '@angular/core';
 import {CandidateService} from "../../../../services/candidate.service";
 import {Candidate} from "../../../../model/candidate";
 
@@ -24,7 +24,9 @@ import {Candidate} from "../../../../model/candidate";
 @Component({
   selector: 'app-duplicates-detail',
   templateUrl: './duplicates-detail.component.html',
-  styleUrls: ['./duplicates-detail.component.scss']
+  styleUrls: ['./duplicates-detail.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class DuplicatesDetailComponent {
   error = null;

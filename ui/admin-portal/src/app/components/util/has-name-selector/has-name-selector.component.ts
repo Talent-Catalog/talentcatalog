@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {HasName} from "../../../model/base";
 import {UntypedFormBuilder, UntypedFormGroup} from "@angular/forms";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
@@ -30,7 +30,9 @@ import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 @Component({
   selector: 'app-has-name-selector',
   templateUrl: './has-name-selector.component.html',
-  styleUrls: ['./has-name-selector.component.scss']
+  styleUrls: ['./has-name-selector.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class HasNameSelectorComponent implements OnInit {
   cancel: string = "Cancel";

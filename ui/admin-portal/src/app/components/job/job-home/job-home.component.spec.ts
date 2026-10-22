@@ -19,7 +19,8 @@ import {JobHomeComponent} from './job-home.component';
 import {CandidateOpportunityService} from '../../../services/candidate-opportunity.service';
 import {JobService} from '../../../services/job.service';
 import {of, throwError} from 'rxjs';
-import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {provideHttpClientTesting} from "@angular/common/http/testing";
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {ReactiveFormsModule, UntypedFormBuilder} from "@angular/forms";
 import {NgbModule} from "@ng-bootstrap/ng-bootstrap";
 import {JobsWithDetailComponent} from "../jobs-with-detail/jobs-with-detail.component";
@@ -45,7 +46,6 @@ describe('JobHomeComponent', () => {
      TestBed.configureTestingModule({
       declarations: [JobHomeComponent,SortedByComponent,ChatReadStatusComponent,JobsWithDetailComponent,JobsComponent],
       imports: [
-        HttpClientTestingModule,
         ReactiveFormsModule,
         NgbModule,
         NgSelectModule
@@ -56,7 +56,9 @@ describe('JobHomeComponent', () => {
         { provide: CandidateService, useValue: candidateServiceSpy },
         { provide: UntypedFormBuilder, useClass: UntypedFormBuilder },
         { provide: ActivatedRoute, useValue: { queryParams: of({}) } },
-        { provide: Router, useValue: { navigateByUrl: jasmine.createSpy('navigateByUrl') }}
+        { provide: Router, useValue: { navigateByUrl: jasmine.createSpy('navigateByUrl') }},
+        provideHttpClient(withXhr(), withInterceptorsFromDi()),
+        provideHttpClientTesting()
       ]
     })
     .compileComponents();

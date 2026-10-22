@@ -18,7 +18,8 @@ import {ComponentFixture, fakeAsync, TestBed, tick} from "@angular/core/testing"
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {EducationLevelService} from "../../../../services/education-level.service";
 import {ReactiveFormsModule, UntypedFormBuilder} from "@angular/forms";
-import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {provideHttpClientTesting} from "@angular/common/http/testing";
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {EducationLevel} from "../../../../model/education-level";
 import {of, throwError} from "rxjs";
@@ -38,10 +39,12 @@ describe('EditEducationLevelComponent', () => {
 
     await TestBed.configureTestingModule({
       declarations: [EditEducationLevelComponent],
-      imports: [HttpClientTestingModule,ReactiveFormsModule,NgSelectModule],
+      imports: [ReactiveFormsModule,NgSelectModule],
       providers: [
         { provide: EducationLevelService, useValue: educationLevelServiceSpyObj },
-        { provide: NgbActiveModal, useValue: ngbActiveModalSpyObj }
+        { provide: NgbActiveModal, useValue: ngbActiveModalSpyObj },
+        provideHttpClient(withXhr(), withInterceptorsFromDi()),
+        provideHttpClientTesting()
       ]
     }).compileComponents();
 

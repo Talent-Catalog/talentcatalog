@@ -21,7 +21,8 @@ import {
   OnChanges,
   OnInit,
   Output,
-  SimpleChanges
+  SimpleChanges,
+  ChangeDetectionStrategy
 } from '@angular/core';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {CandidateService} from "../../../services/candidate.service";
@@ -35,7 +36,9 @@ import {CandidateSource} from "../../../model/base";
 @Component({
   selector: 'app-candidate-review-status-item',
   templateUrl: './candidate-review-status-item.component.html',
-  styleUrls: ['./candidate-review-status-item.component.scss']
+  styleUrls: ['./candidate-review-status-item.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class CandidateReviewStatusItemComponent implements OnInit, OnChanges {
 

@@ -17,7 +17,8 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {ReactiveFormsModule, UntypedFormBuilder} from '@angular/forms';
 import {IeltsLevelComponent} from './ielts-level.component';
-import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {provideHttpClientTesting} from "@angular/common/http/testing";
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {AutosaveStatusComponent} from "../../../../util/autosave-status/autosave-status.component";
 
 describe('IeltsLevelComponent', () => {
@@ -28,8 +29,8 @@ describe('IeltsLevelComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [IeltsLevelComponent,AutosaveStatusComponent],
-      imports: [HttpClientTestingModule,ReactiveFormsModule],
-      providers: [UntypedFormBuilder]
+      imports: [ReactiveFormsModule],
+      providers: [UntypedFormBuilder, provideHttpClient(withXhr(), withInterceptorsFromDi()), provideHttpClientTesting()]
     }).compileComponents();
   });
 

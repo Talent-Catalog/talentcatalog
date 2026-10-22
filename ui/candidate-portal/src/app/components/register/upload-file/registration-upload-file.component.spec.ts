@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, EventEmitter, Input, Output} from '@angular/core';
+import {Component, EventEmitter, Input, Output, ChangeDetectionStrategy} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 import {NgbPopoverModule} from '@ng-bootstrap/ng-bootstrap';
@@ -25,7 +25,9 @@ import {RegistrationService} from '../../../services/registration.service';
 
 @Component({
   selector: 'tc-accordion',
-  template: '<ng-content></ng-content>'
+  template: '<ng-content></ng-content>',
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 class TcAccordionStubComponent {
   @Input() activeIndexes?: number | null;
@@ -34,13 +36,17 @@ class TcAccordionStubComponent {
 
 @Component({
   selector: 'tc-accordion-item',
-  template: '<ng-content></ng-content>'
+  template: '<ng-content></ng-content>',
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 class TcAccordionItemStubComponent {}
 
 @Component({
   selector: 'app-candidate-attachments',
-  template: ''
+  template: '',
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 class CandidateAttachmentsStubComponent {
   @Input() cv?: boolean;
@@ -48,7 +54,9 @@ class CandidateAttachmentsStubComponent {
 
 @Component({
   selector: 'app-registration-footer',
-  template: ''
+  template: '',
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 class RegistrationFooterStubComponent {
   @Input() type?: string;

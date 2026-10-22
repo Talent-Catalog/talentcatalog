@@ -51,7 +51,7 @@
             <h6 class="fw-bold">{{experience.startDate | date: 'customMonthYear' }} - {{experience.endDate | date: 'customMonthYear' }}</h6>
 
 
-            <p class="ms-3" [ngClass]="isHtml(experience?.description)?'html':'text'" [innerHtml]="experience.description">
+            <p class="ms-3" [ngClass]="isHtml($safeNavigationMigration(experience?.description))?'html':'text'" [innerHtml]="experience.description">
           </div>
         </div>
 

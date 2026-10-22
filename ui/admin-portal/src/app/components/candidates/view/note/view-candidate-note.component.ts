@@ -21,7 +21,8 @@ import {
   OnChanges,
   OnInit,
   Output,
-  SimpleChanges
+  SimpleChanges,
+  ChangeDetectionStrategy
 } from '@angular/core';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {Candidate} from '../../../../model/candidate';
@@ -33,7 +34,9 @@ import {CreateCandidateNoteComponent} from './create/create-candidate-note.compo
 @Component({
   selector: 'app-view-candidate-note',
   templateUrl: './view-candidate-note.component.html',
-  styleUrls: ['./view-candidate-note.component.scss']
+  styleUrls: ['./view-candidate-note.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class ViewCandidateNoteComponent implements OnInit, OnChanges {
 

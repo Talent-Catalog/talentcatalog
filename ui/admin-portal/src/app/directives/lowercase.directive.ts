@@ -18,7 +18,8 @@ import {Directive, ElementRef, HostListener} from '@angular/core';
 import {NgControl} from "@angular/forms";
 
 @Directive({
-  selector: '[appLowercase]'
+  selector: '[appLowercase]',
+  standalone: false
 })
 export class LowercaseDirective {
 

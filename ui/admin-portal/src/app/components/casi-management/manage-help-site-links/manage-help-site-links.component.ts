@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {SharedServiceLink} from '../../../model/shared-service-link';
 import {CasiAdminService} from '../../../services/casi-admin.service';
 
@@ -26,7 +26,9 @@ import {CasiAdminService} from '../../../services/casi-admin.service';
 @Component({
   selector: 'app-manage-help-site-links',
   templateUrl: './manage-help-site-links.component.html',
-  styleUrls: ['./manage-help-site-links.component.scss']
+  styleUrls: ['./manage-help-site-links.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class ManageHelpSiteLinksComponent implements OnInit {
   @Input() provider!: string;

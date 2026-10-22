@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output, ChangeDetectionStrategy} from '@angular/core';
 import {forkJoin} from "rxjs";
 import {Candidate} from "../../../../../../model/candidate";
 import {
@@ -21,7 +21,9 @@ import {CasiPortalService} from "../../../../../../services/casi-portal.service"
 @Component({
   selector: 'app-reference',
   templateUrl: './reference.component.html',
-  styleUrl: './reference.component.scss'
+  styleUrl: './reference.component.scss',
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class ReferenceComponent implements OnInit {
   protected readonly ResourceStatus = ResourceStatus;

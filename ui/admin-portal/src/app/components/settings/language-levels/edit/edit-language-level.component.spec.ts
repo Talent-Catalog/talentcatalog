@@ -19,7 +19,8 @@ import {ReactiveFormsModule, UntypedFormBuilder} from "@angular/forms";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {LanguageLevelService} from "../../../../services/language-level.service";
 import {NgSelectModule} from "@ng-select/ng-select";
-import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {provideHttpClientTesting} from "@angular/common/http/testing";
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {LanguageLevel} from "../../../../model/language-level";
 import {of, throwError} from "rxjs";
 
@@ -40,10 +41,12 @@ describe('EditLanguageLevelComponent', () => {
 
     await TestBed.configureTestingModule({
       declarations: [EditLanguageLevelComponent],
-      imports: [ReactiveFormsModule,NgSelectModule,HttpClientTestingModule],
+      imports: [ReactiveFormsModule,NgSelectModule],
       providers: [
         { provide: LanguageLevelService, useValue: languageLevelServiceSpyObj },
-        { provide: NgbActiveModal, useValue: ngbActiveModalSpyObj }
+        { provide: NgbActiveModal, useValue: ngbActiveModalSpyObj },
+        provideHttpClient(withXhr(), withInterceptorsFromDi()),
+        provideHttpClientTesting()
       ]
     }).compileComponents();
 

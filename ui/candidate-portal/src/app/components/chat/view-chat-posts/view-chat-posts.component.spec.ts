@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, EventEmitter, Input, Output, Pipe, PipeTransform} from '@angular/core';
+import {Component, EventEmitter, Input, Output, Pipe, PipeTransform, ChangeDetectionStrategy} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 import {EMPTY, of} from 'rxjs';
@@ -23,19 +23,19 @@ import {ChatService} from '../../../services/chat.service';
 import {ChatPostService} from '../../../services/chat-post.service';
 import {JobChatType} from '../../../model/chat';
 
-@Pipe({name: 'translate'})
+@Pipe({name: 'translate', standalone: false})
 class TranslatePipeStub implements PipeTransform {
   transform(value: string): string {
     return value;
   }
 }
 
-@Component({selector: 'tc-loading', template: ''})
+@Component({selector: 'tc-loading', template: '', changeDetection: ChangeDetectionStrategy.Eager, standalone: false})
 class TcLoadingStubComponent {
   @Input() loading = false;
 }
 
-@Component({selector: 'tc-alert', template: '<ng-content></ng-content>'})
+@Component({selector: 'tc-alert', template: '<ng-content></ng-content>', changeDetection: ChangeDetectionStrategy.Eager, standalone: false})
 class TcAlertStubComponent {
   @Input() type?: string;
 }
@@ -43,6 +43,8 @@ class TcAlertStubComponent {
 @Component({
   selector: 'tc-button',
   template: '<button (click)="onClick.emit()"><ng-content></ng-content></button>',
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 class TcButtonStubComponent {
   @Input() color?: string;
@@ -51,18 +53,18 @@ class TcButtonStubComponent {
   @Output() onClick = new EventEmitter<void>();
 }
 
-@Component({selector: 'tc-icon', template: '<ng-content></ng-content>'})
+@Component({selector: 'tc-icon', template: '<ng-content></ng-content>', changeDetection: ChangeDetectionStrategy.Eager, standalone: false})
 class TcIconStubComponent {
   @Input() color?: string;
 }
 
-@Component({selector: 'app-view-post', template: ''})
+@Component({selector: 'app-view-post', template: '', changeDetection: ChangeDetectionStrategy.Eager, standalone: false})
 class ViewPostStubComponent {
   @Input() readOnly = false;
   @Input() post: unknown;
 }
 
-@Component({selector: 'app-create-update-post', template: ''})
+@Component({selector: 'app-create-update-post', template: '', changeDetection: ChangeDetectionStrategy.Eager, standalone: false})
 class CreateUpdatePostStubComponent {
   @Input() chat: unknown;
 }

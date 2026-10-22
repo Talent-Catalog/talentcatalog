@@ -19,7 +19,8 @@ import {Pipe, PipeTransform} from '@angular/core';
  * Taken from here: https://careydevelopment.us/blog/angular-how-to-truncate-text-with-a-custom-pipe
  */
 @Pipe({
-  name: 'truncate'
+  name: 'truncate',
+  standalone: false
 })
 export class TruncatePipe implements PipeTransform {
 

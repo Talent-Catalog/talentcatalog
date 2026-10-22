@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output, ChangeDetectionStrategy} from '@angular/core';
 import {UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators} from "@angular/forms";
 import {ActivatedRoute} from "@angular/router";
 import {BrandingService} from "../../../services/branding.service";
@@ -29,7 +29,9 @@ import {EMAIL_REGEX, sanitizeEmailInput} from "../../../model/base";
 @Component({
   selector: 'app-registration-create-account',
   templateUrl: './registration-create-account.component.html',
-  styleUrls: ['./registration-create-account.component.scss']
+  styleUrls: ['./registration-create-account.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class RegistrationCreateAccountComponent implements OnInit {
 

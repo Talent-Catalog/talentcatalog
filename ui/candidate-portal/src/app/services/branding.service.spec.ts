@@ -15,7 +15,8 @@
  */
 
 import {TestBed} from '@angular/core/testing';
-import {HttpClientTestingModule, HttpTestingController} from '@angular/common/http/testing';
+import {HttpTestingController, provideHttpClientTesting} from '@angular/common/http/testing';
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from '@angular/common/http';
 import {BrandingInfo, BrandingService} from './branding.service';
 import {AuthenticationService} from './authentication.service';
 import {environment} from '../../environments/environment';
@@ -31,10 +32,11 @@ describe('BrandingService', () => {
     const authSpy = jasmine.createSpyObj('AuthenticationService', ['isRegistered', 'getTcInstanceType']);
 
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
       providers: [
         BrandingService,
-        { provide: AuthenticationService, useValue: authSpy }
+        { provide: AuthenticationService, useValue: authSpy },
+        provideHttpClient(withXhr(), withInterceptorsFromDi()),
+        provideHttpClientTesting()
       ]
     });
 

@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnInit, ChangeDetectionStrategy} from '@angular/core';
 
 
 import {SearchResults} from '../../../model/search-results';
@@ -33,7 +33,9 @@ import {FileSelectorComponent} from "../../util/file-selector/file-selector.comp
 @Component({
   selector: 'app-search-occupations',
   templateUrl: './search-occupations.component.html',
-  styleUrls: ['./search-occupations.component.scss']
+  styleUrls: ['./search-occupations.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class SearchOccupationsComponent implements OnInit {
 

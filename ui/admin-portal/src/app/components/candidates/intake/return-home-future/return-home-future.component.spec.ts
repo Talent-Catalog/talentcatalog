@@ -20,7 +20,8 @@ import {NgSelectModule} from "@ng-select/ng-select";
 import {ReactiveFormsModule} from "@angular/forms";
 import {AutosaveStatusComponent} from "../../../util/autosave-status/autosave-status.component";
 import {YesNoUnsure} from "../../../../model/candidate";
-import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {provideHttpClientTesting} from "@angular/common/http/testing";
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 
 describe('ReturnHomeFutureComponent', () => {
   let component: ReturnHomeFutureComponent;
@@ -29,9 +30,11 @@ describe('ReturnHomeFutureComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [ ReturnHomeFutureComponent, AutosaveStatusComponent ],
-      imports: [HttpClientTestingModule, ReactiveFormsModule, NgSelectModule ],
+      imports: [ReactiveFormsModule, NgSelectModule ],
       providers: [
-        { provide: CandidateService }
+        { provide: CandidateService },
+        provideHttpClient(withXhr(), withInterceptorsFromDi()),
+        provideHttpClientTesting()
       ]
     })
     .compileComponents();

@@ -1,4 +1,4 @@
-import {Component, HostBinding, Input} from '@angular/core';
+import {Component, HostBinding, Input, ChangeDetectionStrategy} from '@angular/core';
 
 /**
  * @component FieldComponent
@@ -33,6 +33,7 @@ import {Component, HostBinding, Input} from '@angular/core';
   selector: 'tc-field',
   templateUrl: './field.component.html',
   styleUrls: ['./field.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: true
 })
 export class FieldComponent {

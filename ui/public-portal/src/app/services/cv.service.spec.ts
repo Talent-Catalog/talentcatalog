@@ -14,11 +14,12 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {HttpClientTestingModule, HttpTestingController} from '@angular/common/http/testing';
+import {HttpTestingController, provideHttpClientTesting} from '@angular/common/http/testing';
 import {TestBed} from '@angular/core/testing';
 
 import {Candidate} from '../model/candidate';
 import {CvService} from './cv.service';
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from '@angular/common/http';
 
 describe('CvService', () => {
   let service: CvService;
@@ -26,7 +27,7 @@ describe('CvService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule]
+      providers: [provideHttpClient(withXhr(), withInterceptorsFromDi()), provideHttpClientTesting()]
     });
 
     service = TestBed.inject(CvService);

@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output, ChangeDetectionStrategy} from '@angular/core';
 import {Job} from "../../../../../model/job";
 import {PartnerService} from "../../../../../services/partner.service";
 import {
@@ -40,7 +40,9 @@ MODEL: Modal popups.
 @Component({
   selector: 'app-view-job-source-contacts',
   templateUrl: './view-job-source-contacts.component.html',
-  styleUrls: ['./view-job-source-contacts.component.scss']
+  styleUrls: ['./view-job-source-contacts.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class ViewJobSourceContactsComponent implements OnInit {
   @Input() job: Job;

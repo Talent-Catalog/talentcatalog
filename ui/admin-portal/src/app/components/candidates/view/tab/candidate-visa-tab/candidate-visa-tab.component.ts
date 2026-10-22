@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, EventEmitter, Input, OnChanges, Output, SimpleChanges} from '@angular/core';
+import {Component, EventEmitter, Input, OnChanges, Output, SimpleChanges, ChangeDetectionStrategy} from '@angular/core';
 import {CandidateService} from '../../../../../services/candidate.service';
 import {UntypedFormBuilder, UntypedFormGroup} from '@angular/forms';
 import {CountryService} from '../../../../../services/country.service';
@@ -36,7 +36,9 @@ import {forkJoin} from "rxjs";
 @Component({
   selector: 'app-candidate-visa-tab',
   templateUrl: './candidate-visa-tab.component.html',
-  styleUrls: ['./candidate-visa-tab.component.scss']
+  styleUrls: ['./candidate-visa-tab.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class CandidateVisaTabComponent implements OnChanges {
   @Input() candidate: Candidate;

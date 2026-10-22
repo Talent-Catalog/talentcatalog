@@ -21,7 +21,7 @@ import {of} from "rxjs";
 import {ServicesComponent} from './services.component';
 import {ServiceProvider} from "../../../../../model/services";
 
-@Pipe({name: 'translate'})
+@Pipe({name: 'translate', standalone: false})
 class MockTranslatePipe implements PipeTransform {
   transform(value: string): string {
     return value;

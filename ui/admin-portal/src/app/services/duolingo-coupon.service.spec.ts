@@ -1,5 +1,6 @@
 import { TestBed } from '@angular/core/testing';
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
+import { provideHttpClient, withInterceptorsFromDi, withXhr } from '@angular/common/http';
 import { DuolingoCouponService } from './duolingo-coupon.service';
 import { environment } from '../../environments/environment';
 import {
@@ -13,8 +14,7 @@ describe('DuolingoCouponService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
-      providers: [DuolingoCouponService],
+      providers: [DuolingoCouponService, provideHttpClient(withXhr(), withInterceptorsFromDi()), provideHttpClientTesting()],
     });
 
     service = TestBed.inject(DuolingoCouponService);

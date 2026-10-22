@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {
   CandidateAttachmentService,
   UpdateCandidateAttachmentRequest
@@ -31,7 +31,9 @@ import {UploadType} from "../../../model/task";
 @Component({
   selector: 'app-candidate-attachments',
   templateUrl: './candidate-attachments.component.html',
-  styleUrls: ['./candidate-attachments.component.scss']
+  styleUrls: ['./candidate-attachments.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class CandidateAttachmentsComponent implements OnInit {
 

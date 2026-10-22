@@ -19,7 +19,8 @@ import {HomeComponent} from './home.component';
 import {NgbNavModule} from '@ng-bootstrap/ng-bootstrap';
 import {SavedSearchService} from '../../services/saved-search.service';
 import {AuthenticationService} from '../../services/authentication.service';
-import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {provideHttpClientTesting} from "@angular/common/http/testing";
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {LocalStorageService} from "../../services/local-storage.service";
 import {ActivatedRoute} from "@angular/router";
 import {of} from "rxjs";
@@ -39,14 +40,15 @@ describe('HomeComponent', () => {
     TestBed.configureTestingModule({
       declarations: [HomeComponent],
       imports: [
-        NgbNavModule,
-        HttpClientTestingModule
+        NgbNavModule
       ],
       providers: [
         { provide: LocalStorageService, useValue: localStorageSpy },
         SavedSearchService,
         AuthenticationService,
         { provide: ActivatedRoute, useValue: { queryParams: of({}) } },
+        provideHttpClient(withXhr(), withInterceptorsFromDi()),
+        provideHttpClientTesting(),
       ]
     }).compileComponents();
   }));

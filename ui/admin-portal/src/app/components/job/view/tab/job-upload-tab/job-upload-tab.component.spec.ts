@@ -19,7 +19,8 @@ import {JobUploadTabComponent} from './job-upload-tab.component';
 import {Job} from '../../../../../model/job';
 import {MockJob} from "../../../../../MockData/MockJob";
 import {ViewJobUploadsComponent} from "../../uploads/view-job-uploads/view-job-uploads.component";
-import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {provideHttpClientTesting} from "@angular/common/http/testing";
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 
 describe('JobUploadTabComponent', () => {
   let component: JobUploadTabComponent;
@@ -27,7 +28,7 @@ describe('JobUploadTabComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports:[HttpClientTestingModule],
+      providers: [provideHttpClient(withXhr(), withInterceptorsFromDi()), provideHttpClientTesting()],
       declarations: [ JobUploadTabComponent ,ViewJobUploadsComponent]
     })
     .compileComponents();

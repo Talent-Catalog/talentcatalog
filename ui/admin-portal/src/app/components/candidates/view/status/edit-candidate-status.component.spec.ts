@@ -21,7 +21,8 @@ import {CandidateStatus, UpdateCandidateStatusInfo} from "../../../../model/cand
 import {
   CandidateStatusSelectorComponent
 } from "../../../util/candidate-status-selector/candidate-status-selector.component";
-import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {provideHttpClientTesting} from "@angular/common/http/testing";
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {NgxWigModule} from "ngx-wig";
@@ -39,9 +40,11 @@ describe('EditCandidateStatusComponent', () => {
         EditCandidateStatusComponent,
         CandidateStatusSelectorComponent
       ],
-      imports: [HttpClientTestingModule,FormsModule,ReactiveFormsModule, NgSelectModule,NgxWigModule],
+      imports: [FormsModule,ReactiveFormsModule, NgSelectModule,NgxWigModule],
       providers: [
-        { provide: NgbActiveModal, useValue: activeModalSpy }
+        { provide: NgbActiveModal, useValue: activeModalSpy },
+        provideHttpClient(withXhr(), withInterceptorsFromDi()),
+        provideHttpClientTesting()
       ]
     }).compileComponents();
 

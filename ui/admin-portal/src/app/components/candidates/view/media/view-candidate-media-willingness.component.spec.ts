@@ -19,7 +19,8 @@ import {NgbActiveModal, NgbModal, NgbModalModule, NgbNavModule} from "@ng-bootst
 import {MockCandidate} from "../../../../MockData/MockCandidate";
 import {By} from "@angular/platform-browser";
 import {CandidateService} from "../../../../services/candidate.service";
-import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {provideHttpClientTesting} from "@angular/common/http/testing";
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {CUSTOM_ELEMENTS_SCHEMA} from "@angular/core";
 
 describe('ViewCandidateMediaWillingnessComponent', () => {
@@ -33,11 +34,13 @@ describe('ViewCandidateMediaWillingnessComponent', () => {
 
     await TestBed.configureTestingModule({
       declarations: [ViewCandidateMediaWillingnessComponent],
-      imports: [NgbNavModule, HttpClientTestingModule, NgbModalModule],
+      imports: [NgbNavModule, NgbModalModule],
       providers: [
         { provide: CandidateService, userValue: mockCandidateService },
         { provide: NgbModal, useValue: mockModalService },
         NgbActiveModal,
+        provideHttpClient(withXhr(), withInterceptorsFromDi()),
+        provideHttpClientTesting(),
       ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
     })

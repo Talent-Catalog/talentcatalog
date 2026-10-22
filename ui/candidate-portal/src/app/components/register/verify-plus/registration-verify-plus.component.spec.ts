@@ -24,7 +24,7 @@ import {RegistrationService} from '../../../services/registration.service';
 import {AuthenticationService} from '../../../services/authentication.service';
 import {environment} from '../../../../environments/environment';
 
-@Pipe({name: 'translate'})
+@Pipe({name: 'translate', standalone: false})
 class MockTranslatePipe implements PipeTransform {
   transform(value: string): string {
     return value;

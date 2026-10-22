@@ -21,7 +21,8 @@ import {JobChat} from "../../../model/chat";
 import {MockJobChat} from "../../../MockData/MockJobChat";
 import {ViewChatComponent} from "../view-chat/view-chat.component";
 import {ChatReadStatusComponent} from "../chat-read-status/chat-read-status.component";
-import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {provideHttpClientTesting} from "@angular/common/http/testing";
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {ChatService} from "../../../services/chat.service";
 import {TranslateModule} from "@ngx-translate/core";
 
@@ -37,9 +38,11 @@ describe('ChatsComponent', () => {
 
     await TestBed.configureTestingModule({
       declarations: [ ChatsComponent,ViewChatComponent,ChatReadStatusComponent ],
-      imports: [HttpClientTestingModule, TranslateModule.forRoot({})],
+      imports: [TranslateModule.forRoot({})],
       providers:[
-        { provide: ChatService, useValue: chatServiceSpy }
+        { provide: ChatService, useValue: chatServiceSpy },
+        provideHttpClient(withXhr(), withInterceptorsFromDi()),
+        provideHttpClientTesting()
       ]
     })
     .compileComponents();

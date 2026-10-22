@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {IntakeComponentBase} from '../../../util/intake/IntakeComponentBase';
 import {EnumOption, enumOptions} from '../../../../util/enum';
 import {YesNoUnsure} from '../../../../model/candidate';
@@ -24,7 +24,9 @@ import {CandidateService} from '../../../../services/candidate.service';
 @Component({
   selector: 'app-visa-reject',
   templateUrl: './visa-reject.component.html',
-  styleUrls: ['./visa-reject.component.scss']
+  styleUrls: ['./visa-reject.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class VisaRejectComponent extends IntakeComponentBase implements OnInit {
 

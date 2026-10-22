@@ -21,7 +21,8 @@ import {NgbModule} from "@ng-bootstrap/ng-bootstrap";
 import {MockUser} from "../../MockData/MockUser";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {NgSelectModule} from "@ng-select/ng-select";
-import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {provideHttpClientTesting} from "@angular/common/http/testing";
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {SearchUsersComponent} from "./users/search-users.component";
 import {LocalStorageService} from "../../services/local-storage.service";
 
@@ -44,7 +45,6 @@ describe('SettingsComponent', () => {
         FormsModule,
         ReactiveFormsModule,
         NgSelectModule,
-        HttpClientTestingModule,
       ],
       declarations: [SettingsComponent,SearchUsersComponent],
       providers: [
@@ -52,6 +52,8 @@ describe('SettingsComponent', () => {
         { provide: AuthorizationService, useValue: authSpy },
         { provide: AuthenticationService, useValue: authMock },
         { provide: LocalStorageService, useValue: localStorageMock },
+        provideHttpClient(withXhr(), withInterceptorsFromDi()),
+        provideHttpClientTesting(),
 
       ]
     }).compileComponents();

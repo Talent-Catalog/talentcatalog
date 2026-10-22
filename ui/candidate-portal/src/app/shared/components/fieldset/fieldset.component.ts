@@ -1,4 +1,4 @@
-import {Component, Input} from '@angular/core';
+import {Component, Input, ChangeDetectionStrategy} from '@angular/core';
 
 /**
  * @component FieldsetComponent
@@ -29,6 +29,7 @@ import {Component, Input} from '@angular/core';
   selector: 'tc-fieldset',
   templateUrl: './fieldset.component.html',
   styleUrls: ['./fieldset.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: true
 })
 export class FieldsetComponent {

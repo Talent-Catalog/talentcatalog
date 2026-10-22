@@ -17,8 +17,9 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {VisaCheckAuComponent} from './visa-check-au.component';
 import {NgbAccordionModule, NgbModal} from '@ng-bootstrap/ng-bootstrap';
-import {Component, CUSTOM_ELEMENTS_SCHEMA} from '@angular/core';
-import {HttpClientTestingModule} from '@angular/common/http/testing';
+import {Component, CUSTOM_ELEMENTS_SCHEMA, ChangeDetectionStrategy} from '@angular/core';
+import {provideHttpClientTesting} from '@angular/common/http/testing';
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from '@angular/common/http';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {NgSelectModule} from '@ng-select/ng-select';
 import {LocalStorageService} from '../../../../../../services/local-storage.service';
@@ -45,7 +46,9 @@ import {
     <textarea></textarea>
     <app-date-picker></app-date-picker>
     <ngx-wig></ngx-wig>
-  `
+  `,
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 class MockIntProtectionComponent {
   // No isEditable method; inputs are controlled by parent directive
@@ -69,7 +72,6 @@ describe('VisaCheckAuComponent', () => {
         HealthAssessmentComponent
       ],
       imports: [
-        HttpClientTestingModule,
         FormsModule,
         ReactiveFormsModule,
         NgbAccordionModule,
@@ -78,7 +80,9 @@ describe('VisaCheckAuComponent', () => {
       providers: [
         {provide: NgbModal, useValue: {}},
         {provide: LocalStorageService, useValue: {}},
-        {provide: AuthorizationService, useValue: authServiceSpyObj}
+        {provide: AuthorizationService, useValue: authServiceSpyObj},
+        provideHttpClient(withXhr(), withInterceptorsFromDi()),
+        provideHttpClientTesting()
       ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA]
     }).compileComponents();

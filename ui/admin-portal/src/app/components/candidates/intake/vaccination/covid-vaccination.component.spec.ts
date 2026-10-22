@@ -15,7 +15,8 @@
  */
 import {CovidVaccinationComponent} from "./covid-vaccination.component";
 import {ComponentFixture, TestBed} from "@angular/core/testing";
-import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {provideHttpClientTesting} from "@angular/common/http/testing";
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {NgbDatepickerModule} from "@ng-bootstrap/ng-bootstrap";
@@ -31,9 +32,11 @@ describe('CovidVaccinationComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [ CovidVaccinationComponent, DatePickerComponent, AutosaveStatusComponent ], // Include the date picker component
-      imports: [HttpClientTestingModule, NgbDatepickerModule, NgSelectModule, FormsModule, ReactiveFormsModule ],
+      imports: [NgbDatepickerModule, NgSelectModule, FormsModule, ReactiveFormsModule ],
       providers: [
-        { provide: CandidateService }
+        { provide: CandidateService },
+        provideHttpClient(withXhr(), withInterceptorsFromDi()),
+        provideHttpClientTesting()
       ]
     })
     .compileComponents();

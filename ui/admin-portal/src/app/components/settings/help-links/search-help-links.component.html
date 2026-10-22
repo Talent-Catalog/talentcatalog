@@ -67,9 +67,9 @@
          rel="noopener">{{helpLink.link}}</a>
     </td>
     <td>{{helpLink?.country?.name}}</td>
-    <td>{{caseStageKeyToValue(helpLink?.caseStage)}}</td>
-    <td>{{jobStageKeyToValue(helpLink?.jobStage)}}</td>
-    <td>{{focusKeyToValue(helpLink?.focus)}}</td>
+    <td>{{caseStageKeyToValue($safeNavigationMigration(helpLink?.caseStage))}}</td>
+    <td>{{jobStageKeyToValue($safeNavigationMigration(helpLink?.jobStage))}}</td>
+    <td>{{focusKeyToValue($safeNavigationMigration(helpLink?.focus))}}</td>
     <td>{{helpLink?.nextStepInfo?.nextStepName}}</td>
     <td>{{helpLink?.nextStepInfo?.nextStepText}}</td>
     <td>{{helpLink?.nextStepInfo?.nextStepDays}}</td>

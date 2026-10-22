@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {NgbActiveModal, NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {UntypedFormBuilder, UntypedFormGroup, Validators} from "@angular/forms";
 import {ConfirmationComponent} from "../../util/confirm/confirmation.component";
@@ -28,7 +28,9 @@ import {DuolingoCouponService} from "../../../services/duolingo-coupon.service";
 @Component({
   selector: 'app-assign-tasks-list',
   templateUrl: './assign-tasks-list.component.html',
-  styleUrls: ['./assign-tasks-list.component.scss']
+  styleUrls: ['./assign-tasks-list.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class AssignTasksListComponent implements OnInit {
   assignForm: UntypedFormGroup;

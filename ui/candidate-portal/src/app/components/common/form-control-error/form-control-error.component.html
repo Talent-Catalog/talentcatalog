@@ -25,7 +25,7 @@
   </tc-error-message>
 
   <tc-error-message *ngIf="control?.errors?.minlength">
-    {{ 'FORM.ERROR.MINLENGTH' | translate: {length: control?.errors?.minlength?.requiredLength} }}
+    {{ 'FORM.ERROR.MINLENGTH' | translate: {length: $safeNavigationMigration(control?.errors?.minlength?.requiredLength)} }}
   </tc-error-message>
 
 <!--  <small *ngIf="control?.errors?.pattern && control?.errors?.pattern.requiredPattern === '^[\\w-]*$'">-->
@@ -37,7 +37,7 @@
 <!--  </small>-->
 
   <tc-error-message *ngIf="control?.errors?.min">
-    {{ 'FORM.ERROR.MINVALUE' | translate: {min: control?.errors?.min?.min} }}
+    {{ 'FORM.ERROR.MINVALUE' | translate: {min: $safeNavigationMigration(control?.errors?.min?.min)} }}
   </tc-error-message>
 
   <tc-error-message *ngIf="control?.errors?.ngbDate?.invalid">

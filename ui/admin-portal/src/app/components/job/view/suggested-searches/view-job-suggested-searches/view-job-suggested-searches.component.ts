@@ -21,7 +21,8 @@ import {
   OnChanges,
   OnInit,
   Output,
-  SimpleChanges
+  SimpleChanges,
+  ChangeDetectionStrategy
 } from '@angular/core';
 import {Job} from "../../../../../model/job";
 import {SavedSearch} from "../../../../../model/saved-search";
@@ -33,7 +34,9 @@ import {JobPrepItem, JobPrepSuggestedSearches} from "../../../../../model/job-pr
 @Component({
   selector: 'app-view-job-suggested-searches',
   templateUrl: './view-job-suggested-searches.component.html',
-  styleUrls: ['./view-job-suggested-searches.component.scss']
+  styleUrls: ['./view-job-suggested-searches.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class ViewJobSuggestedSearchesComponent implements OnInit, OnChanges {
   @Input() job: Job;

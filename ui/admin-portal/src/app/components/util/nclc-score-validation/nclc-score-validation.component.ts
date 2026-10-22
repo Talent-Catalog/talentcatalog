@@ -14,13 +14,15 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {UntypedFormControl} from "@angular/forms";
 
 @Component({
   selector: 'app-nclc-score-validation',
   templateUrl: './nclc-score-validation.component.html',
-  styleUrls: ['./nclc-score-validation.component.scss']
+  styleUrls: ['./nclc-score-validation.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class NclcScoreValidationComponent implements OnInit {
 

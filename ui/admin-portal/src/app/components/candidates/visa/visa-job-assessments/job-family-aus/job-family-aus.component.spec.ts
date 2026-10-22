@@ -18,7 +18,8 @@ import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {ReactiveFormsModule, UntypedFormBuilder} from '@angular/forms';
 import {JobFamilyAusComponent} from './job-family-aus.component';
 import {CandidateVisaJobCheck, YesNo} from '../../../../../model/candidate';
-import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {provideHttpClientTesting} from "@angular/common/http/testing";
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {AutosaveStatusComponent} from "../../../../util/autosave-status/autosave-status.component";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {MockCandidateVisaJobCheck} from "../../../../../MockData/MockCandidateVisaCheck";
@@ -31,8 +32,8 @@ describe('JobFamilyAusComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [JobFamilyAusComponent,AutosaveStatusComponent],
-      imports: [HttpClientTestingModule,ReactiveFormsModule,NgSelectModule],
-      providers: [UntypedFormBuilder]
+      imports: [ReactiveFormsModule,NgSelectModule],
+      providers: [UntypedFormBuilder, provideHttpClient(withXhr(), withInterceptorsFromDi()), provideHttpClientTesting()]
     }).compileComponents();
   });
 

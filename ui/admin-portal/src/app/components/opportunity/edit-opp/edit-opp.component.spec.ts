@@ -25,7 +25,8 @@ import {JobService} from "../../../services/job.service";
 import {OpportunityProgressParams} from "../../../model/opportunity";
 import {FormsModule, ReactiveFormsModule, UntypedFormBuilder} from "@angular/forms";
 import {of, throwError} from "rxjs";
-import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {provideHttpClientTesting} from "@angular/common/http/testing";
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {RouterTestingModule} from "@angular/router/testing";
 import {DatePickerComponent} from "../../util/date-picker/date-picker.component";
 import {NgSelectModule} from "@ng-select/ng-select";
@@ -77,14 +78,16 @@ describe('EditOppComponent', () => {
 
     await TestBed.configureTestingModule({
       declarations: [ EditOppComponent, DatePickerComponent, HelpComponent ],
-      imports: [HttpClientTestingModule,NgSelectModule,RouterTestingModule,NgbTooltipModule,NgbDatepickerModule,ReactiveFormsModule,FormsModule],
+      imports: [NgSelectModule,RouterTestingModule,NgbTooltipModule,NgbDatepickerModule,ReactiveFormsModule,FormsModule],
 
       providers: [
         UntypedFormBuilder,
         { provide: NgbActiveModal, useValue: modalSpy },
         { provide: SavedListService, useValue: savedListService },
         { provide: CandidateSourceCandidateService, useValue: candidateSourceCandidateService },
-        { provide: JobService, useValue: jobService }
+        { provide: JobService, useValue: jobService },
+        provideHttpClient(withXhr(), withInterceptorsFromDi()),
+        provideHttpClientTesting()
       ]
     }).compileComponents();
 

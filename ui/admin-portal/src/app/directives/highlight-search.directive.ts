@@ -25,7 +25,8 @@ import {takeUntil} from "rxjs/operators";
  * @author sadatmalik
  */
 @Directive({
-  selector: '[appHighlightSearch]'
+  selector: '[appHighlightSearch]',
+  standalone: false
 })
 export class HighlightSearchDirective implements OnInit, OnDestroy, AfterContentChecked {
   @Input() showHighlightsOnly: boolean = false;

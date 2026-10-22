@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output, ChangeDetectionStrategy} from '@angular/core';
 import {CandidateStatus, UpdateCandidateStatusInfo} from "../../../model/candidate";
 import {UntypedFormBuilder, UntypedFormGroup, Validators} from "@angular/forms";
 import {EnumOption, enumOptions, toEnumKey} from "../../../util/enum";
@@ -22,7 +22,9 @@ import {EnumOption, enumOptions, toEnumKey} from "../../../util/enum";
 @Component({
   selector: 'app-candidate-status-selector',
   templateUrl: './candidate-status-selector.component.html',
-  styleUrls: ['./candidate-status-selector.component.scss']
+  styleUrls: ['./candidate-status-selector.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class CandidateStatusSelectorComponent implements OnInit {
 

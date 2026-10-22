@@ -19,7 +19,8 @@ import {ComponentFixture, fakeAsync, TestBed, tick} from "@angular/core/testing"
 import {SimpleChange} from "@angular/core";
 import {FormsModule, ReactiveFormsModule, UntypedFormBuilder} from "@angular/forms";
 import {SortedByComponent} from "../../util/sort/sorted-by.component";
-import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {provideHttpClientTesting} from "@angular/common/http/testing";
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {RouterTestingModule} from "@angular/router/testing";
 import {Router} from "@angular/router";
 import {
@@ -92,7 +93,6 @@ describe('ShowCandidatesComponent', () => {
     await TestBed.configureTestingModule({
       declarations: [ShowCandidatesComponent, SortedByComponent, AutosaveStatusComponent, CandidateSourceDescriptionComponent],
       imports: [
-        HttpClientTestingModule,
         RouterTestingModule,
         NgbTypeaheadModule,
         NgbPaginationModule,
@@ -119,7 +119,9 @@ describe('ShowCandidatesComponent', () => {
         {provide: SavedListCandidateService, useValue: mockSavedListCandidateService},
         {provide: CandidateFieldService, useValue: mockCandidateFieldService},
         {provide: PublishedDocColumnService, useValue: mockPublishedDocColumnService},
-        {provide: CasiAdminService, useValue: mockCasiAdminService}
+        {provide: CasiAdminService, useValue: mockCasiAdminService},
+        provideHttpClient(withXhr(), withInterceptorsFromDi()),
+        provideHttpClientTesting()
       ]
     }).compileComponents();
   });

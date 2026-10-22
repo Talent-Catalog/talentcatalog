@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {CandidateService} from "../../../../../services/candidate.service";
 import {Candidate} from "../../../../../model/candidate";
 import {ActivatedRoute} from "@angular/router";
@@ -41,7 +41,9 @@ import {
 @Component({
   selector: 'app-candidate-profile',
   templateUrl: './candidate-profile.component.html',
-  styleUrls: ['./candidate-profile.component.scss']
+  styleUrls: ['./candidate-profile.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class CandidateProfileComponent implements OnInit {
 

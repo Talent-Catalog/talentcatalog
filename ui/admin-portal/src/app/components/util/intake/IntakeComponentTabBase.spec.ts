@@ -158,7 +158,7 @@ describe('IntakeComponentTabBase', () => {
     component.hasPendingRemoteUpdate = true;
     component.ngOnInit();
 
-    internalUpdates.next();
+    internalUpdates.next(undefined);
 
     expect(component.hasPendingRemoteUpdate).toBeFalse();
     expect(component.refreshIntakeData).toHaveBeenCalled();
@@ -219,7 +219,7 @@ describe('IntakeComponentTabBase', () => {
     component.ngOnInit();
     component.ngOnDestroy();
 
-    internalUpdates.next();
+    internalUpdates.next(undefined);
     crossTabUpdates.next({id: 10});
 
     expect(component.refreshIntakeData).not.toHaveBeenCalled();

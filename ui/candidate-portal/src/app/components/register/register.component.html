@@ -14,15 +14,15 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<div class="container-fluid step-header" [hidden]="registrationService?.currentStep?.hideHeader">
+<div class="container-fluid step-header" [hidden]="$safeNavigationMigration(registrationService?.currentStep?.hideHeader)">
 
   <div class="container">
 
     <h5 *ngIf="registrationService?.currentStep?.section > 0">
-      {{ 'REGISTRATION.HEADER.STEP' | translate: {current: registrationService?.currentStep?.section, total: registrationService?.totalSections} }}
+      {{ 'REGISTRATION.HEADER.STEP' | translate: {current: $safeNavigationMigration(registrationService?.currentStep?.section), total: $safeNavigationMigration(registrationService?.totalSections)} }}
     </h5>
 
-    <h3 class="fw-bold">{{ 'REGISTRATION.HEADER.TITLE.' + registrationService?.currentStep?.key | uppercase | translate }}</h3>
+    <h3 class="fw-bold">{{ 'REGISTRATION.HEADER.TITLE.' + $safeNavigationMigration(registrationService?.currentStep?.key) | uppercase | translate }}</h3>
 
     <p *ngIf="registrationService?.currentStep?.section > 0" class="explain">
       {{ 'REGISTRATION.HEADER.EXPLANATION' | translate }}

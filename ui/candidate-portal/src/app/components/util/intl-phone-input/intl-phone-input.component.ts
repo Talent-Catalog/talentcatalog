@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {AbstractControl} from "@angular/forms";
 import {Country} from "../../../model/country";
 import {CountryService} from "../../../services/country.service";
@@ -15,7 +15,9 @@ import examples from "libphonenumber-js/examples.mobile.json";
 @Component({
   selector: 'app-intl-phone-input',
   templateUrl: './intl-phone-input.component.html',
-  styleUrls: ['./intl-phone-input.component.scss']
+  styleUrls: ['./intl-phone-input.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class IntlPhoneInputComponent implements OnInit {
   @Input() control: AbstractControl;

@@ -27,7 +27,8 @@ import {
 import {
   ViewCandidateAttachmentComponent
 } from "../../attachment/view-candidate-attachment.component";
-import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {provideHttpClientTesting} from "@angular/common/http/testing";
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 
 describe('CandidateAdditionalInfoTabComponent', () => {
   let component: CandidateAdditionalInfoTabComponent;
@@ -37,7 +38,7 @@ describe('CandidateAdditionalInfoTabComponent', () => {
   beforeEach(async () => {
 
     await TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
+      providers: [provideHttpClient(withXhr(), withInterceptorsFromDi()), provideHttpClientTesting()],
       declarations: [ CandidateAdditionalInfoTabComponent,ViewCandidateSurveyComponent,ViewCandidateSurveyComponent,
         ViewCandidateMediaWillingnessComponent,ViewCandidateSpecialLinksComponent,ViewCandidateAttachmentComponent ],
     })

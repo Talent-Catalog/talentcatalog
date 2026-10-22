@@ -14,7 +14,6 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {TranslationWidth} from '@angular/common';
 import {LanguageService} from '../services/language.service';
 import {CustomDatepickerI18n} from './custom-date-picker';
 
@@ -57,7 +56,7 @@ describe('CustomDatepickerI18n', () => {
   it('returns the translated weekday label', () => {
     languageService.getDatePickerWeekdayName.and.returnValue('Mon');
 
-    expect(service.getWeekdayLabel(1, TranslationWidth.Abbreviated)).toBe('Mon');
+    expect(service.getWeekdayLabel(1, 'short')).toBe('Mon');
     expect(languageService.getDatePickerWeekdayName).toHaveBeenCalledWith(1);
   });
 });

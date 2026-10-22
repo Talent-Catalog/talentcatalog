@@ -16,7 +16,8 @@
 
 import {LangAssessmentComponent} from "./lang-assessment.component";
 import {ComponentFixture, TestBed} from "@angular/core/testing";
-import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {provideHttpClientTesting} from "@angular/common/http/testing";
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {NgbTooltipModule} from "@ng-bootstrap/ng-bootstrap";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {NgSelectModule} from "@ng-select/ng-select";
@@ -48,7 +49,8 @@ describe('LangAssessmentComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [LangAssessmentComponent, AutosaveStatusComponent,DetScoreValidationComponent, NclcScoreValidationComponent, IeltsScoreValidationComponent],
-      imports: [HttpClientTestingModule,NgbTooltipModule,NgSelectModule,FormsModule,ReactiveFormsModule],
+      imports: [NgbTooltipModule,NgSelectModule,FormsModule,ReactiveFormsModule],
+      providers: [provideHttpClient(withXhr(), withInterceptorsFromDi()), provideHttpClientTesting()],
     })
     .compileComponents();
   });

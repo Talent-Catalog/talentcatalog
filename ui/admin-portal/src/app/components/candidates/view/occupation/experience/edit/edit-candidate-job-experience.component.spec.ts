@@ -21,7 +21,8 @@ import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {
   CandidateJobExperienceService
 } from "../../../../../../services/candidate-job-experience.service";
-import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {provideHttpClientTesting} from "@angular/common/http/testing";
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {FormsModule, ReactiveFormsModule, UntypedFormBuilder} from "@angular/forms";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {NgSelectComponent} from "@ng-select/ng-select";
@@ -48,13 +49,15 @@ describe('EditCandidateJobExperienceComponent', () => {
 
     await TestBed.configureTestingModule({
       declarations: [EditCandidateJobExperienceComponent],
-      imports: [HttpClientTestingModule,FormsModule,ReactiveFormsModule, NgSelectModule,
+      imports: [FormsModule,ReactiveFormsModule, NgSelectModule,
         NgxWigModule],
       providers: [
         UntypedFormBuilder,
         { provide: CandidateJobExperienceService, useValue: candidateJobExperienceServiceSpy },
         { provide: CountryService, useValue: countryServiceSpy },
-        { provide: NgbActiveModal, useValue: activeModalSpy }
+        { provide: NgbActiveModal, useValue: activeModalSpy },
+        provideHttpClient(withXhr(), withInterceptorsFromDi()),
+        provideHttpClientTesting()
       ],
       schemas: [NO_ERRORS_SCHEMA]
     }).compileComponents();

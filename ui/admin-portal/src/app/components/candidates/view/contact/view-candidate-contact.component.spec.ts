@@ -17,7 +17,8 @@ import {ViewCandidateContactComponent} from "./view-candidate-contact.component"
 import {CandidateService} from "../../../../services/candidate.service";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {ComponentFixture, TestBed, waitForAsync} from "@angular/core/testing";
-import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {provideHttpClientTesting} from "@angular/common/http/testing";
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {MockCandidate} from "../../../../MockData/MockCandidate";
@@ -33,11 +34,13 @@ describe('ViewCandidateContactComponent', () => {
     const modalServiceSpyObj = jasmine.createSpyObj('NgbModal', ['open']);
 
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule,FormsModule,ReactiveFormsModule, NgSelectModule],
+      imports: [FormsModule,ReactiveFormsModule, NgSelectModule],
       declarations: [ViewCandidateContactComponent],
       providers: [
         { provide: CandidateService, useValue: candidateServiceSpyObj },
-        { provide: NgbModal, useValue: modalServiceSpyObj }
+        { provide: NgbModal, useValue: modalServiceSpyObj },
+        provideHttpClient(withXhr(), withInterceptorsFromDi()),
+        provideHttpClientTesting()
       ]
     }).compileComponents();
 

@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {UntypedFormBuilder, UntypedFormGroup, Validators} from "@angular/forms";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {SavedList, SearchSavedListRequest} from "../../../../model/saved-list";
@@ -24,7 +24,9 @@ import {environment} from "../../../../../environments/environment";
 @Component({
   selector: 'app-edit-external-link',
   templateUrl: './edit-external-link.component.html',
-  styleUrls: ['./edit-external-link.component.scss']
+  styleUrls: ['./edit-external-link.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class EditExternalLinkComponent implements OnInit {
 

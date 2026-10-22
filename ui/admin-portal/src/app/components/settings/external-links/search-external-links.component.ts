@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {User} from "../../../model/user";
 import {UntypedFormBuilder, UntypedFormGroup} from "@angular/forms";
 import {SearchResults} from "../../../model/search-results";
@@ -36,7 +36,9 @@ import {copyToClipboard} from "../../../util/clipboard";
 @Component({
   selector: 'app-search-external-links',
   templateUrl: './search-external-links.component.html',
-  styleUrls: ['./search-external-links.component.scss']
+  styleUrls: ['./search-external-links.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class SearchExternalLinksComponent implements OnInit {
 

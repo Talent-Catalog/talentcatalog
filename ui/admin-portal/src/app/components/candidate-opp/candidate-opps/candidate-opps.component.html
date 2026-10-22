@@ -169,7 +169,7 @@
           [chats]="getChats(opp)"
         ></app-chat-read-status>
         {{ opp.name | truncate: 25 }}
-        <tc-icon type="link" color="gray" [routerLink]="['/candidate',opp.candidate?.candidateNumber]">
+        <tc-icon type="link" color="gray" [routerLink]="['/candidate',$safeNavigationMigration(opp.candidate?.candidateNumber)]">
           <i class="fas fa-user" title="Candidate"></i>
         </tc-icon>
         <tc-icon type="link" color="gray" [routerLink]="['/opp',opp.id]">

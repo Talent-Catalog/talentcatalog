@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {EnumOption, enumOptions} from '../../../../../util/enum';
 import {OtherVisas} from '../../../../../model/candidate';
 import {UntypedFormBuilder} from '@angular/forms';
@@ -24,7 +24,9 @@ import {CandidateVisaCheckService} from "../../../../../services/candidate-visa-
 @Component({
   selector: 'app-visa-other-options',
   templateUrl: './visa-other-options.component.html',
-  styleUrls: ['./visa-other-options.component.scss']
+  styleUrls: ['./visa-other-options.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class VisaOtherOptionsComponent extends VisaCheckComponentBase implements OnInit {
 

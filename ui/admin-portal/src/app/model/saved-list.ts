@@ -128,21 +128,21 @@ export class PublishedDocValueSource {
 export class PublishedDocFieldSource extends PublishedDocValueSource {
   constructor(fieldName: string) {
     super();
-    super.fieldName = fieldName;
+    this.fieldName = fieldName;
   }
 }
 
 export class PublishedDocConstantSource extends PublishedDocValueSource {
   constructor(constant: any) {
     super();
-    super.constant = constant;
+    this.constant = constant;
   }
 }
 
 export class PublishedDocPropertySource extends PublishedDocValueSource {
   constructor(propertyName: string) {
     super();
-    super.propertyName = propertyName;
+    this.propertyName = propertyName;
   }
 }
 

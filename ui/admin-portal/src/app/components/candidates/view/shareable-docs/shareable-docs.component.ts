@@ -21,7 +21,8 @@ import {
   OnChanges,
   OnInit,
   Output,
-  SimpleChanges
+  SimpleChanges,
+  ChangeDetectionStrategy
 } from '@angular/core';
 import {Candidate, UpdateCandidateShareableDocsRequest} from "../../../../model/candidate";
 import {UntypedFormBuilder, UntypedFormGroup} from "@angular/forms";
@@ -35,7 +36,9 @@ import {UploadType} from "../../../../model/task";
 @Component({
   selector: 'app-shareable-docs',
   templateUrl: './shareable-docs.component.html',
-  styleUrls: ['./shareable-docs.component.scss']
+  styleUrls: ['./shareable-docs.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class ShareableDocsComponent implements OnInit, OnChanges {
 

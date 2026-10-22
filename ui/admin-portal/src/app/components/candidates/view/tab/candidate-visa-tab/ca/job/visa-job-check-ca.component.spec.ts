@@ -13,7 +13,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {provideHttpClientTesting} from "@angular/common/http/testing";
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {provideRouter} from "@angular/router";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {NgSelectModule} from "@ng-select/ng-select";
@@ -94,7 +95,7 @@ describe('VisaJobCheckCaComponent', () => {
     const educationSpy = jasmine.createSpyObj('CandidateEducationService', ['list']);
     const occupationSpy = jasmine.createSpyObj('CandidateOccupationService', ['get']);
     await TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule,FormsModule,ReactiveFormsModule,
+      imports: [FormsModule,ReactiveFormsModule,
         NgSelectModule,
         TcAccordionComponent,
         TcAccordionItemComponent
@@ -109,7 +110,9 @@ describe('VisaJobCheckCaComponent', () => {
       providers: [
         provideRouter([]),
         { provide: CandidateEducationService, useValue: educationSpy },
-        { provide: CandidateOccupationService, useValue: occupationSpy }
+        { provide: CandidateOccupationService, useValue: occupationSpy },
+        provideHttpClient(withXhr(), withInterceptorsFromDi()),
+        provideHttpClientTesting()
       ],
     })
     .compileComponents();

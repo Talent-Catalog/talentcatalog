@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, forwardRef, Input} from '@angular/core';
+import {Component, forwardRef, Input, ChangeDetectionStrategy} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR, ReactiveFormsModule} from '@angular/forms';
@@ -32,7 +32,9 @@ import {Country} from '../../../../model/country';
     provide: NG_VALUE_ACCESSOR,
     useExisting: forwardRef(() => NgSelectStubComponent),
     multi: true
-  }]
+  }],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 class NgSelectStubComponent implements ControlValueAccessor {
   @Input() id?: string;
@@ -55,7 +57,9 @@ class NgSelectStubComponent implements ControlValueAccessor {
     provide: NG_VALUE_ACCESSOR,
     useExisting: forwardRef(() => TcTextareaStubComponent),
     multi: true
-  }]
+  }],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 class TcTextareaStubComponent implements ControlValueAccessor {
   @Input() id?: string;
@@ -69,7 +73,9 @@ class TcTextareaStubComponent implements ControlValueAccessor {
 
 @Component({
   selector: 'tc-label',
-  template: '<ng-content></ng-content>'
+  template: '<ng-content></ng-content>',
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 class TcLabelStubComponent {
   @Input() for?: string;

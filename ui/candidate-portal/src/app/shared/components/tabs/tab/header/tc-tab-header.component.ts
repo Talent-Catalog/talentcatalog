@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, TemplateRef, ViewChild} from '@angular/core';
+import {Component, TemplateRef, ViewChild, ChangeDetectionStrategy} from '@angular/core';
 
 /**
  * @component TcTabHeaderComponent
@@ -48,7 +48,7 @@ import {Component, TemplateRef, ViewChild} from '@angular/core';
   selector: 'tc-tab-header',
   templateUrl: './tc-tab-header.component.html',
   styleUrls: ['./tc-tab-header.component.scss'],
-  standalone: true,
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: []
 })
 export class TcTabHeaderComponent {

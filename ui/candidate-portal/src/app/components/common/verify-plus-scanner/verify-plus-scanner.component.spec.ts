@@ -27,7 +27,7 @@ import {NO_ERRORS_SCHEMA, Pipe, PipeTransform} from '@angular/core';
 import {VerifyPlusScannerComponent} from './verify-plus-scanner.component';
 import {VerifyPlusDecoderService} from '../../../services/verify-plus-decoder.service';
 
-@Pipe({name: 'translate'})
+@Pipe({name: 'translate', standalone: false})
 class MockTranslatePipe implements PipeTransform {
   transform(value: string): string {
     return value;

@@ -18,7 +18,8 @@ import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {ReactiveFormsModule, UntypedFormBuilder} from '@angular/forms';
 import {IneligiblePathwaysComponent} from './ineligible-pathways.component';
 import {AutosaveStatusComponent} from "../../../../util/autosave-status/autosave-status.component";
-import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {provideHttpClientTesting} from "@angular/common/http/testing";
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 
 describe('IneligiblePathwaysComponent', () => {
   let component: IneligiblePathwaysComponent;
@@ -28,8 +29,8 @@ describe('IneligiblePathwaysComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [IneligiblePathwaysComponent,AutosaveStatusComponent],
-      imports: [HttpClientTestingModule,ReactiveFormsModule],
-      providers: [UntypedFormBuilder]
+      imports: [ReactiveFormsModule],
+      providers: [UntypedFormBuilder, provideHttpClient(withXhr(), withInterceptorsFromDi()), provideHttpClientTesting()]
     }).compileComponents();
   });
 

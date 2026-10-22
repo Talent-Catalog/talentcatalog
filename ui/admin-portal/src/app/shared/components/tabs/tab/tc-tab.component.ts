@@ -1,4 +1,4 @@
-import {AfterContentInit, Component, ContentChild, Input, TemplateRef} from '@angular/core';
+import {AfterContentInit, Component, ContentChild, Input, TemplateRef, ChangeDetectionStrategy} from '@angular/core';
 import {TcTabHeaderComponent} from "./header/tc-tab-header.component";
 import {TcTabContentComponent} from "./content/tc-tab-content.component";
 
@@ -37,7 +37,7 @@ import {TcTabContentComponent} from "./content/tc-tab-content.component";
   selector: 'tc-tab',
   templateUrl: './tc-tab.component.html',
   styleUrls: ['./tc-tab.component.scss'],
-  standalone: true,
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: []
 })
 export class TcTabComponent implements AfterContentInit {

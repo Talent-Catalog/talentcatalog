@@ -18,7 +18,8 @@ import {DateRangePickerComponent} from "./date-range-picker.component";
 import {ComponentFixture, TestBed} from "@angular/core/testing";
 import {FormsModule} from "@angular/forms";
 import {NgbDate, NgbDateStruct, NgbModule} from "@ng-bootstrap/ng-bootstrap";
-import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {provideHttpClientTesting} from "@angular/common/http/testing";
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 
 describe('DateRangePickerComponent', () => {
   let component: DateRangePickerComponent;
@@ -27,7 +28,8 @@ describe('DateRangePickerComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [DateRangePickerComponent],
-      imports: [HttpClientTestingModule ,FormsModule, NgbModule]
+      imports: [FormsModule, NgbModule],
+      providers: [provideHttpClient(withXhr(), withInterceptorsFromDi()), provideHttpClientTesting()]
     }).compileComponents();
 
     fixture = TestBed.createComponent(DateRangePickerComponent);

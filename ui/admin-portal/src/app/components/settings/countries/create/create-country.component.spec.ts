@@ -21,7 +21,8 @@ import {By} from '@angular/platform-browser';
 import {CreateCountryComponent} from './create-country.component';
 import {CountryService} from '../../../../services/country.service';
 import {of, throwError} from 'rxjs';
-import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {provideHttpClientTesting} from "@angular/common/http/testing";
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {MockJob} from "../../../../MockData/MockJob";
 
@@ -37,10 +38,12 @@ describe('CreateCountryComponent', () => {
 
     await TestBed.configureTestingModule({
       declarations: [ CreateCountryComponent ],
-      imports: [HttpClientTestingModule, NgSelectModule, ReactiveFormsModule ],
+      imports: [NgSelectModule, ReactiveFormsModule ],
       providers: [
         { provide: CountryService, useValue: countryServiceSpyObj },
-        { provide: NgbActiveModal, useValue: activeModalSpyObj }
+        { provide: NgbActiveModal, useValue: activeModalSpyObj },
+        provideHttpClient(withXhr(), withInterceptorsFromDi()),
+        provideHttpClientTesting()
       ]
     }).compileComponents();
 

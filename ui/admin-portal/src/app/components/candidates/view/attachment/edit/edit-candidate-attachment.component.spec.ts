@@ -20,7 +20,8 @@ import {
 } from "../../../../../services/candidate-attachment.service";
 import {ComponentFixture, TestBed} from "@angular/core/testing";
 import {MockCandidate} from "../../../../../MockData/MockCandidate";
-import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {provideHttpClientTesting} from "@angular/common/http/testing";
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {
   FormsModule,
   ReactiveFormsModule,
@@ -45,11 +46,13 @@ describe('EditCandidateAttachmentComponent', () => {
 
     await TestBed.configureTestingModule({
       declarations: [EditCandidateAttachmentComponent],
-      imports: [HttpClientTestingModule,FormsModule,ReactiveFormsModule, NgSelectModule],
+      imports: [FormsModule,ReactiveFormsModule, NgSelectModule],
       providers: [
         UntypedFormBuilder,
         NgbActiveModal,
-        { provide: CandidateAttachmentService, useValue: candidateAttachmentServiceMock }
+        { provide: CandidateAttachmentService, useValue: candidateAttachmentServiceMock },
+        provideHttpClient(withXhr(), withInterceptorsFromDi()),
+        provideHttpClientTesting()
       ]
     }).compileComponents();
 

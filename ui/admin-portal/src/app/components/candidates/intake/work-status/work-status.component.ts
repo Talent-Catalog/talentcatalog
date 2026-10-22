@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {EnumOption, enumOptions} from '../../../../util/enum';
 import {YesNoUnemployedOther} from '../../../../model/candidate';
 import {UntypedFormBuilder} from '@angular/forms';
@@ -24,7 +24,9 @@ import {IntakeComponentBase} from '../../../util/intake/IntakeComponentBase';
 @Component({
   selector: 'app-work-status',
   templateUrl: './work-status.component.html',
-  styleUrls: ['./work-status.component.scss']
+  styleUrls: ['./work-status.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class WorkStatusComponent extends IntakeComponentBase implements OnInit {
 

@@ -69,7 +69,7 @@
 
       <div class="col-6">
         <span class="card-title"
-              [innerHtml]="edu.educationType + ' in ' + edu.educationMajor?.name + ' : ' + edu.courseName"
+              [innerHtml]="edu.educationType + ' in ' + $safeNavigationMigration(edu.educationMajor?.name) + ' : ' + edu.courseName"
               appHighlightSearch>
         </span>
         <div class="col-12">

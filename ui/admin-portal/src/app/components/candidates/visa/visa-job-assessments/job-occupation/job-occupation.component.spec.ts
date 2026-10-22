@@ -20,7 +20,8 @@ import {Occupation} from '../../../../../model/occupation';
 import {JobOccupationComponent} from './job-occupation.component';
 import {By} from '@angular/platform-browser';
 import {AutosaveStatusComponent} from "../../../../util/autosave-status/autosave-status.component";
-import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {provideHttpClientTesting} from "@angular/common/http/testing";
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {MockCandidateVisaJobCheck} from "../../../../../MockData/MockCandidateVisaCheck";
 
@@ -32,8 +33,8 @@ describe('JobOccupationComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [JobOccupationComponent,AutosaveStatusComponent],
-      imports: [HttpClientTestingModule,ReactiveFormsModule,NgSelectModule],
-      providers: [UntypedFormBuilder]
+      imports: [ReactiveFormsModule,NgSelectModule],
+      providers: [UntypedFormBuilder, provideHttpClient(withXhr(), withInterceptorsFromDi()), provideHttpClientTesting()]
     }).compileComponents();
   });
 

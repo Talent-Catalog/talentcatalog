@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {EnumOption, enumOptions} from "../../../../../util/enum";
 import {Candidate, Gender, UnhcrStatus, YesNo, YesNoUnsure} from "../../../../../model/candidate";
 import {UntypedFormBuilder, UntypedFormGroup} from "@angular/forms";
@@ -25,7 +25,9 @@ import {CountryService} from "../../../../../services/country.service";
 @Component({
   selector: 'app-edit-candidate-registration',
   templateUrl: './edit-candidate-registration.component.html',
-  styleUrls: ['./edit-candidate-registration.component.scss']
+  styleUrls: ['./edit-candidate-registration.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class EditCandidateRegistrationComponent implements OnInit {
 

@@ -1,4 +1,4 @@
-import {Component, Input} from '@angular/core';
+import {Component, Input, ChangeDetectionStrategy} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {RouterLink} from '@angular/router';
 
@@ -75,7 +75,7 @@ import {RouterLink} from '@angular/router';
   selector: 'tc-icon',
   templateUrl: './tc-icon.component.html',
   styleUrls: ['./tc-icon.component.scss'],
-  standalone: true,
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [CommonModule, RouterLink]
 })
 export class TcIconComponent {

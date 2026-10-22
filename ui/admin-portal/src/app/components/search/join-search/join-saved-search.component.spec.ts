@@ -25,7 +25,8 @@ import {SavedSearch} from "../../../model/saved-search";
 import {SearchResults} from "../../../model/search-results";
 import {MockSavedSearch} from "../../../MockData/MockSavedSearch";
 import {CandidateSourceComponent} from "../../util/candidate-source/candidate-source.component";
-import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {provideHttpClientTesting} from "@angular/common/http/testing";
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {UpdatedByComponent} from "../../util/user/updated-by/updated-by.component";
 
 describe('JoinSavedSearchComponent', () => {
@@ -46,8 +47,8 @@ describe('JoinSavedSearchComponent', () => {
 
     await TestBed.configureTestingModule({
       declarations: [JoinSavedSearchComponent,UpdatedByComponent,CandidateSourceComponent],
-      imports: [HttpClientTestingModule,ReactiveFormsModule,NgbTypeaheadModule,RouterTestingModule],
-      providers: [{ provide: SavedSearchService, useValue: savedSearchServiceSpyObj }, UntypedFormBuilder],
+      imports: [ReactiveFormsModule,NgbTypeaheadModule,RouterTestingModule],
+      providers: [{ provide: SavedSearchService, useValue: savedSearchServiceSpyObj }, UntypedFormBuilder, provideHttpClient(withXhr(), withInterceptorsFromDi()), provideHttpClientTesting()],
     }).compileComponents();
 
     savedSearchServiceSpy = TestBed.inject(SavedSearchService) as jasmine.SpyObj<SavedSearchService>;

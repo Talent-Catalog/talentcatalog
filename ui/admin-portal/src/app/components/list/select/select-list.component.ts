@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
 import {UntypedFormBuilder, UntypedFormGroup} from '@angular/forms';
 import {DtoType} from '../../../model/base';
@@ -48,7 +48,9 @@ export interface TargetListSelection {
 @Component({
   selector: 'app-select-list',
   templateUrl: './select-list.component.html',
-  styleUrls: ['./select-list.component.scss']
+  styleUrls: ['./select-list.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class SelectListComponent implements OnInit {
 

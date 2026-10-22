@@ -274,7 +274,7 @@ export abstract class FilteredOppsComponentBase<T extends Opportunity> implement
   }
 
   get selectedStages(): string[] {
-    return this.searchForm ? this.searchForm.value.selectedStages : "";
+    return this.searchForm ? this.searchForm.value.selectedStages : "" as any;
   }
 
   get selectedDestinationIds(): number[] {

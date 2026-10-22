@@ -1,10 +1,12 @@
-import {Component, Input} from '@angular/core';
+import {Component, Input, ChangeDetectionStrategy} from '@angular/core';
 import {PresetEmbedService} from "../../../services/preset-embed.service";
 
 @Component({
   selector: 'app-preset-embed',
   templateUrl: './preset-embed.component.html',
-  styleUrls: ['./preset-embed.component.scss']
+  styleUrls: ['./preset-embed.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class PresetEmbedComponent {
   @Input() dashboardId: string;

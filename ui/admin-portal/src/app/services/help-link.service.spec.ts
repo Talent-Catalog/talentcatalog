@@ -15,7 +15,8 @@
  */
 
 import {TestBed} from '@angular/core/testing';
-import {HttpClientTestingModule, HttpTestingController} from '@angular/common/http/testing';
+import {HttpTestingController, provideHttpClientTesting} from '@angular/common/http/testing';
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from '@angular/common/http';
 import {HelpLinkService} from './help-link.service';
 import {environment} from '../../environments/environment';
 import {HelpLink, SearchHelpLinkRequest, UpdateHelpLinkRequest} from '../model/help-link';
@@ -29,8 +30,7 @@ describe('HelpLinkService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
-      providers: [HelpLinkService]
+      providers: [HelpLinkService, provideHttpClient(withXhr(), withInterceptorsFromDi()), provideHttpClientTesting()]
     });
 
     service = TestBed.inject(HelpLinkService);

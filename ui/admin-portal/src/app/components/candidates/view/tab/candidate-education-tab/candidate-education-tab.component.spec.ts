@@ -21,7 +21,8 @@ import {
   ViewCandidateCertificationComponent
 } from "../../certification/view-candidate-certification.component";
 import {ViewCandidateEducationComponent} from "../../education/view-candidate-education.component";
-import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {provideHttpClientTesting} from "@angular/common/http/testing";
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {CUSTOM_ELEMENTS_SCHEMA} from "@angular/core";
@@ -32,7 +33,8 @@ describe('CandidateEducationTabComponent', () => {
   const mockCandidate = new MockCandidate();
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule,FormsModule,ReactiveFormsModule, NgSelectModule],
+      imports: [FormsModule,ReactiveFormsModule, NgSelectModule],
+      providers: [provideHttpClient(withXhr(), withInterceptorsFromDi()), provideHttpClientTesting()],
       declarations: [CandidateEducationTabComponent,ViewCandidateCertificationComponent,ViewCandidateEducationComponent],
       schemas: [CUSTOM_ELEMENTS_SCHEMA]
     })

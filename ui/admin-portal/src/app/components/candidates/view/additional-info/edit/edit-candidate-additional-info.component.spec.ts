@@ -18,7 +18,8 @@ import {ComponentFixture, TestBed} from "@angular/core/testing";
 import {CandidateService} from "../../../../../services/candidate.service";
 import {FormsModule, ReactiveFormsModule, UntypedFormBuilder} from "@angular/forms";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
-import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {provideHttpClientTesting} from "@angular/common/http/testing";
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {Candidate} from "../../../../../model/candidate";
 import {MockCandidate} from "../../../../../MockData/MockCandidate";
 import {of, throwError} from "rxjs";
@@ -37,11 +38,13 @@ describe('EditCandidateAdditionalInfoComponent', () => {
 
     await TestBed.configureTestingModule({
       declarations: [EditCandidateAdditionalInfoComponent, CreatedByComponent],
-      imports: [HttpClientTestingModule, FormsModule, ReactiveFormsModule],
+      imports: [FormsModule, ReactiveFormsModule],
       providers: [
         UntypedFormBuilder,
         NgbActiveModal,
-        { provide: CandidateService, useValue: candidateServiceSpyObj }
+        { provide: CandidateService, useValue: candidateServiceSpyObj },
+        provideHttpClient(withXhr(), withInterceptorsFromDi()),
+        provideHttpClientTesting()
       ]
     }).compileComponents();
     fb = TestBed.inject(UntypedFormBuilder); // Inject FormBuilder

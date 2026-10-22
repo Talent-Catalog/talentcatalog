@@ -27,7 +27,8 @@ import {
   ViewJobSourceContactsComponent
 } from "../view-job-source-contacts/view-job-source-contacts.component";
 import {PartnerService} from "../../../../../services/partner.service";
-import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {provideHttpClientTesting} from "@angular/common/http/testing";
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {ViewPostComponent} from "../../../../chat/view-post/view-post.component";
 import {ViewChatPostsComponent} from "../../../../chat/view-chat-posts/view-chat-posts.component";
 import {
@@ -67,13 +68,15 @@ describe('JobSourceContactsWithChatsComponent', () => {
      // partnerService.listSourcePartners.and.returnValue();
     TestBed.configureTestingModule({
       declarations: [JobSourceContactsWithChatsComponent,ViewPostComponent,CreateUpdatePostComponent,ViewJobSourceContactsComponent,ViewChatPostsComponent],
-      imports: [HttpClientTestingModule,QuillModule,ReactiveFormsModule,TranslateModule.forRoot(),NgbModule ],
+      imports: [QuillModule,ReactiveFormsModule,TranslateModule.forRoot(),NgbModule ],
       providers: [
         { provide: AuthenticationService, useValue: authSpy },
         { provide: AuthorizationService, useValue: authzSpy },
         { provide: ChatService, useValue: chatService },
         { provide: PartnerService, useValue: partnerService },
         { provide: UntypedFormBuilder },
+        provideHttpClient(withXhr(), withInterceptorsFromDi()),
+        provideHttpClientTesting(),
 
       ]
     })

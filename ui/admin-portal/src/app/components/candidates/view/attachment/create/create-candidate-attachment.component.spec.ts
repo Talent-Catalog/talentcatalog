@@ -17,7 +17,8 @@ import {CreateCandidateAttachmentComponent} from "./create-candidate-attachment.
 import {ComponentFixture, TestBed} from "@angular/core/testing";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {CandidateAttachmentService} from "../../../../../services/candidate-attachment.service";
-import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {provideHttpClientTesting} from "@angular/common/http/testing";
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {FormsModule, ReactiveFormsModule, UntypedFormBuilder} from "@angular/forms";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {
@@ -39,11 +40,13 @@ describe('CreateCandidateAttachmentComponent', () => {
 
     await TestBed.configureTestingModule({
       declarations: [CreateCandidateAttachmentComponent],
-      imports: [HttpClientTestingModule, FormsModule, ReactiveFormsModule, NgSelectModule],
+      imports: [FormsModule, ReactiveFormsModule, NgSelectModule],
       providers: [
         UntypedFormBuilder,
         {provide: CandidateAttachmentService, useValue: candidateAttachmentServiceMock},
-        {provide: NgbActiveModal, useValue: modalMock}
+        {provide: NgbActiveModal, useValue: modalMock},
+        provideHttpClient(withXhr(), withInterceptorsFromDi()),
+        provideHttpClientTesting()
       ]
     })
     .compileComponents();

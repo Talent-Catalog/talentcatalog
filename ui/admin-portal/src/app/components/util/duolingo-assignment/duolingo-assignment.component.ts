@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, EventEmitter, Input, Output} from '@angular/core';
+import {Component, EventEmitter, Input, Output, ChangeDetectionStrategy} from '@angular/core';
 import {Candidate} from 'src/app/model/candidate';
 import {CandidateService} from 'src/app/services/candidate.service';
 import {DuolingoCouponService} from 'src/app/services/duolingo-coupon.service';
@@ -22,7 +22,9 @@ import {DuolingoCouponService} from 'src/app/services/duolingo-coupon.service';
 @Component({
   selector: 'app-duolingo-assignment',
   templateUrl: './duolingo-assignment.component.html',
-  styleUrls: ['./duolingo-assignment.component.scss']
+  styleUrls: ['./duolingo-assignment.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class DuolingoAssignmentComponent {
   @Input() candidate: Candidate;

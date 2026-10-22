@@ -24,7 +24,8 @@ import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {CandidateService} from "../../../../services/candidate.service";
 import {MockCandidate} from "../../../../MockData/MockCandidate";
 import {CandidateLanguage} from "../../../../model/candidate-language";
-import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {provideHttpClientTesting} from "@angular/common/http/testing";
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 
 describe('ViewCandidateLanguageComponent', () => {
   let component: ViewCandidateLanguageComponent;
@@ -43,11 +44,12 @@ describe('ViewCandidateLanguageComponent', () => {
 
     await TestBed.configureTestingModule({
       declarations: [ViewCandidateLanguageComponent],
-      imports: [HttpClientTestingModule],
       providers: [
         { provide: CandidateLanguageService, useValue: candidateLanguageServiceSpy },
         { provide: CandidateService, useValue: candidateServiceSpy },
-        { provide: NgbModal, useValue: modalServiceSpy }
+        { provide: NgbModal, useValue: modalServiceSpy },
+        provideHttpClient(withXhr(), withInterceptorsFromDi()),
+        provideHttpClientTesting()
       ]
     }).compileComponents();
 

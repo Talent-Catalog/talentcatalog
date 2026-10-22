@@ -14,7 +14,8 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {provideHttpClientTesting} from "@angular/common/http/testing";
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {FormsModule, ReactiveFormsModule, UntypedFormBuilder} from "@angular/forms";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {EditCandidateNoteComponent} from "./edit-candidate-note.component";
@@ -53,12 +54,14 @@ describe('EditCandidateNoteComponent', () => {
 
     TestBed.configureTestingModule({
       declarations: [ EditCandidateNoteComponent ],
-      imports: [HttpClientTestingModule,FormsModule,ReactiveFormsModule, NgSelectModule,NgxWigModule],
+      imports: [FormsModule,ReactiveFormsModule, NgSelectModule,NgxWigModule],
       providers: [
         UntypedFormBuilder,
         { provide: NgbActiveModal, useValue: mockActiveModal },
         { provide: CandidateNoteService, useValue: mockCandidateNoteService },
-        { provide: CountryService, useValue: mockCountryService }
+        { provide: CountryService, useValue: mockCountryService },
+        provideHttpClient(withXhr(), withInterceptorsFromDi()),
+        provideHttpClientTesting()
       ]
     })
     .compileComponents();

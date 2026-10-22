@@ -17,7 +17,8 @@
 import {AvailImmediateComponent} from "./avail-immediate.component";
 import {ComponentFixture, TestBed} from "@angular/core/testing";
 import {FormsModule, ReactiveFormsModule, UntypedFormBuilder} from "@angular/forms";
-import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {provideHttpClientTesting} from "@angular/common/http/testing";
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {CandidateService} from "../../../../services/candidate.service";
 import {AvailImmediateReason, YesNo} from "../../../../model/candidate";
@@ -32,10 +33,12 @@ describe('AvailImmediateComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [AvailImmediateComponent, AutosaveStatusComponent],
-      imports: [HttpClientTestingModule, NgSelectModule,FormsModule,ReactiveFormsModule],
+      imports: [NgSelectModule,FormsModule,ReactiveFormsModule],
       providers: [
         UntypedFormBuilder,
-        { provide: CandidateService }
+        { provide: CandidateService },
+        provideHttpClient(withXhr(), withInterceptorsFromDi()),
+        provideHttpClientTesting()
       ]
     }).compileComponents();
 

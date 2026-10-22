@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {VisaCheckComponentBase} from "../../../../util/intake/VisaCheckComponentBase";
 import {UntypedFormBuilder} from "@angular/forms";
 import {CandidateVisaCheckService} from "../../../../../services/candidate-visa-check.service";
@@ -26,7 +26,9 @@ import {LanguageService} from "../../../../../services/language.service";
 @Component({
   selector: 'app-language-threshold',
   templateUrl: './language-threshold.component.html',
-  styleUrls: ['./language-threshold.component.scss']
+  styleUrls: ['./language-threshold.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class LanguageThresholdComponent extends VisaCheckComponentBase implements OnInit {
   languages: Language[];

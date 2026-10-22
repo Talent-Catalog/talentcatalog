@@ -23,7 +23,8 @@ import {SavedSearchService} from '../../../services/saved-search.service';
 import {SalesforceService} from '../../../services/salesforce.service';
 import {MockSavedSearch} from "../../../MockData/MockSavedSearch";
 import {JoblinkComponent} from "../../util/joblink/joblink.component";
-import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {provideHttpClientTesting} from "@angular/common/http/testing";
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import MOCK_SAVED_SEARCH_TYPE_INFO from "../../../MockData/MockSavedSearchTypeInfo";
 
 describe('CreateUpdateSearchComponent', () => {
@@ -40,11 +41,13 @@ describe('CreateUpdateSearchComponent', () => {
 
     await TestBed.configureTestingModule({
       declarations: [CreateUpdateSearchComponent,JoblinkComponent],
-      imports: [HttpClientTestingModule,ReactiveFormsModule,NgbTypeaheadModule],
+      imports: [ReactiveFormsModule,NgbTypeaheadModule],
       providers: [
         { provide: SavedSearchService, useValue: mockSavedSearchService },
         { provide: SalesforceService, useValue: mockSalesforceService },
         { provide: NgbActiveModal, useValue: mockActiveModal },
+        provideHttpClient(withXhr(), withInterceptorsFromDi()),
+        provideHttpClientTesting(),
       ],
     }).compileComponents();
   });

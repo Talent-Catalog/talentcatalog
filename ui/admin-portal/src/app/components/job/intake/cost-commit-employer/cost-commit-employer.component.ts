@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {UntypedFormBuilder} from "@angular/forms";
 import {JobService} from "../../../../services/job.service";
 import {JoiDataComponent} from "../joi-data/joi-data.component";
@@ -37,7 +37,9 @@ import {CUSTOM_CLEAR_FORMAT_BUTTON} from "../../../../util/clear-format";
       },
       deps: [NgxWigToolbarService],
     },
-  ]
+  ],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 
 })
 export class CostCommitEmployerComponent extends JoiDataComponent implements OnInit {

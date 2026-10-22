@@ -18,7 +18,8 @@ import {ComponentFixture, TestBed, waitForAsync} from '@angular/core/testing';
 
 import {EditCandidateDestinationsComponent} from './edit-candidate-destinations.component';
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
-import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {provideHttpClientTesting} from "@angular/common/http/testing";
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {of, throwError} from "rxjs";
@@ -41,10 +42,12 @@ describe('EditCandidateDestinationsComponent', () => {
 
     TestBed.configureTestingModule({
       declarations: [EditCandidateDestinationsComponent],
-      imports: [HttpClientTestingModule,FormsModule,ReactiveFormsModule, NgSelectModule],
+      imports: [FormsModule,ReactiveFormsModule, NgSelectModule],
       providers: [
         { provide: NgbActiveModal, useValue: activeModalMock },
-        { provide: CandidateDestinationService, useValue: candidateDestinationSpy }
+        { provide: CandidateDestinationService, useValue: candidateDestinationSpy },
+        provideHttpClient(withXhr(), withInterceptorsFromDi()),
+        provideHttpClientTesting()
       ]
     }).compileComponents();
 

@@ -15,7 +15,8 @@
  */
 
 import {TestBed} from '@angular/core/testing';
-import {HttpClientTestingModule, HttpTestingController} from '@angular/common/http/testing';
+import {HttpTestingController, provideHttpClientTesting} from '@angular/common/http/testing';
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from '@angular/common/http';
 import {OccupationService} from './occupation.service';
 import {Occupation} from '../model/occupation';
 import {SearchResults} from '../model/search-results';
@@ -28,8 +29,7 @@ describe('OccupationService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
-      providers: [OccupationService]
+      providers: [OccupationService, provideHttpClient(withXhr(), withInterceptorsFromDi()), provideHttpClientTesting()]
     });
     service = TestBed.inject(OccupationService);
     httpMock = TestBed.inject(HttpTestingController);

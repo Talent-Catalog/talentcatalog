@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, OnDestroy, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {RegistrationService} from "../../services/registration.service";
 import {ActivatedRoute, Router} from "@angular/router";
 import {LanguageService} from "../../services/language.service";
@@ -25,7 +25,9 @@ import {Partner} from "../../model/partner";
 @Component({
   selector: 'app-register',
   templateUrl: './register.component.html',
-  styleUrls: ['./register.component.scss']
+  styleUrls: ['./register.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class RegisterComponent implements OnInit, OnDestroy {
 

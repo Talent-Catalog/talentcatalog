@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {Candidate, CandidateStatus, isMuted} from "../../../model/candidate";
 import {CandidateService} from "../../../services/candidate.service";
 import {US_AFGHAN_SURVEY_TYPE} from "../../../model/survey-type";
@@ -41,7 +41,9 @@ import {isVerifyPlusUiEnabled} from "../../../util/verify-plus-ui";
 @Component({
   selector: 'app-view-candidate',
   templateUrl: './view-candidate.component.html',
-  styleUrls: ['./view-candidate.component.scss']
+  styleUrls: ['./view-candidate.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class ViewCandidateComponent implements OnInit {
 

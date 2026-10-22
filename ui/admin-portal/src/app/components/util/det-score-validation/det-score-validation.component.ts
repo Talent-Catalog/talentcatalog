@@ -1,9 +1,11 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {UntypedFormControl} from "@angular/forms";
 @Component({
   selector: 'app-det-score-validation',
   templateUrl: './det-score-validation.component.html',
-  styleUrls: ['./det-score-validation.component.scss']
+  styleUrls: ['./det-score-validation.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class DetScoreValidationComponent implements OnInit{
 

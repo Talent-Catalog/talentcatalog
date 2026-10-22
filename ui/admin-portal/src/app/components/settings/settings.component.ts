@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {User} from "../../model/user";
 import {AuthorizationService} from "../../services/authorization.service";
 import {AuthenticationService} from "../../services/authentication.service";
@@ -24,7 +24,9 @@ import {LocalStorageService} from "../../services/local-storage.service";
 @Component({
   selector: 'app-settings',
   templateUrl: './settings.component.html',
-  styleUrls: ['./settings.component.scss']
+  styleUrls: ['./settings.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class SettingsComponent implements OnInit {
 

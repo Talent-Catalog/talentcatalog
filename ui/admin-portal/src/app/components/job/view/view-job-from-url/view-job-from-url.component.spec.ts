@@ -21,7 +21,8 @@ import {ViewJobFromUrlComponent} from './view-job-from-url.component';
 import {JobService} from '../../../../services/job.service';
 import {MockJob} from "../../../../MockData/MockJob";
 import {ViewJobComponent} from "../view-job/view-job.component";
-import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {provideHttpClientTesting} from "@angular/common/http/testing";
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {NgbNavModule, NgbTooltipModule} from "@ng-bootstrap/ng-bootstrap";
 import {ReactiveFormsModule} from "@angular/forms";
 import {CommonModule} from "@angular/common";
@@ -46,12 +47,14 @@ describe('ViewJobFromUrlComponent', () => {
     mockJobService = jasmine.createSpyObj('JobService', ['get']);
     mockJobService.get.and.returnValue(of(MockJob));
     TestBed.configureTestingModule({
-      imports:[HttpClientTestingModule,NgbNavModule,ReactiveFormsModule,CommonModule,NgbTooltipModule],
+      imports:[NgbNavModule,ReactiveFormsModule,CommonModule,NgbTooltipModule],
       declarations: [ViewJobFromUrlComponent,AutosaveStatusComponent,ViewJobComponent,JobGeneralTabComponent,ViewJobInfoComponent,ChatReadStatusComponent,ViewJobSummaryComponent,RouterLinkStubDirective],
       providers: [
         { provide: Router, useClass: class { navigate = jasmine.createSpy('navigate'); events = of(); } }, // Mock Router
         { provide: JobService, useValue: mockJobService },
-        { provide: ActivatedRoute, useValue: mockActivatedRoute }
+        { provide: ActivatedRoute, useValue: mockActivatedRoute },
+        provideHttpClient(withXhr(), withInterceptorsFromDi()),
+        provideHttpClientTesting()
       ]
     }).compileComponents();
   }));

@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {UntypedFormBuilder, UntypedFormGroup} from "@angular/forms";
 import {JobService} from "../../../../../services/job.service";
@@ -27,7 +27,9 @@ import {AuthorizationService} from "../../../../../services/authorization.servic
 @Component({
   selector: 'app-edit-job-info',
   templateUrl: './edit-job-info.component.html',
-  styleUrls: ['./edit-job-info.component.scss']
+  styleUrls: ['./edit-job-info.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class EditJobInfoComponent implements OnInit {
 

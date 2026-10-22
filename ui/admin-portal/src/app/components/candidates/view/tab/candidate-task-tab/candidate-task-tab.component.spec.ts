@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, Input} from '@angular/core';
+import {Component, Input, ChangeDetectionStrategy} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 
@@ -24,7 +24,9 @@ import {CandidateTaskTabComponent} from './candidate-task-tab.component';
 
 @Component({
   selector: 'app-view-candidate-tasks',
-  template: ''
+  template: '',
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 class MockViewCandidateTasksComponent {
   @Input() candidate: Candidate;

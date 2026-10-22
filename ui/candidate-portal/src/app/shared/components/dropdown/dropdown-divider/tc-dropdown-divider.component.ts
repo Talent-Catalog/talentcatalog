@@ -1,4 +1,4 @@
-import {Component} from '@angular/core';
+import {Component, ChangeDetectionStrategy} from '@angular/core';
 
 /**
  * @component TcDropdownDividerComponent
@@ -38,7 +38,7 @@ import {Component} from '@angular/core';
   selector: 'tc-dropdown-divider',
   templateUrl: './tc-dropdown-divider.component.html',
   styleUrls: ['./tc-dropdown-divider.component.scss'],
-  standalone: true,
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: []
 })
 export class TcDropdownDividerComponent {

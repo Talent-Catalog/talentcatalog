@@ -31,11 +31,11 @@
     <div class="card card-body intake-data">
       <app-fixed-input
         [question]="'Job location'"
-        [answer]="selectedJobCheck?.jobOpp?.jobOppIntake?.location">
+        [answer]="$safeNavigationMigration(selectedJobCheck?.jobOpp?.jobOppIntake?.location)">
       </app-fixed-input>
       <app-fixed-input
         [question]="'Job location details'"
-        [answer]="selectedJobCheck?.jobOpp?.jobOppIntake?.locationDetails">
+        [answer]="$safeNavigationMigration(selectedJobCheck?.jobOpp?.jobOppIntake?.locationDetails)">
       </app-fixed-input>
       <small class="text-center text-muted">All job information can be found on the job's page - to view click the linked job name under Job Specific Assessment above.</small>
     </div>
@@ -94,7 +94,7 @@
               <li class="display" *ngFor="let co of candOccupations" >
                 <app-fixed-input
                   *ngIf="co.occupation"
-                  [question]="co.occupation?.name"
+                  [question]="$safeNavigationMigration(co.occupation?.name)"
                   [answer]="co.yearsExperience.toString() + ' years'">
                 </app-fixed-input>
                 <app-fixed-input
@@ -136,7 +136,7 @@
               <li class="display" *ngFor="let edu of candQualifications">
                 <app-fixed-input
                   *ngIf="edu.educationMajor"
-                  [question]="edu.educationMajor?.name + ' ' + edu.courseName"
+                  [question]="$safeNavigationMigration(edu.educationMajor?.name) + ' ' + edu.courseName"
                   [answer]="edu.educationType">
                 </app-fixed-input>
                 <app-fixed-input
@@ -182,8 +182,8 @@
       </app-relocating-dependants>
     </div>
     <div class="card card-body intake-data">
-      <app-fixed-input [question]="'Marital status'" [answer]="candidateIntakeData?.maritalStatus"></app-fixed-input>
-      <app-fixed-input [question]="'Spouse\'s highest level education'" [answer]="candidateIntakeData?.partnerEduLevel?.name"></app-fixed-input>
+      <app-fixed-input [question]="'Marital status'" [answer]="$safeNavigationMigration(candidateIntakeData?.maritalStatus)"></app-fixed-input>
+      <app-fixed-input [question]="'Spouse\'s highest level education'" [answer]="$safeNavigationMigration(candidateIntakeData?.partnerEduLevel?.name)"></app-fixed-input>
       <app-fixed-input [question]="'Did spouse take IELTS?'" [answer]="partnerIeltsString"></app-fixed-input>
       <hr>
       <div>

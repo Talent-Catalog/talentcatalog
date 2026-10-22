@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output, ChangeDetectionStrategy} from '@angular/core';
 import {Job, JobDocType} from "../../../../../model/job";
 import {FileSelectorComponent} from "../../../../util/file-selector/file-selector.component";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
@@ -33,7 +33,9 @@ through a hierarchy of components.
 @Component({
   selector: 'app-view-job-uploads',
   templateUrl: './view-job-uploads.component.html',
-  styleUrls: ['./view-job-uploads.component.scss']
+  styleUrls: ['./view-job-uploads.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class ViewJobUploadsComponent implements OnInit {
   @Input() job: Job;

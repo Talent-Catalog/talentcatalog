@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {UntypedFormBuilder, UntypedFormGroup, Validators} from '@angular/forms';
 import {Role, UpdateUserRequest, User} from "../../../../model/user";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
@@ -32,7 +32,9 @@ import {AuthenticationService} from "../../../../services/authentication.service
 @Component({
   selector: 'app-create-update-user',
   templateUrl: './create-update-user.component.html',
-  styleUrls: ['./create-update-user.component.scss']
+  styleUrls: ['./create-update-user.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class CreateUpdateUserComponent implements OnInit {
 

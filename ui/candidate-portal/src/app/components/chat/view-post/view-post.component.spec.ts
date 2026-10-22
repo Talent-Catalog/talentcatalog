@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, EventEmitter, Input, Output} from '@angular/core';
+import {Component, EventEmitter, Input, Output, ChangeDetectionStrategy} from '@angular/core';
 import {ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
 import {NgbTooltipModule} from '@ng-bootstrap/ng-bootstrap';
 import {of} from 'rxjs';
@@ -27,7 +27,9 @@ import {Reaction} from '../../../model/reaction';
 
 @Component({
   selector: 'app-preview-link',
-  template: ''
+  template: '',
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 class PreviewLinkStubComponent {
   @Input() linkPreview: unknown;
@@ -36,7 +38,9 @@ class PreviewLinkStubComponent {
 
 @Component({
   selector: 'emoji-mart',
-  template: ''
+  template: '',
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 class EmojiMartStubComponent {
   @Input() emoji: string;

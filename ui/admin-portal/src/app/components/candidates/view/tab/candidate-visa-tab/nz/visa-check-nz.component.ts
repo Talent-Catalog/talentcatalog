@@ -14,14 +14,16 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, Input} from '@angular/core';
+import {Component, Input, ChangeDetectionStrategy} from '@angular/core';
 import {IntakeComponentTabBase} from "../../../../../util/intake/IntakeComponentTabBase";
 import {CandidateIntakeData, CandidateVisa} from "../../../../../../model/candidate";
 
 @Component({
   selector: 'app-visa-check-nz',
   templateUrl: './visa-check-nz.component.html',
-  styleUrls: ['./visa-check-nz.component.scss']
+  styleUrls: ['./visa-check-nz.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class VisaCheckNzComponent extends IntakeComponentTabBase {
   @Input() selectedIndex: number;

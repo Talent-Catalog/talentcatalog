@@ -23,7 +23,8 @@ import {NgSelectModule} from '@ng-select/ng-select';
 import {CUSTOM_ELEMENTS_SCHEMA, DebugElement} from '@angular/core';
 import {CandidateDependant, DependantRelations} from "../../../../../model/candidate";
 import {AutosaveStatusComponent} from "../../../../util/autosave-status/autosave-status.component";
-import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {provideHttpClientTesting} from "@angular/common/http/testing";
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {of, throwError} from "rxjs";
 import {mockCandidateOpportunity} from "../../../../../MockData/MockCandidateOpportunity";
 import {CandidateOpportunityService} from "../../../../../services/candidate-opportunity.service";
@@ -57,13 +58,15 @@ describe('RelocatingDependantsComponent', () => {
 
     await TestBed.configureTestingModule({
       declarations: [RelocatingDependantsComponent,AutosaveStatusComponent],
-      imports: [HttpClientTestingModule,ReactiveFormsModule, NgSelectModule],
+      imports: [ReactiveFormsModule, NgSelectModule],
       providers: [
         { provide: UntypedFormBuilder  },
         { provide: CandidateVisaCheckService, useValue: candidateVisaCheckServiceSpy },
         { provide: CandidateOpportunityService, useValue: candidateOpportunityServiceSpy },
         { provide: CandidateDependantService, useValue: candidateDependantServiceSpy },
-        { provide: AuthorizationService, useValue: authorizationServiceSpy }
+        { provide: AuthorizationService, useValue: authorizationServiceSpy },
+        provideHttpClient(withXhr(), withInterceptorsFromDi()),
+        provideHttpClientTesting()
       ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA]
     }).compileComponents();

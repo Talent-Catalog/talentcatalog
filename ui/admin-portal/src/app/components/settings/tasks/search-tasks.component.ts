@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {User} from "../../../model/user";
 import {UntypedFormBuilder, UntypedFormGroup} from "@angular/forms";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
@@ -29,7 +29,9 @@ import {EditTaskComponent} from "./edit/edit-task.component";
 @Component({
   selector: 'app-search-tasks',
   templateUrl: './search-tasks.component.html',
-  styleUrls: ['./search-tasks.component.scss']
+  styleUrls: ['./search-tasks.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class SearchTasksComponent implements OnInit {
 

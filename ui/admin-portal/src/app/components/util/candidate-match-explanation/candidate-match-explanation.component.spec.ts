@@ -15,7 +15,7 @@
  */
 
 
-import {Component, NO_ERRORS_SCHEMA} from '@angular/core';
+import {Component, NO_ERRORS_SCHEMA, ChangeDetectionStrategy} from '@angular/core';
 import {ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 import {Subject, of, throwError} from 'rxjs';
@@ -39,7 +39,9 @@ import {CandidateJobExperience} from '../../../model/candidate-job-experience';
       [matchingUpdatedDate]="matchingUpdatedDate"
       [requirementsPendingMessage]="requirementsPendingMessage">
     </app-candidate-match-explanation>
-  `
+  `,
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 class TestHostComponent {
   candidateId = 1;
@@ -471,7 +473,7 @@ describe('CandidateMatchExplanationComponent', () => {
       function focus(el: HTMLElement, keyboard: boolean) {
         const matches = el.matches.bind(el);
         spyOn(el, 'matches').and.callFake(
-          (selector: string) => selector === ':focus-visible' ? keyboard : matches(selector));
+          ((selector: string) => selector === ':focus-visible' ? keyboard : matches(selector)) as any);
         el.dispatchEvent(new FocusEvent('focus'));
         hostFixture.detectChanges();
       }

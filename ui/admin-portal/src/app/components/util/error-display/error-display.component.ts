@@ -1,4 +1,4 @@
-import {Component, Input} from '@angular/core';
+import {Component, Input, ChangeDetectionStrategy} from '@angular/core';
 
 /**
  * Reusable component to display errors received from parent
@@ -6,7 +6,9 @@ import {Component, Input} from '@angular/core';
 @Component({
   selector: 'app-error-display',
   templateUrl: './error-display.component.html',
-  styleUrls: ['./error-display.component.scss']
+  styleUrls: ['./error-display.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class ErrorDisplayComponent {
   @Input("error") error: any;

@@ -21,7 +21,8 @@ import {MockJob} from "../../../../../MockData/MockJob";
 import {
   JobSourceContactsWithChatsComponent
 } from "../../source-contacts/job-source-contacts-with-chats/job-source-contacts-with-chats.component";
-import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {provideHttpClientTesting} from "@angular/common/http/testing";
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {
   ViewJobSourceContactsComponent
 } from "../../source-contacts/view-job-source-contacts/view-job-source-contacts.component";
@@ -32,7 +33,7 @@ describe('JobSourceContactsTabComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports:[HttpClientTestingModule],
+      providers: [provideHttpClient(withXhr(), withInterceptorsFromDi()), provideHttpClientTesting()],
       declarations: [JobSourceContactsTabComponent,JobSourceContactsWithChatsComponent,ViewJobSourceContactsComponent],
     })
     .compileComponents();

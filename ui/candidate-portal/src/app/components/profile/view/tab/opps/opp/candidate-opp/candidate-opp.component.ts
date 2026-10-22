@@ -21,7 +21,8 @@ import {
   OnChanges,
   OnInit,
   Output,
-  SimpleChanges
+  SimpleChanges,
+  ChangeDetectionStrategy
 } from '@angular/core';
 import {Candidate, isMuted} from "../../../../../../../model/candidate";
 import {
@@ -38,7 +39,9 @@ const STAGE_TRANSLATION_KEY_ROOT = 'CASE-STAGE.';
 @Component({
   selector: 'app-candidate-opp',
   templateUrl: './candidate-opp.component.html',
-  styleUrls: ['./candidate-opp.component.scss']
+  styleUrls: ['./candidate-opp.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class CandidateOppComponent implements OnInit, OnChanges {
   @Input() selectedOpp: CandidateOpportunity;

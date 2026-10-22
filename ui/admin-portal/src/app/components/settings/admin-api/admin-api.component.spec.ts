@@ -18,7 +18,8 @@ import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {ReactiveFormsModule} from '@angular/forms';
 import {By} from '@angular/platform-browser';
 import {AdminApiComponent} from './admin-api.component';
-import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {provideHttpClientTesting} from "@angular/common/http/testing";
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 
 describe('AdminApiComponent', () => {
   let component: AdminApiComponent;
@@ -27,7 +28,8 @@ describe('AdminApiComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [ AdminApiComponent ],
-      imports: [HttpClientTestingModule, ReactiveFormsModule ]
+      imports: [ReactiveFormsModule ],
+      providers: [provideHttpClient(withXhr(), withInterceptorsFromDi()), provideHttpClientTesting()]
     }).compileComponents();
   });
 

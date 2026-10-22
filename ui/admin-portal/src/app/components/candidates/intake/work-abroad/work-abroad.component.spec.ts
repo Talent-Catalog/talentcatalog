@@ -19,7 +19,8 @@ import {ReactiveFormsModule} from "@angular/forms";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {CandidateService} from "../../../../services/candidate.service";
 import {AutosaveStatusComponent} from "../../../util/autosave-status/autosave-status.component";
-import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {provideHttpClientTesting} from "@angular/common/http/testing";
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {YesNo} from "../../../../model/candidate";
 
 describe('WorkAbroadComponent', () => {
@@ -29,9 +30,11 @@ describe('WorkAbroadComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [ WorkAbroadComponent, AutosaveStatusComponent ],
-      imports: [HttpClientTestingModule, ReactiveFormsModule, NgSelectModule ],
+      imports: [ReactiveFormsModule, NgSelectModule ],
       providers: [
-        { provide: CandidateService }
+        { provide: CandidateService },
+        provideHttpClient(withXhr(), withInterceptorsFromDi()),
+        provideHttpClientTesting()
       ]
     })
     .compileComponents();

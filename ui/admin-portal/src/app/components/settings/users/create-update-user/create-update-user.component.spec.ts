@@ -22,7 +22,8 @@ import {CountryService} from "../../../../services/country.service";
 import {PartnerService} from "../../../../services/partner.service";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {NgSelectModule} from "@ng-select/ng-select";
-import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {provideHttpClientTesting} from "@angular/common/http/testing";
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {NO_ERRORS_SCHEMA} from "@angular/core";
 import {of, throwError} from "rxjs";
@@ -55,14 +56,16 @@ describe('CreateUpdateUserComponent', () => {
 
     TestBed.configureTestingModule({
       declarations: [CreateUpdateUserComponent],
-      imports: [FormsModule,ReactiveFormsModule,NgSelectModule,HttpClientTestingModule],
+      imports: [FormsModule,ReactiveFormsModule,NgSelectModule],
       providers: [
         NgbActiveModal,
         { provide: UserService, useValue: userServiceSpyObj },
         { provide: AuthenticationService, useValue: authenticationServiceSpyObj },
         { provide: AuthorizationService, useValue: authServiceSpyObj },
         { provide: CountryService, useValue: countryServiceSpyObj },
-        { provide: PartnerService, useValue: partnerServiceSpyObj }
+        { provide: PartnerService, useValue: partnerServiceSpyObj },
+        provideHttpClient(withXhr(), withInterceptorsFromDi()),
+        provideHttpClientTesting()
       ],
       schemas: [NO_ERRORS_SCHEMA]
     }).compileComponents();

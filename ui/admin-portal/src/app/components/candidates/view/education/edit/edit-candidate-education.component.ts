@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {UntypedFormBuilder, UntypedFormGroup, Validators} from '@angular/forms';
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {
@@ -29,7 +29,9 @@ import {generateYearArray} from "../../../../../util/year-helper";
 @Component({
   selector: 'app-edit-candidate-education',
   templateUrl: './edit-candidate-education.component.html',
-  styleUrls: ['./edit-candidate-education.component.scss']
+  styleUrls: ['./edit-candidate-education.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class EditCandidateEducationComponent implements OnInit {
 

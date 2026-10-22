@@ -50,7 +50,7 @@
 
         <tc-pagination
           *ngIf="results?.totalElements > 0"
-          [totalElements]="results?.totalElements"
+          [totalElements]="$safeNavigationMigration(results?.totalElements)"
           [pageSize]="pageSize"
           [pageNumber]="pageNumber"
           (pageChange)="pageNumber = $event; search()">

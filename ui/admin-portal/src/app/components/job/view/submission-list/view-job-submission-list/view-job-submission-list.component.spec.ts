@@ -17,7 +17,8 @@
 import {ComponentFixture, TestBed, waitForAsync} from '@angular/core/testing';
 import {ViewJobSubmissionListComponent} from './view-job-submission-list.component';
 import {Job} from '../../../../../model/job';
-import {HttpClientTestingModule} from '@angular/common/http/testing';
+import {provideHttpClientTesting} from '@angular/common/http/testing';
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from '@angular/common/http';
 import {ShowCandidatesComponent} from "../../../../candidates/show/show-candidates.component";
 import {FormsModule, ReactiveFormsModule, UntypedFormBuilder} from "@angular/forms";
 import {DatePipe, TitleCasePipe} from "@angular/common";
@@ -41,7 +42,6 @@ describe('ViewJobSubmissionListComponent', () => {
       declarations: [ViewJobSubmissionListComponent, ShowCandidatesComponent,SortedByComponent, CandidateSourceDescriptionComponent,AutosaveStatusComponent
       ],
       imports: [
-        HttpClientTestingModule,
         FormsModule,
         ReactiveFormsModule,
         NgbModule,
@@ -54,6 +54,8 @@ describe('ViewJobSubmissionListComponent', () => {
          TitleCasePipe,
          { provide: ActivatedRoute, useValue: { queryParams: of({}), snapshot: { data: {} } } }, // Mock ActivatedRoute
           UntypedFormBuilder,
+          provideHttpClient(withXhr(), withInterceptorsFromDi()),
+          provideHttpClientTesting(),
       ]
     })
     .compileComponents();

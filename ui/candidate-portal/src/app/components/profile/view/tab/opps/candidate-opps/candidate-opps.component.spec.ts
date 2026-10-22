@@ -21,7 +21,8 @@ import {
   Output,
   Pipe,
   PipeTransform,
-  SimpleChange
+  SimpleChange,
+  ChangeDetectionStrategy
 } from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
@@ -34,31 +35,31 @@ import {JobChat, JobChatType} from '../../../../../../model/chat';
 import {Candidate} from '../../../../../../model/candidate';
 import {CandidateOpportunity} from '../../../../../../model/candidate-opportunity';
 
-@Pipe({name: 'translate'})
+@Pipe({name: 'translate', standalone: false})
 class TranslatePipeStub implements PipeTransform {
   transform(value: string): string {
     return value;
   }
 }
 
-@Pipe({name: 'truncate'})
+@Pipe({name: 'truncate', standalone: false})
 class TruncatePipeStub implements PipeTransform {
   transform(value: string): string {
     return value;
   }
 }
 
-@Component({selector: 'app-error', template: ''})
+@Component({selector: 'app-error', template: '', changeDetection: ChangeDetectionStrategy.Eager, standalone: false})
 class ErrorStubComponent {
   @Input() error: unknown;
 }
 
-@Component({selector: 'tc-loading', template: ''})
+@Component({selector: 'tc-loading', template: '', changeDetection: ChangeDetectionStrategy.Eager, standalone: false})
 class TcLoadingStubComponent {
   @Input() loading = false;
 }
 
-@Component({selector: 'app-candidate-opp', template: ''})
+@Component({selector: 'app-candidate-opp', template: '', changeDetection: ChangeDetectionStrategy.Eager, standalone: false})
 class CandidateOppStubComponent {
   @Input() selectedOpp: unknown;
   @Input() candidate: unknown;
@@ -67,19 +68,23 @@ class CandidateOppStubComponent {
 
 @Component({
   selector: 'app-tab-header',
-  template: '<ng-content></ng-content>'
+  template: '<ng-content></ng-content>',
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 class TabHeaderStubComponent {
 }
 
-@Component({selector: 'app-chat-read-status', template: ''})
+@Component({selector: 'app-chat-read-status', template: '', changeDetection: ChangeDetectionStrategy.Eager, standalone: false})
 class ChatReadStatusStubComponent {
   @Input() chats: unknown;
 }
 
 @Component({
   selector: 'tc-table',
-  template: '<ng-content></ng-content>'
+  template: '<ng-content></ng-content>',
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 class TcTableStubComponent {
   @Input() striped = false;

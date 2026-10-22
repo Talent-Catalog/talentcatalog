@@ -1,4 +1,4 @@
-import {Component, Input} from '@angular/core';
+import {Component, Input, ChangeDetectionStrategy} from '@angular/core';
 
 /**
  * @component TcDropdownMenuComponent
@@ -50,7 +50,7 @@ import {Component, Input} from '@angular/core';
   selector: 'tc-dropdown-menu',
   templateUrl: './tc-dropdown-menu.component.html',
   styleUrls: ['./tc-dropdown-menu.component.scss'],
-  standalone: true,
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: []
 })
 export class TcDropdownMenuComponent {

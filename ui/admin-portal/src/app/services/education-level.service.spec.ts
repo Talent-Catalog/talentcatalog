@@ -15,7 +15,8 @@
  */
 
 import {TestBed} from '@angular/core/testing';
-import {HttpClientTestingModule, HttpTestingController} from '@angular/common/http/testing';
+import {HttpTestingController, provideHttpClientTesting} from '@angular/common/http/testing';
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from '@angular/common/http';
 import {EducationLevelService} from './education-level.service';
 import {EducationLevel} from '../model/education-level';
 import {environment} from '../../environments/environment';
@@ -28,8 +29,7 @@ describe('EducationLevelService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
-      providers: [EducationLevelService]
+      providers: [EducationLevelService, provideHttpClient(withXhr(), withInterceptorsFromDi()), provideHttpClientTesting()]
     });
     service = TestBed.inject(EducationLevelService);
     httpMock = TestBed.inject(HttpTestingController);

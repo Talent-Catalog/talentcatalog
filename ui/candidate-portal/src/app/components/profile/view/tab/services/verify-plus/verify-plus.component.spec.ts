@@ -21,7 +21,7 @@ import {of, throwError} from 'rxjs';
 import {VerifyPlusComponent} from './verify-plus.component';
 import {VerifyPlusService} from '../../../../../../services/verify-plus.service';
 
-@Pipe({name: 'translate'})
+@Pipe({name: 'translate', standalone: false})
 class MockTranslatePipe implements PipeTransform {
   transform(value: string): string {
     return value;

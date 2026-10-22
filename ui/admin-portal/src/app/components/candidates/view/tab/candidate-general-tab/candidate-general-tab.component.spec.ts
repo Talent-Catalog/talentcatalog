@@ -21,7 +21,8 @@ import {
   ViewCandidateRegistrationComponent
 } from "../../registration/view-candidate-registration.component";
 import {ViewCandidateContactComponent} from "../../contact/view-candidate-contact.component";
-import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {provideHttpClientTesting} from "@angular/common/http/testing";
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {ViewCandidateAccountComponent} from "../../account/view-candidate-account.component";
@@ -35,9 +36,9 @@ describe('CandidateGeneralTabComponent', () => {
   const mockCandidate = new MockCandidate();
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule,FormsModule,ReactiveFormsModule, NgSelectModule,RouterTestingModule],
+      imports: [FormsModule,ReactiveFormsModule, NgSelectModule,RouterTestingModule],
       declarations: [ CandidateGeneralTabComponent,ViewCandidateLanguageComponent,ViewCandidateAccountComponent,ViewCandidateRegistrationComponent,ViewCandidateContactComponent ],
-      providers: [DatePipe],
+      providers: [DatePipe, provideHttpClient(withXhr(), withInterceptorsFromDi()), provideHttpClientTesting()],
       schemas: [CUSTOM_ELEMENTS_SCHEMA]
     })
     .compileComponents();

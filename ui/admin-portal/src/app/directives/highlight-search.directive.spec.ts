@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import {ComponentFixture, TestBed} from '@angular/core/testing';
-import {Component, DebugElement} from '@angular/core';
+import {Component, DebugElement, ChangeDetectionStrategy} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {LowercaseDirective} from './lowercase.directive';
 import {HighlightSearchDirective} from './highlight-search.directive';
@@ -29,7 +29,9 @@ import {SearchQueryService} from "../services/search-query.service";
     <div appLowercase></div>
     <div class="highlight" appHighlightSearch>Angular is amazing. Learn Angular today!</div>
     <div id="word-boundary-test" appHighlightSearch>It is a bite writing situation.</div>
-  `
+  `,
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 class TestComponent {}
 describe('DirectiveModule', () => {
@@ -48,7 +50,7 @@ describe('DirectiveModule', () => {
       declarations: [TestComponent],
       imports: [CommonModule, DirectiveModule],
       providers: [
-        NgControl,
+        {provide: NgControl, useValue: {}},
         { provide: SearchQueryService, useValue: searchServiceMock }
       ]
     });

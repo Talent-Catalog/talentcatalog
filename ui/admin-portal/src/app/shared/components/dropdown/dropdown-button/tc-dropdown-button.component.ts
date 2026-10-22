@@ -1,4 +1,4 @@
-import {Component, Input} from '@angular/core';
+import {Component, Input, ChangeDetectionStrategy} from '@angular/core';
 import {ButtonComponent} from "../../button/button.component";
 
 /**
@@ -55,7 +55,7 @@ import {ButtonComponent} from "../../button/button.component";
   selector: 'tc-dropdown-button',
   templateUrl: './tc-dropdown-button.component.html',
   styleUrls: ['./tc-dropdown-button.component.scss'],
-  standalone: true,
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [ButtonComponent]
 })
 export class TcDropdownButtonComponent {

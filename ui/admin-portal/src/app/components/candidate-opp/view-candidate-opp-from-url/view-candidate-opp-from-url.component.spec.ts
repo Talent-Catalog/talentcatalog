@@ -21,7 +21,8 @@ import {ViewCandidateOppFromUrlComponent} from './view-candidate-opp-from-url.co
 import {CandidateOpportunityService} from '../../../services/candidate-opportunity.service';
 import {mockCandidateOpportunity} from "../../../MockData/MockCandidateOpportunity";
 import {ViewCandidateOppComponent} from "../view-candidate-opp/view-candidate-opp.component";
-import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {provideHttpClientTesting} from "@angular/common/http/testing";
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {NgbNavModule} from "@ng-bootstrap/ng-bootstrap";
 import {MockPartner} from "../../../MockData/MockPartner";
 import {AuthenticationService} from "../../../services/authentication.service";
@@ -46,11 +47,13 @@ describe('ViewCandidateOppFromUrlComponent', () => {
 
     TestBed.configureTestingModule({
       declarations: [ ViewCandidateOppFromUrlComponent,OpportunityStageNextStepComponent,RouterLinkStubDirective ,ViewCandidateOppComponent ],
-      imports: [HttpClientTestingModule,NgbNavModule],
+      imports: [NgbNavModule],
       providers: [
         { provide: ActivatedRoute, useValue: { paramMap: of(convertToParamMap({ id: '1' })) } },
         { provide: CandidateOpportunityService, useValue: spyOpportunityService },
         { provide: AuthenticationService, useValue: mockAuthService },
+        provideHttpClient(withXhr(), withInterceptorsFromDi()),
+        provideHttpClientTesting(),
 
       ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA]

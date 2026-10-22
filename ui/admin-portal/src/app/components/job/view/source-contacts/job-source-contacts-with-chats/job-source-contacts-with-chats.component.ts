@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
+import {Component, Input, OnChanges, OnInit, SimpleChanges, ChangeDetectionStrategy} from '@angular/core';
 import {MainSidePanelBase} from "../../../../util/split/MainSidePanelBase";
 import {CreateChatRequest, JobChat, JobChatType} from "../../../../../model/chat";
 import {Partner} from "../../../../../model/partner";
@@ -26,7 +26,9 @@ import {AuthenticationService} from "../../../../../services/authentication.serv
 @Component({
   selector: 'app-job-source-contacts-with-chats',
   templateUrl: './job-source-contacts-with-chats.component.html',
-  styleUrls: ['./job-source-contacts-with-chats.component.scss']
+  styleUrls: ['./job-source-contacts-with-chats.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class JobSourceContactsWithChatsComponent extends MainSidePanelBase
   implements OnInit, OnChanges {

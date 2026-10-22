@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output, ChangeDetectionStrategy} from '@angular/core';
 import {
   AbstractControl,
   FormArray,
@@ -22,8 +22,8 @@ import {SharedModule} from "../../../shared/shared.module";
 @Component({
   selector: 'app-dependants-travel-info-form',
   templateUrl: './dependants-travel-info-form.component.html',
-  standalone: true,
   imports: [ReactiveFormsModule, NgIf, NgForOf, NgSelectModule, TranslateModule, SharedModule],
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrls: ['./dependants-travel-info-form.component.scss']
 })
 export class DependantsTravelInfoFormComponent implements OnInit, ICandidateFormComponent<DependantsInfoFormData> {

@@ -15,7 +15,8 @@
  */
 
 import {TestBed} from '@angular/core/testing';
-import {HttpClientTestingModule, HttpTestingController} from '@angular/common/http/testing';
+import {HttpTestingController, provideHttpClientTesting} from '@angular/common/http/testing';
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from '@angular/common/http';
 import {
   CandidateCitizenshipService,
   CreateCandidateCitizenshipRequest
@@ -30,8 +31,7 @@ describe('CandidateCitizenshipService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
-      providers: [CandidateCitizenshipService]
+      providers: [CandidateCitizenshipService, provideHttpClient(withXhr(), withInterceptorsFromDi()), provideHttpClientTesting()]
     });
     service = TestBed.inject(CandidateCitizenshipService);
     httpMock = TestBed.inject(HttpTestingController);

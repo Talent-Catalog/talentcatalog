@@ -22,7 +22,8 @@ import {EditCountryComponent} from './edit-country.component';
 import {CountryService} from '../../../../services/country.service';
 import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
 import {NgSelectModule} from '@ng-select/ng-select';
-import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {provideHttpClientTesting} from "@angular/common/http/testing";
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {MockJob} from "../../../../MockData/MockJob";
 
 describe('EditCountryComponent', () => {
@@ -37,10 +38,12 @@ describe('EditCountryComponent', () => {
 
     await TestBed.configureTestingModule({
       declarations: [EditCountryComponent],
-      imports: [HttpClientTestingModule, ReactiveFormsModule, NgSelectModule],
+      imports: [ReactiveFormsModule, NgSelectModule],
       providers: [
         { provide: CountryService, useValue: countryServiceSpyObj },
-        { provide: NgbActiveModal, useValue: activeModalSpyObj }
+        { provide: NgbActiveModal, useValue: activeModalSpyObj },
+        provideHttpClient(withXhr(), withInterceptorsFromDi()),
+        provideHttpClientTesting()
       ]
     }).compileComponents();
 

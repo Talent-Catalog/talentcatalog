@@ -15,7 +15,8 @@
  */
 
 import {TestBed} from '@angular/core/testing';
-import {HttpClientTestingModule, HttpTestingController} from '@angular/common/http/testing';
+import {HttpTestingController, provideHttpClientTesting} from '@angular/common/http/testing';
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from '@angular/common/http';
 import {PartnerService} from './partner.service';
 import {environment} from '../../environments/environment';
 import {Partner, UpdatePartnerJobContactRequest, UpdatePartnerRequest} from '../model/partner';
@@ -36,8 +37,7 @@ describe('PartnerService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
-      providers: [PartnerService]
+      providers: [PartnerService, provideHttpClient(withXhr(), withInterceptorsFromDi()), provideHttpClientTesting()]
     });
     service = TestBed.inject(PartnerService);
     httpMock = TestBed.inject(HttpTestingController);

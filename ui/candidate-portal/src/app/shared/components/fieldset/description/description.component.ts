@@ -1,4 +1,4 @@
-import {Component} from '@angular/core';
+import {Component, ChangeDetectionStrategy} from '@angular/core';
 
 /**
  * @component DescriptionComponent
@@ -40,6 +40,7 @@ import {Component} from '@angular/core';
   selector: 'tc-description',
   templateUrl: './description.component.html',
   styleUrls: ['./description.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: true
 })
 export class DescriptionComponent {

@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {UntypedFormBuilder} from '@angular/forms';
 import {CandidateService} from '../../../../services/candidate.service';
 import {IntakeComponentBase} from '../../../util/intake/IntakeComponentBase';
@@ -26,7 +26,9 @@ import {Country} from "../../../../model/country";
 @Component({
   selector: 'app-host-entry',
   templateUrl: './host-entry.component.html',
-  styleUrls: ['./host-entry.component.scss']
+  styleUrls: ['./host-entry.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class HostEntryComponent extends IntakeComponentBase implements OnInit {
 

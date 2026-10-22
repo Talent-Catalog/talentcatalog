@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, Input, OnInit, ViewChild} from '@angular/core';
+import {Component, Input, OnInit, ViewChild, ChangeDetectionStrategy} from '@angular/core';
 import {Job} from "../../../model/job";
 import {MainSidePanelBase} from "../../util/split/MainSidePanelBase";
 import {SearchOppsBy} from "../../../model/base";
@@ -32,7 +32,9 @@ import {AuthorizationService} from "../../../services/authorization.service";
 @Component({
   selector: 'app-jobs-with-detail',
   templateUrl: './jobs-with-detail.component.html',
-  styleUrls: ['./jobs-with-detail.component.scss']
+  styleUrls: ['./jobs-with-detail.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class JobsWithDetailComponent extends MainSidePanelBase implements OnInit {
   selectedJob: Job;

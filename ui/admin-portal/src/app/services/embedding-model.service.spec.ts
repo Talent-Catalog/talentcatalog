@@ -15,7 +15,8 @@
  */
 
 import {TestBed} from '@angular/core/testing';
-import {HttpClientTestingModule, HttpTestingController} from '@angular/common/http/testing';
+import {HttpTestingController, provideHttpClientTesting} from '@angular/common/http/testing';
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from '@angular/common/http';
 import {EmbeddingModelService} from './embedding-model.service';
 import {EmbeddingModel} from '../model/embedding-model';
 import {environment} from '../../environments/environment';
@@ -27,8 +28,7 @@ describe('EmbeddingModelService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
-      providers: [EmbeddingModelService]
+      providers: [EmbeddingModelService, provideHttpClient(withXhr(), withInterceptorsFromDi()), provideHttpClientTesting()]
     });
     service = TestBed.inject(EmbeddingModelService);
     httpMock = TestBed.inject(HttpTestingController);

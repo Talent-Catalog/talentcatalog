@@ -19,7 +19,8 @@ import {ReactiveFormsModule, UntypedFormBuilder} from '@angular/forms';
 import {JobInterestComponent} from './job-interest.component';
 import {CandidateVisaJobCheck, YesNo} from '../../../../../model/candidate';
 import {AutosaveStatusComponent} from "../../../../util/autosave-status/autosave-status.component";
-import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {provideHttpClientTesting} from "@angular/common/http/testing";
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {MockCandidateVisaJobCheck} from "../../../../../MockData/MockCandidateVisaCheck";
 import {NgSelectModule} from "@ng-select/ng-select";
 
@@ -31,8 +32,8 @@ describe('JobInterestComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [JobInterestComponent,AutosaveStatusComponent],
-      imports: [HttpClientTestingModule,ReactiveFormsModule,NgSelectModule],
-      providers: [UntypedFormBuilder]
+      imports: [ReactiveFormsModule,NgSelectModule],
+      providers: [UntypedFormBuilder, provideHttpClient(withXhr(), withInterceptorsFromDi()), provideHttpClientTesting()]
     }).compileComponents();
   });
 

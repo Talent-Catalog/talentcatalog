@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {CandidateSource} from "../../../model/base";
 import {CandidateSourceService} from "../../../services/candidate-source.service";
 import {DragulaService} from "ng2-dragula";
@@ -25,7 +25,9 @@ import {PublishedDocColumnService} from "../../../services/published-doc-column.
 @Component({
   selector: 'app-published-doc-column-selector',
   templateUrl: './published-doc-column-selector.component.html',
-  styleUrls: ['./published-doc-column-selector.component.scss']
+  styleUrls: ['./published-doc-column-selector.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class PublishedDocColumnSelectorComponent implements OnInit {
 

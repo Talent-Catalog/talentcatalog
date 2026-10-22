@@ -18,7 +18,8 @@ import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {NgbActiveModal, NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {EditJobInfoComponent} from "./edit-job-info.component";
 import {UntypedFormBuilder} from "@angular/forms";
-import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {provideHttpClientTesting} from "@angular/common/http/testing";
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {MockJob} from "../../../../../MockData/MockJob";
 import {RouterLinkStubDirective} from "../../../../login/login.component.spec";
 
@@ -31,11 +32,12 @@ describe('EditJobInfoComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [ EditJobInfoComponent,RouterLinkStubDirective ],
-      imports:[HttpClientTestingModule],
       providers: [
         { provide: NgbModal  },
         { provide: NgbActiveModal  },
         { provide: UntypedFormBuilder  },
+        provideHttpClient(withXhr(), withInterceptorsFromDi()),
+        provideHttpClientTesting(),
       ]
     })
     .compileComponents();

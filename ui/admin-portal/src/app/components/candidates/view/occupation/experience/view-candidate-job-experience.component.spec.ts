@@ -26,7 +26,8 @@ import {
   UntypedFormControl,
   UntypedFormGroup
 } from "@angular/forms";
-import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {provideHttpClientTesting} from "@angular/common/http/testing";
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {NgxWigModule} from "ngx-wig";
 import {NO_ERRORS_SCHEMA, SimpleChange} from "@angular/core";
@@ -69,13 +70,15 @@ describe('ViewCandidateJobExperienceComponent', () => {
 
     await TestBed.configureTestingModule({
       declarations: [ViewCandidateJobExperienceComponent, CandidateJobExperienceComponent, ExtendDatePipe],
-      imports: [HttpClientTestingModule,FormsModule,ReactiveFormsModule, NgSelectModule,NgxWigModule],
+      imports: [FormsModule,ReactiveFormsModule, NgSelectModule,NgxWigModule],
       providers: [
         UntypedFormBuilder,
         { provide: CandidateJobExperienceService, useValue: candidateJobExperienceServiceSpy },
         { provide: CandidateService, useValue: candidateServiceSpy },
         { provide: NgbModal, useValue: ngbModalSpy },
-        { provide: SkillsService, useValue: skillsServiceSpy }
+        { provide: SkillsService, useValue: skillsServiceSpy },
+        provideHttpClient(withXhr(), withInterceptorsFromDi()),
+        provideHttpClientTesting()
       ],
       schemas: [NO_ERRORS_SCHEMA]
     }).compileComponents();

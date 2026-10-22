@@ -15,7 +15,8 @@
  */
 import {DependantsCardComponent} from "./dependants-card.component";
 import {ComponentFixture, TestBed} from "@angular/core/testing";
-import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {provideHttpClientTesting} from "@angular/common/http/testing";
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {FormsModule, ReactiveFormsModule, UntypedFormBuilder} from "@angular/forms";
 import {CandidateService} from "../../../../../services/candidate.service";
@@ -33,8 +34,8 @@ describe('DependantsCardComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [DependantsCardComponent,AutosaveStatusComponent,DatePickerComponent],
-      imports: [HttpClientTestingModule,NgbDatepickerModule,NgSelectModule,FormsModule,ReactiveFormsModule],
-      providers: [UntypedFormBuilder, CandidateService, CandidateDependantService]
+      imports: [NgbDatepickerModule,NgSelectModule,FormsModule,ReactiveFormsModule],
+      providers: [UntypedFormBuilder, CandidateService, CandidateDependantService, provideHttpClient(withXhr(), withInterceptorsFromDi()), provideHttpClientTesting()]
     })
     .compileComponents();
   });

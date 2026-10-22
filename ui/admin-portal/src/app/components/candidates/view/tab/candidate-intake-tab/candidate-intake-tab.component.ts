@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component} from '@angular/core';
+import {Component, ChangeDetectionStrategy} from '@angular/core';
 import {IntakeComponentTabBase} from "../../../../util/intake/IntakeComponentTabBase";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {CandidateService} from "../../../../../services/candidate.service";
@@ -42,7 +42,9 @@ import {AuthorizationService} from "../../../../../services/authorization.servic
 @Component({
   selector: 'app-candidate-intake-tab',
   templateUrl: './candidate-intake-tab.component.html',
-  styleUrls: ['./candidate-intake-tab.component.scss']
+  styleUrls: ['./candidate-intake-tab.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class CandidateIntakeTabComponent extends IntakeComponentTabBase {
   constructor(candidateService: CandidateService,

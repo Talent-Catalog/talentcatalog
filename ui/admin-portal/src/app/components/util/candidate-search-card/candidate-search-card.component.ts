@@ -22,7 +22,8 @@ import {
   OnDestroy,
   OnInit,
   Output,
-  SimpleChanges
+  SimpleChanges,
+  ChangeDetectionStrategy
 } from '@angular/core';
 import {Candidate} from '../../../model/candidate';
 import {User} from '../../../model/user';
@@ -41,7 +42,9 @@ import {hasTextContent} from "../../../util/string";
 @Component({
   selector: 'app-candidate-search-card',
   templateUrl: './candidate-search-card.component.html',
-  styleUrls: ['./candidate-search-card.component.scss']
+  styleUrls: ['./candidate-search-card.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class CandidateSearchCardComponent implements OnInit, OnDestroy, AfterViewChecked {
 

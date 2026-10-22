@@ -133,7 +133,7 @@ export class CandidateAttachmentService {
     } else {
       forkJoin(...downloads).subscribe(
         (results: CandidateAttachment[]) => {
-          downloadComplete.next();
+          downloadComplete.next(undefined);
           downloadComplete.complete();
         },
         error => {

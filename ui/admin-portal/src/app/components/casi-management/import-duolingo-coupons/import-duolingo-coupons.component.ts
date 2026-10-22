@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, Input} from '@angular/core';
+import {Component, Input, ChangeDetectionStrategy} from '@angular/core';
 import {DuolingoCouponService} from "../../../services/duolingo-coupon.service";
 import {User} from "../../../model/user";
 import {BaseCsvImportComponent} from "../base-csv-import.component";
@@ -23,6 +23,8 @@ import {BaseCsvImportComponent} from "../base-csv-import.component";
   selector: 'app-import-duolingo-coupons',
   templateUrl: './import-duolingo-coupons.component.html',
   styleUrls: ['./import-duolingo-coupons.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class ImportDuolingoCouponsComponent extends BaseCsvImportComponent {
   availableProctoredCouponsCount = 0;

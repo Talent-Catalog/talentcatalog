@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {TermsInfoDto} from "../../model/terms-info-dto";
 import {TermsInfoService} from "../../services/terms-info.service";
 import {CandidateService} from "../../services/candidate.service";
@@ -25,7 +25,9 @@ import {Candidate} from "../../model/candidate";
 @Component({
   selector: 'app-terms',
   templateUrl: './terms.component.html',
-  styleUrls: ['./terms.component.scss']
+  styleUrls: ['./terms.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class TermsComponent implements OnInit {
   content: string;

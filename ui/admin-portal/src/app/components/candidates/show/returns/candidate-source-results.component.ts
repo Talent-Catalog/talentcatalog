@@ -21,7 +21,8 @@ import {
   OnChanges,
   OnInit,
   Output,
-  SimpleChanges
+  SimpleChanges,
+  ChangeDetectionStrategy
 } from '@angular/core';
 import {getCandidateSourceNavigation} from '../../../../model/saved-search';
 import {Router} from '@angular/router';
@@ -40,7 +41,9 @@ import {CandidateSourceBaseComponent} from "../candidate-source-base";
 @Component({
   selector: 'app-candidate-source-results',
   templateUrl: './candidate-source-results.component.html',
-  styleUrls: ['./candidate-source-results.component.scss']
+  styleUrls: ['./candidate-source-results.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class CandidateSourceResultsComponent extends CandidateSourceBaseComponent implements OnInit, OnChanges {
   @Input() showSourceDetails = true;

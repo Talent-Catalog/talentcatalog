@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, Input, OnChanges, OnDestroy, SimpleChanges} from '@angular/core';
+import {Component, Input, OnChanges, OnDestroy, SimpleChanges, ChangeDetectionStrategy} from '@angular/core';
 import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 import {Observable, of, Subject} from 'rxjs';
 import {NgbPopover} from '@ng-bootstrap/ng-bootstrap';
@@ -67,7 +67,9 @@ interface ExplanationOutcome {
 @Component({
   selector: 'app-candidate-match-explanation',
   templateUrl: './candidate-match-explanation.component.html',
-  styleUrls: ['./candidate-match-explanation.component.scss']
+  styleUrls: ['./candidate-match-explanation.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class CandidateMatchExplanationComponent implements OnChanges, OnDestroy {
 

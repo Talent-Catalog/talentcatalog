@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, EventEmitter, Input, Output} from '@angular/core';
+import {Component, EventEmitter, Input, Output, ChangeDetectionStrategy} from '@angular/core';
 
 
 /**
@@ -25,7 +25,9 @@ import {Component, EventEmitter, Input, Output} from '@angular/core';
  */
 @Component({
   selector: 'app-csv-preview',
-  templateUrl: './csv-preview.component.html'
+  templateUrl: './csv-preview.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class CsvPreviewComponent {
   @Input() csvHeaders: string[] = [];

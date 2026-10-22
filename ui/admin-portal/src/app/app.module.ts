@@ -24,7 +24,7 @@ import {AppComponent} from './components/app.component';
 import {HeaderComponent} from './components/header/header.component';
 import {ShowCandidatesComponent} from './components/candidates/show/show-candidates.component';
 import {HomeComponent} from './components/candidates/home.component';
-import {HTTP_INTERCEPTORS, HttpClientModule} from '@angular/common/http';
+import {HTTP_INTERCEPTORS, provideHttpClient, withInterceptorsFromDi, withXhr} from '@angular/common/http';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {ViewCandidateComponent} from './components/candidates/view/view-candidate.component';
 import {
@@ -1216,7 +1216,6 @@ import {
   imports: [
     BrowserModule,
     AppRoutingModule,
-    HttpClientModule,
     ReactiveFormsModule,
     NgbModule,
     FormsModule,
@@ -1254,7 +1253,8 @@ import {
     RoleGuardService,
     UnsavedChangesGuard,
     Title,
-    DatePipe, TitleCasePipe
+    DatePipe, TitleCasePipe,
+    provideHttpClient(withXhr(), withInterceptorsFromDi())
   ],
   exports: [
     ViewChatPostsComponent,

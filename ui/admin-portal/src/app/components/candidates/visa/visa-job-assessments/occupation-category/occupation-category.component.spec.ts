@@ -19,7 +19,8 @@ import {ReactiveFormsModule, UntypedFormBuilder} from '@angular/forms';
 import {OccupationCategoryComponent} from './occupation-category.component';
 import {CandidateVisaCheckService} from '../../../../../services/candidate-visa-check.service';
 import {AutosaveStatusComponent} from "../../../../util/autosave-status/autosave-status.component";
-import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {provideHttpClientTesting} from "@angular/common/http/testing";
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {NgSelectModule} from "@ng-select/ng-select";
 
 describe('OccupationCategoryComponent', () => {
@@ -32,10 +33,12 @@ describe('OccupationCategoryComponent', () => {
 
     await TestBed.configureTestingModule({
       declarations: [OccupationCategoryComponent,AutosaveStatusComponent],
-      imports: [HttpClientTestingModule,ReactiveFormsModule,NgSelectModule],
+      imports: [ReactiveFormsModule,NgSelectModule],
       providers: [
         UntypedFormBuilder,
-        { provide: CandidateVisaCheckService, useValue: candidateVisaCheckServiceSpy }
+        { provide: CandidateVisaCheckService, useValue: candidateVisaCheckServiceSpy },
+        provideHttpClient(withXhr(), withInterceptorsFromDi()),
+        provideHttpClientTesting()
       ]
     }).compileComponents();
 

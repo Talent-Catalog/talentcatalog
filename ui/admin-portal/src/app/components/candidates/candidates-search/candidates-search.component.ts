@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {SavedSearch} from "../../../model/saved-search";
 import {ActivatedRoute} from "@angular/router";
 import {SavedSearchService} from "../../../services/saved-search.service";
@@ -26,7 +26,9 @@ import {combineLatest} from "rxjs";
 @Component({
   selector: 'app-candidates-search',
   templateUrl: './candidates-search.component.html',
-  styleUrls: ['./candidates-search.component.scss']
+  styleUrls: ['./candidates-search.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class CandidatesSearchComponent implements OnInit, BlockUnsavedChanges {
   error: string;

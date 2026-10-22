@@ -15,7 +15,8 @@
  */
 import {ViewCandidateOccupationComponent} from "./view-candidate-occupation.component";
 import {ComponentFixture, TestBed, waitForAsync} from "@angular/core/testing";
-import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {provideHttpClientTesting} from "@angular/common/http/testing";
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {FormsModule, ReactiveFormsModule, UntypedFormBuilder} from "@angular/forms";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {NgxWigModule} from "ngx-wig";
@@ -44,14 +45,16 @@ describe('ViewCandidateOccupationComponent', () => {
 
     TestBed.configureTestingModule({
       declarations: [ ViewCandidateOccupationComponent, ViewCandidateJobExperienceComponent ],
-      imports: [HttpClientTestingModule,FormsModule,ReactiveFormsModule, NgSelectModule,NgxWigModule],
+      imports: [FormsModule,ReactiveFormsModule, NgSelectModule,NgxWigModule],
       // schemas: [NO_ERRORS_SCHEMA],
       providers: [
         UntypedFormBuilder,
         { provide: NgbModal, useValue: mockModalService },
         { provide: CandidateService, useValue: mockCandidateService },
         { provide: CandidateOccupationService, useValue: mockCandidateOccupationService },
-        { provide: CandidateJobExperienceService, useValue: mockCandidateJobExperienceService }
+        { provide: CandidateJobExperienceService, useValue: mockCandidateJobExperienceService },
+        provideHttpClient(withXhr(), withInterceptorsFromDi()),
+        provideHttpClientTesting()
       ]
     })
     .compileComponents();

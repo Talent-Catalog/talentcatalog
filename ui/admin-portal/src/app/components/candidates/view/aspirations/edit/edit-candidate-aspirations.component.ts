@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {CandidateService} from "../../../../../services/candidate.service";
 import {Candidate} from "../../../../../model/candidate";
@@ -7,7 +7,9 @@ import {UntypedFormBuilder, UntypedFormGroup} from "@angular/forms";
 @Component({
   selector: 'app-edit-candidate-aspirations',
   templateUrl: './edit-candidate-aspirations.component.html',
-  styleUrl: './edit-candidate-aspirations.component.scss'
+  styleUrl: './edit-candidate-aspirations.component.scss',
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class EditCandidateAspirationsComponent implements OnInit{
 

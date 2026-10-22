@@ -13,7 +13,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {provideHttpClientTesting} from "@angular/common/http/testing";
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {MockCandidate} from "../../../../../../MockData/MockCandidate";
 import {ComponentFixture, TestBed} from "@angular/core/testing";
 import {
@@ -31,7 +32,7 @@ import {
 } from "../../../../../util/autosave-status/autosave-status.component";
 import {RouterLinkStubDirective} from "../../../../../login/login.component.spec";
 import {DependantsComponent} from "../../../../intake/dependants/dependants.component";
-import {Component, CUSTOM_ELEMENTS_SCHEMA} from "@angular/core";
+import {Component, CUSTOM_ELEMENTS_SCHEMA, ChangeDetectionStrategy} from "@angular/core";
 import {AuthorizationService} from "../../../../../../services/authorization.service";
 import {LocalStorageService} from "../../../../../../services/local-storage.service";
 import {ReadOnlyInputsDirective} from "../../../../../../directives/read-only-inputs.directive";
@@ -45,7 +46,9 @@ import {ReadOnlyInputsDirective} from "../../../../../../directives/read-only-in
     <textarea></textarea>
     <app-date-picker></app-date-picker>
     <ngx-wig></ngx-wig>
-  `
+  `,
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 class MockDestinationFamilyComponent {
   // No isEditable method; inputs are controlled by parent directive
@@ -68,11 +71,13 @@ describe('VisaCheckUkComponent', () => {
         MockDestinationFamilyComponent,
         RouterLinkStubDirective,
         DependantsComponent],
-      imports: [NgSelectModule,FormsModule,ReactiveFormsModule,HttpClientTestingModule,NgbAccordionModule],
+      imports: [NgSelectModule,FormsModule,ReactiveFormsModule,NgbAccordionModule],
       providers: [UntypedFormBuilder,
         {provide: NgbModal, useValue: {}},
         {provide: LocalStorageService, useValue: {}},
-        {provide: AuthorizationService, useValue: authServiceSpyObj}],
+        {provide: AuthorizationService, useValue: authServiceSpyObj},
+        provideHttpClient(withXhr(), withInterceptorsFromDi()),
+        provideHttpClientTesting()],
       schemas: [CUSTOM_ELEMENTS_SCHEMA]
     }).compileComponents();
   });

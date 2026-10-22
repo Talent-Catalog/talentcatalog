@@ -68,7 +68,7 @@
           <tc-label><i class="fa-solid fa-map-location-dot"></i>
             {{ 'CANDIDATE-OPPS.TABLE.STAGE' | translate }}</tc-label>
           <div class="form-control-plaintext">
-            {{getCandidateOpportunityStageTranslationKey(selectedOpp?.stage) | translate}}
+            {{getCandidateOpportunityStageTranslationKey($safeNavigationMigration(selectedOpp?.stage)) | translate}}
           </div>
         </div>
         <div *ngIf="selectedOpp?.fileOfferLink" class="mb-2 col-sm-12 col-md-3">
@@ -85,7 +85,7 @@
             {{ 'CANDIDATE-OPPS.TABLE.INTERVIEW-GUIDANCE' | translate }}</tc-label>
           <div class="form-control-plaintext">
             <a class="link-secondary" target="_blank"
-               [href]="selectedOpp?.jobOpp?.submissionList?.fileInterviewGuidanceLink">
+               [href]="$safeNavigationMigration(selectedOpp?.jobOpp?.submissionList?.fileInterviewGuidanceLink)">
               <i class="fa-solid fa-link"></i>
               {{selectedOpp?.jobOpp?.submissionList?.fileInterviewGuidanceName ?
               selectedOpp?.jobOpp?.submissionList?.fileInterviewGuidanceName :
@@ -99,7 +99,7 @@
             {{ 'CANDIDATE-OPPS.TABLE.COMMENTS' | translate }}
           </tc-label>
           <div id="closingComments"
-               [innerHtml]="selectedOpp?.closingCommentsForCandidate">
+               [innerHtml]="$safeNavigationMigration(selectedOpp?.closingCommentsForCandidate)">
           </div>
         </div>
       </div>

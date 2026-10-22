@@ -15,7 +15,7 @@
   -->
 
 <app-candidate-opps
-  [candidateOpps]="candidate?.candidateOpportunities"
+  [candidateOpps]="$safeNavigationMigration(candidate?.candidateOpportunities)"
   [showJobOppName]="true"
   [preview]="preview"
   [clickableRows]="false"

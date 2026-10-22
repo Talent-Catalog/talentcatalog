@@ -20,7 +20,8 @@ import {CandidateAttachmentService} from "../../../services/candidate-attachment
 import {FormsModule} from "@angular/forms";
 import {NgbModule} from "@ng-bootstrap/ng-bootstrap";
 import {NgSelectModule} from "@ng-select/ng-select";
-import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {provideHttpClientTesting} from "@angular/common/http/testing";
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 
 describe('FileUploadComponent', () => {
   let component: FileUploadComponent;
@@ -32,9 +33,11 @@ describe('FileUploadComponent', () => {
 
     await TestBed.configureTestingModule({
       declarations: [FileUploadComponent],
-      imports: [HttpClientTestingModule,FormsModule, NgbModule, NgSelectModule],
+      imports: [FormsModule, NgbModule, NgSelectModule],
       providers: [
-        { provide: CandidateAttachmentService, useValue: candidateAttachmentServiceSpy }
+        { provide: CandidateAttachmentService, useValue: candidateAttachmentServiceSpy },
+        provideHttpClient(withXhr(), withInterceptorsFromDi()),
+        provideHttpClientTesting()
       ]
     }).compileComponents();
 

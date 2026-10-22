@@ -21,7 +21,8 @@ import {CandidateVisaCheckService} from '../../../../../services/candidate-visa-
 import {VisaEligibility} from '../../../../../model/candidate';
 import {EnumOption, enumOptions} from '../../../../../util/enum';
 import {AutosaveStatusComponent} from "../../../../util/autosave-status/autosave-status.component";
-import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {provideHttpClientTesting} from "@angular/common/http/testing";
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 
 describe('VisaJobPutForwardComponent', () => {
   let component: VisaJobPutForwardComponent;
@@ -33,10 +34,12 @@ describe('VisaJobPutForwardComponent', () => {
 
     await TestBed.configureTestingModule({
       declarations: [VisaJobPutForwardComponent,AutosaveStatusComponent],
-      imports: [HttpClientTestingModule,ReactiveFormsModule, NgSelectModule],
+      imports: [ReactiveFormsModule, NgSelectModule],
       providers: [
         UntypedFormBuilder,
-        { provide: CandidateVisaCheckService, useValue: candidateVisaCheckServiceSpy }
+        { provide: CandidateVisaCheckService, useValue: candidateVisaCheckServiceSpy },
+        provideHttpClient(withXhr(), withInterceptorsFromDi()),
+        provideHttpClientTesting()
       ]
     }).compileComponents();
 

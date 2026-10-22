@@ -35,7 +35,7 @@
           </tc-dropdown-button>
 
           <tc-dropdown-menu>
-            <tc-dropdown-item [routerLink]="['/candidate',opp.candidate?.candidateNumber]">
+            <tc-dropdown-item [routerLink]="['/candidate',$safeNavigationMigration(opp.candidate?.candidateNumber)]">
               <tc-icon [color]="'primary'"
                        [size]="'md'">
                 <i class="fas fa-user " title="Candidate"></i>

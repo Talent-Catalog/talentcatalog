@@ -17,7 +17,8 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 
 import {VisaJobCheckUkComponent} from './visa-job-check-uk.component';
-import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {provideHttpClientTesting} from "@angular/common/http/testing";
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {provideRouter} from "@angular/router";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {NgSelectModule} from "@ng-select/ng-select";
@@ -46,12 +47,12 @@ describe('VisaJobCheckUkComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule,FormsModule,ReactiveFormsModule,
+      imports: [FormsModule,ReactiveFormsModule,
         NgSelectModule,
         TcAccordionComponent,
         TcAccordionItemComponent
       ],
-      providers: [provideRouter([])],
+      providers: [provideRouter([]), provideHttpClient(withXhr(), withInterceptorsFromDi()), provideHttpClientTesting()],
       declarations: [ VisaJobCheckUkComponent, RelocatingDependantsComponent, DependantsComponent]
     })
     .compileComponents();

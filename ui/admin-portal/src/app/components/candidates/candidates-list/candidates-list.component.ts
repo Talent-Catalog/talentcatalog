@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {SavedList} from '../../../model/saved-list';
 import {Location} from '@angular/common';
 import {ActivatedRoute, Router} from '@angular/router';
@@ -26,7 +26,9 @@ import {CreateUpdateListComponent} from '../../list/create-update/create-update-
 @Component({
   selector: 'app-candidates-list',
   templateUrl: './candidates-list.component.html',
-  styleUrls: ['./candidates-list.component.scss']
+  styleUrls: ['./candidates-list.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class CandidatesListComponent implements OnInit {
   error: string;

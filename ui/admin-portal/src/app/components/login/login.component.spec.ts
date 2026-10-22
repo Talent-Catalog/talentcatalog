@@ -15,7 +15,8 @@
  */
 
 import {ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
-import {HttpClientTestingModule} from '@angular/common/http/testing';
+import {provideHttpClientTesting} from '@angular/common/http/testing';
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from '@angular/common/http';
 import {LoginComponent} from './login.component';
 import {ReactiveFormsModule, UntypedFormBuilder} from '@angular/forms';
 import {ActivatedRoute, Router} from '@angular/router';
@@ -27,6 +28,7 @@ import {config_test} from "../../../config-test";
 
 @Directive({
   selector: "[routerLink]", // Stub directive for routerLink
+  standalone: false
 })
 export class RouterLinkStubDirective {
   @Input('routerLink') linkParams: any;
@@ -40,7 +42,6 @@ describe('LoginComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [
-        HttpClientTestingModule,
         ReactiveFormsModule
       ],
       declarations: [
@@ -52,6 +53,8 @@ describe('LoginComponent', () => {
         UntypedFormBuilder,
         { provide: ActivatedRoute, useValue: { queryParams: of({}) } },
         { provide: Router, useValue: { navigateByUrl: jasmine.createSpy('navigateByUrl') } },
+        provideHttpClient(withXhr(), withInterceptorsFromDi()),
+        provideHttpClientTesting(),
       ]
     }).compileComponents();
   });

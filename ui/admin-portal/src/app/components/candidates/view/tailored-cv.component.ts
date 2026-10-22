@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, OnInit} from "@angular/core";
+import {Component, OnInit, ChangeDetectionStrategy} from "@angular/core";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {CandidateOccupationService} from "src/app/services/candidate-occupation.service";
 import {CandidateService} from "src/app/services/candidate.service";
@@ -23,6 +23,8 @@ import {CandidateService} from "src/app/services/candidate.service";
   selector: "app-tailored-cv",
   templateUrl: "./tailored-cv.component.html",
   styleUrls: ["./tailored-cv.component.scss"],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class TailoredCvComponent implements OnInit {
   loading: boolean;

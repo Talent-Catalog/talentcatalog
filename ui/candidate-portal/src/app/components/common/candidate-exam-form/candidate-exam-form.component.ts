@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output, ChangeDetectionStrategy} from '@angular/core';
 import {UntypedFormBuilder, UntypedFormGroup, Validators} from "@angular/forms";
 import {Candidate, CandidateExam, Exam} from "../../../model/candidate";
 import {CandidateService} from "../../../services/candidate.service";
@@ -25,7 +25,9 @@ import {generateYearArray} from "../../../util/year-helper";
 @Component({
   selector: 'app-candidate-exam-form',
   templateUrl: './candidate-exam-form.component.html',
-  styleUrls: ['./candidate-exam-form.component.scss']
+  styleUrls: ['./candidate-exam-form.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class CandidateExamFormComponent implements OnInit {
 

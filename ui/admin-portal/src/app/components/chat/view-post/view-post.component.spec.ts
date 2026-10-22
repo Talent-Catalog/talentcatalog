@@ -23,7 +23,8 @@ import {of} from "rxjs";
 import {Reaction} from "../../../model/reaction";
 import {MOCK_REACTIONS} from "../../../MockData/MockReactions";
 import {By} from "@angular/platform-browser";
-import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {provideHttpClientTesting} from "@angular/common/http/testing";
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {AuthenticationService} from "../../../services/authentication.service";
 import {MockUser} from "../../../MockData/MockUser";
 import {NgbTooltipModule} from "@ng-bootstrap/ng-bootstrap";
@@ -40,10 +41,12 @@ describe('ViewPostComponent', () => {
 
     await TestBed.configureTestingModule({
       declarations: [ ViewPostComponent ],
-      imports: [HttpClientTestingModule,NgbTooltipModule],
+      imports: [NgbTooltipModule],
       providers: [
         { provide: ReactionService, useValue: spy },
-        { provide: AuthenticationService, useValue: authSpy }
+        { provide: AuthenticationService, useValue: authSpy },
+        provideHttpClient(withXhr(), withInterceptorsFromDi()),
+        provideHttpClientTesting()
       ]
     })
     .compileComponents();

@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {EnumOption, enumOptions} from '../../../../util/enum';
 import {YesNo} from '../../../../model/candidate';
 import {UntypedFormBuilder} from '@angular/forms';
@@ -24,7 +24,9 @@ import {IntakeComponentBase} from '../../../util/intake/IntakeComponentBase';
 @Component({
   selector: 'app-destination-limit',
   templateUrl: './destination-limit.component.html',
-  styleUrls: ['./destination-limit.component.scss']
+  styleUrls: ['./destination-limit.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class DestinationLimitComponent extends IntakeComponentBase implements OnInit {
 

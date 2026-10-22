@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output, ChangeDetectionStrategy} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {CandidateFormService} from "../../../services/candidate-form.service";
 import {
@@ -11,7 +11,9 @@ import {Candidate} from "../../../model/candidate";
 
 @Component({
   selector: 'app-refugee-status-info-form',
-  templateUrl: './refugee-status-info-form.component.html'
+  templateUrl: './refugee-status-info-form.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class RefugeeStatusInfoFormComponent implements OnInit, ICandidateFormComponent<RefugeeStatusInfoFormData> {
   @Input() readOnly = false;

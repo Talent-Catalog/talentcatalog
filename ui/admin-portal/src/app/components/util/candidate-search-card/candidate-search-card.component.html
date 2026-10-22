@@ -123,8 +123,8 @@
       <app-candidate-match-explanation
         [candidateId]="candidate.id"
         [candidate]="candidate"
-        [matchingId]="matching?.id"
-        [matchingUpdatedDate]="matching?.updatedDate"
+        [matchingId]="$safeNavigationMigration(matching?.id)"
+        [matchingUpdatedDate]="$safeNavigationMigration(matching?.updatedDate)"
         [requirementsPendingMessage]="requirementsPendingMessage"
       ></app-candidate-match-explanation>
     </div>

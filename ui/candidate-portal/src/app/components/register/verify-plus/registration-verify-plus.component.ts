@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, OnInit, ViewChild} from '@angular/core';
+import {Component, OnInit, ViewChild, ChangeDetectionStrategy} from '@angular/core';
 import {finalize} from 'rxjs/operators';
 import {VerifyPlusScannerComponent} from '../../common/verify-plus-scanner/verify-plus-scanner.component';
 import {VerifyPlusScanResult, VerifyPlusService} from '../../../services/verify-plus.service';
@@ -28,7 +28,9 @@ import {isVerifyPlusUiEnabled} from '../../../util/verify-plus-ui';
 @Component({
   selector: 'app-registration-verify-plus',
   templateUrl: './registration-verify-plus.component.html',
-  styleUrls: ['./registration-verify-plus.component.scss']
+  styleUrls: ['./registration-verify-plus.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class RegistrationVerifyPlusComponent implements OnInit {
   @ViewChild(VerifyPlusScannerComponent) scanner?: VerifyPlusScannerComponent;

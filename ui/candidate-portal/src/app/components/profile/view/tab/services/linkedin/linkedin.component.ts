@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output, ChangeDetectionStrategy} from '@angular/core';
 import {Candidate} from "../../../../../../model/candidate";
 import {LinkedinService} from "../../../../../../services/linkedin.service";
 import {CandidateService} from "../../../../../../services/candidate.service";
@@ -13,7 +13,9 @@ import {
 @Component({
   selector: 'app-linkedin',
   templateUrl: './linkedin.component.html',
-  styleUrl: './linkedin.component.scss'
+  styleUrl: './linkedin.component.scss',
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class LinkedinComponent implements OnInit {
   protected readonly ResourceStatus = ResourceStatus;

@@ -18,7 +18,8 @@ import {ComponentFixture, fakeAsync, TestBed, tick} from "@angular/core/testing"
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {FormsModule, ReactiveFormsModule, UntypedFormBuilder} from "@angular/forms";
 import {SavedListService} from "../../../services/saved-list.service";
-import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {provideHttpClientTesting} from "@angular/common/http/testing";
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {MockSavedList} from "../../../MockData/MockSavedList";
 import {of, throwError} from "rxjs";
 import {CandidateStatus, UpdateCandidateStatusInfo} from "../../../model/candidate";
@@ -44,12 +45,14 @@ describe('SelectListComponent', () => {
 
     await TestBed.configureTestingModule({
       declarations: [SelectListComponent],
-      imports: [HttpClientTestingModule,FormsModule,ReactiveFormsModule,NgSelectModule],
+      imports: [FormsModule,ReactiveFormsModule,NgSelectModule],
       providers: [
         UntypedFormBuilder,
         { provide: NgbActiveModal, useValue: activeModalSpyObj },
         { provide: SavedListService, useValue: savedListServiceSpyObj },
-        { provide: AuthorizationService, useValue: authorizationServiceSpyObj }
+        { provide: AuthorizationService, useValue: authorizationServiceSpyObj },
+        provideHttpClient(withXhr(), withInterceptorsFromDi()),
+        provideHttpClientTesting()
       ]
     }).compileComponents();
 

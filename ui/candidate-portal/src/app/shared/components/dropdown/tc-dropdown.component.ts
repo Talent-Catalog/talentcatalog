@@ -1,4 +1,4 @@
-import {Component, Input} from '@angular/core';
+import {Component, Input, ChangeDetectionStrategy} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {NgbDropdown, NgbDropdownMenu, NgbDropdownToggle, Placement} from '@ng-bootstrap/ng-bootstrap';
 
@@ -49,7 +49,7 @@ import {NgbDropdown, NgbDropdownMenu, NgbDropdownToggle, Placement} from '@ng-bo
   selector: 'tc-dropdown',
   templateUrl: './tc-dropdown.component.html',
   styleUrls: ['./tc-dropdown.component.scss'],
-  standalone: true,
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [CommonModule, NgbDropdown, NgbDropdownToggle, NgbDropdownMenu]
 })
 export class TcDropdownComponent {

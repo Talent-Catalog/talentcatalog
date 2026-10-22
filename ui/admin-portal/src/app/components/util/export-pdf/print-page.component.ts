@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
 import {Candidate} from "../../../model/candidate";
@@ -22,7 +22,9 @@ import {Candidate} from "../../../model/candidate";
 @Component({
   selector: 'app-print-page',
   templateUrl: './print-page.component.html',
-  styleUrls: ['./print-page.component.scss']
+  styleUrls: ['./print-page.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class PrintPageComponent implements OnInit {
 

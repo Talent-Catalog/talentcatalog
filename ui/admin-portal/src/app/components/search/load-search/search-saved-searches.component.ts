@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ChangeDetectionStrategy} from '@angular/core';
 
 
 import {SearchResults} from '../../../model/search-results';
@@ -29,7 +29,9 @@ import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 @Component({
   selector: 'app-search-saved-searches',
   templateUrl: './search-saved-searches.component.html',
-  styleUrls: ['./search-saved-searches.component.scss']
+  styleUrls: ['./search-saved-searches.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class SearchSavedSearchesComponent implements OnInit {
 

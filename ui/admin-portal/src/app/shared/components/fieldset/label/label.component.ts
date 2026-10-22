@@ -1,4 +1,4 @@
-import {Component, Input} from '@angular/core';
+import {Component, Input, ChangeDetectionStrategy} from '@angular/core';
 import {CommonModule} from '@angular/common';
 
 /**
@@ -30,7 +30,7 @@ import {CommonModule} from '@angular/common';
   selector: 'tc-label',
   templateUrl: './label.component.html',
   styleUrls: ['./label.component.scss'],
-  standalone: true,
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [CommonModule]
 })
 export class LabelComponent {

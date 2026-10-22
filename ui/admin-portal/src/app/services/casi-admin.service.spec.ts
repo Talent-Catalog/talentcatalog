@@ -1,5 +1,6 @@
 import {TestBed} from '@angular/core/testing';
-import {HttpClientTestingModule, HttpTestingController} from "@angular/common/http/testing";
+import {HttpTestingController, provideHttpClientTesting} from "@angular/common/http/testing";
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {environment} from "../../environments/environment";
 import {CasiAdminService} from './casi-admin.service';
 import {ListAction, ServiceList} from "../model/service-list";
@@ -10,8 +11,7 @@ describe('CasiAdminService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
-      providers: [CasiAdminService],
+      providers: [CasiAdminService, provideHttpClient(withXhr(), withInterceptorsFromDi()), provideHttpClientTesting()],
     });
 
     service = TestBed.inject(CasiAdminService);

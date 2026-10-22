@@ -14,13 +14,15 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {Job} from "../../../../../model/job";
 
 @Component({
   selector: 'app-job-source-contacts-tab',
   templateUrl: './job-source-contacts-tab.component.html',
-  styleUrls: ['./job-source-contacts-tab.component.scss']
+  styleUrls: ['./job-source-contacts-tab.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class JobSourceContactsTabComponent implements OnInit {
   @Input() job: Job;

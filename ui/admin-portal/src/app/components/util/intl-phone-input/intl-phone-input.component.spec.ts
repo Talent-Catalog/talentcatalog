@@ -2,7 +2,8 @@ import {ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing'
 
 import {IntlPhoneInputComponent} from './intl-phone-input.component';
 import {NgSelectModule} from "@ng-select/ng-select";
-import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {provideHttpClientTesting} from "@angular/common/http/testing";
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {CountryService} from "../../../services/country.service";
 import {of} from "rxjs";
 import {Country} from "../../../model/country";
@@ -23,9 +24,11 @@ describe('IntlPhoneInputComponent', () => {
     const countrySpy = jasmine.createSpyObj('CountryService', ['listCountries']);
     await TestBed.configureTestingModule({
       declarations: [IntlPhoneInputComponent],
-      imports: [NgSelectModule, HttpClientTestingModule, FormsModule],
+      imports: [NgSelectModule, FormsModule],
       providers: [
-        {provide: CountryService, useValue: countrySpy}
+        {provide: CountryService, useValue: countrySpy},
+        provideHttpClient(withXhr(), withInterceptorsFromDi()),
+        provideHttpClientTesting()
       ],
     }).compileComponents();
 

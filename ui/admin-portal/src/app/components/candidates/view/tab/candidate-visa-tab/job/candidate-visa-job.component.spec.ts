@@ -17,7 +17,8 @@
 import {ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
 
 import {CandidateVisaJobComponent} from './candidate-visa-job.component';
-import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {provideHttpClientTesting} from "@angular/common/http/testing";
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {FormsModule, ReactiveFormsModule, UntypedFormBuilder} from "@angular/forms";
 import {MockCandidate} from "../../../../../../MockData/MockCandidate";
 import {CandidateVisaJobService} from "../../../../../../services/candidate-visa-job.service";
@@ -48,13 +49,15 @@ describe('CandidateVisaJobComponent', () => {
     modalServiceMock = jasmine.createSpyObj('NgbModal', ['open']);
     authServiceMock = jasmine.createSpyObj('AuthorizationService', ['isSystemAdminOnly', 'isEditableCandidate']);
     await TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule,FormsModule,ReactiveFormsModule,RouterTestingModule],
+      imports: [FormsModule,ReactiveFormsModule,RouterTestingModule],
       declarations: [CandidateVisaJobComponent],
       providers: [
         UntypedFormBuilder,
         { provide: CandidateVisaJobService, useValue: candidateVisaJobServiceMock },
         { provide: NgbModal, useValue: modalServiceMock },
         { provide: AuthorizationService, useValue: authServiceMock },
+        provideHttpClient(withXhr(), withInterceptorsFromDi()),
+        provideHttpClientTesting(),
       ],
     })
     .compileComponents();

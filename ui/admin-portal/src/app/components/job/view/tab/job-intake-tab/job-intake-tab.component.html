@@ -19,13 +19,13 @@
 <tc-alert *ngIf="error" type="danger">{{error}}</tc-alert>
 
 <tc-accordion *ngIf="!loading" [allOpen]="true">
-  <tc-accordion-item [header]="'Employer Details: ' + job.employerEntity?.name">
+  <tc-accordion-item [header]="'Employer Details: ' + $safeNavigationMigration(job.employerEntity?.name)">
     <tc-description-list *ngIf="canViewEmployerDetails()" direction="column">
       <tc-description-item label="Destination">
         {{job.country?.name}}
       </tc-description-item>
       <tc-description-item label="Company website">
-        <a [href]="job.employerEntity?.website" target="_blank">{{job.employerEntity.website}}</a>
+        <a [href]="$safeNavigationMigration(job.employerEntity?.website)" target="_blank">{{job.employerEntity.website}}</a>
       </tc-description-item>
       <tc-description-item label="Opportunity Score">
         {{job.opportunityScore}}

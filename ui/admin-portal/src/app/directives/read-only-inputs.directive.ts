@@ -17,7 +17,8 @@
 import {AfterViewInit, Directive, ElementRef, Input, Renderer2} from '@angular/core';
 
 @Directive({
-  selector: '[appReadOnlyInputs]'
+  selector: '[appReadOnlyInputs]',
+  standalone: false
 })
 export class ReadOnlyInputsDirective implements AfterViewInit {
   @Input('appReadOnlyInputs') isReadonly: boolean;

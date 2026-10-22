@@ -13,7 +13,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-import {Component, Input} from '@angular/core';
+import {Component, Input, ChangeDetectionStrategy} from '@angular/core';
 import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
 import {
   Candidate,
@@ -44,7 +44,9 @@ import {CandidateService} from '../../../../services/candidate.service';
 @Component({
   selector: 'app-erase-candidate-data',
   templateUrl: './erase-candidate-data.component.html',
-  styleUrls: ['./erase-candidate-data.component.scss']
+  styleUrls: ['./erase-candidate-data.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class EraseCandidateDataComponent {
 

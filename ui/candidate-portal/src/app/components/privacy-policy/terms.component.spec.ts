@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Input, Output, Pipe, PipeTransform} from '@angular/core';
+import {Component, EventEmitter, Input, Output, Pipe, PipeTransform, ChangeDetectionStrategy} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 import {of} from 'rxjs';
@@ -7,33 +7,33 @@ import {TermsComponent} from './terms.component';
 import {CandidateService} from '../../services/candidate.service';
 import {TermsInfoService} from '../../services/terms-info.service';
 
-@Pipe({name: 'translate'})
+@Pipe({name: 'translate', standalone: false})
 class TranslatePipeStub implements PipeTransform {
   transform(value: string): string {
     return value;
   }
 }
 
-@Component({selector: 'app-error', template: ''})
+@Component({selector: 'app-error', template: '', changeDetection: ChangeDetectionStrategy.Eager, standalone: false})
 class AppErrorStubComponent {
   @Input() error: any;
 }
 
-@Component({selector: 'app-tab-header', template: '<ng-content></ng-content>'})
+@Component({selector: 'app-tab-header', template: '<ng-content></ng-content>', changeDetection: ChangeDetectionStrategy.Eager, standalone: false})
 class AppTabHeaderStubComponent {}
 
-@Component({selector: 'app-show-terms', template: '<ng-content></ng-content>'})
+@Component({selector: 'app-show-terms', template: '<ng-content></ng-content>', changeDetection: ChangeDetectionStrategy.Eager, standalone: false})
 class AppShowTermsStubComponent {
   @Input() requestTermsRead: boolean;
   @Output() termsRead = new EventEmitter<void>();
 }
 
-@Component({selector: 'tc-icon', template: '<ng-content></ng-content>'})
+@Component({selector: 'tc-icon', template: '<ng-content></ng-content>', changeDetection: ChangeDetectionStrategy.Eager, standalone: false})
 class TcIconStubComponent {
   @Input() color: string;
 }
 
-@Component({selector: 'tc-button', template: '<ng-content></ng-content>'})
+@Component({selector: 'tc-button', template: '<ng-content></ng-content>', changeDetection: ChangeDetectionStrategy.Eager, standalone: false})
 class TcButtonStubComponent {
   @Input() color: string;
   @Input() routerLink: string | any[];

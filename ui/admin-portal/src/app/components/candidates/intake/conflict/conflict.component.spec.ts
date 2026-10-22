@@ -16,7 +16,8 @@
 import {ConflictComponent} from "./conflict.component";
 import {ComponentFixture, TestBed} from "@angular/core/testing";
 import {YesNo} from "../../../../model/candidate";
-import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {provideHttpClientTesting} from "@angular/common/http/testing";
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {FormsModule, ReactiveFormsModule, UntypedFormBuilder} from "@angular/forms";
 import {CandidateService} from "../../../../services/candidate.service";
@@ -36,10 +37,12 @@ describe('ConflictComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [ConflictComponent,AutosaveStatusComponent],
-      imports: [HttpClientTestingModule,NgSelectModule,FormsModule,ReactiveFormsModule],
+      imports: [NgSelectModule,FormsModule,ReactiveFormsModule],
       providers: [
         UntypedFormBuilder,
-        { provide: CandidateService, useValue: mockCandidateService }
+        { provide: CandidateService, useValue: mockCandidateService },
+        provideHttpClient(withXhr(), withInterceptorsFromDi()),
+        provideHttpClientTesting()
       ]
     }).compileComponents();
   });

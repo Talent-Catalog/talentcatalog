@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {Candidate} from "../../../../model/candidate";
 import {CandidateService} from "../../../../services/candidate.service";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
@@ -24,7 +24,9 @@ import {AuthorizationService} from "../../../../services/authorization.service";
 @Component({
   selector: 'app-view-candidate-special-links',
   templateUrl: './view-candidate-special-links.component.html',
-  styleUrls: ['./view-candidate-special-links.component.scss']
+  styleUrls: ['./view-candidate-special-links.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class ViewCandidateSpecialLinksComponent implements OnInit {
   @Input() candidate: Candidate;

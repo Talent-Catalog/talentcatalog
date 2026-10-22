@@ -19,7 +19,8 @@ import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {CandidateService} from "../../../../../services/candidate.service";
 import {MockCandidate} from "../../../../../MockData/MockCandidate";
 import {of, throwError} from "rxjs";
-import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {provideHttpClientTesting} from "@angular/common/http/testing";
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {FormsModule, ReactiveFormsModule, UntypedFormBuilder} from "@angular/forms";
 import {NgSelectModule} from "@ng-select/ng-select";
 
@@ -36,11 +37,13 @@ describe('EditCandidateMediaWillingnessComponent', () => {
 
     await TestBed.configureTestingModule({
       declarations: [EditCandidateMediaWillingnessComponent],
-      imports: [HttpClientTestingModule,FormsModule,ReactiveFormsModule, NgSelectModule],
+      imports: [FormsModule,ReactiveFormsModule, NgSelectModule],
       providers: [
         UntypedFormBuilder,
         { provide: NgbActiveModal, useValue: activeModalSpy },
-        { provide: CandidateService, useValue: candidateServiceSpy }
+        { provide: CandidateService, useValue: candidateServiceSpy },
+        provideHttpClient(withXhr(), withInterceptorsFromDi()),
+        provideHttpClientTesting()
       ]
     })
     .compileComponents();

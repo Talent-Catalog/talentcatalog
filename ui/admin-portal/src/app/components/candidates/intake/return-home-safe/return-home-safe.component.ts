@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {EnumOption, enumOptions} from '../../../../util/enum';
 import {YesNoUnsure} from '../../../../model/candidate';
 import {UntypedFormBuilder} from '@angular/forms';
@@ -24,7 +24,9 @@ import {IntakeComponentBase} from '../../../util/intake/IntakeComponentBase';
 @Component({
   selector: 'app-return-home-safe',
   templateUrl: './return-home-safe.component.html',
-  styleUrls: ['./return-home-safe.component.scss']
+  styleUrls: ['./return-home-safe.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class ReturnHomeSafeComponent extends IntakeComponentBase implements OnInit {
 

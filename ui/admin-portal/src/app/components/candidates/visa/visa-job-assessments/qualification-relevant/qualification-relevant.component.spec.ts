@@ -21,7 +21,8 @@ import {QualificationRelevantComponent} from './qualification-relevant.component
 import {CandidateVisaCheckService} from '../../../../../services/candidate-visa-check.service';
 import {EnumOption, enumOptions} from '../../../../../util/enum';
 import {YesNo} from '../../../../../model/candidate';
-import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {provideHttpClientTesting} from "@angular/common/http/testing";
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {AutosaveStatusComponent} from "../../../../util/autosave-status/autosave-status.component";
 
 describe('QualificationRelevantComponent', () => {
@@ -34,10 +35,12 @@ describe('QualificationRelevantComponent', () => {
 
     await TestBed.configureTestingModule({
       declarations: [QualificationRelevantComponent,AutosaveStatusComponent],
-      imports: [HttpClientTestingModule,ReactiveFormsModule, NgSelectModule],
+      imports: [ReactiveFormsModule, NgSelectModule],
       providers: [
         UntypedFormBuilder,
-        { provide: CandidateVisaCheckService, useValue: candidateVisaCheckServiceSpy }
+        { provide: CandidateVisaCheckService, useValue: candidateVisaCheckServiceSpy },
+        provideHttpClient(withXhr(), withInterceptorsFromDi()),
+        provideHttpClientTesting()
       ]
     }).compileComponents();
 

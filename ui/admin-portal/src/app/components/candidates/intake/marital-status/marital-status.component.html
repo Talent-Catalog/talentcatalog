@@ -68,7 +68,7 @@
         <app-candidate-name-num-search
           [handleSelect]="'displayOnly'"
           [displayValue]="partnerCandidate ?
-          partnerCandidate?.candidateNumber + ': ' + partnerCandidate?.user?.firstName + ' ' + partnerCandidate?.user?.lastName
+          $safeNavigationMigration(partnerCandidate?.candidateNumber) + ': ' + $safeNavigationMigration(partnerCandidate?.user?.firstName) + ' ' + $safeNavigationMigration(partnerCandidate?.user?.lastName)
           : null"
           (candChange)="updatePartnerCand($event)">
         </app-candidate-name-num-search>

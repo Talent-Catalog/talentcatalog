@@ -24,7 +24,7 @@
     <div class="text-parts-view">
       <div class="mb-3" *ngIf="experience?.description">
         <label class="form-label">Original</label>
-        <div class="form-control-plaintext" [innerHTML]="experience?.description"
+        <div class="form-control-plaintext" [innerHTML]="$safeNavigationMigration(experience?.description)"
              appHighlightSearch></div>
       </div>
 

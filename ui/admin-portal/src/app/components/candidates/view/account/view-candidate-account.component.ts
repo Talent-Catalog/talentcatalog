@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 import {Candidate} from '../../../../model/candidate';
 import {User} from '../../../../model/user';
@@ -25,7 +25,9 @@ import {ChangePasswordComponent} from '../../../account/change-password/change-p
 @Component({
   selector: 'app-view-candidate-account',
   templateUrl: './view-candidate-account.component.html',
-  styleUrls: ['./view-candidate-account.component.scss']
+  styleUrls: ['./view-candidate-account.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class ViewCandidateAccountComponent implements OnInit {
 

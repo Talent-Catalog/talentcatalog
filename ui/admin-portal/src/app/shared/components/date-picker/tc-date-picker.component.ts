@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {AbstractControl, FormsModule, UntypedFormControl} from "@angular/forms";
 import {CommonModule} from "@angular/common";
 import {NgbDate, NgbDateStruct, NgbInputDatepicker} from "@ng-bootstrap/ng-bootstrap";
@@ -72,7 +72,7 @@ import {AlertComponent} from "../alert/alert.component";
   selector: 'tc-date-picker',
   templateUrl: './tc-date-picker.component.html',
   styleUrls: ['./tc-date-picker.component.scss'],
-  standalone: true,
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [
     CommonModule,
     FormsModule,

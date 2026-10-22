@@ -17,14 +17,15 @@
 import {TestBed} from '@angular/core/testing';
 
 import {PublishedDocColumnService} from './published-doc-column.service';
-import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {provideHttpClientTesting} from "@angular/common/http/testing";
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 
 describe('PublishedDocColumnService', () => {
   let service: PublishedDocColumnService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
+      providers: [provideHttpClient(withXhr(), withInterceptorsFromDi()), provideHttpClientTesting()],
     });
     service = TestBed.inject(PublishedDocColumnService);
   });

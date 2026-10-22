@@ -18,7 +18,8 @@ import {SfJoblinkComponent, SfJoblinkValidationEvent} from "./sf-joblink.compone
 import {ComponentFixture, TestBed, waitForAsync} from "@angular/core/testing";
 import {SalesforceService} from "../../../services/salesforce.service";
 import {FormsModule, ReactiveFormsModule, UntypedFormBuilder} from "@angular/forms";
-import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {provideHttpClientTesting} from "@angular/common/http/testing";
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {of, throwError} from "rxjs";
 import {mockCandidateOpportunity} from "../../../MockData/MockCandidateOpportunity";
@@ -33,10 +34,12 @@ describe('SfJoblinkComponent', () => {
 
     TestBed.configureTestingModule({
       declarations: [SfJoblinkComponent],
-      imports: [ReactiveFormsModule,FormsModule,HttpClientTestingModule,NgSelectModule],
+      imports: [ReactiveFormsModule,FormsModule,NgSelectModule],
       providers: [
         UntypedFormBuilder,
-        { provide: SalesforceService, useValue: spy }
+        { provide: SalesforceService, useValue: spy },
+        provideHttpClient(withXhr(), withInterceptorsFromDi()),
+        provideHttpClientTesting()
       ]
     }).compileComponents();
 

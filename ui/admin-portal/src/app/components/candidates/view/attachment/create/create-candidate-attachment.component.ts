@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {UntypedFormBuilder, UntypedFormGroup} from "@angular/forms";
 import {CandidateAttachmentService} from "../../../../../services/candidate-attachment.service";
@@ -28,7 +28,9 @@ import {UploadType} from "../../../../../model/task";
 @Component({
   selector: 'app-create-candidate-attachment',
   templateUrl: './create-candidate-attachment.component.html',
-  styleUrls: ['./create-candidate-attachment.component.scss']
+  styleUrls: ['./create-candidate-attachment.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class CreateCandidateAttachmentComponent implements OnInit {
 

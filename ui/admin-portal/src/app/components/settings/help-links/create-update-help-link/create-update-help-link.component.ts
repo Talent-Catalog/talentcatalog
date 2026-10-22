@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {Country} from "../../../../model/country";
 import {UntypedFormBuilder, UntypedFormGroup, Validators} from "@angular/forms";
 import {enumOptions} from "../../../../util/enum";
@@ -28,7 +28,9 @@ import {JobOpportunityStage} from "../../../../model/job";
 @Component({
   selector: 'app-create-update-help-link',
   templateUrl: './create-update-help-link.component.html',
-  styleUrls: ['./create-update-help-link.component.scss']
+  styleUrls: ['./create-update-help-link.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class CreateUpdateHelpLinkComponent extends FormComponentBase implements OnInit {
 

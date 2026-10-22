@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output, ChangeDetectionStrategy} from '@angular/core';
 import {isCandidateOpportunity} from "../../../model/candidate-opportunity";
 import {
   getOpportunityStageName,
@@ -31,7 +31,9 @@ import {JobService} from "../../../services/job.service";
 @Component({
   selector: 'app-opportunity-stage-next-step',
   templateUrl: './opportunity-stage-next-step.component.html',
-  styleUrls: ['./opportunity-stage-next-step.component.scss']
+  styleUrls: ['./opportunity-stage-next-step.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class OpportunityStageNextStepComponent implements OnInit {
   @Input() opp: Opportunity;

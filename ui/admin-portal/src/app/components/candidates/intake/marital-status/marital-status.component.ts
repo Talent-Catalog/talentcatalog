@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {EnumOption, enumOptions} from '../../../../util/enum';
 import {
   Candidate,
@@ -35,7 +35,9 @@ import {Country} from "../../../../model/country";
 @Component({
   selector: 'app-marital-status',
   templateUrl: './marital-status.component.html',
-  styleUrls: ['./marital-status.component.scss']
+  styleUrls: ['./marital-status.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class MaritalStatusComponent extends IntakeComponentBase implements OnInit {
 

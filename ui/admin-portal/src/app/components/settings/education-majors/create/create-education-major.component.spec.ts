@@ -19,7 +19,8 @@ import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {EducationMajorService} from "../../../../services/education-major.service";
 import {ReactiveFormsModule, UntypedFormBuilder} from "@angular/forms";
 import {NgSelectModule} from "@ng-select/ng-select";
-import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {provideHttpClientTesting} from "@angular/common/http/testing";
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {EducationMajor} from "../../../../model/education-major";
 import {of, throwError} from "rxjs";
 
@@ -36,10 +37,12 @@ describe('CreateEducationMajorComponent', () => {
 
     await TestBed.configureTestingModule({
       declarations: [CreateEducationMajorComponent],
-      imports: [ReactiveFormsModule,NgSelectModule,HttpClientTestingModule],
+      imports: [ReactiveFormsModule,NgSelectModule],
       providers: [
         { provide: EducationMajorService, useValue: educationMajorServiceSpyObj },
-        { provide: NgbActiveModal, useValue: ngbActiveModalSpyObj }
+        { provide: NgbActiveModal, useValue: ngbActiveModalSpyObj },
+        provideHttpClient(withXhr(), withInterceptorsFromDi()),
+        provideHttpClientTesting()
       ]
     }).compileComponents();
 

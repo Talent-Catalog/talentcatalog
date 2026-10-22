@@ -16,7 +16,8 @@
 
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {CreateCandidateExamComponent} from './create-candidate-exam.component';
-import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {provideHttpClientTesting} from "@angular/common/http/testing";
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {NgbActiveModal, NgbModalModule} from "@ng-bootstrap/ng-bootstrap";
 import {ReactiveFormsModule, UntypedFormBuilder} from "@angular/forms";
 import {NgSelectModule} from "@ng-select/ng-select";
@@ -29,8 +30,8 @@ describe('CreateCandidateExamComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [ CreateCandidateExamComponent ],
-      imports: [HttpClientTestingModule, NgbModalModule,ReactiveFormsModule,NgSelectModule],
-      providers: [NgbActiveModal,UntypedFormBuilder],
+      imports: [NgbModalModule,ReactiveFormsModule,NgSelectModule],
+      providers: [NgbActiveModal,UntypedFormBuilder, provideHttpClient(withXhr(), withInterceptorsFromDi()), provideHttpClientTesting()],
       schemas: [CUSTOM_ELEMENTS_SCHEMA]
     })
     .compileComponents();

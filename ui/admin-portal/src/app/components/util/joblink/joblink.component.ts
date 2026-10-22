@@ -21,7 +21,8 @@ import {
   OnChanges,
   OnInit,
   Output,
-  SimpleChanges
+  SimpleChanges,
+  ChangeDetectionStrategy
 } from '@angular/core';
 import {Observable, of} from "rxjs";
 import {JobNameAndId} from "../../../model/job";
@@ -34,7 +35,9 @@ import {NgbTypeaheadSelectItemEvent} from "@ng-bootstrap/ng-bootstrap";
 @Component({
   selector: 'app-joblink',
   templateUrl: './joblink.component.html',
-  styleUrls: ['./joblink.component.scss']
+  styleUrls: ['./joblink.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class JoblinkComponent implements OnInit, OnChanges {
 

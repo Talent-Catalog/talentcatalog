@@ -25,7 +25,8 @@ import {CandidateService} from '../../../../services/candidate.service';
 import {YesNoUnsure} from '../../../../model/candidate';
 import {AutosaveStatusComponent} from "../../../util/autosave-status/autosave-status.component";
 import {NgSelectModule} from "@ng-select/ng-select";
-import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {provideHttpClientTesting} from "@angular/common/http/testing";
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 
 describe('ArrestImprisonComponent', () => {
   let component: ArrestImprisonComponent;
@@ -35,11 +36,13 @@ describe('ArrestImprisonComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [ArrestImprisonComponent,AutosaveStatusComponent],
-      imports: [HttpClientTestingModule, NgSelectModule,FormsModule,ReactiveFormsModule],
+      imports: [NgSelectModule,FormsModule,ReactiveFormsModule],
       providers: [
         UntypedFormControl,
         UntypedFormBuilder,
-        { provide: CandidateService }
+        { provide: CandidateService },
+        provideHttpClient(withXhr(), withInterceptorsFromDi()),
+        provideHttpClientTesting()
       ]
     }).compileComponents();
 

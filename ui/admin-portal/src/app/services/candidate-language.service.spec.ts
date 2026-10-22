@@ -15,7 +15,8 @@
  */
 
 import {TestBed} from '@angular/core/testing';
-import {HttpClientTestingModule, HttpTestingController} from '@angular/common/http/testing';
+import {HttpTestingController, provideHttpClientTesting} from '@angular/common/http/testing';
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from '@angular/common/http';
 import {
   CandidateLanguageService,
   CreateCandidateLanguageRequest,
@@ -32,8 +33,7 @@ describe('CandidateLanguageService', () => {
   const mockCandidate = new MockCandidate();
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
-      providers: [CandidateLanguageService]
+      providers: [CandidateLanguageService, provideHttpClient(withXhr(), withInterceptorsFromDi()), provideHttpClientTesting()]
     });
     service = TestBed.inject(CandidateLanguageService);
     httpMock = TestBed.inject(HttpTestingController);

@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {IntakeComponentBase} from "../../../util/intake/IntakeComponentBase";
 import {UntypedFormBuilder} from "@angular/forms";
 import {CandidateService} from "../../../../services/candidate.service";
@@ -24,7 +24,9 @@ import {YesNo} from "../../../../model/candidate";
 @Component({
   selector: 'app-health-issues',
   templateUrl: './health-issues.component.html',
-  styleUrls: ['./health-issues.component.scss']
+  styleUrls: ['./health-issues.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class HealthIssuesComponent extends IntakeComponentBase implements OnInit {
 

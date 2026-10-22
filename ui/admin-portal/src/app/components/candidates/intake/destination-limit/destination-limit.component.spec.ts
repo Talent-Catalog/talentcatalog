@@ -19,7 +19,8 @@ import {FormsModule, ReactiveFormsModule, UntypedFormBuilder} from '@angular/for
 import {CandidateService} from '../../../../services/candidate.service';
 import {YesNo} from "../../../../model/candidate";
 import {AutosaveStatusComponent} from "../../../util/autosave-status/autosave-status.component";
-import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {provideHttpClientTesting} from "@angular/common/http/testing";
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {NgSelectModule} from "@ng-select/ng-select";
 
 describe('DestinationLimitComponent', () => {
@@ -29,8 +30,8 @@ describe('DestinationLimitComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [DestinationLimitComponent,AutosaveStatusComponent],
-      imports: [HttpClientTestingModule,NgSelectModule,FormsModule,ReactiveFormsModule],
-      providers: [UntypedFormBuilder, CandidateService]
+      imports: [NgSelectModule,FormsModule,ReactiveFormsModule],
+      providers: [UntypedFormBuilder, CandidateService, provideHttpClient(withXhr(), withInterceptorsFromDi()), provideHttpClientTesting()]
     })
     .compileComponents();
   });

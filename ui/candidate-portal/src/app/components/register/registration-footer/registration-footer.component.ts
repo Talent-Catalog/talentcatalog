@@ -14,13 +14,15 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, EventEmitter, Input, Output} from '@angular/core';
+import {Component, EventEmitter, Input, Output, ChangeDetectionStrategy} from '@angular/core';
 import {RegistrationService} from "../../../services/registration.service";
 
 @Component({
   selector: 'app-registration-footer',
   templateUrl: './registration-footer.component.html',
-  styleUrls: ['./registration-footer.component.scss']
+  styleUrls: ['./registration-footer.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
+  standalone: false
 })
 export class RegistrationFooterComponent {
 

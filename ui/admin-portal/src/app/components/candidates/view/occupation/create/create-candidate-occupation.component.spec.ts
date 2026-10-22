@@ -15,7 +15,8 @@
  */
 import {CreateCandidateOccupationComponent} from "./create-candidate-occupation.component";
 import {ComponentFixture, TestBed, waitForAsync} from "@angular/core/testing";
-import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {provideHttpClientTesting} from "@angular/common/http/testing";
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {FormsModule, ReactiveFormsModule, UntypedFormBuilder} from "@angular/forms";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {NgxWigModule} from "ngx-wig";
@@ -43,12 +44,14 @@ describe('CreateCandidateOccupationComponent', () => {
 
     TestBed.configureTestingModule({
       declarations: [CreateCandidateOccupationComponent],
-      imports: [HttpClientTestingModule,FormsModule,ReactiveFormsModule, NgSelectModule,NgxWigModule],
+      imports: [FormsModule,ReactiveFormsModule, NgSelectModule,NgxWigModule],
       providers: [
         UntypedFormBuilder,
         { provide: NgbActiveModal, useValue: mockActiveModal },
         { provide: CandidateOccupationService, useValue: mockCandidateOccupationService },
-        { provide: OccupationService, useValue: mockOccupationService }
+        { provide: OccupationService, useValue: mockOccupationService },
+        provideHttpClient(withXhr(), withInterceptorsFromDi()),
+        provideHttpClientTesting()
       ],
       schemas: [NO_ERRORS_SCHEMA]
     }).compileComponents();

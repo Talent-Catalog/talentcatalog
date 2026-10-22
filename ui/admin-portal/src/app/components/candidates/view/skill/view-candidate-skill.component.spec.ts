@@ -16,7 +16,8 @@
 import {ViewCandidateSkillComponent} from "./view-candidate-skill.component";
 import {ComponentFixture, TestBed} from "@angular/core/testing";
 import {MockCandidate} from "../../../../MockData/MockCandidate";
-import {HttpClientTestingModule} from "@angular/common/http/testing";
+import {provideHttpClientTesting} from "@angular/common/http/testing";
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 
 describe('ViewCandidateSkillComponent', () => {
   let component: ViewCandidateSkillComponent;
@@ -26,9 +27,7 @@ describe('ViewCandidateSkillComponent', () => {
 
     await TestBed.configureTestingModule({
       declarations: [ViewCandidateSkillComponent],
-      imports: [HttpClientTestingModule],
-      providers: [
-      ]
+      providers: [provideHttpClient(withXhr(), withInterceptorsFromDi()), provideHttpClientTesting()]
     }).compileComponents();
   });
 

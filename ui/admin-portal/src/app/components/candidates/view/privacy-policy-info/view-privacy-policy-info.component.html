@@ -12,7 +12,7 @@
     </tc-description-item>
 
     <tc-description-item [label]="'Accepted On:'">
-      {{ (candidate?.acceptedPrivacyPolicyDate | date: 'customDateTime') || 'N/A' }}
+      {{ ($safeNavigationMigration(candidate?.acceptedPrivacyPolicyDate) | date: 'customDateTime') || 'N/A' }}
     </tc-description-item>
 
     <tc-description-item [label]="'Accepted With Partner:'">
