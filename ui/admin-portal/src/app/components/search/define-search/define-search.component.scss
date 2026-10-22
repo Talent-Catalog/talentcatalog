@@ -279,6 +279,12 @@ $candidate-card-width: 375px;
   font-weight: 600;
 }
 
+.ai-source-note-row {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
 .ai-source-note {
   @include text-color-caption;
 }

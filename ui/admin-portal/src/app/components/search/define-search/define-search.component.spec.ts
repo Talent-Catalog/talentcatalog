@@ -1007,7 +1007,7 @@ describe('DefineSearchComponent', () => {
 
       expect(jobService.getJobMatchingInfo).toHaveBeenCalledWith(123);
       expect(component.jobName).toBe('Associated job');
-      expect(component.displayJobNameAsSource()).toBe('(Autopopulated from job 123: Associated job)');
+      expect(component.displayJobNameAsSource()).toBe('Linked to job 123: Associated job');
     }));
 
     it('should only display the job - not replace the saved search criteria or re-run the search', fakeAsync(() => {
@@ -1053,7 +1053,7 @@ describe('DefineSearchComponent', () => {
       tick();
 
       expect(jobService.getJobMatchingInfo).toHaveBeenCalledOnceWith(3);
-      expect(component.displayJobNameAsSource()).toBe('(Autopopulated from job 3: Query param job)');
+      expect(component.displayJobNameAsSource()).toBe('Linked to job 3: Query param job');
       discardPeriodicTasks();
     }));
 

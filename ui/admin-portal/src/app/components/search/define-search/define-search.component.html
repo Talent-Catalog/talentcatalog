@@ -186,9 +186,20 @@
                 </div>
               </div>
               <div *ngIf="jobName" class="ai-extracted-info">
-                <small class="ai-source-note">
-                  {{displayJobNameAsSource()}}
-                </small>
+                <div class="ai-source-note-row">
+                  <small class="ai-source-note">
+                    {{displayJobNameAsSource()}}
+                  </small>
+                  <tc-button [type]="'plain'"
+                             ngbTooltip="This search is linked to a job. Click Clear Search to clear the search and remove the link."
+                             placement="bottom top"
+                             aria-label="About the linked job"
+                  >
+                    <tc-icon size="sm" ariaLabel="About the linked job">
+                      <i class="fa-regular fa-circle-question"></i>
+                    </tc-icon>
+                  </tc-button>
+                </div>
               </div>
 
             </div>
