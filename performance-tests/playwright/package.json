@@ -1,0 +1,19 @@
+{
+  "name": "@tc/performance-playwright",
+  "version": "0.1.0",
+  "private": true,
+  "license": "GPL-3.0-or-later",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "perf:smoke": "playwright test tests/infrastructure --project=chromium",
+    "perf:test": "playwright test tests/journeys --project=chromium",
+    "perf:list": "playwright test tests/journeys --project=chromium --list",
+    "perf:install": "playwright install chromium"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.62.1",
+    "@types/node": "20.19.43"
+  }
+}
