@@ -23,6 +23,27 @@ plugins {
 
 group = 'org.tctalent'
 version = '0.0.1-SNAPSHOT'
+
+
+/**
+ * Adds the Git commit used to build TC to Spring Boot build information.
+ * Actuator exposes the value as build.commit.
+ */
+def gitCommit = providers.exec {
+    workingDir rootProject.projectDir
+    commandLine 'git', 'rev-parse', 'HEAD'
+}.standardOutput.asText.get().trim()
+
+springBoot {
+    buildInfo {
+        excludes = ['time']
+        properties {
+            additional = [commit: gitCommit]
+        }
+    }
+}
+
+
 ext {
     isDev = System.properties['env'] == 'dev'
     mapstructVersion = "1.6.3"

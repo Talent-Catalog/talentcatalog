@@ -10,14 +10,8 @@ on:
       - '.github/workflows/tc-candidate-portal-e2e.yml'
       - '.nvmrc'
 
-  push:
-    branches:
-      - staging
-    paths:
-      - 'ui/candidate-portal/**'
-      - '.github/workflows/tc-candidate-portal-e2e.yml'
-      - '.nvmrc'
-
+  # Temporarily disabled on staging push.
+  # E2E will run only on pull requests or manual dispatch.
   workflow_dispatch:
 
 permissions:
