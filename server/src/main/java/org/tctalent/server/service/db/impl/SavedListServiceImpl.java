@@ -16,8 +16,6 @@
 
 package org.tctalent.server.service.db.impl;
 
-import static org.springframework.data.jpa.domain.Specification.where;
-
 import com.opencsv.CSVReader;
 import com.opencsv.exceptions.CsvValidationException;
 import java.io.IOException;
@@ -837,7 +835,7 @@ public class SavedListServiceImpl implements SavedListService {
         //Set standard sort to ascending by name.
         Sort sort = Sort.by(Sort.Direction.ASC, "name");
         return savedListRepository.findAll(
-                where(getSavedListsQuery).and(getCandidateSavedListsQuery),
+                getSavedListsQuery.and(getCandidateSavedListsQuery),
                 sort);
     }
 
