@@ -32,6 +32,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.util.AopTestUtils;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.tctalent.server.configuration.SystemAdminConfiguration;
 import org.tctalent.server.integration.helper.BaseDBIntegrationTest;
 import org.tctalent.server.model.db.Candidate;
@@ -42,6 +44,7 @@ import org.tctalent.server.model.db.UnhcrStatus;
 import org.tctalent.server.repository.db.read.cache.CandidateRedisCache;
 import org.tctalent.server.request.candidate.SearchCandidateRequest;
 import org.tctalent.server.service.db.CandidateService;
+import org.tctalent.server.service.db.LanguageService;
 import org.tctalent.server.service.db.SavedSearchService;
 import org.tctalent.server.service.db.util.PagedCandidateBackProcessor;
 import org.tctalent.server.util.background.PageContextBackRunner;
@@ -57,6 +60,8 @@ class SavedSearchServiceImplTest extends BaseDBIntegrationTest {
     private ThreadPoolTaskScheduler taskScheduler;
     @Autowired
     private SavedSearchServiceImpl savedSearchServiceImpl;
+    @Autowired
+    private LanguageService languageService;
 
     @MockitoBean
     private CandidateRedisCache candidateRedisCache;
@@ -68,6 +73,15 @@ class SavedSearchServiceImplTest extends BaseDBIntegrationTest {
         taskScheduler.setThreadNamePrefix("saved-search-test-");
         taskScheduler.initialize();
         request = new SearchCandidateRequest();
+    }
+
+    @Test
+    void initIsCalledBySpringWhenBeanCreated() {
+        //The English language id is only set by the @PostConstruct init method.
+        //Get the target in case the bean is proxied.
+        SavedSearchServiceImpl target = AopTestUtils.getTargetObject(savedSearchServiceImpl);
+        Object englishLanguageId = ReflectionTestUtils.getField(target, "ENGLISH_LANGUAGE_ID");
+        assertEquals(languageService.getLanguage("english").getId(), englishLanguageId);
     }
 
     @Test
