@@ -9,7 +9,8 @@ Branch: `john/tc-1189-upgrade-to-spring-boot-4` (base: `b1c367b9f` TC-1584)
 | 2. Build configuration | Complete. Decisions D11–D15 approved. |
 | 3. Source fixes | **Complete.** D16–D20 approved and implemented. Main and test code compile. 3,591 tests, of which only the 8 `BatchJobServiceIntegrationTest` tests fail; they await the Stage 4 migration (§3.4). Checkpoint committed. (The 8 Batch failures were resolved in Stage 4.) |
 | 4. Database migration and infrastructure | **Complete and approved.** V2_34 added. Fresh and existing (Spring Batch 5) databases are tested. **Full suite: 3,593 tests, 0 failures** (§3.5). D21 and D22 approved. |
-| 5–6 | Not started |
+| 5. Broader regression and application compatibility | **Complete.** One production bug found and fixed (candidate search, D26), plus an error-response format fix (D23). 15 new regression tests, most compared against Boot 3. Local runs of the application on both Boot 3 and Boot 4. **Full suite: 3,608 tests, 0 failures, 0 skipped** (run twice). New decisions D23–D27 (§4). **Awaiting review before Stage 6.** |
+| 6 | Not started |
 
 > **Deployment constraint:** the Spring Boot 4 application and the V2_34 migration **must be deployed together**.
 > - Without V2_34, Spring Batch 6 cannot launch any job.
@@ -403,6 +404,73 @@ It contains:
 
 3,593 = the 3,591 at the checkpoint + the 2 migration tests. No test was disabled or skipped.
 
+### 3.6 Stage 5: broader regression and application compatibility
+
+**Method.** Wherever possible, a new test was **run on Boot 3.5.16 first** (in a temporary worktree of `734b383b5`, since deleted). That recorded the previous behaviour, and the same test was then run on Boot 4. So "unchanged" below means compared against real Boot 3 output, not judged by eye. Throwaway probes and worktrees were deleted, and only the regression tests listed here are kept.
+
+#### 1. Verified by automated tests
+
+| Area | Test (new unless stated) | What it checks | Result |
+|---|---|---|---|
+| Security 7: HTTP authorization | `integration/security/HttpAuthorizationMatrixIntegrationTest` | Builds requests for **every path pattern in `SecurityConfiguration`** (parsed from the file) plus extra paths, for each relevant HTTP method: **367 requests**. Each is sent through the real security filter chain as 9 personas: anonymous, an invalid JWT, and **real JWTs** for `user`, `limited`, `semilimited`, `partneradmin`, `admin`, `systemadmin` and read-only users. It records permit, 401 or 403; controllers don't run. | **All 3,303 decisions are identical to Boot 3 / Security 6.5** (expected file `security/http-authorization-matrix.txt` recorded on Boot 3). |
+| Security 7: JWT and login, TOTP | `integration/api/ApiJsonCompatibilityIntegrationTest` | Real login: success, wrong password, unknown user. **MFA login** without a code, with a wrong code, and with a **valid TOTP code** from the real TOTP library. Requests with and without a JWT. | Identical to Boot 3 |
+| Security 7: WebSocket/STOMP (TC-1583) | existing `WebSocketSecurityConfigTest` | JWT CONNECT, CSRF, subscribe and send rules | Passes |
+| Jackson 3: REST API JSON | `ApiJsonCompatibilityIntegrationTest` | A golden master of real HTTP exchanges through the filter chain, controllers, message converters and database: login, user, a paged and sorted search, candidate (simple and extended DTOs), 404, validation error, malformed JSON, a wrongly typed value, `/api/hal` (root, collection, item, the admin portal's request, and a refused write). Volatile values are normalized, keeping their formats. | Identical to Boot 3 **after D23 and D26**, except for D24 (the HAL content type when no `Accept` header is sent). |
+| Jackson 3: candidate search | `integration/api/CandidateSearchIntegrationTest` | The admin portal's flow: get the default saved search, then search. Results are read from **database-built candidate JSON** into `CandidateReadDto`. | **Failed on Boot 4 (production bug, D26); passes after the fix.** The response JSON is identical to Boot 3, including key order. |
+| Jackson 3: jsonb, Python services, Salesforce, Anthropic | from Stages 2–3 | Payload and storage formats | Pass |
+| Hibernate 7 / Data JPA 4: queries | `integration/repo/RepositoryQueryCompatibilityIntegrationTest` | Calls **every read-only method of all our repositories (278)**, covering derived queries, JPQL and **native SQL**, with representative arguments: real entities, enums, dates, collections and `Pageable`. Each call runs in its own rolled-back transaction. | **All 278 outcomes are identical to Hibernate 6.6**, including result types in a detailed one-off comparison. 275 succeed. 3 fail identically on both versions; these are pre-existing (§ observations). |
+| Hibernate 7: native result mapping with data | `integration/api/CandidateStatsIntegrationTest` | Every candidate statistic, over all candidates and over a list. These native queries return `Object[]` rows that our code casts (`(Long) row[1]`), and no Gradle test ran them with data before. | Pass on Boot 3 and Boot 4 |
+| Hibernate 7: persistence behaviour | `integration/repo/PersistenceBehaviourIntegrationTest` | Insert then update of entities with **assigned composite ids** (`CandidateProperty`, `JobChatUser`), which Spring Data does with `merge`. Also updating a detached entity, dirty checking, and lazy loading inside and outside a transaction (`LazyInitializationException`). | Pass on Boot 3 and Boot 4. No entity uses `@Version`, so Hibernate 7's stricter merge rule for versioned entities does not apply. |
+| Hibernate 7: pagination and sorting | the repository sweep and API golden master | `Pageable` queries, paged and sorted user search | Identical |
+| Hibernate 7: id sequences, schema | from Stages 3–4 | | Pass |
+| Spring Batch 6: the real candidate-text job | `integration/batch/CandidateTextJobIntegrationTest` | `POST /api/admin/system/set_candidate_text/list-{id}-cpu-100` launches the **real job** asynchronously. It reads the list's candidates, updates their `text`, writes them, and the result appears in the status summary. | Pass on Boot 3 and Boot 4 |
+| Spring Batch 6: lifecycle | `BatchJobServiceIntegrationTest` (changed), `SpringBatchSchemaMigrationIntegrationTest` | Async launch, status, stop, restart, once-per-day, D13, D21 | Pass. See D27 for the change in stop semantics. |
+| Redis (Spring Data Redis 4, Lettuce 7) | `integration/cache/RedisIntegrationTest` | Against a **real Redis server** (`redis:7.2.4`). The other tests turn caching off. It checks the `users` cache read and write (the value served from Redis after the database row is deleted), the fallback to the database for an unreadable cached value, and the candidate JSON cache (put, versioned get, clear). | Pass on Boot 3 and Boot 4 |
+| ShedLock 7 with scheduled jobs | `integration/cache/ShedLockSchedulerIntegrationTest` | `ResourceExpiryScheduler.markResourcesAsExpired()` takes the 23-hour lock in the `shedlock` table. A second run while locked does nothing. After release it runs and expires an overdue resource. | Pass on Boot 3 and Boot 4 |
+| DOCX generation | existing `DocxFormatterHelperTest` | docx4j with JAXB | Pass |
+
+**Test-infrastructure findings.** These were found while running the new tests; none are production changes:
+- **The shared test database is re-imported from `dump.sql` before every test class.** The import resets all sequences (`setval(…, 1, false)`), including `batch_job_execution_seq`. So tests that commit Batch metadata must remove it, or later classes collide. A new `integration/helper/BatchMetadataCleaner` is used by `CandidateTextJobIntegrationTest` and `BatchJobServiceIntegrationTest`. The other new tests that commit data clean it up.
+- **`CpuUsageTest`** (existing) failed twice in about ten runs: the Micrometer CPU gauge was `NaN` because the JVM had no CPU-load sample at that moment. It now waits up to 5 seconds for a sample, then applies the same 0–1 assertion.
+- `ApplicationJsonMapper` (the test helper from Stage 3) now loads the real `spring.jackson` settings from `application.yml`.
+
+#### 2. Verified by running the application locally
+
+I ran the Boot 4 jar against **throwaway** PostgreSQL (restored from `dump.sql`) and Redis containers on separate ports. Your docker-compose development database was **not** used, because V2_34 would rename its Batch sequence. I also ran the **Boot 3** jar the same way for comparison. Everything was removed afterwards.
+
+| Check | Boot 4 result |
+|---|---|
+| Startup | Starts in about 8.5 s. **Flyway 12 migrated the restored database through V2.34.** Health is UP, and `/actuator/info` shows the commit. |
+| Startup warnings | **Identical to the Boot 3 jar**: the same 5 warnings, all pre-existing (Hibernate dialect and `use_jdbc_metadata_defaults` deprecations, `open-in-view`, a macOS Netty DNS notice, a duplicate JVM gauge). |
+| Admin login, JWT, wrong password, no token | 200 / 401 / 401 |
+| Candidate self-registration and portal login | Works. A candidate's JWT gets 403 on admin endpoints. |
+| Portal endpoints (`personal`, `contact`) | Work |
+| Admin user, country, candidate, statistics endpoints | Work |
+| Candidate search (native SQL JSON, **real Redis** cache) | **Failed** ("Could not deserialize cached JSON") until the D26 fix. Afterwards: the first search reads from the database, the second from Redis. |
+| CV download as **DOCX** and **PDF** | A valid Word document (13 parts, containing the candidate number and email) and a 1-page PDF |
+| `/api/hal` as the admin portal requests it | 200 `application/json` |
+| **WebSocket/STOMP chat over SockJS** | With the admin's JWT: CONNECT, SUBSCRIBE, SEND, and the post is stored and broadcast. Without a JWT: CONNECT is accepted, SUBSCRIBE is refused (TC-1583 rules). **The broadcast message JSON is identical to the Boot 3 jar** (same fields, order, date format and characters). |
+| Batch: candidate-text job from System Admin | Launched, COMPLETED, read and write count 1, the candidate's text updated, using `batch_job_instance_seq` on the V2_34 database |
+| Rolling deploy (Boot 3 and Boot 4 sharing Redis) | Boot 4 could not read a Boot 3-written `users` cache entry. It logged "Cache get failed … falling through to database" once and continued correctly (D25). |
+| `timestamptz` read from the database | UTC on both Hibernate 6.6 and 7.4 (checked with a probe), so no change in API date offsets |
+
+#### 3. Still requires manual testing (external services or the Angular UI)
+
+Passing serialization tests don't prove these integrations work; each has to be checked against the real service:
+- **Salesforce:** sync against the **sandbox**, including the de-duplicated request bodies (D17, mandatory before merging), authentication, upserts, opportunity sync (the `JobOppSyncFromSalesforce` scheduled job) and response handling.
+- **Python explanation and embedding services:** real calls (request and response formats are covered by tests).
+- **Anthropic** and **Duolingo** calls, and other external HTTP clients (reCAPTCHA, Preset, Google Drive/Docs, AWS S3/SES, Slack).
+- **Angular UI:** both portals end to end, in particular:
+  - login, including 2FA setup and login;
+  - candidate search and saved searches;
+  - lists and stats;
+  - chat (WebSocket);
+  - CV export;
+  - candidate property definitions (`/api/hal`);
+  - System Admin batch launch.
+- **Deployment environment:** startup with production configuration and secrets, Redis (ElastiCache), and scheduled jobs with ShedLock across several instances.
+- **Copy of production data:** candidate search and stats on realistic data, and Batch status on real Batch 5 history.
+
 ---
 
 ## 4. Issues and decisions
@@ -456,8 +524,17 @@ D21 and D22 were both approved with option (a).
 - **D21 (known limitation, kept):** job instances created by Spring Batch 5 are not found again from their parameters. On the upgrade day, a once-per-day job that has already run may run once more. Restarting a stopped or failed pre-upgrade execution starts a new instance from the beginning. Existing history is still readable. Neither case affects current production workflows. `SpringBatchSchemaMigrationIntegrationTest` records this behaviour as a regression test.
 - **D22:** restarting an unregistered job now fails with `IllegalArgumentException`. `BatchJobServiceIntegrationTest.restartUnregisteredJobFails` still verifies that no new execution is created and that the stopped execution stays STOPPED.
 
+### New decisions requiring approval (Stage 5)
+| # | Decision | Options | Recommendation |
+|---|---|---|---|
+| D23 | **Error responses from `ErrorHandler` (`ErrorDTO`) were written by Spring Data REST's own `JsonMapper`.** That mapper pretty-prints and ignores our `spring.jackson` settings, because Spring Data REST's exception resolver picks up message converter beans and Boot 4 no longer defines them. | (a) Restore Boot 3 behaviour: give that resolver the application's `JsonMapper` through Spring Data REST's own hook (`RestRepositoryConfig.configureExceptionHandlerExceptionResolver`). (b) Accept: the JSON is equivalent but pretty-printed. | **(a), applied** pending your confirmation. Error responses are now byte-for-byte as on Boot 3 (golden master). |
+| D24 | **HAL content type:** with no `Accept` header, `/api/hal` now answers `application/vnd.hal+json` instead of `application/hal+json` (Spring HATEOAS 3 / Data REST 5). The admin portal's request (`Accept: application/json, text/plain, */*`) still gets `application/json` and an identical body. | (a) Accept. (b) Force the old media type in `RestRepositoryConfig`. | **(a).** No client is affected. The golden master records the new value. |
+| D25 | **The Redis `users` cache is not readable across the upgrade.** It stores Java-serialized `User` entities, and Hibernate 7 changed the `serialVersionUID` of its collection classes. After deployment, and in both directions during a rolling deployment, each stale entry logs one "Cache get failed … falling through to database" error. The correct user is then loaded from the database and re-cached. The TTL is 5 minutes. | (a) Accept the transient error logs. (b) Clear the `users::*` keys in Redis as part of the deployment. | **(b)** if convenient, otherwise (a). It is harmless either way. The candidate JSON cache is unaffected (it stores plain JSON strings). |
+| D26 | **Production bug, fixed: candidate search failed under Jackson 3.** `CandidateReadDto` has only Lombok's package-private `@Builder` constructor. Jackson 2 created it through that constructor (parameter names module, creator visibility `ANY`). Jackson 3 doesn't, even with Boot's Jackson 2 defaults, which turn parameter-name detection off. | (a) Restore Jackson 2's behaviour globally in `application.yml`: `spring.jackson.mapper.detect-parameter-names: true` and `spring.jackson.visibility.creator: any`. (b) Fix `CandidateReadDto` alone (eg add `@NoArgsConstructor` or `@Jacksonized`), leaving any other class that relies on the same behaviour broken. | **(a), applied** pending your confirmation. It restores Boot 3 behaviour for every class. The search response, error responses and all golden masters now match Boot 3 (apart from D24). |
+| D27 | **Spring Batch 6 stop semantics:** `stop()` now records **STOPPED immediately**, while the job thread is still running (it stops at the next chunk boundary). Batch 5 recorded STOPPING until the job had actually stopped. So a restart soon after a stop could run alongside the old execution. | (a) Accept and record it. (b) Work around it in `BatchJobServiceImpl`. | **(a).** Neither stop nor restart is called by any endpoint (D13). The Stage 2 restart test now waits for the old execution's steps to stop before restarting. |
+
 ### Outstanding blockers
-- None for Stage 4.
+- None. D23–D27 need confirmation.
 - **Deployment constraint: the V2_34 migration and the Boot 4 code must be deployed together.** On a database without V2_34, Batch 6 can't launch jobs. Once V2_34 has run, an older Boot 3 build could no longer launch batch jobs either, because `batch_job_seq` is gone. So a rollback to the previous release would need `ALTER SEQUENCE batch_job_instance_seq RENAME TO batch_job_seq;` (manually, outside Flyway).
 
 ### Changes that may affect production behaviour
@@ -470,8 +547,10 @@ D21 and D22 were both approved with option (a).
 - Salesforce request bodies no longer contain the duplicate fields (D17). This needs verifying in the Salesforce sandbox before merging.
 - jsonb reads: UTC offsets and tolerance of unknown properties (D18).
 - A null raw password returns false (D16; not reachable in production).
+- Restored Jackson 2 creator detection (D26) and error-response serialization (D23). These keep the behaviour unchanged, so they aren't changes, but they are configuration that must stay in place.
+- HAL content type without an `Accept` header (D24); Redis `users` cache entries invalidated by the upgrade (D25); STOPPED recorded immediately on stop (D27).
 
-### Manual verification requirements (to be refined)
+### Manual verification requirements (see §3.6 part 3 for the full list)
 - Chat over WebSocket from the Angular clients.
 - Explanation and embedding calls to the Python services.
 - Salesforce sync against the sandbox (in particular the de-duplicated payloads, D14/D17).
@@ -507,6 +586,12 @@ D21 and D22 were both approved with option (a).
 - Move `model/sf` `ContactTest`/`OpportunityTest` to Jackson 3, which is what Salesforce decoding now uses.
 - Fix the pre-existing `audit_log.event_date` type mismatch (`date` column mapped as a timestamp), then consider enabling `hibernate.hbm2ddl.auto=validate`, so that future mapping and schema drift is caught at startup.
 - Remove the explicit `hibernate.dialect` setting (Hibernate warns it is unnecessary).
+- Consider storing the Redis `users` cache as JSON rather than Java serialization, so cache entries survive library upgrades (D25).
+- `dump.sql` is restored before every integration test class and resets all sequences. Consider loading it once per test run (test infrastructure).
+- Pre-existing, found by the repository sweep:
+  - `SavedListLinkRepository`'s `saved_list_link` table doesn't exist (the entity is marked as possible zombie code);
+  - `CandidateRepository.findByIdIn(String, Pageable)` binds a SQL fragment as a parameter, so it fails with a syntax error for any value. It is unused (both callers pass a collection, which uses the other overload), so it can be removed.
+- Make `CandidateReadDto` (and similar Lombok `@Builder` DTOs) explicitly deserializable (eg `@Jacksonized`) so that it doesn't rely on D26's global settings.
 - Add tests for ShedLock-protected scheduled jobs (none exist).
 - Give the shared test container a unique name or enable reuse properly, to avoid "Container startup failed" when test runs overlap.
 - Remove `thymeleaf-extras-springsecurity6` if it is confirmed unused (no `sec:` in templates).
@@ -545,6 +630,26 @@ D21 and D22 were both approved with option (a).
 - Decision changes: `TcPasswordEncoderTest` (D16), `SalesforceJsonPayloadTest` (D17), `CandidateMatchExplanationIntegrationTest` (D18).
 
 **Checkpoint review:** I reviewed the whole diff. There is no temporary debugging code, no disabled test and no probe file left behind. The probe used for D19 lived only in the scratchpad and in a temporary Boot 3 worktree, and both are deleted. `BatchConfig` keeps its existing Javadoc and `@RequiredArgsConstructor`, so it shows no unrelated change. The other non-mechanical changes are the ones listed in §3.4.
+
+**Stage 5:**
+- Main code:
+  - `configuration/RestRepositoryConfig` (D23);
+  - `application.yml` (D26: `spring.jackson.mapper.detect-parameter-names`, `spring.jackson.visibility.creator`).
+- New tests:
+  - `integration/security/HttpAuthorizationMatrixIntegrationTest` (+ `security/http-authorization-matrix.txt`);
+  - `integration/api/ApiJsonCompatibilityIntegrationTest` (+ `api/api-json-exchanges.txt`);
+  - `integration/api/CandidateSearchIntegrationTest`;
+  - `integration/api/CandidateStatsIntegrationTest`;
+  - `integration/repo/RepositoryQueryCompatibilityIntegrationTest` (+ `repository/repository-query-outcomes.txt`);
+  - `integration/repo/PersistenceBehaviourIntegrationTest`;
+  - `integration/batch/CandidateTextJobIntegrationTest`;
+  - `integration/cache/RedisIntegrationTest`;
+  - `integration/cache/ShedLockSchedulerIntegrationTest`;
+  - `integration/helper/BatchMetadataCleaner`.
+- Tests changed:
+  - `BatchJobServiceIntegrationTest` (cleanup; D27 wait before restart);
+  - `logging/CpuUsageTest` (wait for a CPU sample);
+  - `util/json/ApplicationJsonMapper` (loads `application.yml`).
 
 **Stage 4:**
 - Migration (new): `server/src/main/resources/db/migration/V2_34__rename_spring_batch_job_sequence.sql`
