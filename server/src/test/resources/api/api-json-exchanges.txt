@@ -1,0 +1,165 @@
+### login
+200 application/json
+{"tcInstanceType":"GRN","accessToken":"<jwt>","tokenType":"Bearer","user":{"jobCreator":false,"firstName":"Api","lastName":"Tester","role":"systemadmin","partner":{"jobCreator":false,"defaultJobCreator":false,"sourcePartner":false,"publicApiAuthorities":[],"defaultSourcePartner":false,"id":1,"publicApiAccess":false},"usingMfa":false,"readOnly":false,"id":<tc1189_api_admin.id>,"mfaConfigured":false,"email":"tc1189_api_admin@example.com","username":"tc1189_api_admin"},"canViewChats":false}
+
+### login with wrong password
+401 application/json
+{"code":"invalid_credentials","message":"Invalid credentials for user","timestamp":<epochMillis>,"data":null}
+
+### login with unknown user
+401 application/json
+{"code":"invalid_credentials","message":"Invalid credentials for user","timestamp":<epochMillis>,"data":null}
+
+### mfa login without code
+401 application/json
+{"code":"invalid_credentials","message":"You need to enter an authentication code for this user","timestamp":<epochMillis>,"data":null}
+
+### mfa login with wrong code
+401 application/json
+{"code":"invalid_credentials","message":"Incorrect authentication code - try again. Or contact a Talent Catalog administrator.","timestamp":<epochMillis>,"data":null}
+
+### mfa login with valid code
+200 application/json
+{"tcInstanceType":"GRN","accessToken":"<jwt>","tokenType":"Bearer","user":{"jobCreator":false,"firstName":"Api","lastName":"Tester","role":"admin","partner":{"jobCreator":false,"defaultJobCreator":false,"sourcePartner":false,"publicApiAuthorities":[],"defaultSourcePartner":false,"id":1,"publicApiAccess":false},"usingMfa":true,"readOnly":false,"id":<tc1189_api_mfa.id>,"mfaConfigured":true,"email":"tc1189_api_mfa@example.com","username":"tc1189_api_mfa"},"canViewChats":false}
+
+### admin endpoint without jwt
+401 -
+
+
+### get user
+200 application/json
+{"jobCreator":false,"lastName":"Tester","lastLogin":"dddd-dd-ddTdd:dd:dd.fraction+hh:mm","role":"systemadmin","usingMfa":false,"readOnly":false,"sourceCountries":[],"mfaConfigured":false,"firstName":"Api","emailVerified":false,"createdDate":"dddd-dd-ddTdd:dd:dd.fraction+hh:mm","partner":{"jobCreator":false,"defaultJobCreator":false,"sourcePartner":false,"publicApiAuthorities":[],"defaultSourcePartner":false,"id":1,"publicApiAccess":false},"id":<tc1189_api_admin.id>,"email":"tc1189_api_admin@example.com","username":"tc1189_api_admin","status":"active"}
+
+### get unknown user
+404 application/json
+{"code":"missing_object","message":"Missing User with ID 999999999","timestamp":<epochMillis>,"data":null}
+
+### search users paged
+200 application/json
+{"number":0,"size":1,"numberOfElements":1,"totalPages":2,"hasPrevious":false,"hasNext":true,"content":[{"jobCreator":false,"lastName":"Tester","lastLogin":"dddd-dd-ddTdd:dd:dd.fraction+hh:mm","role":"systemadmin","usingMfa":false,"readOnly":false,"sourceCountries":[],"mfaConfigured":false,"firstName":"Api","emailVerified":false,"createdDate":"dddd-dd-ddTdd:dd:dd.fraction+hh:mm","partner":{"jobCreator":false,"defaultJobCreator":false,"sourcePartner":false,"publicApiAuthorities":[],"defaultSourcePartner":false,"id":1,"publicApiAccess":false},"id":<tc1189_api_admin.id>,"email":"tc1189_api_admin@example.com","username":"tc1189_api_admin","status":"active"}],"totalElements":2}
+
+### validation error
+400 application/json
+{"code":"validation_error","message":"must not be blank","timestamp":<epochMillis>,"data":null}
+
+### malformed json
+400 application/json
+{"code":"unexpected_exception","message":"org.springframework.http.converter.HttpMessageNotReadableException: JSON parse error: Unexpected end-of-input within/between Object entries","timestamp":<epochMillis>,"data":null}
+
+### wrongly typed json value
+400 application/json
+{"code":"unexpected_exception","message":"org.springframework.http.converter.HttpMessageNotReadableException: JSON parse error: Cannot deserialize value of type `java.lang.Integer` from String \"abc\": not a valid `java.lang.Integer` value","timestamp":<epochMillis>,"data":null}
+
+### get candidate
+200 application/json
+{"whatsapp":"+61 400 000 001","gender":"female","pendingTerms":false,"linkedInLink":"https://linkedin.example/tc1189","updatedDate":"dddd-dd-ddTdd:dd:dd.fraction+hh:mm","potentialDuplicate":false,"createdDate":"dddd-dd-ddTdd:dd:dd.fraction+hh:mm","phone":"+61 400 000 000","dob":"1990-05-17","unhcrRegistered":"Yes","candidateNumber":"TC1189API1","verifyPlusConsented":false,"id":<property.id>,"allNotifications":false,"muted":false,"user":{"firstName":"Api","lastName":"Tester","emailVerified":false,"createdDate":"dddd-dd-ddTdd:dd:dd.fraction+hh:mm","partner":{"id":1},"id":<tc1189_api_candidate.id>,"email":"tc1189_api_candidate@example.com"},"unhcrStatus":"RegisteredAsylum","selected":false,"status":"active"}
+
+### get candidate extended
+400 application/json
+{"code":"invalid_request","message":"You don't have access to this candidate.","timestamp":<epochMillis>,"data":null}
+
+### hal root
+200 application/vnd.hal+json
+{
+  "_links" : {
+    "candidatePropertyDefinitions" : {
+      "href" : "http://localhost/api/hal/candidate-property-definitions{?page,size,sort*}",
+      "templated" : true
+    },
+    "profile" : {
+      "href" : "http://localhost/api/hal/profile"
+    }
+  }
+}
+
+### hal collection
+200 application/vnd.hal+json
+{
+  "_embedded" : {
+    "candidatePropertyDefinitions" : [ {
+      "name" : "tc1189Property",
+      "label" : "TC-1189 property",
+      "definition" : null,
+      "type" : "JSON",
+      "_links" : {
+        "self" : {
+          "href" : "http://localhost/api/hal/candidate-property-definitions/<property.id>"
+        },
+        "candidatePropertyDefinition" : {
+          "href" : "http://localhost/api/hal/candidate-property-definitions/<property.id>"
+        }
+      }
+    } ]
+  },
+  "_links" : {
+    "self" : {
+      "href" : "http://localhost/api/hal/candidate-property-definitions?page=0&size=2"
+    },
+    "profile" : {
+      "href" : "http://localhost/api/hal/profile/candidate-property-definitions"
+    }
+  },
+  "page" : {
+    "size" : 2,
+    "totalElements" : 1,
+    "totalPages" : 1,
+    "number" : 0
+  }
+}
+
+### hal collection requested by angular
+200 application/json
+{
+  "_embedded" : {
+    "candidatePropertyDefinitions" : [ {
+      "name" : "tc1189Property",
+      "label" : "TC-1189 property",
+      "definition" : null,
+      "type" : "JSON",
+      "_links" : {
+        "self" : {
+          "href" : "http://localhost/api/hal/candidate-property-definitions/<property.id>"
+        },
+        "candidatePropertyDefinition" : {
+          "href" : "http://localhost/api/hal/candidate-property-definitions/<property.id>"
+        }
+      }
+    } ]
+  },
+  "_links" : {
+    "self" : {
+      "href" : "http://localhost/api/hal/candidate-property-definitions?page=0&size=20"
+    },
+    "profile" : {
+      "href" : "http://localhost/api/hal/profile/candidate-property-definitions"
+    }
+  },
+  "page" : {
+    "size" : 20,
+    "totalElements" : 1,
+    "totalPages" : 1,
+    "number" : 0
+  }
+}
+
+### hal item
+200 application/vnd.hal+json
+{
+  "name" : "tc1189Property",
+  "label" : "TC-1189 property",
+  "definition" : null,
+  "type" : "JSON",
+  "_links" : {
+    "self" : {
+      "href" : "http://localhost/api/hal/candidate-property-definitions/<property.id>"
+    },
+    "candidatePropertyDefinition" : {
+      "href" : "http://localhost/api/hal/candidate-property-definitions/<property.id>"
+    }
+  }
+}
+
+### hal write not exported
+403 -
+
+

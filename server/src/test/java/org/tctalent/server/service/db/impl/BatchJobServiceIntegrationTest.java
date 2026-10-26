@@ -51,6 +51,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.tctalent.server.integration.helper.BaseDBIntegrationTest;
+import org.tctalent.server.integration.helper.BatchMetadataCleaner;
 import org.tctalent.server.repository.db.read.cache.CandidateRedisCache;
 import org.tctalent.server.service.db.BatchJobService;
 
@@ -99,6 +100,7 @@ class BatchJobServiceIntegrationTest extends BaseDBIntegrationTest {
             join batch_job_instance i on i.job_instance_id = e.job_instance_id
             where i.job_name like 'tc1189-test-%' and e.status in ('STARTING', 'STARTED', 'STOPPING')
             """, Integer.class) == 0);
+        BatchMetadataCleaner.deleteJobs(jdbcTemplate, "tc1189-test-%");
     }
 
     @Test
@@ -185,6 +187,9 @@ class BatchJobServiceIntegrationTest extends BaseDBIntegrationTest {
         waitForStatus(executionId, "STARTED");
         batchJobService.stopJobExecution(executionId);
         waitForStatus(executionId, "STOPPED");
+        //Spring Batch 6 records STOPPED as soon as the stop is requested (Spring Batch 5 recorded
+        //STOPPING until the job had stopped), so also wait until the job has really stopped.
+        waitForStepsToStop(executionId);
 
         //Let the restarted execution complete
         keepRunning.set(false);
@@ -299,6 +304,14 @@ class BatchJobServiceIntegrationTest extends BaseDBIntegrationTest {
         AtomicBoolean flag = new AtomicBoolean(true);
         keepRunningFlags.add(flag);
         return flag;
+    }
+
+    private void waitForStepsToStop(long executionId) {
+        waitUntil("the steps of execution " + executionId + " have stopped",
+            () -> jdbcTemplate.queryForObject("""
+                select count(*) from batch_step_execution
+                where job_execution_id = ? and status in ('STARTING', 'STARTED', 'STOPPING')
+                """, Integer.class, executionId) == 0);
     }
 
     private void register(Job job) throws Exception {

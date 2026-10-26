@@ -19,12 +19,14 @@ package org.tctalent.server.util.json;
 import java.util.concurrent.atomic.AtomicReference;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.jackson.autoconfigure.JacksonAutoConfiguration;
+import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import tools.jackson.databind.json.JsonMapper;
 
 /**
- * Creates a JsonMapper configured by Spring Boot in the same way as the application's JsonMapper,
- * for unit tests which do not start a Spring context.
+ * Creates a JsonMapper configured by Spring Boot in the same way as the application's JsonMapper
+ * (including the spring.jackson settings in application.yml), for unit tests which do not start a
+ * Spring context.
  */
 public final class ApplicationJsonMapper {
 
@@ -35,8 +37,8 @@ public final class ApplicationJsonMapper {
         AtomicReference<JsonMapper> mapper = new AtomicReference<>();
         new ApplicationContextRunner()
             .withConfiguration(AutoConfigurations.of(JacksonAutoConfiguration.class))
-            //Same as application.yml
-            .withPropertyValues("spring.jackson.use-jackson2-defaults=true")
+            //Loads application.yml
+            .withInitializer(new ConfigDataApplicationContextInitializer())
             .run(context -> mapper.set(context.getBean(JsonMapper.class)));
         return mapper.get();
     }

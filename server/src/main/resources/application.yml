@@ -59,6 +59,13 @@ spring:
   # our JSON stays the same under Jackson 3 - TC-1189
   jackson:
     use-jackson2-defaults: true
+    # Jackson 2 (with Spring Boot 3's parameter names module) created classes without a default
+    # constructor - eg CandidateReadDto, which only has Lombok's package private @Builder
+    # constructor - through that constructor. Jackson 3 needs both of these for that - TC-1189
+    mapper:
+      detect-parameter-names: true
+    visibility:
+      creator: any
 
   # Batch
   batch:
