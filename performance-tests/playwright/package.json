@@ -7,7 +7,8 @@
     "node": ">=20"
   },
   "scripts": {
-    "perf:smoke": "playwright test tests/infrastructure --project=chromium",
+    "perf:smoke": "playwright test tests/infrastructure --project=chromium --no-deps",
+    "perf:warmup": "playwright test tests/warmup --project=warmup",
     "perf:test": "playwright test tests/journeys --project=chromium",
     "perf:list": "playwright test tests/journeys --project=chromium --list",
     "perf:install": "playwright install chromium"
