@@ -216,8 +216,13 @@ export async function warmUpAdminPortal(
       );
     }
 
-    // Wait for the response body to finish.
-    await response.finished();
+    const completionError = await response.finished();
+
+    if (completionError) {
+      throw new Error(
+          `Jobs response failed to finish: ${completionError.message}`
+      );
+    }
 
     // Confirm the Jobs table is visible.
     await expect(
