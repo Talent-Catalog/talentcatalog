@@ -8,7 +8,8 @@ Branch: `john/tc-1189-upgrade-to-spring-boot-4` (base: `b1c367b9f` TC-1584)
 | Pre-migration baseline tests (requirements 1 and 2) | Complete on Boot 3.5.16: **3,577 tests, 0 failures** |
 | 2. Build configuration | Complete. Decisions D11–D15 approved. |
 | 3. Source fixes | **Complete.** D16–D20 approved and implemented. Main and test code compile. 3,591 tests, of which only the 8 `BatchJobServiceIntegrationTest` tests fail; they await the Stage 4 migration (§3.4). Ready for a checkpoint commit. **The branch must not be merged or deployed until Stage 4 is done.** |
-| 4–6 | Not started |
+| 4. Database migration and infrastructure | **Complete.** V2_34 added. Fresh and existing (Spring Batch 5) databases are tested. **Full suite: 3,593 tests, 0 failures** (§3.5). New decisions D21 and D22 need confirmation. **Awaiting review before Stage 5.** |
+| 5–6 | Not started |
 
 Nothing has been committed.
 
@@ -112,7 +113,7 @@ Locations confirmed against the Boot 4.1.2 jars.
 - **Pre-existing issue (found while writing the baseline tests):** jobs built by `CandidateBatchJobFactory` are never registered in the `JobRegistry`. Batch 5's `SimpleJobOperator.restart(executionId)` looks the job up with `jobRegistry.getJob(jobName)`, so **restarting a factory-built job from System Admin fails today with `NoSuchJobException`**. The baseline test `restartUnregisteredJobFails` records this current behaviour. Decision D13.
 - **Found in Stage 3:** Batch 6 no longer defines a `JobRegistry` bean, so `BatchConfig` now defines a `MapJobRegistry`. As in Batch 5, it registers any `Job` beans; we have none.
 - **Found in Stage 3:** the service's stop and restart methods are **not called from any endpoint** (no System Admin endpoint uses them). So D13 has no production effect. On Batch 6 the failing restart throws `IllegalArgumentException` ("The Job must not be null.") instead of `NoSuchJobException`, because `MapJobRegistry.getJob` now returns null.
-- **Schema:** `migration/6.0/migration-postgresql.sql` in the Batch 6.0.6 jar contains only `ALTER SEQUENCE BATCH_JOB_SEQ RENAME TO BATCH_JOB_INSTANCE_SEQ;`. Our schema already has the Batch 5 table layout. **The next Flyway version is V2_34**: V2_33 is the latest both on this branch and on `origin/staging`. I'll re-check this immediately before creating the migration in Stage 4, since other branches could claim V2_34 first.
+- **Schema:** `migration/6.0/migration-postgresql.sql` in the Batch 6.0.6 jar contains only `ALTER SEQUENCE BATCH_JOB_SEQ RENAME TO BATCH_JOB_INSTANCE_SEQ;`. Our schema already has the Batch 5 table layout. **The next Flyway version is V2_34**: V2_33 is the latest both on this branch and on `origin/staging`. Re-checked in Stage 4 (§3.5): still free. The migration is `V2_34__rename_spring_batch_job_sequence.sql`.
 
 ### 2.5 Spring Security 7
 - Main code compiled with no Security errors, including `BeanIds.AUTHENTICATION_MANAGER`, the TC-1584 `DaoAuthenticationProvider` changes and the TC-1583 WebSocket configuration.
@@ -153,7 +154,7 @@ Locations confirmed against the Boot 4.1.2 jars.
 ### 2.7 Other
 - **ShedLock 7.10.1** and **Hypersistence 3.16.0**: main code compiles against both with no changes.
 - **Testcontainers 2:** `PostgresTestContainer` now uses `org.testcontainers.postgresql.PostgreSQLContainer` (not generic). It accepts the `pgvector/pgvector` image.
-  - **Developer note:** the reusable `tc-postgres-integration` container created by Testcontainers 1.x clashes with Testcontainers 2 ("Container startup failed"). Run `docker rm -f tc-postgres-integration` once after switching branches.
+  - **Developer note (corrected in Stage 4):** the shared test container has a fixed name, `tc-postgres-integration`. If a test run starts before the previous run's container has been removed (for example, runs from two worktrees in quick succession), it fails with "Container startup failed". Run `docker rm -f tc-postgres-integration`. This is not caused by the Testcontainers version. Container reuse is ignored in both 1.21 and 2.0, because `testcontainers.reuse.enable` is only read from the environment or `~/.testcontainers.properties`, not from the classpath file. Hence the pre-existing "Reuse was requested but the environment does not support the reuse of containers" warning.
 - **Found in Stage 3:** `ResponseEntity.getStatusCodeValue()` was removed in Spring 7; 8 tests now use `getStatusCode().value()`.
 - **Found in Stage 3:** Boot 4 no longer initialises Mockito `@Mock` fields in tests run with `SpringExtension` (Boot's `MockitoTestExecutionListener` was removed). One test (`NotificationServiceImplTest`) relied on this. It now uses `MockitoExtension` in lenient mode, as before.
 - **Found in Stage 3:** `SimpMessagingTemplate.convertAndSend(String, Map)` is now ambiguous with a new Spring 7 overload. `ChatPostServiceImpl` casts the payload to `Object`, so the map is still sent as the payload.
@@ -319,6 +320,84 @@ There is no polymorphic data: no `@JsonTypeInfo` anywhere in main code. The form
 
 No test was disabled and no assertion was weakened. Apart from the approved D16–D18 expectation changes, test changes are import or API moves only (plus the `NotificationServiceImplTest` runner). The tests that imitated the application's mapper now use the real application mapper configuration.
 
+### 3.5 Stage 4: database migration and infrastructure
+
+**Flyway version check.** I fetched `origin` before creating the migration (2026-10-26). V2_33 is the latest migration on this branch and on `origin/staging`, and no commit on any of the 1,086 remote branches adds V2_34 or later. The query was confirmed by finding V2_33 the same way. Re-check before merging if staging moves on.
+
+**Schema comparison:**
+- Our Batch tables (created in `V2__init.sql`) match Spring Batch 6.0.6's `schema-postgresql.sql`: the same 6 tables, columns, keys and constraints.
+- Spring Batch's own `migration/6.0/migration-postgresql.sql` is the single statement `ALTER SEQUENCE BATCH_JOB_SEQ RENAME TO BATCH_JOB_INSTANCE_SEQ;`.
+- Execution contexts are serialized the same way in Batch 5 and Batch 6 (`DefaultExecutionContextSerializer`, in both `DefaultBatchConfiguration` 5.2.6 and `JdbcDefaultBatchConfiguration` 6.0.6).
+
+**Migration:** `server/src/main/resources/db/migration/V2_34__rename_spring_batch_job_sequence.sql`
+
+```sql
+-- Spring Batch 6 uses batch_job_instance_seq for job instance ids instead of batch_job_seq.
+-- Renaming keeps the current sequence value, so new job instance ids continue from the existing
+-- ones. This is the only schema change between Spring Batch 5 and 6 - see Spring Batch's
+-- org/springframework/batch/core/migration/6.0/migration-postgresql.sql (TC-1189).
+ALTER SEQUENCE batch_job_seq RENAME TO batch_job_instance_seq;
+```
+
+I deliberately left out `IF EXISTS`: if the sequence were missing, the migration should fail rather than leave Batch unable to launch jobs. No other schema change was made.
+
+**Genuine Spring Batch 5 metadata.** I didn't want to rely on hand-written rows, so I generated the test fixture `server/src/test/resources/batch/spring-batch-5-metadata.sql` with the real Batch 5 code:
+- I ran real jobs on Spring Batch 5.2.6 (Boot 3.5.16, in a temporary worktree of `734b383b5`, since deleted).
+- I then exported the batch tables with `pg_dump --data-only --column-inserts`.
+
+It contains:
+- 4 job instances and executions: COMPLETED (a chunk step, with typed String, Long and LocalDate parameters plus a non-identifying one), FAILED (with a stack-trace exit message), STOPPED (restartable, with progress in its step context), and one launched through `BatchJobService.launchJob`;
+- their serialized job and step execution contexts;
+- the sequence values.
+
+**New test: `integration/batch/SpringBatchSchemaMigrationIntegrationTest`** (2 tests). It uses its own `pgvector` PostgreSQL container, runs Flyway with the application's settings, and uses Spring Batch 6's real JDBC job repository.
+
+*Fresh database:*
+- Flyway creates everything from an empty database, including V2_34.
+- The batch sequences are exactly `batch_job_instance_seq`, `batch_job_execution_seq` and `batch_step_execution_seq`.
+- Every Batch table and column equals Spring Batch 6's own `schema-postgresql.sql` (parsed from the jar).
+- A job launches and completes (instance and execution id 1), and its metadata is read back.
+
+*Existing database:*
+- Migrate to V2_33, load the Batch 5 fixture, then migrate to V2_34.
+- **All six Batch tables are unchanged**, compared row by row as JSON before and after.
+- `batch_job_instance_seq` has exactly the old `batch_job_seq` value (`last_value = 4`, `is_called = true`), and the other two sequences are unchanged.
+- Batch 6 reads every existing instance, execution, parameter (with types and the identifying flag), job execution context (`batch.version = 5.2.6`) and step context (`reader.position`, `progress`). The failure message and the STOPPED status are intact.
+- `BatchJobServiceImpl.getJobExecutionsSummary()` (System Admin status reporting) lists the existing history.
+- New jobs and executions get ids 5, 6 and 7, with no collision with existing rows.
+- **Finding (D21):** Batch 6 computes job keys differently from Batch 5, so a job instance created before the upgrade isn't found from its parameters. The test records the consequences:
+  - a once-per-day job that ran before the upgrade can run once more on the upgrade day (after that the restriction applies again);
+  - restarting an execution stopped under Batch 5 starts a new instance from the beginning instead of resuming.
+  - Neither is reachable in production (see D21).
+
+**`BatchJobServiceIntegrationTest` (pre-migration characterization tests), on the migrated shared test database:**
+- **All 8 pass:** asynchronous launch, status summary, stop, stopping a job that isn't running, restart of a registered stopped job (a new execution of the same instance, which completes), once-per-day blocking, and non-once-per-day allowing a rerun.
+- The D13 test (restarting an unregistered job fails, and no execution is created) needed one change: Spring Batch 6 rejects the restart with `IllegalArgumentException("The Job must not be null.")` instead of `NoSuchJobException` (D22). I kept the substance of the test and added a check that the stopped execution stays STOPPED.
+- The shared test database is restored from `dump.sql` (at V2.18) and migrated by Flyway through V2.34, so the whole integration suite also runs on an upgraded database.
+
+**Infrastructure checks:**
+
+| Component | Result |
+|---|---|
+| Flyway 12.4.0 | Migrates from empty (fresh test), from V2.18 (shared test DB: "Successfully applied 16 migrations … now at version v2.34") and from V2.33 (existing test). No Flyway warnings. |
+| Testcontainers 2.0.5 | Shared container and a separate container both work. The "reuse not supported" warning is pre-existing (see the developer note in §2.7). |
+| Spring Batch 6 JDBC | Metadata is persisted and read through `JdbcJobRepository`, on both a fresh and an upgraded database. |
+| Hibernate 7 startup | All full-context tests start, so every `@Query` parses. |
+| Hibernate 7 schema validation | The application doesn't enable validation (no `ddl-auto`, on Boot 3 or 4). I ran it once via an environment variable: it stops at a **pre-existing** mismatch (`audit_log.event_date` is a `date` column mapped as a timestamp), and Boot 3 / Hibernate 6.6 reports exactly the same error. For a complete comparison I had Hibernate 6.6 and 7.4 each write the DDL they expect for all entities. After normalizing formatting, **all 77 tables have identical columns and types**. Hibernate 7 only adds three DDL-only constraints (two discriminator checks and one unique constraint), which matter only for schema generation, which we don't use. |
+| ShedLock 7.10.1 | No existing tests cover it. Every full-context test creates the `JdbcTemplateLockProvider` bean. A throwaway check (not kept) acquired a lock on the migrated `shedlock` table, was refused a second lock, then unlocked and re-acquired. |
+| Log warnings | Only pre-existing ones remain: HHH000502 for `SalesforceJobOpp.matching` (46 times, identical on Boot 3), the explicit `hibernate.dialect`, and the deprecated `use_jdbc_metadata_defaults`. |
+
+**Test results (Stage 4):**
+
+| Run | Tests | Failures |
+|---|---|---|
+| `SpringBatchSchemaMigrationIntegrationTest` | 2 | 0 |
+| `BatchJobServiceIntegrationTest` | 8 | 0 |
+| Explicit Testcontainers run: all 18 `BaseDBIntegrationTest`/`BaseJpaIntegrationTest` classes plus the migration test (before the D22 test change) | 202 | 1, the D22 exception type, since fixed |
+| **Full suite** (`./gradlew -Denv=dev :server:compileJava :server:compileTestJava :server:test --rerun-tasks`) | **3,593** (354 classes) | **0** (0 skipped) |
+
+3,593 = the 3,591 at the checkpoint + the 2 migration tests. No test was disabled or skipped.
+
 ---
 
 ## 4. Issues and decisions
@@ -362,13 +441,21 @@ D16, D17 and D18 were approved with option (a), and D19 and D20 as applied. **Sa
 - D17: the three `SalesforceJsonPayloadTest` tests now pin the de-duplicated bodies: `RecordType` `{"Name": …}`, and each `EmployerOpportunityRequest` field once under its Salesforce name.
 - D18: `CandidateMatchExplanationIntegrationTest` now pins the UTC conversion exactly, and a new test (`explanationJsonWithUnknownPropertiesIsRead`) pins that unknown properties are ignored.
 
+### New decisions requiring approval (Stage 4)
+| # | Decision | Options | Recommendation |
+|---|---|---|---|
+| D21 | **Spring Batch 6 job keys differ from Batch 5.** The key is an MD5 of the identifying parameters; Batch 5 hashed `name={value=…, type=…, identifying=true};`, Batch 6 hashes `JobParameter{name='…', value=…, …}`. So Batch 6 doesn't find job instances created before the upgrade from their parameters. Consequences: (1) a once-per-day job which already ran on the upgrade day can run once more that day; (2) restarting a pre-upgrade STOPPED/FAILED execution starts a new instance from the beginning. Existing history is still read correctly. | (a) **Accept.** (b) Keep Batch 5 keys with a custom `JobKeyGenerator`. Boot 4's batch auto-configuration doesn't expose one, so this means replacing Boot's batch configuration, a permanent divergence from Batch 6. (c) A migration that recomputes `job_key` for existing instances in SQL. | **(a).** It has **no production effect**: the only production launch (`SystemAdminApi`, candidate text update) uses `onlyOncePerDay = false`, which adds a timestamp so every run is a new instance anyway, and restart isn't exposed (D13). The migration test records this behaviour. |
+| D22 | D13 test: restarting an unregistered job now fails with `IllegalArgumentException("The Job must not be null.")` instead of `NoSuchJobException` (noted in §2.4 during Stage 3) | (a) **Accept** Spring Batch 6's exception: the test now expects it and still asserts that the restart fails, no execution is created and the old execution stays STOPPED. (b) Make `BatchJobServiceImpl` look up the registry and throw `NoSuchJobException`, which adds code to an unused path. | **(a), applied** pending your confirmation. The behaviour D13 preserves (restart fails, nothing runs) is unchanged, and no endpoint calls this method. |
+
 ### Outstanding blockers
-- **Do not merge or deploy before Stage 4.** The V2_34 Batch migration must ship with this code. Spring Batch 6 uses `BATCH_JOB_INSTANCE_SEQ`, so without the migration **every batch job launch fails** ("relation batch_job_instance_seq does not exist"). This is Stage 4.
+- None for Stage 4. D21 and D22 need confirmation.
+- **The V2_34 migration and the Boot 4 code must be deployed together.** On a database without V2_34, Batch 6 can't launch jobs. Once V2_34 has run, an older Boot 3 build could no longer launch batch jobs either, because `batch_job_seq` is gone. So a rollback to the previous release would need `ALTER SEQUENCE batch_job_instance_seq RENAME TO batch_job_seq;` (manually, outside Flyway).
 
 ### Changes that may affect production behaviour
 - Jackson 3 becomes the serializer for HTTP, RestClient, WebClient **and the Hypersistence jsonb columns** (D12).
 - Flyway 11 → 12.
-- The Batch sequence rename migration (V2_34).
+- The Batch sequence rename migration (V2_34). It keeps all metadata and the sequence value (§3.5), but it is a one-way step for older builds (see the blockers above).
+- Job instances from before the upgrade aren't matched by parameters (D21; no production effect).
 - Hibernate 7 query and merge semantics.
 - Batch job metadata depends on `spring-boot-starter-batch-jdbc`. With the plain batch starter, metadata would no longer be persisted.
 - Salesforce request bodies no longer contain the duplicate fields (D17). This needs verifying in the Salesforce sandbox before merging.
@@ -380,7 +467,7 @@ D16, D17 and D18 were approved with option (a), and D19 and D20 as applied. **Sa
 - Explanation and embedding calls to the Python services.
 - Salesforce sync against the sandbox (in particular the de-duplicated payloads, D14/D17).
 - Creating a language level (D19).
-- Running, stopping and restarting batch jobs from System Admin.
+- Running a batch job from System Admin (the candidate text update), and checking the job status summary on a copy of production data, which contains real Batch 5 history.
 - 2FA (TOTP) login.
 - CV DOCX export.
 - The Data REST `/api/hal` endpoints.
@@ -409,6 +496,10 @@ D16, D17 and D18 were approved with option (a), and D19 and D20 as applied. **Sa
 - Replace the deprecated execution-id `JobOperator.stop`/`restart` (Batch 6), or remove them, since no endpoint uses them (D13).
 - Rename `hibernate.temp.use_jdbc_metadata_defaults` to `hibernate.boot.allow_jdbc_metadata_access`.
 - Move `model/sf` `ContactTest`/`OpportunityTest` to Jackson 3, which is what Salesforce decoding now uses.
+- Fix the pre-existing `audit_log.event_date` type mismatch (`date` column mapped as a timestamp), then consider enabling `hibernate.hbm2ddl.auto=validate`, so that future mapping and schema drift is caught at startup.
+- Remove the explicit `hibernate.dialect` setting (Hibernate warns it is unnecessary).
+- Add tests for ShedLock-protected scheduled jobs (none exist).
+- Give the shared test container a unique name or enable reuse properly, to avoid "Container startup failed" when test runs overlap.
 - Remove `thymeleaf-extras-springsecurity6` if it is confirmed unused (no `sec:` in templates).
 - `DatabaseConfiguration` TODO: move to the default DataSource/JPA auto-configuration.
 - Upgrade to Gradle 9 and Java 21/25 separately.
@@ -445,6 +536,13 @@ D16, D17 and D18 were approved with option (a), and D19 and D20 as applied. **Sa
 - Decision changes: `TcPasswordEncoderTest` (D16), `SalesforceJsonPayloadTest` (D17), `CandidateMatchExplanationIntegrationTest` (D18).
 
 **Checkpoint review:** I reviewed the whole diff. There is no temporary debugging code, no disabled test and no probe file left behind. The probe used for D19 lived only in the scratchpad and in a temporary Boot 3 worktree, and both are deleted. `BatchConfig` keeps its existing Javadoc and `@RequiredArgsConstructor`, so it shows no unrelated change. The other non-mechanical changes are the ones listed in §3.4.
+
+**Stage 4:**
+- Migration (new): `server/src/main/resources/db/migration/V2_34__rename_spring_batch_job_sequence.sql`
+- Test (new): `integration/batch/SpringBatchSchemaMigrationIntegrationTest`
+- Test fixture (new): `server/src/test/resources/batch/spring-batch-5-metadata.sql`
+- Test changed: `BatchJobServiceIntegrationTest` (D22: exception type, plus a stronger check).
+- Temporary checks, all deleted: the Boot 3 worktree, the Batch 5 fixture generator, the ShedLock probe and the DDL comparison scripts.
 
 **New tests (baseline, before Stage 2):**
 - `util/http/RecordingHttpServer`
