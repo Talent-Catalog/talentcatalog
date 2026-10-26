@@ -7,11 +7,16 @@ Branch: `john/tc-1189-upgrade-to-spring-boot-4` (base: `b1c367b9f` TC-1584)
 | 1. Assess and plan | Complete. Decisions D1–D10 approved. |
 | Pre-migration baseline tests (requirements 1 and 2) | Complete on Boot 3.5.16: **3,577 tests, 0 failures** |
 | 2. Build configuration | Complete. Decisions D11–D15 approved. |
-| 3. Source fixes | **Complete.** D16–D20 approved and implemented. Main and test code compile. 3,591 tests, of which only the 8 `BatchJobServiceIntegrationTest` tests fail; they await the Stage 4 migration (§3.4). Ready for a checkpoint commit. **The branch must not be merged or deployed until Stage 4 is done.** |
-| 4. Database migration and infrastructure | **Complete.** V2_34 added. Fresh and existing (Spring Batch 5) databases are tested. **Full suite: 3,593 tests, 0 failures** (§3.5). New decisions D21 and D22 need confirmation. **Awaiting review before Stage 5.** |
+| 3. Source fixes | **Complete.** D16–D20 approved and implemented. Main and test code compile. 3,591 tests, of which only the 8 `BatchJobServiceIntegrationTest` tests fail; they await the Stage 4 migration (§3.4). Checkpoint committed. (The 8 Batch failures were resolved in Stage 4.) |
+| 4. Database migration and infrastructure | **Complete and approved.** V2_34 added. Fresh and existing (Spring Batch 5) databases are tested. **Full suite: 3,593 tests, 0 failures** (§3.5). D21 and D22 approved. |
 | 5–6 | Not started |
 
-Nothing has been committed.
+> **Deployment constraint:** the Spring Boot 4 application and the V2_34 migration **must be deployed together**.
+> - Without V2_34, Spring Batch 6 cannot launch any job.
+> - Once V2_34 has run, a Spring Boot 3 build cannot launch batch jobs either.
+> - Rolling back to Spring Boot 3 therefore requires reversing the sequence rename by hand, outside Flyway, before or together with the rollback: `ALTER SEQUENCE batch_job_instance_seq RENAME TO batch_job_seq;`
+>
+> Details are in §4, under "Outstanding blockers".
 
 ---
 
@@ -441,15 +446,19 @@ D16, D17 and D18 were approved with option (a), and D19 and D20 as applied. **Sa
 - D17: the three `SalesforceJsonPayloadTest` tests now pin the de-duplicated bodies: `RecordType` `{"Name": …}`, and each `EmployerOpportunityRequest` field once under its Salesforce name.
 - D18: `CandidateMatchExplanationIntegrationTest` now pins the UTC conversion exactly, and a new test (`explanationJsonWithUnknownPropertiesIsRead`) pins that unknown properties are ignored.
 
-### New decisions requiring approval (Stage 4)
+### Decisions approved after Stage 4
 | # | Decision | Options | Recommendation |
 |---|---|---|---|
 | D21 | **Spring Batch 6 job keys differ from Batch 5.** The key is an MD5 of the identifying parameters; Batch 5 hashed `name={value=…, type=…, identifying=true};`, Batch 6 hashes `JobParameter{name='…', value=…, …}`. So Batch 6 doesn't find job instances created before the upgrade from their parameters. Consequences: (1) a once-per-day job which already ran on the upgrade day can run once more that day; (2) restarting a pre-upgrade STOPPED/FAILED execution starts a new instance from the beginning. Existing history is still read correctly. | (a) **Accept.** (b) Keep Batch 5 keys with a custom `JobKeyGenerator`. Boot 4's batch auto-configuration doesn't expose one, so this means replacing Boot's batch configuration, a permanent divergence from Batch 6. (c) A migration that recomputes `job_key` for existing instances in SQL. | **(a).** It has **no production effect**: the only production launch (`SystemAdminApi`, candidate text update) uses `onlyOncePerDay = false`, which adds a timestamp so every run is a new instance anyway, and restart isn't exposed (D13). The migration test records this behaviour. |
 | D22 | D13 test: restarting an unregistered job now fails with `IllegalArgumentException("The Job must not be null.")` instead of `NoSuchJobException` (noted in §2.4 during Stage 3) | (a) **Accept** Spring Batch 6's exception: the test now expects it and still asserts that the restart fails, no execution is created and the old execution stays STOPPED. (b) Make `BatchJobServiceImpl` look up the registry and throw `NoSuchJobException`, which adds code to an unused path. | **(a), applied** pending your confirmation. The behaviour D13 preserves (restart fails, nothing runs) is unchanged, and no endpoint calls this method. |
 
+D21 and D22 were both approved with option (a).
+- **D21 (known limitation, kept):** job instances created by Spring Batch 5 are not found again from their parameters. On the upgrade day, a once-per-day job that has already run may run once more. Restarting a stopped or failed pre-upgrade execution starts a new instance from the beginning. Existing history is still readable. Neither case affects current production workflows. `SpringBatchSchemaMigrationIntegrationTest` records this behaviour as a regression test.
+- **D22:** restarting an unregistered job now fails with `IllegalArgumentException`. `BatchJobServiceIntegrationTest.restartUnregisteredJobFails` still verifies that no new execution is created and that the stopped execution stays STOPPED.
+
 ### Outstanding blockers
-- None for Stage 4. D21 and D22 need confirmation.
-- **The V2_34 migration and the Boot 4 code must be deployed together.** On a database without V2_34, Batch 6 can't launch jobs. Once V2_34 has run, an older Boot 3 build could no longer launch batch jobs either, because `batch_job_seq` is gone. So a rollback to the previous release would need `ALTER SEQUENCE batch_job_instance_seq RENAME TO batch_job_seq;` (manually, outside Flyway).
+- None for Stage 4.
+- **Deployment constraint: the V2_34 migration and the Boot 4 code must be deployed together.** On a database without V2_34, Batch 6 can't launch jobs. Once V2_34 has run, an older Boot 3 build could no longer launch batch jobs either, because `batch_job_seq` is gone. So a rollback to the previous release would need `ALTER SEQUENCE batch_job_instance_seq RENAME TO batch_job_seq;` (manually, outside Flyway).
 
 ### Changes that may affect production behaviour
 - Jackson 3 becomes the serializer for HTTP, RestClient, WebClient **and the Hypersistence jsonb columns** (D12).
