@@ -39,6 +39,50 @@ export function readWarmUpCredentials(
   return {username, password, totpToken};
 }
 
+
+
+/**
+ * Fill sensitive login fields without putting the secret
+ * directly in a Playwright fill() action.
+ *
+ * This helps avoid exposing passwords and MFA codes
+ * in the HTML report's action descriptions.
+ */
+export async function fillSensitiveInput(
+    page: Page,
+    controlName: 'password' | 'totpToken',
+    secret: string
+): Promise<void> {
+  const input = page.locator(
+      `tc-input[formcontrolname="${controlName}"] input`
+  );
+
+  await expect(input).toBeVisible({timeout: WAIT_MS});
+
+  await input.evaluate((element, value) => {
+    const field = element as HTMLInputElement;
+
+    const setter = Object.getOwnPropertyDescriptor(
+        HTMLInputElement.prototype,
+        'value'
+    )?.set;
+
+    if (!setter) {
+      throw new Error('Native input setter unavailable');
+    }
+
+    setter.call(field, value);
+
+    // Notify Angular's form control that the value changed.
+    field.dispatchEvent(
+        new Event('input', {bubbles: true})
+    );
+    field.dispatchEvent(
+        new Event('change', {bubbles: true})
+    );
+  }, secret);
+}
+
 /**
  * Execute a warm-up step and provide a clear error if it fails.
  */
@@ -102,14 +146,18 @@ export async function warmUpAdminPortal(
     .locator('tc-input[formcontrolname="username"] input')
     .fill(credentials.username);
 
-    await page
-    .locator('tc-input[formcontrolname="password"] input')
-    .fill(credentials.password);
+    await fillSensitiveInput(
+        page,
+        'password',
+        credentials.password
+    );
 
     if (credentials.totpToken) {
-      await page
-      .locator('tc-input[formcontrolname="totpToken"] input')
-      .fill(credentials.totpToken);
+      await fillSensitiveInput(
+          page,
+          'totpToken',
+          credentials.totpToken
+      );
     }
 
     await page.getByRole('button', {
@@ -141,6 +189,7 @@ export async function warmUpAdminPortal(
 
   // 3. Warm up Jobs, including the initial backend search.
   await warmUpStep('Jobs', async () => {
+
     // Start listening before navigating to Jobs.
     const jobsResponsePromise = page.waitForResponse(
         response =>
@@ -151,25 +200,14 @@ export async function warmUpAdminPortal(
         {timeout: WAIT_MS}
     );
 
+    // Attach the rejection handler immediately.
+    // Awaiting the original promise still reports failures.
+    void jobsResponsePromise.catch(() => {});
+
     // Navigate to the Jobs page.
-    // A rejection handler is attached to the response promise
-    // so a navigation failure does not leave an unhandled rejection.
-    let navigationError: unknown;
+    await openPage(page, 'jobs');
 
-    try {
-      await openPage(page, 'jobs');
-    } catch (error) {
-      navigationError = error;
-    }
-
-    if (navigationError !== undefined) {
-      // Consume any later response-wait failure while preserving
-      // the original navigation error.
-      void jobsResponsePromise.catch(() => {});
-      throw navigationError;
-    }
-
-    // Wait for the Jobs API response.
+    // Wait for the backend response.
     const response = await jobsResponsePromise;
 
     if (!response.ok()) {
@@ -178,12 +216,13 @@ export async function warmUpAdminPortal(
       );
     }
 
-    // Ensure the response has finished downloading.
+    // Wait for the response body to finish.
     await response.finished();
 
-    // Verify the Jobs table is visible.
+    // Confirm the Jobs table is visible.
     await expect(
         page.locator('app-jobs tc-table table').first()
     ).toBeVisible({timeout: WAIT_MS});
   });
+
 }

@@ -15,7 +15,7 @@
  */
 
 import {expect, test} from '@playwright/test';
-import {readWarmUpCredentials, warmUpStep,} from '../warmup/warmup';
+import {fillSensitiveInput, readWarmUpCredentials, warmUpStep} from '../warmup/warmup';
 
 test('warm-up requires staging credentials', () => {
   expect(() => readWarmUpCredentials({}))
@@ -41,3 +41,32 @@ test('warm-up failure identifies the failed step', async () => {
       '[perf-warmup] Candidate Search failed: HTTP 500'
   );
 });
+
+
+test('sensitive input updates the form correctly', async ({page}) => {
+  await page.setContent(`
+    <tc-input formcontrolname="password">
+      <input type="password">
+    </tc-input>
+    <output id="status"></output>
+
+    <script>
+      document.querySelector('input')
+        .addEventListener('input', () => {
+          document.querySelector('#status').textContent =
+            'input event received';
+        });
+    </script>
+  `);
+
+  await fillSensitiveInput(
+      page,
+      'password',
+      'example-test-secret'
+  );
+
+  await expect(
+      page.locator('#status')
+  ).toHaveText('input event received');
+});
+

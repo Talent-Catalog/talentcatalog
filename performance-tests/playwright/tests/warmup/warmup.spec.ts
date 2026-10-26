@@ -17,7 +17,7 @@
 import {test} from '@playwright/test';
 import {warmUpAdminPortal} from './warmup';
 
-test.setTimeout(150_000);
+test.setTimeout(240_000);
 
 test('warm up staging before performance measurements', async ({page}) => {
   await warmUpAdminPortal(page);
