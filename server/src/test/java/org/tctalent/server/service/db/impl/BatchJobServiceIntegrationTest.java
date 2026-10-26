@@ -40,7 +40,6 @@ import org.springframework.batch.core.job.Job;
 import org.springframework.batch.core.job.JobExecutionException;
 import org.springframework.batch.core.configuration.JobRegistry;
 import org.springframework.batch.core.job.builder.JobBuilder;
-import org.springframework.batch.core.launch.NoSuchJobException;
 import org.springframework.batch.core.launch.JobInstanceAlreadyCompleteException;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.step.builder.StepBuilder;
@@ -205,10 +204,15 @@ class BatchJobServiceIntegrationTest extends BaseDBIntegrationTest {
     /**
      * Records current behavior: jobs built by CandidateBatchJobFactory are not registered in the
      * JobRegistry, and the job operator needs the registered Job to restart it.
-     * See TC-1189 migration report (pre-existing issue).
+     * See TC-1189 migration report (pre-existing issue, D13).
+     * <p>
+     * Spring Batch 5 reported this with NoSuchJobException. Spring Batch 6's registry returns null
+     * for an unknown job, so the job operator now rejects it with an IllegalArgumentException
+     * (D22). Either way the restart fails and no new execution is created.
+     * </p>
      */
     @Test
-    @DisplayName("restartJobExecution of a job which is not registered fails with NoSuchJobException")
+    @DisplayName("restartJobExecution of a job which is not registered fails")
     void restartUnregisteredJobFails() throws Exception {
         Job job = job(jobName(), continuableTasklet(keepRunning()));
         batchJobService.launchJob(job, false);
@@ -217,9 +221,11 @@ class BatchJobServiceIntegrationTest extends BaseDBIntegrationTest {
         batchJobService.stopJobExecution(executionId);
         waitForStatus(executionId, "STOPPED");
 
-        assertThrows(NoSuchJobException.class,
+        IllegalArgumentException e = assertThrows(IllegalArgumentException.class,
             () -> batchJobService.restartJobExecution(executionId));
+        assertEquals("The Job must not be null.", e.getMessage());
         assertEquals(1, executionCount(job.getName()));
+        assertEquals("STOPPED", status(executionId));
     }
 
     @Test
