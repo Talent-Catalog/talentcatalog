@@ -7,7 +7,7 @@ Branch: `john/tc-1189-upgrade-to-spring-boot-4` (base: `b1c367b9f` TC-1584)
 | 1. Assess and plan | Complete. Decisions D1–D10 approved. |
 | Pre-migration baseline tests (requirements 1 and 2) | Complete on Boot 3.5.16: **3,577 tests, 0 failures** |
 | 2. Build configuration | Complete. Decisions D11–D15 approved. |
-| 3. Source fixes | Complete, apart from three items waiting for decisions (D16–D18, §4). Main and test code compile. Results in §3.4. **Awaiting review before Stage 4.** |
+| 3. Source fixes | **Complete.** D16–D20 approved and implemented. Main and test code compile. 3,591 tests, of which only the 8 `BatchJobServiceIntegrationTest` tests fail; they await the Stage 4 migration (§3.4). Ready for a checkpoint commit. **The branch must not be merged or deployed until Stage 4 is done.** |
 | 4–6 | Not started |
 
 Nothing has been committed.
@@ -190,7 +190,7 @@ All of these tests check behaviour, not Jackson or Spring Batch APIs, so they ca
 
 The test that existing execution metadata survives the schema migration needs the V2_34 migration, so it is planned for **Stage 4**. It will test both a fresh database and a database containing Batch 5 metadata.
 
-**Current behaviour recorded by the baseline tests (pre-existing, not changed):**
+**Behaviour recorded by the baseline tests on Boot 3 (superseded on Boot 4 by D17):**
 - Salesforce `RecordType` is sent as `{"Name": "...", "name": "..."}`, a duplicate. The cause is `RecordTypeField`'s public `Name` field plus Lombok's `getName()`.
 - `EmployerOpportunityRequest` sends **every field twice**, for example `CVs_Folder__c` and `cvs_Folder__c`, and `TCid__c` and `tcid__c`. The cause is the public fields plus Lombok `@Getter`. This presumably works because Salesforce field names are case-insensitive.
 
@@ -298,7 +298,7 @@ Main-code warnings:
 
 There is no polymorphic data: no `@JsonTypeInfo` anywhere in main code. The format differences found are listed in §2.3 and D18; nothing was changed to hide them.
 
-**Requirement 2 (Salesforce):** Jackson 3 changes the duplicate-field output. I stopped and did not add a workaround (D17).
+**Requirement 2 (Salesforce):** Jackson 3 changes the duplicate-field output. I stopped and did not add a workaround. Approved as D17(a): the tests now pin the de-duplicated output.
 
 **Requirement 3 (JAXB):** no runtime problem; nothing changed (§2.6).
 
@@ -310,14 +310,14 @@ There is no polymorphic data: no `@JsonTypeInfo` anywhere in main code. The form
 | Explicit Testcontainers run: all 19 `BaseDBIntegrationTest`/`BaseJpaIntegrationTest` classes, plus `NotificationServiceImplTest`, `StatusRequestMatcherTest` and `DocxFormatterHelperTest` | 234 | 8 | All 8 are `BatchJobServiceIntegrationTest` (Stage 4 migration) |
 | Full suite (first run) | 3,589 | 19 | 12 expected, plus 7 found and fixed: `NotificationServiceImplTest` (6), and `CandidateDataAuditingIntegrationTest` (1, the D19 sequence) |
 | Full suite (second run) | 3,590 | 367 | Context-load failures depending on test order: `LogBuilder` test isolation (see below), found and fixed |
-| Full suite (final, run twice) | **3,590** | **12** | Only the expected failures below. 3,590 = the 3,577 baseline + 13 new tests |
+| Full suite (run twice before D16–D18) | 3,590 | 12 | The 8 Batch tests + 3 Salesforce (D17) + 1 password (D16) |
+| Affected tests after D16–D18 (`TcPasswordEncoderTest`, `SalesforceJsonPayloadTest`, `CandidateMatchExplanationIntegrationTest`, `ChatbotMessageRepositoryIntegrationTest`, `CandidateMatchingExplanationDataJacksonTest`) | 41 | 0 | |
+| **Full suite, checkpoint** (`./gradlew -Denv=dev :server:compileJava :server:compileTestJava :server:test --rerun-tasks`) | **3,591** | **8** | All 8 are `BatchJobServiceIntegrationTest` (Stage 4 migration). 3,591 = the 3,577 baseline + 14 new tests. No compile errors. |
 
-**Remaining failures, all expected:**
-- `BatchJobServiceIntegrationTest` (8): `relation "batch_job_instance_seq" does not exist`. This needs the V2_34 migration in Stage 4.
-- `SalesforceJsonPayloadTest` (3): the duplicate fields (D17).
-- `TcPasswordEncoderTest.matches_withNullRawPassword_throwsIllegalArgumentException` (1): D16.
+**Remaining failures at the checkpoint:**
+- Only `BatchJobServiceIntegrationTest` (8): `relation "batch_job_instance_seq" does not exist`. This needs the V2_34 migration in Stage 4.
 
-No test was disabled and no assertion was weakened. Test changes are import or API moves only, apart from the `NotificationServiceImplTest` runner. The tests that imitated the application's mapper now use the real application mapper configuration.
+No test was disabled and no assertion was weakened. Apart from the approved D16–D18 expectation changes, test changes are import or API moves only (plus the `NotificationServiceImplTest` runner). The tests that imitated the application's mapper now use the real application mapper configuration.
 
 ---
 
@@ -343,12 +343,12 @@ No test was disabled and no assertion was weakened. Test changes are import or A
 | D11 | Lombok `@Jacksonized` variant (`server/lombok.config`) | Generate **both** the Jackson 2 and Jackson 3 builder annotations (`lombok.jacksonized.jacksonVersion += 2` and `+= 3`) for the duration of the migration. The DTOs are read by Spring and Hypersistence (Jackson 3), and the existing Jackson 2 unit tests still read them too. Switching to Jackson 3 only can be a follow-up. |
 | D12 | Amend D3: Hypersistence (jsonb columns) uses Jackson 3 | Accept, since there is no Jackson 2 option for Hibernate 7.3+. The new persisted-format tests (§3.1) must keep passing, so stored jsonb stays readable and is written in the same format. The alternative, replacing Hypersistence with Hibernate's native `@JdbcTypeCode(SqlTypes.JSON)`, is a larger change and not recommended for TC-1189. |
 | D13 | Pre-existing: restarting factory-built batch jobs fails (`NoSuchJobException`) | **Preserve the current behaviour in TC-1189**, with the characterization test, and fix it in a separate ticket. Fixing it changes production behaviour, which is outside a like-for-like upgrade. Batch 6's `TaskExecutorJobOperator.restart` still uses the registry, so behaviour stays the same either way. |
-| D14 | Pre-existing Salesforce duplicate fields (`RecordType`, `EmployerOpportunityRequest`) | **Keep the current output in TC-1189.** If Jackson 3 changes it, report it before changing anything. Clean it up in a separate ticket. |
+| D14 | Pre-existing Salesforce duplicate fields (`RecordType`, `EmployerOpportunityRequest`) | **Superseded by D17**, since Jackson 3 removes the duplicates. Originally: keep the current output in TC-1189. If Jackson 3 changes it, report it before changing anything. Clean it up in a separate ticket. |
 | D15 | Starters added beyond the Stage 1 plan: `webclient`, `restclient`, `data-rest` and `security-test` (§2.1) | These are routine compatibility changes needed to keep current behaviour, so they are already applied. Listed here for visibility. |
 
 D11–D15 were approved.
 
-### New decisions requiring approval (Stage 3)
+### Decisions approved after Stage 3
 | # | Decision | Options | Recommendation |
 |---|---|---|---|
 | D16 | `TcPasswordEncoder`: a null raw password now returns false instead of throwing (§2.5) | (a) Accept Security 7's behaviour and change `TcPasswordEncoderTest.matches_withNullRawPassword_throwsIllegalArgumentException` to expect false. (b) Stop extending `BCryptPasswordEncoder` and wrap it, so we can keep throwing. | **(a).** No production code path passes a null raw password, and returning false is the safer result. I have **not** changed the test: it currently fails, pending your decision. |
@@ -357,9 +357,13 @@ D11–D15 were approved.
 | D19 | (FYI, applied) `LanguageLevel` and `SavedListLink` id sequences (§2.6) | (a) Keep the sequences Hibernate 6.6 actually used, declared explicitly. (b) Move them to `language_level_id_seq` and `saved_list_link_id_seq`, which needs a migration to advance those sequences past the existing ids. | **(a), applied**, because it keeps production behaviour identical. (b) is a follow-up. |
 | D20 | (FYI, applied) `LogBuilder` static provider | `LogBuilder` keeps a static `ObjectProvider` from the application context. After Spring's test context cache closed that context, later test contexts (in particular `@WebMvcTest` slices, which don't include `LogBuilderConfig`) failed whenever code logged through `LogBuilder`. Boot 4 now looks up beans through the closed context, which throws "has been closed already"; Boot 3 tolerated it. The failures depend on test order: 0 in one run, 355 in another. | **Applied:** `LogBuilderConfig` clears the provider (only if it is still its own) when its context closes. In production this only affects logging after shutdown has started, which then omits the CPU and memory fields. Two consecutive full runs are clean. |
 
+D16, D17 and D18 were approved with option (a), and D19 and D20 as applied. **Salesforce sandbox verification (D17) is mandatory before merging.** Implementation:
+- D16: `TcPasswordEncoderTest.matches_withNullRawPassword_returnsFalse` (renamed from `…_throwsIllegalArgumentException`) now expects false.
+- D17: the three `SalesforceJsonPayloadTest` tests now pin the de-duplicated bodies: `RecordType` `{"Name": …}`, and each `EmployerOpportunityRequest` field once under its Salesforce name.
+- D18: `CandidateMatchExplanationIntegrationTest` now pins the UTC conversion exactly, and a new test (`explanationJsonWithUnknownPropertiesIsRead`) pins that unknown properties are ignored.
+
 ### Outstanding blockers
-- D16–D18 above.
-- **The V2_34 Batch migration must ship with this code.** Spring Batch 6 uses `BATCH_JOB_INSTANCE_SEQ`, so without the migration **every batch job launch fails** ("relation batch_job_instance_seq does not exist"). This is Stage 4.
+- **Do not merge or deploy before Stage 4.** The V2_34 Batch migration must ship with this code. Spring Batch 6 uses `BATCH_JOB_INSTANCE_SEQ`, so without the migration **every batch job launch fails** ("relation batch_job_instance_seq does not exist"). This is Stage 4.
 
 ### Changes that may affect production behaviour
 - Jackson 3 becomes the serializer for HTTP, RestClient, WebClient **and the Hypersistence jsonb columns** (D12).
@@ -367,7 +371,7 @@ D11–D15 were approved.
 - The Batch sequence rename migration (V2_34).
 - Hibernate 7 query and merge semantics.
 - Batch job metadata depends on `spring-boot-starter-batch-jdbc`. With the plain batch starter, metadata would no longer be persisted.
-- Salesforce request bodies lose the duplicate fields, unless D17 says otherwise.
+- Salesforce request bodies no longer contain the duplicate fields (D17). This needs verifying in the Salesforce sandbox before merging.
 - jsonb reads: UTC offsets and tolerance of unknown properties (D18).
 - A null raw password returns false (D16; not reachable in production).
 
@@ -394,7 +398,6 @@ D11–D15 were approved.
 ## 5. Follow-up recommendations (not part of TC-1189)
 - **Salesforce WebClient response handling:** TC-1584 kept the `executeWithRetry()` contract by buffering responses and returning a `ClientResponse`. After Boot 4, refactor it to return typed results and process responses inside the WebClient lifecycle. This does not block the migration.
 - Fix restarting of `CandidateBatchJobFactory` jobs (D13).
-- Remove the duplicate Salesforce request fields (D14).
 - Replace the deprecated Batch 6 chunk classes in `CandidateBatchJobFactory`/`AdaptiveDelayTasklet` with the new `ChunkOrientedStep` model.
 - Switch `@Jacksonized` to Jackson 3 only once Jackson 2 readers are gone (D11).
 - Migrate `org.springframework.lang.Nullable` (270 files) to JSpecify.
@@ -438,7 +441,10 @@ D11–D15 were approved.
   - Jackson 3: `CandidateReadDao`, `CandidateReadMapper`, `PublishedDocBuilderServiceImpl`, `CandidateDtoFetchServiceImpl`, `VerifyPlusPayloadParserImpl`, `JsonRows`, and the 13 DTOs in `service/embedding/dto` and `service/explanation/dto`.
 - Configuration: `server/lombok.config` (new), `application.yml`, `application-test.yml`.
 - Tests: about 75 files with import or API moves (§3.4), plus `PostgresTestContainer` and `NotificationServiceImplTest`.
-- New tests: `StatusRequestMatcherTest`, `EntityIdGeneratorIntegrationTest`, `util/json/ApplicationJsonMapper`; additions to `CandidateMatchExplanationIntegrationTest` and `JsonRowsTest`.
+- New tests: `StatusRequestMatcherTest`, `EntityIdGeneratorIntegrationTest`, `util/json/ApplicationJsonMapper`; additions to `CandidateMatchExplanationIntegrationTest` (3) and `JsonRowsTest` (1).
+- Decision changes: `TcPasswordEncoderTest` (D16), `SalesforceJsonPayloadTest` (D17), `CandidateMatchExplanationIntegrationTest` (D18).
+
+**Checkpoint review:** I reviewed the whole diff. There is no temporary debugging code, no disabled test and no probe file left behind. The probe used for D19 lived only in the scratchpad and in a temporary Boot 3 worktree, and both are deleted. `BatchConfig` keeps its existing Javadoc and `@RequiredArgsConstructor`, so it shows no unrelated change. The other non-mechanical changes are the ones listed in §3.4.
 
 **New tests (baseline, before Stage 2):**
 - `util/http/RecordingHttpServer`
