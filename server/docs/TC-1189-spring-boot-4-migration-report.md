@@ -9,7 +9,7 @@ Branch: `john/tc-1189-upgrade-to-spring-boot-4` (base: `b1c367b9f` TC-1584)
 | 2. Build configuration | Complete. Decisions D11–D15 approved. |
 | 3. Source fixes | **Complete.** D16–D20 approved and implemented. Main and test code compile. 3,591 tests, of which only the 8 `BatchJobServiceIntegrationTest` tests fail; they await the Stage 4 migration (§3.4). Checkpoint committed. (The 8 Batch failures were resolved in Stage 4.) |
 | 4. Database migration and infrastructure | **Complete and approved.** V2_34 added. Fresh and existing (Spring Batch 5) databases are tested. **Full suite: 3,593 tests, 0 failures** (§3.5). D21 and D22 approved. |
-| 5. Broader regression and application compatibility | **Complete.** One production bug found and fixed (candidate search, D26), plus an error-response format fix (D23). 15 new regression tests, most compared against Boot 3. Local runs of the application on both Boot 3 and Boot 4. **Full suite: 3,608 tests, 0 failures, 0 skipped** (run twice). New decisions D23–D27 (§4). **Awaiting review before Stage 6.** |
+| 5. Broader regression and application compatibility | **Complete.** One production bug found and fixed (Jackson 3 object creation, D26, which affected candidate search and skills extraction), plus an error-response format fix (D23). 18 new regression tests, most compared against Boot 3. Local runs of the application on both Boot 3 and Boot 4. D23–D27 approved; D26 reviewed (§3.7). **Full suite: 3,611 tests, 0 failures, 0 skipped.** **Awaiting review before Stage 6.** |
 | 6 | Not started |
 
 > **Deployment constraint:** the Spring Boot 4 application and the V2_34 migration **must be deployed together**.
@@ -18,6 +18,8 @@ Branch: `john/tc-1189-upgrade-to-spring-boot-4` (base: `b1c367b9f` TC-1584)
 > - Rolling back to Spring Boot 3 therefore requires reversing the sequence rename by hand, outside Flyway, before or together with the rollback: `ALTER SEQUENCE batch_job_instance_seq RENAME TO batch_job_seq;`
 >
 > Details are in §4, under "Outstanding blockers".
+>
+> **Deployment action (D25):** delete the Redis `users::*` keys during the deployment, for example `redis-cli --scan --pattern 'users::*' | xargs redis-cli del`, run against the production Redis once the new version is live. Boot 4 cannot read the cached users that Boot 3 wrote. This is done as a deployment step, not in application code.
 
 ---
 
@@ -471,6 +473,71 @@ Passing serialization tests don't prove these integrations work; each has to be 
 - **Deployment environment:** startup with production configuration and secrets, Redis (ElastiCache), and scheduled jobs with ShedLock across several instances.
 - **Copy of production data:** candidate search and stats on realistic data, and Batch status on real Batch 5 history.
 
+### 3.7 Review of D26 (global Jackson creator settings)
+
+D26 was approved provisionally, subject to this review. It covers the five points you asked about, all checked against the running Spring context and against Boot 3 rather than by reasoning alone. The temporary Boot 3 worktree and probes are deleted.
+
+**What the settings do, from the Jackson sources:**
+- Jackson 2's default creator visibility was `ANY` (`VisibilityChecker.Std.DEFAULT`, commented "legacy, to support single-arg ctors"). Boot 3 also registered the parameter names module.
+- Jackson 3 split this into **creator** visibility, whose default became `PUBLIC_ONLY` (commented "NOTE: was `ANY` for 2.x"), and a new **scalar-constructor** visibility (single-argument constructors, default `NON_PRIVATE`).
+- Boot's Jackson 2 defaults (`configureForJackson2()`) also turn off `DETECT_PARAMETER_NAMES`.
+- So `spring.jackson.visibility.creator: any` restores exactly the Jackson 2 default for properties-based creators. It sets nothing wider than Boot 3 had. The scalar-constructor level stays at Jackson 3's `NON_PRIVATE`, which is stricter than Boot 3 only for **private** one-argument constructors.
+
+**1. Does it apply to the mapper used by candidate search? Yes.**
+- A probe in the full application context found exactly **one** Jackson mapper bean (`jacksonJsonMapper`), with parameter-name detection on.
+- `CandidateDtoFetchServiceImpl.objectMapper` and `CandidateReadDao`'s `CandidateReadMapper.objectMapper` are that same instance.
+- `CandidateSearchIntegrationTest`, a local run of the application, and the new guard test all confirm candidate search works.
+
+**2. Which classes are affected?** A probe deserialized **every one of our classes (690)** with the real application mapper, on Boot 3 and on Boot 4. It tried each from `{}`, from a JSON string and from a number (2,070 cases), and compared which succeed:
+
+| Configuration | Differences from Boot 3 |
+|---|---|
+| Boot 4 without D26 | **72 classes** |
+| Boot 4 with D26 | **9 classes**; all 71 of the other 72 are restored |
+
+Without D26, the classes that differ include:
+- `CandidateReadDto` and its nested `CountryReadDto` and `UserReadDto`;
+- `SkillName`;
+- the CASI DTOs;
+- the `PublishedDoc*Source` classes;
+- the candidate form classes;
+- `TcUserDetails`;
+- `ErrorDTO`, which explains the error-response key order seen earlier.
+
+The sweep shows what *can* be deserialized, not what the application actually deserializes, so I checked usage. **Two production paths are confirmed broken without D26:**
+- **candidate search** (`CandidateReadDto`, read from database-built JSON);
+- **skills extraction**: `SkillName`, which has only a public all-arguments constructor, is read from the Python skills-extraction service's response through Boot's `RestClient`.
+
+Most of the other classes are only constructed in code or only serialized. For example, the forms are built in their controllers, and `PublishListRequest` builds its value sources in code.
+
+**3. Unintended behaviour or security concerns: none significant.**
+- **No polymorphic deserialization:** there is no `@JsonTypeInfo`, default typing or dynamic class choice in main code. So the classes Jackson creates are always the declared types (request-body types, client response types, `readValue` targets). Creator visibility can't be used to make the application create another class, so there is no "gadget" risk.
+- **Constructors:** for those declared types Jackson may again use a non-public constructor whose parameters match JSON property names, as on Boot 3. Those constructors run normally (any validation in them still applies).
+- **Mass assignment:** properties set through a constructor can include fields that have no setter. Again, this was already true on Boot 3.
+- **The 9 remaining differences are all caused by D26's parameter-name detection.** When a class has both a public no-argument constructor and a public constructor with named parameters, Jackson 3 now prefers the latter. It also treats a single named `String` parameter as a property rather than as a plain JSON string. The 9 classes:
+  - `CandidatePropertyKey`, `CandidateSavedList`, `PartnerJobRelation` and `AllowedQuestionTaskAnswer`: deserializing `{}` now calls the two-argument constructor and fails;
+  - `Matching`, `SystemLanguage`, `PasswordExpiredException` and `UserDeactivatedException`: they can no longer be created from a plain JSON string;
+  - `TcAuthenticationProvider`.
+- **None of these 9 is ever deserialized by the application.** I checked request bodies, client responses, `readValue`/`TypeReference`/`ParameterizedTypeReference` targets and request DTO fields. They're entities, keys, exceptions and a security component, constructed in code or only serialized.
+
+**4. Does it restore Boot 3 behaviour without new incompatibilities?** Yes, for every type the application actually deserializes:
+- the API golden master, candidate search, payload, jsonb and Batch tests all match Boot 3;
+- the full suite passes;
+- the 9 remaining differences are confined to classes that are never deserialized.
+
+The residual risk is a class that is *later* deserialized and relies on either:
+- a no-argument constructor alongside a public constructor with named parameters, or
+- a private one-argument constructor.
+
+Such a class would behave differently from Boot 3. Normal tests of that new code would show it.
+
+**5. Recommendation: keep the global configuration for TC-1189.**
+- A targeted fix would mean annotating or changing many classes. That includes the read DTOs used by candidate search, which are built with Lombok `@Builder` and generated SQL, and `SkillName`. It would also leave unknown cases broken. That is the broader change.
+- The global settings restore Boot 3 behaviour uniformly and now have a guard test.
+- **Follow-up (not TC-1189):** make the deserialized DTOs explicit (for example `@Jacksonized`/`@JsonCreator` or a no-argument constructor), then remove these settings and move to plain Jackson 3 behaviour.
+
+**New guard test:** `util/json/ApplicationJsonMapperCreatorTest` (3 tests). It uses the real `application.yml` settings and checks that parameter-name detection is on, that `CandidateReadDto` (with nested country and user) is read from database-style JSON, and that `SkillName` is read from a skills-service response. I checked that **all 3 fail when the two settings are removed**; the last two fail with the production error.
+
 ---
 
 ## 4. Issues and decisions
@@ -524,7 +591,7 @@ D21 and D22 were both approved with option (a).
 - **D21 (known limitation, kept):** job instances created by Spring Batch 5 are not found again from their parameters. On the upgrade day, a once-per-day job that has already run may run once more. Restarting a stopped or failed pre-upgrade execution starts a new instance from the beginning. Existing history is still readable. Neither case affects current production workflows. `SpringBatchSchemaMigrationIntegrationTest` records this behaviour as a regression test.
 - **D22:** restarting an unregistered job now fails with `IllegalArgumentException`. `BatchJobServiceIntegrationTest.restartUnregisteredJobFails` still verifies that no new execution is created and that the stopped execution stays STOPPED.
 
-### New decisions requiring approval (Stage 5)
+### Decisions approved after Stage 5
 | # | Decision | Options | Recommendation |
 |---|---|---|---|
 | D23 | **Error responses from `ErrorHandler` (`ErrorDTO`) were written by Spring Data REST's own `JsonMapper`.** That mapper pretty-prints and ignores our `spring.jackson` settings, because Spring Data REST's exception resolver picks up message converter beans and Boot 4 no longer defines them. | (a) Restore Boot 3 behaviour: give that resolver the application's `JsonMapper` through Spring Data REST's own hook (`RestRepositoryConfig.configureExceptionHandlerExceptionResolver`). (b) Accept: the JSON is equivalent but pretty-printed. | **(a), applied** pending your confirmation. Error responses are now byte-for-byte as on Boot 3 (golden master). |
@@ -533,8 +600,18 @@ D21 and D22 were both approved with option (a).
 | D26 | **Production bug, fixed: candidate search failed under Jackson 3.** `CandidateReadDto` has only Lombok's package-private `@Builder` constructor. Jackson 2 created it through that constructor (parameter names module, creator visibility `ANY`). Jackson 3 doesn't, even with Boot's Jackson 2 defaults, which turn parameter-name detection off. | (a) Restore Jackson 2's behaviour globally in `application.yml`: `spring.jackson.mapper.detect-parameter-names: true` and `spring.jackson.visibility.creator: any`. (b) Fix `CandidateReadDto` alone (eg add `@NoArgsConstructor` or `@Jacksonized`), leaving any other class that relies on the same behaviour broken. | **(a), applied** pending your confirmation. It restores Boot 3 behaviour for every class. The search response, error responses and all golden masters now match Boot 3 (apart from D24). |
 | D27 | **Spring Batch 6 stop semantics:** `stop()` now records **STOPPED immediately**, while the job thread is still running (it stops at the next chunk boundary). Batch 5 recorded STOPPING until the job had actually stopped. So a restart soon after a stop could run alongside the old execution. | (a) Accept and record it. (b) Work around it in `BatchJobServiceImpl`. | **(a).** Neither stop nor restart is called by any endpoint (D13). The Stage 2 restart test now waits for the old execution's steps to stop before restarting. |
 
+Approved:
+- **D23 (a):** restore Boot 3 error-response serialization (applied in `RestRepositoryConfig`).
+- **D24 (a):** accept the new HAL content type when there is no `Accept` header.
+- **D25 (b):** clear the Redis `users::*` keys **as a deployment action**. This is documented at the top of this report and in the blockers, and deliberately not implemented in application startup.
+- **D26 (a):** keep the global settings. Provisionally approved, then reviewed in §3.7: no significant concerns, and a guard test was added.
+- **D27 (a):** accept Spring Batch 6's stop semantics.
+
 ### Outstanding blockers
-- None. D23–D27 need confirmation.
+- None.
+- **Deployment actions:**
+  - deploy V2_34 together with the Boot 4 build;
+  - clear the Redis `users::*` keys during the deployment (D25).
 - **Deployment constraint: the V2_34 migration and the Boot 4 code must be deployed together.** On a database without V2_34, Batch 6 can't launch jobs. Once V2_34 has run, an older Boot 3 build could no longer launch batch jobs either, because `batch_job_seq` is gone. So a rollback to the previous release would need `ALTER SEQUENCE batch_job_instance_seq RENAME TO batch_job_seq;` (manually, outside Flyway).
 
 ### Changes that may affect production behaviour
@@ -591,7 +668,7 @@ D21 and D22 were both approved with option (a).
 - Pre-existing, found by the repository sweep:
   - `SavedListLinkRepository`'s `saved_list_link` table doesn't exist (the entity is marked as possible zombie code);
   - `CandidateRepository.findByIdIn(String, Pageable)` binds a SQL fragment as a parameter, so it fails with a syntax error for any value. It is unused (both callers pass a collection, which uses the other overload), so it can be removed.
-- Make `CandidateReadDto` (and similar Lombok `@Builder` DTOs) explicitly deserializable (eg `@Jacksonized`) so that it doesn't rely on D26's global settings.
+- Make the deserialized DTOs explicitly deserializable, in particular `CandidateReadDto` and its nested read DTOs, and `SkillName` (eg `@Jacksonized`, `@JsonCreator` or a no-argument constructor). Then remove D26's global `spring.jackson` settings (§3.7).
 - Add tests for ShedLock-protected scheduled jobs (none exist).
 - Give the shared test container a unique name or enable reuse properly, to avoid "Container startup failed" when test runs overlap.
 - Remove `thymeleaf-extras-springsecurity6` if it is confirmed unused (no `sec:` in templates).
@@ -645,7 +722,8 @@ D21 and D22 were both approved with option (a).
   - `integration/batch/CandidateTextJobIntegrationTest`;
   - `integration/cache/RedisIntegrationTest`;
   - `integration/cache/ShedLockSchedulerIntegrationTest`;
-  - `integration/helper/BatchMetadataCleaner`.
+  - `integration/helper/BatchMetadataCleaner`;
+  - `util/json/ApplicationJsonMapperCreatorTest` (D26 guard, added in the D26 review).
 - Tests changed:
   - `BatchJobServiceIntegrationTest` (cleanup; D27 wait before restart);
   - `logging/CpuUsageTest` (wait for a CPU sample);
