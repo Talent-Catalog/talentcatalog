@@ -55,10 +55,10 @@ logbuilder:
   includeMemoryUtilization: ${LOGBUILDER_INCLUDE_MEMORY_UTILIZATION:true}
 
 spring:
-  autoconfigure:
-    exclude:
-      # We only want to use Redis as a cache so we do not want it to auto configure as a data store
-      - org.springframework.boot.autoconfigure.data.redis.RedisRepositoriesAutoConfiguration
+  # Keep the Jackson 2 defaults (eg dates as ISO strings, not failing on null primitives) so that
+  # our JSON stays the same under Jackson 3 - TC-1189
+  jackson:
+    use-jackson2-defaults: true
 
   # Batch
   batch:
@@ -81,6 +81,9 @@ spring:
     redis:
       host: ${REDIS_HOST:localhost}
       port: ${REDIS_PORT:6379}
+      # We only want to use Redis as a cache so we do not want it to auto configure as a data store
+      repositories:
+        enabled: false
     # We explicitly enable repositories with @EnableJpaRepositories.
     # Turn off default enabling to avoid errors
     # jpa has to be enabled otherwise unit tests fail

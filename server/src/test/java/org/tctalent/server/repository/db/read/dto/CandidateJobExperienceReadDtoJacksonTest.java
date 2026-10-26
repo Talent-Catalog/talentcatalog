@@ -20,12 +20,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Map;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.tctalent.server.util.dto.DtoBuilder;
+import org.tctalent.server.util.json.ApplicationJsonMapper;
+import tools.jackson.databind.ObjectMapper;
 
 /**
  * Verifies that {@link CandidateJobExperienceReadDto#getFullTime()} and
@@ -35,7 +35,7 @@ import org.tctalent.server.util.dto.DtoBuilder;
  */
 class CandidateJobExperienceReadDtoJacksonTest {
 
-    private final ObjectMapper objectMapper = Jackson2ObjectMapperBuilder.json().build();
+    private final ObjectMapper objectMapper = ApplicationJsonMapper.create();
 
     @Test
     @DisplayName("Postgres-built JSON booleans deserialize and are output as JSON booleans")

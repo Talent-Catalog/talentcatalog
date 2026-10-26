@@ -15,12 +15,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
-import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
@@ -42,6 +38,9 @@ import org.tctalent.server.repository.db.read.dto.CandidateReadDto;
 import org.tctalent.server.repository.db.read.sql.CandidateJsonDao;
 import org.tctalent.server.util.CandidateSearchUtils;
 import org.tctalent.server.util.textExtract.IdAndScore;
+import tools.jackson.core.JsonParser;
+import tools.jackson.databind.DatabindException;
+import tools.jackson.databind.ObjectMapper;
 
 @ExtendWith(MockitoExtension.class)
 class CandidateDtoFetchServiceImplTest {
@@ -168,7 +167,7 @@ class CandidateDtoFetchServiceImplTest {
   }
 
   @Test
-  void fetchByIdsThrowsWhenPostgresCacheHitHasBlankJson() throws JsonProcessingException {
+  void fetchByIdsThrowsWhenPostgresCacheHitHasBlankJson() {
     CandidateJsonCache badPgHit = blankPgCacheHit(1L, " ");
 
     when(versionDao.fetchCandidateVersions(List.of(1L)))
@@ -185,7 +184,7 @@ class CandidateDtoFetchServiceImplTest {
   }
 
   @Test
-  void fetchByIdsThrowsWhenRecomputedJsonIsBlank() throws JsonProcessingException {
+  void fetchByIdsThrowsWhenRecomputedJsonIsBlank() {
     when(versionDao.fetchCandidateVersions(List.of(1L)))
         .thenReturn(Map.of(1L, 100L));
     when(redisCache.multiGet(Map.of(1L, 100L)))
@@ -203,13 +202,13 @@ class CandidateDtoFetchServiceImplTest {
   }
 
   @Test
-  void fetchByIdsWrapsJsonProcessingException() throws Exception {
+  void fetchByIdsWrapsJacksonException() throws Exception {
     when(versionDao.fetchCandidateVersions(List.of(1L)))
         .thenReturn(Map.of(1L, 100L));
     when(redisCache.multiGet(Map.of(1L, 100L)))
         .thenReturn(Map.of(1L, "bad-json"));
     when(objectMapper.readValue("bad-json", CandidateReadDto.class))
-        .thenThrow(JsonMappingException.fromUnexpectedIOE(new IOException("bad json")));
+        .thenThrow(DatabindException.from((JsonParser) null, "bad json"));
 
     RuntimeException ex = assertThrows(RuntimeException.class,
         () -> service.fetchByIds(List.of(1L)));

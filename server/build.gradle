@@ -15,7 +15,7 @@
  */
 plugins {
     id 'java'
-    id 'org.springframework.boot' version '3.5.16'
+    id 'org.springframework.boot' version '4.1.2'
     id 'io.spring.dependency-management' version '1.1.7'
     id 'com.google.cloud.tools.jib' version '3.4.4'
     id 'jacoco'
@@ -49,8 +49,6 @@ ext {
     mapstructVersion = "1.6.3"
     lombokMapstructBindingVersion = "0.2.0"
     awsSdkVersion = "2.42.15"
-    // Flyway upgrade (Postgres 17.5 compatible)
-    set('flyway.version', '11.20.1')
     //Note that there are breaking changes in jjwt 0.12 and 0.13. Fairly minor though.
     //If you upgrade you will get some compile errors which should be easy to fix. JC
     jjwtVersion = "0.11.2"
@@ -104,31 +102,38 @@ dependencies {
         implementation(project(':ui:public-portal'))
     }
 
-    implementation "org.springframework.boot:spring-boot-starter-batch"
+    //Note that from Spring Boot 4, spring-boot-starter-batch uses an in-memory job repository.
+    //The batch-jdbc starter is needed to keep job metadata in our database (BATCH_* tables).
+    implementation "org.springframework.boot:spring-boot-starter-batch-jdbc"
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-mail'
     implementation 'org.springframework.boot:spring-boot-starter-security'
-    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-webmvc'
     implementation 'org.springframework.boot:spring-boot-starter-webflux'
+    //From Spring Boot 4, the auto-configured WebClient.Builder and RestClient.Builder
+    //(injected by our HTTP clients) come from their own starters.
+    implementation 'org.springframework.boot:spring-boot-starter-webclient'
+    implementation 'org.springframework.boot:spring-boot-starter-restclient'
     implementation 'org.springframework.boot:spring-boot-starter-websocket'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
     implementation 'org.springframework.boot:spring-boot-starter-cache'
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
-    implementation "org.springframework.data:spring-data-rest-webmvc"
+    implementation 'org.springframework.boot:spring-boot-starter-data-rest'
     implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'
-    testImplementation platform("org.testcontainers:testcontainers-bom:2.0.3")
-    testImplementation 'org.testcontainers:junit-jupiter'
-    testImplementation 'org.testcontainers:postgresql'
+    testImplementation 'org.testcontainers:testcontainers-junit-jupiter'
+    testImplementation 'org.testcontainers:testcontainers-postgresql'
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
 
     runtimeOnly 'org.postgresql:postgresql'
     runtimeOnly 'com.h2database:h2'
     annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
-    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    //Spring Boot 4 test starters for the technologies we test (each includes spring-boot-starter-test)
+    testImplementation 'org.springframework.boot:spring-boot-starter-webmvc-test'
+    testImplementation 'org.springframework.boot:spring-boot-starter-data-jpa-test'
+    testImplementation 'org.springframework.boot:spring-boot-starter-security-test'
     testImplementation 'io.projectreactor:reactor-test'
-    testImplementation 'org.springframework.security:spring-security-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
     //Extra stuff not part of Spring Initializr
@@ -137,10 +142,11 @@ dependencies {
     testCompileOnly 'org.projectlombok:lombok'
     testAnnotationProcessor 'org.projectlombok:lombok'
 
-    //Note that Spring Initializr pulls in org.flywaydb:flyway-core but that will not process
-    //older Postgres DB versions. We need the the following dependency
+    //From Spring Boot 4, Flyway is only auto-configured (ie migrations run on startup) with this
+    //starter - flyway-core on its own is no longer enough.
+    implementation 'org.springframework.boot:spring-boot-starter-flyway'
+    //Note that flyway-core will not process Postgres DB versions without the following dependency
     //See https://github.com/flyway/flyway/issues/3902
-    implementation 'org.flywaydb:flyway-core'
     implementation 'org.flywaydb:flyway-database-postgresql'
 
 
@@ -183,8 +189,9 @@ dependencies {
     implementation("com.opencsv:opencsv:5.8")
 
     // https://github.com/lukas-krecan/ShedLock
-    implementation "net.javacrumbs.shedlock:shedlock-spring:5.10.0"
-    implementation "net.javacrumbs.shedlock:shedlock-provider-jdbc-template:5.10.0"
+    //ShedLock 7 is the version line for Spring Framework 7 / Spring Boot 4
+    implementation "net.javacrumbs.shedlock:shedlock-spring:7.10.1"
+    implementation "net.javacrumbs.shedlock:shedlock-provider-jdbc-template:7.10.1"
 
     // JWT support (JSON Web Token) for authentication and authorization.
     // Public API used by application code.
@@ -192,6 +199,10 @@ dependencies {
     // Runtime implementation and Jackson JSON support.
     runtimeOnly("io.jsonwebtoken:jjwt-impl:$jjwtVersion")
     runtimeOnly("io.jsonwebtoken:jjwt-jackson:$jjwtVersion")
+
+    //Spring Boot 4 uses Jackson 3 (tools.jackson). Jackson 2 (com.fasterxml.jackson) is still used
+    //directly by some of our code and by some libraries. Its version is managed by Spring Boot.
+    implementation 'com.fasterxml.jackson.core:jackson-databind'
 
     implementation 'com.google.api-client:google-api-client:1.32.1'
     implementation 'com.google.oauth-client:google-oauth-client-jetty:1.32.1'
@@ -211,8 +222,9 @@ dependencies {
     // tc api
     implementation "org.tctalent:tc-api-spec:1.0.0"
 
-    // Hypersistence Utils for JSON type handling
-    implementation 'io.hypersistence:hypersistence-utils-hibernate-63:3.7.3'
+    // Hypersistence Utils for JSON type handling.
+    // The hibernate-73 artifact supports Hibernate 7.3+. Note that it uses Jackson 3.
+    implementation 'io.hypersistence:hypersistence-utils-hibernate-73:3.16.0'
 
     // Mapstruct
     implementation "org.mapstruct:mapstruct:${mapstructVersion}"

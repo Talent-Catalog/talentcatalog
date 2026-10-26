@@ -18,12 +18,12 @@ package org.tctalent.server.service.db.verify.impl;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.tctalent.server.exception.InvalidVerifyPlusPayloadException;
 import org.tctalent.server.service.db.verify.VerifyPlusPayload;
+import tools.jackson.databind.json.JsonMapper;
 
 class VerifyPlusPayloadParserImplTest {
 
@@ -31,7 +31,7 @@ class VerifyPlusPayloadParserImplTest {
 
     @BeforeEach
     void setUp() {
-        parser = new VerifyPlusPayloadParserImpl(new ObjectMapper());
+        parser = new VerifyPlusPayloadParserImpl(new JsonMapper());
     }
 
     @Test

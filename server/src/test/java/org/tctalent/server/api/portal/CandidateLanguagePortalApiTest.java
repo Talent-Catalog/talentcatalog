@@ -112,7 +112,7 @@ class CandidateLanguagePortalApiTest {
     ResponseEntity result = candidateLanguagePortalApi.deleteCandidateLanguage(id);
 
     assertNotNull(result);
-    assertEquals(200, result.getStatusCodeValue());
+    assertEquals(200, result.getStatusCode().value());
     verify(candidateLanguageService).deleteCandidateLanguage(id);
   }
 

@@ -4,8 +4,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
@@ -15,6 +13,8 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.tctalent.server.util.json.ApplicationJsonMapper;
+import tools.jackson.databind.ObjectMapper;
 
 class CandidateMatchExplanationRequestTest {
 
@@ -58,9 +58,8 @@ class CandidateMatchExplanationRequestTest {
     @Test
     @DisplayName("should ignore any opportunityDescription or jobId supplied by a client")
     void shouldIgnoreDescriptionAndJobId() throws Exception {
-        //Same as the application's ObjectMapper, which ignores unknown properties.
-        ObjectMapper objectMapper = new ObjectMapper()
-            .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        //The application's ObjectMapper, which ignores unknown properties.
+        ObjectMapper objectMapper = ApplicationJsonMapper.create();
 
         CandidateMatchExplanationRequest request = objectMapper.readValue(
             "{\"matchingId\": 3, \"regenerate\": true, \"jobId\": 7,"

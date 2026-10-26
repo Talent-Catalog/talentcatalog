@@ -18,16 +18,12 @@ package org.tctalent.server.security;
 
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
+/**
+ * Null encoded passwords are never valid.
+ * <p>
+ * This used to be implemented by overriding matches. Since Spring Security 7 the BCrypt encoder
+ * already returns false for a null (or empty) encoded password, and matches can no longer be
+ * overridden - TC-1189.
+ */
 public class TcPasswordEncoder extends BCryptPasswordEncoder {
-
-    /**
-     * Null encoded passwords are never valid.
-     */
-    @Override
-    public boolean matches(CharSequence rawPassword, String encodedPassword) {
-        if (encodedPassword == null) {
-            return false;
-        }
-        return super.matches(rawPassword, encodedPassword);
-    }
 }

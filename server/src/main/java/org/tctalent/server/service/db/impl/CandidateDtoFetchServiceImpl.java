@@ -16,8 +16,6 @@
 
 package org.tctalent.server.service.db.impl;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.Query;
@@ -44,6 +42,8 @@ import org.tctalent.server.repository.db.read.sql.CandidateJsonDao;
 import org.tctalent.server.service.db.CandidateDtoFetchService;
 import org.tctalent.server.util.CandidateSearchUtils;
 import org.tctalent.server.util.textExtract.IdAndScore;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
 
 /**
  * Strict read service for CandidateReadDto.
@@ -333,7 +333,7 @@ public class CandidateDtoFetchServiceImpl implements CandidateDtoFetchService {
         for (Map.Entry<Long, String> e : jsonById.entrySet()) {
             try {
                 out.put(e.getKey(), deserialize(e.getValue()));
-            } catch (JsonProcessingException ex) {
+            } catch (JacksonException ex) {
                 String mess = "Could not deserialize cached JSON for candidate id=" + e.getKey();
                 throw new RuntimeException(mess, ex);
             }
@@ -341,7 +341,7 @@ public class CandidateDtoFetchServiceImpl implements CandidateDtoFetchService {
         return out;
     }
 
-    private CandidateReadDto deserialize(String json) throws JsonProcessingException {
+    private CandidateReadDto deserialize(String json) throws JacksonException {
         return objectMapper.readValue(json, CandidateReadDto.class);
     }
 }

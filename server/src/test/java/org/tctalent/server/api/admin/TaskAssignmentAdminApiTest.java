@@ -39,15 +39,14 @@ import static org.tctalent.server.data.TaskTestData.getTask;
 import static org.tctalent.server.data.TaskTestData.getTaskAssignment;
 import static org.tctalent.server.data.TaskTestData.getTaskAssignments;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
+import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
@@ -64,6 +63,7 @@ import org.tctalent.server.service.db.CandidateService;
 import org.tctalent.server.service.db.SavedListService;
 import org.tctalent.server.service.db.TaskAssignmentService;
 import org.tctalent.server.service.db.TaskService;
+import tools.jackson.databind.ObjectMapper;
 
 /**
  * Unit tests for Task Assignment Admin Api endpoints.

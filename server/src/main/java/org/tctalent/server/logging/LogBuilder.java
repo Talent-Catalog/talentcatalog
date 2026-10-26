@@ -88,6 +88,13 @@ public class LogBuilder {
     LogBuilder.systemMetricsProvider = provider;
   }
 
+  // Clears the SystemMetrics provider, if it is the given one
+  public static void clearSystemMetricsProvider(ObjectProvider<SystemMetricsImpl> provider) {
+    if (LogBuilder.systemMetricsProvider == provider) {
+      LogBuilder.systemMetricsProvider = null;
+    }
+  }
+
   // Static method to set the logCpu flag for all LogBuilder instances
   public static void setLogCpu(boolean logCpu) {
     LogBuilder.logCpu = logCpu;

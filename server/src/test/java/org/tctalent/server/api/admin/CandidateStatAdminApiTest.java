@@ -49,7 +49,6 @@ import static org.tctalent.server.api.admin.StatsApiTestUtil.getSurveyStats;
 import static org.tctalent.server.api.admin.StatsApiTestUtil.getUnhcrRegistrationStats;
 import static org.tctalent.server.api.admin.StatsApiTestUtil.getUnhcrStatusStats;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.EntityManager;
 import java.util.List;
 import java.util.Optional;
@@ -58,8 +57,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
+import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
@@ -74,6 +73,7 @@ import org.tctalent.server.service.db.CandidateService;
 import org.tctalent.server.service.db.CandidateStatsService;
 import org.tctalent.server.service.db.SavedListService;
 import org.tctalent.server.service.db.SavedSearchService;
+import tools.jackson.databind.ObjectMapper;
 
 /**
  * Unit tests for Candidate Stats Admin Api endpoints.

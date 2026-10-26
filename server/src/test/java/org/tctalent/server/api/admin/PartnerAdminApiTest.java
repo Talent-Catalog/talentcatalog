@@ -39,7 +39,6 @@ import static org.tctalent.server.data.PartnerImplTestData.getListOfDestinationP
 import static org.tctalent.server.data.SalesforceJobOppTestData.getSalesforceJobOppMinimal;
 import static org.tctalent.server.data.UserTestData.getAuditUser;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -47,8 +46,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
+import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -69,6 +68,7 @@ import org.tctalent.server.service.db.EmployerService;
 import org.tctalent.server.service.db.JobService;
 import org.tctalent.server.service.db.PartnerService;
 import org.tctalent.server.service.db.UserService;
+import tools.jackson.databind.ObjectMapper;
 
 /**
  * Unit tests for Partner Admin Api endpoints.

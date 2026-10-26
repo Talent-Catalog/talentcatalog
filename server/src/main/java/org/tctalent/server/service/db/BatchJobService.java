@@ -1,7 +1,7 @@
 package org.tctalent.server.service.db;
 
-import org.springframework.batch.core.Job;
-import org.springframework.batch.core.JobExecutionException;
+import org.springframework.batch.core.job.Job;
+import org.springframework.batch.core.job.JobExecutionException;
 
 /**
  * Service interface for managing and running Spring Batch jobs.

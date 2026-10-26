@@ -5,15 +5,14 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import org.springframework.batch.core.Job;
-import org.springframework.batch.core.JobExecution;
-import org.springframework.batch.core.JobExecutionException;
-import org.springframework.batch.core.JobInstance;
-import org.springframework.batch.core.JobParameters;
-import org.springframework.batch.core.JobParametersBuilder;
-import org.springframework.batch.core.explore.JobExplorer;
-import org.springframework.batch.core.launch.JobLauncher;
+import org.springframework.batch.core.job.Job;
+import org.springframework.batch.core.job.JobExecution;
+import org.springframework.batch.core.job.JobExecutionException;
+import org.springframework.batch.core.job.JobInstance;
+import org.springframework.batch.core.job.parameters.JobParameters;
+import org.springframework.batch.core.job.parameters.JobParametersBuilder;
 import org.springframework.batch.core.launch.JobOperator;
+import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.tctalent.server.service.db.BatchJobService;
@@ -29,17 +28,14 @@ import org.tctalent.server.service.db.BatchJobService;
 @Service
 public class BatchJobServiceImpl implements BatchJobService {
 
-  private final JobLauncher asyncJobLauncher;
   private final JobOperator jobOperator;
-  private final JobExplorer jobExplorer;
+  private final JobRepository jobRepository;
 
   public BatchJobServiceImpl(
-      @Qualifier("asyncJobLauncher") JobLauncher asyncJobLauncher,
       @Qualifier("asyncJobOperator") JobOperator jobOperator,
-      JobExplorer jobExplorer) {
-    this.asyncJobLauncher = asyncJobLauncher;
+      JobRepository jobRepository) {
     this.jobOperator = jobOperator;
-    this.jobExplorer = jobExplorer;
+    this.jobRepository = jobRepository;
   }
 
   /**
@@ -50,11 +46,11 @@ public class BatchJobServiceImpl implements BatchJobService {
   public String getJobExecutionsSummary() {
     List<JobExecution> allExecutions = new ArrayList<>();
 
-    for (String jobName : jobExplorer.getJobNames()) {
+    for (String jobName : jobRepository.getJobNames()) {
       // fetch up to 20 recent instances
-      List<JobInstance> instances = jobExplorer.getJobInstances(jobName, 0, 20);
+      List<JobInstance> instances = jobRepository.getJobInstances(jobName, 0, 20);
       for (JobInstance instance : instances) {
-        allExecutions.addAll(jobExplorer.getJobExecutions(instance));
+        allExecutions.addAll(jobRepository.getJobExecutions(instance));
       }
     }
 
@@ -70,6 +66,9 @@ public class BatchJobServiceImpl implements BatchJobService {
     return !sb.isEmpty() ? sb.toString() : "No job executions found.";
   }
 
+  //The execution id based stop and restart are deprecated in Spring Batch 6 but are kept because
+  //they report unknown execution ids in the same way as before (NoSuchJobExecutionException).
+  @SuppressWarnings("removal")
   @Override
   public String stopJobExecution(Long executionId) throws Exception {
     boolean stopped = jobOperator.stop(executionId);
@@ -78,6 +77,7 @@ public class BatchJobServiceImpl implements BatchJobService {
         : "Job execution " + executionId + " could not be stopped (maybe already completed or not running).";
   }
 
+  @SuppressWarnings("removal")
   @Override
   public String restartJobExecution(Long executionId) throws Exception {
     Long newExecutionId = jobOperator.restart(executionId);
@@ -99,7 +99,7 @@ public class BatchJobServiceImpl implements BatchJobService {
       JobParameters params = builder.toJobParameters();
 
 
-      asyncJobLauncher.run(job, params);
+      jobOperator.start(job, params);
       return "Job '" + job.getName() + "' launched successfully";
 
     } catch (Exception e) {

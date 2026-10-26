@@ -1,12 +1,12 @@
 package org.tctalent.server.service.explanation.dto;
 
-import com.fasterxml.jackson.databind.PropertyNamingStrategies;
-import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Builder;
 import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 import org.springframework.lang.Nullable;
+import tools.jackson.databind.PropertyNamingStrategies;
+import tools.jackson.databind.annotation.JsonNaming;
 
 /** Explanation of how one job experience relates to the opportunity, as returned by Python. */
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)

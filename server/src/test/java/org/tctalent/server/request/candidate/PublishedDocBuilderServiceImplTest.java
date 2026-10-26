@@ -20,7 +20,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -34,6 +33,8 @@ import org.tctalent.server.model.db.CandidateProperty;
 import org.tctalent.server.model.db.CandidatePropertyType;
 import org.tctalent.server.model.db.HasMultipleRows;
 import org.tctalent.server.model.db.User;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.json.JsonMapper;
 
 class PublishedDocBuilderServiceImplTest {
   PublishedDocBuilderServiceImpl builder;
@@ -96,7 +97,7 @@ class PublishedDocBuilderServiceImplTest {
     dependantsSource.setPropertyType(CandidatePropertyType.JSON);
     infoDependants = addColumn("dependants", "Dependants", dependantsSource);
 
-    ObjectMapper mapper = new ObjectMapper();
+    ObjectMapper mapper = new JsonMapper();
     builder = new PublishedDocBuilderServiceImpl(null, mapper);
   }
 

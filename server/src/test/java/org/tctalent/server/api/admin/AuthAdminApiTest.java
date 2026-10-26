@@ -30,7 +30,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.stream.Stream;
 import javax.security.auth.login.AccountLockedException;
 import org.hamcrest.Matchers;
@@ -41,8 +40,8 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
+import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
@@ -55,6 +54,7 @@ import org.tctalent.server.request.LoginRequest;
 import org.tctalent.server.response.JwtAuthenticationResponse;
 import org.tctalent.server.service.db.UserService;
 import org.tctalent.server.util.qr.EncodedQrImage;
+import tools.jackson.databind.ObjectMapper;
 
 /**
  * Unit tests for Auth Admin Api - the login and mfa handler for the admin-portal.

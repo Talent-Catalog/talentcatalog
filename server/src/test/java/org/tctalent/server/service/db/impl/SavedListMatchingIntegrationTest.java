@@ -21,7 +21,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.EntityManager;
 import java.time.OffsetDateTime;
 import java.util.List;
@@ -79,6 +78,7 @@ import org.tctalent.server.service.db.JobService;
 import org.tctalent.server.service.db.SalesforceService;
 import org.tctalent.server.service.db.SavedListService;
 import org.tctalent.server.service.db.SavedSearchService;
+import tools.jackson.databind.ObjectMapper;
 
 /**
  * Integration tests of the Matching (and job) context of saved lists when candidates are saved

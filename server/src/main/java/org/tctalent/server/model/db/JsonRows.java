@@ -16,8 +16,8 @@
 
 package org.tctalent.server.model.db;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import org.springframework.lang.Nullable;
+import tools.jackson.databind.JsonNode;
 
 /**
  * Json implementation of HasMultipleRows.
@@ -50,10 +50,25 @@ public class JsonRows implements HasMultipleRows {
             if (element != null) {
                 JsonNode node = element.get(name);
                 if (node != null) {
-                    s = node.asText();
+                    s = asText(node);
                 }
             }
         }
         return s;
+    }
+
+    /**
+     * Returns the same text as Jackson 2's JsonNode.asText() did, which differs from Jackson 3's
+     * asString() for nulls ("null" rather than "") and for objects and arrays ("" rather than an
+     * exception) - TC-1189.
+     */
+    private static String asText(JsonNode node) {
+        if (node.isNull()) {
+            return "null";
+        }
+        if (node.isContainer()) {
+            return "";
+        }
+        return node.asString();
     }
 }

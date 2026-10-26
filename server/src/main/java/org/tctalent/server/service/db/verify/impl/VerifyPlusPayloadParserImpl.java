@@ -16,13 +16,13 @@
 
 package org.tctalent.server.service.db.verify.impl;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.tctalent.server.exception.InvalidVerifyPlusPayloadException;
 import org.tctalent.server.service.db.verify.VerifyPlusPayload;
 import org.tctalent.server.service.db.verify.VerifyPlusPayloadParser;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
 
 /**
  * Mock parser contract is currently provisionally mocked and versioned:
@@ -65,11 +65,11 @@ public class VerifyPlusPayloadParserImpl implements VerifyPlusPayloadParser {
         if (node == null || node.isNull()) {
             throw new InvalidVerifyPlusPayloadException("Missing field: " + fieldName);
         }
-        if (!node.isTextual()) {
+        if (!node.isString()) {
             throw new InvalidVerifyPlusPayloadException("Field must be text: " + fieldName);
         }
 
-        String value = node.textValue();
+        String value = node.stringValue();
         if (value == null || value.isEmpty()) {
             throw new InvalidVerifyPlusPayloadException("Field cannot be empty: " + fieldName);
         }

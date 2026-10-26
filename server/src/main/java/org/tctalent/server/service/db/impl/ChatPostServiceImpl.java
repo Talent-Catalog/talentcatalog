@@ -169,7 +169,8 @@ public class ChatPostServiceImpl implements ChatPostService {
     @Override
     public void publishChatPost(ChatPost post) {
         final Map<String, Object> postDto = getChatPostDtoBuilder().build(post);
+        //Cast needed so that postDto is sent as the payload, not as headers (Spring 7 overload)
         messagingTemplate.convertAndSend(
-            CHAT_PUBLISH_ROOT + "/" + post.getJobChat().getId(), postDto);
+            CHAT_PUBLISH_ROOT + "/" + post.getJobChat().getId(), (Object) postDto);
     }
 }

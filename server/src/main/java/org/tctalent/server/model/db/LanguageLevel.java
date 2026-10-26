@@ -29,7 +29,10 @@ import lombok.Setter;
 @Setter
 @Entity
 @Table(name = "language_level")
-@SequenceGenerator(name = "language_level_gen", sequenceName = "language_level_id_seq", allocationSize = 1)
+//The generator must be named seq_gen to match the inherited @Id. Hibernate 6 resolved the misnamed
+//"language_level_gen" generator to Language's language_id_seq, so ids have come from that
+//sequence. Kept until the ids are moved to language_level_id_seq - TC-1189.
+@SequenceGenerator(name = "seq_gen", sequenceName = "language_id_seq", allocationSize = 1)
 @NoArgsConstructor
 public class LanguageLevel extends AbstractTranslatableDomainObject<Long> {
 
