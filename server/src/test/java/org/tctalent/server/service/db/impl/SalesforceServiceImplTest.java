@@ -19,6 +19,7 @@ package org.tctalent.server.service.db.impl;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -49,7 +50,12 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.core.io.buffer.DataBufferLimitException;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.web.reactive.function.client.ClientResponse;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 import org.tctalent.server.configuration.SalesforceConfig;
 import org.tctalent.server.configuration.SalesforceRecordTypeConfig;
 import org.tctalent.server.configuration.SalesforceTbbAccountsConfig;
@@ -978,6 +984,193 @@ class SalesforceServiceImplTest {
   }
 
   @Test
+  void executeWithRetryReturnsResponseWithStatusHeadersAndBody() throws Exception {
+    String body = "{\"totalSize\":0,\"done\":true,\"records\":[]}";
+    try (TestSalesforceServer server = salesforceServer(200, body)) {
+      SalesforceServiceImpl httpService = httpBackedService(server);
+
+      ClientResponse response = ReflectionTestUtils.invokeMethod(
+          httpService, "executeQuery", "SELECT Id FROM Contact");
+
+      assertNotNull(response);
+      assertAll(
+          () -> assertEquals(HttpStatus.OK, response.statusCode()),
+          () -> assertEquals(MediaType.APPLICATION_JSON,
+              response.headers().contentType().orElse(null)),
+          () -> assertEquals(body, response.bodyToMono(String.class).block()),
+          () -> assertEquals(1, server.requestCount())
+      );
+    }
+  }
+
+  @Test
+  void executeWithRetryReturnsResponseWithNoBodyForEmptyResponse() throws Exception {
+    try (TestSalesforceServer server = salesforceServer(200, null)) {
+      SalesforceServiceImpl httpService = httpBackedService(server);
+
+      ClientResponse response = ReflectionTestUtils.invokeMethod(
+          httpService, "executeQuery", "SELECT Id FROM Contact");
+
+      assertNotNull(response);
+      assertAll(
+          () -> assertEquals(HttpStatus.OK, response.statusCode()),
+          //No body - rather than an empty one
+          () -> assertNull(response.bodyToMono(String.class).block())
+      );
+    }
+  }
+
+  @Test
+  void executeWithRetryWrapsSalesforceErrorBodyForMultipleChoices() throws Exception {
+    try (TestSalesforceServer server = salesforceServer(
+        300, "[{\"message\":\"Ambiguous\",\"errorCode\":\"MULTIPLE_CHOICES\"}]")) {
+      SalesforceServiceImpl httpService = httpBackedService(server);
+
+      SalesforceException exception = assertThrows(
+          SalesforceException.class,
+          () -> httpService.findContacts("TBBid__c > 0")
+      );
+
+      assertAll(
+          () -> assertTrue(exception.getMessage().startsWith("300 Multiple Choices from GET")),
+          () -> assertTrue(exception.getMessage().contains("MULTIPLE_CHOICES"))
+      );
+    }
+  }
+
+  @Test
+  void executeWithRetryReportsNullErrorInfoForBadRequestWithNoBody() throws Exception {
+    try (TestSalesforceServer server = salesforceServer(400, null)) {
+      SalesforceServiceImpl httpService = httpBackedService(server);
+
+      SalesforceException exception = assertThrows(
+          SalesforceException.class,
+          () -> httpService.findContacts("bad condition")
+      );
+
+      assertTrue(exception.getMessage().endsWith(": null"));
+    }
+  }
+
+  @Test
+  void executeWithRetryThrowsWebClientResponseExceptionForServerError() throws Exception {
+    String body = "[{\"message\":\"Server problem\",\"errorCode\":\"UNKNOWN_EXCEPTION\"}]";
+    try (TestSalesforceServer server = salesforceServer(500, body)) {
+      SalesforceServiceImpl httpService = httpBackedService(server);
+
+      WebClientResponseException exception = assertThrows(
+          WebClientResponseException.class,
+          () -> httpService.findContacts("TBBid__c > 0")
+      );
+
+      //createException has the status, headers and body of the response
+      assertAll(
+          () -> assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, exception.getStatusCode()),
+          () -> assertEquals(MediaType.APPLICATION_JSON, exception.getHeaders().getContentType()),
+          () -> assertEquals(body, exception.getResponseBodyAsString()),
+          () -> assertTrue(exception.getMessage().contains("from GET " + server.baseUrl())),
+          //Error responses are not retried
+          () -> assertEquals(1, server.requestCount())
+      );
+    }
+  }
+
+  @Test
+  void executeWithRetryNotFoundGivesNullRecord() throws Exception {
+    String body = "[{\"message\":\"Not found\",\"errorCode\":\"NOT_FOUND\"}]";
+    try (TestSalesforceServer server = salesforceServer(404, body)) {
+      SalesforceServiceImpl httpService = httpBackedService(server);
+
+      assertNull(httpService.findOpportunity("006MISSING"));
+    }
+  }
+
+  @Test
+  void executeWithRetryRetriesOnceWhenConnectionFails() throws Exception {
+    String body = "{\"totalSize\":0,\"done\":true,\"records\":[]}";
+    try (TestSalesforceServer server = salesforceServer(
+        List.of(TestSalesforceServer.CONNECTION_FAILURE, 200), List.of("", body))) {
+      SalesforceServiceImpl httpService = httpBackedService(server);
+
+      List<Contact> contacts = httpService.findContacts("TBBid__c > 0");
+
+      assertAll(
+          () -> assertTrue(contacts.isEmpty()),
+          () -> assertEquals(2, server.requestCount())
+      );
+    }
+  }
+
+  @Test
+  void executeWithRetryDoesNotRetryWhenReadingBodyFails() throws Exception {
+    //Larger than the default WebClient in-memory buffer limit (256KB)
+    String body = "{\"totalSize\":0,\"done\":true,\"records\":[],\"padding\":\""
+        + "x".repeat(300 * 1024) + "\"}";
+    try (TestSalesforceServer server = salesforceServer(200, body)) {
+      SalesforceServiceImpl httpService = httpBackedService(server);
+
+      Exception exception = assertThrows(
+          Exception.class,
+          () -> httpService.findContacts("TBBid__c > 0")
+      );
+
+      assertAll(
+          () -> assertTrue(hasCause(exception, DataBufferLimitException.class)),
+          () -> assertEquals(1, server.requestCount())
+      );
+    }
+  }
+
+  @Test
+  void executeWithRetryGetsNewTokenAndRetriesWhenUnauthorized() throws Exception {
+    String bearerTokenResponse = """
+        {
+          "access_token":"new-token",
+          "scope":"api",
+          "instance_url":"https://example.my.salesforce.com",
+          "id":"identity",
+          "token_type":"Bearer"
+        }
+        """;
+    String contactResult = """
+        {"totalSize":1,"done":true,"records":[{"Id":"003CONTACT","TBBid__c":123}]}
+        """;
+
+    try (TestSalesforceServer server = salesforceServer(
+        List.of(401, 200, 200),
+        List.of("[{\"message\":\"Session expired\",\"errorCode\":\"INVALID_SESSION_ID\"}]",
+            bearerTokenResponse, contactResult))) {
+      when(salesforceConfig.getBaseLoginUrl()).thenReturn(server.baseUrl());
+      when(salesforceConfig.getPrivatekey()).thenReturn(validPrivateKeyPem());
+      when(salesforceConfig.getConsumerKey()).thenReturn("consumer-key");
+      when(salesforceConfig.getUser()).thenReturn("salesforce-user");
+      SalesforceServiceImpl httpService = httpBackedService(server);
+      httpService.afterPropertiesSet();
+      ReflectionTestUtils.setField(httpService, "accessToken", ACCESS_TOKEN);
+
+      List<Contact> contacts = httpService.findContacts("TBBid__c > 0");
+
+      assertAll(
+          () -> assertEquals(1, contacts.size()),
+          () -> assertEquals("003CONTACT", contacts.get(0).getId()),
+          () -> assertEquals("new-token",
+              ReflectionTestUtils.getField(httpService, "accessToken")),
+          //Original request, token request, retried request
+          () -> assertEquals(3, server.requestCount())
+      );
+    }
+  }
+
+  private static boolean hasCause(Throwable throwable, Class<? extends Throwable> causeClass) {
+    for (Throwable t = throwable; t != null; t = t.getCause()) {
+      if (causeClass.isInstance(t)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  @Test
   void executeCreateRejectsUnmappedClass() {
     InvalidRequestException exception = assertThrows(
         InvalidRequestException.class,
@@ -1744,6 +1937,11 @@ class SalesforceServiceImplTest {
   }
 
   private static class TestSalesforceServer implements AutoCloseable {
+    /**
+     * Status which makes the server fail the connection rather than send a response.
+     */
+    private static final int CONNECTION_FAILURE = -1;
+
     private final List<Integer> statuses;
     private final List<String> bodies;
     private final AtomicReference<String> requestUri = new AtomicReference<>();
@@ -1778,6 +1976,11 @@ class SalesforceServiceImplTest {
       requestUri.set(exchange.getRequestURI().toString());
       requestBody.set(new String(exchange.getRequestBody().readAllBytes(), StandardCharsets.UTF_8));
 
+      if (status == CONNECTION_FAILURE) {
+        //The server closes the connection without sending a response
+        throw new IOException("Simulated connection failure");
+      }
+
       if (body == null) {
         exchange.sendResponseHeaders(status, -1);
       } else {
@@ -1806,7 +2009,6 @@ class SalesforceServiceImplTest {
       return requestBody.get();
     }
 
-    @SuppressWarnings("unused")
     private int requestCount() {
       return requestCount.get();
     }

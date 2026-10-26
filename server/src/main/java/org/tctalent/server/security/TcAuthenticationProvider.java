@@ -24,7 +24,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 public class TcAuthenticationProvider extends DaoAuthenticationProvider {
 
     public TcAuthenticationProvider(UserDetailsService userDetailsService) {
-        this.setUserDetailsService(userDetailsService);
+        super(userDetailsService);
     }
 
     @Override

@@ -47,6 +47,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.core.io.buffer.DataBuffer;
+import org.springframework.core.io.buffer.DefaultDataBufferFactory;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
@@ -92,6 +94,7 @@ import org.tctalent.server.service.db.NextStepProcessingService;
 import org.tctalent.server.service.db.SalesforceService;
 import org.tctalent.server.service.db.email.EmailHelper;
 import org.tctalent.server.util.SalesforceHelper;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 /**
@@ -1239,7 +1242,7 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
         //reactor.core.Exceptions$ReactiveException: java.io.IOException: Connection reset by peer
         ClientResponse clientResponse;
         try {
-            clientResponse = spec.exchange().block();
+            clientResponse = exchange(spec);
         } catch (Exception ex) {
             //Do one automatic retry after a wait.
             LogBuilder.builder(log)
@@ -1254,7 +1257,7 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
                     .message("Interrupted wait for Salesforce retry")
                     .logWarn(e);
             }
-            clientResponse = spec.exchange().block();
+            clientResponse = exchange(spec);
         }
         if (clientResponse == null || clientResponse.statusCode() == HttpStatus.UNAUTHORIZED) {
             LogBuilder.builder(log)
@@ -1270,7 +1273,7 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
                 .action("ExecuteWithRetry")
                 .message("Connecting to Salesforce with new token")
                 .logInfo();
-            clientResponse = spec.exchange().block();
+            clientResponse = exchange(spec);
         }
 
         if (clientResponse == null) {
@@ -1294,6 +1297,36 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
             throw ex;
         }
         return clientResponse;
+    }
+
+    /**
+     * Sends the request and returns the response, with its body read into memory.
+     * <p/>
+     * This replaces WebClient's exchange() method which has been removed in Spring 7. Its
+     * replacement, exchangeToMono, requires the response to be processed inside the callback so
+     * that the connection can be released. We read the body there and return a copy of the
+     * response containing that body - so that callers can continue to process the response as
+     * before (eg checking the status, decoding the body with bodyToMono, createException).
+     * Salesforce responses are small JSON documents, and callers already read the whole body into
+     * memory (subject to the same in-memory size limit) when decoding it.
+     * <p/>
+     * If reading the body fails, the error is only thrown when the caller reads the body, as it
+     * was with exchange(). This means that, as before, only failures to get a response are
+     * retried by executeWithRetry - not failures reading the body.
+     *
+     * @param spec for the request
+     * @return Response received, with its body in memory
+     * @throws WebClientException if there is a problem connecting to Salesforce
+     */
+    private ClientResponse exchange(WebClient.RequestHeadersSpec<?> spec) {
+        return spec.exchangeToMono(response -> response.bodyToMono(byte[].class)
+                .map(body -> Flux.<DataBuffer>just(DefaultDataBufferFactory.sharedInstance.wrap(body)))
+                .defaultIfEmpty(Flux.empty())
+                .onErrorResume(ex -> Mono.just(Flux.error(ex)))
+                //Use the body function (rather than passing the body directly) because that
+                //does not try to release the original body, which has been consumed above.
+                .map(body -> response.mutate().body(original -> body).build()))
+            .block();
     }
 
     /**
