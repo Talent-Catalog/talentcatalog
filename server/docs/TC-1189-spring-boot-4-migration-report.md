@@ -9,15 +9,16 @@ Branch: `john/tc-1189-upgrade-to-spring-boot-4` (base: `b1c367b9f` TC-1584)
 | 2. Build configuration | Complete. Decisions D11–D15 approved. |
 | 3. Source fixes | **Complete.** D16–D20 approved and implemented. Main and test code compile. 3,591 tests, of which only the 8 `BatchJobServiceIntegrationTest` tests fail; they await the Stage 4 migration (§3.4). Checkpoint committed. (The 8 Batch failures were resolved in Stage 4.) |
 | 4. Database migration and infrastructure | **Complete and approved.** V2_34 added. Fresh and existing (Spring Batch 5) databases are tested. **Full suite: 3,593 tests, 0 failures** (§3.5). D21 and D22 approved. |
-| 5. Broader regression and application compatibility | **Complete.** One production bug found and fixed (Jackson 3 object creation, D26, which affected candidate search and skills extraction), plus an error-response format fix (D23). 18 new regression tests, most compared against Boot 3. Local runs of the application on both Boot 3 and Boot 4. D23–D27 approved; D26 reviewed (§3.7). **Full suite: 3,611 tests, 0 failures, 0 skipped.** **Awaiting review before Stage 6.** |
-| 6 | Not started |
+| 5. Broader regression and application compatibility | **Complete.** One production bug found and fixed (Jackson 3 object creation, D26, which affected candidate search and skills extraction), plus an error-response format fix (D23). 18 new regression tests, most compared against Boot 3. Local runs of the application on both Boot 3 and Boot 4. D23–D27 approved; D26 reviewed (§3.7). **Full suite: 3,611 tests, 0 failures, 0 skipped.** |
+| 6. Final integration and deployment verification | **Complete (§6). No code changes.** Salesforce sandbox verified, reads and approved writes (D17 confirmed). Python services, email, Anthropic, Duolingo and the portal APIs exercised on the production jar. Rolling deploy, rollback and roll-forward rehearsed against Boot 3. **Full suite: 3,611 tests, 0 failures, 0 skipped.** **Recommendation: ready to merge to `staging`; release to production after the staging checklist (§6 C) passes.** **Awaiting review.** |
 
 > **Deployment constraint:** the Spring Boot 4 application and the V2_34 migration **must be deployed together**.
 > - Without V2_34, Spring Batch 6 cannot launch any job.
 > - Once V2_34 has run, a Spring Boot 3 build cannot launch batch jobs either.
 > - Rolling back to Spring Boot 3 therefore requires reversing the sequence rename by hand, outside Flyway, before or together with the rollback: `ALTER SEQUENCE batch_job_instance_seq RENAME TO batch_job_seq;`
+> - **Redeploying Boot 4 after such a rollback requires the opposite rename by hand** (`ALTER SEQUENCE batch_job_seq RENAME TO batch_job_instance_seq;`), because Flyway records V2_34 as applied and won't run it again (rehearsed in §6 A2).
 >
-> Details are in §4, under "Outstanding blockers".
+> Details are in §4, under "Outstanding blockers". The full deployment and rollback checklist is in §6 C.
 >
 > **Deployment action (D25):** delete the Redis `users::*` keys during the deployment, for example `redis-cli --scan --pattern 'users::*' | xargs redis-cli del`, run against the production Redis once the new version is live. Boot 4 cannot read the cached users that Boot 3 wrote. This is done as a deployment step, not in application code.
 
@@ -612,7 +613,8 @@ Approved:
 - **Deployment actions:**
   - deploy V2_34 together with the Boot 4 build;
   - clear the Redis `users::*` keys during the deployment (D25).
-- **Deployment constraint: the V2_34 migration and the Boot 4 code must be deployed together.** On a database without V2_34, Batch 6 can't launch jobs. Once V2_34 has run, an older Boot 3 build could no longer launch batch jobs either, because `batch_job_seq` is gone. So a rollback to the previous release would need `ALTER SEQUENCE batch_job_instance_seq RENAME TO batch_job_seq;` (manually, outside Flyway).
+- **Deployment constraint: the V2_34 migration and the Boot 4 code must be deployed together.** On a database without V2_34, Batch 6 can't launch jobs. Once V2_34 has run, an older Boot 3 build could no longer launch batch jobs either, because `batch_job_seq` is gone. So a rollback to the previous release would need `ALTER SEQUENCE batch_job_instance_seq RENAME TO batch_job_seq;` (manually, outside Flyway), and a later redeploy of Boot 4 the reverse rename. Rehearsed in Stage 6 (§6 A2); the checklist is §6 C.
+- Stage 6 found no blockers (§6 B).
 
 ### Changes that may affect production behaviour
 - Jackson 3 becomes the serializer for HTTP, RestClient, WebClient **and the Hypersistence jsonb columns** (D12).
@@ -627,7 +629,8 @@ Approved:
 - Restored Jackson 2 creator detection (D26) and error-response serialization (D23). These keep the behaviour unchanged, so they aren't changes, but they are configuration that must stay in place.
 - HAL content type without an `Accept` header (D24); Redis `users` cache entries invalidated by the upgrade (D25); STOPPED recorded immediately on stop (D27).
 
-### Manual verification requirements (see §3.6 part 3 for the full list)
+### Manual verification requirements
+Stage 6 verified most of the list below locally or against the Salesforce sandbox. **§6 A4 is the current list of what remains.** The original Stage 5 list, kept for reference (see also §3.6 part 3):
 - Chat over WebSocket from the Angular clients.
 - Explanation and embedding calls to the Python services.
 - Salesforce sync against the sandbox (in particular the de-duplicated payloads, D14/D17).
@@ -674,6 +677,231 @@ Approved:
 - Remove `thymeleaf-extras-springsecurity6` if it is confirmed unused (no `sec:` in templates).
 - `DatabaseConfiguration` TODO: move to the default DataSource/JPA auto-configuration.
 - Upgrade to Gradle 9 and Java 21/25 separately.
+
+---
+
+## 6. Stage 6: final integration and deployment verification
+
+**No repository code, test or configuration changes in Stage 6.** All probes ran from the scratchpad, were copied into the test tree only for the duration of a run, and were then deleted. Only this report changed.
+
+**Environment:**
+- The Boot 4 **production jar** (`./gradlew clean :server:bootJar`, including the three Angular 22 bundles) ran against throwaway PostgreSQL (restored from `dump.sql`) and Redis containers.
+- The Python service (`tc-skills-extraction-service`) ran as a local container. Its LLM URL pointed at a closed local port and it had dummy AWS credentials, so **no call could reach Bedrock**.
+- Email went to a local Mailpit SMTP sink.
+- A **Boot 3.5.16** jar, built from a temporary worktree of `734b383b5`, was used for the mixed-version tests.
+- Your docker-compose development database was **not** used.
+
+### A. Verification results
+
+#### A1. Automated tests
+
+| Run | Tests | Failures / errors / skipped |
+|---|---|---|
+| Full server suite (`./gradlew :server:test`), on the branch head `cb09ecc4d` | **3,611** (364 classes) | **0 / 0 / 0** |
+
+No tests were added, changed, disabled or skipped in Stage 6. Coverage from earlier stages still applies (§3.6 part 1).
+
+#### A2. Local application testing (Boot 4 production jar)
+
+**Build and packaging.**
+- `bootJar` builds with the Angular bundles. `/admin-portal/`, `/candidate-portal/` and `/public-portal/` each return 200 HTML from the jar.
+- **Compiler warnings, compared with the same build on Boot 3:**
+  - **New:** 23 `[removal]` warnings. They come from the deprecated Batch chunk classes kept under D5 (`ChunkOrientedTasklet`, `SimpleChunkProvider`/`Processor`, `ChunkListener.afterChunk*`) and from `CamelCaseToUnderscoresNamingStrategy`.
+  - **Gone:** Boot 3's 15 Lombok "Ambiguous: Jackson2 and Jackson3" warnings.
+  - **Unchanged:** the 14 MapStruct "Unmapped target properties" warnings.
+- Almost all of the roughly 665 "deprecat" lines in the build log are Angular Sass deprecations from the UI build, the same on both versions.
+- **Startup WARN and ERROR lines are identical to Boot 3**: the same 5 pre-existing lines. The only difference is Boot 3's expected "schema version 2.34 is newer than the latest available migration" warning when it runs against the migrated database.
+- **One new runtime warning:** Hibernate Validator 9's `HV000271` "`@Valid` on a container is deprecated". It is logged once per element (`inputs`, `experiences`, `candidates`, …) on the Python-service DTOs. Validation still cascades. Follow-up only.
+
+**Dependencies.**
+- I compared the resolved runtime classpath against Boot 3: 316 → 369 artifacts.
+- Apart from the intended Spring, Hibernate, Jackson, Batch, ShedLock, Hikari, Hypersistence and Angus Mail changes, there are only routine minor bumps, with three things worth noting:
+  - **gRPC 1.67 → 1.84 and protobuf 3.25 → 4.36**, now set by the Boot 4 BOM. Only the declared but **unused** `google-cloud-storage` pulls them in; no main code imports `com.google.cloud`. **No runtime effect.**
+  - `istack-commons-runtime` 4.1.2 → 3.0.12, which follows from the existing `jaxb-runtime` 2.3.8 pin (§2.6; the docx4j CV export works).
+  - Kotlin stdlib 1.9 → 2.3, used by okhttp/okio (backward compatible).
+- No version conflicts failed resolution.
+
+**Angular portal APIs.** These are the HTTP calls the Angular 22 portals make, run with a smoke script against the jar (26 checks, all pass):
+
+| Area | Result |
+|---|---|
+| Admin login, JWT, invalid JWT | 200 with a token; an invalid JWT gets 401 |
+| **TOTP**: MFA setup, then login with no code, a wrong code and a valid code | setup returns a QR code; 401 / 401 / 200 |
+| Candidate self-registration, login, portal `user`/`contact`/`personal`/`occupation` | All 200. A candidate's JWT gets 403 on admin endpoints. |
+| Candidate search with the default saved search; saved searches list; load saved search | 200, with the expected page structure |
+| **Hybrid matching** (`/candidate/match`) | 200, `CandidateReadDto` with `score`. It calls Python skills extraction and query embedding (see A3). |
+| Saved list create, list candidates, lists search | 200 |
+| Stats for a list (gender, registrations, birth years) | 200, 3 reports |
+| System Admin batch launch (`set_candidate_text/list-…`) and completion | 200 "launched successfully"; the execution COMPLETED |
+| `/api/hal` root and `candidate-property-definitions`; unauthenticated access | 200 `application/vnd.hal+json` (no `Accept` header, D24); 401 |
+| CV export, PDF and DOCX | 200, a valid `%PDF` and a valid DOCX (zip) |
+| **WebSocket/STOMP chat** (`/jobchat`, Node WebSocket client) | CONNECT with a JWT, SUBSCRIBE `/topic/chat/{id}`, SEND `/app/chat/{id}`: the broadcast arrives with all fields and the post is stored. An invalid JWT gets an ERROR frame. |
+| **Email** (SMTP with Angus Mail, a Thymeleaf template), via a reset-password request | Delivered to Mailpit: "Talent Catalog - Reset Your Password" |
+
+> **Operational note found while testing TOTP.** A direct SQL update to `users`, made while that user was cached, was invisible to the application until its `users::<username>` Redis key was removed. My first TOTP run "accepted" a wrong code only because I had enabled MFA by SQL on a cached user. With the cache cleared, MFA behaved correctly. This is existing caching behaviour, not a Boot 4 change. **Any manual SQL change to a user (for example during support work) should be followed by deleting that user's `users::` key.**
+
+**Mixed versions: rolling deploy, rollback and roll-forward.** I ran Boot 3 and Boot 4 against the same database and Redis:
+
+| Scenario | Result |
+|---|---|
+| Boot 4 starts on a V2_33 database | Flyway applies V2_34 |
+| **Boot 3 starts on the migrated (V2_34) database** | Starts normally: Flyway validates and ignores the "future" migration, with a WARN only |
+| JWTs across versions | A Boot 4 JWT works on Boot 3 and a Boot 3 JWT works on Boot 4 (200 both ways), so users aren't logged out during the overlap |
+| Redis `users` cache across versions | One "Cache get failed … falling through to database" per stale entry, in both directions (D25), then correct |
+| **Boot 3 launches a batch job on the migrated database** | Fails cleanly: HTTP 400 "Job launch failed: Could not obtain sequence value" (`batch_job_seq` does not exist). No partial metadata. |
+| ShedLock 5 (Boot 3) and ShedLock 7 (Boot 4) sharing the `shedlock` table | Same table and identical acquire/extend SQL (extracted from both jars), both on the JVM clock. The only difference: ShedLock 7's unlock also requires `locked_by` to match, which is stricter and safe. |
+| **Rollback:** stop Boot 4, `ALTER SEQUENCE batch_job_instance_seq RENAME TO batch_job_seq;`, Boot 3 launches a batch job | COMPLETED. Instance and execution ids continue (2 after Boot 4's 1), and Batch 5 reads the Batch 6 rows. |
+| **Roll-forward after rollback:** Boot 4 started again | Starts, but Flyway already records V2_34, so it doesn't re-run, and **batch launch fails** ("Could not obtain sequence value") **until the reverse rename is applied by hand**. After `ALTER SEQUENCE batch_job_seq RENAME TO batch_job_instance_seq;` the launch completes (instance 3). |
+
+**Deployment configuration.**
+- **No change to Gradle, CI, Jib or Terraform on this branch.** The only configuration change is `application.yml` (D4, D26, Redis repositories).
+- CI builds with Zulu 17. Jib 3.4.4 has no `from.image`, so it selects its default Java 17 base image from the toolchain, as today. Boot 4.1 supports Java 17.
+- The environment variables Terraform sets (`SPRING_DATASOURCE_*`, `SPRING_SERVLET_MULTIPART_*`, `SERVER_PORT`) map to properties that Boot 4 hasn't renamed. `SPRING_DBPOOL_*` are our own placeholders.
+- `SPRING_BOOT_ADMIN_CLIENT_URL` is set, but no Spring Boot Admin client is on the classpath on either version. It is a leftover with no effect.
+- `/actuator/health` answers 200 `UP` without authentication, as the ALB health check requires.
+
+#### A3. External service testing
+
+**Salesforce (sfstaging sandbox only).** Every run first checked that the login URL is `https://test.salesforce.com/` and that the API host is the `--sfstaging.sandbox.` instance, and aborted otherwise. Only counts, field names and the probe's own test values were printed.
+
+| Check | Result |
+|---|---|
+| JWT bearer authentication and token handling | Works |
+| **Read paths** (account, open job opps, candidate opps, `fetchOpportunitiesById`, `findCandidateOpportunitiesByJobOpps`, opportunity histories, contacts) | All decode the same fields. **The output is identical when the same probe runs on the Boot 3 worktree.** |
+| Error handling on reads | Unknown ids return `null`; invalid SOQL gives a `SalesforceException` 400 with the body |
+| **Writes (approved), on clearly labelled "TC1189 Probe – delete me" records:** | |
+| contact upsert, create then update; `updateContact` | Created; the same id on update. `RecordType` = Candidate; name, email, `TBBid__c`, country and gender correct. |
+| job opportunity upsert, create then update | `RecordType` sent by name resolved to **Employer job**; stage, account, `TCid__c` and next step correct; the same id on update |
+| **`updateEmployerOpportunity` (the D17 de-duplicated body)** | **`CVs_Folder__c`, `Job_Description_Folder__c`, `Talent_Catalog_List__c` and `TCid__c` all stored**, each sent once under its exact name |
+| `updateEmployerOpportunityName`, `updateEmployerOpportunityStage` | Stored |
+| candidate opportunity **composite** upsert, create then update | `RecordType` resolved to **Candidate recruitment**; parent opportunity, contact and external id correct; employer feedback updated |
+| A write to an unknown id | 404 `WebClientResponseException.NotFound`, as before |
+| **Scheduled `JobOppSyncFromSalesforce`** (`JobService.initiateOpenJobSyncFromSf`), on a probe job moved to "Candidate search" | "Loaded 1 job opportunities", "Processed 1 Job Opps …, of which 1 led to update". The next-step change was posted to the local job's chat. |
+| Cleanup | All probe records deleted. **The final count of probe contacts and opportunities is 0.** |
+
+**D17 is confirmed against the sandbox.** Salesforce accepts the de-duplicated bodies, and every value lands in the intended field.
+
+**Python services (local container, real HTTP from the Boot 4 jar):**
+
+| Integration | Result |
+|---|---|
+| Skills extraction (`POST /api/public/skill/extract_skills` → Python `/extract_skills`, which calls back `GET /api/public/skill/names`) | Correct skills returned. Boot 4's `Page` JSON is read by Python, and `SkillName` is read back (the D26 path). |
+| **Embeddings** (`POST /api/admin/system/build_embeddings` → `/embeddings`) | 2 of 2 job-experience embeddings (384 dimensions) stored; the model moved from BUILDING to READY |
+| **Hybrid matching** (`/candidate/match`): query embedding and pgvector search | Works (A2) |
+| **Explanations** (`/candidate/{id}/match-explanation` → `/explanations`) | Python accepted TC's request (200). Its per-candidate error (`LLM_SERVICE_UNAVAILABLE`, since Bedrock was deliberately unreachable) is decoded and reported as `match_explanation_error`. **The successful Bedrock path was not called (paid)**; its decoding is covered by `ExplanationsResponseJacksonTest` and `CandidateMatchExplanationIntegrationTest`. |
+
+**Other integrations.**
+
+| Integration | How verified | Result |
+|---|---|---|
+| **Anthropic** (chatbot, `WebClient`) | The real bean against a local fake server | Request: snake_case `max_tokens`, `x-api-key`, `anthropic-version`. Response decoded. |
+| **Duolingo** (`WebClient`, basic auth) | The real bean against a local fake server: dashboard and `verify_score`, including `null` for `int` fields and unknown fields | Decoded as with Jackson 2. `use-jackson2-defaults` (D4) keeps nulls for primitives tolerated. |
+| reCAPTCHA | Code review | Server-side verification is **commented out**, on `staging` too, so nothing changes |
+| Email (SMTP) | Local SMTP sink (A2) | Works |
+| Google Drive/Docs, AWS S3, Slack | Code and dependency review | These use their own SDK HTTP and JSON stacks (Google API client, AWS SDK v2, Slack SDK with okhttp/Gson). Their versions are unchanged apart from minor transitive bumps (A2). The only Jackson 2 user among them (`S3TranslationStorageService`) creates its own mapper (§2.3). **Not called: external writes.** |
+
+#### A4. Manual testing still required
+
+Do these on **staging** after the merge (staging deploys from the branch, using the sfstaging sandbox), before releasing to production:
+1. **Angular UI in a browser.** The APIs are verified (A2), but the UI hasn't been clicked through. Check:
+   - admin login with 2FA;
+   - candidate registration and login;
+   - search, saved searches and matching (with explanation);
+   - lists and stats;
+   - job chat;
+   - CV export;
+   - candidate property definitions (`/api/hal`);
+   - System Admin batch launch and the job status page.
+2. **One real match explanation** (Bedrock, paid) from the admin portal.
+3. **One real call each** to:
+   - Google Drive/Docs (create a job folder, publish a list);
+   - S3 (upload and download an attachment);
+   - Slack (post a job);
+   - Duolingo (dashboard);
+   - Anthropic (chatbot question);
+   - SES/SMTP (password reset email).
+4. **Production-like runtime:**
+   - startup with real secrets and ElastiCache;
+   - two tasks sharing ShedLock: check that the next 1am `JobOppSyncFromSalesforce` runs once and logs "Processed …";
+   - health checks pass.
+5. **Batch status on real Batch 5 history** (a copy of production data): System Admin status summary.
+6. **Creating a language level** (D19).
+
+### B. Risks
+
+| Risk | Classification | Notes |
+|---|---|---|
+| — | **Blocking** | **None found.** |
+| V2_34 must go out with the Boot 4 build. During the ECS rolling overlap (desired 2 tasks in production, max 200%), Boot 3 tasks can't launch batch jobs once V2_34 has run. | **Deployment requirement** | The only batch launch is manual (System Admin). Don't launch batch jobs during the deploy window. Nothing scheduled launches a batch job. |
+| Rollback needs a manual sequence rename; a **roll-forward after rollback needs the reverse rename** | **Deployment requirement** | Rehearsed (A2). Checklist in C. |
+| Redis `users::*` entries unreadable across versions (D25) | **Deployment requirement** | Clear them after the old tasks have stopped. Harmless in the meantime (one logged error per entry, then a database read). |
+| A manual SQL change to `users` is hidden by the Redis cache | **Follow-up** (existing behaviour) | Delete that user's `users::` key after such a change |
+| UI not exercised in a browser; real Bedrock, Google, S3, Slack, Duolingo and Anthropic calls not made | **Deployment requirement** (staging checklist, A4) | APIs and payloads are verified locally |
+| `HV000271` deprecation warning | **Follow-up** | Move `@Valid` onto the type argument |
+| Unused `google-cloud-storage` dependency, whose gRPC/protobuf versions are now set by Boot | **Follow-up** | Remove the dependency |
+| Batch 6 behaviour changes (D21, D22, D27) and the deprecated chunk classes (D5) | **Follow-up** | Accepted earlier |
+
+### C. Deployment and rollback checklist
+
+**Before merging**
+1. The branch has no commits missing from `origin/staging`. Re-check that **V2_34 is still the next free Flyway version** (it is on 2026-10-27: staging's latest is V2_33).
+2. Approve this report.
+
+**Deploy (staging first, then each production environment)**
+1. Note the current image tag or digest of the running service, to roll back to.
+2. Avoid launching System Admin batch jobs from about 5 minutes before the deploy until it is stable.
+3. Deploy as usual (`./gradlew jib -P<env>`, then ECS `--force-new-deployment` / the CI workflow). The first Boot 4 task applies V2_34 at startup. Boot 3 tasks keep serving until they drain, which is safe apart from batch launches.
+4. Wait for `services-stable` (health check `/actuator/health`; grace period 300 s).
+5. **Verify V2_34:**
+   ```sql
+   select version, success from flyway_schema_history where version = '2.34';          -- 2.34 | t
+   select relname from pg_class where relname in ('batch_job_seq','batch_job_instance_seq'); -- only batch_job_instance_seq
+   select last_value from batch_job_instance_seq;                                        -- >= max(job_instance_id)
+   select max(job_instance_id) from batch_job_instance;
+   ```
+6. **Once all old tasks have stopped,** clear the user cache (D25) against that environment's Redis only:
+   `redis-cli --scan --pattern 'users::*' | xargs -r redis-cli del` (use `-h`/`--tls` as appropriate). Never clear Redis at application startup.
+7. Smoke test: run the staging checklist (A4) on staging, or for production a login, a search, a list, and one System Admin batch launch reaching COMPLETED.
+8. Check the logs: no repeated "Cache get failed" after step 6; next morning, one "Processed N Job Opps from Salesforce" from `JobOppSyncFromSalesforce`.
+
+**Rollback to the previous Boot 3 release**
+1. Redeploy the previous image.
+2. Once no Boot 4 task is running, run `ALTER SEQUENCE batch_job_instance_seq RENAME TO batch_job_seq;` (by hand, outside Flyway; leave `flyway_schema_history` as it is).
+3. Clear `users::*` again, once only Boot 3 tasks are running.
+4. Verify with one System Admin batch launch (it should reach COMPLETED).
+5. Boot 3 starts with V2_34 in the history and logs a "newer than latest available migration" WARN; this is expected.
+
+**Re-deploying Boot 4 after a rollback**
+1. Before (or immediately after) deploying, run `ALTER SEQUENCE batch_job_seq RENAME TO batch_job_instance_seq;`. Flyway will **not** re-run V2_34.
+2. Then follow the deploy steps above from step 4.
+
+### D. Follow-ups (not part of TC-1189)
+
+Everything in §5 stands, and "Carried over from TC-1584" in §4. In particular:
+- refactor `SalesforceServiceImpl.executeWithRetry()` to typed results;
+- possible duplicate Salesforce POSTs after connection failures and retries;
+- `TcAuthenticationProvider.supports()`;
+- the Salesforce `Content_Type` header;
+- Batch restart (D13), the deprecated chunk classes and the execution-id `stop`/`restart`;
+- removing the Jackson 2 compatibility settings (`use-jackson2-defaults`, D26) once the deserialized DTOs are explicit;
+- docx4j 11 / Jakarta JAXB;
+- Hibernate schema validation after fixing `audit_log.event_date`.
+
+New from Stage 6:
+- Move `@Valid` from container fields to their type arguments, for example `List<@Valid ExplanationResult>` in the `service/explanation/dto` and `service/embedding/dto` classes and `TranslationPatchRequest` (Hibernate Validator 9 `HV000271`).
+- Remove the unused `google-cloud-storage` dependency and the Google Cloud `libraries-bom` platform if nothing else needs it.
+- Remove the unused `SPRING_BOOT_ADMIN_CLIENT_URL` SSM parameter (Terraform), or add the client if monitoring was meant to use it.
+- Document the Redis `users::` eviction for manual user edits in the support runbook; JSON caching (§5) would also make entries survive upgrades.
+- Optional: make the ECS deploy of V2_34 explicit in the runbook (one-off), since a rollback or roll-forward needs the manual sequence rename.
+
+### E. Recommendation
+
+**Ready to merge to `staging`; ready for production after the staging checklist in A4 passes.**
+- All automated tests pass (3,611, 0 failures, 0 skipped).
+- The mandatory Salesforce sandbox verification is done, D17 included.
+- The Python services, email and the WebClient integrations work on the production jar.
+- The rolling deploy, rollback and roll-forward behaviour is rehearsed, and their manual steps are documented in C.
+- The remaining checks need a deployed environment with real secrets or a browser, which staging provides once merged.
 
 ---
 
@@ -728,6 +956,8 @@ Approved:
   - `BatchJobServiceIntegrationTest` (cleanup; D27 wait before restart);
   - `logging/CpuUsageTest` (wait for a CPU sample);
   - `util/json/ApplicationJsonMapper` (loads `application.yml`).
+
+**Stage 6:** this report only (§6). Temporary probes (Salesforce sandbox read, write and sync probes; WebClient fake-server probe; portal API and STOMP smoke scripts) lived in the scratchpad and were deleted from the test tree after each run. The Boot 3 worktree and all containers have been removed.
 
 **Stage 4:**
 - Migration (new): `server/src/main/resources/db/migration/V2_34__rename_spring_batch_job_sequence.sql`
