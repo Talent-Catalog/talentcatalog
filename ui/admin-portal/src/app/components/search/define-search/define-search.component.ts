@@ -668,6 +668,14 @@ export class DefineSearchComponent implements OnInit, OnChanges, AfterViewInit, 
   }
 
   /**
+   * Handles the user clicking the "Unlink job" icon: removes the job association while leaving
+   * the current search criteria untouched.
+   */
+  onUnlinkJob() {
+    this.clearJobAssociation();
+  }
+
+  /**
    * Explicitly clears any job association on the user's default saved search (via the dedicated
    * job-association endpoint - see TC-1535) and removes the 'job' query param from the URL, so
    * that reinitializing from the same URL doesn't immediately reassign the job just cleared.
