@@ -32,7 +32,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -74,7 +73,6 @@ import org.tctalent.server.repository.db.read.cache.CandidateRedisCache;
  */
 
 @SpringBootTest
-@Tag("skip-test-in-gradle-build")
 @Transactional
 class ApiJsonCompatibilityIntegrationTest extends BaseDBIntegrationTest {
 
@@ -274,7 +272,7 @@ class ApiJsonCompatibilityIntegrationTest extends BaseDBIntegrationTest {
         while (m.find()) {
             String shape = "dddd-dd-ddTdd:dd" + (m.group(1) == null ? "" : ":dd")
                 + (m.group(2) == null ? "" : ".fraction")
-                + (m.group(3) == null ? "" : m.group(3).equals("Z") ? "Z" : "+hh:mm");
+                + (m.group(3) == null ? "" : "+hh:mm");
             m.appendReplacement(sb, shape);
         }
         m.appendTail(sb);
