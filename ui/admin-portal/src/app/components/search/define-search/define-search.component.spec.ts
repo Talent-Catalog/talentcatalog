@@ -822,6 +822,33 @@ describe('DefineSearchComponent', () => {
     });
   });
 
+  describe('onUnlinkJob() - user-triggered Unlink job icon', () => {
+
+    beforeEach(() => {
+      setPickerMocks();
+    });
+
+    it('should clear the job association and label but keep the search criteria', () => {
+      component.savedSearch = {id: 7, defaultSearch: true, sfJobOpp: {id: 123}} as any;
+      component.jobId = 123;
+      component.jobName = 'Test job';
+      component.jobNameSourceId = 123;
+      component.searchForm.get('simpleQueryString').patchValue('test query');
+      savedSearchService.updateJob.and.returnValue(of({id: 7, defaultSearch: true, sfJobOpp: null} as any));
+
+      component.onUnlinkJob();
+
+      expect(savedSearchService.updateJob).toHaveBeenCalledWith(7, null);
+      expect(component.jobName).toBeNull();
+      expect(component.displayJobNameAsSource()).toBe('');
+      expect(component.jobId).toBeFalsy();
+      expect(router.navigate).toHaveBeenCalledWith([], jasmine.objectContaining({
+        queryParams: {job: null}
+      }));
+      expect(component.searchForm.get('simpleQueryString').value).toBe('test query');
+    });
+  });
+
   it('should navigate to a new search', () => {
     router.navigate.calls.reset();
 
