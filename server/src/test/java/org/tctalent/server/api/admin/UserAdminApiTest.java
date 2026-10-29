@@ -21,7 +21,7 @@ import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
-import static org.junit.Assert.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.argThat;
@@ -41,15 +41,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.tctalent.server.data.UserTestData.getAuditUser;
 import static org.tctalent.server.data.UserTestData.getFullUser;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
+import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -74,6 +73,7 @@ import org.tctalent.server.request.user.emailverify.VerifyEmailRequest;
 import org.tctalent.server.security.AuthService;
 import org.tctalent.server.service.db.CountryService;
 import org.tctalent.server.service.db.UserService;
+import tools.jackson.databind.ObjectMapper;
 
 /**
  * Unit tests for User Admin Api endpoints.

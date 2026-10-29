@@ -16,9 +16,6 @@
 
 package org.tctalent.server.request.candidate;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -34,6 +31,9 @@ import org.tctalent.server.model.db.CandidatePropertyType;
 import org.tctalent.server.model.db.HasMultipleRows;
 import org.tctalent.server.model.db.JsonRows;
 import org.tctalent.server.security.CandidateTokenProvider;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
 
 /**
  * Used to build the published Google sheet doc
@@ -224,7 +224,7 @@ public class PublishedDocBuilderServiceImpl implements PublishedDocBuilderServic
                     try {
                         JsonNode jsonNode = jsonObjectMapper.readTree(stringVal);
                         obj = new JsonRows(jsonNode);
-                    } catch (JsonProcessingException e) {
+                    } catch (JacksonException e) {
                         //Not JSON
                     }
                 }

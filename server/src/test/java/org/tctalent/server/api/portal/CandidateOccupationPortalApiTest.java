@@ -126,7 +126,7 @@ class CandidateOccupationPortalApiTest {
     ResponseEntity result = candidateOccupationPortalApi.deleteCandidateOccupation(id);
 
     assertNotNull(result);
-    assertEquals(200, result.getStatusCodeValue());
+    assertEquals(200, result.getStatusCode().value());
     verify(candidateOccupationService).deleteCandidateOccupation(id);
   }
 

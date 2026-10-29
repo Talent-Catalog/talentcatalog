@@ -44,7 +44,6 @@ import static org.tctalent.server.data.LanguageTestData.getLanguageList;
 import static org.tctalent.server.data.LanguageTestData.getTranslation;
 import static org.tctalent.server.data.LanguageTestData.getTranslationFile;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -53,8 +52,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
+import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -92,6 +91,7 @@ import org.tctalent.server.service.db.LanguageService;
 import org.tctalent.server.service.db.OccupationService;
 import org.tctalent.server.service.db.SurveyTypeService;
 import org.tctalent.server.service.db.TranslationService;
+import tools.jackson.databind.ObjectMapper;
 
 /**
  * Unit tests for Translation Admin Api endpoints.

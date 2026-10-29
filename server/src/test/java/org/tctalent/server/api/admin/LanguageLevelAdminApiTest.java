@@ -39,15 +39,14 @@ import static org.tctalent.server.data.LanguageTestData.getLanguageLevel;
 import static org.tctalent.server.data.LanguageTestData.getLanguageLevelList;
 import static org.tctalent.server.data.LanguageTestData.getSystemLanguage;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.InputStream;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
+import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -64,6 +63,7 @@ import org.tctalent.server.request.language.level.SearchLanguageLevelRequest;
 import org.tctalent.server.request.language.level.UpdateLanguageLevelRequest;
 import org.tctalent.server.service.db.LanguageLevelService;
 import org.tctalent.server.service.db.LanguageService;
+import tools.jackson.databind.ObjectMapper;
 
 /**
  * Unit tests for Language Level Admin Api endpoints.

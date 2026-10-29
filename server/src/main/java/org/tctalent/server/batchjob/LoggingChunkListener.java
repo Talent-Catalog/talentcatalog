@@ -1,8 +1,8 @@
 package org.tctalent.server.batchjob;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.batch.core.ChunkListener;
-import org.springframework.batch.core.StepExecution;
+import org.springframework.batch.core.listener.ChunkListener;
+import org.springframework.batch.core.step.StepExecution;
 import org.springframework.batch.core.scope.context.ChunkContext;
 import org.springframework.stereotype.Component;
 import org.tctalent.server.logging.LogBuilder;

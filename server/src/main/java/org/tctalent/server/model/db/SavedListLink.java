@@ -20,6 +20,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
+import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
@@ -31,6 +32,9 @@ import lombok.ToString;
 @ToString
 @Entity
 @Table(name = "saved_list_link")
+//With no generator declared, Hibernate 6 used SavedList's saved_list_id_seq, so ids have come from
+//that sequence. Hibernate 7 needs it declared explicitly - TC-1189.
+@SequenceGenerator(name = "seq_gen", sequenceName = "saved_list_id_seq", allocationSize = 1)
 public class SavedListLink extends AbstractAuditableDomainObject<Long>{
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "saved_list_id")

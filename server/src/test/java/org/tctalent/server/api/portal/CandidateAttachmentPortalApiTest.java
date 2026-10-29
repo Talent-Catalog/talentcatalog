@@ -114,7 +114,7 @@ class CandidateAttachmentPortalApiTest {
     ResponseEntity<Object> result = candidateAttachmentPortalApi.deleteCandidateAttachment(id);
 
     assertNotNull(result);
-    assertEquals(200, result.getStatusCodeValue());
+    assertEquals(200, result.getStatusCode().value());
     verify(candidateAttachmentService).deleteCandidateAttachment(id);
   }
 

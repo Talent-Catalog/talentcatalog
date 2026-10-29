@@ -20,7 +20,6 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.fail;
 
-import com.fasterxml.jackson.core.JacksonException;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Set;
@@ -35,6 +34,7 @@ import org.tctalent.server.configuration.SystemAdminConfiguration;
 import org.tctalent.server.repository.db.read.dao.CandidateReadDao;
 import org.tctalent.server.repository.db.read.dto.CandidateReadDto;
 import org.tctalent.server.service.db.SavedListService;
+import tools.jackson.core.JacksonException;
 
 /**
  * These tests should always be run to check that CandidateReadDto and its referenced classes are

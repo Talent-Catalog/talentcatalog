@@ -189,7 +189,7 @@ class AuthPortalApiTest {
   void testLogout_Success() {
     ResponseEntity<Void> response = authPortalApi.logout();
 
-    assertEquals(200, response.getStatusCodeValue());
+    assertEquals(200, response.getStatusCode().value());
     assertNull(response.getBody());
     verify(userService).logout();
   }

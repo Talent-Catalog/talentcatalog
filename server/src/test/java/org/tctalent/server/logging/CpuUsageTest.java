@@ -41,7 +41,7 @@ public class CpuUsageTest {
   }
 
   @Test
-  void testSystemCpuUsageGauge() {
+  void testSystemCpuUsageGauge() throws InterruptedException {
     // Retrieve all gauges for system.cpu.usage
     Collection<Gauge> gauges = meterRegistry.get("system.cpu.usage").gauges();
 
@@ -54,8 +54,14 @@ public class CpuUsageTest {
     Gauge cpuUsageGauge = meterRegistry.get("system.cpu.usage").gauge();
     assertNotNull(cpuUsageGauge, "CPU usage gauge should not be null");
 
-    // Get and print the gauge value
+    // Get and print the gauge value.
+    // The gauge is NaN while the JVM has no CPU load sample available (eg when other threads in
+    // the test JVM have just sampled it), so wait briefly for a sample - TC-1189.
     double cpuUsageValue = cpuUsageGauge.value();
+    for (int attempt = 0; Double.isNaN(cpuUsageValue) && attempt < 50; attempt++) {
+      Thread.sleep(100);
+      cpuUsageValue = cpuUsageGauge.value();
+    }
     System.out.printf("CPU Usage Gauge Value: %.2f%%%n", cpuUsageValue * 100);
 
     // Validate the CPU usage value is within expected bounds (0.0 - 1.0)

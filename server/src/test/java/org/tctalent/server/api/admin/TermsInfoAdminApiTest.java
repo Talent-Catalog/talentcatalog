@@ -55,7 +55,7 @@ class TermsInfoAdminApiTest {
     ResponseEntity<TermsInfoDto> response = termsInfoAdminApi.getCurrentByType(type);
 
     // Assert
-    assertEquals(200, response.getStatusCodeValue());
+    assertEquals(200, response.getStatusCode().value());
     assertEquals("terms-123", response.getBody().getId());
     assertEquals("<p>Terms and conditions</p>", response.getBody().getContent());
 

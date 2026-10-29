@@ -24,8 +24,10 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import io.hypersistence.utils.hibernate.type.util.ObjectMapperWrapper;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CyclicBarrier;
@@ -36,6 +38,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
+import org.skyscreamer.jsonassert.JSONAssert;
+import org.skyscreamer.jsonassert.JSONCompareMode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -55,7 +59,9 @@ import org.tctalent.server.model.db.Matching;
 import org.tctalent.server.model.db.SalesforceJobOpp;
 import org.tctalent.server.model.db.User;
 import org.tctalent.server.model.db.explanation.CandidateMatchingExplanation;
+import org.tctalent.server.model.db.explanation.CandidateMatchingExplanationData;
 import org.tctalent.server.model.db.explanation.CandidateMatchingExplanationKey;
+import org.tctalent.server.model.db.explanation.ExperienceMatchExplanationData;
 import org.tctalent.server.repository.db.CandidateMatchingExplanationRepository;
 import org.tctalent.server.repository.db.CandidateRepository;
 import org.tctalent.server.repository.db.MatchingRepository;
@@ -378,6 +384,168 @@ class CandidateMatchExplanationIntegrationTest extends BaseDBIntegrationTest {
         assertThat(summaries).allMatch(summary -> summary.startsWith("Explanation "));
         assertThat(explanationCount(matching)).isEqualTo(1);
         assertThat(summaries).contains(findExplanation(matching).getExplanation().getSummary());
+    }
+
+    @Test
+    @DisplayName("the explanation jsonb is stored in the established format")
+    void storedExplanationJsonFormat() throws Exception {
+        Matching matching = createMatching(DESCRIPTION);
+        givenPythonReturns("Strong match");
+
+        explain(matching);
+
+        //Strict: exactly these fields, and generatedAt as an ISO-8601 string (TC-1189 regression)
+        String stored = jdbcTemplate.queryForObject(
+            "select explanation::text from candidate_matching_explanation where matching_id = ?",
+            String.class, matching.getId());
+        JSONAssert.assertEquals("Stored JSON: " + stored, """
+                {
+                  "generatedAt": "2026-10-02T03:30:00Z",
+                  "modelName": "test-model",
+                  "summary": "Strong match",
+                  "experienceExplanations": [],
+                  "limitations": []
+                }
+                """, stored, JSONCompareMode.STRICT);
+    }
+
+    @Test
+    @DisplayName("explanation jsonb stored in earlier formats is still read")
+    void previouslyStoredExplanationJsonIsRead() {
+        Matching matching = createMatching(DESCRIPTION);
+        //As stored before generatedAt, modelName and jobTitle were added
+        insertExplanationJson(matching, """
+            {
+              "summary": "Legacy summary",
+              "experienceExplanations": [
+                {"experienceId": 456, "explanation": "Relevant experience"}
+              ],
+              "limitations": ["Limited detail"]
+            }
+            """);
+
+        CandidateMatchingExplanationData legacy = findExplanation(matching).getExplanation();
+
+        assertThat(legacy.getGeneratedAt()).isNull();
+        assertThat(legacy.getModelName()).isNull();
+        assertThat(legacy.getSummary()).isEqualTo("Legacy summary");
+        assertThat(legacy.getExperienceExplanations()).hasSize(1);
+        assertThat(legacy.getExperienceExplanations().get(0).getExperienceId()).isEqualTo(456L);
+        assertThat(legacy.getExperienceExplanations().get(0).getJobTitle()).isNull();
+        assertThat(legacy.getExperienceExplanations().get(0).getExplanation())
+            .isEqualTo("Relevant experience");
+        assertThat(legacy.getLimitations()).containsExactly("Limited detail");
+
+        //Current format, with an explicit null and a non-UTC offset
+        Matching current = createMatching(DESCRIPTION);
+        insertExplanationJson(current, """
+            {
+              "generatedAt": "2026-10-02T13:30:00+10:00",
+              "modelName": "test-model",
+              "summary": "Current summary",
+              "experienceExplanations": [
+                {"experienceId": 789, "jobTitle": null, "explanation": "Transferable"}
+              ],
+              "limitations": []
+            }
+            """);
+
+        CandidateMatchingExplanationData data = findExplanation(current).getExplanation();
+
+        assertThat(data.getGeneratedAt()).isNotNull();
+        assertThat(data.getGeneratedAt().isEqual(GENERATED_AT)).isTrue();
+        assertThat(data.getModelName()).isEqualTo("test-model");
+        assertThat(data.getExperienceExplanations().get(0).getJobTitle()).isNull();
+        assertThat(data.getLimitations()).isEmpty();
+    }
+
+    /**
+     * Explanation jsonb with nested objects, nulls and special characters, exactly as it was
+     * written before TC-1189 by Hypersistence 3.7.3 with Jackson 2 (generated with Jackson 2.21).
+     * Jackson 3 writes the same values but orders the properties alphabetically, which makes no
+     * difference to a jsonb column.
+     */
+    private static final String JACKSON2_NESTED_EXPLANATION_JSON = """
+        {"generatedAt":"2026-10-02T13:30:00+10:00","modelName":null,\
+        "summary":"Line 1\\nUnicode: café – “quoted” \\\\ slash",\
+        "experienceExplanations":[\
+        {"experienceId":456,"jobTitle":"Engineer","explanation":"Relevant"},\
+        {"experienceId":789,"jobTitle":null,"explanation":null}],\
+        "limitations":["Limited detail",null]}""";
+
+    private static CandidateMatchingExplanationData nestedExplanationData() {
+        return CandidateMatchingExplanationData.builder()
+            .generatedAt(OffsetDateTime.parse("2026-10-02T13:30:00+10:00"))
+            .modelName(null)
+            .summary("Line 1\nUnicode: café – “quoted” \\ slash")
+            .experienceExplanations(Arrays.asList(
+                ExperienceMatchExplanationData.builder()
+                    .experienceId(456L).jobTitle("Engineer").explanation("Relevant").build(),
+                ExperienceMatchExplanationData.builder()
+                    .experienceId(789L).jobTitle(null).explanation(null).build()))
+            .limitations(Arrays.asList("Limited detail", null))
+            .build();
+    }
+
+    @Test
+    @DisplayName("nested explanation jsonb is written with the same values as Jackson 2 wrote")
+    void storedNestedExplanationJsonMatchesJackson2() throws Exception {
+        Matching matching = createMatching(DESCRIPTION);
+        //Serialized in the same way as the explanation service does
+        insertExplanationJson(matching, ObjectMapperWrapper.INSTANCE.toString(nestedExplanationData()));
+
+        String stored = jdbcTemplate.queryForObject(
+            "select explanation::text from candidate_matching_explanation where matching_id = ?",
+            String.class, matching.getId());
+        JSONAssert.assertEquals("Stored JSON: " + stored,
+            JACKSON2_NESTED_EXPLANATION_JSON, stored, JSONCompareMode.STRICT);
+        //Postgres normalizes jsonb, so the stored values are identical
+        assertThat(jdbcTemplate.queryForObject(
+            "select explanation = ?::jsonb from candidate_matching_explanation where matching_id = ?",
+            Boolean.class, JACKSON2_NESTED_EXPLANATION_JSON, matching.getId())).isTrue();
+    }
+
+    @Test
+    @DisplayName("nested explanation jsonb written by Jackson 2 is read back unchanged")
+    void jackson2NestedExplanationJsonIsRead() {
+        Matching matching = createMatching(DESCRIPTION);
+        insertExplanationJson(matching, JACKSON2_NESTED_EXPLANATION_JSON);
+
+        CandidateMatchingExplanationData data = findExplanation(matching).getExplanation();
+
+        assertThat(data).usingRecursiveComparison().ignoringFields("generatedAt")
+            .isEqualTo(nestedExplanationData());
+        //Same instant, converted to UTC. (Jackson 2 kept the stored +10:00 offset.) - D18
+        assertThat(data.getGeneratedAt()).isEqualTo(OffsetDateTime.parse("2026-10-02T03:30:00Z"));
+    }
+
+    @Test
+    @DisplayName("explanation jsonb with unknown properties is still read")
+    void explanationJsonWithUnknownPropertiesIsRead() {
+        Matching matching = createMatching(DESCRIPTION);
+        insertExplanationJson(matching, """
+            {
+              "summary": "Summary",
+              "experienceExplanations": [
+                {"experienceId": 456, "explanation": "Relevant", "unknownNested": 1}
+              ],
+              "limitations": [],
+              "unknownField": "ignored"
+            }
+            """);
+
+        //Jackson 3 ignores unknown properties. (Jackson 2 failed to read this.) - D18
+        CandidateMatchingExplanationData data = findExplanation(matching).getExplanation();
+
+        assertThat(data.getSummary()).isEqualTo("Summary");
+        assertThat(data.getExperienceExplanations().get(0).getExplanation()).isEqualTo("Relevant");
+    }
+
+    private void insertExplanationJson(Matching matching, String json) {
+        OffsetDateTime matchingUpdatedDate = matchingRepository.findSnapshot(matching.getId())
+            .orElseThrow().updatedDate();
+        explanationRepository.saveIfMatchingUnchanged(
+            candidate.getId(), matching.getId(), matchingUpdatedDate, json, user.getId());
     }
 
     private CandidateMatchExplanation explain(Matching matching) {

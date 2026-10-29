@@ -16,6 +16,7 @@
 
 package org.tctalent.server.logging;
 
+import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.context.annotation.Configuration;
 
@@ -27,12 +28,25 @@ import org.springframework.context.annotation.Configuration;
  * @author sadatmalik
  */
 @Configuration
-public class LogBuilderConfig {
+public class LogBuilderConfig implements DisposableBean {
+
+  private final ObjectProvider<SystemMetricsImpl> systemMetricsProvider;
 
   public LogBuilderConfig(ObjectProvider<SystemMetricsImpl> systemMetricsProvider,
       LogBuilderProperties logBuilderProperties) {
+    this.systemMetricsProvider = systemMetricsProvider;
     LogBuilder.setSystemMetricsProvider(systemMetricsProvider);
     LogBuilder.setLogCpu(logBuilderProperties.isIncludeCpuUtilization());
     LogBuilder.setLogMemory(logBuilderProperties.isIncludeMemoryUtilization());
+  }
+
+  /**
+   * Stops LogBuilder using our provider once our application context is closed. Otherwise logging
+   * would fail with "has been closed already" (eg in tests, after Spring's test context cache has
+   * closed this context) - TC-1189.
+   */
+  @Override
+  public void destroy() {
+    LogBuilder.clearSystemMetricsProvider(systemMetricsProvider);
   }
 }

@@ -4,10 +4,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.OffsetDateTime;
 import org.junit.jupiter.api.Test;
-import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
+import org.tctalent.server.util.json.ApplicationJsonMapper;
+import tools.jackson.databind.ObjectMapper;
 
 /**
  * Verifies that {@link ExplanationsResponse} deserializes representative JSON as actually
@@ -16,9 +16,8 @@ import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
  */
 class ExplanationsResponseJacksonTest {
 
-    // Configured the same way as Spring's auto-configured ObjectMapper (used by the RestClient),
-    // which registers the java.time module needed for generated_at.
-    private final ObjectMapper objectMapper = Jackson2ObjectMapperBuilder.json().build();
+    // Configured the same way as Spring's auto-configured JsonMapper (used by the RestClient).
+    private final ObjectMapper objectMapper = ApplicationJsonMapper.create();
 
     @Test
     void shouldDeserialize_successfulResult() throws Exception {

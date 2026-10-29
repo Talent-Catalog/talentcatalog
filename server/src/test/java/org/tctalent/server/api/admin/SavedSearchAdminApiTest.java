@@ -39,15 +39,14 @@ import static org.tctalent.server.data.SavedSearchTestData.getListOfSavedSearche
 import static org.tctalent.server.data.SavedSearchTestData.getSavedSearch;
 import static org.tctalent.server.model.db.SavedSearchType.other;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.OffsetDateTime;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
+import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Page;
@@ -85,6 +84,7 @@ import org.tctalent.server.service.db.CandidateService;
 import org.tctalent.server.service.db.MatchingService;
 import org.tctalent.server.service.db.SavedListService;
 import org.tctalent.server.service.db.SavedSearchService;
+import tools.jackson.databind.ObjectMapper;
 
 /**
  * Unit tests for Saved Search Admin Api endpoints

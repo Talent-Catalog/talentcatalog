@@ -75,7 +75,7 @@ class CandidateCertificationPortalApiTest {
     ResponseEntity result = candidateCertificationPortalApi.deleteCandidateCertification(id);
 
     assertNotNull(result);
-    assertEquals(200, result.getStatusCodeValue());
+    assertEquals(200, result.getStatusCode().value());
     verify(candidateCertificationService).deleteCandidateCertification(id);
   }
 

@@ -37,15 +37,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.tctalent.server.data.SalesforceJobOppTestData.getSalesforceJobOppExtended;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.LocalDate;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
+import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Page;
@@ -66,6 +65,7 @@ import org.tctalent.server.request.job.UpdateJobRequest;
 import org.tctalent.server.request.link.UpdateLinkRequest;
 import org.tctalent.server.service.db.CountryService;
 import org.tctalent.server.service.db.JobService;
+import tools.jackson.databind.ObjectMapper;
 
 /**
  * Unit tests for Candidate Job Admin Api endpoints.

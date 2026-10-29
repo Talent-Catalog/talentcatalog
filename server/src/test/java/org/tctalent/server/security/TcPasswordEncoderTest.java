@@ -16,9 +16,7 @@
 
 package org.tctalent.server.security;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doCallRealMethod;
@@ -68,16 +66,15 @@ class TcPasswordEncoderTest {
     verify((BCryptPasswordEncoder) tcPasswordEncoder).matches(rawPassword, encodedPassword);
   }
 
+  //Since Spring Security 7 a null raw password does not match, rather than throwing - TC-1189 (D16)
   @Test
-  void matches_withNullRawPassword_throwsIllegalArgumentException() {
+  void matches_withNullRawPassword_returnsFalse() {
     CharSequence rawPassword = null;
     String encodedPassword = new BCryptPasswordEncoder().encode("password123");
 
-    IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> {
-      tcPasswordEncoder.matches(rawPassword, encodedPassword);
-    });
+    boolean result = tcPasswordEncoder.matches(rawPassword, encodedPassword);
 
-    assertEquals("rawPassword cannot be null", ex.getMessage());
+    assertFalse(result);
     verify((BCryptPasswordEncoder) tcPasswordEncoder).matches(rawPassword, encodedPassword);
   }
 

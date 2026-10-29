@@ -18,11 +18,9 @@ package org.tctalent.server.configuration;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.batch.core.configuration.JobRegistry;
-import org.springframework.batch.core.explore.JobExplorer;
-import org.springframework.batch.core.launch.JobLauncher;
+import org.springframework.batch.core.configuration.support.MapJobRegistry;
 import org.springframework.batch.core.launch.JobOperator;
-import org.springframework.batch.core.launch.support.SimpleJobOperator;
-import org.springframework.batch.core.launch.support.TaskExecutorJobLauncher;
+import org.springframework.batch.core.launch.support.TaskExecutorJobOperator;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
@@ -51,30 +49,29 @@ import org.springframework.core.task.SimpleAsyncTaskExecutor;
 @RequiredArgsConstructor
 public class BatchConfig {
 
+    /**
+     * Spring Batch 6 no longer provides a JobRegistry bean, so we define one. As in Spring
+     * Batch 5, it is automatically populated with any Job beans.
+     */
     @Bean
-    @Qualifier("asyncJobLauncher")
-    public JobLauncher asyncJobLauncher(JobRepository jobRepository) throws Exception {
-        TaskExecutorJobLauncher jobLauncher = new TaskExecutorJobLauncher();
-        jobLauncher.setJobRepository(jobRepository);
-        // Using an async executor so that jobLauncher.run() returns immediately.
-        // See: https://docs.spring.io/spring-batch/reference/job/configuring-launcher.html
-        jobLauncher.setTaskExecutor(new SimpleAsyncTaskExecutor());
-        jobLauncher.afterPropertiesSet();
-        return jobLauncher;
+    public JobRegistry jobRegistry() {
+        return new MapJobRegistry();
     }
 
+    /**
+     * In Spring Batch 6 the JobOperator also launches jobs (it replaces JobLauncher).
+     * Using an async executor so that jobOperator.start() returns immediately.
+     * See: https://docs.spring.io/spring-batch/reference/job/configuring-launcher.html
+     */
     @Bean
     @Qualifier("asyncJobOperator")
-    public JobOperator asyncJobOperator(JobExplorer jobExplorer,
-        JobRepository jobRepository,
-        JobRegistry jobRegistry,
-        @Qualifier("asyncJobLauncher") JobLauncher asyncJobLauncher) throws Exception {
+    public JobOperator asyncJobOperator(
+        JobRepository jobRepository, JobRegistry jobRegistry) throws Exception {
 
-        SimpleJobOperator jobOperator = new SimpleJobOperator();
-        jobOperator.setJobExplorer(jobExplorer);
+        TaskExecutorJobOperator jobOperator = new TaskExecutorJobOperator();
         jobOperator.setJobRepository(jobRepository);
         jobOperator.setJobRegistry(jobRegistry);
-        jobOperator.setJobLauncher(asyncJobLauncher);  // Using the async job launcher
+        jobOperator.setTaskExecutor(new SimpleAsyncTaskExecutor());
         jobOperator.afterPropertiesSet();
 
         return jobOperator;

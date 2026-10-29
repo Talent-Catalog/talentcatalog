@@ -4,8 +4,8 @@ import java.io.File;
 import java.io.IOException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.test.context.DynamicPropertyRegistry;
-import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.postgresql.PostgreSQLContainer;
 import org.testcontainers.utility.MountableFile;
 import org.testcontainers.utility.TestcontainersConfiguration;
 
@@ -30,7 +30,7 @@ public class PostgresTestContainer {
   public static final String ENV_CONTAINER_MOUNT_KEY = "testcontainers.container.mount";
 
   @Container
-  public static final PostgreSQLContainer<?> container = new PostgreSQLContainer<>(getImage())
+  public static final PostgreSQLContainer container = new PostgreSQLContainer(getImage())
       .withDatabaseName(DB_NAME)
       .withUsername(DB_USER)
       .withPassword(DB_PASSWORD)

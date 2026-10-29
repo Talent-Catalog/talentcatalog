@@ -139,7 +139,7 @@ class CandidateJobExperiencePortalApiTest {
     ResponseEntity result = candidateJobExperiencePortalApi.deleteJobExperience(id);
 
     assertNotNull(result);
-    assertEquals(200, result.getStatusCodeValue());
+    assertEquals(200, result.getStatusCode().value());
     verify(candidateJobExperienceService).deleteCandidateJobExperience(id);
   }
 

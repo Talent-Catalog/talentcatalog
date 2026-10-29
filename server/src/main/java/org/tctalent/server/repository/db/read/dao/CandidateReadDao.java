@@ -16,7 +16,6 @@
 
 package org.tctalent.server.repository.db.read.dao;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -29,6 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.tctalent.server.repository.db.read.dto.CandidateReadDto;
 import org.tctalent.server.repository.db.read.mapper.CandidateReadMapper;
 import org.tctalent.server.repository.db.read.sql.SqlJsonQueryBuilder;
+import tools.jackson.databind.ObjectMapper;
 
 /**
  * Data Access Object which fetches candidate data from the Postgres database in the form of a List 
