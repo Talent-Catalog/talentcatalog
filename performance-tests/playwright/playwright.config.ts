@@ -45,10 +45,22 @@ export default defineConfig({
     screenshot: 'only-on-failure',
     video: 'off',
   },
+
   projects: [
     {
+      name: 'warmup',
+      testMatch: '**/warmup/warmup.spec.ts',
+      use: {
+        ...devices['Desktop Chrome'],
+        screenshot: 'off',
+      },
+    },
+    {
       name: 'chromium',
+      testIgnore: '**/warmup/**',
+      dependencies: ['warmup'],
       use: {...devices['Desktop Chrome']},
     },
   ],
+
 });
