@@ -18,6 +18,7 @@ package org.tctalent.server.service.db.email;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -35,8 +36,10 @@ import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
+import org.springframework.mock.env.MockEnvironment;
 
 public class EmailSenderTest {
 
@@ -233,6 +236,32 @@ public class EmailSenderTest {
     String result = invokeApplyTestOverride("");
 
     assertEquals("", result);
+  }
+
+  @Test
+  void init_isCalledBySpringWhenBeanCreated_shouldCreateMailSender() throws Exception {
+    MockEnvironment environment = new MockEnvironment()
+        .withProperty("email.type", "SMTP")
+        .withProperty("email.defaultEmail", "noreply@test.com")
+        .withProperty("email.host", "smtp.test.com")
+        .withProperty("email.port", "587")
+        .withProperty("email.user", "test-user")
+        .withProperty("email.password", "test-pass")
+        .withProperty("email.authenticated", "true")
+        .withProperty("email.alertEmail", "alerts@test.com")
+        .withProperty("email.testOverrideEmail", "");
+
+    try (AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext()) {
+      context.setEnvironment(environment);
+      context.register(EmailSender.class);
+      context.refresh();
+
+      //The mail sender is only created by the @PostConstruct init method
+      Object mailSender = getPrivateField(context.getBean(EmailSender.class), "mailSender");
+      JavaMailSenderImpl javaMailSender = assertInstanceOf(JavaMailSenderImpl.class, mailSender);
+      assertEquals("smtp.test.com", javaMailSender.getHost());
+      assertEquals(587, javaMailSender.getPort());
+    }
   }
 
   private Object getPrivateField(Object target, String fieldName) throws Exception {

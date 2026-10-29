@@ -26,6 +26,7 @@ import static org.tctalent.server.util.StringHelper.getStringListFromString;
 import static org.tctalent.server.util.locale.LocaleHelper.getOffsetDateTime;
 
 import com.opencsv.CSVWriter;
+import jakarta.annotation.PostConstruct;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.Query;
@@ -49,7 +50,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import javax.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
@@ -1195,9 +1195,9 @@ public class SavedSearchServiceImpl implements SavedSearchService {
         SearchCandidateRequest request = loadSavedSearch(searchJoinRequest.getSavedSearchId());
         Specification<Candidate> joinQuery = CandidateSpecification.buildSearchQuery(request, user, null);
         if (searchJoinRequest.getSearchType().equals(SearchType.and)) {
-            query = Specification.where(query.and(joinQuery));
+            query = query.and(joinQuery);
         } else {
-            query = Specification.where(query.or(joinQuery));
+            query = query.or(joinQuery);
         }
         if (!request.getSearchJoinRequests().isEmpty()) {
             for (SearchJoinRequest joinRequest : request.getSearchJoinRequests()) {
