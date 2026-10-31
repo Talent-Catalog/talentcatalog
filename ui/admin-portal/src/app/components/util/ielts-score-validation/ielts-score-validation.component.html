@@ -14,7 +14,9 @@
   ~ along with this program. If not, see https://www.gnu.org/licenses/.
   -->
 
-<tc-input [(ngModel)]="this.value" (ngModelChange)="update()"></tc-input>
+<tc-input [(ngModel)]="this.value"
+          [ngModelOptions]="{standalone: true}"
+          (ngModelChange)="update()"></tc-input>
 <tc-alert  type="warning" *ngIf="error && this.value != null">
   {{error}}
 </tc-alert >
