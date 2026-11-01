@@ -20,6 +20,7 @@
          #datePicker
          #picker="ngbDatepicker"
          [(ngModel)]="date"
+         [ngModelOptions]="{standalone: true}"
          (ngModelChange)="update()"
          (dateSelect)="control.markAsDirty()"
          [autoClose]="true"
