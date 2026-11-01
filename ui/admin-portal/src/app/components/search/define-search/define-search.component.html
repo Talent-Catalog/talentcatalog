@@ -190,13 +190,15 @@
                   <small class="ai-source-note">
                     {{displayJobNameAsSource()}}
                   </small>
-                  <tc-button [type]="'plain'"
-                             ngbTooltip="This search is linked to a job. Click Clear Search to clear the search and remove the link."
+                  <tc-button *ngIf="savedSearch?.defaultSearch"
+                             [type]="'plain'"
+                             ngbTooltip="Unlink job"
                              placement="bottom top"
-                             aria-label="About the linked job"
+                             aria-label="Unlink job"
+                             (onClick)="onUnlinkJob()"
                   >
-                    <tc-icon size="sm" ariaLabel="About the linked job">
-                      <i class="fa-regular fa-circle-question"></i>
+                    <tc-icon size="sm" ariaLabel="Unlink job">
+                      <i class="fa-solid fa-xmark"></i>
                     </tc-icon>
                   </tc-button>
                 </div>
