@@ -17,6 +17,7 @@
 
 package org.tctalent.server.service.db.util;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -27,6 +28,9 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.io.ByteArrayInputStream;
+import java.nio.charset.StandardCharsets;
+import javax.xml.parsers.DocumentBuilderFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -122,6 +126,26 @@ class CvTemplateHelperTest {
         () -> helper.renderCvXhtml(candidate, true, true));
 
     assertEquals("template failed", exception.getMessage());
+  }
+
+  @Test
+  void renderCvXhtmlConvertsHtmlEntitiesAndVoidElementsToWellFormedXhtml() {
+    when(tcInstanceService.getLogoFile()).thenReturn("tbblogo.png");
+    when(cvTemplateEngine.process(eq("cvTemplate"), any(Context.class))).thenReturn("""
+        <?xml version="1.0" encoding="UTF-8"?>
+        <!DOCTYPE html>
+        <html xmlns="http://www.w3.org/1999/xhtml"><head><title></title></head>
+        <body><div><p>Managed&nbsp;team<br>Led &amp; built&rsquo;s<p><br></p></div></body></html>
+        """);
+
+    String result = helper.renderCvXhtml(new Candidate(), false, false);
+
+    assertDoesNotThrow(() -> DocumentBuilderFactory.newInstance().newDocumentBuilder()
+        .parse(new ByteArrayInputStream(result.getBytes(StandardCharsets.UTF_8))));
+    assertFalse(result.contains("&nbsp;"));
+    assertTrueContains(result, "Managed&#xa0;team");
+    assertTrueContains(result, "<br />");
+    assertTrueContains(result, "Led &amp; built\u2019s");
   }
 
   private void assertTrueContains(String actual, String expectedPart) {
