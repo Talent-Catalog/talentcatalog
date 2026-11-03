@@ -54,10 +54,15 @@ function pathOf(url: string): string {
   return new URL(url).pathname;
 }
 
-// Capture Candidate Search and its related saved-search APIs.
+
+/**
+ * APIs that contribute to the Candidate Search journey.
+ * Include both the direct search and saved-search requests.
+ */
 function isImportantSearchApi(path: string): boolean {
-  return path.endsWith('/candidate/search') ||
-      path.includes('/saved-search/');
+  return path === '/api/admin/candidate/search' ||
+      path.startsWith('/api/admin/saved-search/') ||
+      /^\/api\/admin\/saved-search-candidate\/\d+\/search-paged$/.test(path);
 }
 
 function roundMs(value: number): number {
@@ -68,7 +73,7 @@ test('Candidate Search performance journey', async ({page}, testInfo) => {
   test.setTimeout(240_000);
 
   const runs: MeasuredRun[] = [];
-
+  let firstSearchRequest: string | undefined;
   try {
     // Run the same journey exactly three times.
     for (let repetition = 1; repetition <= REPEATS; repetition++) {
@@ -176,6 +181,35 @@ test('Candidate Search performance journey', async ({page}, testInfo) => {
 
         // Wait until the search API responds.
         const searchResponse = await searchResponsePromise;
+        // Read the actual request sent to the backend.
+        const submittedRequest = searchResponse.request().postDataJSON() as {
+          simpleQueryString?: string;
+          savedSearchId?: number;
+        };
+
+        // Confirm the intended keyword was submitted.
+        expect(
+            submittedRequest.simpleQueryString,
+            'Candidate Search must submit the expected keyword'
+        ).toBe(SEARCH_KEYWORD);
+
+        // Confirm we are searching against a saved-search record.
+        expect(
+            submittedRequest.savedSearchId,
+            'Candidate Search must include a saved search ID'
+        ).toBeTruthy();
+
+        // Verify that every repetition uses the same complete request.
+        const currentRequest = JSON.stringify(submittedRequest);
+
+        if (firstSearchRequest === undefined) {
+          firstSearchRequest = currentRequest;
+        } else {
+          expect(
+              currentRequest,
+              'All three repetitions must use identical search parameters'
+          ).toBe(firstSearchRequest);
+        }
         const requestError = await searchResponse.finished();
 
         if (requestError) {
@@ -193,14 +227,37 @@ test('Candidate Search performance journey', async ({page}, testInfo) => {
             page.locator('app-show-candidates > tc-loading .tc-loader')
         ).toBeHidden({timeout: WAIT_MS});
 
+
         // Confirm the search results are actually displayed.
         await expect(
             page.locator('app-show-candidates .results-area')
             .getByText(/^\d+\s+candidates returned$/)
         ).toBeVisible({timeout: WAIT_MS});
 
-        // Stop timing after the user can see the results.
+        // Check failures from APIs required for Candidate Search.
+        // Unrelated API failures remain recorded but do not fail this journey.
+        const requiredFailures = run.httpFailures.filter(
+            failure => isImportantSearchApi(failure.path)
+        );
+
+        if (requiredFailures.length > 0) {
+          const details = requiredFailures.map(failure => {
+            const reason = failure.status !== undefined
+                ? `HTTP ${failure.status}`
+                : failure.error ?? 'Network error';
+
+            return `${failure.method} ${failure.path}: ${reason}`;
+          });
+
+          throw new Error(
+              'Candidate Search required API failure: ' +
+              details.join('; ')
+          );
+        }
+
+        // Only record a successful duration after checking API failures.
         run.durationMs = roundMs(performance.now() - start);
+
       } finally {
         // Remove listeners before starting the next repetition.
         page.off('response', onResponse);
