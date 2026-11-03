@@ -72,6 +72,40 @@ function roundMs(value: number): number {
   return Math.round(value * 10) / 10;
 }
 
+
+/**
+ * Wait for an API response body with a maximum timeout.
+ * Prevents a stalled response from blocking the entire test.
+ */
+async function waitForResponseBody(response: Response): Promise<void> {
+  let timer: ReturnType<typeof setTimeout> | undefined;
+
+  try {
+    const error = await Promise.race([
+      response.finished(),
+      new Promise<never>((_, reject) => {
+        timer = setTimeout(() => {
+          reject(new Error(
+              `Timed out after ${WAIT_MS}ms waiting for response body: ` +
+              `${response.request().method()} ${pathOf(response.url())}`
+          ));
+        }, WAIT_MS);
+      }),
+    ]);
+
+    if (error) {
+      throw new Error(
+          `Failed to finish response body: ${error.message}`
+      );
+    }
+  } finally {
+    // Always clear the timer to avoid keeping it running.
+    if (timer !== undefined) {
+      clearTimeout(timer);
+    }
+  }
+}
+
 /**
  * Set the default search to the same keyword before any measured run.
  * This avoids run 1 loading different saved filters from runs 2 and 3.
@@ -117,8 +151,9 @@ async function prepareSearchState(page: Page): Promise<void> {
   };
   expect(submitted.simpleQueryString).toBe(SEARCH_KEYWORD);
 
-  const error = await response.finished();
-  if (error || !response.ok()) {
+  await waitForResponseBody(response);
+
+  if (!response.ok()) {
     throw new Error(
         'Candidate Search preparation failed: HTTP ' + response.status()
     );
@@ -298,10 +333,9 @@ test('Candidate Search performance journey', async ({page}, testInfo) => {
           ).toBe(firstSearchRequest);
         }
 
-        const requestError = await searchResponse.finished();
-        if (requestError) {
-          throw new Error('Candidate Search API did not finish');
-        }
+        // Wait for the complete API response, with a bounded timeout.
+        await waitForResponseBody(searchResponse);
+
         if (!searchResponse.ok()) {
           throw new Error(
               'Candidate Search returned HTTP ' + searchResponse.status()
@@ -318,21 +352,54 @@ test('Candidate Search performance journey', async ({page}, testInfo) => {
 
         // Stop timing when results are visible, not when reporting completes.
         measuredDurationMs = roundMs(performance.now() - start);
+
       } finally {
+        // The measured duration is already captured.
+        // Allow Playwright a short, unmeasured window to deliver
+        // requestfinished/requestfailed events.
+        const settleDeadline = Date.now() + 3_000;
+
+        while (
+            pendingRequests.size > 0 &&
+            Date.now() < settleDeadline
+            ) {
+          await new Promise<void>(resolve => setTimeout(resolve, 50));
+        }
+
+        // Remove listeners before processing remaining requests.
         page.off('request', onRequest);
         page.off('response', onResponse);
         page.off('requestfinished', onRequestFinished);
         page.off('requestfailed', onRequestFailed);
 
-        // A slow relevant API is reported, never silently skipped.
+        // Reconcile requests whose response body completed but whose
+        // requestfinished event was not processed before cleanup.
         for (const request of pendingRequests) {
-          run.incompleteApiTimings.push({
-            method: request.method(),
-            path: pathOf(request.url()),
-            reason: 'still-pending',
-          });
+          const response = responsesByRequest.get(request);
+          const duration = request.timing().responseEnd;
+
+          if (response && duration >= 0) {
+            run.apiTimings.push({
+              method: request.method(),
+              path: pathOf(request.url()),
+              status: response.status(),
+              durationMs: roundMs(duration),
+            });
+          } else {
+            // Only genuinely unfinished requests remain incomplete.
+            run.incompleteApiTimings.push({
+              method: request.method(),
+              path: pathOf(request.url()),
+              reason: 'still-pending',
+            });
+          }
         }
+
+        pendingRequests.clear();
+        responsesByRequest.clear();
+        apiRequests.clear();
       }
+
 
       // Reject a measurement with failed or missing required API activity.
       const requiredFailures = run.httpFailures.filter(
