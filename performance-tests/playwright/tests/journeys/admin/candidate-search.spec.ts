@@ -2,8 +2,8 @@
  * Copyright (c) 2026 Talent Catalog.
  *
  * This program is free software: you can redistribute it and/or modify it under
- *  the terms of the GNU General Public License as published by the Free
- *  Software Foundation, either version 3 of the License, or any later version.
+ * the terms of the GNU General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or any later version.
  *
  * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
@@ -13,7 +13,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-import {expect, type Request, type Response, test} from '@playwright/test';
+import {expect, type Page, type Request, type Response, test} from '@playwright/test';
 import {writeFile} from 'node:fs/promises';
 import {resolve} from 'node:path';
 import {performance} from 'node:perf_hooks';
@@ -23,7 +23,7 @@ const REPEATS = 3;
 const SEARCH_KEYWORD = 'engineer';
 const WAIT_MS = 45_000;
 
-// Reuse the browser session created during warm-up.
+// The warm-up project creates this authenticated browser state first.
 test.use({
   storageState: resolve(__dirname, '../../../.auth/perf-user.json'),
 });
@@ -42,23 +42,26 @@ type HttpFailure = {
   error?: string;
 };
 
+type IncompleteApiTiming = {
+  method: string;
+  path: string;
+  reason: 'still-pending' | 'timing-unavailable';
+};
+
 type MeasuredRun = {
   repetition: number;
   durationMs: number | null;
   apiTimings: ApiTiming[];
   httpFailures: HttpFailure[];
+  incompleteApiTimings: IncompleteApiTiming[];
 };
 
-// Do not export query parameters or authentication tokens.
+// Keep only the path; do not expose URL query parameters in results.
 function pathOf(url: string): string {
   return new URL(url).pathname;
 }
 
-
-/**
- * APIs that contribute to the Candidate Search journey.
- * Include both the direct search and saved-search requests.
- */
+// Capture the direct candidate search and the saved-search calls it uses.
 function isImportantSearchApi(path: string): boolean {
   return path === '/api/admin/candidate/search' ||
       path.startsWith('/api/admin/saved-search/') ||
@@ -69,29 +72,107 @@ function roundMs(value: number): number {
   return Math.round(value * 10) / 10;
 }
 
+/**
+ * Set the default search to the same keyword before any measured run.
+ * This avoids run 1 loading different saved filters from runs 2 and 3.
+ * Use a dedicated staging account: Clear Search can unlink a saved job.
+ */
+async function prepareSearchState(page: Page): Promise<void> {
+  const navigation = await page.goto('search', {
+    waitUntil: 'domcontentloaded',
+    timeout: WAIT_MS,
+  });
+
+  if (!navigation?.ok()) {
+    throw new Error('Failed to open Candidate Search for preparation');
+  }
+
+  const searchArea = page.locator('app-define-search');
+  const form = searchArea.locator('form.filter-form');
+  await expect(form).toBeVisible({timeout: WAIT_MS});
+
+  await searchArea.getByRole('button', {name: 'Clear Search'}).click();
+  await form.locator(
+      'tc-input[formcontrolname="simpleQueryString"] input'
+  ).fill(SEARCH_KEYWORD);
+
+  // Register before clicking so even a fast response is captured.
+  const responsePromise = page.waitForResponse(
+      response =>
+          response.request().method() === 'POST' &&
+          pathOf(response.url()) === '/api/admin/candidate/search',
+      {timeout: WAIT_MS}
+  );
+  void responsePromise.catch(() => {});
+
+  const searchButton = form.locator('tc-button')
+  .filter({hasText: /^\s*Search\s*$/})
+  .locator('button');
+  await expect(searchButton).toBeEnabled();
+  await searchButton.click();
+
+  const response = await responsePromise;
+  const submitted = response.request().postDataJSON() as {
+    simpleQueryString?: string;
+  };
+  expect(submitted.simpleQueryString).toBe(SEARCH_KEYWORD);
+
+  const error = await response.finished();
+  if (error || !response.ok()) {
+    throw new Error(
+        'Candidate Search preparation failed: HTTP ' + response.status()
+    );
+  }
+
+  await expect(
+      page.locator('app-show-candidates > tc-loading .tc-loader')
+  ).toBeHidden({timeout: WAIT_MS});
+  await expect(
+      page.locator('app-show-candidates .results-area')
+      .getByText(/^\d+\s+candidates returned$/)
+  ).toBeVisible({timeout: WAIT_MS});
+}
+
 test('Candidate Search performance journey', async ({page}, testInfo) => {
   test.setTimeout(240_000);
 
   const runs: MeasuredRun[] = [];
   let firstSearchRequest: string | undefined;
+
   try {
-    // Run the same journey exactly three times.
+    // The preparation search is intentionally excluded from measurements.
+    await prepareSearchState(page);
+
     for (let repetition = 1; repetition <= REPEATS; repetition++) {
       const run: MeasuredRun = {
         repetition,
         durationMs: null,
         apiTimings: [],
         httpFailures: [],
+        incompleteApiTimings: [],
+      };
+      runs.push(run);
+
+      const apiRequests = new Set<Request>();
+      const pendingRequests = new Set<Request>();
+      const responsesByRequest = new Map<Request, Response>();
+      let measuredDurationMs: number | null = null;
+
+      // Track important requests from the moment they start.
+      const onRequest = (request: Request) => {
+        const path = pathOf(request.url());
+        if (!path.includes('/api/')) return;
+
+        // Ignore responses from work that began before this run.
+        apiRequests.add(request);
+        if (isImportantSearchApi(path)) {
+          pendingRequests.add(request);
+        }
       };
 
-      runs.push(run);
-      const importantResponses: Response[] = [];
-
-      // Record HTTP errors and important search responses.
       const onResponse = (response: Response) => {
         const path = pathOf(response.url());
-
-        if (!path.includes('/api/')) return;
+        if (!apiRequests.has(response.request())) return;
 
         if (response.status() >= 400) {
           run.httpFailures.push({
@@ -102,13 +183,40 @@ test('Candidate Search performance journey', async ({page}, testInfo) => {
         }
 
         if (isImportantSearchApi(path)) {
-          importantResponses.push(response);
+          responsesByRequest.set(response.request(), response);
         }
       };
 
-      // Network failures may not have an HTTP status.
+      // Fired after the complete response body has been received.
+      const onRequestFinished = (request: Request) => {
+        if (!pendingRequests.delete(request)) return;
+
+        const response = responsesByRequest.get(request);
+        responsesByRequest.delete(request);
+        const duration = request.timing().responseEnd;
+
+        if (!response || duration < 0) {
+          run.incompleteApiTimings.push({
+            method: request.method(),
+            path: pathOf(request.url()),
+            reason: 'timing-unavailable',
+          });
+          return;
+        }
+
+        run.apiTimings.push({
+          method: request.method(),
+          path: pathOf(request.url()),
+          status: response.status(),
+          durationMs: roundMs(duration),
+        });
+      };
+
       const onRequestFailed = (request: Request) => {
+        if (!apiRequests.has(request)) return;
         const path = pathOf(request.url());
+        pendingRequests.delete(request);
+        responsesByRequest.delete(request);
 
         if (path.includes('/api/')) {
           run.httpFailures.push({
@@ -119,13 +227,14 @@ test('Candidate Search performance journey', async ({page}, testInfo) => {
         }
       };
 
+      page.on('request', onRequest);
       page.on('response', onResponse);
+      page.on('requestfinished', onRequestFinished);
       page.on('requestfailed', onRequestFailed);
 
       try {
-        // Start timing before navigating to Candidate Search.
+        // Timing includes navigation, applying filters and showing results.
         const start = performance.now();
-
         const navigation = await page.goto('search', {
           waitUntil: 'domcontentloaded',
           timeout: WAIT_MS,
@@ -138,70 +247,48 @@ test('Candidate Search performance journey', async ({page}, testInfo) => {
           );
         }
 
-        // Wait for the actual search form.
         const searchArea = page.locator('app-define-search');
         const form = searchArea.locator('form.filter-form');
-
         await expect(form).toBeVisible({timeout: WAIT_MS});
 
-        // Clear previous filters for consistent measurements.
-        await searchArea.getByRole('button', {
-          name: 'Clear Search',
-        }).click();
-
-        // Use the same keyword in every repetition.
-        const keyword = form.locator(
+        // The account's saved search has already been normalized.
+        await searchArea.getByRole('button', {name: 'Clear Search'}).click();
+        await form.locator(
             'tc-input[formcontrolname="simpleQueryString"] input'
-        );
+        ).fill(SEARCH_KEYWORD);
 
-        await keyword.fill('');
-        await keyword.fill(SEARCH_KEYWORD);
-
-// Listen for the Candidate Search API response before clicking.
         const searchResponsePromise = page.waitForResponse(
             response =>
                 response.request().method() === 'POST' &&
-                pathOf(response.url()).endsWith('/candidate/search'),
+                pathOf(response.url()) === '/api/admin/candidate/search',
             {timeout: WAIT_MS}
         );
-
         void searchResponsePromise.catch(() => {});
 
-        // Locate TC's Search button.
-        const searchButton = form
-        .locator('tc-button')
+        const searchButton = form.locator('tc-button')
         .filter({hasText: /^\s*Search\s*$/})
         .locator('button');
-
         await expect(searchButton).toBeVisible();
         await expect(searchButton).toBeEnabled();
-
-        // Execute the search.
         await searchButton.click();
 
-        // Wait until the search API responds.
         const searchResponse = await searchResponsePromise;
-        // Read the actual request sent to the backend.
         const submittedRequest = searchResponse.request().postDataJSON() as {
           simpleQueryString?: string;
           savedSearchId?: number;
         };
 
-        // Confirm the intended keyword was submitted.
         expect(
             submittedRequest.simpleQueryString,
             'Candidate Search must submit the expected keyword'
         ).toBe(SEARCH_KEYWORD);
-
-        // Confirm we are searching against a saved-search record.
         expect(
             submittedRequest.savedSearchId,
             'Candidate Search must include a saved search ID'
         ).toBeTruthy();
 
-        // Verify that every repetition uses the same complete request.
+        // Identical submissions across the three measured runs.
         const currentRequest = JSON.stringify(submittedRequest);
-
         if (firstSearchRequest === undefined) {
           firstSearchRequest = currentRequest;
         } else {
@@ -210,101 +297,83 @@ test('Candidate Search performance journey', async ({page}, testInfo) => {
               'All three repetitions must use identical search parameters'
           ).toBe(firstSearchRequest);
         }
-        const requestError = await searchResponse.finished();
 
+        const requestError = await searchResponse.finished();
         if (requestError) {
           throw new Error('Candidate Search API did not finish');
         }
-
         if (!searchResponse.ok()) {
           throw new Error(
               'Candidate Search returned HTTP ' + searchResponse.status()
           );
         }
 
-        // Wait until the loading indicator disappears.
         await expect(
             page.locator('app-show-candidates > tc-loading .tc-loader')
         ).toBeHidden({timeout: WAIT_MS});
-
-
-        // Confirm the search results are actually displayed.
         await expect(
             page.locator('app-show-candidates .results-area')
             .getByText(/^\d+\s+candidates returned$/)
         ).toBeVisible({timeout: WAIT_MS});
 
-        // Check failures from APIs required for Candidate Search.
-        // Unrelated API failures remain recorded but do not fail this journey.
-        const requiredFailures = run.httpFailures.filter(
-            failure => isImportantSearchApi(failure.path)
-        );
-
-        if (requiredFailures.length > 0) {
-          const details = requiredFailures.map(failure => {
-            const reason = failure.status !== undefined
-                ? `HTTP ${failure.status}`
-                : failure.error ?? 'Network error';
-
-            return `${failure.method} ${failure.path}: ${reason}`;
-          });
-
-          throw new Error(
-              'Candidate Search required API failure: ' +
-              details.join('; ')
-          );
-        }
-
-        // Only record a successful duration after checking API failures.
-        run.durationMs = roundMs(performance.now() - start);
-
+        // Stop timing when results are visible, not when reporting completes.
+        measuredDurationMs = roundMs(performance.now() - start);
       } finally {
-        // Remove listeners before starting the next repetition.
+        page.off('request', onRequest);
         page.off('response', onResponse);
+        page.off('requestfinished', onRequestFinished);
         page.off('requestfailed', onRequestFailed);
 
-        // Record completed API response timings.
-
-        // Record timings only for API responses that have already finished.
-        // Do not wait for pending requests, as they could block the test.
-        for (const response of importantResponses) {
-          const request = response.request();
-          const duration = request.timing().responseEnd;
-
-          // Playwright returns -1 when the response has not finished.
-          if (duration < 0) {
-            continue;
-          }
-
-          run.apiTimings.push({
+        // A slow relevant API is reported, never silently skipped.
+        for (const request of pendingRequests) {
+          run.incompleteApiTimings.push({
             method: request.method(),
-            path: pathOf(response.url()),
-            status: response.status(),
-            durationMs: roundMs(duration),
+            path: pathOf(request.url()),
+            reason: 'still-pending',
           });
         }
-
       }
+
+      // Reject a measurement with failed or missing required API activity.
+      const requiredFailures = run.httpFailures.filter(
+          failure => isImportantSearchApi(failure.path)
+      );
+      if (requiredFailures.length > 0) {
+        const details = requiredFailures.map(failure => {
+          const reason = failure.status !== undefined
+              ? `HTTP ${failure.status}`
+              : failure.error ?? 'Network error';
+          return `${failure.method} ${failure.path}: ${reason}`;
+        });
+        throw new Error('Candidate Search required API failure: ' + details.join('; '));
+      }
+
+      if (run.incompleteApiTimings.length > 0) {
+        const details = run.incompleteApiTimings.map(item =>
+            `${item.method} ${item.path} (${item.reason})`
+        );
+        throw new Error('Candidate Search API timings incomplete: ' + details.join('; '));
+      }
+
+      if (measuredDurationMs === null) {
+        throw new Error('Candidate Search duration was not measured');
+      }
+      run.durationMs = measuredDurationMs;
     }
   } finally {
-    // Keep measurements even when a repetition fails.
+    // Export any completed or partial results, even when a run fails.
     const durations = runs.flatMap(run =>
         run.durationMs === null ? [] : [run.durationMs]
     );
-
     const result = {
       journey: 'candidate-search',
       keyword: SEARCH_KEYWORD,
-      medianDurationMs:
-          durations.length === REPEATS ? median(durations) : null,
+      medianDurationMs: durations.length === REPEATS ? median(durations) : null,
       runs,
     };
 
-    // Export results for later comparison tickets.
     const file = testInfo.outputPath('candidate-search.json');
-
     await writeFile(file, JSON.stringify(result, null, 2) + '\n');
-
     await testInfo.attach('candidate-search.json', {
       path: file,
       contentType: 'application/json',
