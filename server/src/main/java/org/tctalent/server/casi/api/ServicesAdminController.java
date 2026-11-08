@@ -51,7 +51,9 @@ import org.tctalent.server.exception.EntityExistsException;
 import org.tctalent.server.exception.InvalidSessionException;
 import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.logging.LogBuilder;
+import org.tctalent.server.model.db.SavedList;
 import org.tctalent.server.model.db.User;
+import org.tctalent.server.repository.db.SavedListRepository;
 import org.tctalent.server.security.AuthService;
 
 
@@ -79,6 +81,7 @@ public class ServicesAdminController {
   private final CandidateServiceRegistry services;
   private final CandidateServicesQueryService queryService; // consolidated view
   private final ServiceListRepository serviceListRepository;
+  private final SavedListRepository savedListRepository;
 
   // Endpoint to import service resources from a file -- e.g. coupons from CSV data
   @PreAuthorize(ADMIN_ONLY)
@@ -254,9 +257,13 @@ public class ServicesAdminController {
         .build();
   }
 
-  // Returns the service list associated with the given saved list, or 404 if none exists
+  // Returns the service list for the given saved list, or an empty body if it has none.
+  // Returns 404 if the saved list itself does not exist.
   @GetMapping("/list/{savedListId}")
   public ServiceListDto getServiceList(@PathVariable Long savedListId) {
+    if (!savedListRepository.existsById(savedListId)) {
+      throw new NoSuchObjectException(SavedList.class, savedListId);
+    }
     return serviceListRepository.findBySavedListId(savedListId)
         .map(e -> ServiceListDto.builder()
             .id(e.getId())
@@ -265,8 +272,7 @@ public class ServicesAdminController {
             .listRole(e.getListRole())
             .permittedActions(e.getPermittedActions())
             .build())
-        .orElseThrow(() -> new NoSuchObjectException(
-            "No service list for saved list id: " + savedListId));
+        .orElse(null);
   }
 
   // Perform a ListAction on a set of candidates within a service list.
