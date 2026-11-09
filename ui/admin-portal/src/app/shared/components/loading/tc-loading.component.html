@@ -5,22 +5,20 @@
        'tc-loader-section': type === 'section'
      }">
 
-  <!-- Type Page -->
-  <ng-container *ngIf="type === 'page'">
-    <div class="tc-loader-ring" aria-hidden="true">
-      <img class="tc-loader-logo" src="assets/images/tc-logo.png" alt="Logo"/>
-    </div>
-    <p>Loading page<span class="tc-loader-dots"></span></p>
-  </ng-container>
+  <!-- TC logo -->
+  <div class="tc-loader-ring" aria-hidden="true">
+    <svg class="tc-loader-logo" viewBox="0 0 176 128" fill="#0084D1" xmlns="http://www.w3.org/2000/svg">
+      <path d="M133.037 0C133.037 0 98.2707 3.85887 66.5065 33.596C64.3645 35.5955 62.2469 37.7109 60.1415 39.9786C47.686 53.2317 36.0483 70.874 27.5778 94.2772V33.602H0V0.0548656L133.037 0.00609746V0Z"/>
+      <path d="M105.197 80.7924C105.197 80.7924 123.59 113.328 158.528 85.517L176 110.408C176 110.408 160.182 131.409 120.826 127.52C120.826 127.52 108.688 112.041 105.191 80.7864L105.197 80.7924Z"/>
+      <path d="M109.243 42.3439C109.243 42.3439 130.578 16.8681 157.979 43.3193L176 19.398C176 19.398 167.725 3.65157 134.99 0.0487425C134.99 0.0487425 110.165 28.7312 109.243 42.3439Z"/>
+      <path d="M89.9345 110.414C89.9345 110.414 77.2472 41.7709 134.99 0.0487425C134.99 0.0487425 81.2871 29.3164 77.7964 95.4354L89.9345 110.408V110.414Z"/>
+      <path d="M70.0705 60.4312L73.7504 40.9845C73.7504 40.9845 96.0006 8.70529 134.99 0.0487425C134.99 0.0487425 83.6794 33.4008 70.0705 60.4312Z"/>
+      <path d="M57.383 66.5091C57.383 66.5091 42.4926 94.6307 38.8188 127.849H51.1583C51.1583 127.849 53.1966 103.495 57.383 92.7958V66.5091Z"/>
+    </svg>
+  </div>
 
-  <!-- Type Section -->
-  <ng-container *ngIf="type === 'section'">
-    <div class="tc-loader-ring tc-loader-ring--small" aria-hidden="true">
-      <img class="tc-loader-logo" src="assets/images/tc-logo.png" alt="Logo"/>
-    </div>
-    <p> Loading<span class="tc-loader-dots"></span></p>
-
-  </ng-container>
+  <p *ngIf="type === 'page'">Loading page<span class="tc-loader-dots"></span></p>
+  <p *ngIf="type === 'section'">Loading<span class="tc-loader-dots"></span></p>
 
   <span class="sr-only">Loading</span>
 
