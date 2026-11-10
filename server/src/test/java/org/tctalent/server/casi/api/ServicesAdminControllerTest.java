@@ -75,6 +75,7 @@ import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.exception.ServiceException;
 import org.tctalent.server.model.db.SavedList;
 import org.tctalent.server.model.db.User;
+import org.tctalent.server.repository.db.SavedListRepository;
 import org.tctalent.server.security.AuthService;
 import tools.jackson.databind.ObjectMapper;
 
@@ -97,6 +98,7 @@ class ServicesAdminControllerTest extends ApiTestBase {
   @MockitoBean private CandidateServicesQueryService queryService;
   @MockitoBean private CandidateAssistanceService candidateAssistanceService;
   @MockitoBean private ServiceListRepository serviceListRepository;
+  @MockitoBean private SavedListRepository savedListRepository;
 
   @Autowired private MockMvc mockMvc;
   @Autowired private ObjectMapper objectMapper;
@@ -148,6 +150,7 @@ class ServicesAdminControllerTest extends ApiTestBase {
     given(candidateServiceRegistry.forProviderAndServiceCode(
         ServiceProvider.LINKEDIN.name(), ServiceCode.PREMIUM_MEMBERSHIP.name()))
         .willReturn(candidateAssistanceService);
+    given(savedListRepository.existsById(SAVED_LIST_ID)).willReturn(true);
     given(serviceListRepository.findBySavedListId(SAVED_LIST_ID))
         .willReturn(Optional.of(testServiceList));
     given(serviceListRepository.findById(SERVICE_LIST_ID))
@@ -867,10 +870,24 @@ class ServicesAdminControllerTest extends ApiTestBase {
   }
 
   @Test
-  @DisplayName("get service list returns 404 when saved list has no service list")
-  void getServiceListReturns404WhenNotFound() throws Exception {
+  @DisplayName("get service list returns empty body when saved list has no service list")
+  void getServiceListReturnsEmptyWhenNoServiceList() throws Exception {
     given(serviceListRepository.findBySavedListId(SAVED_LIST_ID))
         .willReturn(Optional.empty());
+
+    mockMvc.perform(get(BASE_PATH + "/list/" + SAVED_LIST_ID)
+            .header("Authorization", "Bearer " + "jwt-token")
+            .contentType(MediaType.APPLICATION_JSON))
+
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(content().string(""));
+  }
+
+  @Test
+  @DisplayName("get service list returns 404 when saved list does not exist")
+  void getServiceListReturns404WhenSavedListNotFound() throws Exception {
+    given(savedListRepository.existsById(SAVED_LIST_ID)).willReturn(false);
 
     mockMvc.perform(get(BASE_PATH + "/list/" + SAVED_LIST_ID)
             .header("Authorization", "Bearer " + "jwt-token")
