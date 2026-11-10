@@ -124,8 +124,10 @@ CandidateRepository.searchCandidateName(String,Set,Pageable) -> OK
 CandidateRepository.searchCandidateNumber(String,Set,Pageable) -> OK
 CandidateRepository.searchCandidatePublicId(String,Set,Pageable) -> OK
 CandidateReviewStatusRepository.findReviewedCandidatesForSearch(Long,List) -> OK
+CandidateSavedListRepository.countBySavedList_Id(Long) -> OK
 CandidateSavedListRepository.findByCandidate_Id(Long) -> OK
 CandidateSavedListRepository.findBySavedList_Id(Long) -> OK
+CandidateSavedListRepository.findCandidateIdsBySavedListId(Long,Long,Pageable) -> OK
 CandidateSkillRepository.findByCandidateId(Long) -> OK
 CandidateSkillRepository.findByCandidateId(Long,Pageable) -> OK
 CandidateVisaCheckRepository.findByCandidate_Id(Long) -> OK

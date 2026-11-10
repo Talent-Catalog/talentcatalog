@@ -19,6 +19,7 @@ package org.tctalent.server.casi.application.providers.duolingo;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.lenient;
@@ -31,10 +32,11 @@ import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.read.ListAppender;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
+import java.util.stream.LongStream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -142,7 +144,7 @@ class DuolingoServiceTest {
     // Without lenient(), Mockito would throw UnnecessaryStubbingException
     // for tests that don't use savedList (e.g., providerKeyReturnsCorrectFormat).
     lenient().when(savedList.getId()).thenReturn(LIST_ID);
-    lenient().when(savedList.getCandidates()).thenReturn(Set.of(candidate));
+    givenListCandidates(candidate);
   }
 
   // Provider Key Generation Tests
@@ -337,7 +339,7 @@ class DuolingoServiceTest {
     // Arrange
     Candidate candidate2 = new Candidate();
     candidate2.setId(789L);
-    when(savedList.getCandidates()).thenReturn(Set.of(candidate, candidate2));
+    givenListCandidates(candidate, candidate2);
 
     ServiceAssignment assignment2 = ServiceAssignment.builder()
         .id(2L)
@@ -380,7 +382,7 @@ class DuolingoServiceTest {
     // Arrange
     Candidate candidate2 = new Candidate();
     candidate2.setId(789L);
-    when(savedList.getCandidates()).thenReturn(Set.of(candidate, candidate2));
+    givenListCandidates(candidate, candidate2);
 
     when(savedListService.get(LIST_ID)).thenReturn(savedList);
     when(resourceRepository.countAvailableByProviderAndService(
@@ -402,7 +404,7 @@ class DuolingoServiceTest {
     // Arrange
     Candidate candidate2 = new Candidate();
     candidate2.setId(789L);
-    when(savedList.getCandidates()).thenReturn(Set.of(candidate, candidate2));
+    givenListCandidates(candidate, candidate2);
 
     when(savedListService.get(LIST_ID)).thenReturn(savedList);
     when(resourceRepository.countAvailableByProviderAndService(
@@ -446,7 +448,7 @@ class DuolingoServiceTest {
   void assignToListSucceedsWithEmptyList() {
     // Arrange
     when(savedListService.get(LIST_ID)).thenReturn(savedList);
-    when(savedList.getCandidates()).thenReturn(Set.of());
+    givenListCandidates();
     when(resourceRepository.countAvailableByProviderAndService(
         ServiceProvider.DUOLINGO, ServiceCode.TEST_PROCTORED))
         .thenReturn(1L); // Has resources but no candidates
@@ -465,7 +467,7 @@ class DuolingoServiceTest {
     // Arrange
     Candidate candidate2 = new Candidate();
     candidate2.setId(789L);
-    when(savedList.getCandidates()).thenReturn(Set.of(candidate, candidate2));
+    givenListCandidates(candidate, candidate2);
 
     when(savedListService.get(LIST_ID)).thenReturn(savedList);
     when(resourceRepository.countAvailableByProviderAndService(
@@ -520,7 +522,7 @@ class DuolingoServiceTest {
     Candidate candidate2 = new Candidate();
     candidate2.setId(789L);
     candidate2.setCandidateNumber("C789");
-    when(savedList.getCandidates()).thenReturn(Set.of(candidate, candidate2));
+    givenListCandidates(candidate, candidate2);
 
     ServiceAssignment assignment2 = ServiceAssignment.builder()
         .id(2L)
@@ -566,7 +568,7 @@ class DuolingoServiceTest {
     Candidate candidate2 = new Candidate();
     candidate2.setId(789L);
     candidate2.setCandidateNumber("C789");
-    when(savedList.getCandidates()).thenReturn(Set.of(candidate, candidate2));
+    givenListCandidates(candidate, candidate2);
 
     when(savedListService.get(LIST_ID)).thenReturn(savedList);
     when(resourceRepository.countAvailableByProviderAndService(
@@ -606,7 +608,7 @@ class DuolingoServiceTest {
     Candidate candidate3 = new Candidate();
     candidate3.setId(999L);
     candidate3.setCandidateNumber("C999");
-    when(savedList.getCandidates()).thenReturn(Set.of(candidate, candidate2, candidate3));
+    givenListCandidates(candidate, candidate2, candidate3);
 
     when(savedListService.get(LIST_ID)).thenReturn(savedList);
     when(resourceRepository.countAvailableByProviderAndService(
@@ -658,7 +660,7 @@ class DuolingoServiceTest {
       Candidate candidate2 = new Candidate();
       candidate2.setId(789L);
       candidate2.setCandidateNumber("C789");
-      when(savedList.getCandidates()).thenReturn(Set.of(candidate, candidate2));
+      givenListCandidates(candidate, candidate2);
 
       when(savedListService.get(LIST_ID)).thenReturn(savedList);
       when(resourceRepository.countAvailableByProviderAndService(
@@ -689,12 +691,42 @@ class DuolingoServiceTest {
           .contains("action: assignToList")
           .contains("Failed to assign")
           .contains(CANDIDATE_ID.toString())
-          .contains(CANDIDATE_NUMBER)
           .contains("No available TEST_PROCTORED resources");
 
     } finally {
       serviceLogger.detachAppender(listAppender);
     }
+  }
+
+  @Test
+  @DisplayName("assign to list reads candidates in batches")
+  void assignToListReadsCandidatesInBatches() {
+    // Arrange
+    int batchSize = AbstractCandidateAssistanceService.ASSIGN_TO_LIST_BATCH_SIZE;
+    List<Long> firstBatch = LongStream.rangeClosed(1, batchSize).boxed().toList();
+    long lastId = batchSize + 1L;
+
+    when(savedListService.get(LIST_ID)).thenReturn(savedList);
+    when(savedListService.countCandidates(LIST_ID)).thenReturn(lastId);
+    when(savedListService.getCandidateIdsAfter(LIST_ID, 0L, batchSize)).thenReturn(firstBatch);
+    when(savedListService.getCandidateIdsAfter(LIST_ID, batchSize, batchSize))
+        .thenReturn(List.of(lastId));
+    when(resourceRepository.countAvailableByProviderAndService(
+        ServiceProvider.DUOLINGO, ServiceCode.TEST_PROCTORED))
+        .thenReturn(lastId);
+    when(assignmentRepository.findByCandidateAndProviderAndService(
+        any(), eq(ServiceProvider.DUOLINGO), eq(ServiceCode.TEST_PROCTORED)))
+        .thenReturn(Collections.emptyList());
+    when(assignmentEngine.assign(eq(duolingoAllocator), any(), eq(user))).thenReturn(assignment);
+
+    // Act
+    List<ServiceAssignment> result = duolingoService.assignToList(LIST_ID, user);
+
+    // Assert
+    assertThat(result).hasSize(batchSize + 1);
+    verify(savedListService).getCandidateIdsAfter(LIST_ID, 0L, batchSize);
+    verify(savedListService).getCandidateIdsAfter(LIST_ID, batchSize, batchSize);
+    verify(assignmentEngine).assign(duolingoAllocator, lastId, user);
   }
 
   // Reassign Tests
@@ -1094,6 +1126,14 @@ class DuolingoServiceTest {
 
     // Assert
     assertThat(result).isEqualTo(0L);
+  }
+
+  // Stubs the saved list so that it contains the given candidates
+  private void givenListCandidates(Candidate... candidates) {
+    List<Long> ids = Arrays.stream(candidates).map(Candidate::getId).sorted().toList();
+    lenient().when(savedListService.countCandidates(LIST_ID)).thenReturn((long) ids.size());
+    lenient().when(savedListService.getCandidateIdsAfter(eq(LIST_ID), eq(0L), anyInt()))
+        .thenReturn(ids);
   }
 }
 

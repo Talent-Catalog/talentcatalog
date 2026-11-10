@@ -286,6 +286,23 @@ public interface SavedListService {
     SavedList get(long savedListId) throws NoSuchObjectException;
 
     /**
+     * Counts the candidates in the given saved list without loading them.
+     * @param savedListId ID of the saved list
+     * @return number of candidates in the list
+     */
+    long countCandidates(long savedListId);
+
+    /**
+     * Returns the IDs of candidates in the given saved list in ascending order, starting after
+     * the given candidate ID. Used to process large lists in batches.
+     * @param savedListId ID of the saved list
+     * @param afterCandidateId only IDs greater than this are returned - use 0 for the first batch
+     * @param batchSize maximum number of IDs to return
+     * @return candidate IDs in ascending order
+     */
+    List<Long> getCandidateIdsAfter(long savedListId, long afterCandidateId, int batchSize);
+
+    /**
      * Get the SavedList with the given public id.
      * @param publicId public ID of the SavedList to get
      * @return Saved list
