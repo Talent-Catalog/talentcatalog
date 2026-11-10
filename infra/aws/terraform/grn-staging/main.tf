@@ -247,9 +247,11 @@ module "grn_staging" {
   cache_port            = 6379
 
   # SSM-backed application parameters
-  cloudfront_enable                     = true
-  candidate_files_bucket                = "candidate-files.test.globalrefugee.net"
-  s3_bucket                             = "files.tbbtalent.org" # todo: confirm or set GRN bucket
+  cloudfront_enable      = true
+  candidate_files_bucket = "candidate-files.test.globalrefugee.net"
+  # Staging legacy bucket, used with the dev-tbb-app key for TBB-to-OPC migration rehearsal.
+  # Remove once all legacy TBB data is migrated to OPC (see issue #3324).
+  s3_bucket                             = "dev.files.tbbtalent.org"
   translations_bucket                   = "translations.test.globalrefugee.net"
   translations_folder                   = "translations"
   s3_region                             = "eu-west-2"

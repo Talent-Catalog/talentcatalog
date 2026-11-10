@@ -247,9 +247,12 @@ module "grn_prod" {
   cache_port            = 6379
 
   # SSM-backed application parameters
-  cloudfront_enable                     = true
-  candidate_files_bucket                = "candidate-files.globalrefugee.net"
-  s3_bucket                             = "files.tbbtalent.org" # todo: confirm or set GRN bucket
+  cloudfront_enable      = true
+  candidate_files_bucket = "candidate-files.globalrefugee.net"
+  # Legacy TBB S3 bucket. Unused while enable_legacy_s3_credentials = false below: with no
+  # credentials, S3ResourceHelper falls back to anonymous access and never reads it. Left in
+  # place so the parameter keeps its existing value if the credentials are ever re-enabled.
+  s3_bucket                             = "files.tbbtalent.org"
   translations_bucket                   = "translations.globalrefugee.net"
   translations_folder                   = "translations"
   s3_region                             = "eu-west-2"
@@ -301,6 +304,11 @@ module "grn_prod" {
   web_admin                    = "https://globalrefugee.net/admin-portal"
   web_portal                   = "https://globalrefugee.net/candidate-portal"
   tc_instance_type             = "GRN"
+
+  # GRN prod has no legacy TBB S3 credentials (TC-1560). AWS_CREDENTIALS_ACCESSKEY /
+  # AWS_CREDENTIALS_SECRETKEY are not created, and aws_access_key / aws_secret_key below are
+  # left unset in secrets.auto.tfvars.
+  enable_legacy_s3_credentials = false
 
   # Secrets: loaded from secrets.auto.tfvars
   aws_access_key             = var.aws_access_key

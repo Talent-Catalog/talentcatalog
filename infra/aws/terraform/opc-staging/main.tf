@@ -248,7 +248,9 @@ module "tc-plus-staging" {
 
   # SSM-backed application parameters (stored in SSM, injected into ECS task)
   # Non-secrets: provided directly here
-  s3_bucket                             = "files.tbbtalent.org" # todo: confirm bucket name
+  # Staging legacy bucket, used with the dev-tbb-app key for TBB-to-OPC migration rehearsal.
+  # Remove once all legacy TBB data is migrated to OPC (see issue #3324).
+  s3_bucket                             = "dev.files.tbbtalent.org"
   translations_bucket                   = "translations.test.tctalent.org"
   translations_folder                   = "translations"
   s3_region                             = "eu-west-2"
