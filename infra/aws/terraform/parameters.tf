@@ -2,16 +2,52 @@
 # All values are provided by the environment's main.tf (non-secrets) or passed through
 # from secrets.auto.tfvars (secrets). Terraform is the source of truth for all parameter values.
 
+# Legacy TBB S3 credentials (TC-1560). Only created when enable_legacy_s3_credentials = true.
+# Terraform forbids sensitive values in count, so the gate is a separate bool rather than a
+# test on the credential values themselves. The preconditions catch the case where the feature
+# is enabled but secrets.auto.tfvars does not supply the values.
 resource "aws_ssm_parameter" "aws_access_key" {
+  count = var.enable_legacy_s3_credentials ? 1 : 0
+
   name  = "/${var.app}/${var.env}/AWS_CREDENTIALS_ACCESSKEY"
   type  = "String"
   value = var.aws_access_key
+
+  lifecycle {
+    precondition {
+      condition     = var.aws_access_key != ""
+      error_message = "aws_access_key must be set (in secrets.auto.tfvars) when enable_legacy_s3_credentials = true. Set enable_legacy_s3_credentials = false for environments that should have no legacy TBB S3 credentials."
+    }
+  }
 }
 
 resource "aws_ssm_parameter" "aws_secret_key" {
+  count = var.enable_legacy_s3_credentials ? 1 : 0
+
   name  = "/${var.app}/${var.env}/AWS_CREDENTIALS_SECRETKEY"
   type  = "SecureString"
   value = var.aws_secret_key
+
+  lifecycle {
+    precondition {
+      condition     = var.aws_secret_key != ""
+      error_message = "aws_secret_key must be set (in secrets.auto.tfvars) when enable_legacy_s3_credentials = true. Set enable_legacy_s3_credentials = false for environments that should have no legacy TBB S3 credentials."
+    }
+  }
+}
+
+# Adding count above changes these resources' state addresses from aws_ssm_parameter.aws_access_key
+# to aws_ssm_parameter.aws_access_key[0] (same for aws_secret_key). These moved blocks let roots
+# that keep the credentials re-use the existing state entries instead of destroying and recreating
+# the parameters.
+moved {
+  from = aws_ssm_parameter.aws_access_key
+  to   = aws_ssm_parameter.aws_access_key[0]
+}
+
+moved {
+  from = aws_ssm_parameter.aws_secret_key
+  to   = aws_ssm_parameter.aws_secret_key[0]
 }
 
 resource "aws_ssm_parameter" "s3_bucket" {
