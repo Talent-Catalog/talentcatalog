@@ -17,7 +17,10 @@
 package org.tctalent.server.repository.db;
 
 import java.util.List;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.tctalent.server.model.db.CandidateSavedList;
 import org.tctalent.server.model.db.CandidateSavedListKey;
 
@@ -29,4 +32,12 @@ public interface CandidateSavedListRepository extends
 
     List<CandidateSavedList> findBySavedList_Id(Long savedListId);
     List<CandidateSavedList> findByCandidate_Id(Long candidateId);
+
+    long countBySavedList_Id(Long savedListId);
+
+    @Query("select csl.candidate.id from CandidateSavedList csl"
+            + " where csl.savedList.id = :savedListId and csl.candidate.id > :afterCandidateId"
+            + " order by csl.candidate.id")
+    List<Long> findCandidateIdsBySavedListId(@Param("savedListId") Long savedListId,
+            @Param("afterCandidateId") Long afterCandidateId, Pageable pageable);
 }

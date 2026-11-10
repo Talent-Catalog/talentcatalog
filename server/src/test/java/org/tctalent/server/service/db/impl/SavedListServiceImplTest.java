@@ -63,6 +63,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.tctalent.server.configuration.GoogleDriveConfig;
@@ -498,6 +499,23 @@ class SavedListServiceImplTest {
     given(savedListRepository.findById(404L)).willReturn(Optional.empty());
 
     assertThrows(NoSuchObjectException.class, () -> service.get(404L));
+  }
+
+  @Test
+  @DisplayName("countCandidates delegates to repository")
+  void countCandidatesDelegatesToRepository() {
+    given(candidateSavedListRepository.countBySavedList_Id(1L)).willReturn(3L);
+
+    assertEquals(3L, service.countCandidates(1L));
+  }
+
+  @Test
+  @DisplayName("getCandidateIdsAfter delegates to repository with batch size as limit")
+  void getCandidateIdsAfterDelegatesToRepository() {
+    given(candidateSavedListRepository.findCandidateIdsBySavedListId(1L, 5L, PageRequest.of(0, 2)))
+        .willReturn(List.of(6L, 7L));
+
+    assertEquals(List.of(6L, 7L), service.getCandidateIdsAfter(1L, 5L, 2));
   }
 
   @Test
