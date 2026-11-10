@@ -123,29 +123,35 @@ async function setKeyword(
     page: Page,
     keyword: string
 ): Promise<Response> {
-  const [response] = await Promise.all([
-    page.waitForResponse(response => {
-      if (
-          response.request().method() !== 'POST' ||
-          pathOf(response.url()) !== SEARCH_PATH
-      ) {
-        return false;
-      }
+  // Register the listener before changing the input.
+  const responsePromise = page.waitForResponse(
+      response => {
+        if (
+            response.request().method() !== 'POST' ||
+            pathOf(response.url()) !== SEARCH_PATH
+        ) {
+          return false;
+        }
 
-      const payload = response.request().postDataJSON() as {
-        keyword?: string | null;
-      };
+        const payload = response.request().postDataJSON() as {
+          keyword?: string | null;
+        };
 
-      return (payload.keyword ?? '') === keyword;
-    }, {timeout: WAIT_MS}),
+        return (payload.keyword ?? '') === keyword;
+      },
+      {timeout: WAIT_MS}
+  );
 
-    keywordInput(page).fill(keyword),
-  ]);
+  void responsePromise.catch(() => {});
+
+  await keywordInput(page).fill(keyword);
+
+  const response = await responsePromise;
 
   await ensureOk(response);
+
   return response;
 }
-
 /**
  * Open Live Jobs.
  *
@@ -494,16 +500,21 @@ async function measureJobsJourney(
 
     const detailPath = `/api/admin/job/${fixture.jobId}`;
 
-    // Register the API listener before clicking.
-    const [detailResponse] = await Promise.all([
-      page.waitForResponse(
-          response =>
-              response.request().method() === 'GET' &&
-              pathOf(response.url()) === detailPath,
-          {timeout: WAIT_MS}
-      ),
-      jobLink.click(),
-    ]);
+// Register the API listener before clicking.
+    const detailResponsePromise = page.waitForResponse(
+        response =>
+            response.request().method() === 'GET' &&
+            pathOf(response.url()) === detailPath,
+        {timeout: WAIT_MS}
+    );
+
+    void detailResponsePromise.catch(() => {});
+
+// Open Job Details.
+    await jobLink.click();
+
+// Wait for the matching API response.
+    const detailResponse = await detailResponsePromise;
 
     await ensureOk(detailResponse);
 
