@@ -55,7 +55,7 @@ jobs:
         uses: codecov/codecov-action@v7
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          files: ./ui/candidate-portal/coverage/lcov.info
+          files: ./ui/candidate-portal/coverage/candidate-portal/lcov.info
           flags: candidate-portal
           name: candidate-portal-coverage
           fail_ci_if_error: true
