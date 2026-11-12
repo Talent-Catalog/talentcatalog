@@ -14,247 +14,257 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, forwardRef, Input, ChangeDetectionStrategy} from '@angular/core';
-import {ComponentFixture, TestBed} from '@angular/core/testing';
-import {By} from '@angular/platform-browser';
-import {ControlValueAccessor, FormsModule, NG_VALUE_ACCESSOR} from '@angular/forms';
-import {TranslateModule} from '@ngx-translate/core';
+import { Component, forwardRef, Input, ChangeDetectionStrategy } from '@angular/core';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { By } from '@angular/platform-browser';
+import { ControlValueAccessor, FormsModule, NG_VALUE_ACCESSOR } from '@angular/forms';
+import { TranslateModule } from '@ngx-translate/core';
 
-import {CandidateOccupationCardComponent} from './candidate-occupation-card.component';
-import {CandidateOccupation} from '../../../model/candidate-occupation';
-import {Occupation} from '../../../model/occupation';
+import { CandidateOccupationCardComponent } from './candidate-occupation-card.component';
+import { CandidateOccupation } from '../../../model/candidate-occupation';
+import { Occupation } from '../../../model/occupation';
 
 @Component({
-  selector: 'tc-button',
-  template: '<ng-content></ng-content>',
-  changeDetection: ChangeDetectionStrategy.Eager,
-  standalone: false
+    selector: 'tc-button',
+    template: '<ng-content></ng-content>',
+    changeDetection: ChangeDetectionStrategy.Eager,
+    standalone: false
 })
 class TcButtonStubComponent {
-  @Input() color?: string;
-  @Input() disabled?: boolean;
+    @Input()
+    color?: string;
+    @Input()
+    disabled?: boolean;
 }
 
 @Component({
-  selector: 'tc-label',
-  template: '<ng-content></ng-content>',
-  changeDetection: ChangeDetectionStrategy.Eager,
-  standalone: false
+    selector: 'tc-label',
+    template: '<ng-content></ng-content>',
+    changeDetection: ChangeDetectionStrategy.Eager,
+    standalone: false
 })
-class TcLabelStubComponent {}
+class TcLabelStubComponent {
+}
 
 @Component({
-  selector: 'tc-input',
-  template: '',
-  providers: [{
-    provide: NG_VALUE_ACCESSOR,
-    useExisting: forwardRef(() => TcInputStubComponent),
-    multi: true
-  }],
-  changeDetection: ChangeDetectionStrategy.Eager,
-  standalone: false
+    selector: 'tc-input',
+    template: '',
+    providers: [{
+            provide: NG_VALUE_ACCESSOR,
+            useExisting: forwardRef(() => TcInputStubComponent),
+            multi: true
+        }],
+    changeDetection: ChangeDetectionStrategy.Eager,
+    standalone: false
 })
 class TcInputStubComponent implements ControlValueAccessor {
-  @Input() type?: string;
-  @Input() min?: number | string;
-  writeValue(): void {}
-  registerOnChange(): void {}
-  registerOnTouched(): void {}
+    @Input()
+    type?: string;
+    @Input()
+    min?: number | string;
+    writeValue(): void { }
+    registerOnChange(): void { }
+    registerOnTouched(): void { }
 }
 
 @Component({
-  selector: 'ng-select',
-  template: '<ng-content></ng-content>',
-  providers: [{
-    provide: NG_VALUE_ACCESSOR,
-    useExisting: forwardRef(() => NgSelectStubComponent),
-    multi: true
-  }],
-  changeDetection: ChangeDetectionStrategy.Eager,
-  standalone: false
+    selector: 'ng-select',
+    template: '<ng-content></ng-content>',
+    providers: [{
+            provide: NG_VALUE_ACCESSOR,
+            useExisting: forwardRef(() => NgSelectStubComponent),
+            multi: true
+        }],
+    changeDetection: ChangeDetectionStrategy.Eager,
+    standalone: false
 })
 class NgSelectStubComponent implements ControlValueAccessor {
-  @Input() id?: string;
-  @Input() clearable?: boolean;
-  @Input() placeholder?: string;
-  writeValue(): void {}
-  registerOnChange(): void {}
-  registerOnTouched(): void {}
+    @Input()
+    id?: string;
+    @Input()
+    clearable?: boolean;
+    @Input()
+    placeholder?: string;
+    writeValue(): void { }
+    registerOnChange(): void { }
+    registerOnTouched(): void { }
 }
 
 @Component({
-  selector: 'ng-option',
-  template: '<ng-content></ng-content>',
-  changeDetection: ChangeDetectionStrategy.Eager,
-  standalone: false
+    selector: 'ng-option',
+    template: '<ng-content></ng-content>',
+    changeDetection: ChangeDetectionStrategy.Eager,
+    standalone: false
 })
 class NgOptionStubComponent {
-  @Input() value?: unknown;
+    @Input()
+    value?: unknown;
 }
 
 @Component({
-  selector: 'tc-badge',
-  template: '<ng-content></ng-content>',
-  changeDetection: ChangeDetectionStrategy.Eager,
-  standalone: false
+    selector: 'tc-badge',
+    template: '<ng-content></ng-content>',
+    changeDetection: ChangeDetectionStrategy.Eager,
+    standalone: false
 })
 class TcBadgeStubComponent {
-  @Input() color?: string;
+    @Input()
+    color?: string;
 }
 
 function makeOccupation(id: number, name: string): Occupation {
-  return {id, name};
+    return { id, name };
 }
 
 function makeCandidateOccupation(overrides: Partial<CandidateOccupation> = {}): CandidateOccupation {
-  return {
-    id: 1,
-    occupation: makeOccupation(1, 'Engineer'),
-    occupationId: 1,
-    yearsExperience: 4,
-    migrationOccupation: '',
-    ...overrides
-  };
+    return {
+        id: 1,
+        occupation: makeOccupation(1, 'Engineer'),
+        occupationId: 1,
+        yearsExperience: 4,
+        migrationOccupation: '',
+        ...overrides
+    };
 }
 
 describe('CandidateOccupationCardComponent', () => {
-  let component: CandidateOccupationCardComponent;
-  let fixture: ComponentFixture<CandidateOccupationCardComponent>;
+    let component: CandidateOccupationCardComponent;
+    let fixture: ComponentFixture<CandidateOccupationCardComponent>;
 
-  async function configureAndCreate(options?: {
-    preview?: boolean;
-    disabled?: boolean;
-    isPrincipal?: boolean;
-    candidateOccupation?: CandidateOccupation;
-    candidateOccupations?: CandidateOccupation[];
-    occupations?: Occupation[];
-  }) {
-    await TestBed.configureTestingModule({
-      declarations: [
-        CandidateOccupationCardComponent,
-        TcButtonStubComponent,
-        TcLabelStubComponent,
-        TcInputStubComponent,
-        NgSelectStubComponent,
-        NgOptionStubComponent,
-        TcBadgeStubComponent
-      ],
-      imports: [FormsModule, TranslateModule.forRoot()]
-    }).compileComponents();
+    async function configureAndCreate(options?: {
+        preview?: boolean;
+        disabled?: boolean;
+        isPrincipal?: boolean;
+        candidateOccupation?: CandidateOccupation;
+        candidateOccupations?: CandidateOccupation[];
+        occupations?: Occupation[];
+    }) {
+        await TestBed.configureTestingModule({
+            declarations: [
+                CandidateOccupationCardComponent,
+                TcButtonStubComponent,
+                TcLabelStubComponent,
+                TcInputStubComponent,
+                NgSelectStubComponent,
+                NgOptionStubComponent,
+                TcBadgeStubComponent
+            ],
+            imports: [FormsModule, TranslateModule.forRoot()]
+        }).compileComponents();
 
-    fixture = TestBed.createComponent(CandidateOccupationCardComponent);
-    component = fixture.componentInstance;
-    component.preview = options?.preview ?? false;
-    component.disabled = options?.disabled ?? false;
-    component.isPrincipal = options?.isPrincipal ?? false;
-    component.candidateOccupation = options?.candidateOccupation ?? makeCandidateOccupation();
-    component.candidateOccupations = options?.candidateOccupations ?? [component.candidateOccupation];
-    component.occupations = options?.occupations ?? [
-      makeOccupation(0, 'Unknown'),
-      makeOccupation(1, 'Engineer'),
-      makeOccupation(2, 'Teacher')
-    ];
+        fixture = TestBed.createComponent(CandidateOccupationCardComponent);
+        component = fixture.componentInstance;
+        component.preview = options?.preview ?? false;
+        component.disabled = options?.disabled ?? false;
+        component.isPrincipal = options?.isPrincipal ?? false;
+        component.candidateOccupation = options?.candidateOccupation ?? makeCandidateOccupation();
+        component.candidateOccupations = options?.candidateOccupations ?? [component.candidateOccupation];
+        component.occupations = options?.occupations ?? [
+            makeOccupation(0, 'Unknown'),
+            makeOccupation(1, 'Engineer'),
+            makeOccupation(2, 'Teacher')
+        ];
 
-    fixture.detectChanges();
-  }
+        fixture.detectChanges();
+    }
 
-  afterEach(() => TestBed.resetTestingModule());
+    afterEach(() => TestBed.resetTestingModule());
 
-  it('should create', async () => {
-    await configureAndCreate();
+    it('should create', async () => {
+        await configureAndCreate();
 
-    expect(component).toBeTruthy();
-  });
-
-  describe('template tc components', () => {
-    it('should render tc-label, ng-select.tc-select, tc-input, and a delete tc-button in edit mode', async () => {
-      await configureAndCreate();
-
-      const nativeElement = fixture.nativeElement as HTMLElement;
-      const button = fixture.debugElement.query(By.directive(TcButtonStubComponent));
-      const labels = fixture.debugElement.queryAll(By.directive(TcLabelStubComponent));
-      const select = fixture.debugElement.query(By.directive(NgSelectStubComponent));
-      const input = fixture.debugElement.query(By.directive(TcInputStubComponent));
-
-      expect(button.componentInstance.color).toBe('error');
-      expect(labels.length).toBeGreaterThan(0);
-      expect(select.componentInstance.id).toBe('occupationId');
-      expect(select.nativeElement.classList).toContain('tc-select');
-      expect(input.componentInstance.type).toBe('number');
-      expect(nativeElement.querySelector('.fw-bold')).toBeFalsy();
+        expect(component).toBeTruthy();
     });
 
-    it('should render the occupation name in bold and years experience in muted text in preview mode', async () => {
-      await configureAndCreate({preview: true});
+    describe('template tc components', () => {
+        it('should render tc-label, ng-select.tc-select, tc-input, and a delete tc-button in edit mode', async () => {
+            await configureAndCreate();
 
-      const nativeElement = fixture.nativeElement as HTMLElement;
-      const name = nativeElement.querySelector('.fw-bold');
-      const years = nativeElement.querySelector('.text-muted');
+            const nativeElement = fixture.nativeElement as HTMLElement;
+            const button = fixture.debugElement.query(By.directive(TcButtonStubComponent));
+            const labels = fixture.debugElement.queryAll(By.directive(TcLabelStubComponent));
+            const select = fixture.debugElement.query(By.directive(NgSelectStubComponent));
+            const input = fixture.debugElement.query(By.directive(TcInputStubComponent));
 
-      expect(name?.textContent).toContain('Engineer');
-      expect(years?.textContent).toContain('REGISTRATION.OCCUPATION.LABEL.YEARS_OF_EXPERIENCE_PLURAL');
-      expect(nativeElement.querySelector('ng-select')).toBeFalsy();
-      expect(nativeElement.querySelector('tc-input')).toBeFalsy();
+            expect(button.componentInstance.color).toBe('error');
+            expect(labels.length).toBeGreaterThan(0);
+            expect(select.componentInstance.id).toBe('occupationId');
+            expect(select.nativeElement.classList).toContain('tc-select');
+            expect(input.componentInstance.type).toBe('number');
+            expect(nativeElement.querySelector('.fw-bold')).toBeFalsy();
+        });
+
+        it('should render the occupation name in bold and years experience in muted text in preview mode', async () => {
+            await configureAndCreate({ preview: true });
+
+            const nativeElement = fixture.nativeElement as HTMLElement;
+            const name = nativeElement.querySelector('.fw-bold');
+            const years = nativeElement.querySelector('.text-muted');
+
+            expect(name?.textContent).toContain('Engineer');
+            expect(years?.textContent).toContain('REGISTRATION.OCCUPATION.LABEL.YEARS_OF_EXPERIENCE_PLURAL');
+            expect(nativeElement.querySelector('ng-select')).toBeFalsy();
+            expect(nativeElement.querySelector('tc-input')).toBeFalsy();
+        });
+
+        it('should use the singular years-experience translation when yearsExperience is 1', async () => {
+            await configureAndCreate({ preview: true, candidateOccupation: makeCandidateOccupation({ yearsExperience: 1 }) });
+
+            const years = (fixture.nativeElement as HTMLElement).querySelector('.text-muted');
+
+            expect(years?.textContent).toContain('REGISTRATION.OCCUPATION.LABEL.YEARS_OF_EXPERIENCE_SINGULAR');
+        });
+
+        it('should not render the Principal badge when isPrincipal is false', async () => {
+            await configureAndCreate({ preview: true, isPrincipal: false });
+            expect(fixture.debugElement.query(By.directive(TcBadgeStubComponent))).toBeFalsy();
+        });
+
+        it('should render the Principal badge next to the occupation name when isPrincipal is true', async () => {
+            await configureAndCreate({ preview: true, isPrincipal: true });
+
+            const badge = fixture.debugElement.query(By.directive(TcBadgeStubComponent));
+            const nameContainer = (fixture.nativeElement as HTMLElement).querySelector('.fw-bold')?.parentElement;
+
+            expect(badge).toBeTruthy();
+            expect(nameContainer.contains(badge.nativeElement)).toBe(true);
+        });
     });
 
-    it('should use the singular years-experience translation when yearsExperience is 1', async () => {
-      await configureAndCreate({preview: true, candidateOccupation: makeCandidateOccupation({yearsExperience: 1})});
+    describe('behaviour', () => {
+        beforeEach(async () => configureAndCreate());
 
-      const years = (fixture.nativeElement as HTMLElement).querySelector('.text-muted');
+        it('should emit onDelete when delete is called', () => {
+            const onDeleteSpy = vi.spyOn(component.onDelete, 'emit').mockReturnValue(undefined);
 
-      expect(years?.textContent).toContain('REGISTRATION.OCCUPATION.LABEL.YEARS_OF_EXPERIENCE_SINGULAR');
+            component.delete();
+
+            expect(onDeleteSpy).toHaveBeenCalled();
+        });
+
+        it('should return the matching occupation name', () => {
+            expect(component.getOccupationName(makeOccupation(1, 'Ignored'))).toBe('Engineer');
+        });
+
+        it('should identify singular vs plural years of experience', () => {
+            expect(component.isSingularYear(1)).toBe(true);
+            expect(component.isSingularYear('1')).toBe(true);
+            expect(component.isSingularYear(0)).toBe(false);
+            expect(component.isSingularYear(4)).toBe(false);
+        });
+
+        it('should filter out already selected occupations and unknown when not current', () => {
+            component.candidateOccupations = [
+                makeCandidateOccupation({ id: 1, occupationId: 1, occupation: makeOccupation(1, 'Engineer') }),
+                makeCandidateOccupation({ id: 2, occupationId: 2, occupation: makeOccupation(2, 'Teacher') })
+            ];
+            component.candidateOccupation = component.candidateOccupations[0];
+
+            const ids = component.filteredOccupations.map(occupation => occupation.id);
+
+            expect(ids).toContain(1);
+            expect(ids).not.toContain(2);
+            expect(ids).not.toContain(0);
+        });
     });
-
-    it('should not render the Principal badge when isPrincipal is false', async () => {
-      await configureAndCreate({preview: true, isPrincipal: false});
-      expect(fixture.debugElement.query(By.directive(TcBadgeStubComponent))).toBeFalsy();
-    });
-
-    it('should render the Principal badge next to the occupation name when isPrincipal is true', async () => {
-      await configureAndCreate({preview: true, isPrincipal: true});
-
-      const badge = fixture.debugElement.query(By.directive(TcBadgeStubComponent));
-      const nameContainer = (fixture.nativeElement as HTMLElement).querySelector('.fw-bold')?.parentElement;
-
-      expect(badge).toBeTruthy();
-      expect(nameContainer.contains(badge.nativeElement)).toBeTrue();
-    });
-  });
-
-  describe('behaviour', () => {
-    beforeEach(async () => configureAndCreate());
-
-    it('should emit onDelete when delete is called', () => {
-      const onDeleteSpy = spyOn(component.onDelete, 'emit');
-
-      component.delete();
-
-      expect(onDeleteSpy).toHaveBeenCalled();
-    });
-
-    it('should return the matching occupation name', () => {
-      expect(component.getOccupationName(makeOccupation(1, 'Ignored'))).toBe('Engineer');
-    });
-
-    it('should identify singular vs plural years of experience', () => {
-      expect(component.isSingularYear(1)).toBeTrue();
-      expect(component.isSingularYear('1')).toBeTrue();
-      expect(component.isSingularYear(0)).toBeFalse();
-      expect(component.isSingularYear(4)).toBeFalse();
-    });
-
-    it('should filter out already selected occupations and unknown when not current', () => {
-      component.candidateOccupations = [
-        makeCandidateOccupation({id: 1, occupationId: 1, occupation: makeOccupation(1, 'Engineer')}),
-        makeCandidateOccupation({id: 2, occupationId: 2, occupation: makeOccupation(2, 'Teacher')})
-      ];
-      component.candidateOccupation = component.candidateOccupations[0];
-
-      const ids = component.filteredOccupations.map(occupation => occupation.id);
-
-      expect(ids).toContain(1);
-      expect(ids).not.toContain(2);
-      expect(ids).not.toContain(0);
-    });
-  });
 });

@@ -1,3 +1,4 @@
+import type { MockedObject } from "vitest";
 /*
  * Copyright (c) 2026 Talent Catalog.
  *
@@ -14,213 +15,171 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, Input, Pipe, PipeTransform, ChangeDetectionStrategy} from '@angular/core';
-import {CommonModule} from '@angular/common';
-import {ComponentFixture, TestBed} from '@angular/core/testing';
-import {By} from '@angular/platform-browser';
+import { Component, Input, Pipe, PipeTransform, ChangeDetectionStrategy } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { By } from '@angular/platform-browser';
 
-import {JobChat} from '../../../model/chat';
-import {ChatService} from '../../../services/chat.service';
-import {ViewChatComponent} from './view-chat.component';
+import { JobChat } from '../../../model/chat';
+import { ChatService } from '../../../services/chat.service';
+import { ViewChatComponent } from './view-chat.component';
 
 @Pipe({
-  name: 'translate',
-  standalone: false
+    name: 'translate',
+    standalone: false
 })
 class TranslatePipeStub implements PipeTransform {
-  transform(value: string): string {
-    return value;
-  }
+    transform(value: string): string {
+        return value;
+    }
 }
 
 @Component({
-  selector: 'app-chat-read-status',
-  template: '',
-  changeDetection: ChangeDetectionStrategy.Eager,
-  standalone: false
+    selector: 'app-chat-read-status',
+    template: '',
+    changeDetection: ChangeDetectionStrategy.Eager,
+    standalone: false
 })
 class ChatReadStatusStubComponent {
-  @Input() chats: JobChat[];
+    @Input()
+    chats: JobChat[];
 }
 
 describe('ViewChatComponent', () => {
-  let component: ViewChatComponent;
-  let fixture: ComponentFixture<ViewChatComponent>;
-  let chatServiceSpy: jasmine.SpyObj<ChatService>;
-  let chat: JobChat;
+    let component: ViewChatComponent;
+    let fixture: ComponentFixture<ViewChatComponent>;
+    let chatServiceSpy: MockedObject<ChatService>;
+    let chat: JobChat;
 
-  beforeEach(async () => {
-    chatServiceSpy = jasmine.createSpyObj<ChatService>(
-      'ChatService',
-      [
-        'getChatInfoParticipantsKey',
-        'getChatInfoPurposeKey'
-      ]
-    );
+    beforeEach(async () => {
+        chatServiceSpy = {
+            getChatInfoParticipantsKey: vi.fn().mockName("ChatService.getChatInfoParticipantsKey"),
+            getChatInfoPurposeKey: vi.fn().mockName("ChatService.getChatInfoPurposeKey")
+        } as unknown as MockedObject<ChatService>;
 
-    chatServiceSpy.getChatInfoParticipantsKey.and.returnValue(
-      'CHAT_INFO.PARTICIPANTS.TEST'
-    );
+        chatServiceSpy.getChatInfoParticipantsKey.mockReturnValue('CHAT_INFO.PARTICIPANTS.TEST');
 
-    chatServiceSpy.getChatInfoPurposeKey.and.returnValue(
-      'CHAT_INFO.PURPOSE.TEST'
-    );
+        chatServiceSpy.getChatInfoPurposeKey.mockReturnValue('CHAT_INFO.PURPOSE.TEST');
 
-    await TestBed.configureTestingModule({
-      imports: [CommonModule],
-      declarations: [
-        ViewChatComponent,
-        TranslatePipeStub,
-        ChatReadStatusStubComponent
-      ],
-      providers: [
-        {
-          provide: ChatService,
-          useValue: chatServiceSpy
-        }
-      ]
-    }).compileComponents();
+        await TestBed.configureTestingModule({
+            imports: [CommonModule],
+            declarations: [
+                ViewChatComponent,
+                TranslatePipeStub,
+                ChatReadStatusStubComponent
+            ],
+            providers: [
+                {
+                    provide: ChatService,
+                    useValue: chatServiceSpy
+                }
+            ]
+        }).compileComponents();
 
-    fixture = TestBed.createComponent(ViewChatComponent);
-    component = fixture.componentInstance;
+        fixture = TestBed.createComponent(ViewChatComponent);
+        component = fixture.componentInstance;
 
-    chat = {
-      id: 1,
-      type: 'Job'
-    } as unknown as JobChat;
+        chat = {
+            id: 1,
+            type: 'Job'
+        } as unknown as JobChat;
 
-    component.chat = chat;
-  });
+        component.chat = chat;
+    });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
 
-  it('should initialise without changing the supplied chat', () => {
-    expect(() => component.ngOnInit()).not.toThrow();
-    expect(component.chat).toBe(chat);
-  });
+    it('should initialise without changing the supplied chat', () => {
+        expect(() => component.ngOnInit()).not.toThrow();
+        expect(component.chat).toBe(chat);
+    });
 
-  it('should return the participants translation key', () => {
-    const result = component.chatParticipantsKey;
+    it('should return the participants translation key', () => {
+        const result = component.chatParticipantsKey;
 
-    expect(result).toBe(
-      'CHAT_INFO.PARTICIPANTS.TEST'
-    );
+        expect(result).toBe('CHAT_INFO.PARTICIPANTS.TEST');
 
-    expect(
-      chatServiceSpy.getChatInfoParticipantsKey
-    ).toHaveBeenCalledOnceWith(chat.type);
-  });
+        expect(chatServiceSpy.getChatInfoParticipantsKey).toHaveBeenCalledTimes(1);
 
-  it('should return the purpose translation key', () => {
-    const result = component.chatPurposeKey;
+        expect(chatServiceSpy.getChatInfoParticipantsKey).toHaveBeenCalledWith(chat.type);
+    });
 
-    expect(result).toBe(
-      'CHAT_INFO.PURPOSE.TEST'
-    );
+    it('should return the purpose translation key', () => {
+        const result = component.chatPurposeKey;
 
-    expect(
-      chatServiceSpy.getChatInfoPurposeKey
-    ).toHaveBeenCalledOnceWith(chat.type);
-  });
+        expect(result).toBe('CHAT_INFO.PURPOSE.TEST');
 
-  it('should render the chat information when chat is supplied', () => {
-    fixture.detectChanges();
+        expect(chatServiceSpy.getChatInfoPurposeKey).toHaveBeenCalledTimes(1);
 
-    const container = fixture.debugElement.query(
-      By.css('.d-flex')
-    );
+        expect(chatServiceSpy.getChatInfoPurposeKey).toHaveBeenCalledWith(chat.type);
+    });
 
-    expect(container).toBeTruthy();
-  });
+    it('should render the chat information when chat is supplied', () => {
+        fixture.detectChanges();
 
-  it('should render the participant and purpose labels', () => {
-    fixture.detectChanges();
+        const container = fixture.debugElement.query(By.css('.d-flex'));
 
-    const paragraphs = fixture.debugElement.queryAll(
-      By.css('p')
-    );
+        expect(container).toBeTruthy();
+    });
 
-    expect(paragraphs.length).toBe(2);
+    it('should render the participant and purpose labels', () => {
+        fixture.detectChanges();
 
-    const participantsText =
-      paragraphs[0].nativeElement.textContent
-      .replace(/\s+/g, ' ')
-      .trim();
+        const paragraphs = fixture.debugElement.queryAll(By.css('p'));
 
-    const purposeText =
-      paragraphs[1].nativeElement.textContent
-      .replace(/\s+/g, ' ')
-      .trim();
+        expect(paragraphs.length).toBe(2);
 
-    expect(participantsText).toContain(
-      'CHAT_INFO.LABEL.PARTICIPANTS'
-    );
+        const participantsText = paragraphs[0].nativeElement.textContent
+            .replace(/\s+/g, ' ')
+            .trim();
 
-    expect(participantsText).toContain(
-      'CHAT_INFO.PARTICIPANTS.TEST'
-    );
+        const purposeText = paragraphs[1].nativeElement.textContent
+            .replace(/\s+/g, ' ')
+            .trim();
 
-    expect(purposeText).toContain(
-      'CHAT_INFO.LABEL.PURPOSE'
-    );
+        expect(participantsText).toContain('CHAT_INFO.LABEL.PARTICIPANTS');
 
-    expect(purposeText).toContain(
-      'CHAT_INFO.PURPOSE.TEST'
-    );
-  });
+        expect(participantsText).toContain('CHAT_INFO.PARTICIPANTS.TEST');
 
-  it('should request both translation keys using the chat type', () => {
-    fixture.detectChanges();
+        expect(purposeText).toContain('CHAT_INFO.LABEL.PURPOSE');
 
-    expect(
-      chatServiceSpy.getChatInfoParticipantsKey
-    ).toHaveBeenCalledWith(chat.type);
+        expect(purposeText).toContain('CHAT_INFO.PURPOSE.TEST');
+    });
 
-    expect(
-      chatServiceSpy.getChatInfoPurposeKey
-    ).toHaveBeenCalledWith(chat.type);
-  });
+    it('should request both translation keys using the chat type', () => {
+        fixture.detectChanges();
 
-  it('should pass the current chat to the read-status component', () => {
-    fixture.detectChanges();
+        expect(chatServiceSpy.getChatInfoParticipantsKey).toHaveBeenCalledWith(chat.type);
 
-    const readStatusElement = fixture.debugElement.query(
-      By.directive(ChatReadStatusStubComponent)
-    );
+        expect(chatServiceSpy.getChatInfoPurposeKey).toHaveBeenCalledWith(chat.type);
+    });
 
-    expect(readStatusElement).toBeTruthy();
+    it('should pass the current chat to the read-status component', () => {
+        fixture.detectChanges();
 
-    const readStatusComponent =
-      readStatusElement.componentInstance as
-        ChatReadStatusStubComponent;
+        const readStatusElement = fixture.debugElement.query(By.directive(ChatReadStatusStubComponent));
 
-    expect(readStatusComponent.chats).toEqual([chat]);
-    expect(readStatusComponent.chats[0]).toBe(chat);
-  });
+        expect(readStatusElement).toBeTruthy();
 
-  it('should not render chat information when chat is null', () => {
-    component.chat = null as any;
+        const readStatusComponent = readStatusElement.componentInstance as ChatReadStatusStubComponent;
 
-    fixture.detectChanges();
+        expect(readStatusComponent.chats).toEqual([chat]);
+        expect(readStatusComponent.chats[0]).toBe(chat);
+    });
 
-    expect(
-      fixture.debugElement.query(By.css('.d-flex'))
-    ).toBeNull();
+    it('should not render chat information when chat is null', () => {
+        component.chat = null as any;
 
-    expect(
-      fixture.debugElement.query(
-        By.directive(ChatReadStatusStubComponent)
-      )
-    ).toBeNull();
+        fixture.detectChanges();
 
-    expect(
-      chatServiceSpy.getChatInfoParticipantsKey
-    ).not.toHaveBeenCalled();
+        expect(fixture.debugElement.query(By.css('.d-flex'))).toBeNull();
 
-    expect(
-      chatServiceSpy.getChatInfoPurposeKey
-    ).not.toHaveBeenCalled();
-  });
+        expect(fixture.debugElement.query(By.directive(ChatReadStatusStubComponent))).toBeNull();
+
+        expect(chatServiceSpy.getChatInfoParticipantsKey).not.toHaveBeenCalled();
+
+        expect(chatServiceSpy.getChatInfoPurposeKey).not.toHaveBeenCalled();
+    });
 });

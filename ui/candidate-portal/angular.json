@@ -96,6 +96,37 @@
                   "maximumError": "5mb"
                 }
               ]
+            },
+            "testing": {
+              "aot": false,
+              "polyfills": [
+                "@angular/localize/init",
+                "core-js/es/array/includes",
+                "zone.js",
+                "zone.js/testing",
+                "zone.js/plugins/vitest-patch"
+              ],
+              "sourceMap": true,
+              "styles": [
+                "src/styles.scss"
+              ],
+              "assets": [
+                "src/favicon.ico",
+                "src/assets",
+                {
+                  "glob": "zxing_reader.wasm",
+                  "input": "node_modules/zxing-wasm/dist/reader",
+                  "output": "assets/wasm"
+                },
+                {
+                  "glob": "unhcr-sample.png",
+                  "input": "docs/verify-plus",
+                  "output": "docs/verify-plus"
+                }
+              ],
+              "stylePreprocessorOptions": {
+                "includePaths": ["."]
+              }
             }
           },
           "defaultConfiguration": ""
@@ -121,38 +152,20 @@
           }
         },
         "test": {
-          "builder": "@angular/build:karma",
+          "builder": "@angular/build:unit-test",
           "options": {
-            "main": "src/test.ts",
-            "polyfills": [
-              "src/polyfills.ts"
+            "runner": "vitest",
+            "buildTarget": "candidate-portal:build:testing",
+            "tsConfig": "tsconfig.spec.json",
+            "setupFiles": [
+              "src/test-setup.ts"
             ],
-            "tsConfig": "src/tsconfig.spec.json",
-            "karmaConfig": "src/karma.conf.js",
-            "styles": [
-              "src/styles.scss"
-            ],
-            "scripts": [],
-            "assets": [
-              "src/favicon.ico",
-              "src/assets",
-              {
-                "glob": "zxing_reader.wasm",
-                "input": "node_modules/zxing-wasm/dist/reader",
-                "output": "assets/wasm"
-              },
-              {
-                "glob": "unhcr-sample.png",
-                "input": "docs/verify-plus",
-                "output": "docs/verify-plus"
-              }
-            ],
-            "codeCoverage": true,
-            "stylePreprocessorOptions": {
-              "includePaths": [
-                "."
-              ]
-            }
+            "coverage": true,
+            "coverageReporters": [
+              "html",
+              "lcovonly",
+              "text-summary"
+            ]
           }
         }
       }

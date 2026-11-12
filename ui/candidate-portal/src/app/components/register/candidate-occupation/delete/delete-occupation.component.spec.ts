@@ -1,3 +1,4 @@
+import type { MockedObject } from "vitest";
 /*
  * Copyright (c) 2026 Talent Catalog.
  *
@@ -14,102 +15,105 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {NO_ERRORS_SCHEMA} from '@angular/core';
-import {ComponentFixture, TestBed} from '@angular/core/testing';
-import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
-import {TranslateModule, TranslateService} from '@ngx-translate/core';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
-import {DeleteOccupationComponent} from './delete-occupation.component';
+import { DeleteOccupationComponent } from './delete-occupation.component';
 
 describe('DeleteOccupationComponent', () => {
-  let component: DeleteOccupationComponent;
-  let fixture: ComponentFixture<DeleteOccupationComponent>;
-  let activeModalSpy: jasmine.SpyObj<NgbActiveModal>;
+    let component: DeleteOccupationComponent;
+    let fixture: ComponentFixture<DeleteOccupationComponent>;
+    let activeModalSpy: MockedObject<NgbActiveModal>;
 
-  async function configureAndCreate() {
-    activeModalSpy = jasmine.createSpyObj('NgbActiveModal', ['close', 'dismiss']);
+    async function configureAndCreate() {
+        activeModalSpy = {
+            close: vi.fn().mockName("NgbActiveModal.close"),
+            dismiss: vi.fn().mockName("NgbActiveModal.dismiss")
+        } as unknown as MockedObject<NgbActiveModal>;
 
-    await TestBed.configureTestingModule({
-      declarations: [DeleteOccupationComponent],
-      imports: [TranslateModule.forRoot()],
-      providers: [
-        {provide: NgbActiveModal, useValue: activeModalSpy}
-      ],
-      schemas: [NO_ERRORS_SCHEMA]
-    }).compileComponents();
+        await TestBed.configureTestingModule({
+            declarations: [DeleteOccupationComponent],
+            imports: [TranslateModule.forRoot()],
+            providers: [
+                { provide: NgbActiveModal, useValue: activeModalSpy }
+            ],
+            schemas: [NO_ERRORS_SCHEMA]
+        }).compileComponents();
 
-    fixture = TestBed.createComponent(DeleteOccupationComponent);
-    component = fixture.componentInstance;
+        fixture = TestBed.createComponent(DeleteOccupationComponent);
+        component = fixture.componentInstance;
 
-    const translateService = TestBed.inject(TranslateService);
-    translateService.use('en');
+        const translateService = TestBed.inject(TranslateService);
+        translateService.use('en');
 
-    fixture.detectChanges();
-  }
+        fixture.detectChanges();
+    }
 
-  afterEach(() => TestBed.resetTestingModule());
+    afterEach(() => TestBed.resetTestingModule());
 
-  it('should create', async () => {
-    await configureAndCreate();
-    expect(component).toBeTruthy();
-  });
-
-  describe('template', () => {
-    beforeEach(async () => configureAndCreate());
-
-    it('should render the translated key content for the delete modal', () => {
-      const text = (fixture.nativeElement as HTMLElement).textContent || '';
-
-      expect(text).toContain('REGISTRATION.OCCUPATION.DELETE.TITLE');
-      expect(text).toContain('REGISTRATION.OCCUPATION.DELETE.CONFIRMATION');
-      expect(text).toContain('REGISTRATION.OCCUPATION.DELETE.YES');
-      expect(text).toContain('REGISTRATION.OCCUPATION.DELETE.NO');
+    it('should create', async () => {
+        await configureAndCreate();
+        expect(component).toBeTruthy();
     });
 
-    it('should render the expected close, confirm, and cancel actions', () => {
-      const nativeElement = fixture.nativeElement as HTMLElement;
-      const text = nativeElement.textContent || '';
-      const buttons = nativeElement.querySelectorAll('tc-button');
+    describe('template', () => {
+        beforeEach(async () => configureAndCreate());
 
-      expect(buttons.length).toBeGreaterThanOrEqual(3);
-      expect(nativeElement.querySelector('tc-button.btn-close')).toBeTruthy();
-      expect(text).toContain('REGISTRATION.OCCUPATION.DELETE.YES');
-      expect(text).toContain('REGISTRATION.OCCUPATION.DELETE.NO');
-    });
-  });
+        it('should render the translated key content for the delete modal', () => {
+            const text = (fixture.nativeElement as HTMLElement).textContent || '';
 
-  describe('cancel', () => {
-    beforeEach(async () => configureAndCreate());
+            expect(text).toContain('REGISTRATION.OCCUPATION.DELETE.TITLE');
+            expect(text).toContain('REGISTRATION.OCCUPATION.DELETE.CONFIRMATION');
+            expect(text).toContain('REGISTRATION.OCCUPATION.DELETE.YES');
+            expect(text).toContain('REGISTRATION.OCCUPATION.DELETE.NO');
+        });
 
-    it('should dismiss the active modal with false', () => {
-      component.cancel();
+        it('should render the expected close, confirm, and cancel actions', () => {
+            const nativeElement = fixture.nativeElement as HTMLElement;
+            const text = nativeElement.textContent || '';
+            const buttons = nativeElement.querySelectorAll('tc-button');
 
-      expect(activeModalSpy.dismiss).toHaveBeenCalledWith(false);
-    });
-  });
-
-  describe('confirm', () => {
-    beforeEach(async () => configureAndCreate());
-
-    it('should set deleting to true', () => {
-      component.confirm();
-
-      expect(component.deleting).toBeTrue();
+            expect(buttons.length).toBeGreaterThanOrEqual(3);
+            expect(nativeElement.querySelector('tc-button.btn-close')).toBeTruthy();
+            expect(text).toContain('REGISTRATION.OCCUPATION.DELETE.YES');
+            expect(text).toContain('REGISTRATION.OCCUPATION.DELETE.NO');
+        });
     });
 
-    it('should close the active modal with true', () => {
-      component.confirm();
+    describe('cancel', () => {
+        beforeEach(async () => configureAndCreate());
 
-      expect(activeModalSpy.close).toHaveBeenCalledWith(true);
+        it('should dismiss the active modal with false', () => {
+            component.cancel();
+
+            expect(activeModalSpy.dismiss).toHaveBeenCalledWith(false);
+        });
     });
 
-    it('should render the deleting message when deleting is true', () => {
-      component.confirm();
-      fixture.detectChanges();
+    describe('confirm', () => {
+        beforeEach(async () => configureAndCreate());
 
-      const text = (fixture.nativeElement as HTMLElement).textContent || '';
+        it('should set deleting to true', () => {
+            component.confirm();
 
-      expect(text).toContain('deleting...');
+            expect(component.deleting).toBe(true);
+        });
+
+        it('should close the active modal with true', () => {
+            component.confirm();
+
+            expect(activeModalSpy.close).toHaveBeenCalledWith(true);
+        });
+
+        it('should render the deleting message when deleting is true', () => {
+            component.confirm();
+            fixture.detectChanges();
+
+            const text = (fixture.nativeElement as HTMLElement).textContent || '';
+
+            expect(text).toContain('deleting...');
+        });
     });
-  });
 });

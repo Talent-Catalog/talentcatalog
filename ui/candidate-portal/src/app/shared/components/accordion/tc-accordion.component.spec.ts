@@ -14,349 +14,305 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {CommonModule} from '@angular/common';
-import {QueryList} from '@angular/core';
-import {ComponentFixture, TestBed} from '@angular/core/testing';
-import {By} from '@angular/platform-browser';
-import {provideRouter} from '@angular/router';
+import { CommonModule } from '@angular/common';
+import { QueryList } from '@angular/core';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { By } from '@angular/platform-browser';
+import { provideRouter } from '@angular/router';
 
-import {TcAccordionItemComponent} from './accordion-item/tc-accordion-item.component';
-import {TcAccordionComponent} from './tc-accordion.component';
+import { TcAccordionItemComponent } from './accordion-item/tc-accordion-item.component';
+import { TcAccordionComponent } from './tc-accordion.component';
 
 describe('TcAccordionComponent', () => {
-  let component: TcAccordionComponent;
+    let component: TcAccordionComponent;
 
-  beforeEach(() => {
-    component = new TcAccordionComponent();
-    component.items = createItems(3);
-  });
+    beforeEach(() => {
+        component = new TcAccordionComponent();
+        component.items = createItems(3);
+    });
 
-  it('should create with the default values', () => {
-    expect(component).toBeTruthy();
-    expect(component.allOpen).toBeFalse();
-    expect(component.firstOpen).toBeFalse();
-    expect(component.showOpenCloseAll).toBeTrue();
-    expect(component.allowOverflow).toBeFalse();
-    expect(component.activeIndexes).toEqual([]);
-  });
+    it('should create with the default values', () => {
+        expect(component).toBeTruthy();
+        expect(component.allOpen).toBe(false);
+        expect(component.firstOpen).toBe(false);
+        expect(component.showOpenCloseAll).toBe(true);
+        expect(component.allowOverflow).toBe(false);
+        expect(component.activeIndexes).toEqual([]);
+    });
 
-  it('should set multiple active indexes', () => {
-    component.activeIndexes = [1, 3, 5];
+    it('should set multiple active indexes', () => {
+        component.activeIndexes = [1, 3, 5];
 
-    expect(component.activeIndexes).toEqual([1, 3, 5]);
-    expect(component.isOpen(1)).toBeTrue();
-    expect(component.isOpen(3)).toBeTrue();
-    expect(component.isOpen(5)).toBeTrue();
-  });
+        expect(component.activeIndexes).toEqual([1, 3, 5]);
+        expect(component.isOpen(1)).toBe(true);
+        expect(component.isOpen(3)).toBe(true);
+        expect(component.isOpen(5)).toBe(true);
+    });
 
-  it('should set a single active index', () => {
-    component.activeIndexes = 2;
+    it('should set a single active index', () => {
+        component.activeIndexes = 2;
 
-    expect(component.activeIndexes).toEqual([2]);
-    expect(component.isOpen(2)).toBeTrue();
-  });
+        expect(component.activeIndexes).toEqual([2]);
+        expect(component.isOpen(2)).toBe(true);
+    });
 
-  it('should replace previously active indexes', () => {
-    component.activeIndexes = [0, 1, 2];
+    it('should replace previously active indexes', () => {
+        component.activeIndexes = [0, 1, 2];
 
-    expect(component.activeIndexes).toEqual([0, 1, 2]);
+        expect(component.activeIndexes).toEqual([0, 1, 2]);
 
-    component.activeIndexes = [4, 5];
+        component.activeIndexes = [4, 5];
 
-    expect(component.activeIndexes).toEqual([4, 5]);
-    expect(component.isOpen(0)).toBeFalse();
-    expect(component.isOpen(1)).toBeFalse();
-    expect(component.isOpen(2)).toBeFalse();
-    expect(component.isOpen(4)).toBeTrue();
-    expect(component.isOpen(5)).toBeTrue();
-  });
+        expect(component.activeIndexes).toEqual([4, 5]);
+        expect(component.isOpen(0)).toBe(false);
+        expect(component.isOpen(1)).toBe(false);
+        expect(component.isOpen(2)).toBe(false);
+        expect(component.isOpen(4)).toBe(true);
+        expect(component.isOpen(5)).toBe(true);
+    });
 
-  it('should remove duplicate active indexes', () => {
-    component.activeIndexes = [1, 1, 2, 2];
+    it('should remove duplicate active indexes', () => {
+        component.activeIndexes = [1, 1, 2, 2];
 
-    expect(component.activeIndexes).toEqual([1, 2]);
-  });
+        expect(component.activeIndexes).toEqual([1, 2]);
+    });
 
-  it('should clear active indexes when null is supplied', () => {
-    component.activeIndexes = [0, 1];
+    it('should clear active indexes when null is supplied', () => {
+        component.activeIndexes = [0, 1];
 
-    expect(component.activeIndexes).toEqual([0, 1]);
+        expect(component.activeIndexes).toEqual([0, 1]);
 
-    component.activeIndexes = null;
+        component.activeIndexes = null;
 
-    expect(component.activeIndexes).toEqual([]);
-    expect(component.isOpen(0)).toBeFalse();
-    expect(component.isOpen(1)).toBeFalse();
-  });
+        expect(component.activeIndexes).toEqual([]);
+        expect(component.isOpen(0)).toBe(false);
+        expect(component.isOpen(1)).toBe(false);
+    });
 
-  it('should clear active indexes when undefined is supplied', () => {
-    component.activeIndexes = [0, 1];
+    it('should clear active indexes when undefined is supplied', () => {
+        component.activeIndexes = [0, 1];
 
-    expect(component.activeIndexes).toEqual([0, 1]);
+        expect(component.activeIndexes).toEqual([0, 1]);
 
-    component.activeIndexes = undefined;
+        component.activeIndexes = undefined;
 
-    expect(component.activeIndexes).toEqual([]);
-    expect(component.isOpen(0)).toBeFalse();
-    expect(component.isOpen(1)).toBeFalse();
-  });
+        expect(component.activeIndexes).toEqual([]);
+        expect(component.isOpen(0)).toBe(false);
+        expect(component.isOpen(1)).toBe(false);
+    });
 
-  it('should assign indexes to child items', () => {
-    component.ngAfterContentInit();
+    it('should assign indexes to child items', () => {
+        component.ngAfterContentInit();
 
-    expect(getItems(component)[0].index).toBe(0);
-    expect(getItems(component)[1].index).toBe(1);
-    expect(getItems(component)[2].index).toBe(2);
-  });
+        expect(getItems(component)[0].index).toBe(0);
+        expect(getItems(component)[1].index).toBe(1);
+        expect(getItems(component)[2].index).toBe(2);
+    });
 
-  it('should leave all panels closed by default', () => {
-    component.ngAfterContentInit();
+    it('should leave all panels closed by default', () => {
+        component.ngAfterContentInit();
 
-    expect(component.activeIndexes).toEqual([]);
-  });
+        expect(component.activeIndexes).toEqual([]);
+    });
 
-  it('should open all panels when allOpen is true', () => {
-    component.allOpen = true;
+    it('should open all panels when allOpen is true', () => {
+        component.allOpen = true;
 
-    component.ngAfterContentInit();
+        component.ngAfterContentInit();
 
-    expect(component.activeIndexes).toEqual([0, 1, 2]);
-  });
+        expect(component.activeIndexes).toEqual([0, 1, 2]);
+    });
 
-  it('should open the first panel when firstOpen is true', () => {
-    component.firstOpen = true;
+    it('should open the first panel when firstOpen is true', () => {
+        component.firstOpen = true;
 
-    component.ngAfterContentInit();
+        component.ngAfterContentInit();
 
-    expect(component.activeIndexes).toEqual([0]);
-  });
+        expect(component.activeIndexes).toEqual([0]);
+    });
 
-  it('should give allOpen priority over firstOpen', () => {
-    component.allOpen = true;
-    component.firstOpen = true;
+    it('should give allOpen priority over firstOpen', () => {
+        component.allOpen = true;
+        component.firstOpen = true;
 
-    component.ngAfterContentInit();
+        component.ngAfterContentInit();
 
-    expect(component.activeIndexes).toEqual([0, 1, 2]);
-  });
+        expect(component.activeIndexes).toEqual([0, 1, 2]);
+    });
 
-  it('should close an open panel and emit the new indexes', () => {
-    component.activeIndexes = [0, 1];
+    it('should close an open panel and emit the new indexes', () => {
+        component.activeIndexes = [0, 1];
 
-    const emitSpy = spyOn(
-      component.activeIndexesChange,
-      'emit'
-    );
+        const emitSpy = vi.spyOn(component.activeIndexesChange, 'emit').mockReturnValue(undefined);
 
-    component.toggle(1);
+        component.toggle(1);
 
-    expect(component.activeIndexes).toEqual([0]);
-    expect(component.isOpen(1)).toBeFalse();
-    expect(emitSpy).toHaveBeenCalledOnceWith([0]);
-  });
+        expect(component.activeIndexes).toEqual([0]);
+        expect(component.isOpen(1)).toBe(false);
+        expect(emitSpy).toHaveBeenCalledTimes(1);
+        expect(emitSpy).toHaveBeenCalledWith([0]);
+    });
 
-  it('should open a closed panel and emit the new indexes', () => {
-    component.activeIndexes = [0];
+    it('should open a closed panel and emit the new indexes', () => {
+        component.activeIndexes = [0];
 
-    const emitSpy = spyOn(
-      component.activeIndexesChange,
-      'emit'
-    );
+        const emitSpy = vi.spyOn(component.activeIndexesChange, 'emit').mockReturnValue(undefined);
 
-    component.toggle(2);
+        component.toggle(2);
 
-    expect(component.activeIndexes).toEqual([0, 2]);
-    expect(component.isOpen(2)).toBeTrue();
-    expect(emitSpy).toHaveBeenCalledOnceWith([0, 2]);
-  });
+        expect(component.activeIndexes).toEqual([0, 2]);
+        expect(component.isOpen(2)).toBe(true);
+        expect(emitSpy).toHaveBeenCalledTimes(1);
+        expect(emitSpy).toHaveBeenCalledWith([0, 2]);
+    });
 
-  it('should report whether a panel is open', () => {
-    component.activeIndexes = [1];
+    it('should report whether a panel is open', () => {
+        component.activeIndexes = [1];
 
-    expect(component.isOpen(1)).toBeTrue();
-    expect(component.isOpen(0)).toBeFalse();
-  });
+        expect(component.isOpen(1)).toBe(true);
+        expect(component.isOpen(0)).toBe(false);
+    });
 
-  it('should open all panels and emit their indexes', () => {
-    component.ngAfterContentInit();
+    it('should open all panels and emit their indexes', () => {
+        component.ngAfterContentInit();
 
-    const emitSpy = spyOn(
-      component.activeIndexesChange,
-      'emit'
-    );
+        const emitSpy = vi.spyOn(component.activeIndexesChange, 'emit').mockReturnValue(undefined);
 
-    component.openAll();
+        component.openAll();
 
-    expect(component.activeIndexes).toEqual([0, 1, 2]);
+        expect(component.activeIndexes).toEqual([0, 1, 2]);
 
-    expect(emitSpy).toHaveBeenCalledOnceWith(
-      [0, 1, 2]
-    );
-  });
+        expect(emitSpy).toHaveBeenCalledTimes(1);
 
-  it('should close all panels and emit an empty array', () => {
-    component.ngAfterContentInit();
-    component.activeIndexes = [0, 1, 2];
+        expect(emitSpy).toHaveBeenCalledWith([0, 1, 2]);
+    });
 
-    const emitSpy = spyOn(
-      component.activeIndexesChange,
-      'emit'
-    );
+    it('should close all panels and emit an empty array', () => {
+        component.ngAfterContentInit();
+        component.activeIndexes = [0, 1, 2];
 
-    component.closeAll();
+        const emitSpy = vi.spyOn(component.activeIndexesChange, 'emit').mockReturnValue(undefined);
 
-    expect(component.activeIndexes).toEqual([]);
-    expect(emitSpy).toHaveBeenCalledOnceWith([]);
-  });
+        component.closeAll();
 
-  it('should open all panels when toggleAll is called with none open', () => {
-    component.ngAfterContentInit();
+        expect(component.activeIndexes).toEqual([]);
+        expect(emitSpy).toHaveBeenCalledTimes(1);
+        expect(emitSpy).toHaveBeenCalledWith([]);
+    });
 
-    const emitSpy = spyOn(
-      component.activeIndexesChange,
-      'emit'
-    );
+    it('should open all panels when toggleAll is called with none open', () => {
+        component.ngAfterContentInit();
 
-    component.toggleAll();
+        const emitSpy = vi.spyOn(component.activeIndexesChange, 'emit').mockReturnValue(undefined);
 
-    expect(component.activeIndexes).toEqual([0, 1, 2]);
+        component.toggleAll();
 
-    expect(emitSpy).toHaveBeenCalledOnceWith(
-      [0, 1, 2]
-    );
-  });
+        expect(component.activeIndexes).toEqual([0, 1, 2]);
 
-  it('should close all panels when toggleAll is called with panels open', () => {
-    component.ngAfterContentInit();
-    component.activeIndexes = [1];
+        expect(emitSpy).toHaveBeenCalledTimes(1);
 
-    const emitSpy = spyOn(
-      component.activeIndexesChange,
-      'emit'
-    );
+        expect(emitSpy).toHaveBeenCalledWith([0, 1, 2]);
+    });
 
-    component.toggleAll();
+    it('should close all panels when toggleAll is called with panels open', () => {
+        component.ngAfterContentInit();
+        component.activeIndexes = [1];
 
-    expect(component.activeIndexes).toEqual([]);
-    expect(emitSpy).toHaveBeenCalledOnceWith([]);
-  });
+        const emitSpy = vi.spyOn(component.activeIndexesChange, 'emit').mockReturnValue(undefined);
 
-  it('should handle an accordion with no child items', () => {
-    component.items = createItems(0);
+        component.toggleAll();
 
-    component.ngAfterContentInit();
-    component.openAll();
+        expect(component.activeIndexes).toEqual([]);
+        expect(emitSpy).toHaveBeenCalledTimes(1);
+        expect(emitSpy).toHaveBeenCalledWith([]);
+    });
 
-    expect(component.activeIndexes).toEqual([]);
-  });
+    it('should handle an accordion with no child items', () => {
+        component.items = createItems(0);
+
+        component.ngAfterContentInit();
+        component.openAll();
+
+        expect(component.activeIndexes).toEqual([]);
+    });
 });
 
 describe('TcAccordionComponent template', () => {
-  let fixture: ComponentFixture<TcAccordionComponent>;
-  let component: TcAccordionComponent;
+    let fixture: ComponentFixture<TcAccordionComponent>;
+    let component: TcAccordionComponent;
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      imports: [CommonModule, TcAccordionComponent],
-      providers: [provideRouter([])]
-    }).compileComponents();
+    beforeEach(async () => {
+        await TestBed.configureTestingModule({
+            imports: [CommonModule, TcAccordionComponent],
+            providers: [provideRouter([])]
+        }).compileComponents();
 
-    fixture = TestBed.createComponent(
-      TcAccordionComponent
-    );
+        fixture = TestBed.createComponent(TcAccordionComponent);
 
-    component = fixture.componentInstance;
-  });
+        component = fixture.componentInstance;
+    });
 
-  it('should render the open/close-all button by default', () => {
-    fixture.detectChanges();
+    it('should render the open/close-all button by default', () => {
+        fixture.detectChanges();
 
-    const button = fixture.debugElement.query(
-      By.css('.toggle-all-panels')
-    );
+        const button = fixture.debugElement.query(By.css('.toggle-all-panels'));
 
-    expect(button).toBeTruthy();
-    expect(button.nativeElement.textContent.trim())
-    .toBe('Open/Close All');
-  });
+        expect(button).toBeTruthy();
+        expect(button.nativeElement.textContent.trim())
+            .toBe('Open/Close All');
+    });
 
-  it('should hide the open/close-all button when disabled', () => {
-    component.showOpenCloseAll = false;
+    it('should hide the open/close-all button when disabled', () => {
+        component.showOpenCloseAll = false;
 
-    fixture.detectChanges();
+        fixture.detectChanges();
 
-    expect(
-      fixture.debugElement.query(
-        By.css('.toggle-all-panels')
-      )
-    ).toBeNull();
-  });
+        expect(fixture.debugElement.query(By.css('.toggle-all-panels'))).toBeNull();
+    });
 
-  it('should add the allow-overflow class when enabled', () => {
-    component.allowOverflow = true;
+    it('should add the allow-overflow class when enabled', () => {
+        component.allowOverflow = true;
 
-    fixture.detectChanges();
+        fixture.detectChanges();
 
-    const accordion = fixture.debugElement.query(
-      By.css('.tc-accordion')
-    );
+        const accordion = fixture.debugElement.query(By.css('.tc-accordion'));
 
-    expect(
-      accordion.nativeElement.classList.contains(
-        'allow-overflow'
-      )
-    ).toBeTrue();
-  });
+        expect(accordion.nativeElement.classList.contains('allow-overflow')).toBe(true);
+    });
 
-  it('should not add the allow-overflow class by default', () => {
-    fixture.detectChanges();
+    it('should not add the allow-overflow class by default', () => {
+        fixture.detectChanges();
 
-    const accordion = fixture.debugElement.query(
-      By.css('.tc-accordion')
-    );
+        const accordion = fixture.debugElement.query(By.css('.tc-accordion'));
 
-    expect(
-      accordion.nativeElement.classList.contains(
-        'allow-overflow'
-      )
-    ).toBeFalse();
-  });
+        expect(accordion.nativeElement.classList.contains('allow-overflow')).toBe(false);
+    });
 
-  it('should call toggleAll when the button emits onClick', () => {
-    const toggleAllSpy = spyOn(component, 'toggleAll');
+    it('should call toggleAll when the button emits onClick', () => {
+        const toggleAllSpy = vi.spyOn(component, 'toggleAll').mockReturnValue(undefined);
 
-    fixture.detectChanges();
+        fixture.detectChanges();
 
-    const button = fixture.debugElement.query(
-      By.css('.toggle-all-panels')
-    );
+        const button = fixture.debugElement.query(By.css('.toggle-all-panels'));
 
-    button.triggerEventHandler('onClick', undefined);
+        button.triggerEventHandler('onClick', undefined);
 
-    expect(toggleAllSpy).toHaveBeenCalledTimes(1);
-  });
+        expect(toggleAllSpy).toHaveBeenCalledTimes(1);
+    });
 });
 
-function createItems(
-  count: number
-): QueryList<TcAccordionItemComponent> {
-  const queryList =
-    new QueryList<TcAccordionItemComponent>();
+function createItems(count: number): QueryList<TcAccordionItemComponent> {
+    const queryList = new QueryList<TcAccordionItemComponent>();
 
-  const items = Array.from(
-    {length: count},
-    () => ({
-      index: -1
-    } as TcAccordionItemComponent)
-  );
+    const items = Array.from({ length: count }, () => ({
+        index: -1
+    } as TcAccordionItemComponent));
 
-  queryList.reset(items);
+    queryList.reset(items);
 
-  return queryList;
+    return queryList;
 }
 
-function getItems(
-  component: TcAccordionComponent
-): TcAccordionItemComponent[] {
-  return component.items.toArray();
+function getItems(component: TcAccordionComponent): TcAccordionItemComponent[] {
+    return component.items.toArray();
 }

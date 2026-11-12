@@ -14,199 +14,213 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, EventEmitter, Input, Output, ChangeDetectionStrategy} from '@angular/core';
-import {ComponentFixture, TestBed} from '@angular/core/testing';
-import {By} from '@angular/platform-browser';
-import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
-import {TranslateModule} from '@ngx-translate/core';
+import { Component, EventEmitter, Input, Output, ChangeDetectionStrategy } from '@angular/core';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { By } from '@angular/platform-browser';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { TranslateModule } from '@ngx-translate/core';
 
-import {FileUploadComponent} from './file-upload.component';
+import { FileUploadComponent } from './file-upload.component';
 
 @Component({
-  selector: 'app-error',
-  template: '',
-  changeDetection: ChangeDetectionStrategy.Eager,
-  standalone: false
+    selector: 'app-error',
+    template: '',
+    changeDetection: ChangeDetectionStrategy.Eager,
+    standalone: false
 })
 class ErrorStubComponent {
-  @Input() error?: unknown;
+    @Input()
+    error?: unknown;
 }
 
 @Component({
-  selector: 'tc-button',
-  template: '<ng-content></ng-content>',
-  changeDetection: ChangeDetectionStrategy.Eager,
-  standalone: false
+    selector: 'tc-button',
+    template: '<ng-content></ng-content>',
+    changeDetection: ChangeDetectionStrategy.Eager,
+    standalone: false
 })
 class TcButtonStubComponent {
-  @Input() disabled?: boolean;
-  @Input() class?: string;
-  @Output() onClick = new EventEmitter<void>();
+    @Input()
+    disabled?: boolean;
+    @Input()
+    class?: string;
+    @Output()
+    onClick = new EventEmitter<void>();
 }
 
 describe('FileUploadComponent', () => {
-  let component: FileUploadComponent;
-  let fixture: ComponentFixture<FileUploadComponent>;
+    let component: FileUploadComponent;
+    let fixture: ComponentFixture<FileUploadComponent>;
 
-  async function configureAndCreate(options?: {uploading?: boolean}) {
-    await TestBed.configureTestingModule({
-      declarations: [
-        FileUploadComponent,
-        ErrorStubComponent,
-        TcButtonStubComponent
-      ],
-      imports: [TranslateModule.forRoot()],
-      providers: [
-        {provide: NgbModal, useValue: jasmine.createSpyObj('NgbModal', ['open'])}
-      ]
-    }).compileComponents();
+    async function configureAndCreate(options?: {
+        uploading?: boolean;
+    }) {
+        await TestBed.configureTestingModule({
+            declarations: [
+                FileUploadComponent,
+                ErrorStubComponent,
+                TcButtonStubComponent
+            ],
+            imports: [TranslateModule.forRoot()],
+            providers: [
+                { provide: NgbModal, useValue: {
+                        open: vi.fn().mockName("NgbModal.open")
+                    } }
+            ]
+        }).compileComponents();
 
-    fixture = TestBed.createComponent(FileUploadComponent);
-    component = fixture.componentInstance;
-    component.uploading = options?.uploading ?? false;
+        fixture = TestBed.createComponent(FileUploadComponent);
+        component = fixture.componentInstance;
+        component.uploading = options?.uploading ?? false;
 
-    fixture.detectChanges();
-  }
+        fixture.detectChanges();
+    }
 
-  afterEach(() => TestBed.resetTestingModule());
+    afterEach(() => TestBed.resetTestingModule());
 
-  it('should create', async () => {
-    await configureAndCreate();
+    it('should create', async () => {
+        await configureAndCreate();
 
-    expect(component).toBeTruthy();
-  });
-
-  describe('ngOnInit', () => {
-    it('should initialize the max upload size', async () => {
-      await configureAndCreate();
-
-      expect(component.maxUploadSize).toBe(10485790);
-    });
-  });
-
-  describe('template tc components', () => {
-    it('should render tc-button actions when not uploading', async () => {
-      await configureAndCreate({uploading: false});
-      const buttons = fixture.debugElement.queryAll(By.directive(TcButtonStubComponent));
-
-      expect(buttons.length).toBe(3);
-      buttons.forEach(debugEl => {
-        expect(debugEl.componentInstance.disabled).toBeFalse();
-      });
+        expect(component).toBeTruthy();
     });
 
-    it('should render a single disabled uploading tc-button when uploading', async () => {
-      await configureAndCreate({uploading: true});
-      const buttons = fixture.debugElement.queryAll(By.directive(TcButtonStubComponent));
+    describe('ngOnInit', () => {
+        it('should initialize the max upload size', async () => {
+            await configureAndCreate();
 
-      expect(buttons.length).toBe(2);
-      expect(buttons[0].componentInstance.disabled).toBeTrue();
-      expect(buttons[1].componentInstance.disabled).toBeTrue();
-      const text = (fixture.nativeElement as HTMLElement).textContent || '';
-      expect(text).toContain('FORM.ATTACHMENT.LABEL.UPLOADING');
-    });
-  });
-
-  describe('handleFileChanged', () => {
-    beforeEach(async () => configureAndCreate());
-
-    it('should emit uploadStarted when all files are valid', () => {
-      const uploadStartedSpy = spyOn(component.uploadStarted, 'emit');
-      const file = new File(['test'], 'resume.pdf', {type: 'application/pdf'});
-
-      component.handleFileChanged({target: {files: [file]}}, 'file');
-
-      expect(uploadStartedSpy).toHaveBeenCalledWith({
-        files: [file],
-        type: 'file'
-      });
-      expect(component.error).toBeNull();
+            expect(component.maxUploadSize).toBe(10485790);
+        });
     });
 
-    it('should not emit uploadStarted when a file has no extension', () => {
-      const uploadStartedSpy = spyOn(component.uploadStarted, 'emit');
-      const file = new File(['test'], 'resume', {type: 'application/pdf'});
+    describe('template tc components', () => {
+        it('should render tc-button actions when not uploading', async () => {
+            await configureAndCreate({ uploading: false });
+            const buttons = fixture.debugElement.queryAll(By.directive(TcButtonStubComponent));
 
-      component.handleFileChanged({target: {files: [file]}}, 'file');
+            expect(buttons.length).toBe(3);
+            buttons.forEach(debugEl => {
+                expect(debugEl.componentInstance.disabled).toBe(false);
+            });
+        });
 
-      expect(uploadStartedSpy).not.toHaveBeenCalled();
-      expect(component.error).toBe('No file extension found. Please rename and re-upload this file.');
+        it('should render a single disabled uploading tc-button when uploading', async () => {
+            await configureAndCreate({ uploading: true });
+            const buttons = fixture.debugElement.queryAll(By.directive(TcButtonStubComponent));
+
+            expect(buttons.length).toBe(2);
+            expect(buttons[0].componentInstance.disabled).toBe(true);
+            expect(buttons[1].componentInstance.disabled).toBe(true);
+            const text = (fixture.nativeElement as HTMLElement).textContent || '';
+            expect(text).toContain('FORM.ATTACHMENT.LABEL.UPLOADING');
+        });
     });
 
-    it('should not emit uploadStarted when a file is too large', () => {
-      const uploadStartedSpy = spyOn(component.uploadStarted, 'emit');
-      const file = new File(['test'], 'resume.pdf', {type: 'application/pdf'});
-      Object.defineProperty(file, 'size', {value: component.maxUploadSize + 1});
+    describe('handleFileChanged', () => {
+        beforeEach(async () => configureAndCreate());
 
-      component.handleFileChanged({target: {files: [file]}}, 'file');
+        it('should emit uploadStarted when all files are valid', () => {
+            const uploadStartedSpy = vi.spyOn(component.uploadStarted, 'emit').mockReturnValue(undefined);
+            const file = new File(['test'], 'resume.pdf', { type: 'application/pdf' });
 
-      expect(uploadStartedSpy).not.toHaveBeenCalled();
-      expect(component.error).toBe('Max file size exceeded, please reduce file size to under 10MB.');
-    });
-  });
+            component.handleFileChanged({ target: { files: [file] } }, 'file');
 
-  describe('validation helpers', () => {
-    beforeEach(async () => configureAndCreate());
+            expect(uploadStartedSpy).toHaveBeenCalledWith({
+                files: [file],
+                type: 'file'
+            });
+            expect(component.error).toBeNull();
+        });
 
-    it('should return true for a valid file name', () => {
-      const file = new File(['test'], 'resume.pdf', {type: 'application/pdf'});
+        it('should not emit uploadStarted when a file has no extension', () => {
+            const uploadStartedSpy = vi.spyOn(component.uploadStarted, 'emit').mockReturnValue(undefined);
+            const file = new File(['test'], 'resume', { type: 'application/pdf' });
 
-      expect(component.validFile(file)).toBeTrue();
-    });
+            component.handleFileChanged({ target: { files: [file] } }, 'file');
 
-    it('should return false for a file name without an extension', () => {
-      const file = new File(['test'], 'resume', {type: 'application/pdf'});
+            expect(uploadStartedSpy).not.toHaveBeenCalled();
+            expect(component.error).toBe('No file extension found. Please rename and re-upload this file.');
+        });
 
-      expect(component.validFile(file)).toBeFalse();
-    });
+        it('should not emit uploadStarted when a file is too large', () => {
+            const uploadStartedSpy = vi.spyOn(component.uploadStarted, 'emit').mockReturnValue(undefined);
+            const file = new File(['test'], 'resume.pdf', { type: 'application/pdf' });
+            Object.defineProperty(file, 'size', { value: component.maxUploadSize + 1 });
 
-    it('should return true when file size is within the limit', () => {
-      const file = new File(['test'], 'resume.pdf', {type: 'application/pdf'});
+            component.handleFileChanged({ target: { files: [file] } }, 'file');
 
-      expect(component.validFileSize(file)).toBeTrue();
-    });
-
-    it('should return false when file size exceeds the limit', () => {
-      const file = new File(['test'], 'resume.pdf', {type: 'application/pdf'});
-      Object.defineProperty(file, 'size', {value: component.maxUploadSize + 1});
-
-      expect(component.validFileSize(file)).toBeFalse();
-    });
-  });
-
-  describe('drag and drop', () => {
-    beforeEach(async () => configureAndCreate());
-
-    it('should set hover true on drag over', () => {
-      const event = jasmine.createSpyObj('event', ['preventDefault', 'stopPropagation']);
-
-      component.onDragOver(event);
-
-      expect(component.hover).toBeTrue();
+            expect(uploadStartedSpy).not.toHaveBeenCalled();
+            expect(component.error).toBe('Max file size exceeded, please reduce file size to under 10MB.');
+        });
     });
 
-    it('should set hover false on drag leave', () => {
-      component.hover = true;
-      const event = jasmine.createSpyObj('event', ['preventDefault', 'stopPropagation']);
+    describe('validation helpers', () => {
+        beforeEach(async () => configureAndCreate());
 
-      component.onDragLeave(event);
+        it('should return true for a valid file name', () => {
+            const file = new File(['test'], 'resume.pdf', { type: 'application/pdf' });
 
-      expect(component.hover).toBeFalse();
+            expect(component.validFile(file)).toBe(true);
+        });
+
+        it('should return false for a file name without an extension', () => {
+            const file = new File(['test'], 'resume', { type: 'application/pdf' });
+
+            expect(component.validFile(file)).toBe(false);
+        });
+
+        it('should return true when file size is within the limit', () => {
+            const file = new File(['test'], 'resume.pdf', { type: 'application/pdf' });
+
+            expect(component.validFileSize(file)).toBe(true);
+        });
+
+        it('should return false when file size exceeds the limit', () => {
+            const file = new File(['test'], 'resume.pdf', { type: 'application/pdf' });
+            Object.defineProperty(file, 'size', { value: component.maxUploadSize + 1 });
+
+            expect(component.validFileSize(file)).toBe(false);
+        });
     });
 
-    it('should pass dropped files to handleFileChanged', () => {
-      const file = new File(['test'], 'resume.pdf', {type: 'application/pdf'});
-      const handleSpy = spyOn(component, 'handleFileChanged');
-      const event = {
-        preventDefault: jasmine.createSpy('preventDefault'),
-        stopPropagation: jasmine.createSpy('stopPropagation'),
-        dataTransfer: {files: [file]}
-      };
+    describe('drag and drop', () => {
+        beforeEach(async () => configureAndCreate());
 
-      component.onDrop(event);
+        it('should set hover true on drag over', () => {
+            const event = {
+                preventDefault: vi.fn().mockName("event.preventDefault"),
+                stopPropagation: vi.fn().mockName("event.stopPropagation")
+            };
 
-      expect(component.hover).toBeFalse();
-      expect(handleSpy).toHaveBeenCalledWith({target: {files: [file]}}, 'file');
+            component.onDragOver(event);
+
+            expect(component.hover).toBe(true);
+        });
+
+        it('should set hover false on drag leave', () => {
+            component.hover = true;
+            const event = {
+                preventDefault: vi.fn().mockName("event.preventDefault"),
+                stopPropagation: vi.fn().mockName("event.stopPropagation")
+            };
+
+            component.onDragLeave(event);
+
+            expect(component.hover).toBe(false);
+        });
+
+        it('should pass dropped files to handleFileChanged', () => {
+            const file = new File(['test'], 'resume.pdf', { type: 'application/pdf' });
+            const handleSpy = vi.spyOn(component, 'handleFileChanged').mockReturnValue(undefined);
+            const event = {
+                preventDefault: vi.fn().mockName('preventDefault'),
+                stopPropagation: vi.fn().mockName('stopPropagation'),
+                dataTransfer: { files: [file] }
+            };
+
+            component.onDrop(event);
+
+            expect(component.hover).toBe(false);
+            expect(handleSpy).toHaveBeenCalledWith({ target: { files: [file] } }, 'file');
+        });
     });
-  });
 });

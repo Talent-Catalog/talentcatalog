@@ -1,3 +1,4 @@
+import type { MockedObject } from "vitest";
 /*
  * Copyright (c) 2026 Talent Catalog.
  *
@@ -14,58 +15,61 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {ComponentFixture, TestBed} from '@angular/core/testing';
-import {NO_ERRORS_SCHEMA, Pipe, PipeTransform} from "@angular/core";
-import {of, throwError} from 'rxjs';
-import {UnhcrComponent} from './unhcr.component';
-import {CasiPortalService} from "../../../../../../services/casi-portal.service";
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { NO_ERRORS_SCHEMA, Pipe, PipeTransform } from "@angular/core";
+import { of, throwError } from 'rxjs';
+import { UnhcrComponent } from './unhcr.component';
+import { CasiPortalService } from "../../../../../../services/casi-portal.service";
 
-@Pipe({name: 'translate', standalone: false})
+@Pipe({ name: 'translate', standalone: false })
 class MockTranslatePipe implements PipeTransform {
-  transform(value: string): string {
-    return value;
-  }
+    transform(value: string): string {
+        return value;
+    }
 }
 
 describe('UnhcrComponent', () => {
-  let component: UnhcrComponent;
-  let fixture: ComponentFixture<UnhcrComponent>;
-  let mockPortalService: jasmine.SpyObj<CasiPortalService>;
+    let component: UnhcrComponent;
+    let fixture: ComponentFixture<UnhcrComponent>;
+    let mockPortalService: MockedObject<CasiPortalService>;
 
-  beforeEach(async () => {
-    mockPortalService = jasmine.createSpyObj('CasiPortalService', ['getAssignment', 'assign']);
-    mockPortalService.getAssignment.and.returnValue(of(null as any));
-    mockPortalService.assign.and.returnValue(of({
-      resource: {resourceCode: 'https://help.unhcr.org/pakistan/'}
-    } as any));
+    beforeEach(async () => {
+        mockPortalService = {
+            getAssignment: vi.fn().mockName("CasiPortalService.getAssignment"),
+            assign: vi.fn().mockName("CasiPortalService.assign")
+        } as unknown as MockedObject<CasiPortalService>;
+        mockPortalService.getAssignment.mockReturnValue(of(null as any));
+        mockPortalService.assign.mockReturnValue(of({
+            resource: { resourceCode: 'https://help.unhcr.org/pakistan/' }
+        } as any));
 
-    await TestBed.configureTestingModule({
-      declarations: [UnhcrComponent, MockTranslatePipe],
-      providers: [{provide: CasiPortalService, useValue: mockPortalService}],
-      schemas: [NO_ERRORS_SCHEMA]
-    }).compileComponents();
+        await TestBed.configureTestingModule({
+            declarations: [UnhcrComponent, MockTranslatePipe],
+            providers: [{ provide: CasiPortalService, useValue: mockPortalService }],
+            schemas: [NO_ERRORS_SCHEMA]
+        }).compileComponents();
 
-    fixture = TestBed.createComponent(UnhcrComponent);
-    component = fixture.componentInstance;
-    component.candidate = {
-      id: 1,
-      country: {name: 'Pakistan', isoCode: 'PK'}
-    } as any;
-    fixture.detectChanges();
-  });
+        fixture = TestBed.createComponent(UnhcrComponent);
+        component = fixture.componentInstance;
+        component.candidate = {
+            id: 1,
+            country: { name: 'Pakistan', isoCode: 'PK' }
+        } as any;
+        fixture.detectChanges();
+    });
 
-  it('should create the component', () => {
-    expect(component).toBeTruthy();
-  });
+    it('should create the component', () => {
+        expect(component).toBeTruthy();
+    });
 
-  it('should auto-assign when no assignment exists', () => {
-    component.ngOnInit();
-    expect(mockPortalService.assign).toHaveBeenCalledWith('UNHCR', 'HELP_SITE_LINK');
-  });
+    it('should auto-assign when no assignment exists', () => {
+        component.ngOnInit();
+        expect(mockPortalService.assign).toHaveBeenCalledWith('UNHCR', 'HELP_SITE_LINK');
+    });
 
-  it('should surface load errors', () => {
-    mockPortalService.getAssignment.and.returnValue(throwError(() => new Error('boom')));
-    component.ngOnInit();
-    expect(component.error).toBeTruthy();
-  });
+    it('should surface load errors', () => {
+        mockPortalService.getAssignment.mockReturnValue(throwError(() => new Error('boom')));
+        component.ngOnInit();
+        expect(component.error).toBeTruthy();
+    });
 });

@@ -1,63 +1,63 @@
-import {TestBed} from '@angular/core/testing';
-import {HttpTestingController, provideHttpClientTesting} from '@angular/common/http/testing';
-import {provideHttpClient, withInterceptorsFromDi, withXhr} from '@angular/common/http';
-import {VerifyPlusScanResult, VerifyPlusService} from './verify-plus.service';
-import {environment} from '../../environments/environment';
+import { TestBed } from '@angular/core/testing';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
+import { provideHttpClient, withInterceptorsFromDi, withXhr } from '@angular/common/http';
+import { VerifyPlusScanResult, VerifyPlusService } from './verify-plus.service';
+import { environment } from '../../environments/environment';
 
 describe('VerifyPlusService', () => {
-  let service: VerifyPlusService;
-  let httpMock: HttpTestingController;
+    let service: VerifyPlusService;
+    let httpMock: HttpTestingController;
 
-  const BASE_URL = environment.apiUrl + '/verify-plus';
+    const BASE_URL = environment.apiUrl + '/verify-plus';
 
-  beforeEach(() => {
-    TestBed.configureTestingModule({
-      providers: [VerifyPlusService, provideHttpClient(withXhr(), withInterceptorsFromDi()), provideHttpClientTesting()]
+    beforeEach(() => {
+        TestBed.configureTestingModule({
+            providers: [VerifyPlusService, provideHttpClient(withXhr(), withInterceptorsFromDi()), provideHttpClientTesting()]
+        });
+
+        service = TestBed.inject(VerifyPlusService);
+        httpMock = TestBed.inject(HttpTestingController);
     });
 
-    service = TestBed.inject(VerifyPlusService);
-    httpMock = TestBed.inject(HttpTestingController);
-  });
-
-  afterEach(() => {
-    httpMock.verify();
-  });
-
-  it('should be created', () => {
-    expect(service).toBeTruthy();
-  });
-
-  it('should submit scan payload with POST', () => {
-    const rawPayload = '{"v":"mock-1","unhcrId":"123-45C67890"}';
-    const consented = true;
-    const response: VerifyPlusScanResult = {
-      unhcrNumber: '123-45C67890',
-      duplicate: false
-    };
-
-    service.submitScan(rawPayload, consented).subscribe(result => {
-      expect(result).toEqual(response);
+    afterEach(() => {
+        httpMock.verify();
     });
 
-    const req = httpMock.expectOne(BASE_URL);
-    expect(req.request.method).toBe('POST');
-    expect(req.request.body).toEqual({rawPayload, consented});
-    req.flush(response);
-  });
-
-  it('should surface http errors from submit endpoint', () => {
-    const rawPayload = '{"v":"mock-2","unhcrId":"bad"}';
-    const consented = true;
-
-    service.submitScan(rawPayload, consented).subscribe({
-      next: () => fail('Expected an error response'),
-      error: (error) => {
-        expect(error.status).toBe(400);
-      }
+    it('should be created', () => {
+        expect(service).toBeTruthy();
     });
 
-    const req = httpMock.expectOne(BASE_URL);
-    expect(req.request.method).toBe('POST');
-    req.flush({message: 'Invalid Verify+ payload'}, {status: 400, statusText: 'Bad Request'});
-  });
+    it('should submit scan payload with POST', () => {
+        const rawPayload = '{"v":"mock-1","unhcrId":"123-45C67890"}';
+        const consented = true;
+        const response: VerifyPlusScanResult = {
+            unhcrNumber: '123-45C67890',
+            duplicate: false
+        };
+
+        service.submitScan(rawPayload, consented).subscribe(result => {
+            expect(result).toEqual(response);
+        });
+
+        const req = httpMock.expectOne(BASE_URL);
+        expect(req.request.method).toBe('POST');
+        expect(req.request.body).toEqual({ rawPayload, consented });
+        req.flush(response);
+    });
+
+    it('should surface http errors from submit endpoint', () => {
+        const rawPayload = '{"v":"mock-2","unhcrId":"bad"}';
+        const consented = true;
+
+        service.submitScan(rawPayload, consented).subscribe({
+            next: () => expect.fail('Expected an error response'),
+            error: (error) => {
+                expect(error.status).toBe(400);
+            }
+        });
+
+        const req = httpMock.expectOne(BASE_URL);
+        expect(req.request.method).toBe('POST');
+        req.flush({ message: 'Invalid Verify+ payload' }, { status: 400, statusText: 'Bad Request' });
+    });
 });

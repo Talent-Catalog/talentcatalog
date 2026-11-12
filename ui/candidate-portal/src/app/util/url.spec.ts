@@ -14,32 +14,34 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Location} from '@angular/common';
-import {Router, UrlTree} from '@angular/router';
-import {getExternalHref} from './url';
+import { Location } from '@angular/common';
+import { Router, UrlTree } from '@angular/router';
+import { getExternalHref } from './url';
 
 describe('getExternalHref', () => {
-  it('combines the origin, external base path, and serialized navigation', () => {
-    const urlTree = {} as UrlTree;
-    const router = jasmine.createSpyObj<Router>(
-      'Router',
-      ['createUrlTree', 'serializeUrl']
-    );
-    const location = jasmine.createSpyObj<Location>(
-      'Location',
-      ['prepareExternalUrl']
-    );
-    router.createUrlTree.and.returnValue(urlTree);
-    router.serializeUrl.and.returnValue('/list/1000');
-    location.prepareExternalUrl.and.returnValue('/admin-portal/list/1000');
+    it('combines the origin, external base path, and serialized navigation', () => {
+        const urlTree = {} as UrlTree;
+        const router = {
+            createUrlTree: vi.fn().mockName("Router.createUrlTree"),
+            serializeUrl: vi.fn().mockName("Router.serializeUrl")
+        };
+        const location = {
+            prepareExternalUrl: vi.fn().mockName("Location.prepareExternalUrl")
+        };
+        router.createUrlTree.mockReturnValue(urlTree);
+        router.serializeUrl.mockReturnValue('/list/1000');
+        location.prepareExternalUrl.mockReturnValue('/admin-portal/list/1000');
 
-    const result = getExternalHref(router, location, ['list', 1000]);
+        const result = getExternalHref(router as unknown as Router, location as unknown as Location, ['list', 1000]);
 
-    expect(router.createUrlTree).toHaveBeenCalledOnceWith(['list', 1000]);
-    expect(router.serializeUrl).toHaveBeenCalledOnceWith(urlTree);
-    expect(location.prepareExternalUrl)
-    .toHaveBeenCalledOnceWith('/list/1000');
-    expect(result)
-    .toBe(`${document.location.origin}/admin-portal/list/1000`);
-  });
+        expect(router.createUrlTree).toHaveBeenCalledTimes(1);
+
+        expect(router.createUrlTree).toHaveBeenCalledWith(['list', 1000]);
+        expect(router.serializeUrl).toHaveBeenCalledTimes(1);
+        expect(router.serializeUrl).toHaveBeenCalledWith(urlTree);
+        expect(location.prepareExternalUrl).toHaveBeenCalledTimes(1);
+        expect(location.prepareExternalUrl).toHaveBeenCalledWith('/list/1000');
+        expect(result)
+            .toBe(`${document.location.origin}/admin-portal/list/1000`);
+    });
 });

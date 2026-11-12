@@ -14,11 +14,11 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {test,} from '@playwright/test';
+import { test, } from '@playwright/test';
 
-import {VERIFY_PLUS_DOCUMENTED_QR_FIXTURES,} from '../fixtures/verify-plus-qr.fixture';
+import { VERIFY_PLUS_DOCUMENTED_QR_FIXTURES, } from '../fixtures/verify-plus-qr.fixture';
 
-import {runVerifyPlusQrDecodingScenario,} from '../support/verify-plus-qr-decoding.e2e';
+import { runVerifyPlusQrDecodingScenario, } from '../support/verify-plus-qr-decoding.e2e';
 
 /**
  * Verify+ decoding coverage for the documented synthetic QR fixtures.
@@ -29,32 +29,15 @@ import {runVerifyPlusQrDecodingScenario,} from '../support/verify-plus-qr-decodi
  * still be readable by the QR decoder. Business validation belongs to a
  * separate confirmation/submission E2E suite.
  */
-test.describe(
-  'Verify+ QR decoding',
-  () => {
-    for (
-      const fixture
-      of VERIFY_PLUS_DOCUMENTED_QR_FIXTURES
-      ) {
-      test(
-        `decodes ${fixture.fileName} with zxing-wasm`,
-        async ({
-                 page,
-               }, testInfo) => {
-          /*
-           * WebKit and WASM startup can be slower on a cold browser process.
-           */
-          test.setTimeout(
-            120_000,
-          );
+test.describe('Verify+ QR decoding', () => {
+    for (const fixture of VERIFY_PLUS_DOCUMENTED_QR_FIXTURES) {
+        test(`decodes ${fixture.fileName} with zxing-wasm`, async ({ page, }, testInfo) => {
+            /*
+             * WebKit and WASM startup can be slower on a cold browser process.
+             */
+            test.setTimeout(120000);
 
-          await runVerifyPlusQrDecodingScenario(
-            page,
-            testInfo.project.testDir,
-            fixture,
-          );
-        },
-      );
+            await runVerifyPlusQrDecodingScenario(page, testInfo.project.testDir, fixture);
+        });
     }
-  },
-);
+});

@@ -1,3 +1,4 @@
+import type { MockedObject } from "vitest";
 /*
  * Copyright (c) 2026 Talent Catalog.
  *
@@ -14,414 +15,317 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {ComponentRef, EventEmitter, SimpleChange} from '@angular/core';
+import { ComponentRef, EventEmitter, SimpleChange } from '@angular/core';
 
-import {Candidate} from '../../../../../../../model/candidate';
-import {ICandidateFormComponent} from '../../../../../../../model/candidate-form';
-import {TaskAssignment} from '../../../../../../../model/task-assignment';
-import {CandidateFormService} from '../../../../../../../services/candidate-form.service';
-import {ViewFormTaskComponent} from './view-form-task.component';
+import { Candidate } from '../../../../../../../model/candidate';
+import { ICandidateFormComponent } from '../../../../../../../model/candidate-form';
+import { TaskAssignment } from '../../../../../../../model/task-assignment';
+import { CandidateFormService } from '../../../../../../../services/candidate-form.service';
+import { ViewFormTaskComponent } from './view-form-task.component';
 
-class TestCandidateFormComponent
-  implements ICandidateFormComponent {
-  candidate: Candidate;
-  readOnly = false;
-  submitted = new EventEmitter<unknown>();
+class TestCandidateFormComponent implements ICandidateFormComponent {
+    candidate: Candidate;
+    readOnly = false;
+    submitted = new EventEmitter<unknown>();
 }
 
 describe('ViewFormTaskComponent', () => {
-  let component: ViewFormTaskComponent;
-  let candidateFormServiceSpy:
-    jasmine.SpyObj<CandidateFormService>;
-  let viewContainerSpy: any;
-  let formComponentRef: ComponentRef<TestCandidateFormComponent>;
-  let submitted: EventEmitter<unknown>;
+    let component: ViewFormTaskComponent;
+    let candidateFormServiceSpy: MockedObject<CandidateFormService>;
+    let viewContainerSpy: any;
+    let formComponentRef: ComponentRef<TestCandidateFormComponent>;
+    let submitted: EventEmitter<unknown>;
 
-  beforeEach(() => {
-    candidateFormServiceSpy =
-      jasmine.createSpyObj<CandidateFormService>(
-        'CandidateFormService',
-        ['getFormComponentByName']
-      );
+    beforeEach(() => {
+        candidateFormServiceSpy = {
+            getFormComponentByName: vi.fn().mockName("CandidateFormService.getFormComponentByName")
+        } as unknown as MockedObject<CandidateFormService>;
 
-    submitted = new EventEmitter<unknown>();
+        submitted = new EventEmitter<unknown>();
 
-    formComponentRef = {
-      instance: {
-        candidate: null,
-        readOnly: false,
-        submitted
-      },
-      setInput: jasmine.createSpy('setInput')
-    } as unknown as ComponentRef<TestCandidateFormComponent>;
+        formComponentRef = {
+            instance: {
+                candidate: null,
+                readOnly: false,
+                submitted
+            },
+            setInput: vi.fn().mockName('setInput')
+        } as unknown as ComponentRef<TestCandidateFormComponent>;
 
-    viewContainerSpy = jasmine.createSpyObj(
-      'ViewContainerRef',
-      [
-        'clear',
-        'createComponent'
-      ]
-    );
+        viewContainerSpy = {
+            clear: vi.fn().mockName("ViewContainerRef.clear"),
+            createComponent: vi.fn().mockName("ViewContainerRef.createComponent")
+        };
 
-    viewContainerSpy.createComponent.and.returnValue(
-      formComponentRef
-    );
+        viewContainerSpy.createComponent.mockReturnValue(formComponentRef);
 
-    component = new ViewFormTaskComponent(
-      candidateFormServiceSpy
-    );
+        component = new ViewFormTaskComponent(candidateFormServiceSpy);
 
-    component.candidate = {
-      id: 123
-    } as Candidate;
+        component.candidate = {
+            id: 123
+        } as Candidate;
 
-    component.vc = viewContainerSpy;
-  });
-
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
-
-  it('should initialize with no loaded form', () => {
-    expect(component.currentlyLoadedFormName).toBeNull();
-    expect(component.currentlyLoadedFormRef).toBeNull();
-    expect(component.readOnly).toBeFalse();
-    expect(component.error).toBeUndefined();
-  });
-
-  it('should update the loaded form when readOnly changes', () => {
-    component.currentlyLoadedFormRef = formComponentRef;
-    component.readOnly = true;
-
-    component.ngOnChanges({
-      readOnly: new SimpleChange(
-        false,
-        true,
-        false
-      )
+        component.vc = viewContainerSpy;
     });
 
-    expect(formComponentRef.setInput)
-    .toHaveBeenCalledOnceWith(
-      'readOnly',
-      true
-    );
-  });
-
-  it('should safely handle readOnly changes before a form is loaded', () => {
-    component.currentlyLoadedFormRef = null;
-    component.readOnly = true;
-
-    expect(() => {
-      component.ngOnChanges({
-        readOnly: new SimpleChange(
-          false,
-          true,
-          false
-        )
-      });
-    }).not.toThrow();
-  });
-
-  it('should report an error when the task is not a form task', () => {
-    component.taskAssignment = createTaskAssignment({
-      taskName: 'ordinaryTask',
-      formName: null
+    it('should create', () => {
+        expect(component).toBeTruthy();
     });
 
-    component.ngOnChanges({
-      taskAssignment: new SimpleChange(
-        null,
-        component.taskAssignment,
-        true
-      )
+    it('should initialize with no loaded form', () => {
+        expect(component.currentlyLoadedFormName).toBeNull();
+        expect(component.currentlyLoadedFormRef).toBeNull();
+        expect(component.readOnly).toBe(false);
+        expect(component.error).toBeUndefined();
     });
 
-    expect(component.error).toBe(
-      'Angular ViewFormTaskComponent: Task ordinaryTask is not a FormTask.'
-    );
+    it('should update the loaded form when readOnly changes', () => {
+        component.currentlyLoadedFormRef = formComponentRef;
+        component.readOnly = true;
 
-    expect(
-      candidateFormServiceSpy.getFormComponentByName
-    ).not.toHaveBeenCalled();
+        component.ngOnChanges({
+            readOnly: new SimpleChange(false, true, false)
+        });
 
-    expect(viewContainerSpy.createComponent)
-    .not.toHaveBeenCalled();
-  });
+        expect(formComponentRef.setInput).toHaveBeenCalledTimes(1);
 
-  it('should report an error when no component mapping exists', () => {
-    candidateFormServiceSpy.getFormComponentByName
-    .and.returnValue(undefined);
-
-    component.taskAssignment = createTaskAssignment({
-      taskName: 'missingFormTask',
-      formName: 'MissingForm'
+        expect(formComponentRef.setInput).toHaveBeenCalledWith('readOnly', true);
     });
 
-    component.ngOnChanges({
-      taskAssignment: new SimpleChange(
-        null,
-        component.taskAssignment,
-        true
-      )
+    it('should safely handle readOnly changes before a form is loaded', () => {
+        component.currentlyLoadedFormRef = null;
+        component.readOnly = true;
+
+        expect(() => {
+            component.ngOnChanges({
+                readOnly: new SimpleChange(false, true, false)
+            });
+        }).not.toThrow();
     });
 
-    expect(
-      candidateFormServiceSpy.getFormComponentByName
-    ).toHaveBeenCalledOnceWith('MissingForm');
+    it('should report an error when the task is not a form task', () => {
+        component.taskAssignment = createTaskAssignment({
+            taskName: 'ordinaryTask',
+            formName: null
+        });
 
-    expect(component.error).toBe(
-      'Angular ViewFormTaskComponent: No Component found matching Candidate Form ' +
-      'MissingForm, associated with Form Task missingFormTask' +
-      '. Add a mapping to the componentMap in CandidateFormService.ts.'
-    );
+        component.ngOnChanges({
+            taskAssignment: new SimpleChange(null, component.taskAssignment, true)
+        });
 
-    expect(viewContainerSpy.createComponent)
-    .not.toHaveBeenCalled();
-  });
+        expect(component.error).toBe('Angular ViewFormTaskComponent: Task ordinaryTask is not a FormTask.');
 
-  it('should load the component mapped to the form name', () => {
-    candidateFormServiceSpy.getFormComponentByName
-    .and.returnValue(TestCandidateFormComponent);
+        expect(candidateFormServiceSpy.getFormComponentByName).not.toHaveBeenCalled();
 
-    component.taskAssignment = createTaskAssignment({
-      taskName: 'myFormTask',
-      formName: 'MyFirstForm'
+        expect(viewContainerSpy.createComponent)
+            .not.toHaveBeenCalled();
     });
 
-    component.ngOnChanges({
-      taskAssignment: new SimpleChange(
-        null,
-        component.taskAssignment,
-        true
-      )
+    it('should report an error when no component mapping exists', () => {
+        candidateFormServiceSpy.getFormComponentByName.mockReturnValue(undefined);
+
+        component.taskAssignment = createTaskAssignment({
+            taskName: 'missingFormTask',
+            formName: 'MissingForm'
+        });
+
+        component.ngOnChanges({
+            taskAssignment: new SimpleChange(null, component.taskAssignment, true)
+        });
+
+        expect(candidateFormServiceSpy.getFormComponentByName).toHaveBeenCalledTimes(1);
+
+        expect(candidateFormServiceSpy.getFormComponentByName).toHaveBeenCalledWith('MissingForm');
+
+        expect(component.error).toBe('Angular ViewFormTaskComponent: No Component found matching Candidate Form ' +
+            'MissingForm, associated with Form Task missingFormTask' +
+            '. Add a mapping to the componentMap in CandidateFormService.ts.');
+
+        expect(viewContainerSpy.createComponent)
+            .not.toHaveBeenCalled();
     });
 
-    expect(
-      candidateFormServiceSpy.getFormComponentByName
-    ).toHaveBeenCalledOnceWith('MyFirstForm');
+    it('should load the component mapped to the form name', () => {
+        candidateFormServiceSpy.getFormComponentByName.mockReturnValue(TestCandidateFormComponent);
 
-    expect(viewContainerSpy.clear)
-    .toHaveBeenCalledTimes(1);
+        component.taskAssignment = createTaskAssignment({
+            taskName: 'myFormTask',
+            formName: 'MyFirstForm'
+        });
 
-    expect(viewContainerSpy.createComponent)
-    .toHaveBeenCalledOnceWith(
-      TestCandidateFormComponent
-    );
+        component.ngOnChanges({
+            taskAssignment: new SimpleChange(null, component.taskAssignment, true)
+        });
 
-    expect(component.currentlyLoadedFormRef)
-    .toBe(formComponentRef);
+        expect(candidateFormServiceSpy.getFormComponentByName).toHaveBeenCalledTimes(1);
 
-    expect(component.currentlyLoadedFormName)
-    .toBe('MyFirstForm');
+        expect(candidateFormServiceSpy.getFormComponentByName).toHaveBeenCalledWith('MyFirstForm');
 
-    expect(formComponentRef.setInput)
-    .toHaveBeenCalledWith(
-      'candidate',
-      component.candidate
-    );
+        expect(viewContainerSpy.clear)
+            .toHaveBeenCalledTimes(1);
 
-    expect(formComponentRef.setInput)
-    .toHaveBeenCalledWith(
-      'readOnly',
-      false
-    );
-  });
+        expect(viewContainerSpy.createComponent).toHaveBeenCalledTimes(1);
 
-  it('should not reload a form that is already loaded', () => {
-    candidateFormServiceSpy.getFormComponentByName
-    .and.returnValue(TestCandidateFormComponent);
+        expect(viewContainerSpy.createComponent).toHaveBeenCalledWith(TestCandidateFormComponent);
 
-    component.currentlyLoadedFormName = 'MyFirstForm';
-    component.currentlyLoadedFormRef = formComponentRef;
+        expect(component.currentlyLoadedFormRef)
+            .toBe(formComponentRef);
 
-    component.taskAssignment = createTaskAssignment({
-      taskName: 'myFormTask',
-      formName: 'MyFirstForm'
+        expect(component.currentlyLoadedFormName)
+            .toBe('MyFirstForm');
+
+        expect(formComponentRef.setInput)
+            .toHaveBeenCalledWith('candidate', component.candidate);
+
+        expect(formComponentRef.setInput)
+            .toHaveBeenCalledWith('readOnly', false);
     });
 
-    component.ngOnChanges({
-      taskAssignment: new SimpleChange(
-        null,
-        component.taskAssignment,
-        false
-      )
+    it('should not reload a form that is already loaded', () => {
+        candidateFormServiceSpy.getFormComponentByName.mockReturnValue(TestCandidateFormComponent);
+
+        component.currentlyLoadedFormName = 'MyFirstForm';
+        component.currentlyLoadedFormRef = formComponentRef;
+
+        component.taskAssignment = createTaskAssignment({
+            taskName: 'myFormTask',
+            formName: 'MyFirstForm'
+        });
+
+        component.ngOnChanges({
+            taskAssignment: new SimpleChange(null, component.taskAssignment, false)
+        });
+
+        expect(candidateFormServiceSpy.getFormComponentByName).toHaveBeenCalledTimes(1);
+
+        expect(candidateFormServiceSpy.getFormComponentByName).toHaveBeenCalledWith('MyFirstForm');
+
+        expect(viewContainerSpy.clear)
+            .not.toHaveBeenCalled();
+
+        expect(viewContainerSpy.createComponent)
+            .not.toHaveBeenCalled();
     });
 
-    expect(
-      candidateFormServiceSpy.getFormComponentByName
-    ).toHaveBeenCalledOnceWith('MyFirstForm');
+    it('should set a completed task form to read-only', () => {
+        candidateFormServiceSpy.getFormComponentByName.mockReturnValue(TestCandidateFormComponent);
 
-    expect(viewContainerSpy.clear)
-    .not.toHaveBeenCalled();
+        component.taskAssignment = createTaskAssignment({
+            formName: 'MyFirstForm',
+            completedDate: new Date('2026-01-01')
+        });
 
-    expect(viewContainerSpy.createComponent)
-    .not.toHaveBeenCalled();
-  });
+        component.ngOnChanges({
+            taskAssignment: new SimpleChange(null, component.taskAssignment, true)
+        });
 
-  it('should set a completed task form to read-only', () => {
-    candidateFormServiceSpy.getFormComponentByName
-    .and.returnValue(TestCandidateFormComponent);
-
-    component.taskAssignment = createTaskAssignment({
-      formName: 'MyFirstForm',
-      completedDate: new Date('2026-01-01')
+        expect(formComponentRef.setInput)
+            .toHaveBeenCalledWith('readOnly', true);
     });
 
-    component.ngOnChanges({
-      taskAssignment: new SimpleChange(
-        null,
-        component.taskAssignment,
-        true
-      )
+    it('should set an abandoned task form to read-only', () => {
+        candidateFormServiceSpy.getFormComponentByName.mockReturnValue(TestCandidateFormComponent);
+
+        component.taskAssignment = createTaskAssignment({
+            formName: 'MyFirstForm',
+            abandonedDate: new Date('2026-01-01')
+        });
+
+        component.ngOnChanges({
+            taskAssignment: new SimpleChange(null, component.taskAssignment, true)
+        });
+
+        expect(formComponentRef.setInput)
+            .toHaveBeenCalledWith('readOnly', true);
     });
 
-    expect(formComponentRef.setInput)
-    .toHaveBeenCalledWith(
-      'readOnly',
-      true
-    );
-  });
+    it('should return the dynamically created component reference', () => {
+        component.readOnly = false;
 
-  it('should set an abandoned task form to read-only', () => {
-    candidateFormServiceSpy.getFormComponentByName
-    .and.returnValue(TestCandidateFormComponent);
+        const result = component.load(TestCandidateFormComponent);
 
-    component.taskAssignment = createTaskAssignment({
-      formName: 'MyFirstForm',
-      abandonedDate: new Date('2026-01-01')
+        expect(result).toBe(formComponentRef);
+
+        expect(viewContainerSpy.clear)
+            .toHaveBeenCalledTimes(1);
+
+        expect(viewContainerSpy.createComponent).toHaveBeenCalledTimes(1);
+
+        expect(viewContainerSpy.createComponent).toHaveBeenCalledWith(TestCandidateFormComponent);
+
+        expect(formComponentRef.setInput)
+            .toHaveBeenCalledWith('candidate', component.candidate);
     });
 
-    component.ngOnChanges({
-      taskAssignment: new SimpleChange(
-        null,
-        component.taskAssignment,
-        true
-      )
+    it('should emit taskCompleted when the dynamic form is submitted', () => {
+        candidateFormServiceSpy.getFormComponentByName.mockReturnValue(TestCandidateFormComponent);
+
+        component.taskAssignment = createTaskAssignment({
+            formName: 'MyFirstForm'
+        });
+
+        const taskCompletedSpy = vi.spyOn(component.taskCompleted, 'emit').mockReturnValue(undefined);
+
+        component.ngOnChanges({
+            taskAssignment: new SimpleChange(null, component.taskAssignment, true)
+        });
+
+        submitted.emit({});
+
+        expect(taskCompletedSpy).toHaveBeenCalledTimes(1);
+
+        expect(taskCompletedSpy).toHaveBeenCalledWith(component.taskAssignment);
+
+        expect(formComponentRef.setInput)
+            .toHaveBeenCalledWith('readOnly', true);
     });
 
-    expect(formComponentRef.setInput)
-    .toHaveBeenCalledWith(
-      'readOnly',
-      true
-    );
-  });
+    it('should emit the current assignment when onSubmitted is called', () => {
+        component.taskAssignment = createTaskAssignment({
+            formName: 'MyFirstForm'
+        });
 
-  it('should return the dynamically created component reference', () => {
-    component.readOnly = false;
+        component.currentlyLoadedFormRef = formComponentRef;
 
-    const result = component.load(
-      TestCandidateFormComponent
-    );
+        const taskCompletedSpy = vi.spyOn(component.taskCompleted, 'emit').mockReturnValue(undefined);
 
-    expect(result).toBe(formComponentRef);
+        component.onSubmitted();
 
-    expect(viewContainerSpy.clear)
-    .toHaveBeenCalledTimes(1);
+        expect(taskCompletedSpy).toHaveBeenCalledTimes(1);
 
-    expect(viewContainerSpy.createComponent)
-    .toHaveBeenCalledOnceWith(
-      TestCandidateFormComponent
-    );
+        expect(taskCompletedSpy).toHaveBeenCalledWith(component.taskAssignment);
 
-    expect(formComponentRef.setInput)
-    .toHaveBeenCalledWith(
-      'candidate',
-      component.candidate
-    );
-  });
+        expect(formComponentRef.setInput).toHaveBeenCalledTimes(1);
 
-  it('should emit taskCompleted when the dynamic form is submitted', () => {
-    candidateFormServiceSpy.getFormComponentByName
-    .and.returnValue(TestCandidateFormComponent);
-
-    component.taskAssignment = createTaskAssignment({
-      formName: 'MyFirstForm'
+        expect(formComponentRef.setInput).toHaveBeenCalledWith('readOnly', true);
     });
-
-    const taskCompletedSpy = spyOn(
-      component.taskCompleted,
-      'emit'
-    );
-
-    component.ngOnChanges({
-      taskAssignment: new SimpleChange(
-        null,
-        component.taskAssignment,
-        true
-      )
-    });
-
-    submitted.emit({});
-
-    expect(taskCompletedSpy)
-    .toHaveBeenCalledOnceWith(
-      component.taskAssignment
-    );
-
-    expect(formComponentRef.setInput)
-    .toHaveBeenCalledWith(
-      'readOnly',
-      true
-    );
-  });
-
-  it('should emit the current assignment when onSubmitted is called', () => {
-    component.taskAssignment = createTaskAssignment({
-      formName: 'MyFirstForm'
-    });
-
-    component.currentlyLoadedFormRef = formComponentRef;
-
-    const taskCompletedSpy = spyOn(
-      component.taskCompleted,
-      'emit'
-    );
-
-    component.onSubmitted();
-
-    expect(taskCompletedSpy)
-    .toHaveBeenCalledOnceWith(
-      component.taskAssignment
-    );
-
-    expect(formComponentRef.setInput)
-    .toHaveBeenCalledOnceWith(
-      'readOnly',
-      true
-    );
-  });
 });
 
 interface TaskAssignmentOptions {
-  taskName?: string;
-  formName?: string | null;
-  completedDate?: Date | null;
-  abandonedDate?: Date | null;
+    taskName?: string;
+    formName?: string | null;
+    completedDate?: Date | null;
+    abandonedDate?: Date | null;
 }
 
-function createTaskAssignment(
-  options: TaskAssignmentOptions = {}
-): TaskAssignment {
-  const taskName =
-    options.taskName ?? 'candidateFormTask';
+function createTaskAssignment(options: TaskAssignmentOptions = {}): TaskAssignment {
+    const taskName = options.taskName ?? 'candidateFormTask';
 
-  const formName =
-    options.formName === undefined
-      ? 'MyFirstForm'
-      : options.formName;
+    const formName = options.formName === undefined
+        ? 'MyFirstForm'
+        : options.formName;
 
-  return {
-    id: 1,
-    completedDate: options.completedDate ?? null,
-    abandonedDate: options.abandonedDate ?? null,
-    task: {
-      name: taskName,
-      candidateForm: formName
-        ? {
-          name: formName
+    return {
+        id: 1,
+        completedDate: options.completedDate ?? null,
+        abandonedDate: options.abandonedDate ?? null,
+        task: {
+            name: taskName,
+            candidateForm: formName
+                ? {
+                    name: formName
+                }
+                : null
         }
-        : null
-    }
-  } as TaskAssignment;
+    } as TaskAssignment;
 }

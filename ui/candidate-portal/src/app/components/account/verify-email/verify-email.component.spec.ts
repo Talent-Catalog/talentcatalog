@@ -1,3 +1,4 @@
+import type { MockedObject } from "vitest";
 /*
  * Copyright (c) 2026 Talent Catalog.
  *
@@ -14,122 +15,104 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
-import {Subject, throwError} from 'rxjs';
+import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
+import { Subject, throwError } from 'rxjs';
 
-import {UserService} from '../../../services/user.service';
-import {VerifyEmailComponent} from './verify-email.component';
+import { UserService } from '../../../services/user.service';
+import { VerifyEmailComponent } from './verify-email.component';
 
 describe('VerifyEmailComponent', () => {
-  let component: VerifyEmailComponent;
-  let userServiceSpy: jasmine.SpyObj<UserService>;
-  let activeModalSpy: jasmine.SpyObj<NgbActiveModal>;
+    let component: VerifyEmailComponent;
+    let userServiceSpy: MockedObject<UserService>;
+    let activeModalSpy: MockedObject<NgbActiveModal>;
 
-  beforeEach(() => {
-    userServiceSpy = jasmine.createSpyObj<UserService>(
-      'UserService',
-      ['sendVerifyEmail']
-    );
+    beforeEach(() => {
+        userServiceSpy = {
+            sendVerifyEmail: vi.fn().mockName("UserService.sendVerifyEmail")
+        } as unknown as MockedObject<UserService>;
 
-    activeModalSpy = jasmine.createSpyObj<NgbActiveModal>(
-      'NgbActiveModal',
-      ['close']
-    );
+        activeModalSpy = {
+            close: vi.fn().mockName("NgbActiveModal.close")
+        } as unknown as MockedObject<NgbActiveModal>;
 
-    component = new VerifyEmailComponent(
-      userServiceSpy,
-      activeModalSpy
-    );
+        component = new VerifyEmailComponent(userServiceSpy, activeModalSpy);
 
-    component.userEmail = 'ehsan@example.com';
-  });
+        component.userEmail = 'ehsan@example.com';
+    });
 
-  it('should create with the initial state', () => {
-    expect(component).toBeTruthy();
-    expect(component.state).toBe('idle');
-    expect(component.emailSent).toBeFalse();
-    expect(component.error).toBeUndefined();
-  });
+    it('should create with the initial state', () => {
+        expect(component).toBeTruthy();
+        expect(component.state).toBe('idle');
+        expect(component.emailSent).toBe(false);
+        expect(component.error).toBeUndefined();
+    });
 
-  it('should close the active modal', () => {
-    component.closeModal();
+    it('should close the active modal', () => {
+        component.closeModal();
 
-    expect(activeModalSpy.close).toHaveBeenCalledTimes(1);
-  });
+        expect(activeModalSpy.close).toHaveBeenCalledTimes(1);
+    });
 
-  it('should enter loading state and send the supplied email', () => {
-    const response$ = new Subject<Object>();
-    userServiceSpy.sendVerifyEmail.and.returnValue(response$);
+    it('should enter loading state and send the supplied email', () => {
+        const response$ = new Subject<Object>();
+        userServiceSpy.sendVerifyEmail.mockReturnValue(response$);
 
-    component.sendVerifyEmail();
+        component.sendVerifyEmail();
 
-    expect(component.state).toBe('loading');
-    expect(userServiceSpy.sendVerifyEmail)
-    .toHaveBeenCalledTimes(1);
+        expect(component.state).toBe('loading');
+        expect(userServiceSpy.sendVerifyEmail)
+            .toHaveBeenCalledTimes(1);
 
-    const request =
-      userServiceSpy.sendVerifyEmail.calls.mostRecent().args[0];
+        const request = vi.mocked(userServiceSpy.sendVerifyEmail).mock.lastCall[0];
 
-    expect(request.email).toBe('ehsan@example.com');
-  });
+        expect(request.email).toBe('ehsan@example.com');
+    });
 
-  it('should enter emailSent state after a successful request', () => {
-    const response$ = new Subject<Object>();
-    userServiceSpy.sendVerifyEmail.and.returnValue(response$);
+    it('should enter emailSent state after a successful request', () => {
+        const response$ = new Subject<Object>();
+        userServiceSpy.sendVerifyEmail.mockReturnValue(response$);
 
-    component.sendVerifyEmail();
-    response$.next({});
+        component.sendVerifyEmail();
+        response$.next({});
 
-    expect(component.state).toBe('emailSent');
-    expect(component.emailSent).toBeTrue();
-    expect(component.error).toBeUndefined();
-  });
-  
-  it('should use the server error message when sending fails', () => {
-    const error = new Error(
-      'Unable to send verification email'
-    );
+        expect(component.state).toBe('emailSent');
+        expect(component.emailSent).toBe(true);
+        expect(component.error).toBeUndefined();
+    });
 
-    const consoleSpy = spyOn(console, 'error');
+    it('should use the server error message when sending fails', () => {
+        const error = new Error('Unable to send verification email');
 
-    // RxJS 6 syntax: pass the error directly.
-    userServiceSpy.sendVerifyEmail.and.returnValue(
-      throwError(error)
-    );
+        const consoleSpy = vi.spyOn(console, 'error').mockReturnValue(undefined);
 
-    component.sendVerifyEmail();
+        // RxJS 6 syntax: pass the error directly.
+        userServiceSpy.sendVerifyEmail.mockReturnValue(throwError(error));
 
-    expect(component.state).toBe('error');
-    expect(component.emailSent).toBeFalse();
-    expect(component.error).toBe(
-      'Unable to send verification email'
-    );
+        component.sendVerifyEmail();
 
-    expect(consoleSpy).toHaveBeenCalledOnceWith(
-      'Error sending verification email:',
-      error
-    );
-  });
+        expect(component.state).toBe('error');
+        expect(component.emailSent).toBe(false);
+        expect(component.error).toBe('Unable to send verification email');
 
-  it('should use the fallback message when the error has no message', () => {
-    const error = {};
-    const consoleSpy = spyOn(console, 'error');
+        expect(consoleSpy).toHaveBeenCalledTimes(1);
 
-    // RxJS 6 syntax: pass the error directly.
-    userServiceSpy.sendVerifyEmail.and.returnValue(
-      throwError(error)
-    );
+        expect(consoleSpy).toHaveBeenCalledWith('Error sending verification email:', error);
+    });
 
-    component.sendVerifyEmail();
+    it('should use the fallback message when the error has no message', () => {
+        const error = {};
+        const consoleSpy = vi.spyOn(console, 'error').mockReturnValue(undefined);
 
-    expect(component.state).toBe('error');
-    expect(component.error).toBe(
-      'An error occurred while sending the verification email.'
-    );
+        // RxJS 6 syntax: pass the error directly.
+        userServiceSpy.sendVerifyEmail.mockReturnValue(throwError(error));
 
-    expect(consoleSpy).toHaveBeenCalledOnceWith(
-      'Error sending verification email:',
-      error
-    );
-  });
+        component.sendVerifyEmail();
+
+        expect(component.state).toBe('error');
+        expect(component.error).toBe('An error occurred while sending the verification email.');
+
+        expect(consoleSpy).toHaveBeenCalledTimes(1);
+
+        expect(consoleSpy).toHaveBeenCalledWith('Error sending verification email:', error);
+    });
 });
