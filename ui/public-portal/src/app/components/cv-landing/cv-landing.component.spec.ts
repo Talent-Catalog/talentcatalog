@@ -1,3 +1,4 @@
+import type { MockedObject } from "vitest";
 /*
  * Copyright (c) 2026 Talent Catalog.
  *
@@ -14,110 +15,114 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {CommonModule} from '@angular/common';
-import {Component, Input, ChangeDetectionStrategy} from '@angular/core';
-import {ComponentFixture, TestBed, waitForAsync} from '@angular/core/testing';
-import {ActivatedRoute, convertToParamMap, ParamMap} from '@angular/router';
-import {Subject} from 'rxjs';
+import { CommonModule } from '@angular/common';
+import { Component, Input, ChangeDetectionStrategy } from '@angular/core';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { ActivatedRoute, convertToParamMap, ParamMap } from '@angular/router';
+import { Subject } from 'rxjs';
 
-import {Candidate} from '../../model/candidate';
-import {CvService} from '../../services/cv.service';
-import {CvLandingComponent} from './cv-landing.component';
-
+import { Candidate } from '../../model/candidate';
+import { CvService } from '../../services/cv.service';
+import { CvLandingComponent } from './cv-landing.component';
+import { expect, vi, type Mock } from 'vitest';
 @Component({
-  selector: 'app-cv-display',
-  template: '',
-  changeDetection: ChangeDetectionStrategy.Eager,
-  standalone: false
+    selector: 'app-cv-display',
+    template: '',
+    changeDetection: ChangeDetectionStrategy.Eager,
+    standalone: false
 })
 class CvDisplayStubComponent {
-  @Input() candidate: Candidate;
+    @Input()
+    candidate: Candidate;
 }
 
 describe('CvLandingComponent', () => {
-  let component: CvLandingComponent;
-  let fixture: ComponentFixture<CvLandingComponent>;
-  let routeParamMap: Subject<ParamMap>;
-  let cvService: jasmine.SpyObj<CvService>;
+    let component: CvLandingComponent;
+    let fixture: ComponentFixture<CvLandingComponent>;
+    let routeParamMap: Subject<ParamMap>;
+    let cvService: {
+      decodeCvRequest: Mock<CvService['decodeCvRequest']>;
+    };
 
-  const candidate = {
-    id: 1,
-    candidateNumber: '123456',
-    publicId: 'candidate-public-id'
-  } as Candidate;
+    const candidate = {
+        id: 1,
+        candidateNumber: '123456',
+        publicId: 'candidate-public-id'
+    } as Candidate;
 
-  beforeEach(waitForAsync(() => {
-    routeParamMap = new Subject<ParamMap>();
-    cvService = jasmine.createSpyObj<CvService>('CvService', [
-      'decodeCvRequest'
-    ]);
+    beforeEach(waitForAsync(() => {
+        routeParamMap = new Subject<ParamMap>();
+        cvService = {
+          decodeCvRequest: vi
+            .fn<CvService['decodeCvRequest']>()
+            .mockName('CvService.decodeCvRequest')
+        };
 
-    TestBed.configureTestingModule({
-      imports: [CommonModule],
-      declarations: [CvLandingComponent, CvDisplayStubComponent],
-      providers: [
-        {
-          provide: ActivatedRoute,
-          useValue: {paramMap: routeParamMap.asObservable()}
-        },
-        {
-          provide: CvService,
-          useValue: cvService
-        }
-      ]
-    }).compileComponents();
-  }));
+        TestBed.configureTestingModule({
+            imports: [CommonModule],
+            declarations: [CvLandingComponent, CvDisplayStubComponent],
+            providers: [
+                {
+                    provide: ActivatedRoute,
+                    useValue: { paramMap: routeParamMap.asObservable() }
+                },
+                {
+                    provide: CvService,
+                    useValue: cvService
+                }
+            ]
+        }).compileComponents();
+    }));
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(CvLandingComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
+    beforeEach(() => {
+        fixture = TestBed.createComponent(CvLandingComponent);
+        component = fixture.componentInstance;
+        fixture.detectChanges();
+    });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
 
-  it('should fetch and display the candidate identified by the route token', () => {
-    const response = new Subject<Candidate>();
-    cvService.decodeCvRequest.and.returnValue(response.asObservable());
+    it('should fetch and display the candidate identified by the route token', () => {
+        const response = new Subject<Candidate>();
+        cvService.decodeCvRequest.mockReturnValue(response.asObservable());
 
-    routeParamMap.next(convertToParamMap({token: 'valid-token'}));
+        routeParamMap.next(convertToParamMap({ token: 'valid-token' }));
 
-    expect(cvService.decodeCvRequest).toHaveBeenCalledOnceWith('valid-token');
-    expect(component.loading).toBeTrue();
-    expect(component.error).toBeNull();
+        expect(cvService.decodeCvRequest).toHaveBeenCalledTimes(1);
 
-    response.next(candidate);
-    response.complete();
-    fixture.detectChanges();
+        expect(cvService.decodeCvRequest).toHaveBeenCalledWith('valid-token');
+        expect(component.loading).toBe(true);
+        expect(component.error).toBeNull();
 
-    expect(component.candidate).toEqual(candidate);
-    expect(component.loading).toBeFalse();
+        response.next(candidate);
+        response.complete();
+        fixture.detectChanges();
 
-    const cvDisplay =
-      fixture.nativeElement.querySelector('app-cv-display');
-    expect(cvDisplay).not.toBeNull();
-  });
+        expect(component.candidate).toEqual(candidate);
+        expect(component.loading).toBe(false);
 
-  it('should expose an error when the CV request fails', () => {
-    const response = new Subject<Candidate>();
-    const expectedError = 'Unable to load CV';
-    cvService.decodeCvRequest.and.returnValue(response.asObservable());
+        const cvDisplay = fixture.nativeElement.querySelector('app-cv-display');
+        expect(cvDisplay).not.toBeNull();
+    });
 
-    routeParamMap.next(convertToParamMap({token: 'invalid-token'}));
-    response.error(expectedError);
-    fixture.detectChanges();
+    it('should expose an error when the CV request fails', () => {
+        const response = new Subject<Candidate>();
+        const expectedError = 'Unable to load CV';
+        cvService.decodeCvRequest.mockReturnValue(response.asObservable());
 
-    expect(component.error).toBe(expectedError);
-    expect(component.loading).toBeFalse();
-    expect(
-      fixture.nativeElement.querySelector('.alert-danger').textContent
-    ).toContain(expectedError);
-  });
+        routeParamMap.next(convertToParamMap({ token: 'invalid-token' }));
+        response.error(expectedError);
+        fixture.detectChanges();
 
-  it('should not request a CV when the route has no token', () => {
-    routeParamMap.next(convertToParamMap({}));
-    expect(cvService.decodeCvRequest).not.toHaveBeenCalled();
-  });
+        expect(component.error).toBe(expectedError);
+        expect(component.loading).toBe(false);
+        expect(fixture.nativeElement.querySelector('.alert-danger').textContent).toContain(expectedError);
+    });
+
+    it('should not request a CV when the route has no token', () => {
+        routeParamMap.next(convertToParamMap({}));
+        expect(cvService.decodeCvRequest).not.toHaveBeenCalled();
+    });
 });
