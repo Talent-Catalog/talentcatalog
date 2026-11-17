@@ -15,10 +15,19 @@
  */
 
 import {test} from '@playwright/test';
+import {mkdir} from 'node:fs/promises';
+import {dirname, resolve} from 'node:path';
 import {warmUpAdminPortal} from './warmup';
 
 test.setTimeout(240_000);
 
 test('warm up staging before performance measurements', async ({page}) => {
   await warmUpAdminPortal(page);
+
+  // Save the authenticated browser session.
+  // Performance journeys can reuse it without measuring login.
+  const authFile = resolve(__dirname, '../../.auth/perf-user.json');
+
+  await mkdir(dirname(authFile), {recursive: true});
+  await page.context().storageState({path: authFile});
 });
