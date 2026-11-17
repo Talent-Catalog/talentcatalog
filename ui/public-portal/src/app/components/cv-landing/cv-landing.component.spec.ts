@@ -1,4 +1,3 @@
-import type { MockedObject } from "vitest";
 /*
  * Copyright (c) 2026 Talent Catalog.
  *
@@ -15,16 +14,17 @@ import type { MockedObject } from "vitest";
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import { CommonModule } from '@angular/common';
-import { Component, Input, ChangeDetectionStrategy } from '@angular/core';
-import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
-import { ActivatedRoute, convertToParamMap, ParamMap } from '@angular/router';
-import { Subject } from 'rxjs';
+import type {MockedObject} from "vitest";
+import {CommonModule} from '@angular/common';
+import {Component, Input, ChangeDetectionStrategy} from '@angular/core';
+import {ComponentFixture, TestBed, waitForAsync} from '@angular/core/testing';
+import {ActivatedRoute, convertToParamMap, ParamMap} from '@angular/router';
+import {Subject} from 'rxjs';
 
-import { Candidate } from '../../model/candidate';
-import { CvService } from '../../services/cv.service';
-import { CvLandingComponent } from './cv-landing.component';
-import { expect, vi, type Mock } from 'vitest';
+import {Candidate} from '../../model/candidate';
+import {CvService} from '../../services/cv.service';
+import {CvLandingComponent} from './cv-landing.component';
+import {expect, vi, type Mock} from 'vitest';
 @Component({
     selector: 'app-cv-display',
     template: '',

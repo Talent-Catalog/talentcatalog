@@ -14,13 +14,13 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import { CommonModule } from '@angular/common';
-import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import {CommonModule} from '@angular/common';
+import {ComponentFixture, TestBed, waitForAsync} from '@angular/core/testing';
 
-import { Candidate } from '../../model/candidate';
-import { ExtendDatePipe } from '../../util/date-pipe';
-import { CvDisplayComponent } from './cv-display.component';
-import { expect, vi } from 'vitest';
+import {Candidate} from '../../model/candidate';
+import {ExtendDatePipe} from '../../util/date-pipe';
+import {CvDisplayComponent} from './cv-display.component';
+import {expect, vi} from 'vitest';
 describe('CvDisplayComponent', () => {
     let component: CvDisplayComponent;
     let fixture: ComponentFixture<CvDisplayComponent>;

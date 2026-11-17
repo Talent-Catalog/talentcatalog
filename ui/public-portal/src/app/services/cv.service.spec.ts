@@ -14,13 +14,13 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
-import { TestBed } from '@angular/core/testing';
+import {HttpTestingController, provideHttpClientTesting} from '@angular/common/http/testing';
+import {TestBed} from '@angular/core/testing';
 
-import { Candidate } from '../model/candidate';
-import { CvService } from './cv.service';
-import { provideHttpClient, withInterceptorsFromDi, withXhr } from '@angular/common/http';
-import { expect } from 'vitest';
+import {Candidate} from '../model/candidate';
+import {CvService} from './cv.service';
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from '@angular/common/http';
+import {expect} from 'vitest';
 describe('CvService', () => {
     let service: CvService;
     let httpTestingController: HttpTestingController;
