@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import { TrimPipe } from './trim.pipe';
+import {TrimPipe} from './trim.pipe';
 
 describe('TrimPipe', () => {
 

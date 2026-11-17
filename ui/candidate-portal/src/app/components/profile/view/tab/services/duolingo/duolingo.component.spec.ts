@@ -1,11 +1,11 @@
-import type { MockedObject } from "vitest";
-import { Component, EventEmitter, Input, Output, Pipe, PipeTransform, ChangeDetectionStrategy } from '@angular/core';
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { By } from '@angular/platform-browser';
-import { of, throwError } from 'rxjs';
-import { DuolingoComponent } from './duolingo.component';
-import { DuolingoCouponService } from '../../../../../../services/duolingo-coupon.service';
-import { DuolingoCouponStatus } from '../../../../../../model/duolingo-coupon';
+import type {MockedObject} from "vitest";
+import {Component, EventEmitter, Input, Output, Pipe, PipeTransform, ChangeDetectionStrategy} from '@angular/core';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {By} from '@angular/platform-browser';
+import {of, throwError} from 'rxjs';
+import {DuolingoComponent} from './duolingo.component';
+import {DuolingoCouponService} from '../../../../../../services/duolingo-coupon.service';
+import {DuolingoCouponStatus} from '../../../../../../model/duolingo-coupon';
 
 @Pipe({ name: 'translate', standalone: false })
 class TranslatePipeStub implements PipeTransform {

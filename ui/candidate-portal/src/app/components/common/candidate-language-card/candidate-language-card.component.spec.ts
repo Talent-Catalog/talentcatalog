@@ -14,16 +14,16 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import { Component, forwardRef, Input, SimpleChange, ChangeDetectionStrategy } from '@angular/core';
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { By } from '@angular/platform-browser';
-import { ControlValueAccessor, FormsModule, NG_VALUE_ACCESSOR } from '@angular/forms';
-import { TranslateModule } from '@ngx-translate/core';
+import {Component, forwardRef, Input, SimpleChange, ChangeDetectionStrategy} from '@angular/core';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {By} from '@angular/platform-browser';
+import {ControlValueAccessor, FormsModule, NG_VALUE_ACCESSOR} from '@angular/forms';
+import {TranslateModule} from '@ngx-translate/core';
 
-import { CandidateLanguageCardComponent } from './candidate-language-card.component';
-import { CandidateLanguage } from '../../../model/candidate-language';
-import { Language } from '../../../model/language';
-import { LanguageLevel } from '../../../model/language-level';
+import {CandidateLanguageCardComponent} from './candidate-language-card.component';
+import {CandidateLanguage} from '../../../model/candidate-language';
+import {Language} from '../../../model/language';
+import {LanguageLevel} from '../../../model/language-level';
 
 @Component({
     selector: 'tc-button',

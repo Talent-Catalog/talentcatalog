@@ -14,10 +14,10 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import { expect, test } from '@playwright/test';
+import {expect, test} from '@playwright/test';
 
-import { VerifyPlusPage } from '../pages/verify-plus.page';
-import { getUserMediaCallCount, installNoCameraDevicesMock, } from '../support/media-devices.mock';
+import {VerifyPlusPage} from '../pages/verify-plus.page';
+import {getUserMediaCallCount, installNoCameraDevicesMock} from '../support/media-devices.mock';
 
 test.describe('Verify+ camera availability', () => {
     test.beforeEach(async ({ page }) => {

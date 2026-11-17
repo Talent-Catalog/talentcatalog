@@ -1,4 +1,3 @@
-import type { MockedObject } from "vitest";
 /*
  * Copyright (c) 2026 Talent Catalog.
  *
@@ -15,13 +14,14 @@ import type { MockedObject } from "vitest";
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import { ComponentRef, EventEmitter, SimpleChange } from '@angular/core';
+import type {MockedObject} from "vitest";
+import {ComponentRef, EventEmitter, SimpleChange} from '@angular/core';
 
-import { Candidate } from '../../../../../../../model/candidate';
-import { ICandidateFormComponent } from '../../../../../../../model/candidate-form';
-import { TaskAssignment } from '../../../../../../../model/task-assignment';
-import { CandidateFormService } from '../../../../../../../services/candidate-form.service';
-import { ViewFormTaskComponent } from './view-form-task.component';
+import {Candidate} from '../../../../../../../model/candidate';
+import {ICandidateFormComponent} from '../../../../../../../model/candidate-form';
+import {TaskAssignment} from '../../../../../../../model/task-assignment';
+import {CandidateFormService} from '../../../../../../../services/candidate-form.service';
+import {ViewFormTaskComponent} from './view-form-task.component';
 
 class TestCandidateFormComponent implements ICandidateFormComponent {
     candidate: Candidate;

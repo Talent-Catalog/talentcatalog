@@ -14,10 +14,10 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { NO_ERRORS_SCHEMA } from '@angular/core';
-import { By } from '@angular/platform-browser';
-import { AgreementContentComponent } from './agreement-content.component';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {NO_ERRORS_SCHEMA} from '@angular/core';
+import {By} from '@angular/platform-browser';
+import {AgreementContentComponent} from './agreement-content.component';
 
 describe('AgreementContentComponent', () => {
     let component: AgreementContentComponent;

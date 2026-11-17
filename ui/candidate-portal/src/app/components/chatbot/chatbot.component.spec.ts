@@ -1,4 +1,3 @@
-import type { MockedObject } from "vitest";
 /*
  * Copyright (c) 2026 Talent Catalog.
  *
@@ -15,13 +14,14 @@ import type { MockedObject } from "vitest";
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
-import { FormsModule } from '@angular/forms';
-import { NO_ERRORS_SCHEMA } from '@angular/core';
-import { BehaviorSubject, Subject, Subscription } from 'rxjs';
-import { ChatbotComponent } from './chatbot.component';
-import { ChatbotService } from '../../services/chatbot.service';
-import { ChatbotMessage } from '../../model/chatbot-message';
+import type {MockedObject} from "vitest";
+import {ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
+import {FormsModule} from '@angular/forms';
+import {NO_ERRORS_SCHEMA} from '@angular/core';
+import {BehaviorSubject, Subject, Subscription} from 'rxjs';
+import {ChatbotComponent} from './chatbot.component';
+import {ChatbotService} from '../../services/chatbot.service';
+import {ChatbotMessage} from '../../model/chatbot-message';
 
 describe('ChatbotComponent', () => {
     let component: ChatbotComponent;

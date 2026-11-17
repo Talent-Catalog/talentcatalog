@@ -1,4 +1,3 @@
-import type { MockedObject } from "vitest";
 /*
  * Copyright (c) 2026 Talent Catalog.
  *
@@ -14,15 +13,17 @@ import type { MockedObject } from "vitest";
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-import { Component, forwardRef, Input, Pipe, PipeTransform, ChangeDetectionStrategy } from '@angular/core';
-import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
-import { By } from '@angular/platform-browser';
-import { ControlValueAccessor, NG_VALUE_ACCESSOR, ReactiveFormsModule, UntypedFormBuilder, Validators } from '@angular/forms';
-import { ActivatedRoute, convertToParamMap, ParamMap, Router } from '@angular/router';
-import { BehaviorSubject, of, throwError } from 'rxjs';
 
-import { ChangePasswordComponent } from './change-password.component';
-import { UserService } from '../../../services/user.service';
+import type {MockedObject} from "vitest";
+import {Component, forwardRef, Input, Pipe, PipeTransform, ChangeDetectionStrategy} from '@angular/core';
+import {ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
+import {By} from '@angular/platform-browser';
+import {ControlValueAccessor, NG_VALUE_ACCESSOR, ReactiveFormsModule, UntypedFormBuilder, Validators} from '@angular/forms';
+import {ActivatedRoute, convertToParamMap, ParamMap, Router} from '@angular/router';
+import {BehaviorSubject, of, throwError} from 'rxjs';
+
+import {ChangePasswordComponent} from './change-password.component';
+import {UserService} from '../../../services/user.service';
 
 @Pipe({ name: 'translate', standalone: false })
 class TranslatePipeStub implements PipeTransform {

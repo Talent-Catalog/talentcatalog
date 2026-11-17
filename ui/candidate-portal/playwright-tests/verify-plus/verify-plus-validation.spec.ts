@@ -14,19 +14,19 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import type { Response as PlaywrightResponse, } from '@playwright/test';
+import type {Response as PlaywrightResponse} from '@playwright/test';
 
-import { expect, test, } from '../fixtures/verify-plus-api.fixture';
+import {expect, test} from '../fixtures/verify-plus-api.fixture';
 
-import { VERIFY_PLUS_VALIDATION_QR_FIXTURES, VerifyPlusQrValidationFixture, } from '../fixtures/verify-plus-qr.fixture';
+import {VERIFY_PLUS_VALIDATION_QR_FIXTURES, VerifyPlusQrValidationFixture} from '../fixtures/verify-plus-qr.fixture';
 
-import { VerifyPlusPage, } from '../pages/verify-plus.page';
+import {VerifyPlusPage} from '../pages/verify-plus.page';
 
-import { getE2EVerifyPlusBaselineUnhcrId, getE2EVerifyPlusDuplicateUnhcrId, } from '../support/e2e-env';
+import {getE2EVerifyPlusBaselineUnhcrId, getE2EVerifyPlusDuplicateUnhcrId} from '../support/e2e-env';
 
-import { restoreVerifyPlusBaselineUnhcrId, } from '../support/verify-plus-api';
+import {restoreVerifyPlusBaselineUnhcrId} from '../support/verify-plus-api';
 
-import { scanVerifyPlusQrFixtureToReview, } from '../support/verify-plus-qr-decoding.e2e';
+import {scanVerifyPlusQrFixtureToReview} from '../support/verify-plus-qr-decoding.e2e';
 
 /**
  * Standard guidance displayed underneath Verify+ backend validation errors.

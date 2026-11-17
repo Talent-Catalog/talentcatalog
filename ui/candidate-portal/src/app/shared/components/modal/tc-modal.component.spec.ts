@@ -1,11 +1,11 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { TcModalComponent } from './tc-modal.component';
-import { NgbActiveModal } from "@ng-bootstrap/ng-bootstrap";
-import { By } from "@angular/platform-browser";
-import { ButtonComponent } from "../button/button.component";
-import { Component, ChangeDetectionStrategy } from "@angular/core";
-import { provideRouter } from '@angular/router';
+import {TcModalComponent} from './tc-modal.component';
+import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
+import {By} from "@angular/platform-browser";
+import {ButtonComponent} from "../button/button.component";
+import {Component, ChangeDetectionStrategy} from "@angular/core";
+import {provideRouter} from '@angular/router';
 
 @Component({
     template: `

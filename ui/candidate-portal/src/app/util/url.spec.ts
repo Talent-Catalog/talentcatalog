@@ -14,9 +14,9 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import { Location } from '@angular/common';
-import { Router, UrlTree } from '@angular/router';
-import { getExternalHref } from './url';
+import {Location} from '@angular/common';
+import {Router, UrlTree} from '@angular/router';
+import {getExternalHref} from './url';
 
 describe('getExternalHref', () => {
     it('combines the origin, external base path, and serialized navigation', () => {

@@ -1,4 +1,3 @@
-import type { MockedObject } from "vitest";
 /*
  * Copyright (c) 2026 Talent Catalog.
  *
@@ -15,18 +14,19 @@ import type { MockedObject } from "vitest";
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {NO_ERRORS_SCHEMA,  Component, EventEmitter, forwardRef, Input, Output, ChangeDetectionStrategy } from '@angular/core';
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { By } from '@angular/platform-browser';
-import { ControlValueAccessor, NG_VALUE_ACCESSOR, ReactiveFormsModule } from '@angular/forms';
-import { TranslateModule } from '@ngx-translate/core';
-import { of, throwError } from 'rxjs';
+import type {MockedObject} from "vitest";
+import {NO_ERRORS_SCHEMA, Component, EventEmitter, forwardRef, Input, Output, ChangeDetectionStrategy} from '@angular/core';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {By} from '@angular/platform-browser';
+import {ControlValueAccessor, NG_VALUE_ACCESSOR, ReactiveFormsModule} from '@angular/forms';
+import {TranslateModule} from '@ngx-translate/core';
+import {of, throwError} from 'rxjs';
 
-import { CandidateTaskComponent } from './candidate-task.component';
-import { TaskAssignmentService } from '../../../../../../services/task-assignment.service';
-import { TaskAssignment } from '../../../../../../model/task-assignment';
-import { TaskType } from '../../../../../../model/task';
-import { Status } from '../../../../../../model/base';
+import {CandidateTaskComponent} from './candidate-task.component';
+import {TaskAssignmentService} from '../../../../../../services/task-assignment.service';
+import {TaskAssignment} from '../../../../../../model/task-assignment';
+import {TaskType} from '../../../../../../model/task';
+import {Status} from '../../../../../../model/base';
 
 @Component({ selector: 'app-error', template: '', changeDetection: ChangeDetectionStrategy.Eager, standalone: false })
 class ErrorStubComponent {

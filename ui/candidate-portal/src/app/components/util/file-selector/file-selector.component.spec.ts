@@ -1,4 +1,3 @@
-import type { MockedObject } from "vitest";
 /*
  * Copyright (c) 2026 Talent Catalog.
  *
@@ -15,11 +14,12 @@ import type { MockedObject } from "vitest";
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import { Component, EventEmitter, Input, Output, ChangeDetectionStrategy } from '@angular/core';
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
+import type {MockedObject} from "vitest";
+import {Component, EventEmitter, Input, Output, ChangeDetectionStrategy} from '@angular/core';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
 
-import { FileSelectorComponent } from './file-selector.component';
+import {FileSelectorComponent} from './file-selector.component';
 
 @Component({
     selector: 'app-file-upload',

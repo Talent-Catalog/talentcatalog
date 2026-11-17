@@ -1,4 +1,3 @@
-import type { MockedObject } from "vitest";
 /*
  * Copyright (c) 2026 Talent Catalog.
  *
@@ -15,22 +14,23 @@ import type { MockedObject } from "vitest";
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import { Component, forwardRef, Input, NO_ERRORS_SCHEMA, ChangeDetectionStrategy } from '@angular/core';
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { By } from '@angular/platform-browser';
-import { ControlValueAccessor, FormsModule, NG_VALUE_ACCESSOR, ReactiveFormsModule } from '@angular/forms';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import { NgxWigModule } from 'ngx-wig';
-import { of, throwError } from 'rxjs';
+import type {MockedObject} from "vitest";
+import {Component, forwardRef, Input, NO_ERRORS_SCHEMA, ChangeDetectionStrategy} from '@angular/core';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {By} from '@angular/platform-browser';
+import {ControlValueAccessor, FormsModule, NG_VALUE_ACCESSOR, ReactiveFormsModule} from '@angular/forms';
+import {TranslateModule, TranslateService} from '@ngx-translate/core';
+import {NgxWigModule} from 'ngx-wig';
+import {of, throwError} from 'rxjs';
 
-import { CandidateJobExperienceFormComponent } from './candidate-job-experience-form.component';
-import { CandidateJobExperience } from '../../../model/candidate-job-experience';
-import { CandidateOccupation } from '../../../model/candidate-occupation';
-import { Country } from '../../../model/country';
-import { Occupation } from '../../../model/occupation';
-import { CountryService } from '../../../services/country.service';
-import { CandidateOccupationService } from '../../../services/candidate-occupation.service';
-import { CandidateJobExperienceService } from '../../../services/candidate-job-experience.service';
+import {CandidateJobExperienceFormComponent} from './candidate-job-experience-form.component';
+import {CandidateJobExperience} from '../../../model/candidate-job-experience';
+import {CandidateOccupation} from '../../../model/candidate-occupation';
+import {Country} from '../../../model/country';
+import {Occupation} from '../../../model/occupation';
+import {CountryService} from '../../../services/country.service';
+import {CandidateOccupationService} from '../../../services/candidate-occupation.service';
+import {CandidateJobExperienceService} from '../../../services/candidate-job-experience.service';
 
 @Component({
     selector: 'tc-input',

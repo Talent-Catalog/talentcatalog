@@ -1,4 +1,3 @@
-import type { MockedObject } from "vitest";
 /*
  * Copyright (c) 2026 Talent Catalog.
  *
@@ -15,13 +14,14 @@ import type { MockedObject } from "vitest";
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { NgbDate, NgbDatepickerModule } from '@ng-bootstrap/ng-bootstrap';
-import { of } from 'rxjs';
+import type {MockedObject} from "vitest";
+import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {NgbDate, NgbDatepickerModule} from '@ng-bootstrap/ng-bootstrap';
+import {of} from 'rxjs';
 
-import { LanguageService } from '../../../services/language.service';
-import { TcDateRangePickerComponent } from './tc-date-range-picker.component';
-import { provideRouter } from "@angular/router";
+import {LanguageService} from '../../../services/language.service';
+import {TcDateRangePickerComponent} from './tc-date-range-picker.component';
+import {provideRouter} from "@angular/router";
 
 describe('TcDateRangePickerComponent', () => {
     let component: TcDateRangePickerComponent;

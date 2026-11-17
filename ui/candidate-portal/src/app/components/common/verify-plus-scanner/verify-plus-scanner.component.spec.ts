@@ -14,12 +14,12 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import { ComponentFixture, discardPeriodicTasks, fakeAsync, flushMicrotasks, TestBed, tick } from '@angular/core/testing';
-import { NO_ERRORS_SCHEMA, Pipe, PipeTransform } from '@angular/core';
+import {ComponentFixture, discardPeriodicTasks, fakeAsync, flushMicrotasks, TestBed, tick} from '@angular/core/testing';
+import {NO_ERRORS_SCHEMA, Pipe, PipeTransform} from '@angular/core';
 
-import { VerifyPlusScannerComponent } from './verify-plus-scanner.component';
-import { VerifyPlusDecoderService } from '../../../services/verify-plus-decoder.service';
-import { vi, type Mock } from 'vitest';
+import {VerifyPlusScannerComponent} from './verify-plus-scanner.component';
+import {VerifyPlusDecoderService} from '../../../services/verify-plus-decoder.service';
+import {vi, type Mock} from 'vitest';
 
 describe('VerifyPlusScannerComponent', () => {
     let component: VerifyPlusScannerComponent;

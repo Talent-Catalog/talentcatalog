@@ -1,4 +1,3 @@
-import type { MockedObject } from "vitest";
 /*
  * Copyright (c) 2026 Talent Catalog.
  *
@@ -15,15 +14,16 @@ import type { MockedObject } from "vitest";
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { NO_ERRORS_SCHEMA, Pipe, PipeTransform } from '@angular/core';
-import { of, throwError } from 'rxjs';
+import type {MockedObject} from "vitest";
+import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {NO_ERRORS_SCHEMA, Pipe, PipeTransform} from '@angular/core';
+import {of, throwError} from 'rxjs';
 
-import { RegistrationVerifyPlusComponent } from './registration-verify-plus.component';
-import { VerifyPlusService } from '../../../services/verify-plus.service';
-import { RegistrationService } from '../../../services/registration.service';
-import { AuthenticationService } from '../../../services/authentication.service';
-import { environment } from '../../../../environments/environment';
+import {RegistrationVerifyPlusComponent} from './registration-verify-plus.component';
+import {VerifyPlusService} from '../../../services/verify-plus.service';
+import {RegistrationService} from '../../../services/registration.service';
+import {AuthenticationService} from '../../../services/authentication.service';
+import {environment} from '../../../../environments/environment';
 
 @Pipe({ name: 'translate', standalone: false })
 class MockTranslatePipe implements PipeTransform {

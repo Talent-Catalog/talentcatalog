@@ -14,8 +14,8 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import { environment } from '../../environments/environment';
-import { isLocalOrStaging, isVerifyPlusUiEnabled } from './verify-plus-ui';
+import {environment} from '../../environments/environment';
+import {isLocalOrStaging, isVerifyPlusUiEnabled} from './verify-plus-ui';
 
 describe('verify-plus-ui', () => {
     let originalEnvironmentName: string;

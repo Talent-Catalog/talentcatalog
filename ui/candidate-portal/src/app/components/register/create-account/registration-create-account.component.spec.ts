@@ -1,4 +1,3 @@
-import type { MockedObject } from "vitest";
 /*
  * Copyright (c) 2026 Talent Catalog.
  *
@@ -15,21 +14,22 @@ import type { MockedObject } from "vitest";
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import { Component, forwardRef, NO_ERRORS_SCHEMA, ChangeDetectionStrategy } from '@angular/core';
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { ControlValueAccessor, NG_VALUE_ACCESSOR, ReactiveFormsModule } from '@angular/forms';
-import { ActivatedRoute, convertToParamMap } from '@angular/router';
-import { TranslateModule } from '@ngx-translate/core';
-import { of, throwError } from 'rxjs';
+import type {MockedObject} from "vitest";
+import {Component, forwardRef, NO_ERRORS_SCHEMA, ChangeDetectionStrategy} from '@angular/core';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {ControlValueAccessor, NG_VALUE_ACCESSOR, ReactiveFormsModule} from '@angular/forms';
+import {ActivatedRoute, convertToParamMap} from '@angular/router';
+import {TranslateModule} from '@ngx-translate/core';
+import {of, throwError} from 'rxjs';
 
-import { RegistrationCreateAccountComponent } from './registration-create-account.component';
-import { BrandingService } from '../../../services/branding.service';
-import { CandidateService } from '../../../services/candidate.service';
-import { AuthenticationService } from '../../../services/authentication.service';
-import { RegistrationService } from '../../../services/registration.service';
-import { LanguageService } from '../../../services/language.service';
-import { Candidate } from '../../../model/candidate';
-import { US_AFGHAN_SURVEY_TYPE } from '../../../model/survey-type';
+import {RegistrationCreateAccountComponent} from './registration-create-account.component';
+import {BrandingService} from '../../../services/branding.service';
+import {CandidateService} from '../../../services/candidate.service';
+import {AuthenticationService} from '../../../services/authentication.service';
+import {RegistrationService} from '../../../services/registration.service';
+import {LanguageService} from '../../../services/language.service';
+import {Candidate} from '../../../model/candidate';
+import {US_AFGHAN_SURVEY_TYPE} from '../../../model/survey-type';
 
 @Component({
     selector: 'tc-input',

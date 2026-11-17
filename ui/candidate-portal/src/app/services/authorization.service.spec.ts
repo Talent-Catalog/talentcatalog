@@ -1,4 +1,3 @@
-import type { MockedObject } from "vitest";
 /*
  * Copyright (c) 2026 Talent Catalog.
  *
@@ -15,9 +14,10 @@ import type { MockedObject } from "vitest";
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import { AuthorizationService } from "./authorization.service";
-import { AuthenticationService } from "./authentication.service";
-import { TestBed } from "@angular/core/testing";
+import type {MockedObject} from "vitest";
+import {AuthorizationService} from "./authorization.service";
+import {AuthenticationService} from "./authentication.service";
+import {TestBed} from "@angular/core/testing";
 
 
 describe('AuthorizationService', () => {

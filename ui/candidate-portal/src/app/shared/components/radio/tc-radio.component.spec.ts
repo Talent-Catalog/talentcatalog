@@ -14,11 +14,11 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { TcRadioComponent } from './tc-radio.component';
-import { FormsModule, ReactiveFormsModule } from "@angular/forms";
-import { By } from "@angular/platform-browser";
+import {TcRadioComponent} from './tc-radio.component';
+import {FormsModule, ReactiveFormsModule} from "@angular/forms";
+import {By} from "@angular/platform-browser";
 
 describe('TcRadioComponent', () => {
     let component: TcRadioComponent;

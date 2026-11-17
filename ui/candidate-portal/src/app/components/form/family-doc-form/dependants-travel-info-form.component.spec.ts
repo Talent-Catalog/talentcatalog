@@ -1,4 +1,3 @@
-import type { MockedObject } from "vitest";
 /*
  * Copyright (c) 2026 Talent Catalog.
  *
@@ -14,13 +13,15 @@ import type { MockedObject } from "vitest";
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { of, throwError } from 'rxjs';
 
-import { DependantsTravelInfoFormComponent } from './dependants-travel-info-form.component';
-import { CandidateFormService } from '../../../services/candidate-form.service';
-import { DependantRelations } from '../../../model/candidate';
-import { TravelDocType } from '../../../model/form';
+import type {MockedObject} from "vitest";
+import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {of, throwError} from 'rxjs';
+
+import {DependantsTravelInfoFormComponent} from './dependants-travel-info-form.component';
+import {CandidateFormService} from '../../../services/candidate-form.service';
+import {DependantRelations} from '../../../model/candidate';
+import {TravelDocType} from '../../../model/form';
 
 describe('DependantsTravelInfoFormComponent', () => {
     let component: DependantsTravelInfoFormComponent;

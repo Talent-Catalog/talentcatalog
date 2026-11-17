@@ -1,10 +1,10 @@
-import type { MockedObject } from "vitest";
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { of, throwError } from 'rxjs';
-import { NO_ERRORS_SCHEMA, Pipe, PipeTransform } from "@angular/core";
-import { ReferenceComponent } from './reference.component';
-import { CasiPortalService } from "../../../../../../services/casi-portal.service";
-import { ResourceStatus } from "../../../../../../model/services";
+import type {MockedObject} from "vitest";
+import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {of, throwError} from 'rxjs';
+import {NO_ERRORS_SCHEMA, Pipe, PipeTransform} from "@angular/core";
+import {ReferenceComponent} from './reference.component';
+import {CasiPortalService} from "../../../../../../services/casi-portal.service";
+import {ResourceStatus} from "../../../../../../model/services";
 
 @Pipe({ name: 'translate', standalone: false })
 class MockTranslatePipe implements PipeTransform {

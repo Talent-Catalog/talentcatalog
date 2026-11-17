@@ -1,4 +1,3 @@
-import type { MockedObject } from "vitest";
 /*
  * Copyright (c) 2026 Talent Catalog.
  *
@@ -15,14 +14,15 @@ import type { MockedObject } from "vitest";
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { FormControl, FormsModule } from '@angular/forms';
-import { NgbDatepickerModule } from '@ng-bootstrap/ng-bootstrap';
-import { TranslateModule } from '@ngx-translate/core';
-import { of } from 'rxjs';
+import type {MockedObject} from "vitest";
+import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {FormControl, FormsModule} from '@angular/forms';
+import {NgbDatepickerModule} from '@ng-bootstrap/ng-bootstrap';
+import {TranslateModule} from '@ngx-translate/core';
+import {of} from 'rxjs';
 
-import { DatePickerComponent } from './date-picker.component';
-import { LanguageService } from '../../../services/language.service';
+import {DatePickerComponent} from './date-picker.component';
+import {LanguageService} from '../../../services/language.service';
 
 describe('DatePickerComponent', () => {
     let component: DatePickerComponent;

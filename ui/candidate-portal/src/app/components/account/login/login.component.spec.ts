@@ -1,4 +1,3 @@
-import type { Mock, MockedObject } from "vitest";
 /*
  * Copyright (c) 2026 Talent Catalog.
  *
@@ -15,22 +14,23 @@ import type { Mock, MockedObject } from "vitest";
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import { Component, forwardRef, Input, Pipe, PipeTransform, ChangeDetectionStrategy } from '@angular/core';
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { By } from '@angular/platform-browser';
-import { ControlValueAccessor, NG_VALUE_ACCESSOR, ReactiveFormsModule } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { BehaviorSubject, of, throwError } from 'rxjs';
+import type {Mock, MockedObject} from "vitest";
+import {Component, forwardRef, Input, Pipe, PipeTransform, ChangeDetectionStrategy} from '@angular/core';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {By} from '@angular/platform-browser';
+import {ControlValueAccessor, NG_VALUE_ACCESSOR, ReactiveFormsModule} from '@angular/forms';
+import {ActivatedRoute, Router} from '@angular/router';
+import {RouterTestingModule} from '@angular/router/testing';
+import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
+import {BehaviorSubject, of, throwError} from 'rxjs';
 
-import { Candidate, CandidateStatus } from '../../../model/candidate';
-import { TermsInfoDto } from '../../../model/terms-info-dto';
-import { AuthenticationService } from '../../../services/authentication.service';
-import { CandidateService } from '../../../services/candidate.service';
-import { TermsInfoService } from '../../../services/terms-info.service';
-import { ChangePasswordComponent } from '../change-password/change-password.component';
-import { LoginComponent } from './login.component';
+import {Candidate, CandidateStatus} from '../../../model/candidate';
+import {TermsInfoDto} from '../../../model/terms-info-dto';
+import {AuthenticationService} from '../../../services/authentication.service';
+import {CandidateService} from '../../../services/candidate.service';
+import {TermsInfoService} from '../../../services/terms-info.service';
+import {ChangePasswordComponent} from '../change-password/change-password.component';
+import {LoginComponent} from './login.component';
 
 @Pipe({
     name: 'translate',

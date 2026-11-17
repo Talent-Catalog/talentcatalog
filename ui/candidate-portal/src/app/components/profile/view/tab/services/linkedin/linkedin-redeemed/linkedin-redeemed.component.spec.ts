@@ -1,12 +1,12 @@
-import type { MockedObject } from "vitest";
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { LinkedinRedeemedComponent } from './linkedin-redeemed.component';
-import { LinkedinService } from '../../../../../../../services/linkedin.service';
-import { NO_ERRORS_SCHEMA } from '@angular/core';
-import { FormsModule } from '@angular/forms';
-import { of, throwError } from 'rxjs';
-import { IssueReportRequest, ResourceStatus, ServiceAssignment, ServiceProvider, AssignmentStatus, } from '../../../../../../../model/services';
-import { Candidate } from '../../../../../../../model/candidate';
+import type {MockedObject} from "vitest";
+import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {LinkedinRedeemedComponent} from './linkedin-redeemed.component';
+import {LinkedinService} from '../../../../../../../services/linkedin.service';
+import {NO_ERRORS_SCHEMA} from '@angular/core';
+import {FormsModule} from '@angular/forms';
+import {of, throwError} from 'rxjs';
+import {IssueReportRequest, ResourceStatus, ServiceAssignment, ServiceProvider, AssignmentStatus} from '../../../../../../../model/services';
+import {Candidate} from '../../../../../../../model/candidate';
 
 describe('LinkedinRedeemedComponent', () => {
     let component: LinkedinRedeemedComponent;

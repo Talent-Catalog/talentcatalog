@@ -14,16 +14,16 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import { Component, forwardRef, Input, ChangeDetectionStrategy } from '@angular/core';
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { By } from '@angular/platform-browser';
-import { ControlValueAccessor, NG_VALUE_ACCESSOR, ReactiveFormsModule } from '@angular/forms';
-import { TranslateModule } from '@ngx-translate/core';
+import {Component, forwardRef, Input, ChangeDetectionStrategy} from '@angular/core';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {By} from '@angular/platform-browser';
+import {ControlValueAccessor, NG_VALUE_ACCESSOR, ReactiveFormsModule} from '@angular/forms';
+import {TranslateModule} from '@ngx-translate/core';
 
-import { DestinationComponent } from './destination.component';
-import { RegistrationService } from '../../../../services/registration.service';
-import { CandidateDestination, YesNoUnsureLearn } from '../../../../model/candidate';
-import { Country } from '../../../../model/country';
+import {DestinationComponent} from './destination.component';
+import {RegistrationService} from '../../../../services/registration.service';
+import {CandidateDestination, YesNoUnsureLearn} from '../../../../model/candidate';
+import {Country} from '../../../../model/country';
 
 @Component({
     selector: 'ng-select',

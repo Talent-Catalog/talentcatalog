@@ -1,4 +1,3 @@
-import type { MockedObject } from "vitest";
 /*
  * Copyright (c) 2026 Talent Catalog.
  *
@@ -15,23 +14,24 @@ import type { MockedObject } from "vitest";
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import { Component, EventEmitter, Input, NO_ERRORS_SCHEMA, Output, ChangeDetectionStrategy } from '@angular/core';
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { By } from '@angular/platform-browser';
-import { Router } from '@angular/router';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import { of, throwError } from 'rxjs';
+import type {MockedObject} from "vitest";
+import {Component, EventEmitter, Input, NO_ERRORS_SCHEMA, Output, ChangeDetectionStrategy} from '@angular/core';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {By} from '@angular/platform-browser';
+import {Router} from '@angular/router';
+import {TranslateModule, TranslateService} from '@ngx-translate/core';
+import {of, throwError} from 'rxjs';
 
-import { RegistrationWorkExperienceComponent } from './registration-work-experience.component';
-import { CandidateJobExperience } from '../../../model/candidate-job-experience';
-import { CandidateOccupation } from '../../../model/candidate-occupation';
-import { Country } from '../../../model/country';
-import { Occupation } from '../../../model/occupation';
-import { CandidateService } from '../../../services/candidate.service';
-import { CandidateJobExperienceService } from '../../../services/candidate-job-experience.service';
-import { CountryService } from '../../../services/country.service';
-import { CandidateOccupationService } from '../../../services/candidate-occupation.service';
-import { RegistrationService } from '../../../services/registration.service';
+import {RegistrationWorkExperienceComponent} from './registration-work-experience.component';
+import {CandidateJobExperience} from '../../../model/candidate-job-experience';
+import {CandidateOccupation} from '../../../model/candidate-occupation';
+import {Country} from '../../../model/country';
+import {Occupation} from '../../../model/occupation';
+import {CandidateService} from '../../../services/candidate.service';
+import {CandidateJobExperienceService} from '../../../services/candidate-job-experience.service';
+import {CountryService} from '../../../services/country.service';
+import {CandidateOccupationService} from '../../../services/candidate-occupation.service';
+import {RegistrationService} from '../../../services/registration.service';
 
 @Component({
     selector: 'app-candidate-job-experience-form',

@@ -1,4 +1,3 @@
-import type { MockedObject } from "vitest";
 /*
  * Copyright (c) 2026 Talent Catalog.
  *
@@ -15,14 +14,15 @@ import type { MockedObject } from "vitest";
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import { CommonModule } from '@angular/common';
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { By } from '@angular/platform-browser';
-import { of } from 'rxjs';
+import type {MockedObject} from "vitest";
+import {CommonModule} from '@angular/common';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {By} from '@angular/platform-browser';
+import {of} from 'rxjs';
 
-import { LinkPreview } from '../../../model/link-preview';
-import { LinkPreviewService } from '../../../services/link-preview.service';
-import { PreviewLinkComponent } from './preview-link.component';
+import {LinkPreview} from '../../../model/link-preview';
+import {LinkPreviewService} from '../../../services/link-preview.service';
+import {PreviewLinkComponent} from './preview-link.component';
 
 describe('PreviewLinkComponent', () => {
     let component: PreviewLinkComponent;

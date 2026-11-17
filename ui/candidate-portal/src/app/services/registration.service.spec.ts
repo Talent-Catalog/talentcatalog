@@ -1,4 +1,3 @@
-import type { MockedObject } from "vitest";
 /*
  * Copyright (c) 2026 Talent Catalog.
  *
@@ -15,14 +14,15 @@ import type { MockedObject } from "vitest";
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import { TestBed } from '@angular/core/testing';
-import { ActivatedRoute, Router } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
-import { of } from 'rxjs';
+import type {MockedObject} from "vitest";
+import {TestBed} from '@angular/core/testing';
+import {ActivatedRoute, Router} from '@angular/router';
+import {RouterTestingModule} from '@angular/router/testing';
+import {of} from 'rxjs';
 
-import { RegistrationService } from './registration.service';
-import { AuthenticationService } from './authentication.service';
-import { environment } from '../../environments/environment';
+import {RegistrationService} from './registration.service';
+import {AuthenticationService} from './authentication.service';
+import {environment} from '../../environments/environment';
 
 describe('RegistrationService', () => {
     let service: RegistrationService;

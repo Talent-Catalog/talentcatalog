@@ -1,4 +1,3 @@
-import type { MockedObject } from "vitest";
 /*
  * Copyright (c) 2026 Talent Catalog.
  *
@@ -15,30 +14,31 @@ import type { MockedObject } from "vitest";
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import { Component, EventEmitter, Input, ChangeDetectionStrategy } from '@angular/core';
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { ActivatedRoute } from '@angular/router';
-import { By } from '@angular/platform-browser';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import { of, throwError } from 'rxjs';
+import type {MockedObject} from "vitest";
+import {Component, EventEmitter, Input, ChangeDetectionStrategy} from '@angular/core';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {ActivatedRoute} from '@angular/router';
+import {By} from '@angular/platform-browser';
+import {TranslateModule, TranslateService} from '@ngx-translate/core';
+import {of, throwError} from 'rxjs';
 
-import { ChangePasswordComponent } from '../../../../account/change-password/change-password.component';
-import { CandidateProfileComponent } from './candidate-profile.component';
-import { Candidate } from '../../../../../model/candidate';
-import { Country } from '../../../../../model/country';
-import { EducationMajor } from '../../../../../model/education-major';
-import { Language } from '../../../../../model/language';
-import { LanguageLevel } from '../../../../../model/language-level';
-import { Occupation } from '../../../../../model/occupation';
-import { SurveyType } from '../../../../../model/survey-type';
-import { CandidateService } from '../../../../../services/candidate.service';
-import { CountryService } from '../../../../../services/country.service';
-import { EducationMajorService } from '../../../../../services/education-major.service';
-import { LanguageLevelService } from '../../../../../services/language-level.service';
-import { LanguageService } from '../../../../../services/language.service';
-import { OccupationService } from '../../../../../services/occupation.service';
-import { SurveyTypeService } from '../../../../../services/survey-type.service';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import {ChangePasswordComponent} from '../../../../account/change-password/change-password.component';
+import {CandidateProfileComponent} from './candidate-profile.component';
+import {Candidate} from '../../../../../model/candidate';
+import {Country} from '../../../../../model/country';
+import {EducationMajor} from '../../../../../model/education-major';
+import {Language} from '../../../../../model/language';
+import {LanguageLevel} from '../../../../../model/language-level';
+import {Occupation} from '../../../../../model/occupation';
+import {SurveyType} from '../../../../../model/survey-type';
+import {CandidateService} from '../../../../../services/candidate.service';
+import {CountryService} from '../../../../../services/country.service';
+import {EducationMajorService} from '../../../../../services/education-major.service';
+import {LanguageLevelService} from '../../../../../services/language-level.service';
+import {LanguageService} from '../../../../../services/language.service';
+import {OccupationService} from '../../../../../services/occupation.service';
+import {SurveyTypeService} from '../../../../../services/survey-type.service';
+import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
     selector: 'app-error',

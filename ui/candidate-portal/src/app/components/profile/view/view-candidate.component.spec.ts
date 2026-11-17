@@ -1,4 +1,3 @@
-import type { MockedObject } from "vitest";
 /*
  * Copyright (c) 2026 Talent Catalog.
  *
@@ -15,22 +14,23 @@ import type { MockedObject } from "vitest";
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import { CommonModule, Location } from '@angular/common';
-import { NO_ERRORS_SCHEMA, Pipe, PipeTransform } from '@angular/core';
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { ActivatedRoute } from '@angular/router';
-import { NgbNavChangeEvent, NgbNavModule } from '@ng-bootstrap/ng-bootstrap';
-import { of } from 'rxjs';
+import type {MockedObject} from "vitest";
+import {CommonModule, Location} from '@angular/common';
+import {NO_ERRORS_SCHEMA, Pipe, PipeTransform} from '@angular/core';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {ActivatedRoute} from '@angular/router';
+import {NgbNavChangeEvent, NgbNavModule} from '@ng-bootstrap/ng-bootstrap';
+import {of} from 'rxjs';
 
-import { ViewCandidateComponent } from './view-candidate.component';
-import { AuthorizationService } from '../../../services/authorization.service';
-import { CandidateService } from '../../../services/candidate.service';
-import { ChatService } from '../../../services/chat.service';
-import { LinkedinService } from '../../../services/linkedin.service';
-import { CasiPortalService } from '../../../services/casi-portal.service';
-import { LocalStorageService } from '../../../services/local-storage.service';
-import { AuthenticationService } from '../../../services/authentication.service';
-import { environment } from '../../../../environments/environment';
+import {ViewCandidateComponent} from './view-candidate.component';
+import {AuthorizationService} from '../../../services/authorization.service';
+import {CandidateService} from '../../../services/candidate.service';
+import {ChatService} from '../../../services/chat.service';
+import {LinkedinService} from '../../../services/linkedin.service';
+import {CasiPortalService} from '../../../services/casi-portal.service';
+import {LocalStorageService} from '../../../services/local-storage.service';
+import {AuthenticationService} from '../../../services/authentication.service';
+import {environment} from '../../../../environments/environment';
 
 @Pipe({ name: 'translate', standalone: false })
 class TranslatePipeStub implements PipeTransform {

@@ -14,12 +14,12 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import { Component, Input, ChangeDetectionStrategy } from '@angular/core';
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { By } from '@angular/platform-browser';
+import {Component, Input, ChangeDetectionStrategy} from '@angular/core';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {By} from '@angular/platform-browser';
 
-import { CandidateCertificationCardComponent } from './candidate-certification-card.component';
-import { CandidateCertification } from '../../../model/candidate-certification';
+import {CandidateCertificationCardComponent} from './candidate-certification-card.component';
+import {CandidateCertification} from '../../../model/candidate-certification';
 
 @Component({
     selector: 'tc-button',

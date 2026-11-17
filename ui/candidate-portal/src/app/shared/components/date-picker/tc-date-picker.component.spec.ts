@@ -1,13 +1,13 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { TcDatePickerComponent } from './tc-date-picker.component';
-import { NgbDatepickerModule } from "@ng-bootstrap/ng-bootstrap";
-import { AbstractControl, FormsModule, ReactiveFormsModule, UntypedFormControl } from "@angular/forms";
-import { DebugElement } from "@angular/core";
-import { By } from "@angular/platform-browser";
-import { LanguageService } from "../../../services/language.service";
-import { of } from "rxjs";
-import { provideRouter } from "@angular/router";
+import {TcDatePickerComponent} from './tc-date-picker.component';
+import {NgbDatepickerModule} from "@ng-bootstrap/ng-bootstrap";
+import {AbstractControl, FormsModule, ReactiveFormsModule, UntypedFormControl} from "@angular/forms";
+import {DebugElement} from "@angular/core";
+import {By} from "@angular/platform-browser";
+import {LanguageService} from "../../../services/language.service";
+import {of} from "rxjs";
+import {provideRouter} from "@angular/router";
 
 describe('TcDatePickerComponent', () => {
     let component: TcDatePickerComponent;

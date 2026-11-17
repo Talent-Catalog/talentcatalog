@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import { sanitizeEmailInput } from './base';
+import {sanitizeEmailInput} from './base';
 
 describe('sanitizeEmailInput', () => {
     it('returns a clean email address unchanged', () => {

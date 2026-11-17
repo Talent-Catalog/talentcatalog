@@ -1,4 +1,3 @@
-import type { MockedObject } from "vitest";
 /*
  * Copyright (c) 2026 Talent Catalog.
  *
@@ -15,12 +14,13 @@ import type { MockedObject } from "vitest";
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import { FormBuilder } from '@angular/forms';
-import { of, Subject } from 'rxjs';
+import type {MockedObject} from "vitest";
+import {FormBuilder} from '@angular/forms';
+import {of, Subject} from 'rxjs';
 
-import { RefugeeStatusEvidenceDocumentType, RefugeeStatusInfoFormData, RsdRefugeeStatus } from '../../../model/form';
-import { CandidateFormService } from '../../../services/candidate-form.service';
-import { RefugeeStatusInfoFormComponent } from './refugee-status-info-form.component';
+import {RefugeeStatusEvidenceDocumentType, RefugeeStatusInfoFormData, RsdRefugeeStatus} from '../../../model/form';
+import {CandidateFormService} from '../../../services/candidate-form.service';
+import {RefugeeStatusInfoFormComponent} from './refugee-status-info-form.component';
 
 describe('RefugeeStatusInfoFormComponent', () => {
     let component: RefugeeStatusInfoFormComponent;

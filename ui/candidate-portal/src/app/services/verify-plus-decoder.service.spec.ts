@@ -13,9 +13,9 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-import { vi } from 'vitest';
-import { TestBed } from '@angular/core/testing';
-import { VerifyPlusDecoderService } from './verify-plus-decoder.service';
+import {vi} from 'vitest';
+import {TestBed} from '@angular/core/testing';
+import {VerifyPlusDecoderService} from './verify-plus-decoder.service';
 
 describe('VerifyPlusDecoderService', () => {
     let service: VerifyPlusDecoderService;

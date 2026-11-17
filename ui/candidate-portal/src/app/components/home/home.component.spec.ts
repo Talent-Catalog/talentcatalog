@@ -1,4 +1,3 @@
-import type { MockedObject } from "vitest";
 /*
  * Copyright (c) 2026 Talent Catalog.
  *
@@ -15,23 +14,24 @@ import type { MockedObject } from "vitest";
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import { CommonModule } from '@angular/common';
-import { Component, Input, Pipe, PipeTransform, ChangeDetectionStrategy } from '@angular/core';
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { By } from '@angular/platform-browser';
-import { Router } from '@angular/router';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { of } from 'rxjs';
+import type {MockedObject} from "vitest";
+import {CommonModule} from '@angular/common';
+import {Component, Input, Pipe, PipeTransform, ChangeDetectionStrategy} from '@angular/core';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {By} from '@angular/platform-browser';
+import {Router} from '@angular/router';
+import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
+import {of} from 'rxjs';
 
-import { HomeComponent } from './home.component';
-import { CandidateService } from '../../services/candidate.service';
-import { LanguageService } from '../../services/language.service';
-import { BrandingService } from '../../services/branding.service';
-import { ExternalLinkService } from '../../services/external-link.service';
-import { TermsInfoService } from '../../services/terms-info.service';
-import { CandidateStatus } from '../../model/candidate';
-import { US_AFGHAN_SURVEY_TYPE } from '../../model/survey-type';
-import { VerifyEmailComponent } from '../account/verify-email/verify-email.component';
+import {HomeComponent} from './home.component';
+import {CandidateService} from '../../services/candidate.service';
+import {LanguageService} from '../../services/language.service';
+import {BrandingService} from '../../services/branding.service';
+import {ExternalLinkService} from '../../services/external-link.service';
+import {TermsInfoService} from '../../services/terms-info.service';
+import {CandidateStatus} from '../../model/candidate';
+import {US_AFGHAN_SURVEY_TYPE} from '../../model/survey-type';
+import {VerifyEmailComponent} from '../account/verify-email/verify-email.component';
 
 // ─── Stubs ────────────────────────────────────────────────────────────────────
 

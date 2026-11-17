@@ -14,16 +14,16 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import { Component, EventEmitter, Input, Output, ChangeDetectionStrategy } from '@angular/core';
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { By } from '@angular/platform-browser';
-import { TranslateModule } from '@ngx-translate/core';
+import {Component, EventEmitter, Input, Output, ChangeDetectionStrategy} from '@angular/core';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {By} from '@angular/platform-browser';
+import {TranslateModule} from '@ngx-translate/core';
 
-import { CandidateTasksComponent } from './candidate-tasks.component';
-import { Candidate } from '../../../../../model/candidate';
-import { Status } from '../../../../../model/base';
-import { TaskAssignment } from '../../../../../model/task-assignment';
-import { TaskType } from '../../../../../model/task';
+import {CandidateTasksComponent} from './candidate-tasks.component';
+import {Candidate} from '../../../../../model/candidate';
+import {Status} from '../../../../../model/base';
+import {TaskAssignment} from '../../../../../model/task-assignment';
+import {TaskType} from '../../../../../model/task';
 
 @Component({ selector: 'app-error', template: '', changeDetection: ChangeDetectionStrategy.Eager, standalone: false })
 class ErrorStubComponent {

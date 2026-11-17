@@ -14,11 +14,11 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import { randomInt } from 'node:crypto';
-import { APIRequestContext, APIResponse } from '@playwright/test';
+import {randomInt} from 'node:crypto';
+import {APIRequestContext, APIResponse} from '@playwright/test';
 
-import { expect, test } from '../fixtures/verify-plus-api.fixture';
-import { getE2EVerifyPlusBaselineUnhcrId, getE2EVerifyPlusDuplicateUnhcrId } from "../support/e2e-env";
+import {expect, test} from '../fixtures/verify-plus-api.fixture';
+import {getE2EVerifyPlusBaselineUnhcrId, getE2EVerifyPlusDuplicateUnhcrId} from "../support/e2e-env";
 
 /**
  * Authenticated Verify+ submission endpoint.

@@ -1,4 +1,3 @@
-import type { MockedObject } from "vitest";
 /*
  * Copyright (c) 2026 Talent Catalog.
  *
@@ -15,14 +14,15 @@ import type { MockedObject } from "vitest";
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import { Component, EventEmitter, Input, Output, Pipe, PipeTransform, ChangeDetectionStrategy } from '@angular/core';
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { By } from '@angular/platform-browser';
-import { EMPTY, of } from 'rxjs';
-import { ViewChatPostsComponent } from './view-chat-posts.component';
-import { ChatService } from '../../../services/chat.service';
-import { ChatPostService } from '../../../services/chat-post.service';
-import { JobChatType } from '../../../model/chat';
+import type {MockedObject} from "vitest";
+import {Component, EventEmitter, Input, Output, Pipe, PipeTransform, ChangeDetectionStrategy} from '@angular/core';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {By} from '@angular/platform-browser';
+import {EMPTY, of} from 'rxjs';
+import {ViewChatPostsComponent} from './view-chat-posts.component';
+import {ChatService} from '../../../services/chat.service';
+import {ChatPostService} from '../../../services/chat-post.service';
+import {JobChatType} from '../../../model/chat';
 
 @Pipe({ name: 'translate', standalone: false })
 class TranslatePipeStub implements PipeTransform {

@@ -1,8 +1,8 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { InputComponent } from './input.component';
-import { Component, ChangeDetectionStrategy } from '@angular/core';
-import { By } from '@angular/platform-browser';
+import {InputComponent} from './input.component';
+import {Component, ChangeDetectionStrategy} from '@angular/core';
+import {By} from '@angular/platform-browser';
 
 @Component({
     template: `

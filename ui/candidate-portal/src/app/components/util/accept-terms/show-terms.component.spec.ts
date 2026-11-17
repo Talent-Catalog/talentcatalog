@@ -1,5 +1,5 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { ShowTermsComponent } from './show-terms.component';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {ShowTermsComponent} from './show-terms.component';
 
 describe('ShowTermsComponent', () => {
     let component: ShowTermsComponent;

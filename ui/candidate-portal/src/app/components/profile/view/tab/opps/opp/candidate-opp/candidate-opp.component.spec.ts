@@ -1,4 +1,3 @@
-import type { MockedObject } from "vitest";
 /*
  * Copyright (c) 2026 Talent Catalog.
  *
@@ -15,17 +14,18 @@ import type { MockedObject } from "vitest";
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import { Component, EventEmitter, Input, Output, Pipe, PipeTransform, SimpleChange, ChangeDetectionStrategy } from '@angular/core';
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { By } from '@angular/platform-browser';
-import { of, Subject, throwError } from 'rxjs';
+import type {MockedObject} from "vitest";
+import {Component, EventEmitter, Input, Output, Pipe, PipeTransform, SimpleChange, ChangeDetectionStrategy} from '@angular/core';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {By} from '@angular/platform-browser';
+import {of, Subject, throwError} from 'rxjs';
 
-import { CandidateOppComponent } from './candidate-opp.component';
-import { AuthorizationService } from '../../../../../../../services/authorization.service';
-import { ChatService } from '../../../../../../../services/chat.service';
-import { JobChat, JobChatType } from '../../../../../../../model/chat';
-import { Candidate } from '../../../../../../../model/candidate';
-import { CandidateOpportunity } from '../../../../../../../model/candidate-opportunity';
+import {CandidateOppComponent} from './candidate-opp.component';
+import {AuthorizationService} from '../../../../../../../services/authorization.service';
+import {ChatService} from '../../../../../../../services/chat.service';
+import {JobChat, JobChatType} from '../../../../../../../model/chat';
+import {Candidate} from '../../../../../../../model/candidate';
+import {CandidateOpportunity} from '../../../../../../../model/candidate-opportunity';
 
 @Pipe({ name: 'translate', standalone: false })
 class TranslatePipeStub implements PipeTransform {

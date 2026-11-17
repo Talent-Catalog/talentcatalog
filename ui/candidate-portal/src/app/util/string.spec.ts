@@ -15,7 +15,7 @@
  */
 
 
-import { isHtml, truncate } from './string';
+import {isHtml, truncate} from './string';
 
 describe('string utilities', () => {
     describe('truncate', () => {

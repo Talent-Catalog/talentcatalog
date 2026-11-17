@@ -1,4 +1,3 @@
-import type { MockedObject } from "vitest";
 /*
  * Copyright (c) 2026 Talent Catalog.
  *
@@ -15,16 +14,17 @@ import type { MockedObject } from "vitest";
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import { Component, EventEmitter, Input, Output, ChangeDetectionStrategy } from '@angular/core';
-import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
-import { NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
-import { of } from 'rxjs';
+import type {MockedObject} from "vitest";
+import {Component, EventEmitter, Input, Output, ChangeDetectionStrategy} from '@angular/core';
+import {ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
+import {NgbTooltipModule} from '@ng-bootstrap/ng-bootstrap';
+import {of} from 'rxjs';
 
-import { ViewPostComponent } from './view-post.component';
-import { ReactionService } from '../../../services/reaction.service';
-import { AuthenticationService } from '../../../services/authentication.service';
-import { ChatPost } from '../../../model/chat';
-import { Reaction } from '../../../model/reaction';
+import {ViewPostComponent} from './view-post.component';
+import {ReactionService} from '../../../services/reaction.service';
+import {AuthenticationService} from '../../../services/authentication.service';
+import {ChatPost} from '../../../model/chat';
+import {Reaction} from '../../../model/reaction';
 
 @Component({
     selector: 'app-preview-link',

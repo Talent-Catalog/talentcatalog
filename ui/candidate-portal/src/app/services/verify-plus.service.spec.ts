@@ -1,8 +1,8 @@
-import { TestBed } from '@angular/core/testing';
-import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
-import { provideHttpClient, withInterceptorsFromDi, withXhr } from '@angular/common/http';
-import { VerifyPlusScanResult, VerifyPlusService } from './verify-plus.service';
-import { environment } from '../../environments/environment';
+import {TestBed} from '@angular/core/testing';
+import {HttpTestingController, provideHttpClientTesting} from '@angular/common/http/testing';
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from '@angular/common/http';
+import {VerifyPlusScanResult, VerifyPlusService} from './verify-plus.service';
+import {environment} from '../../environments/environment';
 
 describe('VerifyPlusService', () => {
     let service: VerifyPlusService;

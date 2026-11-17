@@ -14,9 +14,9 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import { expect, test } from '@playwright/test';
+import {expect, test} from '@playwright/test';
 
-import { VerifyPlusPage } from '../pages/verify-plus.page';
+import {VerifyPlusPage} from '../pages/verify-plus.page';
 
 test.describe('Verify+ navigation', () => {
     test('authenticated GRN candidate can open Verify+ and return to Services', async ({ page }) => {

@@ -1,4 +1,3 @@
-import type { MockedObject } from "vitest";
 /*
  * Copyright (c) 2026 Talent Catalog.
  *
@@ -15,13 +14,14 @@ import type { MockedObject } from "vitest";
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import { TestBed } from '@angular/core/testing';
-import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
-import { provideHttpClient, withInterceptorsFromDi, withXhr } from '@angular/common/http';
-import { BrandingInfo, BrandingService } from './branding.service';
-import { AuthenticationService } from './authentication.service';
-import { environment } from '../../environments/environment';
-import { TcInstanceType } from '../model/tc-instance-type';
+import type {MockedObject} from "vitest";
+import {TestBed} from '@angular/core/testing';
+import {HttpTestingController, provideHttpClientTesting} from '@angular/common/http/testing';
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from '@angular/common/http';
+import {BrandingInfo, BrandingService} from './branding.service';
+import {AuthenticationService} from './authentication.service';
+import {environment} from '../../environments/environment';
+import {TcInstanceType} from '../model/tc-instance-type';
 
 describe('BrandingService', () => {
     let service: BrandingService;

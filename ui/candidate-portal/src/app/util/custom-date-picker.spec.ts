@@ -1,4 +1,3 @@
-import type { MockedObject } from "vitest";
 /*
  * Copyright (c) 2026 Talent Catalog.
  *
@@ -15,8 +14,9 @@ import type { MockedObject } from "vitest";
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import { LanguageService } from '../services/language.service';
-import { CustomDatepickerI18n } from './custom-date-picker';
+import type {MockedObject} from "vitest";
+import {LanguageService} from '../services/language.service';
+import {CustomDatepickerI18n} from './custom-date-picker';
 
 describe('CustomDatepickerI18n', () => {
     let languageService: MockedObject<LanguageService>;

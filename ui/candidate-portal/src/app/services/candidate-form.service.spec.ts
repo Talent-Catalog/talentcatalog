@@ -18,26 +18,12 @@ import {provideHttpClient, withInterceptorsFromDi, withXhr} from '@angular/commo
 import {TestBed} from '@angular/core/testing';
 
 import {environment} from '../../environments/environment';
-import {
-  DependantsTravelInfoFormComponent
-} from '../components/form/family-doc-form/dependants-travel-info-form.component';
-import {
-  DependantsRefugeeStatusInfoFormComponent
-} from '../components/form/family-rsd-evidence-form/dependants-refugee-status-info-form.component';
-import {
-  TravelInfoFormComponent
-} from '../components/form/italy-travel-document-form/travel-info-form.component';
+import {DependantsTravelInfoFormComponent} from '../components/form/family-doc-form/dependants-travel-info-form.component';
+import {DependantsRefugeeStatusInfoFormComponent} from '../components/form/family-rsd-evidence-form/dependants-refugee-status-info-form.component';
+import {TravelInfoFormComponent} from '../components/form/italy-travel-document-form/travel-info-form.component';
 import {MyFirstFormComponent} from '../components/form/my-first-form/my-first-form.component';
-import {
-  RefugeeStatusInfoFormComponent
-} from '../components/form/rsd-evidence-form/refugee-status-info-form.component';
-import {
-  DependantsInfoFormData,
-  MyFirstFormData,
-  RefugeeStatusInfoFormData,
-  TravelDocType,
-  TravelInfoFormData
-} from '../model/form';
+import {RefugeeStatusInfoFormComponent} from '../components/form/rsd-evidence-form/refugee-status-info-form.component';
+import {DependantsInfoFormData, MyFirstFormData, RefugeeStatusInfoFormData, TravelDocType, TravelInfoFormData} from '../model/form';
 import {CandidateFormService} from './candidate-form.service';
 
 describe('CandidateFormService', () => {

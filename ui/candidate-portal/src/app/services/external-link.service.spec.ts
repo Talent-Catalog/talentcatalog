@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import { ExternalLinkService } from './external-link.service';
+import {ExternalLinkService} from './external-link.service';
 
 describe('ExternalLinkService', () => {
     let service: ExternalLinkService;

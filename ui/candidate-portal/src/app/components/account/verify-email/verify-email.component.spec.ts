@@ -1,4 +1,3 @@
-import type { MockedObject } from "vitest";
 /*
  * Copyright (c) 2026 Talent Catalog.
  *
@@ -15,11 +14,12 @@ import type { MockedObject } from "vitest";
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
-import { Subject, throwError } from 'rxjs';
+import type {MockedObject} from "vitest";
+import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
+import {Subject, throwError} from 'rxjs';
 
-import { UserService } from '../../../services/user.service';
-import { VerifyEmailComponent } from './verify-email.component';
+import {UserService} from '../../../services/user.service';
+import {VerifyEmailComponent} from './verify-email.component';
 
 describe('VerifyEmailComponent', () => {
     let component: VerifyEmailComponent;

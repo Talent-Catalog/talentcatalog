@@ -14,11 +14,11 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import { NO_ERRORS_SCHEMA } from '@angular/core';
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {NO_ERRORS_SCHEMA} from '@angular/core';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { CandidateExamCardComponent } from './candidate-exam-card.component';
-import { CandidateExam } from '../../../model/candidate';
+import {CandidateExamCardComponent} from './candidate-exam-card.component';
+import {CandidateExam} from '../../../model/candidate';
 
 function makeExam(overrides: Partial<CandidateExam> = {}): CandidateExam {
     return {

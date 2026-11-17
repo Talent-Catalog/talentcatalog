@@ -14,15 +14,15 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import { Component, Input, ChangeDetectionStrategy } from '@angular/core';
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { By } from '@angular/platform-browser';
-import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
-import { TranslateModule } from '@ngx-translate/core';
+import {Component, Input, ChangeDetectionStrategy} from '@angular/core';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {By} from '@angular/platform-browser';
+import {FormControl, FormGroup, ReactiveFormsModule} from '@angular/forms';
+import {TranslateModule} from '@ngx-translate/core';
 
-import { ViewSimpleTaskComponent } from './view-simple-task.component';
-import { TaskAssignment } from '../../../../../../../model/task-assignment';
-import { TaskType } from '../../../../../../../model/task';
+import {ViewSimpleTaskComponent} from './view-simple-task.component';
+import {TaskAssignment} from '../../../../../../../model/task-assignment';
+import {TaskType} from '../../../../../../../model/task';
 
 @Component({ selector: 'tc-label', template: '<ng-content></ng-content>', changeDetection: ChangeDetectionStrategy.Eager, standalone: false })
 class TcLabelStubComponent {

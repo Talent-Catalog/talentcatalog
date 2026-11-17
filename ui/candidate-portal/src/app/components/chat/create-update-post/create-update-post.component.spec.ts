@@ -1,4 +1,3 @@
-import type { MockedObject } from "vitest";
 /*
  * Copyright (c) 2026 Talent Catalog.
  *
@@ -15,18 +14,19 @@ import type { MockedObject } from "vitest";
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import { UntypedFormBuilder } from '@angular/forms';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { of, throwError } from 'rxjs';
+import type {MockedObject} from "vitest";
+import {UntypedFormBuilder} from '@angular/forms';
+import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
+import {of, throwError} from 'rxjs';
 
-import { JobChat } from '../../../model/chat';
-import { LinkPreview } from '../../../model/link-preview';
-import { ChatPostService } from '../../../services/chat-post.service';
-import { LinkPreviewService } from '../../../services/link-preview.service';
-import { RxStompService } from '../../../services/rx-stomp.service';
-import { BuildLinkComponent } from '../../../util/build-link/build-link.component';
-import { FileSelectorComponent } from '../../util/file-selector/file-selector.component';
-import { CreateUpdatePostComponent } from './create-update-post.component';
+import {JobChat} from '../../../model/chat';
+import {LinkPreview} from '../../../model/link-preview';
+import {ChatPostService} from '../../../services/chat-post.service';
+import {LinkPreviewService} from '../../../services/link-preview.service';
+import {RxStompService} from '../../../services/rx-stomp.service';
+import {BuildLinkComponent} from '../../../util/build-link/build-link.component';
+import {FileSelectorComponent} from '../../util/file-selector/file-selector.component';
+import {CreateUpdatePostComponent} from './create-update-post.component';
 
 describe('CreateUpdatePostComponent', () => {
     let component: CreateUpdatePostComponent;

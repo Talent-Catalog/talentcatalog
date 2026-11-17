@@ -1,4 +1,3 @@
-import type { MockedObject } from "vitest";
 /*
  * Copyright (c) 2026 Talent Catalog.
  *
@@ -15,18 +14,19 @@ import type { MockedObject } from "vitest";
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import { Component, EventEmitter, Input, Output, ChangeDetectionStrategy } from '@angular/core';
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { By } from '@angular/platform-browser';
-import { TranslateModule } from '@ngx-translate/core';
-import { of, throwError } from 'rxjs';
+import type {MockedObject} from "vitest";
+import {Component, EventEmitter, Input, Output, ChangeDetectionStrategy} from '@angular/core';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {By} from '@angular/platform-browser';
+import {TranslateModule} from '@ngx-translate/core';
+import {of, throwError} from 'rxjs';
 
-import { RegistrationSubmitComponent } from './registration-submit.component';
-import { Candidate, CandidateStatus } from '../../../model/candidate';
-import { CandidateService } from '../../../services/candidate.service';
-import { AuthenticationService } from '../../../services/authentication.service';
-import { TermsInfoDto } from '../../../model/terms-info-dto';
-import { TermsInfoService } from '../../../services/terms-info.service';
+import {RegistrationSubmitComponent} from './registration-submit.component';
+import {Candidate, CandidateStatus} from '../../../model/candidate';
+import {CandidateService} from '../../../services/candidate.service';
+import {AuthenticationService} from '../../../services/authentication.service';
+import {TermsInfoDto} from '../../../model/terms-info-dto';
+import {TermsInfoService} from '../../../services/terms-info.service';
 
 @Component({
     selector: 'tc-loading',

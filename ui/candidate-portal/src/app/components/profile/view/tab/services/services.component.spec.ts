@@ -14,12 +14,12 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { NO_ERRORS_SCHEMA, Pipe, PipeTransform } from "@angular/core";
-import { of } from "rxjs";
+import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {NO_ERRORS_SCHEMA, Pipe, PipeTransform} from "@angular/core";
+import {of} from "rxjs";
 
-import { ServicesComponent } from './services.component';
-import { ServiceProvider } from "../../../../../model/services";
+import {ServicesComponent} from './services.component';
+import {ServiceProvider} from "../../../../../model/services";
 
 @Pipe({ name: 'translate', standalone: false })
 class MockTranslatePipe implements PipeTransform {

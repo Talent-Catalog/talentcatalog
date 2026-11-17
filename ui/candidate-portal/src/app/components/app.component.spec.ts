@@ -1,4 +1,3 @@
-import type { MockedObject } from "vitest";
 /*
  * Copyright (c) 2026 Talent Catalog.
  *
@@ -15,19 +14,20 @@ import type { MockedObject } from "vitest";
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import { ComponentFixture, fakeAsync, TestBed, tick, waitForAsync } from '@angular/core/testing';
-import { ActivatedRoute, Router } from '@angular/router';
-import { BehaviorSubject } from 'rxjs';
-import { AppComponent } from './app.component';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import { AuthenticationService } from '../services/authentication.service';
-import { ChatService } from '../services/chat.service';
-import { LanguageService } from '../services/language.service';
-import { LanguageLoader } from '../services/language.loader';
-import { BrandingService } from '../services/branding.service';
-import { User } from '../model/user';
-import { TcInstanceType } from '../model/tc-instance-type';
-import { environment } from '../../environments/environment';
+import type {MockedObject} from "vitest";
+import {ComponentFixture, fakeAsync, TestBed, tick, waitForAsync} from '@angular/core/testing';
+import {ActivatedRoute, Router} from '@angular/router';
+import {BehaviorSubject} from 'rxjs';
+import {AppComponent} from './app.component';
+import {TranslateModule, TranslateService} from '@ngx-translate/core';
+import {AuthenticationService} from '../services/authentication.service';
+import {ChatService} from '../services/chat.service';
+import {LanguageService} from '../services/language.service';
+import {LanguageLoader} from '../services/language.loader';
+import {BrandingService} from '../services/branding.service';
+import {User} from '../model/user';
+import {TcInstanceType} from '../model/tc-instance-type';
+import {environment} from '../../environments/environment';
 
 describe('AppComponent', () => {
     let component: AppComponent;

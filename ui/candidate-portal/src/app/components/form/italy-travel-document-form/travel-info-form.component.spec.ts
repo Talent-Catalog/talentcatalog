@@ -1,4 +1,3 @@
-import type { MockedObject } from "vitest";
 /*
  * Copyright (c) 2026 Talent Catalog.
  *
@@ -15,15 +14,16 @@ import type { MockedObject } from "vitest";
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import { FormBuilder } from '@angular/forms';
-import { Router } from '@angular/router';
-import { of, Subject } from 'rxjs';
+import type {MockedObject} from "vitest";
+import {FormBuilder} from '@angular/forms';
+import {Router} from '@angular/router';
+import {of, Subject} from 'rxjs';
 
-import { Country } from '../../../model/country';
-import { TravelDocType, TravelInfoFormData } from '../../../model/form';
-import { CandidateFormService } from '../../../services/candidate-form.service';
-import { CountryService } from '../../../services/country.service';
-import { TravelInfoFormComponent } from './travel-info-form.component';
+import {Country} from '../../../model/country';
+import {TravelDocType, TravelInfoFormData} from '../../../model/form';
+import {CandidateFormService} from '../../../services/candidate-form.service';
+import {CountryService} from '../../../services/country.service';
+import {TravelInfoFormComponent} from './travel-info-form.component';
 
 describe('TravelInfoFormComponent', () => {
     let component: TravelInfoFormComponent;

@@ -14,10 +14,10 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { By } from '@angular/platform-browser';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {By} from '@angular/platform-browser';
 
-import { CreateUpdateChatComponent } from './create-update-chat.component';
+import {CreateUpdateChatComponent} from './create-update-chat.component';
 
 describe('CreateUpdateChatComponent', () => {
     let component: CreateUpdateChatComponent;

@@ -14,9 +14,9 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { TabHeaderComponent } from './tab-header.component';
+import {TabHeaderComponent} from './tab-header.component';
 
 describe('TabHeaderComponent', () => {
     let component: TabHeaderComponent;

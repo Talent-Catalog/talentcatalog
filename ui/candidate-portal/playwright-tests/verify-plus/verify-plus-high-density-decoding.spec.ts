@@ -14,11 +14,11 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import { test, } from '@playwright/test';
+import {test} from '@playwright/test';
 
-import { VERIFY_PLUS_HIGH_DENSITY_QR_FIXTURES, } from '../fixtures/verify-plus-qr.fixture';
+import {VERIFY_PLUS_HIGH_DENSITY_QR_FIXTURES} from '../fixtures/verify-plus-qr.fixture';
 
-import { runVerifyPlusQrDecodingScenario, } from '../support/verify-plus-qr-decoding.e2e';
+import {runVerifyPlusQrDecodingScenario} from '../support/verify-plus-qr-decoding.e2e';
 
 /**
  * Cross-browser decoding coverage for high-density Verify+ QR images.

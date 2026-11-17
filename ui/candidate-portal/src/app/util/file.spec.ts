@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import { saveBlob } from './file';
+import {saveBlob} from './file';
 
 describe('saveBlob', () => {
     const filename = 'report.pdf';

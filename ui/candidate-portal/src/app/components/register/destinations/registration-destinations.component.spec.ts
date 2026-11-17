@@ -1,4 +1,3 @@
-import type { MockedObject } from "vitest";
 /*
  * Copyright (c) 2026 Talent Catalog.
  *
@@ -15,21 +14,22 @@ import type { MockedObject } from "vitest";
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import { Component, EventEmitter, Input, Output, QueryList, ChangeDetectionStrategy } from '@angular/core';
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
-import { By } from '@angular/platform-browser';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import { of, throwError } from 'rxjs';
+import type {MockedObject} from "vitest";
+import {Component, EventEmitter, Input, Output, QueryList, ChangeDetectionStrategy} from '@angular/core';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {UntypedFormControl, UntypedFormGroup} from '@angular/forms';
+import {By} from '@angular/platform-browser';
+import {TranslateModule, TranslateService} from '@ngx-translate/core';
+import {of, throwError} from 'rxjs';
 
-import { RegistrationDestinationsComponent } from './registration-destinations.component';
-import { Candidate, CandidateDestination, YesNoUnsureLearn } from '../../../model/candidate';
-import { Country } from '../../../model/country';
-import { CandidateService } from '../../../services/candidate.service';
-import { RegistrationService } from '../../../services/registration.service';
-import { CountryService } from '../../../services/country.service';
-import { DestinationComponent } from './destination/destination.component';
-import { CandidateDestinationService } from '../../../services/candidate-destination.service';
+import {RegistrationDestinationsComponent} from './registration-destinations.component';
+import {Candidate, CandidateDestination, YesNoUnsureLearn} from '../../../model/candidate';
+import {Country} from '../../../model/country';
+import {CandidateService} from '../../../services/candidate.service';
+import {RegistrationService} from '../../../services/registration.service';
+import {CountryService} from '../../../services/country.service';
+import {DestinationComponent} from './destination/destination.component';
+import {CandidateDestinationService} from '../../../services/candidate-destination.service';
 
 @Component({
     selector: 'tc-loading',

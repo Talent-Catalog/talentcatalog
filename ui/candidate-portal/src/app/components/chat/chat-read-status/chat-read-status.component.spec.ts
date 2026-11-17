@@ -1,4 +1,3 @@
-import type { MockedObject } from "vitest";
 /*
  * Copyright (c) 2026 Talent Catalog.
  *
@@ -15,15 +14,16 @@ import type { MockedObject } from "vitest";
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import { CommonModule } from '@angular/common';
-import { SimpleChange } from '@angular/core';
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { By } from '@angular/platform-browser';
-import { of, Subject, throwError } from 'rxjs';
+import type {MockedObject} from "vitest";
+import {CommonModule} from '@angular/common';
+import {SimpleChange} from '@angular/core';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {By} from '@angular/platform-browser';
+import {of, Subject, throwError} from 'rxjs';
 
-import { JobChat } from '../../../model/chat';
-import { ChatService } from '../../../services/chat.service';
-import { ChatReadStatusComponent } from './chat-read-status.component';
+import {JobChat} from '../../../model/chat';
+import {ChatService} from '../../../services/chat.service';
+import {ChatReadStatusComponent} from './chat-read-status.component';
 
 describe('ChatReadStatusComponent', () => {
     let component: ChatReadStatusComponent;

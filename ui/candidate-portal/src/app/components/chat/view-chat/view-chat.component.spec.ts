@@ -1,4 +1,3 @@
-import type { MockedObject } from "vitest";
 /*
  * Copyright (c) 2026 Talent Catalog.
  *
@@ -15,14 +14,15 @@ import type { MockedObject } from "vitest";
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import { Component, Input, Pipe, PipeTransform, ChangeDetectionStrategy } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { By } from '@angular/platform-browser';
+import type {MockedObject} from "vitest";
+import {Component, Input, Pipe, PipeTransform, ChangeDetectionStrategy} from '@angular/core';
+import {CommonModule} from '@angular/common';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {By} from '@angular/platform-browser';
 
-import { JobChat } from '../../../model/chat';
-import { ChatService } from '../../../services/chat.service';
-import { ViewChatComponent } from './view-chat.component';
+import {JobChat} from '../../../model/chat';
+import {ChatService} from '../../../services/chat.service';
+import {ViewChatComponent} from './view-chat.component';
 
 @Pipe({
     name: 'translate',

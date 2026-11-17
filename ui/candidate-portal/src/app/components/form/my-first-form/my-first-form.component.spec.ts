@@ -1,4 +1,3 @@
-import type { MockedObject } from "vitest";
 /*
  * Copyright (c) 2026 Talent Catalog.
  *
@@ -15,12 +14,13 @@ import type { MockedObject } from "vitest";
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import { FormBuilder } from '@angular/forms';
-import { of, Subject } from 'rxjs';
+import type {MockedObject} from "vitest";
+import {FormBuilder} from '@angular/forms';
+import {of, Subject} from 'rxjs';
 
-import { MyFirstFormData } from '../../../model/form';
-import { CandidateFormService } from '../../../services/candidate-form.service';
-import { MyFirstFormComponent } from './my-first-form.component';
+import {MyFirstFormData} from '../../../model/form';
+import {CandidateFormService} from '../../../services/candidate-form.service';
+import {MyFirstFormComponent} from './my-first-form.component';
 
 describe('MyFirstFormComponent', () => {
     let component: MyFirstFormComponent;

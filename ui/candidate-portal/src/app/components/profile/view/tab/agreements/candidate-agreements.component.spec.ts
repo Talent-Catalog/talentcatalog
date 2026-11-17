@@ -1,4 +1,3 @@
-import type { MockedObject } from "vitest";
 /*
  * Copyright (c) 2026 Talent Catalog.
  *
@@ -15,11 +14,12 @@ import type { MockedObject } from "vitest";
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { NO_ERRORS_SCHEMA } from '@angular/core';
-import { of } from 'rxjs';
-import { AgreementService } from '../../../../../services/agreement.service';
-import { CandidateAgreementsComponent } from './candidate-agreements.component';
+import type {MockedObject} from "vitest";
+import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {NO_ERRORS_SCHEMA} from '@angular/core';
+import {of} from 'rxjs';
+import {AgreementService} from '../../../../../services/agreement.service';
+import {CandidateAgreementsComponent} from './candidate-agreements.component';
 
 describe('CandidateAgreementsComponent', () => {
     let component: CandidateAgreementsComponent;

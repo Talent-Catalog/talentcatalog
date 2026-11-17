@@ -13,13 +13,13 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
-import { TestBed } from '@angular/core/testing';
-import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
-import { provideHttpClient, withInterceptorsFromDi, withXhr } from '@angular/common/http';
+import {TestBed} from '@angular/core/testing';
+import {HttpTestingController, provideHttpClientTesting} from '@angular/common/http/testing';
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from '@angular/common/http';
 
-import { environment } from '../../environments/environment';
-import { ResourceStatus, ServiceProviderTermsInfo } from '../model/services';
-import { CasiPortalService } from './casi-portal.service';
+import {environment} from '../../environments/environment';
+import {ResourceStatus, ServiceProviderTermsInfo} from '../model/services';
+import {CasiPortalService} from './casi-portal.service';
 
 describe('CasiPortalService', () => {
     let service: CasiPortalService;

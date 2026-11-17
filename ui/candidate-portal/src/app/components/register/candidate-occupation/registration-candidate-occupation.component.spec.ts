@@ -1,4 +1,3 @@
-import type { MockedObject } from "vitest";
 /*
  * Copyright (c) 2026 Talent Catalog.
  *
@@ -15,23 +14,24 @@ import type { MockedObject } from "vitest";
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import { Component, EventEmitter, forwardRef, Input, NO_ERRORS_SCHEMA, Output, ChangeDetectionStrategy } from '@angular/core';
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { By } from '@angular/platform-browser';
-import { ControlValueAccessor, FormsModule, NG_VALUE_ACCESSOR, ReactiveFormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import { of, Subject, throwError } from 'rxjs';
+import type {MockedObject} from "vitest";
+import {Component, EventEmitter, forwardRef, Input, NO_ERRORS_SCHEMA, Output, ChangeDetectionStrategy} from '@angular/core';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {By} from '@angular/platform-browser';
+import {ControlValueAccessor, FormsModule, NG_VALUE_ACCESSOR, ReactiveFormsModule} from '@angular/forms';
+import {Router} from '@angular/router';
+import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
+import {TranslateModule, TranslateService} from '@ngx-translate/core';
+import {of, Subject, throwError} from 'rxjs';
 
-import { RegistrationCandidateOccupationComponent } from './registration-candidate-occupation.component';
-import { CandidateOccupation } from '../../../model/candidate-occupation';
-import { CandidateJobExperience } from '../../../model/candidate-job-experience';
-import { Occupation } from '../../../model/occupation';
-import { CandidateService } from '../../../services/candidate.service';
-import { CandidateOccupationService } from '../../../services/candidate-occupation.service';
-import { OccupationService } from '../../../services/occupation.service';
-import { RegistrationService } from '../../../services/registration.service';
+import {RegistrationCandidateOccupationComponent} from './registration-candidate-occupation.component';
+import {CandidateOccupation} from '../../../model/candidate-occupation';
+import {CandidateJobExperience} from '../../../model/candidate-job-experience';
+import {Occupation} from '../../../model/occupation';
+import {CandidateService} from '../../../services/candidate.service';
+import {CandidateOccupationService} from '../../../services/candidate-occupation.service';
+import {OccupationService} from '../../../services/occupation.service';
+import {RegistrationService} from '../../../services/registration.service';
 
 @Component({
     selector: 'tc-input',

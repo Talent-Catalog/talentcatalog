@@ -1,17 +1,17 @@
-import type { Mock, MockedObject } from "vitest";
-import { Component, forwardRef, Input, ChangeDetectionStrategy } from '@angular/core';
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { ControlValueAccessor, FormsModule, NG_VALUE_ACCESSOR, UntypedFormControl } from '@angular/forms';
-import { By } from '@angular/platform-browser';
-import { provideHttpClientTesting } from '@angular/common/http/testing';
-import { provideHttpClient, withInterceptorsFromDi, withXhr } from '@angular/common/http';
-import { NgSelectModule } from '@ng-select/ng-select';
-import { of, throwError } from 'rxjs';
-import { PhoneNumber } from 'libphonenumber-js';
+import type {Mock, MockedObject} from "vitest";
+import {Component, forwardRef, Input, ChangeDetectionStrategy} from '@angular/core';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {ControlValueAccessor, FormsModule, NG_VALUE_ACCESSOR, UntypedFormControl} from '@angular/forms';
+import {By} from '@angular/platform-browser';
+import {provideHttpClientTesting} from '@angular/common/http/testing';
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from '@angular/common/http';
+import {NgSelectModule} from '@ng-select/ng-select';
+import {of, throwError} from 'rxjs';
+import {PhoneNumber} from 'libphonenumber-js';
 
-import { IntlPhoneInputComponent } from './intl-phone-input.component';
-import { CountryService } from '../../../services/country.service';
-import { Country } from '../../../model/country';
+import {IntlPhoneInputComponent} from './intl-phone-input.component';
+import {CountryService} from '../../../services/country.service';
+import {Country} from '../../../model/country';
 
 @Component({
     selector: 'tc-input',

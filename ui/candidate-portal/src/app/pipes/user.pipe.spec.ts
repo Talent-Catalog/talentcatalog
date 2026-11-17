@@ -14,8 +14,8 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import { UserPipe } from './user.pipe';
-import { User } from "../model/user";
+import {UserPipe} from './user.pipe';
+import {User} from "../model/user";
 
 describe('UserPipe', () => {
     let pipe: UserPipe;

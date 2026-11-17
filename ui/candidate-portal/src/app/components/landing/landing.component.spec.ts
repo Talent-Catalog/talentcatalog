@@ -1,13 +1,13 @@
-import { Component, Input, Pipe, PipeTransform, ChangeDetectionStrategy } from '@angular/core';
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { By } from '@angular/platform-browser';
-import { ActivatedRoute, Router } from '@angular/router';
-import { of } from 'rxjs';
+import {Component, Input, Pipe, PipeTransform, ChangeDetectionStrategy} from '@angular/core';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {By} from '@angular/platform-browser';
+import {ActivatedRoute, Router} from '@angular/router';
+import {of} from 'rxjs';
 
-import { LandingComponent } from './landing.component';
-import { AuthenticationService } from '../../services/authentication.service';
-import { BrandingService } from '../../services/branding.service';
-import { LanguageService } from '../../services/language.service';
+import {LandingComponent} from './landing.component';
+import {AuthenticationService} from '../../services/authentication.service';
+import {BrandingService} from '../../services/branding.service';
+import {LanguageService} from '../../services/language.service';
 
 @Pipe({ name: 'translate', standalone: false })
 class TranslatePipeStub implements PipeTransform {

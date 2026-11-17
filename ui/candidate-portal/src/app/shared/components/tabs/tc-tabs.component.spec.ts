@@ -1,10 +1,10 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { Component, ChangeDetectionStrategy } from '@angular/core';
-import { By } from '@angular/platform-browser';
-import { TcTabsComponent } from './tc-tabs.component';
-import { TcTabComponent } from './tab/tc-tab.component';
-import { TcTabHeaderComponent } from "./tab/header/tc-tab-header.component";
-import { TcTabContentComponent } from "./tab/content/tc-tab-content.component";
+import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {Component, ChangeDetectionStrategy} from '@angular/core';
+import {By} from '@angular/platform-browser';
+import {TcTabsComponent} from './tc-tabs.component';
+import {TcTabComponent} from './tab/tc-tab.component';
+import {TcTabHeaderComponent} from "./tab/header/tc-tab-header.component";
+import {TcTabContentComponent} from "./tab/content/tc-tab-content.component";
 
 @Component({
     template: `

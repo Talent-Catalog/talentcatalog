@@ -1,4 +1,3 @@
-import type { Mock, MockedObject } from "vitest";
 /*
  * Copyright (c) 2026 Talent Catalog.
  *
@@ -15,14 +14,15 @@ import type { Mock, MockedObject } from "vitest";
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import { Component, EventEmitter, Input, Output, ChangeDetectionStrategy } from '@angular/core';
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { By } from '@angular/platform-browser';
-import { TranslateModule } from '@ngx-translate/core';
-import { of, throwError } from 'rxjs';
+import type {Mock, MockedObject} from "vitest";
+import {Component, EventEmitter, Input, Output, ChangeDetectionStrategy} from '@angular/core';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {By} from '@angular/platform-browser';
+import {TranslateModule} from '@ngx-translate/core';
+import {of, throwError} from 'rxjs';
 
-import { DownloadCvComponent } from './download-cv.component';
-import { CandidateService } from '../../../services/candidate.service';
+import {DownloadCvComponent} from './download-cv.component';
+import {CandidateService} from '../../../services/candidate.service';
 
 @Component({
     selector: 'tc-button',

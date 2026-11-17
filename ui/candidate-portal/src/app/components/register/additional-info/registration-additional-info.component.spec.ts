@@ -1,4 +1,3 @@
-import type { MockedObject } from "vitest";
 /*
  * Copyright (c) 2026 Talent Catalog.
  *
@@ -15,21 +14,22 @@ import type { MockedObject } from "vitest";
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import { Component, EventEmitter, forwardRef, Input, Output, ChangeDetectionStrategy } from '@angular/core';
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { By } from '@angular/platform-browser';
-import { ControlValueAccessor, NG_VALUE_ACCESSOR, ReactiveFormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
-import { TranslateModule } from '@ngx-translate/core';
-import { of, throwError } from 'rxjs';
+import type {MockedObject} from "vitest";
+import {Component, EventEmitter, forwardRef, Input, Output, ChangeDetectionStrategy} from '@angular/core';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {By} from '@angular/platform-browser';
+import {ControlValueAccessor, NG_VALUE_ACCESSOR, ReactiveFormsModule} from '@angular/forms';
+import {Router} from '@angular/router';
+import {TranslateModule} from '@ngx-translate/core';
+import {of, throwError} from 'rxjs';
 
-import { RegistrationAdditionalInfoComponent } from './registration-additional-info.component';
-import { CandidateService } from '../../../services/candidate.service';
-import { RegistrationService } from '../../../services/registration.service';
-import { SurveyTypeService } from '../../../services/survey-type.service';
-import { SurveyType, US_AFGHAN_SURVEY_TYPE } from '../../../model/survey-type';
-import { AuthenticationService } from "../../../services/authentication.service";
-import { TcInstanceType } from "../../../model/tc-instance-type";
+import {RegistrationAdditionalInfoComponent} from './registration-additional-info.component';
+import {CandidateService} from '../../../services/candidate.service';
+import {RegistrationService} from '../../../services/registration.service';
+import {SurveyTypeService} from '../../../services/survey-type.service';
+import {SurveyType, US_AFGHAN_SURVEY_TYPE} from '../../../model/survey-type';
+import {AuthenticationService} from "../../../services/authentication.service";
+import {TcInstanceType} from "../../../model/tc-instance-type";
 
 @Component({
     selector: 'tc-loading',

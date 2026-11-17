@@ -14,12 +14,12 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import { Component, Input, SimpleChange, SimpleChanges, ChangeDetectionStrategy } from '@angular/core';
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { By } from '@angular/platform-browser';
+import {Component, Input, SimpleChange, SimpleChanges, ChangeDetectionStrategy} from '@angular/core';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {By} from '@angular/platform-browser';
 
-import { ChatsComponent } from './chats.component';
-import { JobChat } from '../../../model/chat';
+import {ChatsComponent} from './chats.component';
+import {JobChat} from '../../../model/chat';
 
 @Component({
     selector: 'app-view-chat',

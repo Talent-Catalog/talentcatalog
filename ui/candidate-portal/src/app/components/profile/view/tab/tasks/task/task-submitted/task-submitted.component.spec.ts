@@ -1,10 +1,10 @@
-import { Component, EventEmitter, Input, Output, ChangeDetectionStrategy } from '@angular/core';
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { By } from '@angular/platform-browser';
-import { TranslateModule } from '@ngx-translate/core';
+import {Component, EventEmitter, Input, Output, ChangeDetectionStrategy} from '@angular/core';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {By} from '@angular/platform-browser';
+import {TranslateModule} from '@ngx-translate/core';
 
-import { TaskSubmittedComponent } from './task-submitted.component';
-import { TaskAssignment } from '../../../../../../../model/task-assignment';
+import {TaskSubmittedComponent} from './task-submitted.component';
+import {TaskAssignment} from '../../../../../../../model/task-assignment';
 
 @Component({ selector: 'tc-button', template: '<ng-content></ng-content>', changeDetection: ChangeDetectionStrategy.Eager, standalone: false })
 class TcButtonStubComponent {

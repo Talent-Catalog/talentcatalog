@@ -14,8 +14,8 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import { InputFilterDirective } from './input-filter.directive';
-import { ElementRef } from '@angular/core';
+import {InputFilterDirective} from './input-filter.directive';
+import {ElementRef} from '@angular/core';
 
 describe('InputFilterDirective', () => {
 

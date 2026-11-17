@@ -1,4 +1,3 @@
-import type { MockedObject } from "vitest";
 /*
  * Copyright (c) 2026 Talent Catalog.
  *
@@ -15,19 +14,20 @@ import type { MockedObject } from "vitest";
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import { Component, EventEmitter, Input, NO_ERRORS_SCHEMA, Output, ChangeDetectionStrategy } from '@angular/core';
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { ReactiveFormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import { of, throwError } from 'rxjs';
+import type {MockedObject} from "vitest";
+import {Component, EventEmitter, Input, NO_ERRORS_SCHEMA, Output, ChangeDetectionStrategy} from '@angular/core';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {ReactiveFormsModule} from '@angular/forms';
+import {Router} from '@angular/router';
+import {NgbModal} from '@ng-bootstrap/ng-bootstrap';
+import {TranslateModule, TranslateService} from '@ngx-translate/core';
+import {of, throwError} from 'rxjs';
 
-import { RegistrationCandidateExamComponent } from './registration-candidate-exam.component';
-import { CandidateExam, Exam } from '../../../model/candidate';
-import { CandidateExamService } from '../../../services/candidate-exam.service';
-import { CandidateService } from '../../../services/candidate.service';
-import { RegistrationService } from '../../../services/registration.service';
+import {RegistrationCandidateExamComponent} from './registration-candidate-exam.component';
+import {CandidateExam, Exam} from '../../../model/candidate';
+import {CandidateExamService} from '../../../services/candidate-exam.service';
+import {CandidateService} from '../../../services/candidate.service';
+import {RegistrationService} from '../../../services/registration.service';
 
 @Component({
     selector: 'tc-button',

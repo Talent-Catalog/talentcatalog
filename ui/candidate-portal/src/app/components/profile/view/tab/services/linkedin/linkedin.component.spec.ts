@@ -1,12 +1,12 @@
-import type { MockedObject } from "vitest";
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { LinkedinComponent } from './linkedin.component';
-import { LinkedinService } from '../../../../../../services/linkedin.service';
-import { CandidateService } from '../../../../../../services/candidate.service';
-import { NO_ERRORS_SCHEMA } from '@angular/core';
-import { of, throwError } from 'rxjs';
-import { ResourceStatus, ServiceAssignment, ServiceProvider, AssignmentStatus, } from '../../../../../../model/services';
-import { Candidate } from '../../../../../../model/candidate';
+import type {MockedObject} from "vitest";
+import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {LinkedinComponent} from './linkedin.component';
+import {LinkedinService} from '../../../../../../services/linkedin.service';
+import {CandidateService} from '../../../../../../services/candidate.service';
+import {NO_ERRORS_SCHEMA} from '@angular/core';
+import {of, throwError} from 'rxjs';
+import {ResourceStatus, ServiceAssignment, ServiceProvider, AssignmentStatus} from '../../../../../../model/services';
+import {Candidate} from '../../../../../../model/candidate';
 
 describe('LinkedinComponent', () => {
     let component: LinkedinComponent;

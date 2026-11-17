@@ -14,8 +14,8 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import { FormControl, FormGroup } from '@angular/forms';
-import { profileMatchValidator } from './profile-match-validator';
+import {FormControl, FormGroup} from '@angular/forms';
+import {profileMatchValidator} from './profile-match-validator';
 
 describe('profileMatchValidator', () => {
 

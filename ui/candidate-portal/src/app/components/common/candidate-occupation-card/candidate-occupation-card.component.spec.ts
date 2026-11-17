@@ -14,15 +14,15 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import { Component, forwardRef, Input, ChangeDetectionStrategy } from '@angular/core';
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { By } from '@angular/platform-browser';
-import { ControlValueAccessor, FormsModule, NG_VALUE_ACCESSOR } from '@angular/forms';
-import { TranslateModule } from '@ngx-translate/core';
+import {Component, forwardRef, Input, ChangeDetectionStrategy} from '@angular/core';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {By} from '@angular/platform-browser';
+import {ControlValueAccessor, FormsModule, NG_VALUE_ACCESSOR} from '@angular/forms';
+import {TranslateModule} from '@ngx-translate/core';
 
-import { CandidateOccupationCardComponent } from './candidate-occupation-card.component';
-import { CandidateOccupation } from '../../../model/candidate-occupation';
-import { Occupation } from '../../../model/occupation';
+import {CandidateOccupationCardComponent} from './candidate-occupation-card.component';
+import {CandidateOccupation} from '../../../model/candidate-occupation';
+import {Occupation} from '../../../model/occupation';
 
 @Component({
     selector: 'tc-button',

@@ -1,4 +1,3 @@
-import type { MockedObject } from "vitest";
 /*
  * Copyright (c) 2026 Talent Catalog.
  *
@@ -15,14 +14,15 @@ import type { MockedObject } from "vitest";
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import { Component, EventEmitter, Input, Output, ChangeDetectionStrategy } from '@angular/core';
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { By } from '@angular/platform-browser';
-import { NgbPopoverModule } from '@ng-bootstrap/ng-bootstrap';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import type {MockedObject} from "vitest";
+import {Component, EventEmitter, Input, Output, ChangeDetectionStrategy} from '@angular/core';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {By} from '@angular/platform-browser';
+import {NgbPopoverModule} from '@ng-bootstrap/ng-bootstrap';
+import {TranslateModule, TranslateService} from '@ngx-translate/core';
 
-import { RegistrationUploadFileComponent } from './registration-upload-file.component';
-import { RegistrationService } from '../../../services/registration.service';
+import {RegistrationUploadFileComponent} from './registration-upload-file.component';
+import {RegistrationService} from '../../../services/registration.service';
 
 @Component({
     selector: 'tc-accordion',

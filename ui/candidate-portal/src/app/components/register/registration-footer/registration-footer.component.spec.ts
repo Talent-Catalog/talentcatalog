@@ -14,9 +14,9 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import {ComponentFixture, TestBed, waitForAsync} from '@angular/core/testing';
 
-import { RegistrationFooterComponent } from './registration-footer.component';
+import {RegistrationFooterComponent} from './registration-footer.component';
 
 describe('RegistrationFooterComponent', () => {
     let component: RegistrationFooterComponent;

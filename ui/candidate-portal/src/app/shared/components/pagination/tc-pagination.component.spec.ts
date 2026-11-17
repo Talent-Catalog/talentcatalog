@@ -1,7 +1,7 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { TcPaginationComponent } from './tc-pagination.component';
-import { NgbPaginationModule } from "@ng-bootstrap/ng-bootstrap";
+import {TcPaginationComponent} from './tc-pagination.component';
+import {NgbPaginationModule} from "@ng-bootstrap/ng-bootstrap";
 
 describe('TcPaginationComponent', () => {
     let component: TcPaginationComponent;

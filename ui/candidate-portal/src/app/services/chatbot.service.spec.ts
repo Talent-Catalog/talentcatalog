@@ -14,12 +14,12 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import { TestBed } from '@angular/core/testing';
-import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
-import { provideHttpClient, withInterceptorsFromDi, withXhr } from '@angular/common/http';
-import { ChatbotService } from './chatbot.service';
-import { ChatbotMessage } from '../model/chatbot-message';
-import { environment } from '../../environments/environment';
+import {TestBed} from '@angular/core/testing';
+import {HttpTestingController, provideHttpClientTesting} from '@angular/common/http/testing';
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from '@angular/common/http';
+import {ChatbotService} from './chatbot.service';
+import {ChatbotMessage} from '../model/chatbot-message';
+import {environment} from '../../environments/environment';
 
 describe('ChatbotService', () => {
     let service: ChatbotService;
