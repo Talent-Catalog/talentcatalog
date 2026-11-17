@@ -12,7 +12,9 @@
     "src/**/*.ts"
   ],
   "exclude": [
-    "src/test.ts",
-    "src/**/*.spec.ts"
+    "test.ts",
+    "test-setup.ts",
+    "test-global-custom-elements.ts",
+    "**/*.spec.ts"
   ]
 }
