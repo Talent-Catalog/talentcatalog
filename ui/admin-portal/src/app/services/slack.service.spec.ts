@@ -20,6 +20,7 @@ import {provideHttpClient, withInterceptorsFromDi, withXhr} from '@angular/commo
 import {SlackService} from './slack.service';
 import {environment} from '../../environments/environment';
 import {PostJobToSlackRequest, PostJobToSlackResponse} from '../model/base';
+import {expect} from 'vitest';
 
 describe('SlackService', () => {
   let service: SlackService;

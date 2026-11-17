@@ -18,48 +18,45 @@ import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 import {JobSourceContactsTabComponent} from './job-source-contacts-tab.component';
 import {MockJob} from "../../../../../MockData/MockJob";
-import {
-  JobSourceContactsWithChatsComponent
-} from "../../source-contacts/job-source-contacts-with-chats/job-source-contacts-with-chats.component";
+import {JobSourceContactsWithChatsComponent} from "../../source-contacts/job-source-contacts-with-chats/job-source-contacts-with-chats.component";
 import {provideHttpClientTesting} from "@angular/common/http/testing";
 import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
-import {
-  ViewJobSourceContactsComponent
-} from "../../source-contacts/view-job-source-contacts/view-job-source-contacts.component";
+import {ViewJobSourceContactsComponent} from "../../source-contacts/view-job-source-contacts/view-job-source-contacts.component";
+import {expect} from 'vitest';
 
 describe('JobSourceContactsTabComponent', () => {
-  let component: JobSourceContactsTabComponent;
-  let fixture: ComponentFixture<JobSourceContactsTabComponent>;
+    let component: JobSourceContactsTabComponent;
+    let fixture: ComponentFixture<JobSourceContactsTabComponent>;
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      providers: [provideHttpClient(withXhr(), withInterceptorsFromDi()), provideHttpClientTesting()],
-      declarations: [JobSourceContactsTabComponent,JobSourceContactsWithChatsComponent,ViewJobSourceContactsComponent],
-    })
-    .compileComponents();
-  });
+    beforeEach(async () => {
+        await TestBed.configureTestingModule({
+            providers: [provideHttpClient(withXhr(), withInterceptorsFromDi()), provideHttpClientTesting()],
+            declarations: [JobSourceContactsTabComponent, JobSourceContactsWithChatsComponent, ViewJobSourceContactsComponent],
+        })
+            .compileComponents();
+    });
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(JobSourceContactsTabComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
+    beforeEach(() => {
+        fixture = TestBed.createComponent(JobSourceContactsTabComponent);
+        component = fixture.componentInstance;
+        fixture.detectChanges();
+    });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
 
-  it('should render job source contacts with chats', () => {
-    component.job = MockJob;
+    it('should render job source contacts with chats', () => {
+        component.job = MockJob;
 
-    fixture.detectChanges();
+        fixture.detectChanges();
 
-    const viewJobSourceContactsComponent = fixture.debugElement.query(By.directive(ViewJobSourceContactsComponent)).componentInstance;
-    expect(viewJobSourceContactsComponent).toBeTruthy();
+        const viewJobSourceContactsComponent = fixture.debugElement.query(By.directive(ViewJobSourceContactsComponent)).componentInstance;
+        expect(viewJobSourceContactsComponent).toBeTruthy();
 
-    // Now you can access the job property of the app-view-job-source-contacts component
-    const jobFromComponent = viewJobSourceContactsComponent.job;
-    expect(jobFromComponent).toEqual(component.job);
-  });
+        // Now you can access the job property of the app-view-job-source-contacts component
+        const jobFromComponent = viewJobSourceContactsComponent.job;
+        expect(jobFromComponent).toEqual(component.job);
+    });
 
 });

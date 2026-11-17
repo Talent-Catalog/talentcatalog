@@ -14,63 +14,67 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
+import type {MockedObject} from "vitest";
 import {NO_ERRORS_SCHEMA} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {of, throwError} from 'rxjs';
 import {CasiAdminService} from "../../../services/casi-admin.service";
 import {ImportReferenceVouchersComponent} from './import-reference-vouchers.component';
+import {expect, vi} from 'vitest';
 
 describe('ImportReferenceVouchersComponent', () => {
-  let component: ImportReferenceVouchersComponent;
-  let fixture: ComponentFixture<ImportReferenceVouchersComponent>;
-  let mockCasiAdminService: jasmine.SpyObj<CasiAdminService>;
+    let component: ImportReferenceVouchersComponent;
+    let fixture: ComponentFixture<ImportReferenceVouchersComponent>;
+    let mockCasiAdminService: MockedObject<CasiAdminService>;
 
-  beforeEach(async () => {
-    mockCasiAdminService = jasmine.createSpyObj('CasiAdminService',
-      ['importInventory', 'countAvailable']);
+    beforeEach(async () => {
+        mockCasiAdminService = ({
+            importInventory: vi.fn().mockName("CasiAdminService.importInventory"),
+            countAvailable: vi.fn().mockName("CasiAdminService.countAvailable")
+        } as unknown as typeof mockCasiAdminService);
 
-    await TestBed.configureTestingModule({
-      declarations: [ImportReferenceVouchersComponent],
-      providers: [{provide: CasiAdminService, useValue: mockCasiAdminService}],
-      schemas: [NO_ERRORS_SCHEMA]
-    }).compileComponents();
+        await TestBed.configureTestingModule({
+            declarations: [ImportReferenceVouchersComponent],
+            providers: [{ provide: CasiAdminService, useValue: mockCasiAdminService }],
+            schemas: [NO_ERRORS_SCHEMA]
+        }).compileComponents();
 
-    fixture = TestBed.createComponent(ImportReferenceVouchersComponent);
-    component = fixture.componentInstance;
-    mockCasiAdminService.countAvailable.and.returnValue(of({count: 10}));
-    fixture.detectChanges();
-  });
+        fixture = TestBed.createComponent(ImportReferenceVouchersComponent);
+        component = fixture.componentInstance;
+        mockCasiAdminService.countAvailable.mockReturnValue(of({ count: 10 }));
+        fixture.detectChanges();
+    });
 
-  it('should create the component', () => {
-    expect(component).toBeTruthy();
-  });
+    it('should create the component', () => {
+        expect(component).toBeTruthy();
+    });
 
-  it('should set an error if import is triggered without selecting a file', () => {
-    component.selectedFile = null;
+    it('should set an error if import is triggered without selecting a file', () => {
+        component.selectedFile = null;
 
-    component.importCSV();
+        component.importCSV();
 
-    expect(component.error).toBe('Please select a file to import.');
-  });
+        expect(component.error).toBe('Please select a file to import.');
+    });
 
-  it('should import csv via generic CasiAdminService', () => {
-    component.selectedFile = new File(['voucher_code,expires_at\nREF-1,2026-12-01'], 'reference.csv');
-    component.csvData = [['REF-1', '2026-12-01']];
-    mockCasiAdminService.importInventory.and.returnValue(of({status: 'success'}));
+    it('should import csv via generic CasiAdminService', () => {
+        component.selectedFile = new File(['voucher_code,expires_at\nREF-1,2026-12-01'], 'reference.csv');
+        component.csvData = [['REF-1', '2026-12-01']];
+        mockCasiAdminService.importInventory.mockReturnValue(of({ status: 'success' }));
 
-    component.importCSV();
+        component.importCSV();
 
-    expect(mockCasiAdminService.importInventory)
-      .toHaveBeenCalledWith('REFERENCE', 'VOUCHER', component.selectedFile);
-  });
+        expect(mockCasiAdminService.importInventory)
+            .toHaveBeenCalledWith('REFERENCE', 'VOUCHER', component.selectedFile);
+    });
 
-  it('should set import error when service fails', () => {
-    component.selectedFile = new File(['voucher_code,expires_at\nREF-1,2026-12-01'], 'reference.csv');
-    component.csvData = [['REF-1', '2026-12-01']];
-    mockCasiAdminService.importInventory.and.returnValue(throwError(() => new Error('boom')));
+    it('should set import error when service fails', () => {
+        component.selectedFile = new File(['voucher_code,expires_at\nREF-1,2026-12-01'], 'reference.csv');
+        component.csvData = [['REF-1', '2026-12-01']];
+        mockCasiAdminService.importInventory.mockReturnValue(throwError(() => new Error('boom')));
 
-    component.importCSV();
+        component.importCSV();
 
-    expect(component.error).toBe('Failed to import the CSV file. Please try again.');
-  });
+        expect(component.error).toBe('Failed to import the CSV file. Please try again.');
+    });
 });

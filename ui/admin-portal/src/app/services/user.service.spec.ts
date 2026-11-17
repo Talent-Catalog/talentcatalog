@@ -22,82 +22,83 @@ import {environment} from '../../environments/environment';
 import {UpdateUserRequest, User} from '../model/user';
 import {SearchUserRequest} from '../model/base';
 import {MockUser} from "../MockData/MockUser";
+import {expect} from 'vitest';
 
 describe('UserService', () => {
-  let service: UserService;
-  let httpMock: HttpTestingController;
-  const mockUser: User = new MockUser();
+    let service: UserService;
+    let httpMock: HttpTestingController;
+    const mockUser: User = new MockUser();
 
-  beforeEach(() => {
-    TestBed.configureTestingModule({
-      providers: [UserService, provideHttpClient(withXhr(), withInterceptorsFromDi()), provideHttpClientTesting()]
-    });
-    service = TestBed.inject(UserService);
-    httpMock = TestBed.inject(HttpTestingController);
-  });
-
-  afterEach(() => {
-    httpMock.verify();
-  });
-
-  it('should call search and return a list of users', () => {
-    const mockUsers: User[] = [new MockUser(), new MockUser()];
-
-    const searchRequest: SearchUserRequest = {keyword: 'test'};
-
-    service.search(searchRequest).subscribe(users => {
-      expect(users.length).toBe(2);
-      expect(users).toEqual(mockUsers);
+    beforeEach(() => {
+        TestBed.configureTestingModule({
+            providers: [UserService, provideHttpClient(withXhr(), withInterceptorsFromDi()), provideHttpClientTesting()]
+        });
+        service = TestBed.inject(UserService);
+        httpMock = TestBed.inject(HttpTestingController);
     });
 
-    const req = httpMock.expectOne(`${environment.apiUrl}/user/search`);
-    expect(req.request.method).toBe('POST');
-    req.flush(mockUsers);
-  });
-
-  it('should call get and return a user', () => {
-    service.get(1).subscribe(user => {
-      expect(user).toEqual(mockUser);
+    afterEach(() => {
+        httpMock.verify();
     });
 
-    const req = httpMock.expectOne(`${environment.apiUrl}/user/1`);
-    expect(req.request.method).toBe('GET');
-    req.flush(mockUser);
-  });
+    it('should call search and return a list of users', () => {
+        const mockUsers: User[] = [new MockUser(), new MockUser()];
 
-  it('should call create and return the created user', () => {
-    const updateUserRequest: UpdateUserRequest = {username: 'user1', firstName: 'First1', lastName: 'Last1', role: 'user'} as UpdateUserRequest;
+        const searchRequest: SearchUserRequest = { keyword: 'test' };
 
-    service.create(updateUserRequest).subscribe(user => {
-      expect(user).toEqual(mockUser);
+        service.search(searchRequest).subscribe(users => {
+            expect(users.length).toBe(2);
+            expect(users).toEqual(mockUsers);
+        });
+
+        const req = httpMock.expectOne(`${environment.apiUrl}/user/search`);
+        expect(req.request.method).toBe('POST');
+        req.flush(mockUsers);
     });
 
-    const req = httpMock.expectOne(`${environment.apiUrl}/user`);
-    expect(req.request.method).toBe('POST');
-    req.flush(mockUser);
-  });
+    it('should call get and return a user', () => {
+        service.get(1).subscribe(user => {
+            expect(user).toEqual(mockUser);
+        });
 
-  it('should call update and return the updated user', () => {
-    const updateUserRequest: UpdateUserRequest = {username: 'user1', firstName: 'First1', lastName: 'Last1', role: 'user'} as UpdateUserRequest;
-
-    service.update(1, updateUserRequest).subscribe(user => {
-      expect(user).toEqual(mockUser);
+        const req = httpMock.expectOne(`${environment.apiUrl}/user/1`);
+        expect(req.request.method).toBe('GET');
+        req.flush(mockUser);
     });
 
-    const req = httpMock.expectOne(`${environment.apiUrl}/user/1`);
-    expect(req.request.method).toBe('PUT');
-    req.flush(mockUser);
-  });
+    it('should call create and return the created user', () => {
+        const updateUserRequest: UpdateUserRequest = { username: 'user1', firstName: 'First1', lastName: 'Last1', role: 'user' } as UpdateUserRequest;
 
-  it('should call delete and return true', () => {
-    service.delete(1).subscribe(response => {
-      expect(response).toBeTrue();
+        service.create(updateUserRequest).subscribe(user => {
+            expect(user).toEqual(mockUser);
+        });
+
+        const req = httpMock.expectOne(`${environment.apiUrl}/user`);
+        expect(req.request.method).toBe('POST');
+        req.flush(mockUser);
     });
 
-    const req = httpMock.expectOne(`${environment.apiUrl}/user/1`);
-    expect(req.request.method).toBe('DELETE');
-    req.flush(true);
-  });
+    it('should call update and return the updated user', () => {
+        const updateUserRequest: UpdateUserRequest = { username: 'user1', firstName: 'First1', lastName: 'Last1', role: 'user' } as UpdateUserRequest;
+
+        service.update(1, updateUserRequest).subscribe(user => {
+            expect(user).toEqual(mockUser);
+        });
+
+        const req = httpMock.expectOne(`${environment.apiUrl}/user/1`);
+        expect(req.request.method).toBe('PUT');
+        req.flush(mockUser);
+    });
+
+    it('should call delete and return true', () => {
+        service.delete(1).subscribe(response => {
+            expect(response).toBe(true);
+        });
+
+        const req = httpMock.expectOne(`${environment.apiUrl}/user/1`);
+        expect(req.request.method).toBe('DELETE');
+        req.flush(true);
+    });
 
 
 });

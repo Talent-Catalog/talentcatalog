@@ -17,64 +17,61 @@
 import {CandidateJobsTabComponent} from "./candidate-jobs-tab.component";
 import {ComponentFixture, TestBed} from "@angular/core/testing";
 import {MockCandidate} from "../../../../../MockData/MockCandidate";
-import {
-  ViewCandidateJobsComponent
-} from "../../jobs/view-candidate-jobs/view-candidate-jobs.component";
-import {
-  CandidateOppsComponent
-} from "../../../../candidate-opp/candidate-opps/candidate-opps.component";
+import {ViewCandidateJobsComponent} from "../../jobs/view-candidate-jobs/view-candidate-jobs.component";
+import {CandidateOppsComponent} from "../../../../candidate-opp/candidate-opps/candidate-opps.component";
 import {provideHttpClientTesting} from "@angular/common/http/testing";
 import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {NgSelectModule} from "@ng-select/ng-select";
+import {expect, vi} from 'vitest';
 
 describe('CandidateJobsTabComponent', () => {
-  let component: CandidateJobsTabComponent;
-  let fixture: ComponentFixture<CandidateJobsTabComponent>;
+    let component: CandidateJobsTabComponent;
+    let fixture: ComponentFixture<CandidateJobsTabComponent>;
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      imports: [FormsModule,ReactiveFormsModule, NgSelectModule],
-      providers: [provideHttpClient(withXhr(), withInterceptorsFromDi()), provideHttpClientTesting()],
-      declarations: [CandidateJobsTabComponent,ViewCandidateJobsComponent, CandidateOppsComponent]
-    })
-    .compileComponents();
-  });
+    beforeEach(async () => {
+        await TestBed.configureTestingModule({
+            imports: [FormsModule, ReactiveFormsModule, NgSelectModule],
+            providers: [provideHttpClient(withXhr(), withInterceptorsFromDi()), provideHttpClientTesting()],
+            declarations: [CandidateJobsTabComponent, ViewCandidateJobsComponent, CandidateOppsComponent]
+        })
+            .compileComponents();
+    });
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(CandidateJobsTabComponent);
-    component = fixture.componentInstance;
-    component.candidate = new MockCandidate();
-    fixture.detectChanges();
-  });
+    beforeEach(() => {
+        fixture = TestBed.createComponent(CandidateJobsTabComponent);
+        component = fixture.componentInstance;
+        component.candidate = new MockCandidate();
+        fixture.detectChanges();
+    });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
 
-  it('should have candidate input', () => {
-    const mockCandidate = new MockCandidate();
+    it('should have candidate input', () => {
+        const mockCandidate = new MockCandidate();
 
-    component.candidate = mockCandidate;
-    fixture.detectChanges();
+        component.candidate = mockCandidate;
+        fixture.detectChanges();
 
-    expect(component.candidate).toBe(mockCandidate);
-  });
+        expect(component.candidate).toBe(mockCandidate);
+    });
 
-  it('should have preview input', () => {
-    component.preview = true;
-    fixture.detectChanges();
+    it('should have preview input', () => {
+        component.preview = true;
+        fixture.detectChanges();
 
-    expect(component.preview).toBeTrue();
-  });
+        expect(component.preview).toBe(true);
+    });
 
-  it('should default preview to false', () => {
-    expect(component.preview).toBeFalse();
-  });
+    it('should default preview to false', () => {
+        expect(component.preview).toBe(false);
+    });
 
-  it('should initialize component correctly', () => {
-    spyOn(component, 'ngOnInit').and.callThrough();
-    component.ngOnInit();
-    expect(component.ngOnInit).toHaveBeenCalled();
-  });
+    it('should initialize component correctly', () => {
+        vi.spyOn(component, 'ngOnInit');
+        component.ngOnInit();
+        expect(component.ngOnInit).toHaveBeenCalled();
+    });
 });

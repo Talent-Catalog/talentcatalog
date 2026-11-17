@@ -26,58 +26,59 @@ import {AutosaveStatusComponent} from "../../../../util/autosave-status/autosave
 import {DatePickerComponent} from "../../../../util/date-picker/date-picker.component";
 import {NgbDatepickerModule} from "@ng-bootstrap/ng-bootstrap";
 import {of} from "rxjs";
+import {expect, vi} from 'vitest';
 
 describe('DependantsCardComponent', () => {
-  let component: DependantsCardComponent;
-  let fixture: ComponentFixture<DependantsCardComponent>;
+    let component: DependantsCardComponent;
+    let fixture: ComponentFixture<DependantsCardComponent>;
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      declarations: [DependantsCardComponent,AutosaveStatusComponent,DatePickerComponent],
-      imports: [NgbDatepickerModule,NgSelectModule,FormsModule,ReactiveFormsModule],
-      providers: [UntypedFormBuilder, CandidateService, CandidateDependantService, provideHttpClient(withXhr(), withInterceptorsFromDi()), provideHttpClientTesting()]
-    })
-    .compileComponents();
-  });
+    beforeEach(async () => {
+        await TestBed.configureTestingModule({
+            declarations: [DependantsCardComponent, AutosaveStatusComponent, DatePickerComponent],
+            imports: [NgbDatepickerModule, NgSelectModule, FormsModule, ReactiveFormsModule],
+            providers: [UntypedFormBuilder, CandidateService, CandidateDependantService, provideHttpClient(withXhr(), withInterceptorsFromDi()), provideHttpClientTesting()]
+        })
+            .compileComponents();
+    });
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(DependantsCardComponent);
-    component = fixture.componentInstance;
-    component.myRecordIndex = 0; // Set any required inputs or variables
-    component.candidateIntakeData = {
-      candidateDependants: [{
-        id: 1, // Mock ID
-        relation: DependantRelations.Child, // Mock relation
-        dob: '2000-01-01', // Mock date of birth
-        gender: Gender.male, // Mock gender
-        name: 'John', // Mock name
-        registered: Registrations.UNHCR, // Mock registration status
-        healthConcern: YesNo.Yes, // Mock health concern
-        registeredNumber: '123', // Mock registration number
-        registeredNotes: 'Test notes', // Mock registration notes
-        healthNotes: 'Health notes' // Mock health notes
-      }]
-    };
-    fixture.detectChanges();
-  });
+    beforeEach(() => {
+        fixture = TestBed.createComponent(DependantsCardComponent);
+        component = fixture.componentInstance;
+        component.myRecordIndex = 0; // Set any required inputs or variables
+        component.candidateIntakeData = {
+            candidateDependants: [{
+                    id: 1, // Mock ID
+                    relation: DependantRelations.Child, // Mock relation
+                    dob: '2000-01-01', // Mock date of birth
+                    gender: Gender.male, // Mock gender
+                    name: 'John', // Mock name
+                    registered: Registrations.UNHCR, // Mock registration status
+                    healthConcern: YesNo.Yes, // Mock health concern
+                    registeredNumber: '123', // Mock registration number
+                    registeredNotes: 'Test notes', // Mock registration notes
+                    healthNotes: 'Health notes' // Mock health notes
+                }]
+        };
+        fixture.detectChanges();
+    });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
-  it('should initialize with provided candidate data', () => {
-    expect(component.myRecord).toBeTruthy();
-    expect(component.dependantRelationship).toBe(DependantRelations.Child);
-    expect(component.dependantAge).toBeGreaterThan(0);
-    expect(component.dependantRegistered).toBe(Registrations.UNHCR);
-  });
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
+    it('should initialize with provided candidate data', () => {
+        expect(component.myRecord).toBeTruthy();
+        expect(component.dependantRelationship).toBe(DependantRelations.Child);
+        expect(component.dependantAge).toBeGreaterThan(0);
+        expect(component.dependantRegistered).toBe(Registrations.UNHCR);
+    });
 
-  it('should delete dependant when doDelete is called', () => {
-    spyOn(component.delete, 'emit');
-    spyOn(TestBed.inject(CandidateDependantService), 'delete').and.returnValue(of());
+    it('should delete dependant when doDelete is called', () => {
+        vi.spyOn(component.delete, 'emit').mockReturnValue(undefined);
+        vi.spyOn(TestBed.inject(CandidateDependantService), 'delete').mockReturnValue(of());
 
-    component.doDelete();
+        component.doDelete();
 
-    expect(TestBed.inject(CandidateDependantService).delete).toHaveBeenCalledWith(1); // Assuming the ID is set to 1 in this test
-    expect(component.delete.emit).toHaveBeenCalled();
-  });
+        expect(TestBed.inject(CandidateDependantService).delete).toHaveBeenCalledWith(1); // Assuming the ID is set to 1 in this test
+        expect(component.delete.emit).toHaveBeenCalled();
+    });
 });

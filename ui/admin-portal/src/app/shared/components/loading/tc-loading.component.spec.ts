@@ -1,6 +1,7 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { TcLoadingComponent } from './tc-loading.component';
+import {TcLoadingComponent} from './tc-loading.component';
+import {expect} from 'vitest';
 
 describe('TcLoadingComponent', () => {
   let component: TcLoadingComponent;

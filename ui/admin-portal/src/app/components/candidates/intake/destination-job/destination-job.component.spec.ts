@@ -23,36 +23,37 @@ import {DestinationJobComponent} from "./destination-job.component";
 import {ComponentFixture, TestBed} from "@angular/core/testing";
 import {YesNo} from "../../../../model/candidate";
 import {AutosaveStatusComponent} from "../../../util/autosave-status/autosave-status.component";
+import {expect} from 'vitest';
 
 describe('DestinationJobComponent', () => {
-  let component: DestinationJobComponent;
-  let fixture: ComponentFixture<DestinationJobComponent>;
+    let component: DestinationJobComponent;
+    let fixture: ComponentFixture<DestinationJobComponent>;
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      declarations: [DestinationJobComponent,AutosaveStatusComponent],
-      imports: [NgSelectModule,FormsModule,ReactiveFormsModule],
-      providers: [UntypedFormBuilder, CandidateService, provideHttpClient(withXhr(), withInterceptorsFromDi()), provideHttpClientTesting()]
-    })
-    .compileComponents();
-  });
+    beforeEach(async () => {
+        await TestBed.configureTestingModule({
+            declarations: [DestinationJobComponent, AutosaveStatusComponent],
+            imports: [NgSelectModule, FormsModule, ReactiveFormsModule],
+            providers: [UntypedFormBuilder, CandidateService, provideHttpClient(withXhr(), withInterceptorsFromDi()), provideHttpClientTesting()]
+        })
+            .compileComponents();
+    });
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(DestinationJobComponent);
-    component = fixture.componentInstance;
-    component.candidateIntakeData = {
-      destJob:  YesNo.Yes, // Set any required fields
-      destJobNotes: 'Test notes' // Set any required fields
-    };
-    fixture.detectChanges();
-  });
+    beforeEach(() => {
+        fixture = TestBed.createComponent(DestinationJobComponent);
+        component = fixture.componentInstance;
+        component.candidateIntakeData = {
+            destJob: YesNo.Yes, // Set any required fields
+            destJobNotes: 'Test notes' // Set any required fields
+        };
+        fixture.detectChanges();
+    });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
 
-  it('should initialize with provided candidate intake data', () => {
-    expect(component.form.value.destJob).toBe(YesNo.Yes);
-    expect(component.form.value.destJobNotes).toBe('Test notes');
-  });
+    it('should initialize with provided candidate intake data', () => {
+        expect(component.form.value.destJob).toBe(YesNo.Yes);
+        expect(component.form.value.destJobNotes).toBe('Test notes');
+    });
 });

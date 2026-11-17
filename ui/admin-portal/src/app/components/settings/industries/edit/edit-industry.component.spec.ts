@@ -13,6 +13,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
+
+import type {MockedObject} from "vitest";
 import {IndustryService} from "../../../../services/industry.service";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {ReactiveFormsModule, UntypedFormBuilder} from "@angular/forms";
@@ -23,84 +25,91 @@ import {provideHttpClientTesting} from "@angular/common/http/testing";
 import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {of, throwError} from "rxjs";
 import {Industry} from "../../../../model/industry";
+import {expect, vi} from 'vitest';
 
 describe('EditIndustryComponent', () => {
-  let component: EditIndustryComponent;
-  let fixture: ComponentFixture<EditIndustryComponent>;
-  let industryServiceSpy: jasmine.SpyObj<IndustryService>;
-  let ngbActiveModalSpy: jasmine.SpyObj<NgbActiveModal>;
-  let formBuilder: UntypedFormBuilder;
-  // @ts-expect-error
-  const industry: Industry = {name: 'Test Industry', status: 'active' };
+    let component: EditIndustryComponent;
+    let fixture: ComponentFixture<EditIndustryComponent>;
+    let industryServiceSpy: MockedObject<IndustryService>;
+    let ngbActiveModalSpy: MockedObject<NgbActiveModal>;
+    let formBuilder: UntypedFormBuilder;
+    // @ts-expect-error
+    const industry: Industry = { name: 'Test Industry', status: 'active' };
 
-  beforeEach(async () => {
-    const industryServiceSpyObj = jasmine.createSpyObj('IndustryService', ['get', 'update']);
-    const ngbActiveModalSpyObj = jasmine.createSpyObj('NgbActiveModal', ['close', 'dismiss']);
+    beforeEach(async () => {
+        const industryServiceSpyObj = {
+            get: vi.fn().mockName("IndustryService.get"),
+            update: vi.fn().mockName("IndustryService.update")
+        };
+        const ngbActiveModalSpyObj = {
+            close: vi.fn().mockName("NgbActiveModal.close"),
+            dismiss: vi.fn().mockName("NgbActiveModal.dismiss")
+        };
 
-    await TestBed.configureTestingModule({
-      declarations: [EditIndustryComponent],
-      imports: [ReactiveFormsModule,NgSelectModule],
-      providers: [
-        { provide: IndustryService, useValue: industryServiceSpyObj },
-        { provide: NgbActiveModal, useValue: ngbActiveModalSpyObj },
-        provideHttpClient(withXhr(), withInterceptorsFromDi()),
-        provideHttpClientTesting()
-      ]
-    }).compileComponents();
+        await TestBed.configureTestingModule({
+            declarations: [EditIndustryComponent],
+            imports: [ReactiveFormsModule, NgSelectModule],
+            providers: [
+                { provide: IndustryService, useValue: industryServiceSpyObj },
+                { provide: NgbActiveModal, useValue: ngbActiveModalSpyObj },
+                provideHttpClient(withXhr(), withInterceptorsFromDi()),
+                provideHttpClientTesting()
+            ]
+        }).compileComponents();
 
-    industryServiceSpy = TestBed.inject(IndustryService) as jasmine.SpyObj<IndustryService>;
-    ngbActiveModalSpy = TestBed.inject(NgbActiveModal) as jasmine.SpyObj<NgbActiveModal>;
-    formBuilder = TestBed.inject(UntypedFormBuilder);
-  });
+        industryServiceSpy = TestBed.inject(IndustryService) as MockedObject<IndustryService>;
+        ngbActiveModalSpy = TestBed.inject(NgbActiveModal) as MockedObject<NgbActiveModal>;
+        formBuilder = TestBed.inject(UntypedFormBuilder);
+    });
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(EditIndustryComponent);
-    component = fixture.componentInstance;
-    component.industryId = 1; // Set industryId for testing
-    industryServiceSpy.get.and.returnValue(of(industry));
-    industryServiceSpy.update.and.returnValue(of(industry));
+    beforeEach(() => {
+        fixture = TestBed.createComponent(EditIndustryComponent);
+        component = fixture.componentInstance;
+        component.industryId = 1; // Set industryId for testing
+        industryServiceSpy.get.mockReturnValue(of(industry));
+        industryServiceSpy.update.mockReturnValue(of(industry));
 
-    fixture.detectChanges();
-  });
+        fixture.detectChanges();
+    });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
 
-  it('should initialize form with industry data', fakeAsync(() => {
+    it('should initialize form with industry data', fakeAsync(() => {
 
-    component.ngOnInit();
-    tick(); // Waiting for async operation to complete
+        component.ngOnInit();
+        tick(); // Waiting for async operation to complete
 
-    expect(industryServiceSpy.get).toHaveBeenCalledWith(1);
-    expect(component.industryForm.value).toEqual(industry);
-    expect(component.loading).toBeFalse();
-  }));
+        expect(industryServiceSpy.get).toHaveBeenCalledWith(1);
+        expect(component.industryForm.value).toEqual(industry);
+        expect(component.loading).toBe(false);
+    }));
 
-  it('should call onSave and close modal when industry is successfully updated', fakeAsync(() => {
-    component.industryForm.patchValue({ name: 'Updated Industry', status: 'inactive' });
+    it('should call onSave and close modal when industry is successfully updated', fakeAsync(() => {
+        component.industryForm.patchValue({ name: 'Updated Industry', status: 'inactive' });
 
-    component.onSave();
-    tick(); // Waiting for async operation to complete
+        component.onSave();
+        tick(); // Waiting for async operation to complete
 
-    expect(industryServiceSpy.update).toHaveBeenCalledWith(1, { name: 'Updated Industry', status: 'inactive' });
-    expect(ngbActiveModalSpy.close).toHaveBeenCalledWith(industry);
-    expect(component.saving).toBeFalse();
-  }));
+        expect(industryServiceSpy.update).toHaveBeenCalledWith(1, { name: 'Updated Industry', status: 'inactive' });
+        expect(ngbActiveModalSpy.close).toHaveBeenCalledWith(industry);
+        expect(component.saving).toBe(false);
+    }));
 
-  it('should handle error when updating industry fails', fakeAsync(() => {
-    const errorResponse = { status: 500, message: 'Internal Server Error' };
-    industryServiceSpy.update.and.returnValue(throwError(errorResponse));
+    it('should handle error when updating industry fails', fakeAsync(() => {
+        const errorResponse = { status: 500, message: 'Internal Server Error' };
+        industryServiceSpy.update.mockReturnValue(throwError(errorResponse));
 
-    component.onSave();
-    tick(); // Waiting for async operation to complete
+        component.onSave();
+        tick(); // Waiting for async operation to complete
 
-    expect(component.error).toEqual(errorResponse);
-    expect(component.saving).toBeFalse();
-  }));
+        expect(component.error).toEqual(errorResponse);
+        expect(component.saving).toBe(false);
+    }));
 
-  it('should dismiss modal when dismiss is called', () => {
-    component.dismiss();
-    expect(ngbActiveModalSpy.dismiss).toHaveBeenCalledWith(false);
-  });
+    it('should dismiss modal when dismiss is called', () => {
+        component.dismiss();
+        expect(ngbActiveModalSpy.dismiss).toHaveBeenCalledWith(false);
+    });
 });

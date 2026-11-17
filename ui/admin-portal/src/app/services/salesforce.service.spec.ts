@@ -14,6 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
+import type {MockedObject} from "vitest";
 import {TestBed} from '@angular/core/testing';
 import {HttpTestingController, provideHttpClientTesting} from '@angular/common/http/testing';
 import {provideHttpClient, withInterceptorsFromDi, withXhr} from '@angular/common/http';
@@ -22,88 +23,91 @@ import {EnvService} from './env.service';
 import {environment} from '../../environments/environment';
 import {CandidateSource, UpdateEmployerOpportunityRequest} from '../model/base';
 import {Opportunity} from "../model/opportunity";
+import {expect, vi} from 'vitest';
 
 describe('SalesforceService', () => {
-  let service: SalesforceService;
-  let httpMock: HttpTestingController;
-  let envServiceSpy: jasmine.SpyObj<EnvService>;
+    let service: SalesforceService;
+    let httpMock: HttpTestingController;
+    let envServiceSpy: MockedObject<EnvService>;
 
-  beforeEach(() => {
-    const spy = jasmine.createSpyObj('EnvService', ['sfLightningUrl']);
+    beforeEach(() => {
+        const spy = {
+            sfLightningUrl: vi.fn().mockName("EnvService.sfLightningUrl")
+        };
 
-    TestBed.configureTestingModule({
-      providers: [
-        SalesforceService,
-        { provide: EnvService, useValue: spy },
-        provideHttpClient(withXhr(), withInterceptorsFromDi()),
-        provideHttpClientTesting()
-      ]
+        TestBed.configureTestingModule({
+            providers: [
+                SalesforceService,
+                { provide: EnvService, useValue: spy },
+                provideHttpClient(withXhr(), withInterceptorsFromDi()),
+                provideHttpClientTesting()
+            ]
+        });
+
+        service = TestBed.inject(SalesforceService);
+        httpMock = TestBed.inject(HttpTestingController);
+        envServiceSpy = TestBed.inject(EnvService) as MockedObject<EnvService>;
     });
 
-    service = TestBed.inject(SalesforceService);
-    httpMock = TestBed.inject(HttpTestingController);
-    envServiceSpy = TestBed.inject(EnvService) as jasmine.SpyObj<EnvService>;
-  });
-
-  afterEach(() => {
-    httpMock.verify();
-  });
-
-  it('should be created', () => {
-    expect(service).toBeTruthy();
-  });
-
-  describe('#sfOppToLink', () => {
-    it('should return null if id is null', () => {
-      const result = service.sfOppToLink(null);
-      expect(result).toBeNull();
+    afterEach(() => {
+        httpMock.verify();
     });
 
-  });
-
-  describe('#joblink', () => {
-    it('should return null if candidateSource is null', () => {
-      const result = service.joblink(null);
-      expect(result).toBeNull();
+    it('should be created', () => {
+        expect(service).toBeTruthy();
     });
 
-    it('should return null if sfJobOpp in candidateSource is null', () => {
-      const candidateSource = { sfJobOpp: null } as CandidateSource;
-      const result = service.joblink(candidateSource);
-      expect(result).toBeNull();
+    describe('#sfOppToLink', () => {
+        it('should return null if id is null', () => {
+            const result = service.sfOppToLink(null);
+            expect(result).toBeNull();
+        });
+
     });
 
-  });
+    describe('#joblink', () => {
+        it('should return null if candidateSource is null', () => {
+            const result = service.joblink(null);
+            expect(result).toBeNull();
+        });
 
-  describe('#getOpportunity', () => {
-    it('should return an Opportunity', () => {
-      const mockOpportunity: Opportunity = {
-        closed: false,
-        name: 'Test Opportunity',
-      } as Opportunity;
+        it('should return null if sfJobOpp in candidateSource is null', () => {
+            const candidateSource = { sfJobOpp: null } as CandidateSource;
+            const result = service.joblink(candidateSource);
+            expect(result).toBeNull();
+        });
 
-      service.getOpportunity('https://test.sf.com').subscribe(opportunity => {
-        expect(opportunity).toEqual(mockOpportunity);
-      });
-
-      const req = httpMock.expectOne(`${environment.apiUrl}/sf/opportunity?url=https://test.sf.com`);
-      expect(req.request.method).toBe('GET');
-      req.flush(mockOpportunity);
     });
-  });
 
-  describe('#updateEmployerOpportunity', () => {
-    it('should send a PUT request to update the employer opportunity', () => {
-      const mockRequest: UpdateEmployerOpportunityRequest = {
-        jobId:1
-      } as UpdateEmployerOpportunityRequest;
+    describe('#getOpportunity', () => {
+        it('should return an Opportunity', () => {
+            const mockOpportunity: Opportunity = {
+                closed: false,
+                name: 'Test Opportunity',
+            } as Opportunity;
 
-      service.updateEmployerOpportunity(mockRequest).subscribe();
+            service.getOpportunity('https://test.sf.com').subscribe(opportunity => {
+                expect(opportunity).toEqual(mockOpportunity);
+            });
 
-      const req = httpMock.expectOne(`${environment.apiUrl}/sf/update-emp-opp`);
-      expect(req.request.method).toBe('PUT');
-      expect(req.request.body).toEqual(mockRequest);
-      req.flush({});
+            const req = httpMock.expectOne(`${environment.apiUrl}/sf/opportunity?url=https://test.sf.com`);
+            expect(req.request.method).toBe('GET');
+            req.flush(mockOpportunity);
+        });
     });
-  });
+
+    describe('#updateEmployerOpportunity', () => {
+        it('should send a PUT request to update the employer opportunity', () => {
+            const mockRequest: UpdateEmployerOpportunityRequest = {
+                jobId: 1
+            } as UpdateEmployerOpportunityRequest;
+
+            service.updateEmployerOpportunity(mockRequest).subscribe();
+
+            const req = httpMock.expectOne(`${environment.apiUrl}/sf/update-emp-opp`);
+            expect(req.request.method).toBe('PUT');
+            expect(req.request.body).toEqual(mockRequest);
+            req.flush({});
+        });
+    });
 });

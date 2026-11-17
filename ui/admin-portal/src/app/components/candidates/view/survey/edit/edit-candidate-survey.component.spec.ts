@@ -13,6 +13,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
+
+import type {MockedObject} from "vitest";
 import {ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
 import {EditCandidateSurveyComponent} from './edit-candidate-survey.component';
 import {ReactiveFormsModule, UntypedFormBuilder} from '@angular/forms';
@@ -25,68 +27,74 @@ import {provideHttpClient, withInterceptorsFromDi, withXhr} from '@angular/commo
 import {NO_ERRORS_SCHEMA} from '@angular/core';
 import {MockCandidate} from "../../../../../MockData/MockCandidate";
 import {NgSelectModule} from "@ng-select/ng-select";
+import {expect, vi} from 'vitest';
 
 describe('EditCandidateSurveyComponent', () => {
-  let component: EditCandidateSurveyComponent;
-  let fixture: ComponentFixture<EditCandidateSurveyComponent>;
-  let candidateService: jasmine.SpyObj<CandidateService>;
-  let surveyTypeService: jasmine.SpyObj<SurveyTypeService>;
+    let component: EditCandidateSurveyComponent;
+    let fixture: ComponentFixture<EditCandidateSurveyComponent>;
+    let candidateService: MockedObject<CandidateService>;
+    let surveyTypeService: MockedObject<SurveyTypeService>;
 
-  const candidate = new MockCandidate();
+    const candidate = new MockCandidate();
 
-  const surveyTypes = [
-    {id: 1, name: 'Online Search'},
-    {id: 2, name: 'Job Board'},
-    {id: 3, name: 'Referral'},
-    {id: 4, name: 'Social Media'},
-    {id: 5, name: 'Other'}
-  ];
+    const surveyTypes = [
+        { id: 1, name: 'Online Search' },
+        { id: 2, name: 'Job Board' },
+        { id: 3, name: 'Referral' },
+        { id: 4, name: 'Social Media' },
+        { id: 5, name: 'Other' }
+    ];
 
-  beforeEach(async () => {
-    const candidateServiceSpy = jasmine.createSpyObj('CandidateService', ['get', 'updateSurvey']);
-    const surveyTypeServiceSpy = jasmine.createSpyObj('SurveyTypeService', ['listSurveyTypes']);
+    beforeEach(async () => {
+        const candidateServiceSpy = {
+            get: vi.fn().mockName("CandidateService.get"),
+            updateSurvey: vi.fn().mockName("CandidateService.updateSurvey")
+        };
+        const surveyTypeServiceSpy = {
+            listSurveyTypes: vi.fn().mockName("SurveyTypeService.listSurveyTypes")
+        };
 
-    await TestBed.configureTestingModule({
-      declarations: [EditCandidateSurveyComponent],
-      imports: [ReactiveFormsModule, NgSelectModule],
-      providers: [
-        UntypedFormBuilder,
-        NgbActiveModal,
-        {provide: CandidateService, useValue: candidateServiceSpy},
-        {provide: SurveyTypeService, useValue: surveyTypeServiceSpy},
-        provideHttpClient(withXhr(), withInterceptorsFromDi()),
-        provideHttpClientTesting()
-      ],
-      schemas: [NO_ERRORS_SCHEMA]
-    }).compileComponents();
+        await TestBed.configureTestingModule({
+            declarations: [EditCandidateSurveyComponent],
+            imports: [ReactiveFormsModule, NgSelectModule],
+            providers: [
+                UntypedFormBuilder,
+                NgbActiveModal,
+                { provide: CandidateService, useValue: candidateServiceSpy },
+                { provide: SurveyTypeService, useValue: surveyTypeServiceSpy },
+                provideHttpClient(withXhr(), withInterceptorsFromDi()),
+                provideHttpClientTesting()
+            ],
+            schemas: [NO_ERRORS_SCHEMA]
+        }).compileComponents();
 
-    candidateService = TestBed.inject(CandidateService) as jasmine.SpyObj<CandidateService>;
-    surveyTypeService = TestBed.inject(SurveyTypeService) as jasmine.SpyObj<SurveyTypeService>;
-  });
+        candidateService = TestBed.inject(CandidateService) as MockedObject<CandidateService>;
+        surveyTypeService = TestBed.inject(SurveyTypeService) as MockedObject<SurveyTypeService>;
+    });
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(EditCandidateSurveyComponent);
-    component = fixture.componentInstance;
-    component.candidateId = candidate.id;
-  });
+    beforeEach(() => {
+        fixture = TestBed.createComponent(EditCandidateSurveyComponent);
+        component = fixture.componentInstance;
+        component.candidateId = candidate.id;
+    });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
 
-  it('should initialize form with correct values', fakeAsync(() => {
-    candidateService.get.and.returnValue(of(candidate));
-    surveyTypeService.listSurveyTypes.and.returnValue(of(surveyTypes));
+    it('should initialize form with correct values', fakeAsync(() => {
+        candidateService.get.mockReturnValue(of(candidate));
+        surveyTypeService.listSurveyTypes.mockReturnValue(of(surveyTypes));
 
-    component.ngOnInit();
-    tick(); // Simulate the asynchronous passage of time
+        component.ngOnInit();
+        tick(); // Simulate the asynchronous passage of time
 
-    fixture.detectChanges();
+        fixture.detectChanges();
 
-    expect(component.candidateForm).toBeDefined();
-    expect(component.candidateForm.get('surveyTypeId').value).toBe(candidate.surveyType.id);
-    expect(component.candidateForm.get('surveyComment').value).toBe(candidate.surveyComment);
-    expect(component.loading).toBeFalse();
-  }));
+        expect(component.candidateForm).toBeDefined();
+        expect(component.candidateForm.get('surveyTypeId').value).toBe(candidate.surveyType.id);
+        expect(component.candidateForm.get('surveyComment').value).toBe(candidate.surveyComment);
+        expect(component.loading).toBe(false);
+    }));
 
 });

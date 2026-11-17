@@ -15,6 +15,7 @@
  */
 
 import {TranslatedObject} from "./translated-object";
+import {expect} from 'vitest';
 
 describe('TranslatedObject Interface', () => {
   it('should create an instance of TranslatedObject', () => {

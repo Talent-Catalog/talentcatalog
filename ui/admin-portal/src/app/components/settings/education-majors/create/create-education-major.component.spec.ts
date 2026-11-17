@@ -13,6 +13,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
+
+import type {MockedObject} from "vitest";
 import {CreateEducationMajorComponent} from "./create-education-major.component";
 import {ComponentFixture, TestBed} from "@angular/core/testing";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
@@ -23,75 +25,81 @@ import {provideHttpClientTesting} from "@angular/common/http/testing";
 import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {EducationMajor} from "../../../../model/education-major";
 import {of, throwError} from "rxjs";
+import {expect, vi} from 'vitest';
 
 describe('CreateEducationMajorComponent', () => {
-  let component: CreateEducationMajorComponent;
-  let fixture: ComponentFixture<CreateEducationMajorComponent>;
-  let educationMajorServiceSpy: jasmine.SpyObj<EducationMajorService>;
-  let ngbActiveModalSpy: jasmine.SpyObj<NgbActiveModal>;
-  let formBuilder: UntypedFormBuilder;
+    let component: CreateEducationMajorComponent;
+    let fixture: ComponentFixture<CreateEducationMajorComponent>;
+    let educationMajorServiceSpy: MockedObject<EducationMajorService>;
+    let ngbActiveModalSpy: MockedObject<NgbActiveModal>;
+    let formBuilder: UntypedFormBuilder;
 
-  beforeEach(async () => {
-    const educationMajorServiceSpyObj = jasmine.createSpyObj('EducationMajorService', ['create']);
-    const ngbActiveModalSpyObj = jasmine.createSpyObj('NgbActiveModal', ['close', 'dismiss']);
+    beforeEach(async () => {
+        const educationMajorServiceSpyObj = {
+            create: vi.fn().mockName("EducationMajorService.create")
+        };
+        const ngbActiveModalSpyObj = {
+            close: vi.fn().mockName("NgbActiveModal.close"),
+            dismiss: vi.fn().mockName("NgbActiveModal.dismiss")
+        };
 
-    await TestBed.configureTestingModule({
-      declarations: [CreateEducationMajorComponent],
-      imports: [ReactiveFormsModule,NgSelectModule],
-      providers: [
-        { provide: EducationMajorService, useValue: educationMajorServiceSpyObj },
-        { provide: NgbActiveModal, useValue: ngbActiveModalSpyObj },
-        provideHttpClient(withXhr(), withInterceptorsFromDi()),
-        provideHttpClientTesting()
-      ]
-    }).compileComponents();
+        await TestBed.configureTestingModule({
+            declarations: [CreateEducationMajorComponent],
+            imports: [ReactiveFormsModule, NgSelectModule],
+            providers: [
+                { provide: EducationMajorService, useValue: educationMajorServiceSpyObj },
+                { provide: NgbActiveModal, useValue: ngbActiveModalSpyObj },
+                provideHttpClient(withXhr(), withInterceptorsFromDi()),
+                provideHttpClientTesting()
+            ]
+        }).compileComponents();
 
-    educationMajorServiceSpy = TestBed.inject(EducationMajorService) as jasmine.SpyObj<EducationMajorService>;
-    ngbActiveModalSpy = TestBed.inject(NgbActiveModal) as jasmine.SpyObj<NgbActiveModal>;
-    formBuilder = TestBed.inject(UntypedFormBuilder);
-  });
+        educationMajorServiceSpy = TestBed.inject(EducationMajorService) as MockedObject<EducationMajorService>;
+        ngbActiveModalSpy = TestBed.inject(NgbActiveModal) as MockedObject<NgbActiveModal>;
+        formBuilder = TestBed.inject(UntypedFormBuilder);
+    });
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(CreateEducationMajorComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
+    beforeEach(() => {
+        fixture = TestBed.createComponent(CreateEducationMajorComponent);
+        component = fixture.componentInstance;
+        fixture.detectChanges();
+    });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
 
-  it('should initialize form with required fields', () => {
-    expect(component.educationMajorForm).toBeDefined();
-    expect(component.educationMajorForm.get('name')).toBeTruthy();
-    expect(component.educationMajorForm.get('status')).toBeTruthy();
-  });
+    it('should initialize form with required fields', () => {
+        expect(component.educationMajorForm).toBeDefined();
+        expect(component.educationMajorForm.get('name')).toBeTruthy();
+        expect(component.educationMajorForm.get('status')).toBeTruthy();
+    });
 
-  it('should call onSave and close modal when education major is successfully created', () => {
-    const educationMajor: EducationMajor = { id: 1, name: 'Test', status: 'active' };
-    educationMajorServiceSpy.create.and.returnValue(of(educationMajor));
+    it('should call onSave and close modal when education major is successfully created', () => {
+        const educationMajor: EducationMajor = { id: 1, name: 'Test', status: 'active' };
+        educationMajorServiceSpy.create.mockReturnValue(of(educationMajor));
 
-    component.educationMajorForm.patchValue({ name: 'Test', status: 'active' });
-    component.onSave();
+        component.educationMajorForm.patchValue({ name: 'Test', status: 'active' });
+        component.onSave();
 
-    expect(educationMajorServiceSpy.create).toHaveBeenCalledWith({ name: 'Test', status: 'active' });
-    expect(ngbActiveModalSpy.close).toHaveBeenCalledWith(educationMajor);
-    expect(component.saving).toBeFalse();
-  });
+        expect(educationMajorServiceSpy.create).toHaveBeenCalledWith({ name: 'Test', status: 'active' });
+        expect(ngbActiveModalSpy.close).toHaveBeenCalledWith(educationMajor);
+        expect(component.saving).toBe(false);
+    });
 
-  it('should handle error when education major creation fails', () => {
-    const errorResponse = { status: 500, message: 'Internal Server Error' };
-    educationMajorServiceSpy.create.and.returnValue(throwError(errorResponse));
+    it('should handle error when education major creation fails', () => {
+        const errorResponse = { status: 500, message: 'Internal Server Error' };
+        educationMajorServiceSpy.create.mockReturnValue(throwError(errorResponse));
 
-    component.onSave();
+        component.onSave();
 
-    expect(educationMajorServiceSpy.create).toHaveBeenCalled();
-    expect(component.error).toEqual(errorResponse);
-    expect(component.saving).toBeFalse();
-  });
+        expect(educationMajorServiceSpy.create).toHaveBeenCalled();
+        expect(component.error).toEqual(errorResponse);
+        expect(component.saving).toBe(false);
+    });
 
-  it('should dismiss modal when dismiss is called', () => {
-    component.dismiss();
-    expect(ngbActiveModalSpy.dismiss).toHaveBeenCalledWith(false);
-  });
+    it('should dismiss modal when dismiss is called', () => {
+        component.dismiss();
+        expect(ngbActiveModalSpy.dismiss).toHaveBeenCalledWith(false);
+    });
 });

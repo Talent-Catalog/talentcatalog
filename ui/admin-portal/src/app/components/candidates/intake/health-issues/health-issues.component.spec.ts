@@ -13,6 +13,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
+
+import type {MockedObject} from "vitest";
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {HealthIssuesComponent} from './health-issues.component';
@@ -25,71 +27,74 @@ import {provideHttpClientTesting} from "@angular/common/http/testing";
 import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {AutosaveStatusComponent} from "../../../util/autosave-status/autosave-status.component";
+import {expect} from 'vitest';
 
 describe('HealthIssuesComponent', () => {
-  let component: HealthIssuesComponent;
-  let fixture: ComponentFixture<HealthIssuesComponent>;
-  let candidateService: jasmine.SpyObj<CandidateService>;
+    let component: HealthIssuesComponent;
+    let fixture: ComponentFixture<HealthIssuesComponent>;
+    let candidateService: MockedObject<CandidateService>;
 
-  beforeEach(async () => {
-    const candidateServiceSpy = jasmine.createSpyObj('CandidateService', ['']);
+    beforeEach(async () => {
+        const candidateServiceSpy = {
 
-    await TestBed.configureTestingModule({
-      declarations: [HealthIssuesComponent,AutosaveStatusComponent],
-      imports: [NgSelectModule,FormsModule,ReactiveFormsModule],
-      providers: [
-        { provide: CandidateService, useValue: candidateServiceSpy },
-        provideHttpClient(withXhr(), withInterceptorsFromDi()),
-        provideHttpClientTesting()
-      ],
-      schemas: [NO_ERRORS_SCHEMA]
-    })
-    .compileComponents();
+        };
 
-    candidateService = TestBed.inject(CandidateService) as jasmine.SpyObj<CandidateService>;
-  });
+        await TestBed.configureTestingModule({
+            declarations: [HealthIssuesComponent, AutosaveStatusComponent],
+            imports: [NgSelectModule, FormsModule, ReactiveFormsModule],
+            providers: [
+                { provide: CandidateService, useValue: candidateServiceSpy },
+                provideHttpClient(withXhr(), withInterceptorsFromDi()),
+                provideHttpClientTesting()
+            ],
+            schemas: [NO_ERRORS_SCHEMA]
+        })
+            .compileComponents();
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(HealthIssuesComponent);
-    component = fixture.componentInstance;
-    component.candidateIntakeData = {
-      healthIssues: 'Yes',
-      healthIssuesNotes: 'I have a chronic condition.'
-    };
-    component.editable = true;
-
-    fixture.detectChanges();
-  });
-
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
-
-  it('should initialize form with candidate intake data', () => {
-    expect(component.form.value).toEqual({
-      healthIssues: 'Yes',
-      healthIssuesNotes: 'I have a chronic condition.'
+        candidateService = TestBed.inject(CandidateService) as MockedObject<CandidateService>;
     });
-  });
 
-  it('should display healthIssuesNotes input when healthIssues is "Yes"', () => {
-    component.form.controls['healthIssues'].setValue('Yes');
-    fixture.detectChanges();
+    beforeEach(() => {
+        fixture = TestBed.createComponent(HealthIssuesComponent);
+        component = fixture.componentInstance;
+        component.candidateIntakeData = {
+            healthIssues: 'Yes',
+            healthIssuesNotes: 'I have a chronic condition.'
+        };
+        component.editable = true;
 
-    const healthIssuesNotesInput = fixture.debugElement.query(By.css('textarea[id="healthIssuesNotes"]'));
-    expect(healthIssuesNotesInput).toBeTruthy();
-  });
+        fixture.detectChanges();
+    });
 
-  it('should have the correct options for healthIssues', () => {
-    const healthIssuesOptions: EnumOption[] = enumOptions(YesNo);
-    expect(component.healthIssuesOptions).toEqual(healthIssuesOptions);
-  });
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
 
-  it('should show error message if error is set', () => {
-    component.error = 'An error occurred';
-    fixture.detectChanges();
+    it('should initialize form with candidate intake data', () => {
+        expect(component.form.value).toEqual({
+            healthIssues: 'Yes',
+            healthIssuesNotes: 'I have a chronic condition.'
+        });
+    });
 
-    const errorMsg = fixture.debugElement.query(By.css('div')).nativeElement.textContent;
-    expect(errorMsg).toContain('An error occurred');
-  });
+    it('should display healthIssuesNotes input when healthIssues is "Yes"', () => {
+        component.form.controls['healthIssues'].setValue('Yes');
+        fixture.detectChanges();
+
+        const healthIssuesNotesInput = fixture.debugElement.query(By.css('textarea[id="healthIssuesNotes"]'));
+        expect(healthIssuesNotesInput).toBeTruthy();
+    });
+
+    it('should have the correct options for healthIssues', () => {
+        const healthIssuesOptions: EnumOption[] = enumOptions(YesNo);
+        expect(component.healthIssuesOptions).toEqual(healthIssuesOptions);
+    });
+
+    it('should show error message if error is set', () => {
+        component.error = 'An error occurred';
+        fixture.detectChanges();
+
+        const errorMsg = fixture.debugElement.query(By.css('div')).nativeElement.textContent;
+        expect(errorMsg).toContain('An error occurred');
+    });
 });

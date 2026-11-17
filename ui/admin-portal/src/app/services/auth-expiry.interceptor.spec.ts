@@ -1,100 +1,89 @@
-import { TestBed } from '@angular/core/testing';
-import {
-  HTTP_INTERCEPTORS,
-  HttpClient,
-  provideHttpClient,
-  withInterceptorsFromDi,
-  withXhr
-} from '@angular/common/http';
-import {
-  HttpTestingController,
-  provideHttpClientTesting
-} from '@angular/common/http/testing';
-import { Router } from '@angular/router';
-import { AuthExpiryInterceptor } from './auth-expiry.interceptor';
-import { AuthenticationService } from './authentication.service';
+import {TestBed} from '@angular/core/testing';
+import {HTTP_INTERCEPTORS, HttpClient, provideHttpClient, withInterceptorsFromDi, withXhr} from '@angular/common/http';
+import {HttpTestingController, provideHttpClientTesting} from '@angular/common/http/testing';
+import {Router} from '@angular/router';
+import {AuthExpiryInterceptor} from './auth-expiry.interceptor';
+import {AuthenticationService} from './authentication.service';
+import {expect, vi} from 'vitest';
 
 describe('AuthExpiryInterceptor', () => {
-  let http: HttpClient;
-  let httpMock: HttpTestingController;
+    let http: HttpClient;
+    let httpMock: HttpTestingController;
 
-  // simple spies
-  let routerMock: any;
-  let authMock: any;
+    // simple spies
+    let routerMock: any;
+    let authMock: any;
 
-  beforeEach(() => {
-    routerMock = {
-      url: '/admin-portal/list/6233',
-      navigate: jasmine.createSpy('navigate')
-    };
-    authMock = {
-      logout: jasmine.createSpy('logout')
-    };
+    beforeEach(() => {
+        routerMock = {
+            url: '/admin-portal/list/6233',
+            navigate: vi.fn().mockName('navigate')
+        };
+        authMock = {
+            logout: vi.fn().mockName('logout')
+        };
 
-    TestBed.configureTestingModule({
-      providers: [
-        { provide: Router, useValue: routerMock },
-        { provide: AuthenticationService, useValue: authMock },
-        { provide: HTTP_INTERCEPTORS, useClass: AuthExpiryInterceptor, multi: true },
-        provideHttpClient(withXhr(), withInterceptorsFromDi()),
-        provideHttpClientTesting(),
-      ],
+        TestBed.configureTestingModule({
+            providers: [
+                { provide: Router, useValue: routerMock },
+                { provide: AuthenticationService, useValue: authMock },
+                { provide: HTTP_INTERCEPTORS, useClass: AuthExpiryInterceptor, multi: true },
+                provideHttpClient(withXhr(), withInterceptorsFromDi()),
+                provideHttpClientTesting(),
+            ],
+        });
+
+        http = TestBed.inject(HttpClient);
+        httpMock = TestBed.inject(HttpTestingController);
     });
 
-    http = TestBed.inject(HttpClient);
-    httpMock = TestBed.inject(HttpTestingController);
-  });
-
-  afterEach(() => {
-    httpMock.verify();
-    routerMock.navigate.calls.reset();
-    authMock.logout.calls.reset();
-  });
-
-  it('redirects to /login with returnUrl and logs out on 401', () => {
-    routerMock.url = '/admin-portal/list/6233';
-
-    http.get('/api/test').subscribe({
-      next: () => fail('expected 401'),
-      error: () => { /* ignore */ }
+    afterEach(() => {
+        httpMock.verify();
+        routerMock.navigate.mockClear();
+        authMock.logout.mockClear();
     });
 
-    const req = httpMock.expectOne('/api/test');
-    req.flush(null, { status: 401, statusText: 'Unauthorized' });
+    it('redirects to /login with returnUrl and logs out on 401', () => {
+        routerMock.url = '/admin-portal/list/6233';
 
-    expect(authMock.logout).toHaveBeenCalledTimes(1);
-    expect(routerMock.navigate).toHaveBeenCalledTimes(1);
-    expect(routerMock.navigate).toHaveBeenCalledWith(
-      ['/login'],
-      { queryParams: { returnUrl: '/admin-portal/list/6233' } }
-    );
-  });
+        http.get('/api/test').subscribe({
+            next: () => expect.fail('expected 401'),
+            error: () => { }
+        });
 
-  it('does not redirect if already on login page (still logs out)', () => {
-    routerMock.url = '/login/reset-password';
+        const req = httpMock.expectOne('/api/test');
+        req.flush(null, { status: 401, statusText: 'Unauthorized' });
 
-    http.get('/api/test').subscribe({
-      next: () => fail('expected 401'),
-      error: () => { /* ignore */ }
+        expect(authMock.logout).toHaveBeenCalledTimes(1);
+        expect(routerMock.navigate).toHaveBeenCalledTimes(1);
+        expect(routerMock.navigate).toHaveBeenCalledWith(['/login'], { queryParams: { returnUrl: '/admin-portal/list/6233' } });
     });
 
-    const req = httpMock.expectOne('/api/test');
-    req.flush(null, { status: 401, statusText: 'Unauthorized' });
+    it('does not redirect if already on login page (still logs out)', () => {
+        routerMock.url = '/login/reset-password';
 
-    expect(authMock.logout).toHaveBeenCalledTimes(1);
-    expect(routerMock.navigate).not.toHaveBeenCalled();
-  });
+        http.get('/api/test').subscribe({
+            next: () => expect.fail('expected 401'),
+            error: () => { }
+        });
 
-  it('does nothing on non-401 errors', () => {
-    http.get('/api/test').subscribe({
-      next: () => fail('expected error'),
-      error: () => { /* ignore error shape */ }
+        const req = httpMock.expectOne('/api/test');
+        req.flush(null, { status: 401, statusText: 'Unauthorized' });
+
+        expect(authMock.logout).toHaveBeenCalledTimes(1);
+        expect(routerMock.navigate).not.toHaveBeenCalled();
     });
 
-    const req = httpMock.expectOne('/api/test');
-    req.flush({}, { status: 403, statusText: 'Forbidden' });
+    it('does nothing on non-401 errors', () => {
+        http.get('/api/test').subscribe({
+            next: () => expect.fail('expected error'),
+            error: () => { }
+        });
 
-    expect(authMock.logout).not.toHaveBeenCalled();
-    expect(routerMock.navigate).not.toHaveBeenCalled();
-  });
+        const req = httpMock.expectOne('/api/test');
+        req.flush({}, { status: 403, statusText: 'Forbidden' });
+
+        expect(authMock.logout).not.toHaveBeenCalled();
+        expect(routerMock.navigate).not.toHaveBeenCalled();
+    });
 });

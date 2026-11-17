@@ -20,57 +20,58 @@ import {AdminService} from './admin.service';
 import {environment} from '../../environments/environment';
 import {of} from "rxjs";
 import {HttpClient, provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
+import {expect, vi} from 'vitest';
 
 describe('AdminService', () => {
-  let service: AdminService;
-  let httpMock: HttpTestingController;
-  let httpClient: HttpClient;
+    let service: AdminService;
+    let httpMock: HttpTestingController;
+    let httpClient: HttpClient;
 
-  beforeEach(() => {
-    TestBed.configureTestingModule({
-      providers: [AdminService, provideHttpClient(withXhr(), withInterceptorsFromDi()), provideHttpClientTesting()]
+    beforeEach(() => {
+        TestBed.configureTestingModule({
+            providers: [AdminService, provideHttpClient(withXhr(), withInterceptorsFromDi()), provideHttpClientTesting()]
+        });
+
+        service = TestBed.inject(AdminService);
+        httpMock = TestBed.inject(HttpTestingController);
+        httpClient = TestBed.inject(HttpClient);
     });
 
-    service = TestBed.inject(AdminService);
-    httpMock = TestBed.inject(HttpTestingController);
-    httpClient = TestBed.inject(HttpClient);
-  });
-
-  afterEach(() => {
-    httpMock.verify();
-  });
-
-  it('should be created', () => {
-    expect(service).toBeTruthy();
-  });
-
-  it('should make a GET request to the correct URL', () => {
-    const apicall = 'test-call';
-    const method = 'GET'
-    const apiUrl = `${environment.apiUrl}/system/${apicall}`;
-
-    // Mocking the return value of the HttpClient's get method
-    const getSpy = spyOn(httpClient, 'get').and.returnValue(of(void 0));
-
-    service.call(apicall, method).subscribe(response => {
-      expect(response).toBeUndefined();
+    afterEach(() => {
+        httpMock.verify();
     });
 
-    expect(getSpy).toHaveBeenCalledWith(apiUrl, { responseType: 'text' as any });
-  });
-
-  it('should make a POST request to the correct URL', () => {
-    const apicall = 'test-call';
-    const method = 'POST'
-    const apiUrl = `${environment.apiUrl}/system/${apicall}`;
-
-    // Mocking the return value of the HttpClient's get method
-    const getSpy = spyOn(httpClient, 'post').and.returnValue(of(void 0));
-
-    service.call(apicall, method).subscribe(response => {
-      expect(response).toBeUndefined();
+    it('should be created', () => {
+        expect(service).toBeTruthy();
     });
 
-    expect(getSpy).toHaveBeenCalledWith(apiUrl, {}, { responseType: 'text' as any });
-  });
+    it('should make a GET request to the correct URL', () => {
+        const apicall = 'test-call';
+        const method = 'GET';
+        const apiUrl = `${environment.apiUrl}/system/${apicall}`;
+
+        // Mocking the return value of the HttpClient's get method
+        const getSpy = vi.spyOn(httpClient, 'get').mockReturnValue(of(void 0));
+
+        service.call(apicall, method).subscribe(response => {
+            expect(response).toBeUndefined();
+        });
+
+        expect(getSpy).toHaveBeenCalledWith(apiUrl, { responseType: 'text' as any });
+    });
+
+    it('should make a POST request to the correct URL', () => {
+        const apicall = 'test-call';
+        const method = 'POST';
+        const apiUrl = `${environment.apiUrl}/system/${apicall}`;
+
+        // Mocking the return value of the HttpClient's get method
+        const getSpy = vi.spyOn(httpClient, 'post').mockReturnValue(of(void 0));
+
+        service.call(apicall, method).subscribe(response => {
+            expect(response).toBeUndefined();
+        });
+
+        expect(getSpy).toHaveBeenCalledWith(apiUrl, {}, { responseType: 'text' as any });
+    });
 });

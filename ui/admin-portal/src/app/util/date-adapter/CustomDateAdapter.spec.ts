@@ -15,6 +15,7 @@
  */
 
 import {CustomDateAdapter} from "./ngb-date-adapter";
+import {expect} from 'vitest';
 
 describe('CustomDateAdapter', () => {
   let adapter: CustomDateAdapter;

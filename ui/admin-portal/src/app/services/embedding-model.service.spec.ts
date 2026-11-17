@@ -20,6 +20,7 @@ import {provideHttpClient, withInterceptorsFromDi, withXhr} from '@angular/commo
 import {EmbeddingModelService} from './embedding-model.service';
 import {EmbeddingModel} from '../model/embedding-model';
 import {environment} from '../../environments/environment';
+import {expect} from 'vitest';
 
 describe('EmbeddingModelService', () => {
   let service: EmbeddingModelService;

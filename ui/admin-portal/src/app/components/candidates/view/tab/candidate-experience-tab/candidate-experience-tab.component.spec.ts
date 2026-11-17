@@ -18,81 +18,76 @@ import {ComponentFixture, TestBed} from "@angular/core/testing";
 import {MockCandidate} from "../../../../../MockData/MockCandidate";
 import {Candidate} from "../../../../../model/candidate";
 import {ViewCandidateSkillComponent} from "../../skill/view-candidate-skill.component";
-import {
-  ViewCandidateOccupationComponent
-} from "../../occupation/view-candidate-occupation.component";
+import {ViewCandidateOccupationComponent} from "../../occupation/view-candidate-occupation.component";
 import {provideHttpClientTesting} from "@angular/common/http/testing";
 import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {NgSelectModule} from "@ng-select/ng-select";
-import {
-  ViewCandidateJobExperienceComponent
-} from "../../occupation/experience/view-candidate-job-experience.component";
+import {ViewCandidateJobExperienceComponent} from "../../occupation/experience/view-candidate-job-experience.component";
+import {expect} from 'vitest';
 
 describe('CandidateExperienceTabComponent', () => {
-  let component: CandidateExperienceTabComponent;
-  let fixture: ComponentFixture<CandidateExperienceTabComponent>;
-  const mockCandidate = new MockCandidate();
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      imports: [FormsModule,ReactiveFormsModule, NgSelectModule],
-      providers: [provideHttpClient(withXhr(), withInterceptorsFromDi()), provideHttpClientTesting()],
-      declarations: [ CandidateExperienceTabComponent,ViewCandidateSkillComponent,ViewCandidateJobExperienceComponent,ViewCandidateOccupationComponent ]
-    })
-    .compileComponents();
-  });
-
-  beforeEach(() => {
-    fixture = TestBed.createComponent(CandidateExperienceTabComponent);
-    component = fixture.componentInstance;
-    component.candidate = mockCandidate;
-    fixture.detectChanges();
-  });
-
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
-
-  it('should set initial state correctly', () => {
-    expect(component.error).toBeNull(); // Ensure error is null initially
-    expect(component.loading).toBeUndefined(); // Ensure loading is undefined initially
-    expect(component.result).toBeUndefined(); // Ensure result is undefined initially
-  });
-
-  it('should fetch candidate data when candidate changes', () => {
-    const candidate: Candidate = mockCandidate;
-
-    component.ngOnChanges({
-      candidate:
-        {
-          previousValue: null,
-          currentValue: candidate,
-          firstChange: true,
-          isFirstChange: () => true
-        }
+    let component: CandidateExperienceTabComponent;
+    let fixture: ComponentFixture<CandidateExperienceTabComponent>;
+    const mockCandidate = new MockCandidate();
+    beforeEach(async () => {
+        await TestBed.configureTestingModule({
+            imports: [FormsModule, ReactiveFormsModule, NgSelectModule],
+            providers: [provideHttpClient(withXhr(), withInterceptorsFromDi()), provideHttpClientTesting()],
+            declarations: [CandidateExperienceTabComponent, ViewCandidateSkillComponent, ViewCandidateJobExperienceComponent, ViewCandidateOccupationComponent]
+        })
+            .compileComponents();
     });
-    expect(component.error).toBeNull(); // Ensure error is null after candidate data changes
-    expect(component.loading).toBe(false); // Ensure loading is false after candidate data changes
-    expect(component.result).toEqual(candidate); // Ensure candidate data is set correctly
-  });
 
-  it('should display additional functionalities for admin user', () => {
-    const candidate: Candidate = mockCandidate;
-    component.candidate = candidate;
-    component.adminUser = true; // Simulate admin user access
-
-    component.ngOnChanges({
-      candidate:
-        {
-          previousValue: null,
-          currentValue: candidate,
-          firstChange: true,
-          isFirstChange: () => true
-        }
+    beforeEach(() => {
+        fixture = TestBed.createComponent(CandidateExperienceTabComponent);
+        component = fixture.componentInstance;
+        component.candidate = mockCandidate;
+        fixture.detectChanges();
     });
-    expect(component.error).toBeNull(); // Ensure error is null after initialization
-    expect(component.loading).toBe(false); // Ensure loading is false after initialization
-    expect(component.result).toEqual(candidate); // Ensure candidate data is set correctly
-    expect(component.adminUser).toBe(true); // Ensure adminUser property is set to true
-  });
+
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
+
+    it('should set initial state correctly', () => {
+        expect(component.error).toBeNull(); // Ensure error is null initially
+        expect(component.loading).toBeUndefined(); // Ensure loading is undefined initially
+        expect(component.result).toBeUndefined(); // Ensure result is undefined initially
+    });
+
+    it('should fetch candidate data when candidate changes', () => {
+        const candidate: Candidate = mockCandidate;
+
+        component.ngOnChanges({
+            candidate: {
+                previousValue: null,
+                currentValue: candidate,
+                firstChange: true,
+                isFirstChange: () => true
+            }
+        });
+        expect(component.error).toBeNull(); // Ensure error is null after candidate data changes
+        expect(component.loading).toBe(false); // Ensure loading is false after candidate data changes
+        expect(component.result).toEqual(candidate); // Ensure candidate data is set correctly
+    });
+
+    it('should display additional functionalities for admin user', () => {
+        const candidate: Candidate = mockCandidate;
+        component.candidate = candidate;
+        component.adminUser = true; // Simulate admin user access
+
+        component.ngOnChanges({
+            candidate: {
+                previousValue: null,
+                currentValue: candidate,
+                firstChange: true,
+                isFirstChange: () => true
+            }
+        });
+        expect(component.error).toBeNull(); // Ensure error is null after initialization
+        expect(component.loading).toBe(false); // Ensure loading is false after initialization
+        expect(component.result).toEqual(candidate); // Ensure candidate data is set correctly
+        expect(component.adminUser).toBe(true); // Ensure adminUser property is set to true
+    });
 });

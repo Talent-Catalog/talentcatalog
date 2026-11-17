@@ -13,6 +13,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
+
+import type {MockedObject} from "vitest";
 import {ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
 import {NO_ERRORS_SCHEMA, SimpleChange} from '@angular/core';
 import {NgbModal, NgbModalRef} from '@ng-bootstrap/ng-bootstrap';
@@ -22,263 +24,237 @@ import {ViewCandidateCertificationComponent} from './view-candidate-certificatio
 import {CandidateCertificationService} from '../../../../services/candidate-certification.service';
 import {CandidateService} from '../../../../services/candidate.service';
 import {EditCandidateCertificationComponent} from './edit/edit-candidate-certification.component';
-import {
-  CreateCandidateCertificationComponent
-} from './create/create-candidate-certification.component';
+import {CreateCandidateCertificationComponent} from './create/create-candidate-certification.component';
 import {ConfirmationComponent} from '../../../util/confirm/confirmation.component';
 import {MockCandidate} from "../../../../MockData/MockCandidate";
+import {expect, vi} from 'vitest';
 
 describe('ViewCandidateCertificationComponent', () => {
-  let component: ViewCandidateCertificationComponent;
-  let fixture: ComponentFixture<ViewCandidateCertificationComponent>;
+    let component: ViewCandidateCertificationComponent;
+    let fixture: ComponentFixture<ViewCandidateCertificationComponent>;
 
-  let candidateCertificationService:
-    jasmine.SpyObj<CandidateCertificationService>;
-  let candidateService: jasmine.SpyObj<CandidateService>;
-  let modalService: jasmine.SpyObj<NgbModal>;
+    let candidateCertificationService: MockedObject<CandidateCertificationService>;
+    let candidateService: MockedObject<CandidateService>;
+    let modalService: MockedObject<NgbModal>;
 
-  const candidate = new MockCandidate();
+    const candidate = new MockCandidate();
 
-  const certification = {
-    id: 20,
-    name: 'AWS Certified Developer',
-    institution: 'Amazon'
-  } as any;
+    const certification = {
+        id: 20,
+        name: 'AWS Certified Developer',
+        institution: 'Amazon'
+    } as any;
 
-  function modalRef(result: Promise<any>): NgbModalRef {
-    return {
-      componentInstance: {},
-      result,
-      close: jasmine.createSpy('close'),
-      dismiss: jasmine.createSpy('dismiss')
-    } as unknown as NgbModalRef;
-  }
+    function modalRef(result: Promise<any>): NgbModalRef {
+        return {
+            componentInstance: {},
+            result,
+            close: vi.fn().mockName('close'),
+            dismiss: vi.fn().mockName('dismiss')
+        } as unknown as NgbModalRef;
+    }
 
-  beforeEach(async () => {
-    candidateCertificationService =
-      jasmine.createSpyObj<CandidateCertificationService>(
-        'CandidateCertificationService',
-        ['delete']
-      );
+    beforeEach(async () => {
+        candidateCertificationService = ({
+            delete: vi.fn().mockName("CandidateCertificationService.delete")
+        } as unknown as typeof candidateCertificationService);
 
-    candidateService = jasmine.createSpyObj<CandidateService>(
-      'CandidateService',
-      ['updateCandidate']
-    );
+        candidateService = ({
+            updateCandidate: vi.fn().mockName("CandidateService.updateCandidate")
+        } as unknown as typeof candidateService);
 
-    modalService = jasmine.createSpyObj<NgbModal>(
-      'NgbModal',
-      ['open']
-    );
+        modalService = ({
+            open: vi.fn().mockName("NgbModal.open")
+        } as unknown as typeof modalService);
 
-    await TestBed.configureTestingModule({
-      declarations: [ViewCandidateCertificationComponent],
-      providers: [
-        {
-          provide: CandidateCertificationService,
-          useValue: candidateCertificationService
-        },
-        {
-          provide: CandidateService,
-          useValue: candidateService
-        },
-        {
-          provide: NgbModal,
-          useValue: modalService
-        }
-      ],
-      schemas: [NO_ERRORS_SCHEMA]
-    })
-    .overrideTemplate(ViewCandidateCertificationComponent, '')
-    .compileComponents();
+        await TestBed.configureTestingModule({
+            declarations: [ViewCandidateCertificationComponent],
+            providers: [
+                {
+                    provide: CandidateCertificationService,
+                    useValue: candidateCertificationService
+                },
+                {
+                    provide: CandidateService,
+                    useValue: candidateService
+                },
+                {
+                    provide: NgbModal,
+                    useValue: modalService
+                }
+            ],
+            schemas: [NO_ERRORS_SCHEMA]
+        })
+            .overrideTemplate(ViewCandidateCertificationComponent, '')
+            .compileComponents();
 
-    fixture = TestBed.createComponent(
-      ViewCandidateCertificationComponent
-    );
-    component = fixture.componentInstance;
+        fixture = TestBed.createComponent(ViewCandidateCertificationComponent);
+        component = fixture.componentInstance;
 
-    component.candidate = candidate;
-    component.editable = true;
-    component.adminUser = true;
+        component.candidate = candidate;
+        component.editable = true;
+        component.adminUser = true;
 
-    fixture.detectChanges();
-  });
+        fixture.detectChanges();
+    });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
 
-  it('should run ngOnInit', () => {
-    expect(() => component.ngOnInit()).not.toThrow();
-  });
+    it('should run ngOnInit', () => {
+        expect(() => component.ngOnInit()).not.toThrow();
+    });
 
-  it('should run ngOnChanges', () => {
-    expect(() =>
-      component.ngOnChanges({
-        candidate: new SimpleChange(null, candidate, true)
-      })
-    ).not.toThrow();
-  });
+    it('should run ngOnChanges', () => {
+        expect(() => component.ngOnChanges({
+            candidate: new SimpleChange(null, candidate, true)
+        })).not.toThrow();
+    });
 
-  describe('editCandidateCertification', () => {
-    it('should open edit modal and refresh candidate after success', fakeAsync(() => {
-      const ref = modalRef(Promise.resolve(certification));
-      modalService.open.and.returnValue(ref);
+    describe('editCandidateCertification', () => {
+        it('should open edit modal and refresh candidate after success', fakeAsync(() => {
+            const ref = modalRef(Promise.resolve(certification));
+            modalService.open.mockReturnValue(ref);
 
-      component.editCandidateCertification(certification);
-      tick();
+            component.editCandidateCertification(certification);
+            tick();
 
-      expect(modalService.open).toHaveBeenCalledWith(
-        EditCandidateCertificationComponent,
-        {
-          centered: true,
-          backdrop: 'static'
-        }
-      );
+            expect(modalService.open).toHaveBeenCalledWith(EditCandidateCertificationComponent, {
+                centered: true,
+                backdrop: 'static'
+            });
 
-      expect(ref.componentInstance.candidateCertification)
-      .toBe(certification);
+            expect(ref.componentInstance.candidateCertification)
+                .toBe(certification);
 
-      expect(candidateService.updateCandidate)
-      .toHaveBeenCalledTimes(1);
-    }));
+            expect(candidateService.updateCandidate)
+                .toHaveBeenCalledTimes(1);
+        }));
 
-    it('should ignore edit modal dismissal', fakeAsync(() => {
-      const ref = modalRef(Promise.reject('dismissed'));
-      modalService.open.and.returnValue(ref);
+        it('should ignore edit modal dismissal', fakeAsync(() => {
+            const ref = modalRef(Promise.reject('dismissed'));
+            modalService.open.mockReturnValue(ref);
 
-      component.editCandidateCertification(certification);
-      tick();
+            component.editCandidateCertification(certification);
+            tick();
 
-      expect(ref.componentInstance.candidateCertification)
-      .toBe(certification);
+            expect(ref.componentInstance.candidateCertification)
+                .toBe(certification);
 
-      expect(candidateService.updateCandidate)
-      .not.toHaveBeenCalled();
-    }));
-  });
+            expect(candidateService.updateCandidate)
+                .not.toHaveBeenCalled();
+        }));
+    });
 
-  describe('createCandidateCertification', () => {
-    it('should open create modal and refresh candidate after success', fakeAsync(() => {
-      const ref = modalRef(Promise.resolve(certification));
-      modalService.open.and.returnValue(ref);
+    describe('createCandidateCertification', () => {
+        it('should open create modal and refresh candidate after success', fakeAsync(() => {
+            const ref = modalRef(Promise.resolve(certification));
+            modalService.open.mockReturnValue(ref);
 
-      component.createCandidateCertification();
-      tick();
+            component.createCandidateCertification();
+            tick();
 
-      expect(modalService.open).toHaveBeenCalledWith(
-        CreateCandidateCertificationComponent,
-        {
-          centered: true,
-          backdrop: 'static'
-        }
-      );
+            expect(modalService.open).toHaveBeenCalledWith(CreateCandidateCertificationComponent, {
+                centered: true,
+                backdrop: 'static'
+            });
 
-      expect(ref.componentInstance.candidateId)
-      .toBe(candidate.id);
+            expect(ref.componentInstance.candidateId)
+                .toBe(candidate.id);
 
-      expect(candidateService.updateCandidate)
-      .toHaveBeenCalledTimes(1);
-    }));
+            expect(candidateService.updateCandidate)
+                .toHaveBeenCalledTimes(1);
+        }));
 
-    it('should ignore create modal dismissal', fakeAsync(() => {
-      const ref = modalRef(Promise.reject('dismissed'));
-      modalService.open.and.returnValue(ref);
+        it('should ignore create modal dismissal', fakeAsync(() => {
+            const ref = modalRef(Promise.reject('dismissed'));
+            modalService.open.mockReturnValue(ref);
 
-      component.createCandidateCertification();
-      tick();
+            component.createCandidateCertification();
+            tick();
 
-      expect(ref.componentInstance.candidateId)
-      .toBe(candidate.id);
+            expect(ref.componentInstance.candidateId)
+                .toBe(candidate.id);
 
-      expect(candidateService.updateCandidate)
-      .not.toHaveBeenCalled();
-    }));
-  });
+            expect(candidateService.updateCandidate)
+                .not.toHaveBeenCalled();
+        }));
+    });
 
-  describe('deleteCandidateCertification', () => {
-    it('should delete after confirmation and refresh candidate', fakeAsync(() => {
-      const ref = modalRef(Promise.resolve(true));
-      modalService.open.and.returnValue(ref);
+    describe('deleteCandidateCertification', () => {
+        it('should delete after confirmation and refresh candidate', fakeAsync(() => {
+            const ref = modalRef(Promise.resolve(true));
+            modalService.open.mockReturnValue(ref);
 
-      candidateCertificationService.delete
-      .and.returnValue(of({} as any));
+            candidateCertificationService.delete.mockReturnValue(of({} as any));
 
-      component.loading = true;
+            component.loading = true;
 
-      component.deleteCandidateCertification(certification);
-      tick();
+            component.deleteCandidateCertification(certification);
+            tick();
 
-      expect(modalService.open).toHaveBeenCalledWith(
-        ConfirmationComponent,
-        {
-          centered: true,
-          backdrop: 'static'
-        }
-      );
+            expect(modalService.open).toHaveBeenCalledWith(ConfirmationComponent, {
+                centered: true,
+                backdrop: 'static'
+            });
 
-      expect(ref.componentInstance.message)
-      .toBe(
-        'Are you sure you want to delete this certification?'
-      );
+            expect(ref.componentInstance.message)
+                .toBe('Are you sure you want to delete this certification?');
 
-      expect(candidateCertificationService.delete)
-      .toHaveBeenCalledOnceWith(certification.id);
+            expect(candidateCertificationService.delete).toHaveBeenCalledTimes(1);
 
-      expect(component.loading).toBeFalse();
+            expect(candidateCertificationService.delete).toHaveBeenCalledWith(certification.id);
 
-      expect(candidateService.updateCandidate)
-      .toHaveBeenCalledTimes(1);
-    }));
+            expect(component.loading).toBe(false);
 
-    it('should expose delete error and clear loading', fakeAsync(() => {
-      const error = new Error('delete failed');
-      const ref = modalRef(Promise.resolve(true));
-      modalService.open.and.returnValue(ref);
+            expect(candidateService.updateCandidate)
+                .toHaveBeenCalledTimes(1);
+        }));
 
-      candidateCertificationService.delete
-      .and.returnValue(throwError(error));
+        it('should expose delete error and clear loading', fakeAsync(() => {
+            const error = new Error('delete failed');
+            const ref = modalRef(Promise.resolve(true));
+            modalService.open.mockReturnValue(ref);
 
-      component.loading = true;
+            candidateCertificationService.delete.mockReturnValue(throwError(error));
 
-      component.deleteCandidateCertification(certification);
-      tick();
+            component.loading = true;
 
-      expect(component.error).toBe(error);
-      expect(component.loading).toBeFalse();
+            component.deleteCandidateCertification(certification);
+            tick();
 
-      expect(candidateService.updateCandidate)
-      .not.toHaveBeenCalled();
-    }));
+            expect(component.error).toBe(error);
+            expect(component.loading).toBe(false);
 
-    it('should not delete when confirmation is false', fakeAsync(() => {
-      modalService.open.and.returnValue(
-        modalRef(Promise.resolve(false))
-      );
+            expect(candidateService.updateCandidate)
+                .not.toHaveBeenCalled();
+        }));
 
-      component.deleteCandidateCertification(certification);
-      tick();
+        it('should not delete when confirmation is false', fakeAsync(() => {
+            modalService.open.mockReturnValue(modalRef(Promise.resolve(false)));
 
-      expect(candidateCertificationService.delete)
-      .not.toHaveBeenCalled();
+            component.deleteCandidateCertification(certification);
+            tick();
 
-      expect(candidateService.updateCandidate)
-      .not.toHaveBeenCalled();
-    }));
+            expect(candidateCertificationService.delete)
+                .not.toHaveBeenCalled();
 
-    it('should ignore delete modal dismissal', fakeAsync(() => {
-      modalService.open.and.returnValue(
-        modalRef(Promise.reject('dismissed'))
-      );
+            expect(candidateService.updateCandidate)
+                .not.toHaveBeenCalled();
+        }));
 
-      component.deleteCandidateCertification(certification);
-      tick();
+        it('should ignore delete modal dismissal', fakeAsync(() => {
+            modalService.open.mockReturnValue(modalRef(Promise.reject('dismissed')));
 
-      expect(candidateCertificationService.delete)
-      .not.toHaveBeenCalled();
+            component.deleteCandidateCertification(certification);
+            tick();
 
-      expect(candidateService.updateCandidate)
-      .not.toHaveBeenCalled();
-    }));
-  });
+            expect(candidateCertificationService.delete)
+                .not.toHaveBeenCalled();
+
+            expect(candidateService.updateCandidate)
+                .not.toHaveBeenCalled();
+        }));
+    });
 });

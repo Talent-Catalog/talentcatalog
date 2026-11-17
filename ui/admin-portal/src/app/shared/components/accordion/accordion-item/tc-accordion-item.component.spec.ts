@@ -2,6 +2,7 @@ import {ComponentFixture, TestBed} from '@angular/core/testing';
 
 import {TcAccordionItemComponent} from './tc-accordion-item.component';
 import {TcAccordionComponent} from "../tc-accordion.component";
+import {expect} from 'vitest';
 
 describe('TcAccordionItemComponent', () => {
   let component: TcAccordionItemComponent;

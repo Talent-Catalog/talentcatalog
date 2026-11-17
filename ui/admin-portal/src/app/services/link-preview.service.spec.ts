@@ -20,58 +20,59 @@ import {provideHttpClient, withInterceptorsFromDi, withXhr} from '@angular/commo
 import {BuildLinkPreviewRequest, LinkPreviewService} from './link-preview.service';
 import {LinkPreview} from '../model/link-preview';
 import {environment} from '../../environments/environment';
+import {expect} from 'vitest';
 
 describe('LinkPreviewService', () => {
-  let service: LinkPreviewService;
-  let httpMock: HttpTestingController;
+    let service: LinkPreviewService;
+    let httpMock: HttpTestingController;
 
-  beforeEach(() => {
-    TestBed.configureTestingModule({
-      providers: [LinkPreviewService, provideHttpClient(withXhr(), withInterceptorsFromDi()), provideHttpClientTesting()]
-    });
-    service = TestBed.inject(LinkPreviewService);
-    httpMock = TestBed.inject(HttpTestingController);
-  });
-
-  afterEach(() => {
-    httpMock.verify();
-  });
-
-  it('should be created', () => {
-    expect(service).toBeTruthy();
-  });
-
-  it('should delete a link preview', () => {
-    const dummyId = 123;
-    service.delete(dummyId).subscribe((response) => {
-      expect(response).toBeTrue();
+    beforeEach(() => {
+        TestBed.configureTestingModule({
+            providers: [LinkPreviewService, provideHttpClient(withXhr(), withInterceptorsFromDi()), provideHttpClientTesting()]
+        });
+        service = TestBed.inject(LinkPreviewService);
+        httpMock = TestBed.inject(HttpTestingController);
     });
 
-    const req = httpMock.expectOne(`${environment.apiUrl}/link-preview/${dummyId}`);
-    expect(req.request.method).toBe('DELETE');
-    req.flush(true);
-  });
-
-  it('should build a link preview', () => {
-    const request: BuildLinkPreviewRequest = { url: 'https://example.com' };
-    const dummyLinkPreview: LinkPreview = {
-      url: 'https://example.com',
-      title: 'Example Title',
-      description: 'Example Description',
-      imageUrl: 'https://example.com/image.jpg',
-      domain:'Example Domain',
-      blocked: false,
-      faviconUrl: 'https://example.com/favUrl',
-      id:1
-    };
-
-    service.buildLinkPreview(request).subscribe((response) => {
-      expect(response).toEqual(dummyLinkPreview);
+    afterEach(() => {
+        httpMock.verify();
     });
 
-    const req = httpMock.expectOne(`${environment.apiUrl}/link-preview/build-link-preview`);
-    expect(req.request.method).toBe('POST');
-    expect(req.request.body).toEqual(request);
-    req.flush(dummyLinkPreview);
-  });
+    it('should be created', () => {
+        expect(service).toBeTruthy();
+    });
+
+    it('should delete a link preview', () => {
+        const dummyId = 123;
+        service.delete(dummyId).subscribe((response) => {
+            expect(response).toBe(true);
+        });
+
+        const req = httpMock.expectOne(`${environment.apiUrl}/link-preview/${dummyId}`);
+        expect(req.request.method).toBe('DELETE');
+        req.flush(true);
+    });
+
+    it('should build a link preview', () => {
+        const request: BuildLinkPreviewRequest = { url: 'https://example.com' };
+        const dummyLinkPreview: LinkPreview = {
+            url: 'https://example.com',
+            title: 'Example Title',
+            description: 'Example Description',
+            imageUrl: 'https://example.com/image.jpg',
+            domain: 'Example Domain',
+            blocked: false,
+            faviconUrl: 'https://example.com/favUrl',
+            id: 1
+        };
+
+        service.buildLinkPreview(request).subscribe((response) => {
+            expect(response).toEqual(dummyLinkPreview);
+        });
+
+        const req = httpMock.expectOne(`${environment.apiUrl}/link-preview/build-link-preview`);
+        expect(req.request.method).toBe('POST');
+        expect(req.request.body).toEqual(request);
+        req.flush(dummyLinkPreview);
+    });
 });

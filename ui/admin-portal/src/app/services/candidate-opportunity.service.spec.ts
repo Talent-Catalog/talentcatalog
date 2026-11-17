@@ -19,14 +19,11 @@ import {HttpTestingController, provideHttpClientTesting} from '@angular/common/h
 import {provideHttpClient, withInterceptorsFromDi, withXhr} from '@angular/common/http';
 import {CandidateOpportunityService} from './candidate-opportunity.service';
 import {environment} from '../../environments/environment';
-import {
-  CandidateOpportunity,
-  CandidateOpportunityStage,
-  SearchOpportunityRequest
-} from '../model/candidate-opportunity';
+import {CandidateOpportunity, CandidateOpportunityStage, SearchOpportunityRequest} from '../model/candidate-opportunity';
 import {SearchResults} from '../model/search-results';
 import {CandidateOpportunityParams} from '../model/candidate';
 import {JobChatUserInfo} from '../model/chat';
+import {expect} from 'vitest';
 
 describe('CandidateOpportunityService', () => {
   let service: CandidateOpportunityService;

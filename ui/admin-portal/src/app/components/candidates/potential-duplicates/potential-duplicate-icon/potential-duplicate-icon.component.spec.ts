@@ -14,6 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
+import type {MockedObject} from "vitest";
 import {ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
 import {PotentialDuplicateIconComponent} from './potential-duplicate-icon.component';
 import {CandidateService} from '../../../../services/candidate.service';
@@ -22,197 +23,204 @@ import {NgbModal, NgbModalRef} from '@ng-bootstrap/ng-bootstrap';
 import {MockCandidate} from '../../../../MockData/MockCandidate';
 import {By} from '@angular/platform-browser';
 import {of, throwError} from 'rxjs';
+import {expect, vi} from 'vitest';
 
 describe('PotentialDuplicateIconComponent', () => {
-  let component: PotentialDuplicateIconComponent;
-  let fixture: ComponentFixture<PotentialDuplicateIconComponent>;
-  let candidateServiceSpy: jasmine.SpyObj<CandidateService>;
-  let authorizationServiceSpy: jasmine.SpyObj<AuthorizationService>;
-  let modalServiceSpy: jasmine.SpyObj<NgbModal>;
-  let mockCandidate: MockCandidate;
+    let component: PotentialDuplicateIconComponent;
+    let fixture: ComponentFixture<PotentialDuplicateIconComponent>;
+    let candidateServiceSpy: MockedObject<CandidateService>;
+    let authorizationServiceSpy: MockedObject<AuthorizationService>;
+    let modalServiceSpy: MockedObject<NgbModal>;
+    let mockCandidate: MockCandidate;
 
-  beforeEach(async () => {
-    const candidateService = jasmine.createSpyObj<CandidateService>('CandidateService', ['fetchPotentialDuplicates']);
-    const authorizationService = jasmine.createSpyObj<AuthorizationService>('AuthorizationService', ['canViewCandidateName']);
-    const modalService = jasmine.createSpyObj<NgbModal>('NgbModal', ['open']);
+    beforeEach(async () => {
+        const candidateService = {
+            fetchPotentialDuplicates: vi.fn().mockName("CandidateService.fetchPotentialDuplicates")
+        };
+        const authorizationService = {
+            canViewCandidateName: vi.fn().mockName("AuthorizationService.canViewCandidateName")
+        };
+        const modalService = {
+            open: vi.fn().mockName("NgbModal.open")
+        };
 
-    await TestBed.configureTestingModule({
-      declarations: [PotentialDuplicateIconComponent],
-      providers: [
-        {provide: CandidateService, useValue: candidateService},
-        {provide: AuthorizationService, useValue: authorizationService},
-        {provide: NgbModal, useValue: modalService},
-      ],
-    }).compileComponents();
+        await TestBed.configureTestingModule({
+            declarations: [PotentialDuplicateIconComponent],
+            providers: [
+                { provide: CandidateService, useValue: candidateService },
+                { provide: AuthorizationService, useValue: authorizationService },
+                { provide: NgbModal, useValue: modalService },
+            ],
+        }).compileComponents();
 
-    fixture = TestBed.createComponent(PotentialDuplicateIconComponent);
-    component = fixture.componentInstance;
-    mockCandidate = new MockCandidate();
-    mockCandidate.id = 1;
-    component.candidate = mockCandidate;
-    candidateServiceSpy = TestBed.inject(CandidateService) as jasmine.SpyObj<CandidateService>;
-    authorizationServiceSpy = TestBed.inject(AuthorizationService) as jasmine.SpyObj<AuthorizationService>;
-    modalServiceSpy = TestBed.inject(NgbModal) as jasmine.SpyObj<NgbModal>;
+        fixture = TestBed.createComponent(PotentialDuplicateIconComponent);
+        component = fixture.componentInstance;
+        mockCandidate = new MockCandidate();
+        mockCandidate.id = 1;
+        component.candidate = mockCandidate;
+        candidateServiceSpy = TestBed.inject(CandidateService) as MockedObject<CandidateService>;
+        authorizationServiceSpy = TestBed.inject(AuthorizationService) as MockedObject<AuthorizationService>;
+        modalServiceSpy = TestBed.inject(NgbModal) as MockedObject<NgbModal>;
 
-    component.candidate.potentialDuplicate = true;
-    authorizationServiceSpy.canViewCandidateName.and.returnValue(true);
+        component.candidate.potentialDuplicate = true;
+        authorizationServiceSpy.canViewCandidateName.mockReturnValue(true);
 
-    fixture.detectChanges();
-  });
+        fixture.detectChanges();
+    });
 
-  afterEach(() => {
-    // Reset component state to prevent side effects
-    component.candidate = mockCandidate;
-    component.loading = false;
-    component.error = null;
-    candidateServiceSpy.fetchPotentialDuplicates.calls.reset();
-    fixture.destroy();
-  });
+    afterEach(() => {
+        // Reset component state to prevent side effects
+        component.candidate = mockCandidate;
+        component.loading = false;
+        component.error = null;
+        candidateServiceSpy.fetchPotentialDuplicates.mockClear();
+        fixture.destroy();
+    });
 
-  it('should not display icon when candidate is not a potential duplicate', () => {
-    component.candidate.potentialDuplicate = false;
-    fixture.detectChanges();
+    it('should not display icon when candidate is not a potential duplicate', () => {
+        component.candidate.potentialDuplicate = false;
+        fixture.detectChanges();
 
-    const potentialDuplicateElement = fixture.debugElement.query(By.css('span i.fa-person-circle-exclamation'));
-    expect(potentialDuplicateElement).toBeNull();
-  });
+        const potentialDuplicateElement = fixture.debugElement.query(By.css('span i.fa-person-circle-exclamation'));
+        expect(potentialDuplicateElement).toBeNull();
+    });
 
-  it('should not display icon when user cannot view candidate name', () => {
-    authorizationServiceSpy.canViewCandidateName.and.returnValue(false);
-    component.candidate.potentialDuplicate = true;
-    fixture.detectChanges();
+    it('should not display icon when user cannot view candidate name', () => {
+        authorizationServiceSpy.canViewCandidateName.mockReturnValue(false);
+        component.candidate.potentialDuplicate = true;
+        fixture.detectChanges();
 
-    const potentialDuplicateElement = fixture.debugElement.query(By.css('span i.fa-person-circle-exclamation'));
-    expect(potentialDuplicateElement).toBeNull();
-  });
+        const potentialDuplicateElement = fixture.debugElement.query(By.css('span i.fa-person-circle-exclamation'));
+        expect(potentialDuplicateElement).toBeNull();
+    });
 
-  it('should display icon when candidate is a potential duplicate and user can view name', () => {
-    component.candidate.potentialDuplicate = true;
-    authorizationServiceSpy.canViewCandidateName.and.returnValue(true);
-    fixture.detectChanges();
+    it('should display icon when candidate is a potential duplicate and user can view name', () => {
+        component.candidate.potentialDuplicate = true;
+        authorizationServiceSpy.canViewCandidateName.mockReturnValue(true);
+        fixture.detectChanges();
 
-    const potentialDuplicateElement = fixture.debugElement.query(By.css('span i.fa-person-circle-exclamation'));
-    expect(potentialDuplicateElement).toBeTruthy();
-  });
+        const potentialDuplicateElement = fixture.debugElement.query(By.css('span i.fa-person-circle-exclamation'));
+        expect(potentialDuplicateElement).toBeTruthy();
+    });
 
 
-  it('should emit refresh event when modal closes and no duplicates are found', fakeAsync(() => {
-    const modalRef = {
-      componentInstance: {selectedCandidate: null},
-      result: Promise.resolve()
-    } as NgbModalRef;
-    modalServiceSpy.open.and.returnValue(modalRef);
-    candidateServiceSpy.fetchPotentialDuplicates.and.returnValue(of([]));
-    spyOn(component.refresh, 'emit');
+    it('should emit refresh event when modal closes and no duplicates are found', fakeAsync(() => {
+        const modalRef = {
+            componentInstance: { selectedCandidate: null },
+            result: Promise.resolve()
+        } as NgbModalRef;
+        modalServiceSpy.open.mockReturnValue(modalRef);
+        candidateServiceSpy.fetchPotentialDuplicates.mockReturnValue(of([]));
+        vi.spyOn(component.refresh, 'emit').mockReturnValue(undefined);
 
-    component.candidate.potentialDuplicate = true;
-    authorizationServiceSpy.canViewCandidateName.and.returnValue(true);
-    fixture.detectChanges();
+        component.candidate.potentialDuplicate = true;
+        authorizationServiceSpy.canViewCandidateName.mockReturnValue(true);
+        fixture.detectChanges();
 
-    const iconElement = fixture.debugElement.query(By.css('i.fa-person-circle-exclamation'));
-    iconElement.triggerEventHandler('click', null);
+        const iconElement = fixture.debugElement.query(By.css('i.fa-person-circle-exclamation'));
+        iconElement.triggerEventHandler('click', null);
 
-    tick();
-    fixture.detectChanges();
+        tick();
+        fixture.detectChanges();
 
-    expect(candidateServiceSpy.fetchPotentialDuplicates).toHaveBeenCalledWith(mockCandidate.id);
-    expect(component.refresh.emit).toHaveBeenCalled();
-    expect(component.loading).toBeFalse();
-  }));
+        expect(candidateServiceSpy.fetchPotentialDuplicates).toHaveBeenCalledWith(mockCandidate.id);
+        expect(component.refresh.emit).toHaveBeenCalled();
+        expect(component.loading).toBe(false);
+    }));
 
-  it('should set error and clear loading when modal closes and fetch fails', fakeAsync(() => {
-    const modalRef = {
-      componentInstance: {selectedCandidate: null},
-      result: Promise.resolve()
-    } as NgbModalRef;
-    modalServiceSpy.open.and.returnValue(modalRef);
-    const errorMessage = 'Failed to fetch duplicates';
-    candidateServiceSpy.fetchPotentialDuplicates.and.returnValue(throwError(errorMessage));
+    it('should set error and clear loading when modal closes and fetch fails', fakeAsync(() => {
+        const modalRef = {
+            componentInstance: { selectedCandidate: null },
+            result: Promise.resolve()
+        } as NgbModalRef;
+        modalServiceSpy.open.mockReturnValue(modalRef);
+        const errorMessage = 'Failed to fetch duplicates';
+        candidateServiceSpy.fetchPotentialDuplicates.mockReturnValue(throwError(errorMessage));
 
-    component.candidate.potentialDuplicate = true;
-    authorizationServiceSpy.canViewCandidateName.and.returnValue(true);
-    fixture.detectChanges();
+        component.candidate.potentialDuplicate = true;
+        authorizationServiceSpy.canViewCandidateName.mockReturnValue(true);
+        fixture.detectChanges();
 
-    const iconElement = fixture.debugElement.query(By.css('i.fa-person-circle-exclamation'));
-    iconElement.triggerEventHandler('click', null);
+        const iconElement = fixture.debugElement.query(By.css('i.fa-person-circle-exclamation'));
+        iconElement.triggerEventHandler('click', null);
 
-    tick();
-    fixture.detectChanges();
+        tick();
+        fixture.detectChanges();
 
-    expect(candidateServiceSpy.fetchPotentialDuplicates).toHaveBeenCalledWith(mockCandidate.id);
-    expect(component.error).toBe(errorMessage);
-    expect(component.loading).toBeFalse();
-  }));
+        expect(candidateServiceSpy.fetchPotentialDuplicates).toHaveBeenCalledWith(mockCandidate.id);
+        expect(component.error).toBe(errorMessage);
+        expect(component.loading).toBe(false);
+    }));
 
-  it('should emit refresh event when modal is dismissed and no duplicates are found', fakeAsync(() => {
-    const modalRef = {
-      componentInstance: {selectedCandidate: null},
-      result: Promise.reject('dismissed')
-    } as NgbModalRef;
-    modalServiceSpy.open.and.returnValue(modalRef);
-    candidateServiceSpy.fetchPotentialDuplicates.and.returnValue(of([]));
-    spyOn(component.refresh, 'emit');
+    it('should emit refresh event when modal is dismissed and no duplicates are found', fakeAsync(() => {
+        const modalRef = {
+            componentInstance: { selectedCandidate: null },
+            result: Promise.reject('dismissed')
+        } as NgbModalRef;
+        modalServiceSpy.open.mockReturnValue(modalRef);
+        candidateServiceSpy.fetchPotentialDuplicates.mockReturnValue(of([]));
+        vi.spyOn(component.refresh, 'emit').mockReturnValue(undefined);
 
-    component.candidate.potentialDuplicate = true;
-    authorizationServiceSpy.canViewCandidateName.and.returnValue(true);
-    fixture.detectChanges();
+        component.candidate.potentialDuplicate = true;
+        authorizationServiceSpy.canViewCandidateName.mockReturnValue(true);
+        fixture.detectChanges();
 
-    const iconElement = fixture.debugElement.query(By.css('i.fa-person-circle-exclamation'));
-    iconElement.triggerEventHandler('click', null);
+        const iconElement = fixture.debugElement.query(By.css('i.fa-person-circle-exclamation'));
+        iconElement.triggerEventHandler('click', null);
 
-    tick();
-    fixture.detectChanges();
+        tick();
+        fixture.detectChanges();
 
-    expect(candidateServiceSpy.fetchPotentialDuplicates).toHaveBeenCalledWith(mockCandidate.id);
-    expect(component.refresh.emit).toHaveBeenCalled();
-    expect(component.loading).toBeFalse();
-  }));
+        expect(candidateServiceSpy.fetchPotentialDuplicates).toHaveBeenCalledWith(mockCandidate.id);
+        expect(component.refresh.emit).toHaveBeenCalled();
+        expect(component.loading).toBe(false);
+    }));
 
-  it('should set error and clear loading when modal is dismissed and fetch fails', fakeAsync(() => {
-    const modalRef = {
-      componentInstance: {selectedCandidate: null},
-      result: Promise.reject('dismissed')
-    } as NgbModalRef;
-    modalServiceSpy.open.and.returnValue(modalRef);
-    const errorMessage = 'Failed to fetch duplicates';
-    candidateServiceSpy.fetchPotentialDuplicates.and.returnValue(throwError(errorMessage));
+    it('should set error and clear loading when modal is dismissed and fetch fails', fakeAsync(() => {
+        const modalRef = {
+            componentInstance: { selectedCandidate: null },
+            result: Promise.reject('dismissed')
+        } as NgbModalRef;
+        modalServiceSpy.open.mockReturnValue(modalRef);
+        const errorMessage = 'Failed to fetch duplicates';
+        candidateServiceSpy.fetchPotentialDuplicates.mockReturnValue(throwError(errorMessage));
 
-    component.candidate.potentialDuplicate = true;
-    authorizationServiceSpy.canViewCandidateName.and.returnValue(true);
-    fixture.detectChanges();
+        component.candidate.potentialDuplicate = true;
+        authorizationServiceSpy.canViewCandidateName.mockReturnValue(true);
+        fixture.detectChanges();
 
-    const iconElement = fixture.debugElement.query(By.css('i.fa-person-circle-exclamation'));
-    iconElement.triggerEventHandler('click', null);
+        const iconElement = fixture.debugElement.query(By.css('i.fa-person-circle-exclamation'));
+        iconElement.triggerEventHandler('click', null);
 
-    tick();
-    fixture.detectChanges();
+        tick();
+        fixture.detectChanges();
 
-    expect(candidateServiceSpy.fetchPotentialDuplicates).toHaveBeenCalledWith(mockCandidate.id);
-    expect(component.error).toBe(errorMessage);
-    expect(component.loading).toBeFalse();
-  }));
+        expect(candidateServiceSpy.fetchPotentialDuplicates).toHaveBeenCalledWith(mockCandidate.id);
+        expect(component.error).toBe(errorMessage);
+        expect(component.loading).toBe(false);
+    }));
 
-  it('should display loading spinner when loading is true', () => {
-    component.candidate.potentialDuplicate = true;
-    authorizationServiceSpy.canViewCandidateName.and.returnValue(true);
-    component.loading = true;
-    fixture.detectChanges();
+    it('should display loading spinner when loading is true', () => {
+        component.candidate.potentialDuplicate = true;
+        authorizationServiceSpy.canViewCandidateName.mockReturnValue(true);
+        component.loading = true;
+        fixture.detectChanges();
 
-    const spinnerElement = fixture.debugElement.query(By.css('i.fa-spinner'));
-    expect(spinnerElement).toBeTruthy();
-    const iconElement = fixture.debugElement.query(By.css('i.fa-person-circle-exclamation'));
-    expect(iconElement).toBeNull();
-  });
+        const spinnerElement = fixture.debugElement.query(By.css('i.fa-spinner'));
+        expect(spinnerElement).toBeTruthy();
+        const iconElement = fixture.debugElement.query(By.css('i.fa-person-circle-exclamation'));
+        expect(iconElement).toBeNull();
+    });
 
-  it('should display error message when error is set', () => {
-    component.candidate.potentialDuplicate = true;
-    authorizationServiceSpy.canViewCandidateName.and.returnValue(true);
-    component.error = 'Test error';
-    fixture.detectChanges();
+    it('should display error message when error is set', () => {
+        component.candidate.potentialDuplicate = true;
+        authorizationServiceSpy.canViewCandidateName.mockReturnValue(true);
+        component.error = 'Test error';
+        fixture.detectChanges();
 
-    const errorElement = fixture.debugElement.query(By.css('.alert.alert-danger'));
-    expect(errorElement).toBeTruthy();
-    expect(errorElement.nativeElement.textContent).toContain('Test error');
-  });
+        const errorElement = fixture.debugElement.query(By.css('.alert.alert-danger'));
+        expect(errorElement).toBeTruthy();
+        expect(errorElement.nativeElement.textContent).toContain('Test error');
+    });
 
 });

@@ -14,6 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
+import type {MockedObject} from "vitest";
 import {EditCandidateOppComponent} from "./edit-candidate-opp.component";
 import {NgbActiveModal, NgbDatepickerModule, NgbTooltipModule} from "@ng-bootstrap/ng-bootstrap";
 import {ComponentFixture, TestBed} from "@angular/core/testing";
@@ -27,127 +28,131 @@ import {CommonModule} from "@angular/common";
 import {DatePickerComponent} from "../../util/date-picker/date-picker.component";
 import {NgxWigModule} from "ngx-wig";
 import {NgSelectModule} from "@ng-select/ng-select";
+import {expect, vi} from 'vitest';
 
 describe('EditCandidateOppComponent', () => {
-  let component: EditCandidateOppComponent;
-  let fixture: ComponentFixture<EditCandidateOppComponent>;
-  let mockActiveModal: jasmine.SpyObj<NgbActiveModal>;
+    let component: EditCandidateOppComponent;
+    let fixture: ComponentFixture<EditCandidateOppComponent>;
+    let mockActiveModal: MockedObject<NgbActiveModal>;
 
-  beforeEach(async () => {
-    const modalSpy = jasmine.createSpyObj('NgbActiveModal', ['dismiss', 'close']);
+    beforeEach(async () => {
+        const modalSpy = {
+            dismiss: vi.fn().mockName("NgbActiveModal.dismiss"),
+            close: vi.fn().mockName("NgbActiveModal.close")
+        };
 
-    await TestBed.configureTestingModule({
-      declarations: [EditCandidateOppComponent,HelpComponent,DatePickerComponent],
-      imports: [ReactiveFormsModule,FormsModule,CommonModule,NgbDatepickerModule,NgxWigModule,NgSelectModule,NgbTooltipModule],
-      providers: [
-        UntypedFormBuilder,
-        { provide: NgbActiveModal, useValue: modalSpy },
-        provideHttpClient(withXhr(), withInterceptorsFromDi()),
-        provideHttpClientTesting()
-      ]
-    })
-    .compileComponents();
-  });
-
-  beforeEach(() => {
-    fixture = TestBed.createComponent(EditCandidateOppComponent);
-    component = fixture.componentInstance;
-    mockActiveModal = TestBed.inject(NgbActiveModal) as jasmine.SpyObj<NgbActiveModal>;
-    fixture.detectChanges();
-  });
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
-  it('should initialize the form with default values based on the provided opportunity data', () => {
-    const opportunity: CandidateOpportunity = mockCandidateOpportunity;
-
-    component.opp = opportunity;
-    component.ngOnInit();
-
-    expect(component.salesforceStageForm.value).toEqual({
-      stage: opportunity.stage,
-      nextStep: opportunity.nextStep,
-      nextStepDueDate: opportunity.nextStepDueDate,
-      closingComments: opportunity.closingComments,
-      closingCommentsForCandidate: opportunity.closingCommentsForCandidate,
-      employerFeedback: opportunity.employerFeedback
-    });
-  });
-  //
-  it('should mark the form as valid when form fields are filled with valid data', () => {
-    // Set values for all form controls
-    component.salesforceStageForm.setValue({
-      stage: 'ExampleStage',
-      nextStep: 'ExampleNextStep',
-      nextStepDueDate: '2024-05-15',
-      closingComments: 'ExampleClosingComments',
-      closingCommentsForCandidate: 'ExampleClosingCommentsForCandidate',
-      employerFeedback: 'ExampleEmployerFeedback',
-    });
-    expect(component.salesforceStageForm.valid).toBe(true);
-  });
-
-  it('should dismiss the modal without saving any changes when cancel button is clicked', () => {
-    component.cancel();
-    expect(mockActiveModal.dismiss).toHaveBeenCalledWith(false);
-  });
-
-  it('should close the modal with form values when onSave is called', () => {
-    component.salesforceStageForm.setValue({
-      stage: 'Interview',
-      nextStep: 'Send feedback',
-      nextStepDueDate: '2024-06-01',
-      closingComments: 'All went well.',
-      closingCommentsForCandidate: 'You did great!',
-      employerFeedback: 'Positive response from employer.'
+        await TestBed.configureTestingModule({
+            declarations: [EditCandidateOppComponent, HelpComponent, DatePickerComponent],
+            imports: [ReactiveFormsModule, FormsModule, CommonModule, NgbDatepickerModule, NgxWigModule, NgSelectModule, NgbTooltipModule],
+            providers: [
+                UntypedFormBuilder,
+                { provide: NgbActiveModal, useValue: modalSpy },
+                provideHttpClient(withXhr(), withInterceptorsFromDi()),
+                provideHttpClientTesting()
+            ]
+        })
+            .compileComponents();
     });
 
-    component.onSave();
-
-    expect(mockActiveModal.close).toHaveBeenCalledWith({
-      stage: 'Interview',
-      nextStep: 'Send feedback',
-      nextStepDueDate: '2024-06-01',
-      closingComments: 'All went well.',
-      closingCommentsForCandidate: 'You did great!',
-      employerFeedback: 'Positive response from employer.'
+    beforeEach(() => {
+        fixture = TestBed.createComponent(EditCandidateOppComponent);
+        component = fixture.componentInstance;
+        mockActiveModal = TestBed.inject(NgbActiveModal) as MockedObject<NgbActiveModal>;
+        fixture.detectChanges();
     });
-  });
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
+    it('should initialize the form with default values based on the provided opportunity data', () => {
+        const opportunity: CandidateOpportunity = mockCandidateOpportunity;
 
-  it('should update stageHelpRequest when stage selection changes', () => {
-    const stage = { key: 'Closed_Hired' };
-    component.onStageSelectionChange(stage);
-    expect(component.stageHelpRequest).toEqual({ caseStage: 'Closed_Hired' });
-  });
+        component.opp = opportunity;
+        component.ngOnInit();
 
-  it('should filter stage options to only closed ones if closing is true', () => {
-    component.opp = mockCandidateOpportunity;
-    component.closing = true;
-    component.ngOnInit();
+        expect(component.salesforceStageForm.value).toEqual({
+            stage: opportunity.stage,
+            nextStep: opportunity.nextStep,
+            nextStepDueDate: opportunity.nextStepDueDate,
+            closingComments: opportunity.closingComments,
+            closingCommentsForCandidate: opportunity.closingCommentsForCandidate,
+            employerFeedback: opportunity.employerFeedback
+        });
+    });
+    //
+    it('should mark the form as valid when form fields are filled with valid data', () => {
+        // Set values for all form controls
+        component.salesforceStageForm.setValue({
+            stage: 'ExampleStage',
+            nextStep: 'ExampleNextStep',
+            nextStepDueDate: '2024-05-15',
+            closingComments: 'ExampleClosingComments',
+            closingCommentsForCandidate: 'ExampleClosingCommentsForCandidate',
+            employerFeedback: 'ExampleEmployerFeedback',
+        });
+        expect(component.salesforceStageForm.valid).toBe(true);
+    });
 
-    const allStagesClosed = component.candidateOpportunityStageOptions.every(opt => opt.stringValue.startsWith('Closed'));
-    expect(allStagesClosed).toBeTrue();
-  });
+    it('should dismiss the modal without saving any changes when cancel button is clicked', () => {
+        component.cancel();
+        expect(mockActiveModal.dismiss).toHaveBeenCalledWith(false);
+    });
 
-  it('form control getters should return correct values', () => {
-    const formValues = {
-      stage: 'Screening',
-      nextStep: 'Schedule call',
-      nextStepDueDate: '2025-01-01',
-      closingComments: 'Test comment',
-      closingCommentsForCandidate: 'Candidate comment',
-      employerFeedback: 'Great'
-    };
+    it('should close the modal with form values when onSave is called', () => {
+        component.salesforceStageForm.setValue({
+            stage: 'Interview',
+            nextStep: 'Send feedback',
+            nextStepDueDate: '2024-06-01',
+            closingComments: 'All went well.',
+            closingCommentsForCandidate: 'You did great!',
+            employerFeedback: 'Positive response from employer.'
+        });
 
-    component.salesforceStageForm.setValue(formValues);
+        component.onSave();
 
-    expect(component.stage).toBe(formValues.stage);
-    expect(component.nextStep).toBe(formValues.nextStep);
-    expect(component.nextStepDueDate).toBe(formValues.nextStepDueDate);
-    expect(component.closingComments).toBe(formValues.closingComments);
-    expect(component.closingCommentsForCandidate).toBe(formValues.closingCommentsForCandidate);
-    expect(component.employerFeedback).toBe(formValues.employerFeedback);
-  });
+        expect(mockActiveModal.close).toHaveBeenCalledWith({
+            stage: 'Interview',
+            nextStep: 'Send feedback',
+            nextStepDueDate: '2024-06-01',
+            closingComments: 'All went well.',
+            closingCommentsForCandidate: 'You did great!',
+            employerFeedback: 'Positive response from employer.'
+        });
+    });
+
+    it('should update stageHelpRequest when stage selection changes', () => {
+        const stage = { key: 'Closed_Hired' };
+        component.onStageSelectionChange(stage);
+        expect(component.stageHelpRequest).toEqual({ caseStage: 'Closed_Hired' });
+    });
+
+    it('should filter stage options to only closed ones if closing is true', () => {
+        component.opp = mockCandidateOpportunity;
+        component.closing = true;
+        component.ngOnInit();
+
+        const allStagesClosed = component.candidateOpportunityStageOptions.every(opt => opt.stringValue.startsWith('Closed'));
+        expect(allStagesClosed).toBe(true);
+    });
+
+    it('form control getters should return correct values', () => {
+        const formValues = {
+            stage: 'Screening',
+            nextStep: 'Schedule call',
+            nextStepDueDate: '2025-01-01',
+            closingComments: 'Test comment',
+            closingCommentsForCandidate: 'Candidate comment',
+            employerFeedback: 'Great'
+        };
+
+        component.salesforceStageForm.setValue(formValues);
+
+        expect(component.stage).toBe(formValues.stage);
+        expect(component.nextStep).toBe(formValues.nextStep);
+        expect(component.nextStepDueDate).toBe(formValues.nextStepDueDate);
+        expect(component.closingComments).toBe(formValues.closingComments);
+        expect(component.closingCommentsForCandidate).toBe(formValues.closingCommentsForCandidate);
+        expect(component.employerFeedback).toBe(formValues.employerFeedback);
+    });
 
 
 });

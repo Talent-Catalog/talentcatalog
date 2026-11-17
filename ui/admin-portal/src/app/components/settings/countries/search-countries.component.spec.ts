@@ -14,6 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
+import type {MockedObject} from "vitest";
 import {SearchCountriesComponent} from "./search-countries.component";
 import {ComponentFixture, fakeAsync, TestBed, tick} from "@angular/core/testing";
 import {NgbModal, NgbModalRef, NgbModule} from "@ng-bootstrap/ng-bootstrap";
@@ -29,137 +30,146 @@ import {EditCountryComponent} from "./edit/edit-country.component";
 import {ConfirmationComponent} from "../../util/confirm/confirmation.component";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {MockUser} from "../../../MockData/MockUser";
+import {expect, vi} from 'vitest';
 
 describe('SearchCountriesComponent', () => {
-  let component: SearchCountriesComponent;
-  let fixture: ComponentFixture<SearchCountriesComponent>;
-  let modalService: NgbModal;
-  let countryService: jasmine.SpyObj<CountryService>;
-  let authService: jasmine.SpyObj<AuthorizationService>;
-  let activeModalSpy: jasmine.SpyObj<NgbModalRef>;
+    let component: SearchCountriesComponent;
+    let fixture: ComponentFixture<SearchCountriesComponent>;
+    let modalService: NgbModal;
+    let countryService: MockedObject<CountryService>;
+    let authService: MockedObject<AuthorizationService>;
+    let activeModalSpy: MockedObject<NgbModalRef>;
 
-  beforeEach(async () => {
-    const countryServiceSpy = jasmine.createSpyObj('CountryService', ['searchPaged', 'delete']);
-    const authServiceSpy = jasmine.createSpyObj('AuthorizationService', ['isAnAdmin']);
+    beforeEach(async () => {
+        const countryServiceSpy = {
+            searchPaged: vi.fn().mockName("CountryService.searchPaged"),
+            delete: vi.fn().mockName("CountryService.delete")
+        };
+        const authServiceSpy = {
+            isAnAdmin: vi.fn().mockName("AuthorizationService.isAnAdmin")
+        };
 
-    await TestBed.configureTestingModule({
-      imports: [FormsModule, ReactiveFormsModule, NgbModule,NgSelectModule],
-      declarations: [SearchCountriesComponent],
-      providers: [
-        UntypedFormBuilder,
-        { provide: CountryService, useValue: countryServiceSpy },
-        { provide: AuthorizationService, useValue: authServiceSpy },
-        NgbModal,
-      ],
-    }).compileComponents();
+        await TestBed.configureTestingModule({
+            imports: [FormsModule, ReactiveFormsModule, NgbModule, NgSelectModule],
+            declarations: [SearchCountriesComponent],
+            providers: [
+                UntypedFormBuilder,
+                { provide: CountryService, useValue: countryServiceSpy },
+                { provide: AuthorizationService, useValue: authServiceSpy },
+                NgbModal,
+            ],
+        }).compileComponents();
 
-    countryService = TestBed.inject(CountryService) as jasmine.SpyObj<CountryService>;
-    authService = TestBed.inject(AuthorizationService) as jasmine.SpyObj<AuthorizationService>;
-    modalService = TestBed.inject(NgbModal);
-  });
+        countryService = TestBed.inject(CountryService) as MockedObject<CountryService>;
+        authService = TestBed.inject(AuthorizationService) as MockedObject<AuthorizationService>;
+        modalService = TestBed.inject(NgbModal);
+    });
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(SearchCountriesComponent);
-    component = fixture.componentInstance;
+    beforeEach(() => {
+        fixture = TestBed.createComponent(SearchCountriesComponent);
+        component = fixture.componentInstance;
 
-    // Creating a spy object for NgbModalRef (activeModal)
-    activeModalSpy = jasmine.createSpyObj('NgbModalRef', ['close', 'dismiss']);
-    countryService.searchPaged.and.returnValue(of({ totalElements: 1, content: [{ id: 1, name: 'Added Country', status: 'active' }] } as SearchResults<Country>));
-    component.loggedInUser = new MockUser();
-    fixture.detectChanges();
-  });
+        // Creating a spy object for NgbModalRef (activeModal)
+        activeModalSpy = ({
+            close: vi.fn().mockName("NgbModalRef.close"),
+            dismiss: vi.fn().mockName("NgbModalRef.dismiss")
+        } as unknown as typeof activeModalSpy);
+        countryService.searchPaged.mockReturnValue(of({ totalElements: 1, content: [{ id: 1, name: 'Added Country', status: 'active' }] } as SearchResults<Country>));
+        component.loggedInUser = new MockUser();
+        fixture.detectChanges();
+    });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
 
-  it('should open add country modal and refresh list on success', fakeAsync(() => {
-    // Mocking modalService.open to return the NgbModalRef spy object
-    spyOn(modalService, 'open').and.returnValue(activeModalSpy);
+    it('should open add country modal and refresh list on success', fakeAsync(() => {
+        // Mocking modalService.open to return the NgbModalRef spy object
+        vi.spyOn(modalService, 'open').mockReturnValue(activeModalSpy);
 
-    // Mocking the result of modal close to simulate success
-    activeModalSpy.result = Promise.resolve('added country');
+        // Mocking the result of modal close to simulate success
+        activeModalSpy.result = Promise.resolve('added country');
 
-    // Mocking the countryService.searchPaged response
-    countryService.searchPaged.and.returnValue(of({ totalElements: 1, content: [{ id: 1, name: 'Added Country', status: 'active' }] } as SearchResults<Country>));
+        // Mocking the countryService.searchPaged response
+        countryService.searchPaged.mockReturnValue(of({ totalElements: 1, content: [{ id: 1, name: 'Added Country', status: 'active' }] } as SearchResults<Country>));
 
-    // Calling the addCountry method
-    component.addCountry();
-    fixture.detectChanges();
-    tick(); // Resolve promise
+        // Calling the addCountry method
+        component.addCountry();
+        fixture.detectChanges();
+        tick(); // Resolve promise
 
-    // Expect modalService.open to have been called with CreateCountryComponent
-    expect(modalService.open).toHaveBeenCalledWith(CreateCountryComponent, jasmine.any(Object));
+        // Expect modalService.open to have been called with CreateCountryComponent
+        expect(modalService.open).toHaveBeenCalledWith(CreateCountryComponent, expect.any(Object));
 
-    // Expect searchPaged method to have been called once after modal closes
-    expect(countryService.searchPaged).toHaveBeenCalledTimes(2);
+        // Expect searchPaged method to have been called once after modal closes
+        expect(countryService.searchPaged).toHaveBeenCalledTimes(2);
 
-  }));
+    }));
 
-  it('should open edit country modal and refresh list on success', fakeAsync(() => {
-    const mockCountry: Country = MockJob.country;
+    it('should open edit country modal and refresh list on success', fakeAsync(() => {
+        const mockCountry: Country = MockJob.country;
 
-    // Creating a mock modal instance
-    const mockModalRef: Partial<NgbModalRef> = {
-      componentInstance: { countryId: 1 },
-      result: Promise.resolve(mockCountry)
-    };
+        // Creating a mock modal instance
+        const mockModalRef: Partial<NgbModalRef> = {
+            componentInstance: { countryId: 1 },
+            result: Promise.resolve(mockCountry)
+        };
 
-    // Mocking modalService.open to return the mock modal instance
-    spyOn(modalService, 'open').and.returnValue(mockModalRef as NgbModalRef);
+        // Mocking modalService.open to return the mock modal instance
+        vi.spyOn(modalService, 'open').mockReturnValue(mockModalRef as NgbModalRef);
 
-    // Mocking the countryService.searchPaged response
-    countryService.searchPaged.and.returnValue(of({ totalElements: 1, content: [mockCountry] } as SearchResults<Country>));
+        // Mocking the countryService.searchPaged response
+        countryService.searchPaged.mockReturnValue(of({ totalElements: 1, content: [mockCountry] } as SearchResults<Country>));
 
-    // Calling the editCountry method
-    component.editCountry(mockCountry);
-    fixture.detectChanges();
-    tick(); // Resolve promise
+        // Calling the editCountry method
+        component.editCountry(mockCountry);
+        fixture.detectChanges();
+        tick(); // Resolve promise
 
-    // Expect modalService.open to have been called with EditCountryComponent
-    expect(modalService.open).toHaveBeenCalledWith(EditCountryComponent, jasmine.any(Object));
+        // Expect modalService.open to have been called with EditCountryComponent
+        expect(modalService.open).toHaveBeenCalledWith(EditCountryComponent, expect.any(Object));
 
-    // Ensure the countryId is set correctly on the componentInstance
-    expect(mockModalRef.componentInstance.countryId).toBe(mockCountry.id);
+        // Ensure the countryId is set correctly on the componentInstance
+        expect(mockModalRef.componentInstance.countryId).toBe(mockCountry.id);
 
-    // Expect searchPaged method to have been called once after modal closes
-    expect(countryService.searchPaged).toHaveBeenCalledTimes(2);
+        // Expect searchPaged method to have been called once after modal closes
+        expect(countryService.searchPaged).toHaveBeenCalledTimes(2);
 
-  }));
+    }));
 
-  it('should open confirmation modal and delete country on confirm', fakeAsync(() => {
-    const mockCountry: Country = MockJob.country;
+    it('should open confirmation modal and delete country on confirm', fakeAsync(() => {
+        const mockCountry: Country = MockJob.country;
 
-    // Creating a mock modal instance
-    const mockModalRef: Partial<NgbModalRef> = {
-      componentInstance: { message: "" },
-      result: Promise.resolve(true)
-    };
+        // Creating a mock modal instance
+        const mockModalRef: Partial<NgbModalRef> = {
+            componentInstance: { message: "" },
+            result: Promise.resolve(true)
+        };
 
-    // Mocking modalService.open to return the mock modal instance
-    spyOn(modalService, 'open').and.returnValue(mockModalRef as NgbModalRef);
+        // Mocking modalService.open to return the mock modal instance
+        vi.spyOn(modalService, 'open').mockReturnValue(mockModalRef as NgbModalRef);
 
-    // Mocking the result of modal close to simulate confirmation
-    activeModalSpy.result = Promise.resolve(true);
+        // Mocking the result of modal close to simulate confirmation
+        activeModalSpy.result = Promise.resolve(true);
 
-    // Mocking the countryService.delete response
-    countryService.delete.and.returnValue(of(true));
+        // Mocking the countryService.delete response
+        countryService.delete.mockReturnValue(of(true));
 
-    // Mocking the countryService.searchPaged response
-    countryService.searchPaged.and.returnValue(of({ totalElements: 0, content: [] } as SearchResults<Country>));
+        // Mocking the countryService.searchPaged response
+        countryService.searchPaged.mockReturnValue(of({ totalElements: 0, content: [] } as SearchResults<Country>));
 
-    // Calling the deleteCountry method
-    component.deleteCountry(mockCountry);
-    fixture.detectChanges();
-    tick(); // Resolve promise
+        // Calling the deleteCountry method
+        component.deleteCountry(mockCountry);
+        fixture.detectChanges();
+        tick(); // Resolve promise
 
-    // Expect modalService.open to have been called with ConfirmationComponent
-    expect(modalService.open).toHaveBeenCalledWith(ConfirmationComponent, jasmine.any(Object));
+        // Expect modalService.open to have been called with ConfirmationComponent
+        expect(modalService.open).toHaveBeenCalledWith(ConfirmationComponent, expect.any(Object));
 
-    // Expect delete method to have been called with the correct country id
-    expect(countryService.delete).toHaveBeenCalled();
+        // Expect delete method to have been called with the correct country id
+        expect(countryService.delete).toHaveBeenCalled();
 
-    // Expect searchPaged method to have been called once after deletion
-    expect(countryService.searchPaged).toHaveBeenCalledTimes(3);
-  }));
+        // Expect searchPaged method to have been called once after deletion
+        expect(countryService.searchPaged).toHaveBeenCalledTimes(3);
+    }));
 });

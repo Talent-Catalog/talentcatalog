@@ -22,6 +22,7 @@ import {environment} from '../../environments/environment';
 import {LanguageLevel} from '../model/language-level';
 import {SystemLanguage} from '../model/language';
 import {SearchResults} from '../model/search-results';
+import {expect} from 'vitest';
 
 describe('LanguageLevelService', () => {
   let service: LanguageLevelService;

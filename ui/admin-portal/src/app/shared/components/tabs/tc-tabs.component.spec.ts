@@ -5,9 +5,10 @@ import {TcTabsComponent} from './tc-tabs.component';
 import {TcTabComponent} from './tab/tc-tab.component';
 import {TcTabHeaderComponent} from "./tab/header/tc-tab-header.component";
 import {TcTabContentComponent} from "./tab/content/tc-tab-content.component";
+import {expect} from 'vitest';
 
 @Component({
-  template: `
+    template: `
     <tc-tabs [activeTabId]="activeTabId" (tabChanged)="onTabChanged($event)">
       <tc-tab id="FirstTab" description="First tab description">
         <tc-tab-header>First Tab</tc-tab-header>
@@ -19,72 +20,72 @@ import {TcTabContentComponent} from "./tab/content/tc-tab-content.component";
       </tc-tab>
     </tc-tabs>
   `,
-  changeDetection: ChangeDetectionStrategy.Eager,
-  standalone: false
+    changeDetection: ChangeDetectionStrategy.Eager,
+    standalone: false
 })
 class TestHostComponent {
-  activeTabId = 'FirstTab';
-  lastChanged: string | null = null;
-  onTabChanged(tabId: string) {
-    this.lastChanged = tabId;
-  }
+    activeTabId = 'FirstTab';
+    lastChanged: string | null = null;
+    onTabChanged(tabId: string) {
+        this.lastChanged = tabId;
+    }
 }
 
 describe('TcTabsComponent', () => {
-  let fixture: ComponentFixture<TestHostComponent>;
-  let host: TestHostComponent;
+    let fixture: ComponentFixture<TestHostComponent>;
+    let host: TestHostComponent;
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      declarations: [TestHostComponent],
-      imports: [TcTabsComponent, TcTabComponent, TcTabHeaderComponent, TcTabContentComponent],
-    }).compileComponents();
+    beforeEach(async () => {
+        await TestBed.configureTestingModule({
+            declarations: [TestHostComponent],
+            imports: [TcTabsComponent, TcTabComponent, TcTabHeaderComponent, TcTabContentComponent],
+        }).compileComponents();
 
-    fixture = TestBed.createComponent(TestHostComponent);
-    host = fixture.componentInstance;
-    fixture.detectChanges();
-  });
+        fixture = TestBed.createComponent(TestHostComponent);
+        host = fixture.componentInstance;
+        fixture.detectChanges();
+    });
 
-  it('should render tab headers in the nav', () => {
-    const headers = fixture.debugElement.queryAll(By.css('ul.nav-tabs li a'));
-    expect(headers.length).toBe(2);
-    expect(headers[0].nativeElement.textContent.trim()).toContain('First Tab');
-    expect(headers[1].nativeElement.textContent.trim()).toContain('Second Tab');
-  });
+    it('should render tab headers in the nav', () => {
+        const headers = fixture.debugElement.queryAll(By.css('ul.nav-tabs li a'));
+        expect(headers.length).toBe(2);
+        expect(headers[0].nativeElement.textContent.trim()).toContain('First Tab');
+        expect(headers[1].nativeElement.textContent.trim()).toContain('Second Tab');
+    });
 
-  it('should apply active class to the active tab', () => {
-    const headers = fixture.debugElement.queryAll(By.css('ul.nav-tabs li a'));
-    expect(headers[0].classes['active']).toBeTrue();
-    expect(headers[1].classes['active']).toBeFalsy();
-  });
+    it('should apply active class to the active tab', () => {
+        const headers = fixture.debugElement.queryAll(By.css('ul.nav-tabs li a'));
+        expect(headers[0].classes['active']).toBe(true);
+        expect(headers[1].classes['active']).toBeFalsy();
+    });
 
-  it('should only show content of the active tab', () => {
-    fixture.detectChanges();
+    it('should only show content of the active tab', () => {
+        fixture.detectChanges();
 
-    const contents = fixture.debugElement.queryAll(By.css('.tab-content .tab-pane'));
+        const contents = fixture.debugElement.queryAll(By.css('.tab-content .tab-pane'));
 
-    // Only one tab content should exist in the DOM
-    expect(contents.length).toBe(1);
+        // Only one tab content should exist in the DOM
+        expect(contents.length).toBe(1);
 
-    // The content should be the first tab
-    expect(contents[0].nativeElement.textContent).toContain('First Tab Content');
-  });
+        // The content should be the first tab
+        expect(contents[0].nativeElement.textContent).toContain('First Tab Content');
+    });
 
-  it('should switch tab when header is clicked', () => {
-    fixture.detectChanges();
-    // Query all tab header links
-    const headers = fixture.debugElement.queryAll(By.css('ul.nav-tabs li a'));
+    it('should switch tab when header is clicked', () => {
+        fixture.detectChanges();
+        // Query all tab header links
+        const headers = fixture.debugElement.queryAll(By.css('ul.nav-tabs li a'));
 
-    // Click the second tab header
-    headers[1].nativeElement.click();
-    fixture.detectChanges();
+        // Click the second tab header
+        headers[1].nativeElement.click();
+        fixture.detectChanges();
 
-    // After click, only the second tab content should be rendered
-    const contents = fixture.debugElement.queryAll(By.css('.tab-content .tab-pane'));
-    expect(contents.length).toBe(1);
-    expect(contents[0].nativeElement.textContent).toContain('Second Tab Content');
+        // After click, only the second tab content should be rendered
+        const contents = fixture.debugElement.queryAll(By.css('.tab-content .tab-pane'));
+        expect(contents.length).toBe(1);
+        expect(contents[0].nativeElement.textContent).toContain('Second Tab Content');
 
-    // Verify the component output is emitted correctly
-    expect(host.lastChanged).toBe('SecondTab');
-  });
+        // Verify the component output is emitted correctly
+        expect(host.lastChanged).toBe('SecondTab');
+    });
 });

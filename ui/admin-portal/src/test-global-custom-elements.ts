@@ -7,10 +7,11 @@ import {
   forwardRef,
   NgModule,
   NO_ERRORS_SCHEMA,
-  ChangeDetectionStrategy
+  ChangeDetectionStrategy,
+  provideZoneChangeDetection
 } from '@angular/core';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
-import {TestBed, TestModuleMetadata} from '@angular/core/testing';
+import {TestBed, TestModuleMetadata, getTestBed} from '@angular/core/testing';
 import {CommonModule} from '@angular/common';
 
 
@@ -444,15 +445,36 @@ const REAL_COMPONENTS = new Set([
   'InputComponent',
 ]);
 
-const originalConfigure = TestBed.configureTestingModule.bind(TestBed);
-(TestBed.configureTestingModule as any) = (meta: TestModuleMetadata = {}) => {
-  // The esbuild-based test builder may rename classes with a numeric suffix (e.g. TcModalComponent2),
-  // so compare names without it.
-  const hasReal = [...(meta.declarations ?? []), ...(meta.imports ?? [])]
-    .some(d => REAL_COMPONENTS.has((d as any)?.name?.replace(/\d+$/, '')));
-  if (!hasReal) {
-    meta.imports = [...(meta.imports ?? []), GlobalCustomStubsModule];
-  }
-  meta.schemas = [...(meta.schemas ?? []), NO_ERRORS_SCHEMA, CUSTOM_ELEMENTS_SCHEMA];
-  return originalConfigure(meta);
-};
+// ADMIN_VITEST_PATCH_ONCE_V2:
+// Vitest setup and individual specs can call configureTestingModule multiple times.
+// Import the global stub module only once per TestBed lifetime to avoid NG0300.
+// The first configuration also retains this application's Zone-based change detection.
+const adminVitestPatchKey = '__tcAdminVitestPatchOnceV2';
+if (!(TestBed as any)[adminVitestPatchKey]) {
+  const originalConfigure = TestBed.configureTestingModule.bind(TestBed);
+  // Angular's automatic teardown resets the TestBed INSTANCE, not necessarily
+  // its static facade. Wrap the instance so our once-per-test state is reset.
+  const testBedInstance = getTestBed();
+  const originalInstanceReset = testBedInstance.resetTestingModule.bind(testBedInstance);
+  let firstConfiguration = true;
+
+  (testBedInstance.resetTestingModule as any) = (...args: any[]) => {
+    firstConfiguration = true;
+    return (originalInstanceReset as any)(...args);
+  };
+
+  (TestBed.configureTestingModule as any) = (meta: TestModuleMetadata = {}) => {
+    if (firstConfiguration) {
+      firstConfiguration = false;
+      const hasReal = [...(meta.declarations ?? []), ...(meta.imports ?? [])]
+        .some(d => REAL_COMPONENTS.has((d as any)?.name?.replace(/\d+$/, '')));
+      if (!hasReal) {
+        meta.imports = [...(meta.imports ?? []), GlobalCustomStubsModule];
+      }
+      meta.providers = [...(meta.providers ?? []), provideZoneChangeDetection()];
+    }
+    meta.schemas = [...new Set([...(meta.schemas ?? []), NO_ERRORS_SCHEMA, CUSTOM_ELEMENTS_SCHEMA])];
+    return originalConfigure(meta);
+  };
+  (TestBed as any)[adminVitestPatchKey] = true;
+}

@@ -23,42 +23,43 @@ import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/commo
 import {AutosaveStatusComponent} from "../../../../util/autosave-status/autosave-status.component";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {MockCandidateVisaJobCheck} from "../../../../../MockData/MockCandidateVisaCheck";
+import {expect} from 'vitest';
 
 describe('JobEligibilityAssessmentComponent', () => {
-  let component: JobEligibilityAssessmentComponent;
-  let fixture: ComponentFixture<JobEligibilityAssessmentComponent>;
-  let fb: UntypedFormBuilder;
+    let component: JobEligibilityAssessmentComponent;
+    let fixture: ComponentFixture<JobEligibilityAssessmentComponent>;
+    let fb: UntypedFormBuilder;
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      declarations: [JobEligibilityAssessmentComponent,AutosaveStatusComponent],
-      imports: [ReactiveFormsModule,NgSelectModule],
-      providers: [UntypedFormBuilder, provideHttpClient(withXhr(), withInterceptorsFromDi()), provideHttpClientTesting()]
-    }).compileComponents();
-  });
+    beforeEach(async () => {
+        await TestBed.configureTestingModule({
+            declarations: [JobEligibilityAssessmentComponent, AutosaveStatusComponent],
+            imports: [ReactiveFormsModule, NgSelectModule],
+            providers: [UntypedFormBuilder, provideHttpClient(withXhr(), withInterceptorsFromDi()), provideHttpClientTesting()]
+        }).compileComponents();
+    });
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(JobEligibilityAssessmentComponent);
-    component = fixture.componentInstance;
-    fb = TestBed.inject(UntypedFormBuilder);
-    component.visaJobCheck = MockCandidateVisaJobCheck;
-    fixture.detectChanges();
-  });
+    beforeEach(() => {
+        fixture = TestBed.createComponent(JobEligibilityAssessmentComponent);
+        component = fixture.componentInstance;
+        fb = TestBed.inject(UntypedFormBuilder);
+        component.visaJobCheck = MockCandidateVisaJobCheck;
+        fixture.detectChanges();
+    });
 
-  it('should create the component', () => {
-    expect(component).toBeTruthy();
-  });
+    it('should create the component', () => {
+        expect(component).toBeTruthy();
+    });
 
-  it('should have a form with visaJobTbbEligibility control', () => {
-    expect(component.form.contains('visaJobTbbEligibility')).toBeTrue();
-  });
+    it('should have a form with visaJobTbbEligibility control', () => {
+        expect(component.form.contains('visaJobTbbEligibility')).toBe(true);
+    });
 
-  it('should update form value when input changes', () => {
-    const testValue: TBBEligibilityAssessment = TBBEligibilityAssessment.Discuss;
-    const ngSelect = fixture.nativeElement.querySelector('ng-select');
-    ngSelect.value = testValue;
-    ngSelect.dispatchEvent(new Event('change'));
-    component.form.get('visaJobTbbEligibility').setValue(testValue);
-    expect(component.form.get('visaJobTbbEligibility')?.value).toEqual(testValue);
-  });
+    it('should update form value when input changes', () => {
+        const testValue: TBBEligibilityAssessment = TBBEligibilityAssessment.Discuss;
+        const ngSelect = fixture.nativeElement.querySelector('ng-select');
+        ngSelect.value = testValue;
+        ngSelect.dispatchEvent(new Event('change'));
+        component.form.get('visaJobTbbEligibility').setValue(testValue);
+        expect(component.form.get('visaJobTbbEligibility')?.value).toEqual(testValue);
+    });
 });

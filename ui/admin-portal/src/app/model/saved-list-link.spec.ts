@@ -19,6 +19,7 @@ import {User} from "./user";
 import {MockSavedList} from "../MockData/MockSavedList";
 import {MockUser} from "../MockData/MockUser";
 import {SavedListLink} from "./saved-list-link";
+import {expect} from 'vitest';
 
 describe('SavedListLink interface', () => {
   let savedList: SavedList;

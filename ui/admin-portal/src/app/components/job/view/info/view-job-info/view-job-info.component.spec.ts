@@ -22,61 +22,63 @@ import {MockJob} from "../../../../../MockData/MockJob";
 import {RouterLinkStubDirective} from "../../../../login/login.component.spec";
 import {AuthorizationService} from "../../../../../services/authorization.service";
 import {By} from "@angular/platform-browser";
+import {expect, vi} from 'vitest';
 
 describe('ViewJobInfoComponent', () => {
-  let component: ViewJobInfoComponent;
-  let fixture: ComponentFixture<ViewJobInfoComponent>;
-  let modalService: NgbModal;
-   beforeEach(async () => {
-     let authServiceSpy =
-       jasmine.createSpyObj('AuthorizationService', ['canSeeJobDetails']);
-     authServiceSpy.canSeeJobDetails.and.returnValue(true);
+    let component: ViewJobInfoComponent;
+    let fixture: ComponentFixture<ViewJobInfoComponent>;
+    let modalService: NgbModal;
+    beforeEach(async () => {
+        let authServiceSpy = {
+            canSeeJobDetails: vi.fn().mockName("AuthorizationService.canSeeJobDetails")
+        };
+        authServiceSpy.canSeeJobDetails.mockReturnValue(true);
 
-     await TestBed.configureTestingModule({
-      declarations: [ ViewJobInfoComponent,RouterLinkStubDirective ],
-      providers: [
-        { provide: NgbModal  },
-        { provide: AuthorizationService, useValue: authServiceSpy  },
-      ]
-    })
-    .compileComponents();
+        await TestBed.configureTestingModule({
+            declarations: [ViewJobInfoComponent, RouterLinkStubDirective],
+            providers: [
+                { provide: NgbModal },
+                { provide: AuthorizationService, useValue: authServiceSpy },
+            ]
+        })
+            .compileComponents();
 
-    modalService = TestBed.inject(NgbModal);
-  });
+        modalService = TestBed.inject(NgbModal);
+    });
 
-  beforeEach(() => { // Use this block for component creation
-    fixture = TestBed.createComponent(ViewJobInfoComponent);
-    component = fixture.componentInstance;
+    beforeEach(() => {
+        fixture = TestBed.createComponent(ViewJobInfoComponent);
+        component = fixture.componentInstance;
 
-    component.editable = true;
-    // Provide a mock Job object
-    component.job = MockJob;
+        component.editable = true;
+        // Provide a mock Job object
+        component.job = MockJob;
 
-    fixture.detectChanges();
-  });
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
-  it('should display job information correctly', () => {
-    const items = fixture.debugElement.queryAll(By.css('tc-description-item'));
-    expect(items.some(item => item.nativeElement.textContent.includes('USA'))).toBeTrue();
-   });
+        fixture.detectChanges();
+    });
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
+    it('should display job information correctly', () => {
+        const items = fixture.debugElement.queryAll(By.css('tc-description-item'));
+        expect(items.some(item => item.nativeElement.textContent.includes('USA'))).toBe(true);
+    });
 
-  it('should open edit modal when edit button is clicked', () => {
-    // Spy on modalService.open method and return a dummy NgbModalRef
-    spyOn(modalService, 'open').and.returnValue({
-      componentInstance: {},
-      result: Promise.resolve('saved')
-    } as NgbModalRef);
+    it('should open edit modal when edit button is clicked', () => {
+        // Spy on modalService.open method and return a dummy NgbModalRef
+        vi.spyOn(modalService, 'open').mockReturnValue({
+            componentInstance: {},
+            result: Promise.resolve('saved')
+        } as NgbModalRef);
 
-    // Trigger the editJobInfo method, for example, by clicking the edit button
-    const editButton = fixture.debugElement.query(By.css('#edit-job-info-btn'));
-    editButton.triggerEventHandler('onClick', null);
+        // Trigger the editJobInfo method, for example, by clicking the edit button
+        const editButton = fixture.debugElement.query(By.css('#edit-job-info-btn'));
+        editButton.triggerEventHandler('onClick', null);
 
-    fixture.detectChanges();
+        fixture.detectChanges();
 
-    // Expect that modalService.open was called with EditJobInfoComponent
-    expect(modalService.open).toHaveBeenCalledWith(EditJobInfoComponent, jasmine.any(Object));
-  });
+        // Expect that modalService.open was called with EditJobInfoComponent
+        expect(modalService.open).toHaveBeenCalledWith(EditJobInfoComponent, expect.any(Object));
+    });
 
 });

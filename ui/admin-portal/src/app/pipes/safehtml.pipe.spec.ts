@@ -15,18 +15,21 @@
  */
 import {DomSanitizer} from '@angular/platform-browser';
 import {SafeHtmlPipe} from "./safehtml.pipe";
+import {expect, vi} from 'vitest';
 
 describe('SafeHtmlPipe', () => {
-  let pipe: SafeHtmlPipe;
-  let sanitizer: DomSanitizer;
+    let pipe: SafeHtmlPipe;
+    let sanitizer: DomSanitizer;
 
-  beforeEach(() => {
-    sanitizer = jasmine.createSpyObj('DomSanitizer', ['bypassSecurityTrustHtml']);
-    pipe = new SafeHtmlPipe(sanitizer);
-  });
+    beforeEach(() => {
+        sanitizer = ({
+            bypassSecurityTrustHtml: vi.fn().mockName("DomSanitizer.bypassSecurityTrustHtml")
+        } as unknown as typeof sanitizer);
+        pipe = new SafeHtmlPipe(sanitizer);
+    });
 
-  it('should create an instance', () => {
-    expect(pipe).toBeTruthy();
-  });
+    it('should create an instance', () => {
+        expect(pipe).toBeTruthy();
+    });
 
 });

@@ -14,6 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
+import type {MockedObject} from "vitest";
 import {ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
 import {NO_ERRORS_SCHEMA} from '@angular/core';
 import {NgbModal, NgbModalRef} from '@ng-bootstrap/ng-bootstrap';
@@ -24,280 +25,246 @@ import {CandidateEducationService} from '../../../../services/candidate-educatio
 import {CandidateService} from '../../../../services/candidate.service';
 import {EditCandidateEducationComponent} from './edit/edit-candidate-education.component';
 import {CreateCandidateEducationComponent} from './create/create-candidate-education.component';
-import {
-  EditMaxEducationLevelComponent
-} from './edit-max-education-level/edit-max-education-level.component';
+import {EditMaxEducationLevelComponent} from './edit-max-education-level/edit-max-education-level.component';
 import {ConfirmationComponent} from '../../../util/confirm/confirmation.component';
+import {expect, vi} from 'vitest';
 
 describe('ViewCandidateEducationComponent', () => {
-  let component: ViewCandidateEducationComponent;
-  let fixture: ComponentFixture<ViewCandidateEducationComponent>;
+    let component: ViewCandidateEducationComponent;
+    let fixture: ComponentFixture<ViewCandidateEducationComponent>;
 
-  let candidateEducationService: jasmine.SpyObj<CandidateEducationService>;
-  let candidateService: jasmine.SpyObj<CandidateService>;
-  let modalService: jasmine.SpyObj<NgbModal>;
+    let candidateEducationService: MockedObject<CandidateEducationService>;
+    let candidateService: MockedObject<CandidateService>;
+    let modalService: MockedObject<NgbModal>;
 
-  const candidate = {
-    id: 10,
-    maxEducationLevel: {
-      id: 3,
-      name: 'Bachelor'
-    },
-    candidateEducations: []
-  } as any;
-
-  const education = {
-    id: 25,
-    educationType: 'University',
-    courseName: 'Computer Science'
-  } as any;
-
-  function modalRef(
-    result: Promise<any>,
-    componentInstance: Record<string, any> = {}
-  ): NgbModalRef {
-    return {
-      componentInstance,
-      result,
-      close: jasmine.createSpy('close'),
-      dismiss: jasmine.createSpy('dismiss')
-    } as unknown as NgbModalRef;
-  }
-
-  beforeEach(async () => {
-    candidateEducationService = jasmine.createSpyObj<CandidateEducationService>(
-      'CandidateEducationService',
-      ['delete']
-    );
-
-    candidateService = jasmine.createSpyObj<CandidateService>(
-      'CandidateService',
-      ['updateMaxEducationLevel', 'updateCandidate']
-    );
-
-    modalService = jasmine.createSpyObj<NgbModal>(
-      'NgbModal',
-      ['open']
-    );
-
-    candidateService.updateMaxEducationLevel.and.returnValue(of({} as any));
-
-    await TestBed.configureTestingModule({
-      declarations: [ViewCandidateEducationComponent],
-      providers: [
-        {
-          provide: CandidateEducationService,
-          useValue: candidateEducationService
+    const candidate = {
+        id: 10,
+        maxEducationLevel: {
+            id: 3,
+            name: 'Bachelor'
         },
-        {
-          provide: CandidateService,
-          useValue: candidateService
-        },
-        {
-          provide: NgbModal,
-          useValue: modalService
-        }
-      ],
-      schemas: [NO_ERRORS_SCHEMA]
-    })
-    .overrideTemplate(ViewCandidateEducationComponent, '')
-    .compileComponents();
+        candidateEducations: []
+    } as any;
 
-    fixture = TestBed.createComponent(ViewCandidateEducationComponent);
-    component = fixture.componentInstance;
-    component.candidate = {...candidate};
-    component.editable = true;
-    component.adminUser = true;
+    const education = {
+        id: 25,
+        educationType: 'University',
+        courseName: 'Computer Science'
+    } as any;
 
-    fixture.detectChanges();
-  });
+    function modalRef(result: Promise<any>, componentInstance: Record<string, any> = {}): NgbModalRef {
+        return {
+            componentInstance,
+            result,
+            close: vi.fn().mockName('close'),
+            dismiss: vi.fn().mockName('dismiss')
+        } as unknown as NgbModalRef;
+    }
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+    beforeEach(async () => {
+        candidateEducationService = ({
+            delete: vi.fn().mockName("CandidateEducationService.delete")
+        } as unknown as typeof candidateEducationService);
 
-  it('should run ngOnInit', () => {
-    expect(() => component.ngOnInit()).not.toThrow();
-  });
+        candidateService = ({
+            updateMaxEducationLevel: vi.fn().mockName("CandidateService.updateMaxEducationLevel"),
+            updateCandidate: vi.fn().mockName("CandidateService.updateCandidate")
+        } as unknown as typeof candidateService);
 
-  describe('editMaxEducationLevel', () => {
-    it('should open the modal, update the level and refresh the candidate', fakeAsync(() => {
-      const ref = modalRef(Promise.resolve(7));
-      modalService.open.and.returnValue(ref);
+        modalService = ({
+            open: vi.fn().mockName("NgbModal.open")
+        } as unknown as typeof modalService);
 
-      component.editMaxEducationLevel();
-      tick();
+        candidateService.updateMaxEducationLevel.mockReturnValue(of({} as any));
 
-      expect(modalService.open).toHaveBeenCalledWith(
-        EditMaxEducationLevelComponent,
-        {
-          centered: true,
-          backdrop: 'static'
-        }
-      );
-      expect(ref.componentInstance.educationLevel)
-      .toBe(component.candidate.maxEducationLevel);
-      expect(candidateService.updateMaxEducationLevel)
-      .toHaveBeenCalledWith(component.candidate.id, {
-        maxEducationLevel: 7
-      });
-      expect(candidateService.updateCandidate).toHaveBeenCalled();
-    }));
+        await TestBed.configureTestingModule({
+            declarations: [ViewCandidateEducationComponent],
+            providers: [
+                {
+                    provide: CandidateEducationService,
+                    useValue: candidateEducationService
+                },
+                {
+                    provide: CandidateService,
+                    useValue: candidateService
+                },
+                {
+                    provide: NgbModal,
+                    useValue: modalService
+                }
+            ],
+            schemas: [NO_ERRORS_SCHEMA]
+        })
+            .overrideTemplate(ViewCandidateEducationComponent, '')
+            .compileComponents();
 
-    it('should not update when the modal returns a falsy level id', fakeAsync(() => {
-      modalService.open.and.returnValue(
-        modalRef(Promise.resolve(null))
-      );
+        fixture = TestBed.createComponent(ViewCandidateEducationComponent);
+        component = fixture.componentInstance;
+        component.candidate = { ...candidate };
+        component.editable = true;
+        component.adminUser = true;
 
-      component.editMaxEducationLevel();
-      tick();
+        fixture.detectChanges();
+    });
 
-      expect(candidateService.updateMaxEducationLevel).not.toHaveBeenCalled();
-      expect(candidateService.updateCandidate).not.toHaveBeenCalled();
-    }));
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
 
-    it('should ignore modal dismissal', fakeAsync(() => {
-      modalService.open.and.returnValue(
-        modalRef(Promise.reject('dismissed'))
-      );
+    it('should run ngOnInit', () => {
+        expect(() => component.ngOnInit()).not.toThrow();
+    });
 
-      component.editMaxEducationLevel();
-      tick();
+    describe('editMaxEducationLevel', () => {
+        it('should open the modal, update the level and refresh the candidate', fakeAsync(() => {
+            const ref = modalRef(Promise.resolve(7));
+            modalService.open.mockReturnValue(ref);
 
-      expect(candidateService.updateMaxEducationLevel).not.toHaveBeenCalled();
-      expect(candidateService.updateCandidate).not.toHaveBeenCalled();
-    }));
-  });
+            component.editMaxEducationLevel();
+            tick();
 
-  describe('editCandidateEducation', () => {
-    it('should open the edit modal and refresh after success', fakeAsync(() => {
-      const ref = modalRef(Promise.resolve(education));
-      modalService.open.and.returnValue(ref);
+            expect(modalService.open).toHaveBeenCalledWith(EditMaxEducationLevelComponent, {
+                centered: true,
+                backdrop: 'static'
+            });
+            expect(ref.componentInstance.educationLevel)
+                .toBe(component.candidate.maxEducationLevel);
+            expect(candidateService.updateMaxEducationLevel)
+                .toHaveBeenCalledWith(component.candidate.id, {
+                maxEducationLevel: 7
+            });
+            expect(candidateService.updateCandidate).toHaveBeenCalled();
+        }));
 
-      component.editCandidateEducation(education);
-      tick();
+        it('should not update when the modal returns a falsy level id', fakeAsync(() => {
+            modalService.open.mockReturnValue(modalRef(Promise.resolve(null)));
 
-      expect(modalService.open).toHaveBeenCalledWith(
-        EditCandidateEducationComponent,
-        {
-          centered: true,
-          backdrop: 'static'
-        }
-      );
-      expect(ref.componentInstance.candidateEducation).toBe(education);
-      expect(candidateService.updateCandidate).toHaveBeenCalled();
-    }));
+            component.editMaxEducationLevel();
+            tick();
 
-    it('should ignore edit modal dismissal', fakeAsync(() => {
-      modalService.open.and.returnValue(
-        modalRef(Promise.reject('dismissed'))
-      );
+            expect(candidateService.updateMaxEducationLevel).not.toHaveBeenCalled();
+            expect(candidateService.updateCandidate).not.toHaveBeenCalled();
+        }));
 
-      component.editCandidateEducation(education);
-      tick();
+        it('should ignore modal dismissal', fakeAsync(() => {
+            modalService.open.mockReturnValue(modalRef(Promise.reject('dismissed')));
 
-      expect(candidateService.updateCandidate).not.toHaveBeenCalled();
-    }));
-  });
+            component.editMaxEducationLevel();
+            tick();
 
-  describe('createCandidateEducation', () => {
-    it('should open the create modal and refresh after success', fakeAsync(() => {
-      const ref = modalRef(Promise.resolve(education));
-      modalService.open.and.returnValue(ref);
+            expect(candidateService.updateMaxEducationLevel).not.toHaveBeenCalled();
+            expect(candidateService.updateCandidate).not.toHaveBeenCalled();
+        }));
+    });
 
-      component.createCandidateEducation();
-      tick();
+    describe('editCandidateEducation', () => {
+        it('should open the edit modal and refresh after success', fakeAsync(() => {
+            const ref = modalRef(Promise.resolve(education));
+            modalService.open.mockReturnValue(ref);
 
-      expect(modalService.open).toHaveBeenCalledWith(
-        CreateCandidateEducationComponent,
-        {
-          centered: true,
-          backdrop: 'static'
-        }
-      );
-      expect(ref.componentInstance.candidateId).toBe(component.candidate.id);
-      expect(candidateService.updateCandidate).toHaveBeenCalled();
-    }));
+            component.editCandidateEducation(education);
+            tick();
 
-    it('should ignore create modal dismissal', fakeAsync(() => {
-      modalService.open.and.returnValue(
-        modalRef(Promise.reject('dismissed'))
-      );
+            expect(modalService.open).toHaveBeenCalledWith(EditCandidateEducationComponent, {
+                centered: true,
+                backdrop: 'static'
+            });
+            expect(ref.componentInstance.candidateEducation).toBe(education);
+            expect(candidateService.updateCandidate).toHaveBeenCalled();
+        }));
 
-      component.createCandidateEducation();
-      tick();
+        it('should ignore edit modal dismissal', fakeAsync(() => {
+            modalService.open.mockReturnValue(modalRef(Promise.reject('dismissed')));
 
-      expect(candidateService.updateCandidate).not.toHaveBeenCalled();
-    }));
-  });
+            component.editCandidateEducation(education);
+            tick();
 
-  describe('deleteCandidateEducation', () => {
-    it('should delete after confirmation and refresh the candidate', fakeAsync(() => {
-      const ref = modalRef(Promise.resolve(true));
-      modalService.open.and.returnValue(ref);
-      candidateEducationService.delete.and.returnValue(of({} as any));
-      component.loading = true;
+            expect(candidateService.updateCandidate).not.toHaveBeenCalled();
+        }));
+    });
 
-      component.deleteCandidateEducation(education);
-      tick();
+    describe('createCandidateEducation', () => {
+        it('should open the create modal and refresh after success', fakeAsync(() => {
+            const ref = modalRef(Promise.resolve(education));
+            modalService.open.mockReturnValue(ref);
 
-      expect(modalService.open).toHaveBeenCalledWith(
-        ConfirmationComponent,
-        {
-          centered: true,
-          backdrop: 'static'
-        }
-      );
-      expect(ref.componentInstance.message)
-      .toBe('Are you sure you want to delete this education?');
-      expect(candidateEducationService.delete)
-      .toHaveBeenCalledWith(education.id);
-      expect(component.loading).toBeFalse();
-      expect(candidateService.updateCandidate).toHaveBeenCalled();
-    }));
+            component.createCandidateEducation();
+            tick();
 
-    it('should expose delete errors and clear loading', fakeAsync(() => {
-      const error = new Error('delete failed');
-      modalService.open.and.returnValue(
-        modalRef(Promise.resolve(true))
-      );
-      candidateEducationService.delete.and.returnValue(
-        throwError(error)
-      );
-      component.loading = true;
+            expect(modalService.open).toHaveBeenCalledWith(CreateCandidateEducationComponent, {
+                centered: true,
+                backdrop: 'static'
+            });
+            expect(ref.componentInstance.candidateId).toBe(component.candidate.id);
+            expect(candidateService.updateCandidate).toHaveBeenCalled();
+        }));
 
-      component.deleteCandidateEducation(education);
-      tick();
+        it('should ignore create modal dismissal', fakeAsync(() => {
+            modalService.open.mockReturnValue(modalRef(Promise.reject('dismissed')));
 
-      expect(candidateEducationService.delete)
-      .toHaveBeenCalledWith(education.id);
-      expect(component.error).toBe(error);
-      expect(component.loading).toBeFalse();
-      expect(candidateService.updateCandidate).not.toHaveBeenCalled();
-    }));
+            component.createCandidateEducation();
+            tick();
 
-    it('should not delete when confirmation result is false', fakeAsync(() => {
-      modalService.open.and.returnValue(
-        modalRef(Promise.resolve(false))
-      );
+            expect(candidateService.updateCandidate).not.toHaveBeenCalled();
+        }));
+    });
 
-      component.deleteCandidateEducation(education);
-      tick();
+    describe('deleteCandidateEducation', () => {
+        it('should delete after confirmation and refresh the candidate', fakeAsync(() => {
+            const ref = modalRef(Promise.resolve(true));
+            modalService.open.mockReturnValue(ref);
+            candidateEducationService.delete.mockReturnValue(of({} as any));
+            component.loading = true;
 
-      expect(candidateEducationService.delete).not.toHaveBeenCalled();
-      expect(candidateService.updateCandidate).not.toHaveBeenCalled();
-    }));
+            component.deleteCandidateEducation(education);
+            tick();
 
-    it('should ignore delete modal dismissal', fakeAsync(() => {
-      modalService.open.and.returnValue(
-        modalRef(Promise.reject('dismissed'))
-      );
+            expect(modalService.open).toHaveBeenCalledWith(ConfirmationComponent, {
+                centered: true,
+                backdrop: 'static'
+            });
+            expect(ref.componentInstance.message)
+                .toBe('Are you sure you want to delete this education?');
+            expect(candidateEducationService.delete)
+                .toHaveBeenCalledWith(education.id);
+            expect(component.loading).toBe(false);
+            expect(candidateService.updateCandidate).toHaveBeenCalled();
+        }));
 
-      component.deleteCandidateEducation(education);
-      tick();
+        it('should expose delete errors and clear loading', fakeAsync(() => {
+            const error = new Error('delete failed');
+            modalService.open.mockReturnValue(modalRef(Promise.resolve(true)));
+            candidateEducationService.delete.mockReturnValue(throwError(error));
+            component.loading = true;
 
-      expect(candidateEducationService.delete).not.toHaveBeenCalled();
-      expect(candidateService.updateCandidate).not.toHaveBeenCalled();
-    }));
-  });
+            component.deleteCandidateEducation(education);
+            tick();
+
+            expect(candidateEducationService.delete)
+                .toHaveBeenCalledWith(education.id);
+            expect(component.error).toBe(error);
+            expect(component.loading).toBe(false);
+            expect(candidateService.updateCandidate).not.toHaveBeenCalled();
+        }));
+
+        it('should not delete when confirmation result is false', fakeAsync(() => {
+            modalService.open.mockReturnValue(modalRef(Promise.resolve(false)));
+
+            component.deleteCandidateEducation(education);
+            tick();
+
+            expect(candidateEducationService.delete).not.toHaveBeenCalled();
+            expect(candidateService.updateCandidate).not.toHaveBeenCalled();
+        }));
+
+        it('should ignore delete modal dismissal', fakeAsync(() => {
+            modalService.open.mockReturnValue(modalRef(Promise.reject('dismissed')));
+
+            component.deleteCandidateEducation(education);
+            tick();
+
+            expect(candidateEducationService.delete).not.toHaveBeenCalled();
+            expect(candidateService.updateCandidate).not.toHaveBeenCalled();
+        }));
+    });
 });

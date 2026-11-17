@@ -20,6 +20,7 @@ import {provideHttpClient, withInterceptorsFromDi, withXhr} from '@angular/commo
 import {SurveyTypeService} from './survey-type.service';
 import {SurveyType} from '../model/survey-type';
 import {environment} from '../../environments/environment';
+import {expect} from 'vitest';
 
 describe('SurveyTypeService', () => {
   let service: SurveyTypeService;

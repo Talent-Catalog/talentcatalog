@@ -21,6 +21,7 @@ import {SavedListCandidateService} from './saved-list-candidate.service';
 import {environment} from "../../environments/environment";
 import {SavedList, UpdateExplicitSavedListContentsRequest} from '../model/saved-list';
 import {MockSavedList} from "../MockData/MockSavedList";
+import {expect} from 'vitest';
 
 describe('SavedListCandidateService', () => {
   let service: SavedListCandidateService;

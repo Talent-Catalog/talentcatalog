@@ -14,6 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
+import type {MockedObject} from "vitest";
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {ReactiveFormsModule, UntypedFormBuilder} from '@angular/forms';
 import {HealthAssessmentComponent} from './health-assessment.component';
@@ -22,58 +23,61 @@ import {provideHttpClientTesting} from "@angular/common/http/testing";
 import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {AutosaveStatusComponent} from "../../../util/autosave-status/autosave-status.component";
+import {expect, vi} from 'vitest';
 
 describe('HealthAssessmentComponent', () => {
-  let component: HealthAssessmentComponent;
-  let fixture: ComponentFixture<HealthAssessmentComponent>;
-  let candidateVisaCheckService: jasmine.SpyObj<CandidateVisaCheckService>;
+    let component: HealthAssessmentComponent;
+    let fixture: ComponentFixture<HealthAssessmentComponent>;
+    let candidateVisaCheckService: MockedObject<CandidateVisaCheckService>;
 
-  beforeEach(async () => {
-    const candidateVisaCheckServiceSpy = jasmine.createSpyObj('CandidateVisaCheckService', ['someMethod']);
+    beforeEach(async () => {
+        const candidateVisaCheckServiceSpy = {
+            someMethod: vi.fn().mockName("CandidateVisaCheckService.someMethod")
+        };
 
-    await TestBed.configureTestingModule({
-      imports: [ReactiveFormsModule, NgSelectModule],
-      declarations: [HealthAssessmentComponent,AutosaveStatusComponent],
-      providers: [
-        UntypedFormBuilder,
-        {provide: CandidateVisaCheckService, useValue: candidateVisaCheckServiceSpy},
-        provideHttpClient(withXhr(), withInterceptorsFromDi()),
-        provideHttpClientTesting()
-      ]
-    }).compileComponents();
+        await TestBed.configureTestingModule({
+            imports: [ReactiveFormsModule, NgSelectModule],
+            declarations: [HealthAssessmentComponent, AutosaveStatusComponent],
+            providers: [
+                UntypedFormBuilder,
+                { provide: CandidateVisaCheckService, useValue: candidateVisaCheckServiceSpy },
+                provideHttpClient(withXhr(), withInterceptorsFromDi()),
+                provideHttpClientTesting()
+            ]
+        }).compileComponents();
 
-    candidateVisaCheckService = TestBed.inject(CandidateVisaCheckService) as jasmine.SpyObj<CandidateVisaCheckService>;
-  });
+        candidateVisaCheckService = TestBed.inject(CandidateVisaCheckService) as MockedObject<CandidateVisaCheckService>;
+    });
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(HealthAssessmentComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
+    beforeEach(() => {
+        fixture = TestBed.createComponent(HealthAssessmentComponent);
+        component = fixture.componentInstance;
+        fixture.detectChanges();
+    });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
 
-  it('hasNotes should return false when visaHealthAssessment is not "Yes" or "No"', () => {
-    component.form.controls['visaHealthAssessment'].setValue('Maybe');
-    expect(component.hasNotes).toBeFalse();
+    it('hasNotes should return false when visaHealthAssessment is not "Yes" or "No"', () => {
+        component.form.controls['visaHealthAssessment'].setValue('Maybe');
+        expect(component.hasNotes).toBe(false);
 
-    component.form.controls['visaHealthAssessment'].setValue(null);
-    expect(component.hasNotes).toBeFalse();
+        component.form.controls['visaHealthAssessment'].setValue(null);
+        expect(component.hasNotes).toBe(false);
 
-    component.form.controls['visaHealthAssessment'].setValue('Not sure');
-    expect(component.hasNotes).toBeFalse();
-  });
+        component.form.controls['visaHealthAssessment'].setValue('Not sure');
+        expect(component.hasNotes).toBe(false);
+    });
 
-  // Optional: Add tests for 'Yes' and 'No' values to ensure completeness
-  it('hasNotes should return true when visaHealthAssessment is "Yes"', () => {
-    component.form.controls['visaHealthAssessment'].setValue('Yes');
-    expect(component.hasNotes).toBeTrue();
-  });
+    // Optional: Add tests for 'Yes' and 'No' values to ensure completeness
+    it('hasNotes should return true when visaHealthAssessment is "Yes"', () => {
+        component.form.controls['visaHealthAssessment'].setValue('Yes');
+        expect(component.hasNotes).toBe(true);
+    });
 
-  it('hasNotes should return true when visaHealthAssessment is "No"', () => {
-    component.form.controls['visaHealthAssessment'].setValue('No');
-    expect(component.hasNotes).toBeTrue();
-  });
+    it('hasNotes should return true when visaHealthAssessment is "No"', () => {
+        component.form.controls['visaHealthAssessment'].setValue('No');
+        expect(component.hasNotes).toBe(true);
+    });
 });

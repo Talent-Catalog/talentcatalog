@@ -14,6 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
+import type {MockedObject} from "vitest";
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 
 import {DestinationFamilyComponent} from './destination-family.component';
@@ -24,54 +25,57 @@ import {ReactiveFormsModule, UntypedFormBuilder} from "@angular/forms";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {AutosaveStatusComponent} from "../../../util/autosave-status/autosave-status.component";
 import {By} from "@angular/platform-browser";
+import {expect, vi} from 'vitest';
 
 describe('DestinationFamilyComponent', () => {
-  let component: DestinationFamilyComponent;
-  let fixture: ComponentFixture<DestinationFamilyComponent>;
-  let candidateVisaCheckService: jasmine.SpyObj<CandidateVisaCheckService>;
+    let component: DestinationFamilyComponent;
+    let fixture: ComponentFixture<DestinationFamilyComponent>;
+    let candidateVisaCheckService: MockedObject<CandidateVisaCheckService>;
 
-  beforeEach(async () => {
-    const candidateVisaCheckServiceSpy = jasmine.createSpyObj('CandidateVisaCheckService', ['someMethod']);
+    beforeEach(async () => {
+        const candidateVisaCheckServiceSpy = {
+            someMethod: vi.fn().mockName("CandidateVisaCheckService.someMethod")
+        };
 
-    await TestBed.configureTestingModule({
-      imports: [ReactiveFormsModule, NgSelectModule],
-      declarations: [DestinationFamilyComponent,AutosaveStatusComponent],
-      providers: [
-        UntypedFormBuilder,
-        {provide: CandidateVisaCheckService, useValue: candidateVisaCheckServiceSpy},
-        provideHttpClient(withXhr(), withInterceptorsFromDi()),
-        provideHttpClientTesting()
-      ]
-    }).compileComponents();
+        await TestBed.configureTestingModule({
+            imports: [ReactiveFormsModule, NgSelectModule],
+            declarations: [DestinationFamilyComponent, AutosaveStatusComponent],
+            providers: [
+                UntypedFormBuilder,
+                { provide: CandidateVisaCheckService, useValue: candidateVisaCheckServiceSpy },
+                provideHttpClient(withXhr(), withInterceptorsFromDi()),
+                provideHttpClientTesting()
+            ]
+        }).compileComponents();
 
-    candidateVisaCheckService = TestBed.inject(CandidateVisaCheckService) as jasmine.SpyObj<CandidateVisaCheckService>;
-  });
+        candidateVisaCheckService = TestBed.inject(CandidateVisaCheckService) as MockedObject<CandidateVisaCheckService>;
+    });
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(DestinationFamilyComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
+    beforeEach(() => {
+        fixture = TestBed.createComponent(DestinationFamilyComponent);
+        component = fixture.componentInstance;
+        fixture.detectChanges();
+    });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
 
-  it('location input should be displayed when visaDestinationFamily is a family relation', () => {
-    component.form.controls['visaDestinationFamily'].setValue('Child');
-    fixture.detectChanges();
-    const textarea = fixture.debugElement.query(By.css('#visaDestinationFamilyLocation'));
-    expect(textarea).toBeTruthy();
-  });
+    it('location input should be displayed when visaDestinationFamily is a family relation', () => {
+        component.form.controls['visaDestinationFamily'].setValue('Child');
+        fixture.detectChanges();
+        const textarea = fixture.debugElement.query(By.css('#visaDestinationFamilyLocation'));
+        expect(textarea).toBeTruthy();
+    });
 
-  it('location input should not be displayed when visaDestinationFamily is "NoRelation" or null', () => {
-    component.form.controls['visaDestinationFamily'].setValue('NoRelation');
-    fixture.detectChanges();
-    const textarea = fixture.debugElement.query(By.css('#visaDestinationFamilyLocation'));
-    expect(textarea).toBeFalsy();
+    it('location input should not be displayed when visaDestinationFamily is "NoRelation" or null', () => {
+        component.form.controls['visaDestinationFamily'].setValue('NoRelation');
+        fixture.detectChanges();
+        const textarea = fixture.debugElement.query(By.css('#visaDestinationFamilyLocation'));
+        expect(textarea).toBeFalsy();
 
-    component.form.controls['visaDestinationFamily'].setValue(null);
-    fixture.detectChanges();
-    expect(textarea).toBeFalsy();
-  });
+        component.form.controls['visaDestinationFamily'].setValue(null);
+        fixture.detectChanges();
+        expect(textarea).toBeFalsy();
+    });
 });

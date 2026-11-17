@@ -14,6 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
+import type {MockedObject} from "vitest";
 import {ComponentFixture, TestBed, waitForAsync} from '@angular/core/testing';
 import {ReactiveFormsModule} from '@angular/forms';
 import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
@@ -25,103 +26,109 @@ import {provideHttpClientTesting} from "@angular/common/http/testing";
 import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {MockJob} from "../../../../MockData/MockJob";
+import {expect, vi} from 'vitest';
 
 describe('CreateCountryComponent', () => {
-  let component: CreateCountryComponent;
-  let fixture: ComponentFixture<CreateCountryComponent>;
-  let countryServiceSpy: jasmine.SpyObj<CountryService>;
-  let activeModalSpy: jasmine.SpyObj<NgbActiveModal>;
+    let component: CreateCountryComponent;
+    let fixture: ComponentFixture<CreateCountryComponent>;
+    let countryServiceSpy: MockedObject<CountryService>;
+    let activeModalSpy: MockedObject<NgbActiveModal>;
 
-  beforeEach(async () => {
-    const countryServiceSpyObj = jasmine.createSpyObj('CountryService', ['create']);
-    const activeModalSpyObj = jasmine.createSpyObj('NgbActiveModal', ['close', 'dismiss']);
+    beforeEach(async () => {
+        const countryServiceSpyObj = {
+            create: vi.fn().mockName("CountryService.create")
+        };
+        const activeModalSpyObj = {
+            close: vi.fn().mockName("NgbActiveModal.close"),
+            dismiss: vi.fn().mockName("NgbActiveModal.dismiss")
+        };
 
-    await TestBed.configureTestingModule({
-      declarations: [ CreateCountryComponent ],
-      imports: [NgSelectModule, ReactiveFormsModule ],
-      providers: [
-        { provide: CountryService, useValue: countryServiceSpyObj },
-        { provide: NgbActiveModal, useValue: activeModalSpyObj },
-        provideHttpClient(withXhr(), withInterceptorsFromDi()),
-        provideHttpClientTesting()
-      ]
-    }).compileComponents();
+        await TestBed.configureTestingModule({
+            declarations: [CreateCountryComponent],
+            imports: [NgSelectModule, ReactiveFormsModule],
+            providers: [
+                { provide: CountryService, useValue: countryServiceSpyObj },
+                { provide: NgbActiveModal, useValue: activeModalSpyObj },
+                provideHttpClient(withXhr(), withInterceptorsFromDi()),
+                provideHttpClientTesting()
+            ]
+        }).compileComponents();
 
-    countryServiceSpy = TestBed.inject(CountryService) as jasmine.SpyObj<CountryService>;
-    activeModalSpy = TestBed.inject(NgbActiveModal) as jasmine.SpyObj<NgbActiveModal>;
-  });
+        countryServiceSpy = TestBed.inject(CountryService) as MockedObject<CountryService>;
+        activeModalSpy = TestBed.inject(NgbActiveModal) as MockedObject<NgbActiveModal>;
+    });
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(CreateCountryComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
+    beforeEach(() => {
+        fixture = TestBed.createComponent(CreateCountryComponent);
+        component = fixture.componentInstance;
+        fixture.detectChanges();
+    });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
 
-  it('should initialize the form with empty controls', () => {
-    expect(component.countryForm).toBeTruthy();
-    expect(component.countryForm.get('name').value).toBeNull();
-    expect(component.countryForm.get('status').value).toBeNull();
-  });
+    it('should initialize the form with empty controls', () => {
+        expect(component.countryForm).toBeTruthy();
+        expect(component.countryForm.get('name').value).toBeNull();
+        expect(component.countryForm.get('status').value).toBeNull();
+    });
 
-  it('should update the form control values when input values change', () => {
-    const nameInput = fixture.debugElement.query(By.css('input#name')).nativeElement;
+    it('should update the form control values when input values change', () => {
+        const nameInput = fixture.debugElement.query(By.css('input#name')).nativeElement;
 
-    nameInput.value = 'Test Country';
-    nameInput.dispatchEvent(new Event('input'));
+        nameInput.value = 'Test Country';
+        nameInput.dispatchEvent(new Event('input'));
 
-    fixture.detectChanges();
+        fixture.detectChanges();
 
-    expect(component.countryForm.get('name').value).toBe('Test Country');
+        expect(component.countryForm.get('name').value).toBe('Test Country');
 
-    component.countryForm.get('status').setValue('active');
+        component.countryForm.get('status').setValue('active');
 
-    fixture.detectChanges();
+        fixture.detectChanges();
 
-    expect(component.countryForm.get('status').value).toBe('active');
-  });
+        expect(component.countryForm.get('status').value).toBe('active');
+    });
 
-  it('should call CountryService.create and close the modal when the save button is clicked', waitForAsync(() => {
-    component.countryForm.get('name').setValue('Test Country');
-    component.countryForm.get('status').setValue('active');
-    fixture.detectChanges();
+    it('should call CountryService.create and close the modal when the save button is clicked', waitForAsync(() => {
+        component.countryForm.get('name').setValue('Test Country');
+        component.countryForm.get('status').setValue('active');
+        fixture.detectChanges();
 
-    countryServiceSpy.create.and.returnValue(of(MockJob.country));
-    activeModalSpy.close.and.returnValue();
-    const button = fixture.debugElement.query(By.css('button.btn-primary')).nativeElement;
-    button.click();
-    fixture.detectChanges();
-    expect(countryServiceSpy.create).toHaveBeenCalledWith({ name: 'Test Country', status: 'active' });
-    expect(activeModalSpy.close).toHaveBeenCalled();
-  }));
+        countryServiceSpy.create.mockReturnValue(of(MockJob.country));
+        activeModalSpy.close.mockReturnValue();
+        const button = fixture.debugElement.query(By.css('button.btn-primary')).nativeElement;
+        button.click();
+        fixture.detectChanges();
+        expect(countryServiceSpy.create).toHaveBeenCalledWith({ name: 'Test Country', status: 'active' });
+        expect(activeModalSpy.close).toHaveBeenCalled();
+    }));
 
-  it('should display error message when there is an error', waitForAsync(() => {
-    countryServiceSpy.create.and.returnValue(throwError('Error occurred'));
+    it('should display error message when there is an error', waitForAsync(() => {
+        countryServiceSpy.create.mockReturnValue(throwError('Error occurred'));
 
-    component.countryForm.get('name').setValue('Test Country');
-    component.countryForm.get('status').setValue('active');
-    fixture.detectChanges();
+        component.countryForm.get('name').setValue('Test Country');
+        component.countryForm.get('status').setValue('active');
+        fixture.detectChanges();
 
-    const button = fixture.debugElement.query(By.css('button.btn-primary')).nativeElement;
-    button.click();
-    fixture.detectChanges();
+        const button = fixture.debugElement.query(By.css('button.btn-primary')).nativeElement;
+        button.click();
+        fixture.detectChanges();
 
-    expect(component.error).toBe('Error occurred');
+        expect(component.error).toBe('Error occurred');
 
-    const errorMessage = fixture.debugElement.query(By.css('.alert-danger')).nativeElement;
-    expect(errorMessage).toBeTruthy();
-    expect(errorMessage.textContent).toContain('Error occurred');
-  }));
+        const errorMessage = fixture.debugElement.query(By.css('.alert-danger')).nativeElement;
+        expect(errorMessage).toBeTruthy();
+        expect(errorMessage.textContent).toContain('Error occurred');
+    }));
 
 
-  it('should dismiss the modal when dismiss button is clicked', () => {
-    const dismissButton = fixture.debugElement.query(By.css('button.btn-close')).nativeElement;
-    dismissButton.click();
+    it('should dismiss the modal when dismiss button is clicked', () => {
+        const dismissButton = fixture.debugElement.query(By.css('button.btn-close')).nativeElement;
+        dismissButton.click();
 
-    expect(activeModalSpy.dismiss).toHaveBeenCalledWith(false);
-  });
+        expect(activeModalSpy.dismiss).toHaveBeenCalledWith(false);
+    });
 
 });

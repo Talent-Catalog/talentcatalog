@@ -23,40 +23,41 @@ import {NgSelectModule} from "@ng-select/ng-select";
 import {AutosaveStatusComponent} from "../../../util/autosave-status/autosave-status.component";
 import {NgbDatepickerModule} from "@ng-bootstrap/ng-bootstrap";
 import {DatePickerComponent} from "../../../util/date-picker/date-picker.component";
+import {expect} from 'vitest';
 
 describe('AsylumYearComponent', () => {
-  let component: AsylumYearComponent;
-  let fixture: ComponentFixture<AsylumYearComponent>;
-  let fb: UntypedFormBuilder;
+    let component: AsylumYearComponent;
+    let fixture: ComponentFixture<AsylumYearComponent>;
+    let fb: UntypedFormBuilder;
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      declarations: [AsylumYearComponent, AutosaveStatusComponent, DatePickerComponent],
-      imports: [NgbDatepickerModule, NgSelectModule,FormsModule,ReactiveFormsModule],
-      providers: [
-        UntypedFormBuilder,
-        { provide: CandidateService},
-        provideHttpClient(withXhr(), withInterceptorsFromDi()),
-        provideHttpClientTesting()
-      ]
-    }).compileComponents();
+    beforeEach(async () => {
+        await TestBed.configureTestingModule({
+            declarations: [AsylumYearComponent, AutosaveStatusComponent, DatePickerComponent],
+            imports: [NgbDatepickerModule, NgSelectModule, FormsModule, ReactiveFormsModule],
+            providers: [
+                UntypedFormBuilder,
+                { provide: CandidateService },
+                provideHttpClient(withXhr(), withInterceptorsFromDi()),
+                provideHttpClientTesting()
+            ]
+        }).compileComponents();
 
-    fb = TestBed.inject(UntypedFormBuilder);
-  });
+        fb = TestBed.inject(UntypedFormBuilder);
+    });
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(AsylumYearComponent);
-    component = fixture.componentInstance;
-    component.candidateIntakeData = {
-      asylumYear: '2021' // Example asylum year
-    };
-    fixture.detectChanges(); // Trigger initial data binding
-  });
+    beforeEach(() => {
+        fixture = TestBed.createComponent(AsylumYearComponent);
+        component = fixture.componentInstance;
+        component.candidateIntakeData = {
+            asylumYear: '2021' // Example asylum year
+        };
+        fixture.detectChanges(); // Trigger initial data binding
+    });
 
-  it('should initialize the form correctly with the provided asylum year data', () => {
-    expect(component.form).toBeTruthy();
-    const asylumYearControl = component.form.get('asylumYear');
+    it('should initialize the form correctly with the provided asylum year data', () => {
+        expect(component.form).toBeTruthy();
+        const asylumYearControl = component.form.get('asylumYear');
 
-    expect(asylumYearControl.value).toBe('2021');
-  });
+        expect(asylumYearControl.value).toBe('2021');
+    });
 });

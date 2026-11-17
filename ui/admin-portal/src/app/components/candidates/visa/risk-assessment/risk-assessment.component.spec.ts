@@ -21,39 +21,42 @@ import {AutosaveStatusComponent} from "../../../util/autosave-status/autosave-st
 import {provideHttpClientTesting} from "@angular/common/http/testing";
 import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {NgSelectModule} from "@ng-select/ng-select";
+import {expect, vi} from 'vitest';
 
 describe('RiskAssessmentComponent', () => {
-  let component: RiskAssessmentComponent;
-  let fixture: ComponentFixture<RiskAssessmentComponent>;
+    let component: RiskAssessmentComponent;
+    let fixture: ComponentFixture<RiskAssessmentComponent>;
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      imports: [ReactiveFormsModule, NgSelectModule],
-      declarations: [RiskAssessmentComponent,AutosaveStatusComponent],
-      providers: [
-        UntypedFormBuilder,
-        {
-          provide: CandidateVisaCheckService,
-          useValue: jasmine.createSpyObj('CandidateVisaCheckService', ['someMethod'])
-        },
-        provideHttpClient(withXhr(), withInterceptorsFromDi()),
-        provideHttpClientTesting()
-      ]
-    }).compileComponents();
-  });
+    beforeEach(async () => {
+        await TestBed.configureTestingModule({
+            imports: [ReactiveFormsModule, NgSelectModule],
+            declarations: [RiskAssessmentComponent, AutosaveStatusComponent],
+            providers: [
+                UntypedFormBuilder,
+                {
+                    provide: CandidateVisaCheckService,
+                    useValue: {
+                        someMethod: vi.fn().mockName("CandidateVisaCheckService.someMethod")
+                    }
+                },
+                provideHttpClient(withXhr(), withInterceptorsFromDi()),
+                provideHttpClientTesting()
+            ]
+        }).compileComponents();
+    });
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(RiskAssessmentComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
+    beforeEach(() => {
+        fixture = TestBed.createComponent(RiskAssessmentComponent);
+        component = fixture.componentInstance;
+        fixture.detectChanges();
+    });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
 
-  it('hasNotes should return true when visaOverallRisk is "High"', () => {
-    component.form.controls['visaOverallRisk'].setValue('High');
-    expect(component.hasNotes).toBeTrue();
-  });
+    it('hasNotes should return true when visaOverallRisk is "High"', () => {
+        component.form.controls['visaOverallRisk'].setValue('High');
+        expect(component.hasNotes).toBe(true);
+    });
 });

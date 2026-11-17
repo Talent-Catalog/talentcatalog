@@ -15,6 +15,7 @@
  */
 
 import {dateString, toDateOnly} from "./date-adapter";
+import {expect} from 'vitest';
 
 describe('dateString', () => {
   it('should format the date as "dd MMM yy"', () => {

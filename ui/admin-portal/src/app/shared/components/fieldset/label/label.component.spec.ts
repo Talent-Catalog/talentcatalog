@@ -1,6 +1,7 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { LabelComponent } from './label.component';
+import {LabelComponent} from './label.component';
+import {expect} from 'vitest';
 
 describe('LabelComponent', () => {
   let component: LabelComponent;

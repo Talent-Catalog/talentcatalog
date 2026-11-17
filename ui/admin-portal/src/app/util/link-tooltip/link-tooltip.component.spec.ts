@@ -17,6 +17,7 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {LinkTooltipComponent} from './link-tooltip.component';
 import {TranslateModule} from "@ngx-translate/core";
+import {expect} from 'vitest';
 
 describe('LinkTooltipComponent', () => {
   let component: LinkTooltipComponent;

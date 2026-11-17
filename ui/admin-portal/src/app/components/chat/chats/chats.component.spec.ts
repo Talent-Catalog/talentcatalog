@@ -14,6 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
+import type {MockedObject} from "vitest";
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {ChatsComponent} from './chats.component';
 import {By} from '@angular/platform-browser';
@@ -25,80 +26,85 @@ import {provideHttpClientTesting} from "@angular/common/http/testing";
 import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {ChatService} from "../../../services/chat.service";
 import {TranslateModule} from "@ngx-translate/core";
+import {expect, vi} from 'vitest';
 
 describe('ChatsComponent', () => {
-  let component: ChatsComponent;
-  let fixture: ComponentFixture<ChatsComponent>;
-  let chatService: jasmine.SpyObj<ChatService>;
-  const mockJobChat = new MockJobChat();
-  beforeEach(async () => {
-    const chatServiceSpy = jasmine.createSpyObj('ChatService',
-      ['getChatHeadingKey', 'getChatInfoParticipantsKey','getChatInfoPurposeKey',
-        'getJobChatUserInfo', 'getChatIsRead$']);
+    let component: ChatsComponent;
+    let fixture: ComponentFixture<ChatsComponent>;
+    let chatService: MockedObject<ChatService>;
+    const mockJobChat = new MockJobChat();
+    beforeEach(async () => {
+        const chatServiceSpy = {
+            getChatHeadingKey: vi.fn().mockName("ChatService.getChatHeadingKey"),
+            getChatInfoParticipantsKey: vi.fn().mockName("ChatService.getChatInfoParticipantsKey"),
+            getChatInfoPurposeKey: vi.fn().mockName("ChatService.getChatInfoPurposeKey"),
+            getJobChatUserInfo: vi.fn().mockName("ChatService.getJobChatUserInfo"),
+            getChatIsRead$: vi.fn().mockName("ChatService.getChatIsRead$")
+        };
 
-    await TestBed.configureTestingModule({
-      declarations: [ ChatsComponent,ViewChatComponent,ChatReadStatusComponent ],
-      imports: [TranslateModule.forRoot({})],
-      providers:[
-        { provide: ChatService, useValue: chatServiceSpy },
-        provideHttpClient(withXhr(), withInterceptorsFromDi()),
-        provideHttpClientTesting()
-      ]
-    })
-    .compileComponents();
-    chatService = TestBed.inject(ChatService) as jasmine.SpyObj<ChatService>;
+        await TestBed.configureTestingModule({
+            declarations: [ChatsComponent, ViewChatComponent, ChatReadStatusComponent],
+            imports: [TranslateModule.forRoot({})],
+            providers: [
+                { provide: ChatService, useValue: chatServiceSpy },
+                provideHttpClient(withXhr(), withInterceptorsFromDi()),
+                provideHttpClientTesting()
+            ]
+        })
+            .compileComponents();
+        chatService = TestBed.inject(ChatService) as MockedObject<ChatService>;
 
-  });
+    });
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(ChatsComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
+    beforeEach(() => {
+        fixture = TestBed.createComponent(ChatsComponent);
+        component = fixture.componentInstance;
+        fixture.detectChanges();
+    });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
 
-  it('should render loading spinner when loading is true', () => {
-    component.loading = true;
-    fixture.detectChanges();
+    it('should render loading spinner when loading is true', () => {
+        component.loading = true;
+        fixture.detectChanges();
 
-    const loaderElement = fixture.debugElement.query(By.css('tc-loading'));
-    expect(loaderElement).toBeTruthy();
-    expect(loaderElement.nativeElement.textContent).toContain('Loading');
-  });
+        const loaderElement = fixture.debugElement.query(By.css('tc-loading'));
+        expect(loaderElement).toBeTruthy();
+        expect(loaderElement.nativeElement.textContent).toContain('Loading');
+    });
 
-  it('should render error message when error is present', () => {
-    const errorMessage = 'An error occurred!';
-    component.error = errorMessage;
-    fixture.detectChanges();
-    const errorElement = fixture.debugElement.query(By.css('.alert-danger'));
-    expect(errorElement).toBeTruthy();
-    expect(errorElement.nativeElement.textContent.trim()).toBe(errorMessage);
-  });
+    it('should render error message when error is present', () => {
+        const errorMessage = 'An error occurred!';
+        component.error = errorMessage;
+        fixture.detectChanges();
+        const errorElement = fixture.debugElement.query(By.css('.alert-danger'));
+        expect(errorElement).toBeTruthy();
+        expect(errorElement.nativeElement.textContent.trim()).toBe(errorMessage);
+    });
 
-  it('should render chats when chats are provided', () => {
-    const mockChats: JobChat[] = [mockJobChat];
-    component.chats = mockChats;
-    fixture.detectChanges();
-    const chatRows = fixture.debugElement.queryAll(By.css('li'));
-    expect(chatRows.length).toBe(mockChats.length);
-  });
+    it('should render chats when chats are provided', () => {
+        const mockChats: JobChat[] = [mockJobChat];
+        component.chats = mockChats;
+        fixture.detectChanges();
+        const chatRows = fixture.debugElement.queryAll(By.css('li'));
+        expect(chatRows.length).toBe(mockChats.length);
+    });
 
-  it('should emit chatSelection event when a chat is selected', () => {
-    const mockChat: JobChat = mockJobChat;
-    spyOn(component.chatSelection, 'emit');
-    component.selectCurrent(mockChat);
-    expect(component.currentChat).toEqual(mockChat);
-    expect(component.chatSelection.emit).toHaveBeenCalledWith(mockChat);
-  });
+    it('should emit chatSelection event when a chat is selected', () => {
+        const mockChat: JobChat = mockJobChat;
+        vi.spyOn(component.chatSelection, 'emit').mockReturnValue(undefined);
+        component.selectCurrent(mockChat);
+        expect(component.currentChat).toEqual(mockChat);
+        expect(component.chatSelection.emit).toHaveBeenCalledWith(mockChat);
+    });
 
-  it('should select the first chat as current when chats are provided', () => {
-    const mockChats: JobChat[] = [mockJobChat];
-    component.chats = mockChats;
-    component.ngOnChanges({});
-    fixture.detectChanges();
-    expect(component.currentChat).toEqual(mockChats[0]);
-  });
+    it('should select the first chat as current when chats are provided', () => {
+        const mockChats: JobChat[] = [mockJobChat];
+        component.chats = mockChats;
+        component.ngOnChanges({});
+        fixture.detectChanges();
+        expect(component.currentChat).toEqual(mockChats[0]);
+    });
 });

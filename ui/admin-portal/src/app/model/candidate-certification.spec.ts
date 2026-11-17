@@ -15,6 +15,7 @@
  */
 
 import {CandidateCertification} from "./candidate-certification";
+import {expect} from 'vitest';
 
 describe('CandidateCertification Interface', () => {
   it('should create an object that conforms to the CandidateCertification interface', () => {

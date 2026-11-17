@@ -16,6 +16,7 @@
 
 import {Partner, sourceCountriesAsString} from "./partner";
 import {Country} from "./country";
+import {expect} from 'vitest';
 
 describe('sourceCountriesAsString function', () => {
   it('should return a comma-separated string of country names', () => {

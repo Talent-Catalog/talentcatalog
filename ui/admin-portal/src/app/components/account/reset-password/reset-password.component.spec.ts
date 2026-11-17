@@ -14,6 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
+import type {MockedObject} from "vitest";
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {ResetPasswordComponent} from './reset-password.component';
 import {ReactiveFormsModule, UntypedFormBuilder} from '@angular/forms';
@@ -21,47 +22,50 @@ import {UserService} from "../../../services/user.service";
 import {of} from 'rxjs';
 import {SendResetPasswordEmailRequest} from "../../../model/candidate";
 import {config_test} from "../../../../config-test";
+import {expect, vi} from 'vitest';
 
 describe('ResetPasswordComponent', () => {
-  let component: ResetPasswordComponent;
-  let fixture: ComponentFixture<ResetPasswordComponent>;
-  let userService: jasmine.SpyObj<UserService>;
+    let component: ResetPasswordComponent;
+    let fixture: ComponentFixture<ResetPasswordComponent>;
+    let userService: MockedObject<UserService>;
 
-  beforeEach(async () => {
-    const userServiceSpy = jasmine.createSpyObj('UserService', ['sendResetPassword']);
-    await TestBed.configureTestingModule({
-      imports: [ReactiveFormsModule],
-      declarations: [ResetPasswordComponent],
-      providers: [UntypedFormBuilder, { provide: UserService, useValue: userServiceSpy }]
-    }).compileComponents();
-    userService = TestBed.inject(UserService) as jasmine.SpyObj<UserService>;
-  });
+    beforeEach(async () => {
+        const userServiceSpy = {
+            sendResetPassword: vi.fn().mockName("UserService.sendResetPassword")
+        };
+        await TestBed.configureTestingModule({
+            imports: [ReactiveFormsModule],
+            declarations: [ResetPasswordComponent],
+            providers: [UntypedFormBuilder, { provide: UserService, useValue: userServiceSpy }]
+        }).compileComponents();
+        userService = TestBed.inject(UserService) as MockedObject<UserService>;
+    });
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(ResetPasswordComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
+    beforeEach(() => {
+        fixture = TestBed.createComponent(ResetPasswordComponent);
+        component = fixture.componentInstance;
+        fixture.detectChanges();
+    });
 
-  it('should initialize the form with an empty email field', () => {
-    expect(component.resetPasswordForm.value.email).toEqual('');
-  });
-  it('should clear email field and mark form controls as pristine when resetForm() is called', () => {
-    // Arrange
-    component.resetPasswordForm.patchValue({ email: config_test.credentials.email });
-    // Act
-    component.resetForm();
-    // Assert
-    expect(component.resetPasswordForm.value.email).toEqual('');
-    expect(component.resetPasswordForm.controls['email'].pristine).toBeTrue();
-  });
-  it('should call sendResetEmail() function when "Email Me" button is clicked with a valid email', () => {
-    // Arrange
-    component.resetPasswordForm.patchValue({ email: config_test.credentials.email});
-    userService.sendResetPassword.and.returnValue(of(true));
-    // Act
-    component.sendResetEmail();
-    // Assert
-    expect(userService.sendResetPassword).toHaveBeenCalledWith(jasmine.objectContaining({ email: config_test.credentials.email } as SendResetPasswordEmailRequest));
-  });
+    it('should initialize the form with an empty email field', () => {
+        expect(component.resetPasswordForm.value.email).toEqual('');
+    });
+    it('should clear email field and mark form controls as pristine when resetForm() is called', () => {
+        // Arrange
+        component.resetPasswordForm.patchValue({ email: config_test.credentials.email });
+        // Act
+        component.resetForm();
+        // Assert
+        expect(component.resetPasswordForm.value.email).toEqual('');
+        expect(component.resetPasswordForm.controls['email'].pristine).toBe(true);
+    });
+    it('should call sendResetEmail() function when "Email Me" button is clicked with a valid email', () => {
+        // Arrange
+        component.resetPasswordForm.patchValue({ email: config_test.credentials.email });
+        userService.sendResetPassword.mockReturnValue(of(true));
+        // Act
+        component.sendResetEmail();
+        // Assert
+        expect(userService.sendResetPassword).toHaveBeenCalledWith(expect.objectContaining({ email: config_test.credentials.email } as SendResetPasswordEmailRequest));
+    });
 });

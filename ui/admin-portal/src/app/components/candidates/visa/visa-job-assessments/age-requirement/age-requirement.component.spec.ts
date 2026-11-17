@@ -22,36 +22,37 @@ import {MockCandidateVisaJobCheck} from "../../../../../MockData/MockCandidateVi
 import {provideHttpClientTesting} from "@angular/common/http/testing";
 import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {AutosaveStatusComponent} from "../../../../util/autosave-status/autosave-status.component";
+import {expect} from 'vitest';
 
 describe('AgeRequirementComponent', () => {
-  let component: AgeRequirementComponent;
-  let fixture: ComponentFixture<AgeRequirementComponent>;
-  let fb: UntypedFormBuilder;
+    let component: AgeRequirementComponent;
+    let fixture: ComponentFixture<AgeRequirementComponent>;
+    let fb: UntypedFormBuilder;
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      declarations: [AgeRequirementComponent,AutosaveStatusComponent],
-      imports: [ReactiveFormsModule, NgSelectModule],
-      providers: [UntypedFormBuilder, provideHttpClient(withXhr(), withInterceptorsFromDi()), provideHttpClientTesting()]
-    })
-    .compileComponents();
-  });
+    beforeEach(async () => {
+        await TestBed.configureTestingModule({
+            declarations: [AgeRequirementComponent, AutosaveStatusComponent],
+            imports: [ReactiveFormsModule, NgSelectModule],
+            providers: [UntypedFormBuilder, provideHttpClient(withXhr(), withInterceptorsFromDi()), provideHttpClientTesting()]
+        })
+            .compileComponents();
+    });
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(AgeRequirementComponent);
-    component = fixture.componentInstance;
-    fb = TestBed.inject(UntypedFormBuilder);
-    fixture.detectChanges();
-  });
+    beforeEach(() => {
+        fixture = TestBed.createComponent(AgeRequirementComponent);
+        component = fixture.componentInstance;
+        fb = TestBed.inject(UntypedFormBuilder);
+        fixture.detectChanges();
+    });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
 
-  it('should initialize form with correct values', () => {
-    const expectedAgeRequirement = 'Yes'; // Assuming 'Yes' is a valid initial value
-    component.visaJobCheck = MockCandidateVisaJobCheck;
-    component.ngOnInit();
-    expect(component.form.get('visaJobAgeRequirement').value).toBe(expectedAgeRequirement);
-  });
+    it('should initialize form with correct values', () => {
+        const expectedAgeRequirement = 'Yes'; // Assuming 'Yes' is a valid initial value
+        component.visaJobCheck = MockCandidateVisaJobCheck;
+        component.ngOnInit();
+        expect(component.form.get('visaJobAgeRequirement').value).toBe(expectedAgeRequirement);
+    });
 });

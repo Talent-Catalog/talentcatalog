@@ -22,6 +22,7 @@ import {Country} from '../model/country';
 import {environment} from '../../environments/environment';
 import {SearchResults} from '../model/search-results';
 import {MockJob} from "../MockData/MockJob";
+import {expect} from 'vitest';
 
 describe('CountryService', () => {
   let service: CountryService;

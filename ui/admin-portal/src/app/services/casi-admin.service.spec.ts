@@ -4,6 +4,7 @@ import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/commo
 import {environment} from "../../environments/environment";
 import {CasiAdminService} from './casi-admin.service';
 import {ListAction, ServiceList} from "../model/service-list";
+import {expect} from 'vitest';
 
 describe('CasiAdminService', () => {
   let service: CasiAdminService;

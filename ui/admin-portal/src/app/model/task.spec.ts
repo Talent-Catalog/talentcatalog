@@ -15,6 +15,7 @@
  */
 
 import {Task, TaskType, UploadType} from './task';
+import {expect} from 'vitest';
 
 describe('Task Interface', () => {
   const mockTask: Task = {

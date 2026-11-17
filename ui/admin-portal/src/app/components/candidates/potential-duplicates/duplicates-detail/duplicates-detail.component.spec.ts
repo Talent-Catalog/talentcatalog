@@ -14,6 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
+import type {MockedObject} from "vitest";
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {DuplicatesDetailComponent} from './duplicates-detail.component';
 import {CandidateService} from "../../../../services/candidate.service";
@@ -22,87 +23,85 @@ import {MockCandidate} from "../../../../MockData/MockCandidate";
 import {of} from "rxjs";
 import {By} from "@angular/platform-browser";
 import {RouterTestingModule} from "@angular/router/testing";
+import {expect, vi} from 'vitest';
 
 
 describe('DuplicatesDetailComponent', () => {
-  let component: DuplicatesDetailComponent;
-  let fixture: ComponentFixture<DuplicatesDetailComponent>;
-  let candidateServiceSpy: jasmine.SpyObj<CandidateService>;
-  let activeModalSpy: jasmine.SpyObj<NgbActiveModal>;
-  const mockCandidate = new MockCandidate();
-  const mockDuplicate = new MockCandidate();
-  mockDuplicate.id = 2;
-  const mockDuplicate2 = new MockCandidate();
-  mockDuplicate.id = 3;
-  const mockDuplicates = [mockDuplicate, mockDuplicate2];
+    let component: DuplicatesDetailComponent;
+    let fixture: ComponentFixture<DuplicatesDetailComponent>;
+    let candidateServiceSpy: MockedObject<CandidateService>;
+    let activeModalSpy: MockedObject<NgbActiveModal>;
+    const mockCandidate = new MockCandidate();
+    const mockDuplicate = new MockCandidate();
+    mockDuplicate.id = 2;
+    const mockDuplicate2 = new MockCandidate();
+    mockDuplicate.id = 3;
+    const mockDuplicates = [mockDuplicate, mockDuplicate2];
 
 
-  beforeEach(async () => {
-    const candidateService =
-      jasmine.createSpyObj('CandidateService', ['fetchPotentialDuplicates']);
-    const activeModal =
-      jasmine.createSpyObj('NgbActiveModal', ['close']);
+    beforeEach(async () => {
+        const candidateService = {
+            fetchPotentialDuplicates: vi.fn().mockName("CandidateService.fetchPotentialDuplicates")
+        };
+        const activeModal = {
+            close: vi.fn().mockName("NgbActiveModal.close")
+        };
 
-    await TestBed.configureTestingModule({
-      declarations: [DuplicatesDetailComponent],
-      imports: [RouterTestingModule],
-      providers: [
-        {provide: CandidateService, useValue: candidateService},
-        {provide: NgbActiveModal, useValue: activeModal}
-      ]
-    }).compileComponents();
+        await TestBed.configureTestingModule({
+            declarations: [DuplicatesDetailComponent],
+            imports: [RouterTestingModule],
+            providers: [
+                { provide: CandidateService, useValue: candidateService },
+                { provide: NgbActiveModal, useValue: activeModal }
+            ]
+        }).compileComponents();
 
-    fixture = TestBed.createComponent(DuplicatesDetailComponent);
-    component = fixture.componentInstance;
-    candidateServiceSpy = TestBed.inject(CandidateService) as jasmine.SpyObj<CandidateService>;
-    activeModalSpy = TestBed.inject(NgbActiveModal) as jasmine.SpyObj<NgbActiveModal>;
+        fixture = TestBed.createComponent(DuplicatesDetailComponent);
+        component = fixture.componentInstance;
+        candidateServiceSpy = TestBed.inject(CandidateService) as MockedObject<CandidateService>;
+        activeModalSpy = TestBed.inject(NgbActiveModal) as MockedObject<NgbActiveModal>;
 
-    // ngOnInit
-    component.selectedCandidate = mockCandidate;
-    candidateServiceSpy.fetchPotentialDuplicates.and.returnValue(of([mockDuplicate, mockDuplicate2]));
+        // ngOnInit
+        component.selectedCandidate = mockCandidate;
+        candidateServiceSpy.fetchPotentialDuplicates.mockReturnValue(of([mockDuplicate, mockDuplicate2]));
 
-    fixture.detectChanges();
-  });
+        fixture.detectChanges();
+    });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
 
-  it(
-    'should fetch potential duplicates on ngOnInit and set property with result',
-    () => {
-    expect(candidateServiceSpy.fetchPotentialDuplicates).toHaveBeenCalled();
-    expect(component.potentialDuplicates).toEqual(mockDuplicates);
-  });
+    it('should fetch potential duplicates on ngOnInit and set property with result', () => {
+        expect(candidateServiceSpy.fetchPotentialDuplicates).toHaveBeenCalled();
+        expect(component.potentialDuplicates).toEqual(mockDuplicates);
+    });
 
-  it('should call fetchPotentialDuplicates when refresh button clicked',
-    () => {
-    spyOn(component, 'refresh')
-    const refreshButton = fixture.debugElement.nativeElement.querySelector('.modal-footer .btn-primary');
-    refreshButton.click;
-    expect(candidateServiceSpy.fetchPotentialDuplicates).toHaveBeenCalled();
-    })
+    it('should call fetchPotentialDuplicates when refresh button clicked', () => {
+        vi.spyOn(component, 'refresh').mockReturnValue(undefined);
+        const refreshButton = fixture.debugElement.nativeElement.querySelector('.modal-footer .btn-primary');
+        refreshButton.click;
+        expect(candidateServiceSpy.fetchPotentialDuplicates).toHaveBeenCalled();
+    });
 
-  it('should display different text when no duplicates are returned', () => {
-    component.potentialDuplicates = [];
-    fixture.detectChanges();
+    it('should display different text when no duplicates are returned', () => {
+        component.potentialDuplicates = [];
+        fixture.detectChanges();
 
-    const paragraphs = fixture.debugElement.queryAll(By.css('p'));
-    const noDuplicatesElement = paragraphs[1];
+        const paragraphs = fixture.debugElement.queryAll(By.css('p'));
+        const noDuplicatesElement = paragraphs[1];
 
-    // Assert: Check if the text content matches
-    expect(noDuplicatesElement).toBeTruthy(); // Ensure the element exists
-    expect(noDuplicatesElement.nativeElement.innerText).toContain(
-      'Candidate data have been updated and there are currently no suspected'
-    );
-  })
+        // Assert: Check if the text content matches
+        expect(noDuplicatesElement).toBeTruthy(); // Ensure the element exists
+        expect(noDuplicatesElement.nativeElement.textContent).toContain('Candidate data have been updated and there are currently no suspected');
+    });
 
-  it('should show error message if error is present', () => {
-    component.error = 'Test error message';
-    fixture.detectChanges();
-    const errorMessage = fixture.debugElement.nativeElement.querySelector('.alert-danger');
-    expect(errorMessage).toBeTruthy();
-    expect(errorMessage.textContent).toContain('Test error message');
-  });
+    it('should show error message if error is present', () => {
+        component.error = 'Test error message';
+        fixture.detectChanges();
+        const errorMessage = fixture.debugElement.nativeElement.querySelector('.alert-danger');
+        expect(errorMessage).toBeTruthy();
+        expect(errorMessage.textContent).toContain('Test error message');
+    });
 
 });

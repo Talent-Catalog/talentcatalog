@@ -14,6 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
+import type {MockedObject} from "vitest";
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {FindCandidateSourceComponent} from './find-candidate-source.component';
 import {CandidateSourceService} from "../../../services/candidate-source.service";
@@ -21,121 +22,125 @@ import {of} from "rxjs";
 import {MockCandidateSource} from "../../../MockData/MockCandidateSource";
 import {FormsModule} from "@angular/forms";
 import {NgSelectModule} from "@ng-select/ng-select";
+import {expect, vi} from 'vitest';
 
 describe('FindCandidateSourceComponent', () => {
-  let component: FindCandidateSourceComponent;
-  let fixture: ComponentFixture<FindCandidateSourceComponent>;
-  let candidateSourceService: jasmine.SpyObj<CandidateSourceService>;
-  let mockCandidateSource: MockCandidateSource = new MockCandidateSource();
+    let component: FindCandidateSourceComponent;
+    let fixture: ComponentFixture<FindCandidateSourceComponent>;
+    let candidateSourceService: MockedObject<CandidateSourceService>;
+    let mockCandidateSource: MockCandidateSource = new MockCandidateSource();
 
-  beforeEach(async () => {
-    const candidateSourceServiceSpy = jasmine.createSpyObj('CandidateSourceService',
-      ['searchPaged', 'get','searchByIds']);
+    beforeEach(async () => {
+        const candidateSourceServiceSpy = {
+            searchPaged: vi.fn().mockName("CandidateSourceService.searchPaged"),
+            get: vi.fn().mockName("CandidateSourceService.get"),
+            searchByIds: vi.fn().mockName("CandidateSourceService.searchByIds")
+        };
 
-    await TestBed.configureTestingModule({
-      declarations: [ FindCandidateSourceComponent ],
-      imports: [
-        FormsModule,
-        NgSelectModule
-      ],
-      providers: [
-        { provide: CandidateSourceService, useValue: candidateSourceServiceSpy }
-      ]
-    })
-    .compileComponents();
+        await TestBed.configureTestingModule({
+            declarations: [FindCandidateSourceComponent],
+            imports: [
+                FormsModule,
+                NgSelectModule
+            ],
+            providers: [
+                { provide: CandidateSourceService, useValue: candidateSourceServiceSpy }
+            ]
+        })
+            .compileComponents();
 
-    candidateSourceService = TestBed.inject(CandidateSourceService) as jasmine.SpyObj<CandidateSourceService>;
-  });
-
-  beforeEach(() => {
-    fixture = TestBed.createComponent(FindCandidateSourceComponent);
-    component = fixture.componentInstance;
-    candidateSourceService.get.and.returnValue(of(mockCandidateSource));
-    candidateSourceService.searchByIds.and.returnValue(of([mockCandidateSource]));
-
-    fixture.detectChanges();
-  });
-
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
-
-
-  it('should initialize correctly', () => {
-    component.ngOnInit();
-    component.single = true;
-    component.selectedIds = 1;
-    component.ngOnChanges(null);
-
-    expect(component.currentSelection).toEqual(mockCandidateSource);
-  });
-
-  it('should emit selection correctly', (done) => {
-    component.single = true;
-
-    component.selectionMade.subscribe({
-      next: selectedSource => {
-        expect(selectedSource).toEqual(mockCandidateSource);
-        done();
-      }
+        candidateSourceService = TestBed.inject(CandidateSourceService) as MockedObject<CandidateSourceService>;
     });
 
-    component.onChangedSelection(mockCandidateSource);
-  });
+    beforeEach(() => {
+        fixture = TestBed.createComponent(FindCandidateSourceComponent);
+        component = fixture.componentInstance;
+        candidateSourceService.get.mockReturnValue(of(mockCandidateSource));
+        candidateSourceService.searchByIds.mockReturnValue(of([mockCandidateSource]));
 
-  it('should emit multiple selections correctly', (done) => {
-    component.single = false;
-
-    component.selectionsMade.subscribe({
-      next: selections => {
-        expect(selections).toEqual([mockCandidateSource]);
-        done();
-      }
+        fixture.detectChanges();
     });
 
-    component.onChangedSelection([mockCandidateSource]);
-  });
-
-  it('should set multiple current selections correctly on selectedIds change', () => {
-    component.single = false;
-    component.selectedIds = [1];
-    component.ngOnChanges({ selectedIds: { currentValue: [1], previousValue: null, firstChange: true, isFirstChange: () => true } });
-
-    expect(component.currentSelections.length).toBe(1);
-    expect(component.currentSelections[0]).toEqual(mockCandidateSource);
-  });
-
-  it('should clear selection if selectedIds is null', () => {
-    component.currentSelections = [mockCandidateSource];
-    component.currentSelection = mockCandidateSource;
-
-    component.selectedIds = null;
-    component.ngOnChanges({ selectedIds: { currentValue: null, previousValue: [1], firstChange: false, isFirstChange: () => false } });
-
-    expect(component.currentSelections.length).toBe(0);
-    expect(component.currentSelection).toBeNull();
-  });
-
-  it('should return empty array from doSearch if sourceType is null', (done) => {
-    component.sourceType = null;
-    component['doSearch']('test').subscribe(result => {
-      expect(result).toEqual([]);
-      done();
+    it('should create', () => {
+        expect(component).toBeTruthy();
     });
-  });
 
-  it('should handle empty changes in ngOnChanges gracefully', () => {
-    expect(() => component.ngOnChanges({})).not.toThrow();
-  });
 
-  it('should set first item as currentSelection in single mode', () => {
-    component['setCurrentSelection']([mockCandidateSource]);
-    expect(component.currentSelection).toEqual(mockCandidateSource);
-  });
+    it('should initialize correctly', () => {
+        component.ngOnInit();
+        component.single = true;
+        component.selectedIds = 1;
+        component.ngOnChanges(null);
 
-  it('should set currentSelection to null if empty list is passed', () => {
-    component['setCurrentSelection']([]);
-    expect(component.currentSelection).toBeNull();
-  });
+        expect(component.currentSelection).toEqual(mockCandidateSource);
+    });
+
+    it('should emit selection correctly', async () => {
+        component.single = true;
+
+        component.selectionMade.subscribe({
+            next: selectedSource => {
+                expect(selectedSource).toEqual(mockCandidateSource);
+                ;
+            }
+        });
+
+        component.onChangedSelection(mockCandidateSource);
+    });
+
+    it('should emit multiple selections correctly', async () => {
+        component.single = false;
+
+        component.selectionsMade.subscribe({
+            next: selections => {
+                expect(selections).toEqual([mockCandidateSource]);
+                ;
+            }
+        });
+
+        component.onChangedSelection([mockCandidateSource]);
+    });
+
+    it('should set multiple current selections correctly on selectedIds change', () => {
+        component.single = false;
+        component.selectedIds = [1];
+        component.ngOnChanges({ selectedIds: { currentValue: [1], previousValue: null, firstChange: true, isFirstChange: () => true } });
+
+        expect(component.currentSelections.length).toBe(1);
+        expect(component.currentSelections[0]).toEqual(mockCandidateSource);
+    });
+
+    it('should clear selection if selectedIds is null', () => {
+        component.currentSelections = [mockCandidateSource];
+        component.currentSelection = mockCandidateSource;
+
+        component.selectedIds = null;
+        component.ngOnChanges({ selectedIds: { currentValue: null, previousValue: [1], firstChange: false, isFirstChange: () => false } });
+
+        expect(component.currentSelections.length).toBe(0);
+        expect(component.currentSelection).toBeNull();
+    });
+
+    it('should return empty array from doSearch if sourceType is null', async () => {
+        component.sourceType = null;
+        component['doSearch']('test').subscribe(result => {
+            expect(result).toEqual([]);
+            ;
+        });
+    });
+
+    it('should handle empty changes in ngOnChanges gracefully', () => {
+        expect(() => component.ngOnChanges({})).not.toThrow();
+    });
+
+    it('should set first item as currentSelection in single mode', () => {
+        component['setCurrentSelection']([mockCandidateSource]);
+        expect(component.currentSelection).toEqual(mockCandidateSource);
+    });
+
+    it('should set currentSelection to null if empty list is passed', () => {
+        component['setCurrentSelection']([]);
+        expect(component.currentSelection).toBeNull();
+    });
 
 });

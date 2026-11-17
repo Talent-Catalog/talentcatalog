@@ -14,6 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
+import type {MockedObject} from "vitest";
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {ReactiveFormsModule, UntypedFormBuilder} from '@angular/forms';
 import {IntProtectionComponent} from './int-protection.component';
@@ -23,54 +24,57 @@ import {provideHttpClientTesting} from "@angular/common/http/testing";
 import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {AutosaveStatusComponent} from "../../../util/autosave-status/autosave-status.component";
+import {expect, vi} from 'vitest';
 
 describe('IntProtectionComponent', () => {
-  let component: IntProtectionComponent;
-  let fixture: ComponentFixture<IntProtectionComponent>;
-  let candidateVisaCheckService: jasmine.SpyObj<CandidateVisaCheckService>;
+    let component: IntProtectionComponent;
+    let fixture: ComponentFixture<IntProtectionComponent>;
+    let candidateVisaCheckService: MockedObject<CandidateVisaCheckService>;
 
-  beforeEach(async () => {
-    const candidateVisaCheckServiceSpy = jasmine.createSpyObj('CandidateVisaCheckService', ['someMethod']);
+    beforeEach(async () => {
+        const candidateVisaCheckServiceSpy = {
+            someMethod: vi.fn().mockName("CandidateVisaCheckService.someMethod")
+        };
 
-    await TestBed.configureTestingModule({
-      imports: [ReactiveFormsModule, NgSelectModule],
-      declarations: [IntProtectionComponent,AutosaveStatusComponent],
-      providers: [
-        UntypedFormBuilder,
-        {provide: CandidateVisaCheckService, useValue: candidateVisaCheckServiceSpy},
-        provideHttpClient(withXhr(), withInterceptorsFromDi()),
-        provideHttpClientTesting()
-      ]
-    }).compileComponents();
+        await TestBed.configureTestingModule({
+            imports: [ReactiveFormsModule, NgSelectModule],
+            declarations: [IntProtectionComponent, AutosaveStatusComponent],
+            providers: [
+                UntypedFormBuilder,
+                { provide: CandidateVisaCheckService, useValue: candidateVisaCheckServiceSpy },
+                provideHttpClient(withXhr(), withInterceptorsFromDi()),
+                provideHttpClientTesting()
+            ]
+        }).compileComponents();
 
-    candidateVisaCheckService = TestBed.inject(CandidateVisaCheckService) as jasmine.SpyObj<CandidateVisaCheckService>;
-  });
+        candidateVisaCheckService = TestBed.inject(CandidateVisaCheckService) as MockedObject<CandidateVisaCheckService>;
+    });
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(IntProtectionComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
+    beforeEach(() => {
+        fixture = TestBed.createComponent(IntProtectionComponent);
+        component = fixture.componentInstance;
+        fixture.detectChanges();
+    });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
 
-  it('grounds textarea should be displayed when visaProtection is "Yes"', () => {
-    component.form.controls['visaProtection'].setValue('Yes');
-    fixture.detectChanges();
-    const textarea = fixture.debugElement.query(By.css('#visaProtectionGrounds'));
-    expect(textarea).toBeTruthy();
-  });
+    it('grounds textarea should be displayed when visaProtection is "Yes"', () => {
+        component.form.controls['visaProtection'].setValue('Yes');
+        fixture.detectChanges();
+        const textarea = fixture.debugElement.query(By.css('#visaProtectionGrounds'));
+        expect(textarea).toBeTruthy();
+    });
 
-  it('grounds textarea should not be displayed when visaProtection is not "Yes"', () => {
-    component.form.controls['visaProtection'].setValue('No');
-    fixture.detectChanges();
-    const textarea = fixture.debugElement.query(By.css('#visaProtectionGrounds'));
-    expect(textarea).toBeFalsy();
+    it('grounds textarea should not be displayed when visaProtection is not "Yes"', () => {
+        component.form.controls['visaProtection'].setValue('No');
+        fixture.detectChanges();
+        const textarea = fixture.debugElement.query(By.css('#visaProtectionGrounds'));
+        expect(textarea).toBeFalsy();
 
-    component.form.controls['visaProtection'].setValue(null);
-    fixture.detectChanges();
-    expect(textarea).toBeFalsy();
-  });
+        component.form.controls['visaProtection'].setValue(null);
+        fixture.detectChanges();
+        expect(textarea).toBeFalsy();
+    });
 });

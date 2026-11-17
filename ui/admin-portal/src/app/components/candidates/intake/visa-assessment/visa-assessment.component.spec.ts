@@ -22,38 +22,39 @@ import {AutosaveStatusComponent} from "../../../util/autosave-status/autosave-st
 import {provideHttpClientTesting} from "@angular/common/http/testing";
 import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {VisaEligibility} from "../../../../model/candidate";
+import {expect} from 'vitest';
 
 describe('VisaAssessmentComponent', () => {
-  let component: VisaAssessmentComponent;
-  let fixture: ComponentFixture<VisaAssessmentComponent>;
+    let component: VisaAssessmentComponent;
+    let fixture: ComponentFixture<VisaAssessmentComponent>;
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      declarations: [ VisaAssessmentComponent,AutosaveStatusComponent ],
-      imports: [ReactiveFormsModule, NgSelectModule ],
-      providers: [
-        { provide: CandidateService },
-        provideHttpClient(withXhr(), withInterceptorsFromDi()),
-        provideHttpClientTesting()
-      ]
-    })
-    .compileComponents();
-  });
+    beforeEach(async () => {
+        await TestBed.configureTestingModule({
+            declarations: [VisaAssessmentComponent, AutosaveStatusComponent],
+            imports: [ReactiveFormsModule, NgSelectModule],
+            providers: [
+                { provide: CandidateService },
+                provideHttpClient(withXhr(), withInterceptorsFromDi()),
+                provideHttpClientTesting()
+            ]
+        })
+            .compileComponents();
+    });
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(VisaAssessmentComponent);
-    component = fixture.componentInstance;
-    component.selectedJobCheck = {
-      id: 1,
-      putForward: VisaEligibility.Yes,
-      notes: 'Candidate meets all visa requirements.'
-    };
-    fixture.detectChanges();
-  });
+    beforeEach(() => {
+        fixture = TestBed.createComponent(VisaAssessmentComponent);
+        component = fixture.componentInstance;
+        component.selectedJobCheck = {
+            id: 1,
+            putForward: VisaEligibility.Yes,
+            notes: 'Candidate meets all visa requirements.'
+        };
+        fixture.detectChanges();
+    });
 
-  it('should initialize the form controls with the correct default values', () => {
-    expect(component.form.get('visaJobId').value).toBe(1);
-    expect(component.form.get('visaJobPutForward').value).toBe(VisaEligibility.Yes);
-    expect(component.form.get('visaJobNotes').value).toBe('Candidate meets all visa requirements.');
-  });
+    it('should initialize the form controls with the correct default values', () => {
+        expect(component.form.get('visaJobId').value).toBe(1);
+        expect(component.form.get('visaJobPutForward').value).toBe(VisaEligibility.Yes);
+        expect(component.form.get('visaJobNotes').value).toBe('Candidate meets all visa requirements.');
+    });
 });

@@ -15,6 +15,7 @@
  */
 
 import {Opportunity} from './opportunity';
+import {expect} from 'vitest';
 
 describe('Opportunity Interface', () => {
   it('should create a valid Opportunity object', () => {

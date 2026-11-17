@@ -13,6 +13,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
+
+import type {MockedObject} from "vitest";
 import {provideHttpClientTesting} from "@angular/common/http/testing";
 import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
@@ -29,90 +31,93 @@ import {MockUser} from "../../../../MockData/MockUser";
 import {SearchResults} from "../../../../model/search-results";
 import {UpdatedByComponent} from "../../../util/user/updated-by/updated-by.component";
 import {UserPipe} from "../../../util/user/user.pipe";
+import {expect, vi} from 'vitest';
 
 describe('ViewCandidateNoteComponent', () => {
-  let component: ViewCandidateNoteComponent;
-  let fixture: ComponentFixture<ViewCandidateNoteComponent>;
-  let mockCandidateNoteService: jasmine.SpyObj<CandidateNoteService>;
-  let mockModalService: jasmine.SpyObj<NgbModal>;
+    let component: ViewCandidateNoteComponent;
+    let fixture: ComponentFixture<ViewCandidateNoteComponent>;
+    let mockCandidateNoteService: MockedObject<CandidateNoteService>;
+    let mockModalService: MockedObject<NgbModal>;
 
-  const mockUser = new MockUser();
-  const mockCandidate = new MockCandidate();
-  const mockCandidateNotes: CandidateNote[] = [{
-    id: 1,
-    title: 'Note 1',
-    comment: 'Comment',
-    noteType: 'Test',
-    createdBy: mockUser,
-    createdDate: 2012,
-    updatedBy: mockUser,
-    updatedDate: 2013,
-  }] as CandidateNote[];
+    const mockUser = new MockUser();
+    const mockCandidate = new MockCandidate();
+    const mockCandidateNotes: CandidateNote[] = [{
+            id: 1,
+            title: 'Note 1',
+            comment: 'Comment',
+            noteType: 'Test',
+            createdBy: mockUser,
+            createdDate: 2012,
+            updatedBy: mockUser,
+            updatedDate: 2013,
+        }] as CandidateNote[];
 
-  const mockSearchResults: SearchResults<CandidateNote> = {
-    number: 0,
-    size: 10,
-    totalElements: 1,
-    totalPages: 1,
-    first: true,
-    last: true,
-    content: mockCandidateNotes,
-  };
+    const mockSearchResults: SearchResults<CandidateNote> = {
+        number: 0,
+        size: 10,
+        totalElements: 1,
+        totalPages: 1,
+        first: true,
+        last: true,
+        content: mockCandidateNotes,
+    };
 
 
-  beforeEach(async () => {
-    const modalServiceSpy = jasmine.createSpyObj('NgbModal', ['open']);
+    beforeEach(async () => {
+        const modalServiceSpy = {
+            open: vi.fn().mockName("NgbModal.open")
+        };
 
-    await TestBed.configureTestingModule({
-      imports: [FormsModule,ReactiveFormsModule, NgSelectModule],
-      declarations: [ViewCandidateNoteComponent, UpdatedByComponent, UserPipe],
-      providers: [
-        { provide: NgbModal, useValue: modalServiceSpy },
-        provideHttpClient(withXhr(), withInterceptorsFromDi()),
-        provideHttpClientTesting()
-      ]
-    })
-    .compileComponents();
+        await TestBed.configureTestingModule({
+            imports: [FormsModule, ReactiveFormsModule, NgSelectModule],
+            declarations: [ViewCandidateNoteComponent, UpdatedByComponent, UserPipe],
+            providers: [
+                { provide: NgbModal, useValue: modalServiceSpy },
+                provideHttpClient(withXhr(), withInterceptorsFromDi()),
+                provideHttpClientTesting()
+            ]
+        })
+            .compileComponents();
 
-    mockCandidateNoteService = TestBed.inject(CandidateNoteService) as jasmine.SpyObj<CandidateNoteService>;
-    mockModalService = TestBed.inject(NgbModal) as jasmine.SpyObj<NgbModal>;
-  });
-
-  beforeEach(() => {
-    fixture = TestBed.createComponent(ViewCandidateNoteComponent);
-    component = fixture.componentInstance;
-    component.candidate = mockCandidate;
-    component.notes = mockCandidateNotes;
-    fixture.detectChanges();
-  });
-
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
-
-  it('should open create note modal', () => {
-    const mockModalRef = { componentInstance: { candidateId: null } };
-    mockModalService.open.and.returnValue(mockModalRef as any);
-
-    component.createCandidateNote();
-
-    expect(mockModalService.open).toHaveBeenCalledWith(CreateCandidateNoteComponent, {
-      centered: true,
-      backdrop: 'static'
+        mockCandidateNoteService = TestBed.inject(CandidateNoteService) as MockedObject<CandidateNoteService>;
+        mockModalService = TestBed.inject(NgbModal) as MockedObject<NgbModal>;
     });
-    expect(mockModalRef.componentInstance.candidateId).toEqual(component.candidate.id);
-  });
 
-  it('should open edit note modal', () => {
-    const mockModalRef = { componentInstance: { candidateNote: null } };
-    mockModalService.open.and.returnValue(mockModalRef as any);
-
-    component.editCandidateNote(mockCandidateNotes[0]);
-
-    expect(mockModalService.open).toHaveBeenCalledWith(EditCandidateNoteComponent, {
-      centered: true,
-      backdrop: 'static'
+    beforeEach(() => {
+        fixture = TestBed.createComponent(ViewCandidateNoteComponent);
+        component = fixture.componentInstance;
+        component.candidate = mockCandidate;
+        component.notes = mockCandidateNotes;
+        fixture.detectChanges();
     });
-    expect(mockModalRef.componentInstance.candidateNote).toEqual(mockCandidateNotes[0]);
-  });
+
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
+
+    it('should open create note modal', () => {
+        const mockModalRef = { componentInstance: { candidateId: null } };
+        mockModalService.open.mockReturnValue(mockModalRef as any);
+
+        component.createCandidateNote();
+
+        expect(mockModalService.open).toHaveBeenCalledWith(CreateCandidateNoteComponent, {
+            centered: true,
+            backdrop: 'static'
+        });
+        expect(mockModalRef.componentInstance.candidateId).toEqual(component.candidate.id);
+    });
+
+    it('should open edit note modal', () => {
+        const mockModalRef = { componentInstance: { candidateNote: null } };
+        mockModalService.open.mockReturnValue(mockModalRef as any);
+
+        component.editCandidateNote(mockCandidateNotes[0]);
+
+        expect(mockModalService.open).toHaveBeenCalledWith(EditCandidateNoteComponent, {
+            centered: true,
+            backdrop: 'static'
+        });
+        expect(mockModalRef.componentInstance.candidateNote).toEqual(mockCandidateNotes[0]);
+    });
 });

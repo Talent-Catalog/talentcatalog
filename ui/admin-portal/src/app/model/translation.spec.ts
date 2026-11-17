@@ -15,6 +15,7 @@
  */
 
 import {Translation} from "./translation";
+import {expect} from 'vitest';
 
 describe('Translation Interface', () => {
   it('should create an instance of Translation', () => {

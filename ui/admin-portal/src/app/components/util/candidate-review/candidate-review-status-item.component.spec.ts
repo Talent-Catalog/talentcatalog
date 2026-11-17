@@ -13,96 +13,102 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
+
+import type {MockedObject} from "vitest";
 import {CandidateReviewStatusItemComponent} from "./candidate-review-status-item.component";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {CandidateService} from "../../../services/candidate.service";
 import {ComponentFixture, fakeAsync, TestBed, tick} from "@angular/core/testing";
 import {CandidateReviewStatusItem} from "../../../model/candidate-review-status-item";
 import {CandidateSource} from "../../../model/base";
-import {
-  EditCandidateReviewStatusItemComponent
-} from "./edit/edit-candidate-review-status-item.component";
+import {EditCandidateReviewStatusItemComponent} from "./edit/edit-candidate-review-status-item.component";
+import {expect, vi} from 'vitest';
 
 describe('CandidateReviewStatusItemComponent', () => {
-  let component: CandidateReviewStatusItemComponent;
-  let fixture: ComponentFixture<CandidateReviewStatusItemComponent>;
-  let modalService: jasmine.SpyObj<NgbModal>;
-  let candidateService: jasmine.SpyObj<CandidateService>;
+    let component: CandidateReviewStatusItemComponent;
+    let fixture: ComponentFixture<CandidateReviewStatusItemComponent>;
+    let modalService: MockedObject<NgbModal>;
+    let candidateService: MockedObject<CandidateService>;
 
-  beforeEach(async () => {
-    const modalSpy = jasmine.createSpyObj('NgbModal', ['open']);
-    const candidateServiceSpy = jasmine.createSpyObj('CandidateService', ['']);
+    beforeEach(async () => {
+        const modalSpy = {
+            open: vi.fn().mockName("NgbModal.open")
+        };
+        const candidateServiceSpy = {
 
-    await TestBed.configureTestingModule({
-      declarations: [CandidateReviewStatusItemComponent],
-      providers: [
-        { provide: NgbModal, useValue: modalSpy },
-        { provide: CandidateService, useValue: candidateServiceSpy }
-      ]
-    }).compileComponents();
+        };
 
-    fixture = TestBed.createComponent(CandidateReviewStatusItemComponent);
-    component = fixture.componentInstance;
-    modalService = TestBed.inject(NgbModal) as jasmine.SpyObj<NgbModal>;
-    candidateService = TestBed.inject(CandidateService) as jasmine.SpyObj<CandidateService>;
-  });
+        await TestBed.configureTestingModule({
+            declarations: [CandidateReviewStatusItemComponent],
+            providers: [
+                { provide: NgbModal, useValue: modalSpy },
+                { provide: CandidateService, useValue: candidateServiceSpy }
+            ]
+        }).compileComponents();
 
-  beforeEach(() => {
-    component.candidateReviewStatusItems = [
-      { id: 1, reviewStatus: 'Pending', savedSearch: { id: 1 } },
-      { id: 2, reviewStatus: 'Approved', savedSearch: { id: 2 } }
-    ] as CandidateReviewStatusItem[];
-    component.savedSearch = { id: 1 } as CandidateSource;
-    component.candidateId = 123;
-    fixture.detectChanges();
-  });
-
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
-
-  it('should select the correct review status on initialization', () => {
-    component.ngOnInit();
-    expect(component.candidateReviewStatusItem).toEqual({ id: 1, reviewStatus: 'Pending', savedSearch: { id: 1 } });
-  });
-
-  it('should select the correct review status on input change', () => {
-    component.ngOnChanges({});
-    expect(component.candidateReviewStatusItem).toEqual({ id: 1, reviewStatus: 'Pending', savedSearch: { id: 1 } });
-  });
-
-  it('should open edit modal and emit event on editReviewStatusItem call', fakeAsync(() => {
-    const mockModalRef = {
-      componentInstance: { message: "" },
-      result: Promise.resolve({ id: 1, reviewStatus: 'Approved' })
-    } as any;
-    modalService.open.and.returnValue(mockModalRef);
-
-    spyOn(component.reviewStatusChange, 'emit');
-    component.editReviewStatusItem();
-    tick();
-
-    expect(modalService.open).toHaveBeenCalledWith(EditCandidateReviewStatusItemComponent, {
-      centered: true,
-      backdrop: 'static'
+        fixture = TestBed.createComponent(CandidateReviewStatusItemComponent);
+        component = fixture.componentInstance;
+        modalService = TestBed.inject(NgbModal) as MockedObject<NgbModal>;
+        candidateService = TestBed.inject(CandidateService) as MockedObject<CandidateService>;
     });
-    expect(component.reviewStatusChange.emit).toHaveBeenCalledWith({ id: 1, reviewStatus: 'Approved' });
-  }));
 
-  it('should handle modal dismiss without error', async () => {
+    beforeEach(() => {
+        component.candidateReviewStatusItems = [
+            { id: 1, reviewStatus: 'Pending', savedSearch: { id: 1 } },
+            { id: 2, reviewStatus: 'Approved', savedSearch: { id: 2 } }
+        ] as CandidateReviewStatusItem[];
+        component.savedSearch = { id: 1 } as CandidateSource;
+        component.candidateId = 123;
+        fixture.detectChanges();
+    });
 
-    const mockModalRef = {
-      componentInstance: { message: "" },
-      result: Promise.reject('dismissed')
-    } as any;
-    modalService.open.and.returnValue(mockModalRef);
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
 
-    component.editReviewStatusItem();
+    it('should select the correct review status on initialization', () => {
+        component.ngOnInit();
+        expect(component.candidateReviewStatusItem).toEqual({ id: 1, reviewStatus: 'Pending', savedSearch: { id: 1 } });
+    });
 
-    try {
-      await mockModalRef.result;
-    } catch (error) {
-      expect(error).toBe('dismissed');
-    }
-  });
+    it('should select the correct review status on input change', () => {
+        component.ngOnChanges({});
+        expect(component.candidateReviewStatusItem).toEqual({ id: 1, reviewStatus: 'Pending', savedSearch: { id: 1 } });
+    });
+
+    it('should open edit modal and emit event on editReviewStatusItem call', fakeAsync(() => {
+        const mockModalRef = {
+            componentInstance: { message: "" },
+            result: Promise.resolve({ id: 1, reviewStatus: 'Approved' })
+        } as any;
+        modalService.open.mockReturnValue(mockModalRef);
+
+        vi.spyOn(component.reviewStatusChange, 'emit').mockReturnValue(undefined);
+        component.editReviewStatusItem();
+        tick();
+
+        expect(modalService.open).toHaveBeenCalledWith(EditCandidateReviewStatusItemComponent, {
+            centered: true,
+            backdrop: 'static'
+        });
+        expect(component.reviewStatusChange.emit).toHaveBeenCalledWith({ id: 1, reviewStatus: 'Approved' });
+    }));
+
+    it('should handle modal dismiss without error', async () => {
+
+        const mockModalRef = {
+            componentInstance: { message: "" },
+            result: Promise.reject('dismissed')
+        } as any;
+        modalService.open.mockReturnValue(mockModalRef);
+
+        component.editReviewStatusItem();
+
+        try {
+            await mockModalRef.result;
+        }
+        catch (error) {
+            expect(error).toBe('dismissed');
+        }
+    });
 });

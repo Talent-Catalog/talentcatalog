@@ -14,6 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
+import type {MockedObject} from "vitest";
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {provideHttpClientTesting} from '@angular/common/http/testing';
 import {provideHttpClient, withInterceptorsFromDi, withXhr} from '@angular/common/http';
@@ -24,71 +25,77 @@ import {UserService} from '../../../services/user.service';
 import {of} from 'rxjs';
 import {config_test} from "../../../../config-test";
 import {MockUser} from "../../../MockData/MockUser";
+import {expect, vi} from 'vitest';
 
 describe('ChangePasswordComponent', () => {
-  let component: ChangePasswordComponent;
-  let fixture: ComponentFixture<ChangePasswordComponent>;
-  let userService: jasmine.SpyObj<UserService>;
-  let activeModal: jasmine.SpyObj<NgbActiveModal>;
+    let component: ChangePasswordComponent;
+    let fixture: ComponentFixture<ChangePasswordComponent>;
+    let userService: MockedObject<UserService>;
+    let activeModal: MockedObject<NgbActiveModal>;
 
-  beforeEach(async () => {
-    const userServiceSpy = jasmine.createSpyObj('UserService', ['updatePassword']);
-    const activeModalSpy = jasmine.createSpyObj('NgbActiveModal', ['close', 'dismiss']);
+    beforeEach(async () => {
+        const userServiceSpy = {
+            updatePassword: vi.fn().mockName("UserService.updatePassword")
+        };
+        const activeModalSpy = {
+            close: vi.fn().mockName("NgbActiveModal.close"),
+            dismiss: vi.fn().mockName("NgbActiveModal.dismiss")
+        };
 
-    await TestBed.configureTestingModule({
-      imports: [
-        ReactiveFormsModule
-      ],
-      declarations: [
-        ChangePasswordComponent
-      ],
-      providers: [
-        UntypedFormBuilder,
-        { provide: UserService, useValue: userServiceSpy },
-        { provide: NgbActiveModal, useValue: activeModalSpy },
-        provideHttpClient(withXhr(), withInterceptorsFromDi()),
-        provideHttpClientTesting()
-      ]
-    }).compileComponents();
+        await TestBed.configureTestingModule({
+            imports: [
+                ReactiveFormsModule
+            ],
+            declarations: [
+                ChangePasswordComponent
+            ],
+            providers: [
+                UntypedFormBuilder,
+                { provide: UserService, useValue: userServiceSpy },
+                { provide: NgbActiveModal, useValue: activeModalSpy },
+                provideHttpClient(withXhr(), withInterceptorsFromDi()),
+                provideHttpClientTesting()
+            ]
+        }).compileComponents();
 
-    userService = TestBed.inject(UserService) as jasmine.SpyObj<UserService>;
-    activeModal = TestBed.inject(NgbActiveModal) as jasmine.SpyObj<NgbActiveModal>;
-  });
-
-  beforeEach(() => {
-    fixture = TestBed.createComponent(ChangePasswordComponent);
-    component = fixture.componentInstance;
-    component.user = new MockUser();
-    fixture.detectChanges();
-  });
-
-  it('should initialize the form with empty password and passwordConfirmation fields', () => {
-    const formValue = component.form.value;
-    expect(formValue.password).toEqual('');
-    expect(formValue.passwordConfirmation).toEqual('');
-  });
-
-  it('should call updatePassword() function and close modal on successful password update', () => {
-    // Arrange
-    component.form.patchValue({
-      password: config_test.credentials.password,
-      passwordConfirmation: config_test.credentials.password
+        userService = TestBed.inject(UserService) as MockedObject<UserService>;
+        activeModal = TestBed.inject(NgbActiveModal) as MockedObject<NgbActiveModal>;
     });
 
-    userService.updatePassword.and.returnValue(of(true));
+    beforeEach(() => {
+        fixture = TestBed.createComponent(ChangePasswordComponent);
+        component = fixture.componentInstance;
+        component.user = new MockUser();
+        fixture.detectChanges();
+    });
 
-    // Act
-    component.updatePassword();
+    it('should initialize the form with empty password and passwordConfirmation fields', () => {
+        const formValue = component.form.value;
+        expect(formValue.password).toEqual('');
+        expect(formValue.passwordConfirmation).toEqual('');
+    });
 
-    // Assert
-    expect(userService.updatePassword).toHaveBeenCalledWith(1, { password: config_test.credentials.password, passwordConfirmation: config_test.credentials.password } as any);
-    expect(activeModal.close).toHaveBeenCalledWith(component.user);
-  });
+    it('should call updatePassword() function and close modal on successful password update', () => {
+        // Arrange
+        component.form.patchValue({
+            password: config_test.credentials.password,
+            passwordConfirmation: config_test.credentials.password
+        });
 
-  it('should dismiss modal without changes when closeModal() is called', () => {
-    // Act
-    component.dismiss();
-    // Assert
-    expect(activeModal.dismiss).toHaveBeenCalledWith(false);
-  });
+        userService.updatePassword.mockReturnValue(of(true));
+
+        // Act
+        component.updatePassword();
+
+        // Assert
+        expect(userService.updatePassword).toHaveBeenCalledWith(1, { password: config_test.credentials.password, passwordConfirmation: config_test.credentials.password } as any);
+        expect(activeModal.close).toHaveBeenCalledWith(component.user);
+    });
+
+    it('should dismiss modal without changes when closeModal() is called', () => {
+        // Act
+        component.dismiss();
+        // Assert
+        expect(activeModal.dismiss).toHaveBeenCalledWith(false);
+    });
 });

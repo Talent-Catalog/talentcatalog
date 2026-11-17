@@ -14,6 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
+import type {MockedObject} from "vitest";
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {ReactiveFormsModule, UntypedFormBuilder} from '@angular/forms';
 import {SalaryTsmitComponent} from './salary-tsmit.component';
@@ -26,72 +27,75 @@ import {enumOptions} from '../../../../../util/enum';
 import {provideHttpClientTesting} from "@angular/common/http/testing";
 import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {AutosaveStatusComponent} from "../../../../util/autosave-status/autosave-status.component";
+import {expect, vi} from 'vitest';
 
 describe('SalaryTsmitComponent', () => {
-  let component: SalaryTsmitComponent;
-  let fixture: ComponentFixture<SalaryTsmitComponent>;
-  let candidateVisaCheckService: jasmine.SpyObj<CandidateVisaCheckService>;
-  let fb: UntypedFormBuilder;
+    let component: SalaryTsmitComponent;
+    let fixture: ComponentFixture<SalaryTsmitComponent>;
+    let candidateVisaCheckService: MockedObject<CandidateVisaCheckService>;
+    let fb: UntypedFormBuilder;
 
-  beforeEach(async () => {
-    const candidateVisaCheckServiceSpy = jasmine.createSpyObj('CandidateVisaCheckService', ['someMethod']);
+    beforeEach(async () => {
+        const candidateVisaCheckServiceSpy = {
+            someMethod: vi.fn().mockName("CandidateVisaCheckService.someMethod")
+        };
 
-    await TestBed.configureTestingModule({
-      declarations: [SalaryTsmitComponent,AutosaveStatusComponent],
-      imports: [ReactiveFormsModule, NgSelectModule],
-      providers: [
-        UntypedFormBuilder,
-        { provide: CandidateVisaCheckService, useValue: candidateVisaCheckServiceSpy },
-        provideHttpClient(withXhr(), withInterceptorsFromDi()),
-        provideHttpClientTesting()
-      ]
-    }).compileComponents();
+        await TestBed.configureTestingModule({
+            declarations: [SalaryTsmitComponent, AutosaveStatusComponent],
+            imports: [ReactiveFormsModule, NgSelectModule],
+            providers: [
+                UntypedFormBuilder,
+                { provide: CandidateVisaCheckService, useValue: candidateVisaCheckServiceSpy },
+                provideHttpClient(withXhr(), withInterceptorsFromDi()),
+                provideHttpClientTesting()
+            ]
+        }).compileComponents();
 
-    candidateVisaCheckService = TestBed.inject(CandidateVisaCheckService) as jasmine.SpyObj<CandidateVisaCheckService>;
-    fb = TestBed.inject(UntypedFormBuilder);
-  });
+        candidateVisaCheckService = TestBed.inject(CandidateVisaCheckService) as MockedObject<CandidateVisaCheckService>;
+        fb = TestBed.inject(UntypedFormBuilder);
+    });
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(SalaryTsmitComponent);
-    component = fixture.componentInstance;
-    component.salaryRequirementOptions = enumOptions(YesNo);
-    component.visaJobCheck = { id: 123, salaryTsmit: YesNo.Yes };
-    fixture.detectChanges();
-  });
+    beforeEach(() => {
+        fixture = TestBed.createComponent(SalaryTsmitComponent);
+        component = fixture.componentInstance;
+        component.salaryRequirementOptions = enumOptions(YesNo);
+        component.visaJobCheck = { id: 123, salaryTsmit: YesNo.Yes };
+        fixture.detectChanges();
+    });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
 
-  it('should initialize form with visaJobSalaryTsmit control', () => {
-    expect(component.form.contains('visaJobSalaryTsmit')).toBeTrue();
-  });
+    it('should initialize form with visaJobSalaryTsmit control', () => {
+        expect(component.form.contains('visaJobSalaryTsmit')).toBe(true);
+    });
 
-  it('should initialize form control with value from visaJobCheck', () => {
-    expect(component.form.value.visaJobSalaryTsmit).toEqual(YesNo.Yes );
-  });
+    it('should initialize form control with value from visaJobCheck', () => {
+        expect(component.form.value.visaJobSalaryTsmit).toEqual(YesNo.Yes);
+    });
 
-  it('should render autosave status component', () => {
-    const autosaveStatusComponent = fixture.debugElement.query(By.css('app-autosave-status'));
-    expect(autosaveStatusComponent).toBeTruthy();
-  });
+    it('should render autosave status component', () => {
+        const autosaveStatusComponent = fixture.debugElement.query(By.css('app-autosave-status'));
+        expect(autosaveStatusComponent).toBeTruthy();
+    });
 
-  it('should display error message when error is set', () => {
-    component.error = 'Some error message';
-    fixture.detectChanges();
-    const errorElement: HTMLElement = fixture.nativeElement.querySelector('div');
-    expect(errorElement.textContent).toContain('Some error message');
-  });
+    it('should display error message when error is set', () => {
+        component.error = 'Some error message';
+        fixture.detectChanges();
+        const errorElement: HTMLElement = fixture.nativeElement.querySelector('div');
+        expect(errorElement.textContent).toContain('Some error message');
+    });
 
-  it('should render ng-select with correct placeholder', () => {
-    const ngSelect: DebugElement = fixture.debugElement.query(By.css('ng-select'));
-    expect(ngSelect).toBeTruthy();
-    expect(ngSelect.attributes['placeholder']).toBe('Select');
-  });
+    it('should render ng-select with correct placeholder', () => {
+        const ngSelect: DebugElement = fixture.debugElement.query(By.css('ng-select'));
+        expect(ngSelect).toBeTruthy();
+        expect(ngSelect.attributes['placeholder']).toBe('Select');
+    });
 
-  it('should display the correct link in the label', () => {
-    const link: HTMLElement = fixture.nativeElement.querySelector('a');
-    expect(link.textContent).toContain('TSMIT');
-    expect(link.getAttribute('href')).toBe('https://immi.homeaffairs.gov.au/visas/employing-and-sponsoring-someone/sponsoring-workers/nominating-a-position/salary-requirements');
-  });
+    it('should display the correct link in the label', () => {
+        const link: HTMLElement = fixture.nativeElement.querySelector('a');
+        expect(link.textContent).toContain('TSMIT');
+        expect(link.getAttribute('href')).toBe('https://immi.homeaffairs.gov.au/visas/employing-and-sponsoring-someone/sponsoring-workers/nominating-a-position/salary-requirements');
+    });
 });

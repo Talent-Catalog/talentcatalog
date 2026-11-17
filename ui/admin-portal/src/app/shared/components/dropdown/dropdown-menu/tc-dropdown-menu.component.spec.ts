@@ -1,6 +1,7 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 
 import {TcDropdownMenuComponent} from './tc-dropdown-menu.component';
+import {expect} from 'vitest';
 
 describe('TcDropdownMenuComponent', () => {
   let component: TcDropdownMenuComponent;

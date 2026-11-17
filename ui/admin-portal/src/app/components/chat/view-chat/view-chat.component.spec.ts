@@ -21,34 +21,35 @@ import {JobChat, JobChatType} from "../../../model/chat";
 import {provideHttpClientTesting} from "@angular/common/http/testing";
 import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {TranslateModule} from "@ngx-translate/core";
+import {expect} from 'vitest';
 
 describe('ViewChatComponent', () => {
-  let component: ViewChatComponent;
-  let fixture: ComponentFixture<ViewChatComponent>;
+    let component: ViewChatComponent;
+    let fixture: ComponentFixture<ViewChatComponent>;
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      imports: [TranslateModule.forRoot({})],
-      providers: [provideHttpClient(withXhr(), withInterceptorsFromDi()), provideHttpClientTesting()],
-      declarations: [ViewChatComponent],
-      schemas: [NO_ERRORS_SCHEMA] // To ignore subcomponent and directive errors
-    }).compileComponents();
+    beforeEach(async () => {
+        await TestBed.configureTestingModule({
+            imports: [TranslateModule.forRoot({})],
+            providers: [provideHttpClient(withXhr(), withInterceptorsFromDi()), provideHttpClientTesting()],
+            declarations: [ViewChatComponent],
+            schemas: [NO_ERRORS_SCHEMA] // To ignore subcomponent and directive errors
+        }).compileComponents();
 
-    fixture = TestBed.createComponent(ViewChatComponent);
-    component = fixture.componentInstance;
-  });
+        fixture = TestBed.createComponent(ViewChatComponent);
+        component = fixture.componentInstance;
+    });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
 
-  it('should display chat-read-status component with correct input', () => {
-    const mockChat: JobChat = { id: 1, type: JobChatType.CandidateProspect, name: 'Test Chat' };
-    component.chat = mockChat;
+    it('should display chat-read-status component with correct input', () => {
+        const mockChat: JobChat = { id: 1, type: JobChatType.CandidateProspect, name: 'Test Chat' };
+        component.chat = mockChat;
 
-    fixture.detectChanges();
+        fixture.detectChanges();
 
-    const chatReadStatusComponent = fixture.debugElement.nativeElement.querySelector('app-chat-read-status');
-    expect(chatReadStatusComponent).toBeTruthy();
-  });
+        const chatReadStatusComponent = fixture.debugElement.nativeElement.querySelector('app-chat-read-status');
+        expect(chatReadStatusComponent).toBeTruthy();
+    });
 });

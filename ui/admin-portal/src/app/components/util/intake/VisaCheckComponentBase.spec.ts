@@ -14,79 +14,74 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
+import type {MockedObject} from "vitest";
 import {TestBed} from '@angular/core/testing';
 import {UntypedFormBuilder} from '@angular/forms';
 import {of} from 'rxjs';
 
 import {VisaCheckComponentBase} from './VisaCheckComponentBase';
 import {CandidateVisaCheckService} from '../../../services/candidate-visa-check.service';
+import {expect, vi} from 'vitest';
 
 class TestVisaCheckComponent extends VisaCheckComponentBase {
-  constructor(
-    fb: UntypedFormBuilder,
-    candidateVisaCheckService: CandidateVisaCheckService
-  ) {
-    super(fb, candidateVisaCheckService);
-  }
+    constructor(fb: UntypedFormBuilder, candidateVisaCheckService: CandidateVisaCheckService) {
+        super(fb, candidateVisaCheckService);
+    }
 
-  ngOnInit(): void {
-    this.form = this.fb.group({
-      assessment: [''],
-      options: [[]]
-    });
-  }
+    ngOnInit(): void {
+        this.form = this.fb.group({
+            assessment: [''],
+            options: [[]]
+        });
+    }
 }
 
 describe('VisaCheckComponentBase', () => {
-  let component: TestVisaCheckComponent;
-  let service: jasmine.SpyObj<CandidateVisaCheckService>;
+    let component: TestVisaCheckComponent;
+    let service: MockedObject<CandidateVisaCheckService>;
 
-  beforeEach(() => {
-    service = jasmine.createSpyObj<CandidateVisaCheckService>(
-      'CandidateVisaCheckService',
-      ['updateIntakeData']
-    );
-    service.updateIntakeData.and.returnValue(of(void 0));
+    beforeEach(() => {
+        service = ({
+            updateIntakeData: vi.fn().mockName("CandidateVisaCheckService.updateIntakeData")
+        } as unknown as typeof service);
+        service.updateIntakeData.mockReturnValue(of(void 0));
 
-    TestBed.configureTestingModule({
-      providers: [
-        UntypedFormBuilder,
-        {provide: CandidateVisaCheckService, useValue: service}
-      ]
+        TestBed.configureTestingModule({
+            providers: [
+                UntypedFormBuilder,
+                { provide: CandidateVisaCheckService, useValue: service }
+            ]
+        });
+
+        component = new TestVisaCheckComponent(TestBed.inject(UntypedFormBuilder), service);
+        component.ngOnInit();
+        component.entity = { id: 30 } as any;
     });
 
-    component = new TestVisaCheckComponent(
-      TestBed.inject(UntypedFormBuilder),
-      service
-    );
-    component.ngOnInit();
-    component.entity = {id: 30} as any;
-  });
-
-  it('should return entity as visa check', () => {
-    expect(component.visaCheck).toBe(component.entity as any);
-  });
-
-  it('should convert enum options to enum keys', () => {
-    const formValue = {
-      options: [
-        {key: 'ELIGIBLE', stringValue: 'Eligible'},
-        {key: 'INELIGIBLE', stringValue: 'Ineligible'}
-      ],
-      unchanged: 'value'
-    };
-
-    const result = component.preprocessFormValues(formValue) as any;
-
-    expect(result).toEqual({
-      options: ['ELIGIBLE', 'INELIGIBLE'],
-      unchanged: 'value'
+    it('should return entity as visa check', () => {
+        expect(component.visaCheck).toBe(component.entity as any);
     });
-  });
 
-  it('should set NoResponse on a form control', () => {
-    component.setNoResponse('assessment');
+    it('should convert enum options to enum keys', () => {
+        const formValue = {
+            options: [
+                { key: 'ELIGIBLE', stringValue: 'Eligible' },
+                { key: 'INELIGIBLE', stringValue: 'Ineligible' }
+            ],
+            unchanged: 'value'
+        };
 
-    expect(component.form.get('assessment')?.value).toBe('NoResponse');
-  });
+        const result = component.preprocessFormValues(formValue) as any;
+
+        expect(result).toEqual({
+            options: ['ELIGIBLE', 'INELIGIBLE'],
+            unchanged: 'value'
+        });
+    });
+
+    it('should set NoResponse on a form control', () => {
+        component.setNoResponse('assessment');
+
+        expect(component.form.get('assessment')?.value).toBe('NoResponse');
+    });
 });

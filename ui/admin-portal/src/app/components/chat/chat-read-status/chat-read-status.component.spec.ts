@@ -14,6 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
+import type {MockedObject} from "vitest";
 import {By} from '@angular/platform-browser';
 import {ChatReadStatusComponent} from "./chat-read-status.component";
 import {ComponentFixture, TestBed} from "@angular/core/testing";
@@ -22,104 +23,108 @@ import {JobChat, JobChatType} from "../../../model/chat";
 import {MockJobChat} from "../../../MockData/MockJobChat";
 import {of, throwError} from "rxjs";
 import {DebugElement, SimpleChange} from "@angular/core";
+import {expect, vi} from 'vitest';
 
 describe('ChatReadStatusComponent', () => {
-  let component: ChatReadStatusComponent;
-  let fixture: ComponentFixture<ChatReadStatusComponent>;
-  let chatService: jasmine.SpyObj<ChatService>;
-  const mockJobChats = new MockJobChat();
-  beforeEach(() => {
-    const chatServiceSpy = jasmine.createSpyObj('ChatService', ['combineChatReadStatuses', 'getChatIsRead$']);
+    let component: ChatReadStatusComponent;
+    let fixture: ComponentFixture<ChatReadStatusComponent>;
+    let chatService: MockedObject<ChatService>;
+    const mockJobChats = new MockJobChat();
+    beforeEach(() => {
+        const chatServiceSpy = {
+            combineChatReadStatuses: vi.fn().mockName("ChatService.combineChatReadStatuses"),
+            getChatIsRead$: vi.fn().mockName("ChatService.getChatIsRead$")
+        };
 
-    TestBed.configureTestingModule({
-      declarations: [ChatReadStatusComponent],
-      providers: [
-        { provide: ChatService, useValue: chatServiceSpy }
-      ]
-    }).compileComponents();
+        TestBed.configureTestingModule({
+            declarations: [ChatReadStatusComponent],
+            providers: [
+                { provide: ChatService, useValue: chatServiceSpy }
+            ]
+        }).compileComponents();
 
-    fixture = TestBed.createComponent(ChatReadStatusComponent);
-    component = fixture.componentInstance;
-    component.chats = [mockJobChats];
-    chatService = TestBed.inject(ChatService) as jasmine.SpyObj<ChatService>;
-  });
+        fixture = TestBed.createComponent(ChatReadStatusComponent);
+        component = fixture.componentInstance;
+        component.chats = [mockJobChats];
+        chatService = TestBed.inject(ChatService) as MockedObject<ChatService>;
+    });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
 
-  it('should set unreadIndicator to * if any chat is unread', () => {
-    const chats: JobChat[] = [mockJobChats,mockJobChats];
-    const combinedStatus = of(false);
-    chatService.combineChatReadStatuses.and.returnValue(combinedStatus);
+    it('should set unreadIndicator to * if any chat is unread', () => {
+        const chats: JobChat[] = [mockJobChats, mockJobChats];
+        const combinedStatus = of(false);
+        chatService.combineChatReadStatuses.mockReturnValue(combinedStatus);
 
-    component.chats = chats;
-    component.ngOnChanges({ chats: new SimpleChange(null, chats, true) });
-    expect(chatService.combineChatReadStatuses).toHaveBeenCalledWith(chats);
-    expect(component.unreadIndicator).toBe('*');
-  });
+        component.chats = chats;
+        component.ngOnChanges({ chats: new SimpleChange(null, chats, true) });
+        expect(chatService.combineChatReadStatuses).toHaveBeenCalledWith(chats);
+        expect(component.unreadIndicator).toBe('*');
+    });
 
-  it('should set unreadIndicator to blank if all chats are read', () => {
-    const chats: JobChat[] = [{ id: 1, type: JobChatType.CandidateProspect }, { id: 2, type: JobChatType.CandidateProspect }];
-    const combinedStatus = of(true);
-    chatService.combineChatReadStatuses.and.returnValue(combinedStatus);
+    it('should set unreadIndicator to blank if all chats are read', () => {
+        const chats: JobChat[] = [{ id: 1, type: JobChatType.CandidateProspect }, { id: 2, type: JobChatType.CandidateProspect }];
+        const combinedStatus = of(true);
+        chatService.combineChatReadStatuses.mockReturnValue(combinedStatus);
 
-    component.chats = chats;
+        component.chats = chats;
 
-    component.ngOnChanges({ chats: new SimpleChange(null, chats, true) });
-    expect(chatService.combineChatReadStatuses).toHaveBeenCalledWith(chats);
-    expect(component.unreadIndicator).toBe('');
-  });
+        component.ngOnChanges({ chats: new SimpleChange(null, chats, true) });
+        expect(chatService.combineChatReadStatuses).toHaveBeenCalledWith(chats);
+        expect(component.unreadIndicator).toBe('');
+    });
 
-  it('should set unreadIndicator to ? if chat status is unknown', () => {
-    const chats: JobChat[] = [{ id: 1, type: JobChatType.CandidateProspect }, { id: 2, type: JobChatType.CandidateProspect }];
-    const error = throwError('Error');
-    chatService.combineChatReadStatuses.and.returnValue(error);
+    it('should set unreadIndicator to ? if chat status is unknown', () => {
+        const chats: JobChat[] = [{ id: 1, type: JobChatType.CandidateProspect }, { id: 2, type: JobChatType.CandidateProspect }];
+        const error = throwError('Error');
+        chatService.combineChatReadStatuses.mockReturnValue(error);
 
-    component.chats = chats;
-    component.ngOnChanges({ chats: new SimpleChange(null, chats, true) });
-    expect(chatService.combineChatReadStatuses).toHaveBeenCalledWith(chats);
-    expect(component.unreadIndicator).toBe('?');
-  });
+        component.chats = chats;
+        component.ngOnChanges({ chats: new SimpleChange(null, chats, true) });
+        expect(chatService.combineChatReadStatuses).toHaveBeenCalledWith(chats);
+        expect(component.unreadIndicator).toBe('?');
+    });
 
-  it('should set unreadIndicator to * if observable emits false', () => {
-    const observable = of(false);
-    chatService.getChatIsRead$.and.returnValue(observable);
+    it('should set unreadIndicator to * if observable emits false', () => {
+        const observable = of(false);
+        chatService.getChatIsRead$.mockReturnValue(observable);
 
-    component.observable = observable;
-    component.ngOnChanges({ observable: new SimpleChange(null, observable, true) });
-    expect(component.unreadIndicator).toBe('*');
-  });
+        component.observable = observable;
+        component.ngOnChanges({ observable: new SimpleChange(null, observable, true) });
+        expect(component.unreadIndicator).toBe('*');
+    });
 
-  it('should set unreadIndicator to blank if observable emits true', () => {
-    const observable = of(true);
-    chatService.getChatIsRead$.and.returnValue(observable);
+    it('should set unreadIndicator to blank if observable emits true', () => {
+        const observable = of(true);
+        chatService.getChatIsRead$.mockReturnValue(observable);
 
-    component.observable = observable;
-    component.ngOnChanges({ observable: new SimpleChange(null, observable, true) });
-    expect(component.unreadIndicator).toBe('');
-  });
+        component.observable = observable;
+        component.ngOnChanges({ observable: new SimpleChange(null, observable, true) });
+        expect(component.unreadIndicator).toBe('');
+    });
 
-  it('should set unreadIndicator to ? if observable emits an error', () => {
-    const observable = throwError('Error');
-    chatService.getChatIsRead$.and.returnValue(observable);
+    it('should set unreadIndicator to ? if observable emits an error', () => {
+        const observable = throwError('Error');
+        chatService.getChatIsRead$.mockReturnValue(observable);
 
-    component.observable = observable;
-    component.ngOnChanges({ observable: new SimpleChange(null, observable, true) });
-    expect(component.unreadIndicator).toBe('?');
-  });
+        component.observable = observable;
+        component.ngOnChanges({ observable: new SimpleChange(null, observable, true) });
+        expect(component.unreadIndicator).toBe('?');
+    });
 
-  it('should display notification-dot class when unreadIndicator is *', () => {
-    component.unreadIndicator = '*';
-    fixture.detectChanges();
-    const spanEl: DebugElement = fixture.debugElement.query(By.css('.notification-dot'));
-    expect(spanEl).toBeTruthy();
-  });
+    it('should display notification-dot class when unreadIndicator is *', () => {
+        component.unreadIndicator = '*';
+        fixture.detectChanges();
+        const spanEl: DebugElement = fixture.debugElement.query(By.css('.notification-dot'));
+        expect(spanEl).toBeTruthy();
+    });
 
-  it('should display unreadIndicator value when unreadIndicator is ?', () => {
-    component.unreadIndicator = '?';
-    fixture.detectChanges();
-    const spanEl: DebugElement = fixture.debugElement.query(By.css('span'));
-    expect(spanEl.nativeElement.textContent.trim()).toBe('?');
-  });
+    it('should display unreadIndicator value when unreadIndicator is ?', () => {
+        component.unreadIndicator = '?';
+        fixture.detectChanges();
+        const spanEl: DebugElement = fixture.debugElement.query(By.css('span'));
+        expect(spanEl.nativeElement.textContent.trim()).toBe('?');
+    });
 });

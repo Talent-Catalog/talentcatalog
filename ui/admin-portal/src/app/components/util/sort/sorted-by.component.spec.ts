@@ -18,6 +18,7 @@ import {By} from '@angular/platform-browser';
 import {DebugElement} from "@angular/core";
 import {ComponentFixture, TestBed} from "@angular/core/testing";
 import {SortedByComponent} from "./sorted-by.component";
+import {expect} from 'vitest';
 
 describe('SortedByComponent', () => {
   let component: SortedByComponent;

@@ -13,6 +13,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
+
+import type {MockedObject} from "vitest";
 import {SelectListComponent, TargetListSelection} from "./select-list.component";
 import {ComponentFixture, fakeAsync, TestBed, tick} from "@angular/core/testing";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
@@ -29,135 +31,143 @@ import {MockJob} from "../../../MockData/MockJob";
 import {SavedList} from "../../../model/saved-list";
 import {DtoType} from "../../../model/base";
 import {AuthorizationService} from "../../../services/authorization.service";
+import {expect, vi} from 'vitest';
 
 describe('SelectListComponent', () => {
-  let component: SelectListComponent;
-  let fixture: ComponentFixture<SelectListComponent>;
-  let activeModalSpy: jasmine.SpyObj<NgbActiveModal>;
-  let savedListServiceSpy: jasmine.SpyObj<SavedListService>;
-  let formBuilder: UntypedFormBuilder;
+    let component: SelectListComponent;
+    let fixture: ComponentFixture<SelectListComponent>;
+    let activeModalSpy: MockedObject<NgbActiveModal>;
+    let savedListServiceSpy: MockedObject<SavedListService>;
+    let formBuilder: UntypedFormBuilder;
 
-  beforeEach(async () => {
-    const activeModalSpyObj = jasmine.createSpyObj('NgbActiveModal', ['close', 'dismiss']);
-    const savedListServiceSpyObj = jasmine.createSpyObj('SavedListService', ['search']);
-    const authorizationServiceSpyObj = jasmine.createSpyObj('AuthorizationService', ['isCandidateSourceMine']);
-    authorizationServiceSpyObj.isCandidateSourceMine.and.returnValue(true);
+    beforeEach(async () => {
+        const activeModalSpyObj = {
+            close: vi.fn().mockName("NgbActiveModal.close"),
+            dismiss: vi.fn().mockName("NgbActiveModal.dismiss")
+        };
+        const savedListServiceSpyObj = {
+            search: vi.fn().mockName("SavedListService.search")
+        };
+        const authorizationServiceSpyObj = {
+            isCandidateSourceMine: vi.fn().mockName("AuthorizationService.isCandidateSourceMine")
+        };
+        authorizationServiceSpyObj.isCandidateSourceMine.mockReturnValue(true);
 
-    await TestBed.configureTestingModule({
-      declarations: [SelectListComponent],
-      imports: [FormsModule,ReactiveFormsModule,NgSelectModule],
-      providers: [
-        UntypedFormBuilder,
-        { provide: NgbActiveModal, useValue: activeModalSpyObj },
-        { provide: SavedListService, useValue: savedListServiceSpyObj },
-        { provide: AuthorizationService, useValue: authorizationServiceSpyObj },
-        provideHttpClient(withXhr(), withInterceptorsFromDi()),
-        provideHttpClientTesting()
-      ]
-    }).compileComponents();
+        await TestBed.configureTestingModule({
+            declarations: [SelectListComponent],
+            imports: [FormsModule, ReactiveFormsModule, NgSelectModule],
+            providers: [
+                UntypedFormBuilder,
+                { provide: NgbActiveModal, useValue: activeModalSpyObj },
+                { provide: SavedListService, useValue: savedListServiceSpyObj },
+                { provide: AuthorizationService, useValue: authorizationServiceSpyObj },
+                provideHttpClient(withXhr(), withInterceptorsFromDi()),
+                provideHttpClientTesting()
+            ]
+        }).compileComponents();
 
-    activeModalSpy = TestBed.inject(NgbActiveModal) as jasmine.SpyObj<NgbActiveModal>;
-    savedListServiceSpy = TestBed.inject(SavedListService) as jasmine.SpyObj<SavedListService>;
-    formBuilder = TestBed.inject(UntypedFormBuilder);
-  });
+        activeModalSpy = TestBed.inject(NgbActiveModal) as MockedObject<NgbActiveModal>;
+        savedListServiceSpy = TestBed.inject(SavedListService) as MockedObject<SavedListService>;
+        formBuilder = TestBed.inject(UntypedFormBuilder);
+    });
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(SelectListComponent);
-    component = fixture.componentInstance;
+    beforeEach(() => {
+        fixture = TestBed.createComponent(SelectListComponent);
+        component = fixture.componentInstance;
 
-    component.excludeList = { ...MockSavedList, id: 1 }; // Add an id to the excludeList
-    savedListServiceSpy.search.and.returnValue(of([MockSavedList]));
-    fixture.detectChanges();
-  });
+        component.excludeList = { ...MockSavedList, id: 1 }; // Add an id to the excludeList
+        savedListServiceSpy.search.mockReturnValue(of([MockSavedList]));
+        fixture.detectChanges();
+    });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
 
-  it('should initialize form with default values', () => {
-    expect(component.form).toBeDefined();
-    expect(component.newList).toBeFalse();
-    expect(component.replace).toBeFalse();
-    expect(component.changeStatuses).toBeFalse();
-  });
+    it('should initialize form with default values', () => {
+        expect(component.form).toBeDefined();
+        expect(component.newList).toBe(false);
+        expect(component.replace).toBe(false);
+        expect(component.changeStatuses).toBe(false);
+    });
 
-  it('should request minimal non-fixed list data when loading lists', () => {
-    expect(savedListServiceSpy.search).toHaveBeenCalledWith(jasmine.objectContaining({
-      dtoType: DtoType.MINIMAL,
-      fixed: false,
-      owned: true,
-      shared: true,
-      global: true
+    it('should request minimal non-fixed list data when loading lists', () => {
+        expect(savedListServiceSpy.search).toHaveBeenCalledWith(expect.objectContaining({
+            dtoType: DtoType.MINIMAL,
+            fixed: false,
+            owned: true,
+            shared: true,
+            global: true
+        }));
+    });
+
+    it('should handle error while loading lists', fakeAsync(() => {
+        const errorMessage = 'Error loading lists';
+        savedListServiceSpy.search.mockReturnValue(throwError(errorMessage));
+
+        component.ngOnInit();
+        tick(); // Wait for observable to resolve
+
+        expect(savedListServiceSpy.search).toHaveBeenCalled();
+        expect(component.error).toEqual(errorMessage);
+        expect(component.loading).toBe(false);
     }));
-  });
 
-  it('should handle error while loading lists', fakeAsync(() => {
-    const errorMessage = 'Error loading lists';
-    savedListServiceSpy.search.and.returnValue(throwError(errorMessage));
+    it('should dismiss modal', () => {
+        component.dismiss();
+        expect(activeModalSpy.dismiss).toHaveBeenCalled();
+    });
 
-    component.ngOnInit();
-    tick(); // Wait for observable to resolve
+    it('should select list and close modal', () => {
+        component.jobId = 1;
+        const selection: TargetListSelection = {
+            savedListId: 0,
+            newListName: null,
+            replace: false,
+            jobId: 1
+        };
+        component.form.patchValue({ newList: false }); // Simulate selecting existing list
 
-    expect(savedListServiceSpy.search).toHaveBeenCalled();
-    expect(component.error).toEqual(errorMessage);
-    expect(component.loading).toBeFalse();
-  }));
+        component.select();
+        expect(activeModalSpy.close).toHaveBeenCalledWith(selection);
+    });
 
-  it('should dismiss modal', () => {
-    component.dismiss();
-    expect(activeModalSpy.dismiss).toHaveBeenCalled();
-  });
+    it('should handle job selection', () => {
+        const job: JobNameAndId = { id: 1, name: 'Test Job' };
+        component.onJobSelection(job);
+        expect(component.jobName).toBe('Test Job');
+        expect(component.jobId).toBe(1);
+        expect(component.newListNameControl.value).toBe('Test Job');
+    });
 
-  it('should select list and close modal', () => {
-    component.jobId = 1;
-    const selection: TargetListSelection = {
-      savedListId: 0,
-      newListName:null,
-      replace: false,
-      jobId:1
-    };
-    component.form.patchValue({ newList: false }); // Simulate selecting existing list
+    it('should handle status info update', () => {
+        const statusInfo: UpdateCandidateStatusInfo = { status: CandidateStatus.active };
+        component.onStatusInfoUpdate(statusInfo);
+        expect(component['statusUpdateInfo']).toEqual(statusInfo);
+    });
 
-    component.select();
-    expect(activeModalSpy.close).toHaveBeenCalledWith(selection);
-  });
+    it('should disable new list', () => {
+        component.disableNew();
+        expect(component.form.get('newList').disabled).toBe(true);
+    });
 
-  it('should handle job selection', () => {
-    const job: JobNameAndId = { id: 1, name: 'Test Job' };
-    component.onJobSelection(job);
-    expect(component.jobName).toBe('Test Job');
-    expect(component.jobId).toBe(1);
-    expect(component.newListNameControl.value).toBe('Test Job');
-  });
+    it('should enable new list', () => {
+        component.enableNew();
+        expect(component.form.get('newList').enabled).toBe(true);
+        expect(component.form.get('savedList').value).toBeNull();
+    });
 
-  it('should handle status info update', () => {
-    const statusInfo: UpdateCandidateStatusInfo = { status: CandidateStatus.active };
-    component.onStatusInfoUpdate(statusInfo);
-    expect(component['statusUpdateInfo']).toEqual(statusInfo);
-  });
-
-  it('should disable new list', () => {
-    component.disableNew();
-    expect(component.form.get('newList').disabled).toBeTrue();
-  });
-
-  it('should enable new list', () => {
-    component.enableNew();
-    expect(component.form.get('newList').enabled).toBeTrue();
-    expect(component.form.get('savedList').value).toBeNull();
-  });
-
-  it('should set replace to false if existing list is a submission list', () => {
-    let selectedSubmissionList = {
-      id: 2,
-      name: 'Submission List',
-      sfJobOpp: MockJob,
-      fixed: true,
-      global: true
-    } as SavedList;
-    component.form.controls['savedList'].patchValue(selectedSubmissionList);
-    component.select();
-    expect(component.form.get('replace').value).toBeFalse();
-  });
+    it('should set replace to false if existing list is a submission list', () => {
+        let selectedSubmissionList = {
+            id: 2,
+            name: 'Submission List',
+            sfJobOpp: MockJob,
+            fixed: true,
+            global: true
+        } as SavedList;
+        component.form.controls['savedList'].patchValue(selectedSubmissionList);
+        component.select();
+        expect(component.form.get('replace').value).toBe(false);
+    });
 
 });

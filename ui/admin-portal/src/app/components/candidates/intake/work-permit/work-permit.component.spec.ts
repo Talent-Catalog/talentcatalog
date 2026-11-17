@@ -22,60 +22,61 @@ import {ReactiveFormsModule} from "@angular/forms";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {CandidateService} from "../../../../services/candidate.service";
 import {WorkPermitValidity, YesNoUnsure} from "../../../../model/candidate";
+import {expect} from 'vitest';
 
 describe('WorkPermitComponent', () => {
-  let component: WorkPermitComponent;
-  let fixture: ComponentFixture<WorkPermitComponent>;
+    let component: WorkPermitComponent;
+    let fixture: ComponentFixture<WorkPermitComponent>;
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      declarations: [ WorkPermitComponent, AutosaveStatusComponent ],
-      imports: [ReactiveFormsModule, NgSelectModule ],
-      providers: [
-        { provide: CandidateService },
-        provideHttpClient(withXhr(), withInterceptorsFromDi()),
-        provideHttpClientTesting()
-      ]
-    })
-    .compileComponents();
-  });
+    beforeEach(async () => {
+        await TestBed.configureTestingModule({
+            declarations: [WorkPermitComponent, AutosaveStatusComponent],
+            imports: [ReactiveFormsModule, NgSelectModule],
+            providers: [
+                { provide: CandidateService },
+                provideHttpClient(withXhr(), withInterceptorsFromDi()),
+                provideHttpClientTesting()
+            ]
+        })
+            .compileComponents();
+    });
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(WorkPermitComponent);
-    component = fixture.componentInstance;
-    component.candidateIntakeData = {
-      workPermit: WorkPermitValidity.YesDesired,
-      workPermitDesired: YesNoUnsure.Yes,
-      workPermitDesiredNotes: 'Sample notes'
-    };
-    fixture.detectChanges();
-  });
+    beforeEach(() => {
+        fixture = TestBed.createComponent(WorkPermitComponent);
+        component = fixture.componentInstance;
+        component.candidateIntakeData = {
+            workPermit: WorkPermitValidity.YesDesired,
+            workPermitDesired: YesNoUnsure.Yes,
+            workPermitDesiredNotes: 'Sample notes'
+        };
+        fixture.detectChanges();
+    });
 
-  it('should initialize the form controls with the correct default values', () => {
-    expect(component.form.get('workPermit').value).toBe(WorkPermitValidity.YesDesired);
-    expect(component.form.get('workPermitDesired').value).toBe(YesNoUnsure.Yes);
-    expect(component.form.get('workPermitDesiredNotes').value).toBe('Sample notes');
-  });
+    it('should initialize the form controls with the correct default values', () => {
+        expect(component.form.get('workPermit').value).toBe(WorkPermitValidity.YesDesired);
+        expect(component.form.get('workPermitDesired').value).toBe(YesNoUnsure.Yes);
+        expect(component.form.get('workPermitDesiredNotes').value).toBe('Sample notes');
+    });
 
-  it('should update the form controls when candidateIntakeData changes', () => {
-    component.candidateIntakeData = {
-      workPermit: WorkPermitValidity.No,
-      workPermitDesired: YesNoUnsure.Unsure,
-      workPermitDesiredNotes: 'Updated notes'
-    };
-    component.ngOnInit();
-    fixture.detectChanges();
-    expect(component.form.get('workPermit').value).toBe(WorkPermitValidity.No);
-    expect(component.form.get('workPermitDesired').value).toBe(YesNoUnsure.Unsure);
-    expect(component.form.get('workPermitDesiredNotes').value).toBe('Updated notes');
-  });
+    it('should update the form controls when candidateIntakeData changes', () => {
+        component.candidateIntakeData = {
+            workPermit: WorkPermitValidity.No,
+            workPermitDesired: YesNoUnsure.Unsure,
+            workPermitDesiredNotes: 'Updated notes'
+        };
+        component.ngOnInit();
+        fixture.detectChanges();
+        expect(component.form.get('workPermit').value).toBe(WorkPermitValidity.No);
+        expect(component.form.get('workPermitDesired').value).toBe(YesNoUnsure.Unsure);
+        expect(component.form.get('workPermitDesiredNotes').value).toBe('Updated notes');
+    });
 
-  it('should initialize the form controls correctly when candidateIntakeData is null', () => {
-    component.candidateIntakeData = null;
-    component.ngOnInit();
-    fixture.detectChanges();
-    expect(component.form.get('workPermit').value).toBeUndefined();
-    expect(component.form.get('workPermitDesired').value).toBeUndefined();
-    expect(component.form.get('workPermitDesiredNotes').value).toBeUndefined();
-  });
+    it('should initialize the form controls correctly when candidateIntakeData is null', () => {
+        component.candidateIntakeData = null;
+        component.ngOnInit();
+        fixture.detectChanges();
+        expect(component.form.get('workPermit').value).toBeUndefined();
+        expect(component.form.get('workPermitDesired').value).toBeUndefined();
+        expect(component.form.get('workPermitDesiredNotes').value).toBeUndefined();
+    });
 });

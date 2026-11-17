@@ -14,6 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
+import type {MockedObject} from "vitest";
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {ReactiveFormsModule, UntypedFormBuilder} from '@angular/forms';
 import {NgbTypeaheadModule} from '@ng-bootstrap/ng-bootstrap';
@@ -28,79 +29,83 @@ import {CandidateSourceComponent} from "../../util/candidate-source/candidate-so
 import {provideHttpClientTesting} from "@angular/common/http/testing";
 import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {UpdatedByComponent} from "../../util/user/updated-by/updated-by.component";
+import {expect, vi} from 'vitest';
 
 describe('JoinSavedSearchComponent', () => {
-  let component: JoinSavedSearchComponent;
-  let fixture: ComponentFixture<JoinSavedSearchComponent>;
-  let savedSearchServiceSpy: jasmine.SpyObj<SavedSearchService>;
-  const mockSearchResult:SearchResults<SavedSearch> = {
-    number : 1,
-    size : 10,
-    totalElements : 1,
-    totalPages : 1,
-    first : true,
-    last : true,
-    content : [new MockSavedSearch()] // Use the MockCandidateSource as content
-  }
-  beforeEach(async () => {
-    const savedSearchServiceSpyObj = jasmine.createSpyObj('SavedSearchService', ['searchPaged', 'get']);
+    let component: JoinSavedSearchComponent;
+    let fixture: ComponentFixture<JoinSavedSearchComponent>;
+    let savedSearchServiceSpy: MockedObject<SavedSearchService>;
+    const mockSearchResult: SearchResults<SavedSearch> = {
+        number: 1,
+        size: 10,
+        totalElements: 1,
+        totalPages: 1,
+        first: true,
+        last: true,
+        content: [new MockSavedSearch()] // Use the MockCandidateSource as content
+    };
+    beforeEach(async () => {
+        const savedSearchServiceSpyObj = {
+            searchPaged: vi.fn().mockName("SavedSearchService.searchPaged"),
+            get: vi.fn().mockName("SavedSearchService.get")
+        };
 
-    await TestBed.configureTestingModule({
-      declarations: [JoinSavedSearchComponent,UpdatedByComponent,CandidateSourceComponent],
-      imports: [ReactiveFormsModule,NgbTypeaheadModule,RouterTestingModule],
-      providers: [{ provide: SavedSearchService, useValue: savedSearchServiceSpyObj }, UntypedFormBuilder, provideHttpClient(withXhr(), withInterceptorsFromDi()), provideHttpClientTesting()],
-    }).compileComponents();
+        await TestBed.configureTestingModule({
+            declarations: [JoinSavedSearchComponent, UpdatedByComponent, CandidateSourceComponent],
+            imports: [ReactiveFormsModule, NgbTypeaheadModule, RouterTestingModule],
+            providers: [{ provide: SavedSearchService, useValue: savedSearchServiceSpyObj }, UntypedFormBuilder, provideHttpClient(withXhr(), withInterceptorsFromDi()), provideHttpClientTesting()],
+        }).compileComponents();
 
-    savedSearchServiceSpy = TestBed.inject(SavedSearchService) as jasmine.SpyObj<SavedSearchService>;
-  });
-
-  beforeEach(() => {
-    fixture = TestBed.createComponent(JoinSavedSearchComponent);
-    component = fixture.componentInstance;
-    component.results = mockSearchResult;
-    fixture.detectChanges();
-  });
-
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
-
-  it('should load saved searches on initialization', () => {
-    savedSearchServiceSpy.searchPaged.and.returnValue(of(mockSearchResult));
-    fixture.detectChanges();
-    expect(component.results).toEqual(mockSearchResult);
-  });
-
-  it('should emit selected base search on selection', () => {
-    savedSearchServiceSpy.get.and.returnValue(of(new MockSavedSearch()));
-    component.selected(1);
-    // @ts-ignore: The TypeScript compiler requires the second overload signature, but the first overload is valid here
-    expect(savedSearchServiceSpy.get).toHaveBeenCalledWith(1);
-    expect(component.selectedBaseSearch).toEqual(new MockSavedSearch());
-  })
-
-  it('should delete selected search', () => {
-    component.selectedBaseSearch = {
-      defaultSearch: false,
-      fixed: false,
-      global: false,
-      reviewable: false,
-      savedSearchSubtype: undefined,
-      savedSearchType: undefined,
-      id: 1, name: 'Selected Search' };
-
-    component.deleteSearch();
-
-    expect(component.selectedBaseSearch).toBeNull();
-  });
-
-  it('should set searchFailed to true on search failure', () => {
-    savedSearchServiceSpy.searchPaged.and.returnValue(throwError('error'));
-
-    const term = 'test';
-    component.doSavedSearchSearch(of(term)).subscribe(() => {
-      expect(component.searchFailed).toBeTrue();
+        savedSearchServiceSpy = TestBed.inject(SavedSearchService) as MockedObject<SavedSearchService>;
     });
-  });
-});
 
+    beforeEach(() => {
+        fixture = TestBed.createComponent(JoinSavedSearchComponent);
+        component = fixture.componentInstance;
+        component.results = mockSearchResult;
+        fixture.detectChanges();
+    });
+
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
+
+    it('should load saved searches on initialization', () => {
+        savedSearchServiceSpy.searchPaged.mockReturnValue(of(mockSearchResult));
+        fixture.detectChanges();
+        expect(component.results).toEqual(mockSearchResult);
+    });
+
+    it('should emit selected base search on selection', () => {
+        savedSearchServiceSpy.get.mockReturnValue(of(new MockSavedSearch()));
+        component.selected(1);
+        // @ts-ignore: The TypeScript compiler requires the second overload signature, but the first overload is valid here
+        expect(savedSearchServiceSpy.get).toHaveBeenCalledWith(1);
+        expect(component.selectedBaseSearch).toEqual(new MockSavedSearch());
+    });
+
+    it('should delete selected search', () => {
+        component.selectedBaseSearch = {
+            defaultSearch: false,
+            fixed: false,
+            global: false,
+            reviewable: false,
+            savedSearchSubtype: undefined,
+            savedSearchType: undefined,
+            id: 1, name: 'Selected Search'
+        };
+
+        component.deleteSearch();
+
+        expect(component.selectedBaseSearch).toBeNull();
+    });
+
+    it('should set searchFailed to true on search failure', () => {
+        savedSearchServiceSpy.searchPaged.mockReturnValue(throwError('error'));
+
+        const term = 'test';
+        component.doSavedSearchSearch(of(term)).subscribe(() => {
+            expect(component.searchFailed).toBe(true);
+        });
+    });
+});

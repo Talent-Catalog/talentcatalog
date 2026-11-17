@@ -14,13 +14,12 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
+import type {MockedObject} from "vitest";
 import {EditCandidateJobExperienceComponent} from "./edit-candidate-job-experience.component";
 import {ComponentFixture, TestBed} from "@angular/core/testing";
 import {CountryService} from "../../../../../../services/country.service";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
-import {
-  CandidateJobExperienceService
-} from "../../../../../../services/candidate-job-experience.service";
+import {CandidateJobExperienceService} from "../../../../../../services/candidate-job-experience.service";
 import {provideHttpClientTesting} from "@angular/common/http/testing";
 import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {FormsModule, ReactiveFormsModule, UntypedFormBuilder} from "@angular/forms";
@@ -33,244 +32,243 @@ import {of, throwError} from "rxjs";
 import {MockJob} from "../../../../../../MockData/MockJob";
 import {MockCandidate} from "../../../../../../MockData/MockCandidate";
 import {CandidateJobExperience} from "../../../../../../model/candidate-job-experience";
+import {expect, vi} from 'vitest';
 
 describe('EditCandidateJobExperienceComponent', () => {
-  let component: EditCandidateJobExperienceComponent;
-  let fixture: ComponentFixture<EditCandidateJobExperienceComponent>;
-  let mockCandidateJobExperienceService: jasmine.SpyObj<CandidateJobExperienceService>;
-  let mockCountryService: jasmine.SpyObj<CountryService>;
-  let mockActiveModal: jasmine.SpyObj<NgbActiveModal>;
+    let component: EditCandidateJobExperienceComponent;
+    let fixture: ComponentFixture<EditCandidateJobExperienceComponent>;
+    let mockCandidateJobExperienceService: MockedObject<CandidateJobExperienceService>;
+    let mockCountryService: MockedObject<CountryService>;
+    let mockActiveModal: MockedObject<NgbActiveModal>;
 
-  const mockCandidate = new MockCandidate();
-  beforeEach(async () => {
-    const candidateJobExperienceServiceSpy = jasmine.createSpyObj('CandidateJobExperienceService', ['update']);
-    const countryServiceSpy = jasmine.createSpyObj('CountryService', ['listCountries']);
-    const activeModalSpy = jasmine.createSpyObj('NgbActiveModal', ['close', 'dismiss']);
+    const mockCandidate = new MockCandidate();
+    beforeEach(async () => {
+        const candidateJobExperienceServiceSpy = {
+            update: vi.fn().mockName("CandidateJobExperienceService.update")
+        };
+        const countryServiceSpy = {
+            listCountries: vi.fn().mockName("CountryService.listCountries")
+        };
+        const activeModalSpy = {
+            close: vi.fn().mockName("NgbActiveModal.close"),
+            dismiss: vi.fn().mockName("NgbActiveModal.dismiss")
+        };
 
-    await TestBed.configureTestingModule({
-      declarations: [EditCandidateJobExperienceComponent],
-      imports: [FormsModule,ReactiveFormsModule, NgSelectModule,
-        NgxWigModule],
-      providers: [
-        UntypedFormBuilder,
-        { provide: CandidateJobExperienceService, useValue: candidateJobExperienceServiceSpy },
-        { provide: CountryService, useValue: countryServiceSpy },
-        { provide: NgbActiveModal, useValue: activeModalSpy },
-        provideHttpClient(withXhr(), withInterceptorsFromDi()),
-        provideHttpClientTesting()
-      ],
-      schemas: [NO_ERRORS_SCHEMA]
-    }).compileComponents();
+        await TestBed.configureTestingModule({
+            declarations: [EditCandidateJobExperienceComponent],
+            imports: [FormsModule, ReactiveFormsModule, NgSelectModule,
+                NgxWigModule],
+            providers: [
+                UntypedFormBuilder,
+                { provide: CandidateJobExperienceService, useValue: candidateJobExperienceServiceSpy },
+                { provide: CountryService, useValue: countryServiceSpy },
+                { provide: NgbActiveModal, useValue: activeModalSpy },
+                provideHttpClient(withXhr(), withInterceptorsFromDi()),
+                provideHttpClientTesting()
+            ],
+            schemas: [NO_ERRORS_SCHEMA]
+        }).compileComponents();
 
-    mockCandidateJobExperienceService = TestBed.inject(CandidateJobExperienceService) as jasmine.SpyObj<CandidateJobExperienceService>;
-    mockCountryService = TestBed.inject(CountryService) as jasmine.SpyObj<CountryService>;
-    mockActiveModal = TestBed.inject(NgbActiveModal) as jasmine.SpyObj<NgbActiveModal>;
+        mockCandidateJobExperienceService = TestBed.inject(CandidateJobExperienceService) as MockedObject<CandidateJobExperienceService>;
+        mockCountryService = TestBed.inject(CountryService) as MockedObject<CountryService>;
+        mockActiveModal = TestBed.inject(NgbActiveModal) as MockedObject<NgbActiveModal>;
 
-    fixture = TestBed.createComponent(EditCandidateJobExperienceComponent);
-    component = fixture.componentInstance;
-  });
-
-  beforeEach(() => {
-    component.candidate = mockCandidate;
-    component.candidateJobExperience = mockCandidate.candidateJobExperiences[0];
-    mockCountryService.listCountries.and.returnValue(of([MockJob.country]));
-
-    component.ngOnInit();
-    fixture.detectChanges();
-  });
-
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
-
-  it('should initialize form with provided job experience values', () => {
-    expect(component.candidateForm.value).toEqual({
-      countryId: component.candidateJobExperience.country.id,
-      companyName: component.candidateJobExperience.companyName,
-      role: component.candidateJobExperience.role,
-      startDate: component.candidateJobExperience.startDate,
-      endDate: component.candidateJobExperience.endDate,
-      fullTime: component.candidateJobExperience.fullTime,
-      paid: component.candidateJobExperience.paid,
-      description: component.candidateJobExperience.description,
-      tidiedDescription: null,
-      keywordsInDescription: null
-    });
-  });
-
-  it('should pre-populate fullTime/paid controls with the experience\'s boolean values', () => {
-    // MockCandidate experience 1 is full time and paid
-    expect(component.candidateForm.value.fullTime).toBe(true);
-    expect(component.candidateForm.value.paid).toBe(true);
-  });
-
-  it('should save the edited job experience successfully', () => {
-    const updatedJobExperience = { ...component.candidateJobExperience, role: 'Senior Developer' };
-    mockCandidateJobExperienceService.update.and.returnValue(of(updatedJobExperience));
-
-    component.candidateForm.patchValue({
-      role: 'Senior Developer'
+        fixture = TestBed.createComponent(EditCandidateJobExperienceComponent);
+        component = fixture.componentInstance;
     });
 
-    component.onSave();
+    beforeEach(() => {
+        component.candidate = mockCandidate;
+        component.candidateJobExperience = mockCandidate.candidateJobExperiences[0];
+        mockCountryService.listCountries.mockReturnValue(of([MockJob.country]));
 
-    expect(component.saving).toBe(false);
-    expect(mockCandidateJobExperienceService.update).
-    toHaveBeenCalledWith(component.candidateJobExperience.id, component.candidateForm.value);
-    expect(mockActiveModal.close).toHaveBeenCalledWith(updatedJobExperience);
-  });
-
-  it('should handle save error', () => {
-    const error = 'Error saving job experience';
-    mockCandidateJobExperienceService.update.and.returnValue(throwError(error));
-
-    component.candidateForm.patchValue({
-      role: 'Senior Developer'
+        component.ngOnInit();
+        fixture.detectChanges();
     });
 
-    component.onSave();
-
-    expect(component.saving).toBe(false);
-    expect(component.error).toBe(error);
-    expect(mockActiveModal.close).not.toHaveBeenCalled();
-  });
-
-  describe('keywordsInDescription processing', () => {
-
-    function withKeywords(keywordsInDescription: any): CandidateJobExperience {
-      return {
-        ...mockCandidate.candidateJobExperiences[0],
-        keywordsInDescription
-      };
-    }
-
-    describe('ngOnInit', () => {
-
-      it('should join a populated keywordsInDescription array into a comma-separated string', () => {
-        component.candidateJobExperience = withKeywords(['Java', 'Spring', 'SQL']);
-
-        component.ngOnInit();
-
-        expect(component.candidateForm.value.keywordsInDescription).toBe('Java, Spring, SQL');
-      });
-
-      it('should leave keywordsInDescription as null when it is undefined', () => {
-        component.candidateJobExperience = withKeywords(undefined);
-
-        component.ngOnInit();
-
-        expect(component.candidateForm.value.keywordsInDescription).toBeNull();
-      });
-
-      it('should leave keywordsInDescription as null when it is null', () => {
-        component.candidateJobExperience = withKeywords(null);
-
-        component.ngOnInit();
-
-        expect(component.candidateForm.value.keywordsInDescription).toBeNull();
-      });
-
-      it('should leave keywordsInDescription as null when it is not an array', () => {
-        component.candidateJobExperience = withKeywords('not-an-array');
-
-        component.ngOnInit();
-
-        expect(component.candidateForm.value.keywordsInDescription).toBeNull();
-      });
-
-      it('should produce an empty string when keywordsInDescription is an empty array', () => {
-        component.candidateJobExperience = withKeywords([]);
-
-        component.ngOnInit();
-
-        expect(component.candidateForm.value.keywordsInDescription).toBe('');
-      });
+    it('should create', () => {
+        expect(component).toBeTruthy();
     });
 
-    describe('onSave', () => {
+    it('should initialize form with provided job experience values', () => {
+        expect(component.candidateForm.value).toEqual({
+            countryId: component.candidateJobExperience.country.id,
+            companyName: component.candidateJobExperience.companyName,
+            role: component.candidateJobExperience.role,
+            startDate: component.candidateJobExperience.startDate,
+            endDate: component.candidateJobExperience.endDate,
+            fullTime: component.candidateJobExperience.fullTime,
+            paid: component.candidateJobExperience.paid,
+            description: component.candidateJobExperience.description,
+            tidiedDescription: null,
+            keywordsInDescription: null
+        });
+    });
 
-      it('should convert a comma-separated keywordsInDescription string back into a trimmed array', () => {
-        const updatedJobExperience = { ...component.candidateJobExperience };
-        mockCandidateJobExperienceService.update.and.returnValue(of(updatedJobExperience));
+    it('should pre-populate fullTime/paid controls with the experience\'s boolean values', () => {
+        // MockCandidate experience 1 is full time and paid
+        expect(component.candidateForm.value.fullTime).toBe(true);
+        expect(component.candidateForm.value.paid).toBe(true);
+    });
+
+    it('should save the edited job experience successfully', () => {
+        const updatedJobExperience = { ...component.candidateJobExperience, role: 'Senior Developer' };
+        mockCandidateJobExperienceService.update.mockReturnValue(of(updatedJobExperience));
 
         component.candidateForm.patchValue({
-          keywordsInDescription: 'Java, Spring , SQL'
+            role: 'Senior Developer'
         });
 
         component.onSave();
 
-        expect(mockCandidateJobExperienceService.update).toHaveBeenCalledWith(
-          component.candidateJobExperience.id,
-          jasmine.objectContaining({keywordsInDescription: ['Java', 'Spring', 'SQL']})
-        );
-      });
+        expect(component.saving).toBe(false);
+        expect(mockCandidateJobExperienceService.update).
+            toHaveBeenCalledWith(component.candidateJobExperience.id, component.candidateForm.value);
+        expect(mockActiveModal.close).toHaveBeenCalledWith(updatedJobExperience);
+    });
 
-      it('should leave keywordsInDescription unchanged when it is null', () => {
-        const updatedJobExperience = { ...component.candidateJobExperience };
-        mockCandidateJobExperienceService.update.and.returnValue(of(updatedJobExperience));
+    it('should handle save error', () => {
+        const error = 'Error saving job experience';
+        mockCandidateJobExperienceService.update.mockReturnValue(throwError(error));
 
         component.candidateForm.patchValue({
-          keywordsInDescription: null
+            role: 'Senior Developer'
         });
 
         component.onSave();
 
-        expect(mockCandidateJobExperienceService.update).toHaveBeenCalledWith(
-          component.candidateJobExperience.id,
-          jasmine.objectContaining({keywordsInDescription: null})
-        );
-      });
+        expect(component.saving).toBe(false);
+        expect(component.error).toBe(error);
+        expect(mockActiveModal.close).not.toHaveBeenCalled();
+    });
 
-      it('should leave keywordsInDescription unchanged when it is an empty string', () => {
-        const updatedJobExperience = { ...component.candidateJobExperience };
-        mockCandidateJobExperienceService.update.and.returnValue(of(updatedJobExperience));
+    describe('keywordsInDescription processing', () => {
 
-        component.candidateForm.patchValue({
-          keywordsInDescription: ''
+        function withKeywords(keywordsInDescription: any): CandidateJobExperience {
+            return {
+                ...mockCandidate.candidateJobExperiences[0],
+                keywordsInDescription
+            };
+        }
+
+        describe('ngOnInit', () => {
+
+            it('should join a populated keywordsInDescription array into a comma-separated string', () => {
+                component.candidateJobExperience = withKeywords(['Java', 'Spring', 'SQL']);
+
+                component.ngOnInit();
+
+                expect(component.candidateForm.value.keywordsInDescription).toBe('Java, Spring, SQL');
+            });
+
+            it('should leave keywordsInDescription as null when it is undefined', () => {
+                component.candidateJobExperience = withKeywords(undefined);
+
+                component.ngOnInit();
+
+                expect(component.candidateForm.value.keywordsInDescription).toBeNull();
+            });
+
+            it('should leave keywordsInDescription as null when it is null', () => {
+                component.candidateJobExperience = withKeywords(null);
+
+                component.ngOnInit();
+
+                expect(component.candidateForm.value.keywordsInDescription).toBeNull();
+            });
+
+            it('should leave keywordsInDescription as null when it is not an array', () => {
+                component.candidateJobExperience = withKeywords('not-an-array');
+
+                component.ngOnInit();
+
+                expect(component.candidateForm.value.keywordsInDescription).toBeNull();
+            });
+
+            it('should produce an empty string when keywordsInDescription is an empty array', () => {
+                component.candidateJobExperience = withKeywords([]);
+
+                component.ngOnInit();
+
+                expect(component.candidateForm.value.keywordsInDescription).toBe('');
+            });
         });
 
-        component.onSave();
+        describe('onSave', () => {
 
-        expect(mockCandidateJobExperienceService.update).toHaveBeenCalledWith(
-          component.candidateJobExperience.id,
-          jasmine.objectContaining({keywordsInDescription: ''})
-        );
-      });
+            it('should convert a comma-separated keywordsInDescription string back into a trimmed array', () => {
+                const updatedJobExperience = { ...component.candidateJobExperience };
+                mockCandidateJobExperienceService.update.mockReturnValue(of(updatedJobExperience));
+
+                component.candidateForm.patchValue({
+                    keywordsInDescription: 'Java, Spring , SQL'
+                });
+
+                component.onSave();
+
+                expect(mockCandidateJobExperienceService.update).toHaveBeenCalledWith(component.candidateJobExperience.id, expect.objectContaining({ keywordsInDescription: ['Java', 'Spring', 'SQL'] }));
+            });
+
+            it('should leave keywordsInDescription unchanged when it is null', () => {
+                const updatedJobExperience = { ...component.candidateJobExperience };
+                mockCandidateJobExperienceService.update.mockReturnValue(of(updatedJobExperience));
+
+                component.candidateForm.patchValue({
+                    keywordsInDescription: null
+                });
+
+                component.onSave();
+
+                expect(mockCandidateJobExperienceService.update).toHaveBeenCalledWith(component.candidateJobExperience.id, expect.objectContaining({ keywordsInDescription: null }));
+            });
+
+            it('should leave keywordsInDescription unchanged when it is an empty string', () => {
+                const updatedJobExperience = { ...component.candidateJobExperience };
+                mockCandidateJobExperienceService.update.mockReturnValue(of(updatedJobExperience));
+
+                component.candidateForm.patchValue({
+                    keywordsInDescription: ''
+                });
+
+                component.onSave();
+
+                expect(mockCandidateJobExperienceService.update).toHaveBeenCalledWith(component.candidateJobExperience.id, expect.objectContaining({ keywordsInDescription: '' }));
+            });
+        });
     });
-  });
 
-  describe('fullTime / paid select boundary', () => {
+    describe('fullTime / paid select boundary', () => {
 
-    function selectOption(id: string, displayText: string) {
-      const select: NgSelectComponent = fixture.debugElement
-        .query(By.css(`ng-select#${id}`)).componentInstance;
-      select.select(select.itemsList.items.find(item => item.label === displayText));
-      fixture.detectChanges();
-    }
+        function selectOption(id: string, displayText: string) {
+            const select: NgSelectComponent = fixture.debugElement
+                .query(By.css(`ng-select#${id}`)).componentInstance;
+            select.select(select.itemsList.items.find(item => item.label === displayText));
+            fixture.detectChanges();
+        }
 
-    it('should produce actual booleans (not strings) from the Contract Type and Paid selects', () => {
-      selectOption('fullTime', 'Part Time');
-      selectOption('paid', 'Voluntary');
-      expect(component.candidateForm.value.fullTime).toBe(false);
-      expect(component.candidateForm.value.paid).toBe(false);
+        it('should produce actual booleans (not strings) from the Contract Type and Paid selects', () => {
+            selectOption('fullTime', 'Part Time');
+            selectOption('paid', 'Voluntary');
+            expect(component.candidateForm.value.fullTime).toBe(false);
+            expect(component.candidateForm.value.paid).toBe(false);
 
-      selectOption('fullTime', 'Full Time');
-      selectOption('paid', 'Paid');
-      expect(component.candidateForm.value.fullTime).toBe(true);
-      expect(component.candidateForm.value.paid).toBe(true);
+            selectOption('fullTime', 'Full Time');
+            selectOption('paid', 'Paid');
+            expect(component.candidateForm.value.fullTime).toBe(true);
+            expect(component.candidateForm.value.paid).toBe(true);
+        });
+
+        it('should send actual booleans to the service on save', () => {
+            mockCandidateJobExperienceService.update.mockReturnValue(of(component.candidateJobExperience));
+
+            selectOption('fullTime', 'Part Time');
+            selectOption('paid', 'Paid');
+
+            component.onSave();
+
+            const sent = vi.mocked(mockCandidateJobExperienceService.update).mock.lastCall[1];
+            expect(sent.fullTime).toBe(false);
+            expect(sent.paid).toBe(true);
+        });
     });
-
-    it('should send actual booleans to the service on save', () => {
-      mockCandidateJobExperienceService.update.and.returnValue(of(component.candidateJobExperience));
-      
-      selectOption('fullTime', 'Part Time');
-      selectOption('paid', 'Paid');
-
-      component.onSave();
-
-      const sent = mockCandidateJobExperienceService.update.calls.mostRecent().args[1];
-      expect(sent.fullTime).toBe(false);
-      expect(sent.paid).toBe(true);
-    });
-  });
 });

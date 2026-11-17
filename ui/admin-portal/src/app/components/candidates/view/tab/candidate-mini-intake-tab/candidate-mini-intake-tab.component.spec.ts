@@ -32,52 +32,53 @@ import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/commo
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {MockCandidate} from "../../../../../MockData/MockCandidate";
+import {expect} from 'vitest';
 
 describe('CandidateMiniIntakeTabComponent', () => {
-  let component: CandidateMiniIntakeTabComponent;
-  let fixture: ComponentFixture<CandidateMiniIntakeTabComponent>;
+    let component: CandidateMiniIntakeTabComponent;
+    let fixture: ComponentFixture<CandidateMiniIntakeTabComponent>;
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      imports: [FormsModule,ReactiveFormsModule, NgSelectModule],
-      declarations: [CandidateMiniIntakeTabComponent],
-      providers: [
-        CandidateService,
-        CountryService,
-        EducationLevelService,
-        OccupationService,
-        LanguageLevelService,
-        CandidateNoteService,
-        AuthenticationService,
-        NgbModal,
-        AuthorizationService,
-        CandidateCitizenshipService,
-        CandidateExamService,
-        provideHttpClient(withXhr(), withInterceptorsFromDi()),
-        provideHttpClientTesting()
-      ]
-    })
-    .compileComponents();
-  });
+    beforeEach(async () => {
+        await TestBed.configureTestingModule({
+            imports: [FormsModule, ReactiveFormsModule, NgSelectModule],
+            declarations: [CandidateMiniIntakeTabComponent],
+            providers: [
+                CandidateService,
+                CountryService,
+                EducationLevelService,
+                OccupationService,
+                LanguageLevelService,
+                CandidateNoteService,
+                AuthenticationService,
+                NgbModal,
+                AuthorizationService,
+                CandidateCitizenshipService,
+                CandidateExamService,
+                provideHttpClient(withXhr(), withInterceptorsFromDi()),
+                provideHttpClientTesting()
+            ]
+        })
+            .compileComponents();
+    });
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(CandidateMiniIntakeTabComponent);
-    component = fixture.componentInstance;
-    component.candidate = new MockCandidate();
-    fixture.detectChanges();
-  });
+    beforeEach(() => {
+        fixture = TestBed.createComponent(CandidateMiniIntakeTabComponent);
+        component = fixture.componentInstance;
+        component.candidate = new MockCandidate();
+        fixture.detectChanges();
+    });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
 
-  it('should correctly determine the mini intake completion status', () => {
-    // Case 1: miniIntakeCompletedDate is null
-    component.candidate = { miniIntakeCompletedDate: null } as any;
-    expect(component.miniIntakeComplete).toBeFalse();
+    it('should correctly determine the mini intake completion status', () => {
+        // Case 1: miniIntakeCompletedDate is null
+        component.candidate = { miniIntakeCompletedDate: null } as any;
+        expect(component.miniIntakeComplete).toBe(false);
 
-    // Case 2: miniIntakeCompletedDate is not null
-    component.candidate = { miniIntakeCompletedDate: new Date() } as any;
-    expect(component.miniIntakeComplete).toBeTrue();
-  });
+        // Case 2: miniIntakeCompletedDate is not null
+        component.candidate = { miniIntakeCompletedDate: new Date() } as any;
+        expect(component.miniIntakeComplete).toBe(true);
+    });
 });

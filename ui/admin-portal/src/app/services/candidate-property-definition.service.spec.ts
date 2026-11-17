@@ -5,6 +5,7 @@ import {HttpTestingController, provideHttpClientTesting} from "@angular/common/h
 import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {SpringDataCandidatePropertyDefinitionsPage} from "../model/candidate-property-definition";
 import {environment} from "../../environments/environment";
+import {expect} from 'vitest';
 
 describe('CandidatePropertyDefinitionService', () => {
   let service: CandidatePropertyDefinitionService;

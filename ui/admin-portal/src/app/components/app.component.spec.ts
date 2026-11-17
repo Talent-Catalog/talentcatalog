@@ -23,66 +23,70 @@ import {ActivatedRoute, Router} from "@angular/router";
 import {of, Subject} from "rxjs";
 import {User} from "../model/user";
 import {MockUser} from "../MockData/MockUser";
+import {expect, vi} from 'vitest';
 
 // Stub class for AuthenticationService
 class AuthenticationServiceStub {
-  loggedInUser$ = new Subject<User>();
-  // Method to set the logged-in user
-  setLoggedInUser(user: User) {
-    this.loggedInUser$.next(user);
-  }
+    loggedInUser$ = new Subject<User>();
+    // Method to set the logged-in user
+    setLoggedInUser(user: User) {
+        this.loggedInUser$.next(user);
+    }
 }
 
 // Test suite declaration
 describe('AppComponent', () => {
-  let component: AppComponent;
-  let fixture: ComponentFixture<AppComponent>;
-  let authService: AuthenticationServiceStub;
+    let component: AppComponent;
+    let fixture: ComponentFixture<AppComponent>;
+    let authService: AuthenticationServiceStub;
 
-  // Async setup before each test
-  beforeEach(waitForAsync(() => {
-    // TestBed configuration
-    TestBed.configureTestingModule({
-      imports: [
-        RouterTestingModule // Add RouterTestingModule to imports
-      ],
-      declarations: [AppComponent],
-      providers: [
-        { provide: AuthenticationService, useClass: AuthenticationServiceStub }, // Provide stubbed AuthenticationService
-        { provide: Router, useClass: class { navigate = jasmine.createSpy('navigate'); events = of(); } }, // Mock Router
-        { provide: ActivatedRoute, useValue: { queryParams: of({}), snapshot: { data: {} } } }, // Mock ActivatedRoute
-        provideHttpClient(withXhr(), withInterceptorsFromDi()),
-        provideHttpClientTesting(),
-      ]
-    }).compileComponents();
+    // Async setup before each test
+    beforeEach(waitForAsync(() => {
+        // TestBed configuration
+        TestBed.configureTestingModule({
+            imports: [
+                RouterTestingModule // Add RouterTestingModule to imports
+            ],
+            declarations: [AppComponent],
+            providers: [
+                { provide: AuthenticationService, useClass: AuthenticationServiceStub }, // Provide stubbed AuthenticationService
+                { provide: Router, useClass: class {
+                        navigate = vi.fn().mockName('navigate');
+                        events = of();
+                    } }, // Mock Router
+                { provide: ActivatedRoute, useValue: { queryParams: of({}), snapshot: { data: {} } } }, // Mock ActivatedRoute
+                provideHttpClient(withXhr(), withInterceptorsFromDi()),
+                provideHttpClientTesting(),
+            ]
+        }).compileComponents();
 
-    // Injecting AuthenticationServiceStub into the test suite
-    authService = TestBed.inject(AuthenticationService) as AuthenticationServiceStub;
-  }));
+        // Injecting AuthenticationServiceStub into the test suite
+        authService = TestBed.inject(AuthenticationService) as AuthenticationServiceStub;
+    }));
 
-  // Setup before each test
-  beforeEach(() => {
-    fixture = TestBed.createComponent(AppComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
+    // Setup before each test
+    beforeEach(() => {
+        fixture = TestBed.createComponent(AppComponent);
+        component = fixture.componentInstance;
+        fixture.detectChanges();
+    });
 
-  // Test case: should create the app
-  it('should create the app', () => {
-    expect(component).toBeTruthy();
-  });
+    // Test case: should create the app
+    it('should create the app', () => {
+        expect(component).toBeTruthy();
+    });
 
-  // Test case: should set showHeader to true when a user is logged in
-  it('should set showHeader to true when a user is logged in', () => {
-    /* mock user object */
-    const user: User = new MockUser();
-    authService.setLoggedInUser(user);
-    expect(component.showHeader).toBeTrue();
-  });
+    // Test case: should set showHeader to true when a user is logged in
+    it('should set showHeader to true when a user is logged in', () => {
+        /* mock user object */
+        const user: User = new MockUser();
+        authService.setLoggedInUser(user);
+        expect(component.showHeader).toBe(true);
+    });
 
-  // Test case: should set showHeader to false when no user is logged in
-  it('should set showHeader to false when no user is logged in', () => {
-    authService.setLoggedInUser(null);
-    expect(component.showHeader).toBeFalse();
-  });
+    // Test case: should set showHeader to false when no user is logged in
+    it('should set showHeader to false when no user is logged in', () => {
+        authService.setLoggedInUser(null);
+        expect(component.showHeader).toBe(false);
+    });
 });

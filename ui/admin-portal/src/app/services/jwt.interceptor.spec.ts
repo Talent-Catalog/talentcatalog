@@ -14,56 +14,60 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
+import type {MockedObject} from "vitest";
 import {TestBed} from '@angular/core/testing';
 import {HttpTestingController, provideHttpClientTesting} from '@angular/common/http/testing';
 import {HTTP_INTERCEPTORS, HttpClient, provideHttpClient, withInterceptorsFromDi, withXhr} from '@angular/common/http';
 import {JwtInterceptor} from './jwt.interceptor';
 import {AuthenticationService} from './authentication.service';
+import {expect, vi} from 'vitest';
 
 describe('JwtInterceptor', () => {
-  let httpMock: HttpTestingController;
-  let httpClient: HttpClient;
-  let authServiceSpy: jasmine.SpyObj<AuthenticationService>;
+    let httpMock: HttpTestingController;
+    let httpClient: HttpClient;
+    let authServiceSpy: MockedObject<AuthenticationService>;
 
-  beforeEach(() => {
-    const spy = jasmine.createSpyObj('AuthenticationService', ['getToken']);
+    beforeEach(() => {
+        const spy = {
+            getToken: vi.fn().mockName("AuthenticationService.getToken")
+        };
 
-    TestBed.configureTestingModule({
-      providers: [
-        { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },
-        { provide: AuthenticationService, useValue: spy },
-        provideHttpClient(withXhr(), withInterceptorsFromDi()),
-        provideHttpClientTesting()
-      ]
+        TestBed.configureTestingModule({
+            providers: [
+                { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },
+                { provide: AuthenticationService, useValue: spy },
+                provideHttpClient(withXhr(), withInterceptorsFromDi()),
+                provideHttpClientTesting()
+            ]
+        });
+
+        httpMock = TestBed.inject(HttpTestingController);
+        httpClient = TestBed.inject(HttpClient);
+        authServiceSpy = TestBed.inject(AuthenticationService) as MockedObject<AuthenticationService>;
     });
 
-    httpMock = TestBed.inject(HttpTestingController);
-    httpClient = TestBed.inject(HttpClient);
-    authServiceSpy = TestBed.inject(AuthenticationService) as jasmine.SpyObj<AuthenticationService>;
-  });
+    afterEach(() => {
+        httpMock.verify();
+    });
 
-  afterEach(() => {
-    httpMock.verify();
-  });
+    it('should add an Authorization header', () => {
+        authServiceSpy.getToken.mockReturnValue('fake-jwt-token');
 
-  it('should add an Authorization header', () => {
-    authServiceSpy.getToken.and.returnValue('fake-jwt-token');
+        httpClient.get('/test').subscribe(response => expect(response).toBeTruthy());
 
-    httpClient.get('/test').subscribe(response => expect(response).toBeTruthy());
+        const httpRequest = httpMock.expectOne('/test');
 
-    const httpRequest = httpMock.expectOne('/test');
+        expect(httpRequest.request.headers.has('Authorization')).toEqual(true);
+        expect(httpRequest.request.headers.get('Authorization')).toBe('Bearer fake-jwt-token');
+    });
 
-    expect(httpRequest.request.headers.has('Authorization')).toEqual(true);
-    expect(httpRequest.request.headers.get('Authorization')).toBe('Bearer fake-jwt-token');
-  });
+    it('should not add an Authorization header when no token is available', () => {
+        authServiceSpy.getToken.mockReturnValue(null);
 
-  it('should not add an Authorization header when no token is available', () => {
-    authServiceSpy.getToken.and.returnValue(null);
+        httpClient.get('/test').subscribe(response => expect(response).toBeTruthy());
 
-    httpClient.get('/test').subscribe(response => expect(response).toBeTruthy());
+        const httpRequest = httpMock.expectOne('/test');
 
-    const httpRequest = httpMock.expectOne('/test');
-
-    expect(httpRequest.request.headers.has('Authorization')).toEqual(false);
-  });
+        expect(httpRequest.request.headers.has('Authorization')).toEqual(false);
+    });
 });

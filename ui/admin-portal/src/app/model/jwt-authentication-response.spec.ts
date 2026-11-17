@@ -18,6 +18,7 @@ import {JwtAuthenticationResponse} from "./jwt-authentication-response";
 import {User} from "./user";
 import {MockUser} from "../MockData/MockUser";
 import {TcInstanceType} from "./tc-instance-type";
+import {expect} from 'vitest';
 
 describe('JwtResponse', () => {
   it('should create a valid JwtResponse object', () => {

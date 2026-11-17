@@ -21,282 +21,289 @@ import {BehaviorSubject, of, throwError} from 'rxjs';
 import {MockSavedSearch} from "../../../MockData/MockSavedSearch";
 import {NgbModal, NgbModalRef} from "@ng-bootstrap/ng-bootstrap";
 import {ConfirmationComponent} from "../../util/confirm/confirmation.component";
+import {expect, vi} from 'vitest';
 
-function fakeParamMap(params: { [key: string]: string }): ParamMap {
-  return {
-    get: (name: string) => (name in params ? params[name] : null),
-    has: (name: string) => name in params,
-    getAll: (name: string) => (name in params ? [params[name]] : []),
-    keys: Object.keys(params)
-  } as ParamMap;
+function fakeParamMap(params: {
+    [key: string]: string;
+}): ParamMap {
+    return {
+        get: (name: string) => (name in params ? params[name] : null),
+        has: (name: string) => name in params,
+        getAll: (name: string) => (name in params ? [params[name]] : []),
+        keys: Object.keys(params)
+    } as ParamMap;
 }
 
 describe('CandidatesSearchComponent', () => {
-  let component: CandidatesSearchComponent;
-  let fixture: ComponentFixture<CandidatesSearchComponent>;
-  let paramMap$: BehaviorSubject<ParamMap>;
-  let queryParamMap$: BehaviorSubject<ParamMap>;
-  let mockSavedSearchService: any;
-  let modalService: NgbModal;
+    let component: CandidatesSearchComponent;
+    let fixture: ComponentFixture<CandidatesSearchComponent>;
+    let paramMap$: BehaviorSubject<ParamMap>;
+    let queryParamMap$: BehaviorSubject<ParamMap>;
+    let mockSavedSearchService: any;
+    let modalService: NgbModal;
 
-  beforeEach(async () => {
-    paramMap$ = new BehaviorSubject<ParamMap>(fakeParamMap({}));
-    queryParamMap$ = new BehaviorSubject<ParamMap>(fakeParamMap({}));
+    beforeEach(async () => {
+        paramMap$ = new BehaviorSubject<ParamMap>(fakeParamMap({}));
+        queryParamMap$ = new BehaviorSubject<ParamMap>(fakeParamMap({}));
 
-    const mockActivatedRoute: any = {
-      paramMap: paramMap$,
-      queryParamMap: queryParamMap$
-    };
-    mockSavedSearchService = jasmine.createSpyObj('SavedSearchService', ['get', 'getDefault', 'updateJob']);
+        const mockActivatedRoute: any = {
+            paramMap: paramMap$,
+            queryParamMap: queryParamMap$
+        };
+        mockSavedSearchService = {
+            get: vi.fn().mockName("SavedSearchService.get"),
+            getDefault: vi.fn().mockName("SavedSearchService.getDefault"),
+            updateJob: vi.fn().mockName("SavedSearchService.updateJob")
+        };
 
-    await TestBed.configureTestingModule({
-      declarations: [CandidatesSearchComponent],
-      providers: [
-        { provide: ActivatedRoute, useValue: mockActivatedRoute },
-        { provide: SavedSearchService, useValue: mockSavedSearchService },
-        { provide: NgbModal  },
-      ]
-    })
-    .compileComponents();
-    mockSavedSearchService.getDefault.and.returnValue(of());
-    modalService = TestBed.inject(NgbModal);
-  });
+        await TestBed.configureTestingModule({
+            declarations: [CandidatesSearchComponent],
+            providers: [
+                { provide: ActivatedRoute, useValue: mockActivatedRoute },
+                { provide: SavedSearchService, useValue: mockSavedSearchService },
+                { provide: NgbModal },
+            ]
+        })
+            .compileComponents();
+        mockSavedSearchService.getDefault.mockReturnValue(of());
+        modalService = TestBed.inject(NgbModal);
+    });
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(CandidatesSearchComponent);
-    component = fixture.componentInstance;
-  });
+    beforeEach(() => {
+        fixture = TestBed.createComponent(CandidatesSearchComponent);
+        component = fixture.componentInstance;
+    });
 
-  it('should create', () => {
-    fixture.detectChanges();
-    expect(component).toBeTruthy();
-  });
+    it('should create', () => {
+        fixture.detectChanges();
+        expect(component).toBeTruthy();
+    });
 
-  it('should load default search when no ID is provided in the route', fakeAsync(() => {
-    const mockDefaultSearch = new MockSavedSearch();
-    mockSavedSearchService.getDefault.and.returnValue(of(mockDefaultSearch));
+    it('should load default search when no ID is provided in the route', fakeAsync(() => {
+        const mockDefaultSearch = new MockSavedSearch();
+        mockSavedSearchService.getDefault.mockReturnValue(of(mockDefaultSearch));
 
-    fixture.detectChanges();
-    tick();
+        fixture.detectChanges();
+        tick();
 
-    expect(component.loading).toBe(false);
-    expect(component.savedSearch).toEqual(mockDefaultSearch);
-    expect(component.error).toBeUndefined();
-  }));
-
-  it('should handle error from saved search service when loading default search', fakeAsync(() => {
-    const mockError = 'Error loading default search';
-    mockSavedSearchService.getDefault.and.returnValue(throwError(mockError));
-
-    fixture.detectChanges();
-    tick();
-
-    expect(component.loading).toBe(false);
-    expect(component.savedSearch).toBeUndefined();
-    expect(component.error).toEqual(mockError);
-  }));
-
-  it('should update page number and page size when route parameters change', () => {
-    mockSavedSearchService.getDefault.and.returnValue(of(new MockSavedSearch()));
-    queryParamMap$.next(fakeParamMap({pageNumber: '2', pageSize: '10'}));
-
-    fixture.detectChanges();
-
-    expect(component.pageNumber).toEqual(2);
-    expect(component.pageSize).toEqual(10);
-  });
-
-  it('should load a saved search by id when the :id route param is present', fakeAsync(() => {
-    const mockSavedSearch = new MockSavedSearch();
-    mockSavedSearchService.get.and.returnValue(of(mockSavedSearch));
-    paramMap$.next(fakeParamMap({id: '5'}));
-
-    fixture.detectChanges();
-    tick();
-
-    expect(mockSavedSearchService.get).toHaveBeenCalledWith(5);
-    expect(component.savedSearch).toEqual(mockSavedSearch);
-    expect(component.loading).toBe(false);
-  }));
-
-  it('should handle error from saved search service when loading a saved search by id', fakeAsync(() => {
-    const mockError = 'Error loading saved search';
-    mockSavedSearchService.get.and.returnValue(throwError(mockError));
-    paramMap$.next(fakeParamMap({id: '5'}));
-
-    fixture.detectChanges();
-    tick();
-
-    expect(component.loading).toBe(false);
-    expect(component.savedSearch).toBeUndefined();
-    expect(component.error).toEqual(mockError);
-  }));
-
-  it('should not reload the saved search when only an unrelated query param changes', fakeAsync(() => {
-    const mockDefaultSearch = new MockSavedSearch();
-    mockSavedSearchService.getDefault.and.returnValue(of(mockDefaultSearch));
-
-    fixture.detectChanges();
-    tick();
-    expect(mockSavedSearchService.getDefault).toHaveBeenCalledTimes(1);
-
-    // Simulate Clear Search removing the 'job' query param from the URL - the :id route param
-    // (and therefore which saved search is active) hasn't changed, so this must not retrigger a
-    // reload (which would overwrite the just-cleared form with the persisted search contents).
-    queryParamMap$.next(fakeParamMap({}));
-    tick();
-
-    expect(mockSavedSearchService.getDefault).toHaveBeenCalledTimes(1);
-  }));
-
-  it('should reload when the :id route param actually changes', fakeAsync(() => {
-    mockSavedSearchService.getDefault.and.returnValue(of(new MockSavedSearch()));
-    const otherSearch = new MockSavedSearch();
-    mockSavedSearchService.get.and.returnValue(of(otherSearch));
-
-    fixture.detectChanges();
-    tick();
-    expect(mockSavedSearchService.getDefault).toHaveBeenCalledTimes(1);
-
-    paramMap$.next(fakeParamMap({id: '9'}));
-    tick();
-
-    expect(mockSavedSearchService.get).toHaveBeenCalledWith(9);
-    expect(component.savedSearch).toEqual(otherSearch);
-  }));
-
-  describe('explicit job association on the default search', () => {
-
-    it('should call updateJob when a job query param is present and the default search has no existing job', fakeAsync(() => {
-      const defaultSearch = {...new MockSavedSearch(), id: 1, defaultSearch: true, sfJobOpp: null};
-      const updatedSearch = {...defaultSearch, sfJobOpp: {id: 123}};
-      mockSavedSearchService.getDefault.and.returnValue(of(defaultSearch));
-      mockSavedSearchService.updateJob.and.returnValue(of(updatedSearch));
-      queryParamMap$.next(fakeParamMap({job: '123'}));
-
-      fixture.detectChanges();
-      tick();
-
-      expect(mockSavedSearchService.updateJob).toHaveBeenCalledWith(defaultSearch.id, 123);
-      expect(component.savedSearch).toEqual(updatedSearch);
+        expect(component.loading).toBe(false);
+        expect(component.savedSearch).toEqual(mockDefaultSearch);
+        expect(component.error).toBeUndefined();
     }));
 
-    it('should call updateJob to replace a different existing job association', fakeAsync(() => {
-      const defaultSearch = {...new MockSavedSearch(), id: 1, defaultSearch: true, sfJobOpp: {id: 1}};
-      const updatedSearch = {...defaultSearch, sfJobOpp: {id: 123}};
-      mockSavedSearchService.getDefault.and.returnValue(of(defaultSearch));
-      mockSavedSearchService.updateJob.and.returnValue(of(updatedSearch));
-      queryParamMap$.next(fakeParamMap({job: '123'}));
+    it('should handle error from saved search service when loading default search', fakeAsync(() => {
+        const mockError = 'Error loading default search';
+        mockSavedSearchService.getDefault.mockReturnValue(throwError(mockError));
 
-      fixture.detectChanges();
-      tick();
+        fixture.detectChanges();
+        tick();
 
-      expect(mockSavedSearchService.updateJob).toHaveBeenCalledWith(defaultSearch.id, 123);
-      expect(component.savedSearch).toEqual(updatedSearch);
+        expect(component.loading).toBe(false);
+        expect(component.savedSearch).toBeUndefined();
+        expect(component.error).toEqual(mockError);
     }));
 
-    it('should NOT call updateJob when the default search is already associated with that same job', fakeAsync(() => {
-      const defaultSearch = {...new MockSavedSearch(), defaultSearch: true, sfJobOpp: {id: 123}};
-      mockSavedSearchService.getDefault.and.returnValue(of(defaultSearch));
-      queryParamMap$.next(fakeParamMap({job: '123'}));
+    it('should update page number and page size when route parameters change', () => {
+        mockSavedSearchService.getDefault.mockReturnValue(of(new MockSavedSearch()));
+        queryParamMap$.next(fakeParamMap({ pageNumber: '2', pageSize: '10' }));
 
-      fixture.detectChanges();
-      tick();
+        fixture.detectChanges();
 
-      expect(mockSavedSearchService.updateJob).not.toHaveBeenCalled();
-      expect(component.savedSearch).toEqual(defaultSearch);
+        expect(component.pageNumber).toEqual(2);
+        expect(component.pageSize).toEqual(10);
+    });
+
+    it('should load a saved search by id when the :id route param is present', fakeAsync(() => {
+        const mockSavedSearch = new MockSavedSearch();
+        mockSavedSearchService.get.mockReturnValue(of(mockSavedSearch));
+        paramMap$.next(fakeParamMap({ id: '5' }));
+
+        fixture.detectChanges();
+        tick();
+
+        expect(mockSavedSearchService.get).toHaveBeenCalledWith(5);
+        expect(component.savedSearch).toEqual(mockSavedSearch);
+        expect(component.loading).toBe(false);
     }));
 
-    it('should NOT call updateJob when there is no job query param', fakeAsync(() => {
-      const defaultSearch = {...new MockSavedSearch(), defaultSearch: true, sfJobOpp: {id: 123}};
-      mockSavedSearchService.getDefault.and.returnValue(of(defaultSearch));
+    it('should handle error from saved search service when loading a saved search by id', fakeAsync(() => {
+        const mockError = 'Error loading saved search';
+        mockSavedSearchService.get.mockReturnValue(throwError(mockError));
+        paramMap$.next(fakeParamMap({ id: '5' }));
 
-      fixture.detectChanges();
-      tick();
+        fixture.detectChanges();
+        tick();
 
-      expect(mockSavedSearchService.updateJob).not.toHaveBeenCalled();
-      expect(component.savedSearch.sfJobOpp).toEqual({id: 123});
+        expect(component.loading).toBe(false);
+        expect(component.savedSearch).toBeUndefined();
+        expect(component.error).toEqual(mockError);
     }));
 
-    it('should NOT call updateJob when loading a non-default saved search by id, even with a job query param', fakeAsync(() => {
-      const namedSearch = {...new MockSavedSearch(), defaultSearch: false};
-      mockSavedSearchService.get.and.returnValue(of(namedSearch));
-      paramMap$.next(fakeParamMap({id: '5'}));
-      queryParamMap$.next(fakeParamMap({job: '123'}));
+    it('should not reload the saved search when only an unrelated query param changes', fakeAsync(() => {
+        const mockDefaultSearch = new MockSavedSearch();
+        mockSavedSearchService.getDefault.mockReturnValue(of(mockDefaultSearch));
 
-      fixture.detectChanges();
-      tick();
+        fixture.detectChanges();
+        tick();
+        expect(mockSavedSearchService.getDefault).toHaveBeenCalledTimes(1);
 
-      expect(mockSavedSearchService.updateJob).not.toHaveBeenCalled();
+        // Simulate Clear Search removing the 'job' query param from the URL - the :id route param
+        // (and therefore which saved search is active) hasn't changed, so this must not retrigger a
+        // reload (which would overwrite the just-cleared form with the persisted search contents).
+        queryParamMap$.next(fakeParamMap({}));
+        tick();
+
+        expect(mockSavedSearchService.getDefault).toHaveBeenCalledTimes(1);
     }));
 
-    it('should surface a job assignment failure without blocking the rest of the page', fakeAsync(() => {
-      const defaultSearch = {...new MockSavedSearch(), defaultSearch: true, sfJobOpp: null};
-      mockSavedSearchService.getDefault.and.returnValue(of(defaultSearch));
-      mockSavedSearchService.updateJob.and.returnValue(throwError('Job assignment failed'));
-      queryParamMap$.next(fakeParamMap({job: '123'}));
+    it('should reload when the :id route param actually changes', fakeAsync(() => {
+        mockSavedSearchService.getDefault.mockReturnValue(of(new MockSavedSearch()));
+        const otherSearch = new MockSavedSearch();
+        mockSavedSearchService.get.mockReturnValue(of(otherSearch));
 
-      fixture.detectChanges();
-      tick();
+        fixture.detectChanges();
+        tick();
+        expect(mockSavedSearchService.getDefault).toHaveBeenCalledTimes(1);
 
-      expect(component.jobAssignmentError).toEqual('Job assignment failed');
-      expect(component.error).toBeUndefined();
-      expect(component.loading).toBe(false);
+        paramMap$.next(fakeParamMap({ id: '9' }));
+        tick();
+
+        expect(mockSavedSearchService.get).toHaveBeenCalledWith(9);
+        expect(component.savedSearch).toEqual(otherSearch);
     }));
-  });
 
-  it('should display confirmation modal if form dirty and navigate away', () => {
-    fixture.detectChanges();
-    spyOn(modalService, 'open').and.returnValue({
-      componentInstance: {},
-      result: Promise.resolve('saved')
-    } as NgbModalRef);
+    describe('explicit job association on the default search', () => {
 
-    component.formDirty = true;
+        it('should call updateJob when a job query param is present and the default search has no existing job', fakeAsync(() => {
+            const defaultSearch = { ...new MockSavedSearch(), id: 1, defaultSearch: true, sfJobOpp: null };
+            const updatedSearch = { ...defaultSearch, sfJobOpp: { id: 123 } };
+            mockSavedSearchService.getDefault.mockReturnValue(of(defaultSearch));
+            mockSavedSearchService.updateJob.mockReturnValue(of(updatedSearch));
+            queryParamMap$.next(fakeParamMap({ job: '123' }));
 
-    component.canExit();
+            fixture.detectChanges();
+            tick();
 
-    expect(modalService.open).toHaveBeenCalledWith(ConfirmationComponent, jasmine.any(Object));
-  });
+            expect(mockSavedSearchService.updateJob).toHaveBeenCalledWith(defaultSearch.id, 123);
+            expect(component.savedSearch).toEqual(updatedSearch);
+        }));
 
-  it('should tell user to click Search when auto update is enabled', () => {
-    component.savedSearch = new MockSavedSearch();
-    component.savedSearch.autoUpdateOnSearch = true;
+        it('should call updateJob to replace a different existing job association', fakeAsync(() => {
+            const defaultSearch = { ...new MockSavedSearch(), id: 1, defaultSearch: true, sfJobOpp: { id: 1 } };
+            const updatedSearch = { ...defaultSearch, sfJobOpp: { id: 123 } };
+            mockSavedSearchService.getDefault.mockReturnValue(of(defaultSearch));
+            mockSavedSearchService.updateJob.mockReturnValue(of(updatedSearch));
+            queryParamMap$.next(fakeParamMap({ job: '123' }));
 
-    const modalRef = {
-      componentInstance: {},
-      result: Promise.resolve()
-    } as NgbModalRef;
+            fixture.detectChanges();
+            tick();
 
-    spyOn(modalService, 'open').and.returnValue(modalRef);
+            expect(mockSavedSearchService.updateJob).toHaveBeenCalledWith(defaultSearch.id, 123);
+            expect(component.savedSearch).toEqual(updatedSearch);
+        }));
 
-    component.unsavedChangesCheck();
+        it('should NOT call updateJob when the default search is already associated with that same job', fakeAsync(() => {
+            const defaultSearch = { ...new MockSavedSearch(), defaultSearch: true, sfJobOpp: { id: 123 } };
+            mockSavedSearchService.getDefault.mockReturnValue(of(defaultSearch));
+            queryParamMap$.next(fakeParamMap({ job: '123' }));
 
-    expect(modalRef.componentInstance.title)
-    .toBe('Unapplied search filter changes');
+            fixture.detectChanges();
+            tick();
 
-    expect(modalRef.componentInstance.message)
-    .toContain('click "Search"');
-  });
+            expect(mockSavedSearchService.updateJob).not.toHaveBeenCalled();
+            expect(component.savedSearch).toEqual(defaultSearch);
+        }));
 
-  it('should tell user to click Update Search when auto update is disabled', () => {
-    component.savedSearch = new MockSavedSearch();
-    component.savedSearch.autoUpdateOnSearch = false;
+        it('should NOT call updateJob when there is no job query param', fakeAsync(() => {
+            const defaultSearch = { ...new MockSavedSearch(), defaultSearch: true, sfJobOpp: { id: 123 } };
+            mockSavedSearchService.getDefault.mockReturnValue(of(defaultSearch));
 
-    const modalRef = {
-      componentInstance: {},
-      result: Promise.resolve()
-    } as NgbModalRef;
+            fixture.detectChanges();
+            tick();
 
-    spyOn(modalService, 'open').and.returnValue(modalRef);
+            expect(mockSavedSearchService.updateJob).not.toHaveBeenCalled();
+            expect(component.savedSearch.sfJobOpp).toEqual({ id: 123 });
+        }));
 
-    component.unsavedChangesCheck();
+        it('should NOT call updateJob when loading a non-default saved search by id, even with a job query param', fakeAsync(() => {
+            const namedSearch = { ...new MockSavedSearch(), defaultSearch: false };
+            mockSavedSearchService.get.mockReturnValue(of(namedSearch));
+            paramMap$.next(fakeParamMap({ id: '5' }));
+            queryParamMap$.next(fakeParamMap({ job: '123' }));
 
-    expect(modalRef.componentInstance.title)
-    .toBe('Unsaved search filter changes');
+            fixture.detectChanges();
+            tick();
 
-    expect(modalRef.componentInstance.message)
-    .toContain('click "Update Search"');
-  });
+            expect(mockSavedSearchService.updateJob).not.toHaveBeenCalled();
+        }));
+
+        it('should surface a job assignment failure without blocking the rest of the page', fakeAsync(() => {
+            const defaultSearch = { ...new MockSavedSearch(), defaultSearch: true, sfJobOpp: null };
+            mockSavedSearchService.getDefault.mockReturnValue(of(defaultSearch));
+            mockSavedSearchService.updateJob.mockReturnValue(throwError('Job assignment failed'));
+            queryParamMap$.next(fakeParamMap({ job: '123' }));
+
+            fixture.detectChanges();
+            tick();
+
+            expect(component.jobAssignmentError).toEqual('Job assignment failed');
+            expect(component.error).toBeUndefined();
+            expect(component.loading).toBe(false);
+        }));
+    });
+
+    it('should display confirmation modal if form dirty and navigate away', () => {
+        fixture.detectChanges();
+        vi.spyOn(modalService, 'open').mockReturnValue({
+            componentInstance: {},
+            result: Promise.resolve('saved')
+        } as NgbModalRef);
+
+        component.formDirty = true;
+
+        component.canExit();
+
+        expect(modalService.open).toHaveBeenCalledWith(ConfirmationComponent, expect.any(Object));
+    });
+
+    it('should tell user to click Search when auto update is enabled', () => {
+        component.savedSearch = new MockSavedSearch();
+        component.savedSearch.autoUpdateOnSearch = true;
+
+        const modalRef = {
+            componentInstance: {},
+            result: Promise.resolve()
+        } as NgbModalRef;
+
+        vi.spyOn(modalService, 'open').mockReturnValue(modalRef);
+
+        component.unsavedChangesCheck();
+
+        expect(modalRef.componentInstance.title)
+            .toBe('Unapplied search filter changes');
+
+        expect(modalRef.componentInstance.message)
+            .toContain('click "Search"');
+    });
+
+    it('should tell user to click Update Search when auto update is disabled', () => {
+        component.savedSearch = new MockSavedSearch();
+        component.savedSearch.autoUpdateOnSearch = false;
+
+        const modalRef = {
+            componentInstance: {},
+            result: Promise.resolve()
+        } as NgbModalRef;
+
+        vi.spyOn(modalService, 'open').mockReturnValue(modalRef);
+
+        component.unsavedChangesCheck();
+
+        expect(modalRef.componentInstance.title)
+            .toBe('Unsaved search filter changes');
+
+        expect(modalRef.componentInstance.message)
+            .toContain('click "Update Search"');
+    });
 
 });

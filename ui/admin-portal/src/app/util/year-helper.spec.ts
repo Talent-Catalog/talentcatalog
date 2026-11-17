@@ -15,6 +15,7 @@
  */
 
 import {generateYearArray} from "./year-helper";
+import {expect} from 'vitest';
 
 describe('generateYearArray', () => {
 

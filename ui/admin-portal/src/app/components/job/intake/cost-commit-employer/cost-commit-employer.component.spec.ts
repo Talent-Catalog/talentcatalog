@@ -22,51 +22,52 @@ import {NgxWigModule} from "ngx-wig";
 import {provideHttpClientTesting} from "@angular/common/http/testing";
 import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {TranslateModule} from "@ngx-translate/core";
+import {expect, vi} from 'vitest';
 
 describe('CostCommitEmployerComponent', () => {
-  let component: CostCommitEmployerComponent;
-  let fixture: ComponentFixture<CostCommitEmployerComponent>;
+    let component: CostCommitEmployerComponent;
+    let fixture: ComponentFixture<CostCommitEmployerComponent>;
 
-  beforeEach(waitForAsync(() => {
-    TestBed.configureTestingModule({
-      declarations: [ CostCommitEmployerComponent,AutosaveStatusComponent ],
-      imports: [ ReactiveFormsModule,NgxWigModule,TranslateModule.forRoot() ],
-      providers: [provideHttpClient(withXhr(), withInterceptorsFromDi()), provideHttpClientTesting()],
-    })
-    .compileComponents();
-  }));
+    beforeEach(waitForAsync(() => {
+        TestBed.configureTestingModule({
+            declarations: [CostCommitEmployerComponent, AutosaveStatusComponent],
+            imports: [ReactiveFormsModule, NgxWigModule, TranslateModule.forRoot()],
+            providers: [provideHttpClient(withXhr(), withInterceptorsFromDi()), provideHttpClientTesting()],
+        })
+            .compileComponents();
+    }));
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(CostCommitEmployerComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
+    beforeEach(() => {
+        fixture = TestBed.createComponent(CostCommitEmployerComponent);
+        component = fixture.componentInstance;
+        fixture.detectChanges();
+    });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
 
-  it('should initialize form with jobIntakeData if provided', () => {
-    const testData = { employerCostCommitment: 'Test commitment' };
-    component.jobIntakeData = testData;
-    component.editable = true;
-    component.ngOnInit();
-    expect(component.form.value.employerCostCommitment).toEqual(testData.employerCostCommitment);
-  });
+    it('should initialize form with jobIntakeData if provided', () => {
+        const testData = { employerCostCommitment: 'Test commitment' };
+        component.jobIntakeData = testData;
+        component.editable = true;
+        component.ngOnInit();
+        expect(component.form.value.employerCostCommitment).toEqual(testData.employerCostCommitment);
+    });
 
-  it('should disable form control when editable is false', () => {
-    component.editable = false;
-    component.ngOnInit();
-    expect(component.form.controls.employerCostCommitment.disabled).toBeTrue();
-  });
+    it('should disable form control when editable is false', () => {
+        component.editable = false;
+        component.ngOnInit();
+        expect(component.form.controls.employerCostCommitment.disabled).toBe(true);
+    });
 
-  it('should update jobIntakeData and emit event on successful save', () => {
-    const testData = 'Test commitment';
-    component.jobIntakeData = { employerCostCommitment: 'Initial commitment' };
-    component.form.controls.employerCostCommitment.setValue(testData);
-    spyOn(component.intakeChanged, 'emit');
-    component.onSuccessfulSave();
-    expect(component.jobIntakeData.employerCostCommitment).toEqual(testData);
-    expect(component.intakeChanged.emit).toHaveBeenCalledWith(component.jobIntakeData);
-  });
+    it('should update jobIntakeData and emit event on successful save', () => {
+        const testData = 'Test commitment';
+        component.jobIntakeData = { employerCostCommitment: 'Initial commitment' };
+        component.form.controls.employerCostCommitment.setValue(testData);
+        vi.spyOn(component.intakeChanged, 'emit').mockReturnValue(undefined);
+        component.onSuccessfulSave();
+        expect(component.jobIntakeData.employerCostCommitment).toEqual(testData);
+        expect(component.intakeChanged.emit).toHaveBeenCalledWith(component.jobIntakeData);
+    });
 });

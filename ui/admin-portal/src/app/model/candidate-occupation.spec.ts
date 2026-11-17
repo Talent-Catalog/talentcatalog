@@ -17,6 +17,7 @@
 import {User} from "./user";
 import {Occupation} from "./occupation";
 import {CandidateOccupation} from "./candidate-occupation";
+import {expect} from 'vitest';
 
 describe('CandidateOccupation Model', () => {
   let user1: User;

@@ -22,6 +22,7 @@ import {environment} from '../../environments/environment';
 import {CandidateReviewStatusItem} from "../model/candidate-review-status-item";
 import {MockSavedSearch} from "../MockData/MockSavedSearch";
 import {MockUser} from "../MockData/MockUser";
+import {expect} from 'vitest';
 
 describe('CandidateReviewStatusService', () => {
   let service: CandidateReviewStatusService;

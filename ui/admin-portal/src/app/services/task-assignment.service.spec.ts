@@ -17,108 +17,104 @@
 import {TestBed} from '@angular/core/testing';
 import {HttpTestingController, provideHttpClientTesting} from '@angular/common/http/testing';
 import {provideHttpClient, withInterceptorsFromDi, withXhr} from '@angular/common/http';
-import {
-  CreateTaskAssignmentRequest,
-  TaskAssignmentService,
-  TaskListRequest,
-  UpdateTaskAssignmentRequest
-} from './task-assignment.service';
+import {CreateTaskAssignmentRequest, TaskAssignmentService, TaskListRequest, UpdateTaskAssignmentRequest} from './task-assignment.service';
 import {environment} from '../../environments/environment';
 import {TaskAssignment} from '../model/task-assignment';
 import {MockCandidate} from "../MockData/MockCandidate";
+import {expect} from 'vitest';
 
 describe('TaskAssignmentService', () => {
-  let service: TaskAssignmentService;
-  let httpMock: HttpTestingController;
-  const apiUrl = environment.apiUrl + '/task-assignment';
+    let service: TaskAssignmentService;
+    let httpMock: HttpTestingController;
+    const apiUrl = environment.apiUrl + '/task-assignment';
 
-  const mockTaskAssignment: TaskAssignment = new MockCandidate().taskAssignments[0];
+    const mockTaskAssignment: TaskAssignment = new MockCandidate().taskAssignments[0];
 
-  beforeEach(() => {
-    TestBed.configureTestingModule({
-      providers: [TaskAssignmentService, provideHttpClient(withXhr(), withInterceptorsFromDi()), provideHttpClientTesting()]
-    });
-    service = TestBed.inject(TaskAssignmentService);
-    httpMock = TestBed.inject(HttpTestingController);
-  });
-
-  afterEach(() => {
-    httpMock.verify();
-  });
-
-  it('should be created', () => {
-    expect(service).toBeTruthy();
-  });
-
-  it('should assign a task to a list via PUT', () => {
-    const request: TaskListRequest = { savedListId: 1, taskId: 1 };
-
-    service.assignTaskToList(request).subscribe(response => {
-      expect(response).toBeNull();
+    beforeEach(() => {
+        TestBed.configureTestingModule({
+            providers: [TaskAssignmentService, provideHttpClient(withXhr(), withInterceptorsFromDi()), provideHttpClientTesting()]
+        });
+        service = TestBed.inject(TaskAssignmentService);
+        httpMock = TestBed.inject(HttpTestingController);
     });
 
-    const req = httpMock.expectOne(`${apiUrl}/assign-to-list`);
-    expect(req.request.method).toBe('PUT');
-    req.flush(null); // since the API response is void
-  });
-
-  it('should search for task assignments via POST', () => {
-    const request: TaskListRequest = { savedListId: 1, taskId: 1 };
-
-    service.search(request).subscribe((taskAssignments) => {
-      expect(taskAssignments.length).toBe(1);
-      expect(taskAssignments).toEqual([mockTaskAssignment]);
+    afterEach(() => {
+        httpMock.verify();
     });
 
-    const req = httpMock.expectOne(`${apiUrl}/search`);
-    expect(req.request.method).toBe('POST');
-    req.flush([mockTaskAssignment]);
-  });
-
-  it('should remove a task from a list via PUT', () => {
-    const request: TaskListRequest = { savedListId: 1, taskId: 1 };
-
-    service.removeTaskFromList(request).subscribe(response => {
-      expect(response).toBeNull();
+    it('should be created', () => {
+        expect(service).toBeTruthy();
     });
 
-    const req = httpMock.expectOne(`${apiUrl}/remove-from-list`);
-    expect(req.request.method).toBe('PUT');
-    req.flush(null); // since the API response is void
-  });
+    it('should assign a task to a list via PUT', () => {
+        const request: TaskListRequest = { savedListId: 1, taskId: 1 };
 
-  it('should create a task assignment via POST', () => {
-    const request: CreateTaskAssignmentRequest = { candidateId: 1, taskId: 1, dueDate: new Date() };
+        service.assignTaskToList(request).subscribe(response => {
+            expect(response).toBeNull();
+        });
 
-    service.createTaskAssignment(request).subscribe((taskAssignment) => {
-      expect(taskAssignment).toEqual(mockTaskAssignment);
+        const req = httpMock.expectOne(`${apiUrl}/assign-to-list`);
+        expect(req.request.method).toBe('PUT');
+        req.flush(null); // since the API response is void
     });
 
-    const req = httpMock.expectOne(apiUrl);
-    expect(req.request.method).toBe('POST');
-    req.flush(mockTaskAssignment);
-  });
+    it('should search for task assignments via POST', () => {
+        const request: TaskListRequest = { savedListId: 1, taskId: 1 };
 
-  it('should update a task assignment via PUT', () => {
-    const request: UpdateTaskAssignmentRequest = { taskAssignmentId: 1, completed: true, abandoned: false, dueDate: new Date(), candidateNotes: 'Updated Notes' };
+        service.search(request).subscribe((taskAssignments) => {
+            expect(taskAssignments.length).toBe(1);
+            expect(taskAssignments).toEqual([mockTaskAssignment]);
+        });
 
-    service.updateTaskAssignment(request).subscribe((taskAssignment) => {
-      expect(taskAssignment).toEqual({ ...mockTaskAssignment, ...request });
+        const req = httpMock.expectOne(`${apiUrl}/search`);
+        expect(req.request.method).toBe('POST');
+        req.flush([mockTaskAssignment]);
     });
 
-    const req = httpMock.expectOne(`${apiUrl}/1`);
-    expect(req.request.method).toBe('PUT');
-    req.flush({ ...mockTaskAssignment, ...request });
-  });
+    it('should remove a task from a list via PUT', () => {
+        const request: TaskListRequest = { savedListId: 1, taskId: 1 };
 
-  it('should remove a task assignment via DELETE', () => {
-    service.removeTaskAssignment(1).subscribe((response) => {
-      expect(response).toBeTrue();
+        service.removeTaskFromList(request).subscribe(response => {
+            expect(response).toBeNull();
+        });
+
+        const req = httpMock.expectOne(`${apiUrl}/remove-from-list`);
+        expect(req.request.method).toBe('PUT');
+        req.flush(null); // since the API response is void
     });
 
-    const req = httpMock.expectOne(`${apiUrl}/1`);
-    expect(req.request.method).toBe('DELETE');
-    req.flush(true);
-  });
+    it('should create a task assignment via POST', () => {
+        const request: CreateTaskAssignmentRequest = { candidateId: 1, taskId: 1, dueDate: new Date() };
+
+        service.createTaskAssignment(request).subscribe((taskAssignment) => {
+            expect(taskAssignment).toEqual(mockTaskAssignment);
+        });
+
+        const req = httpMock.expectOne(apiUrl);
+        expect(req.request.method).toBe('POST');
+        req.flush(mockTaskAssignment);
+    });
+
+    it('should update a task assignment via PUT', () => {
+        const request: UpdateTaskAssignmentRequest = { taskAssignmentId: 1, completed: true, abandoned: false, dueDate: new Date(), candidateNotes: 'Updated Notes' };
+
+        service.updateTaskAssignment(request).subscribe((taskAssignment) => {
+            expect(taskAssignment).toEqual({ ...mockTaskAssignment, ...request });
+        });
+
+        const req = httpMock.expectOne(`${apiUrl}/1`);
+        expect(req.request.method).toBe('PUT');
+        req.flush({ ...mockTaskAssignment, ...request });
+    });
+
+    it('should remove a task assignment via DELETE', () => {
+        service.removeTaskAssignment(1).subscribe((response) => {
+            expect(response).toBe(true);
+        });
+
+        const req = httpMock.expectOne(`${apiUrl}/1`);
+        expect(req.request.method).toBe('DELETE');
+        req.flush(true);
+    });
 
 });

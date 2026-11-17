@@ -15,6 +15,7 @@
  */
 
 import {EducationMajor} from "./education-major";
+import {expect} from 'vitest';
 
 describe('EducationMajor interface', () => {
   it('should create an EducationMajor instance', () => {

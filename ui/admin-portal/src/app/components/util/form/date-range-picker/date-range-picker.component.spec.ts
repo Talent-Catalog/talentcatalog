@@ -20,139 +20,143 @@ import {FormsModule} from "@angular/forms";
 import {NgbDate, NgbDateStruct, NgbModule} from "@ng-bootstrap/ng-bootstrap";
 import {provideHttpClientTesting} from "@angular/common/http/testing";
 import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
+import {expect} from 'vitest';
 
 describe('DateRangePickerComponent', () => {
-  let component: DateRangePickerComponent;
-  let fixture: ComponentFixture<DateRangePickerComponent>;
+    let component: DateRangePickerComponent;
+    let fixture: ComponentFixture<DateRangePickerComponent>;
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      declarations: [DateRangePickerComponent],
-      imports: [FormsModule, NgbModule],
-      providers: [provideHttpClient(withXhr(), withInterceptorsFromDi()), provideHttpClientTesting()]
-    }).compileComponents();
+    beforeEach(async () => {
+        await TestBed.configureTestingModule({
+            declarations: [DateRangePickerComponent],
+            imports: [FormsModule, NgbModule],
+            providers: [provideHttpClient(withXhr(), withInterceptorsFromDi()), provideHttpClientTesting()]
+        }).compileComponents();
 
-    fixture = TestBed.createComponent(DateRangePickerComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
-
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
-
-  it('should initialize', () => {
-    expect(component.fromDate).toBeUndefined();
-    expect(component.toDate).toBeUndefined();
-    expect(component.readonly).toBeFalsy();
-    expect(component.displayDate).toBeNull();
-  });
-
-  it('should select date when no dates are selected', () => {
-    const date = new NgbDate(2023, 7, 1);
-    component.selectDate(date);
-
-    expect(component.fromDate).toEqual(date);
-    expect(component.toDate).toBeUndefined();
-    expect(component.displayDate).toEqual('2023/7/1');
-  });
-
-  it('should select start date when start date exists and end date does not', () => {
-    const startDate = new NgbDate(2023, 7, 1);
-    const endDate = new NgbDate(2023, 7, 5);
-    component.fromDate = startDate;
-    component.selectDate(endDate);
-
-    expect(component.fromDate).toEqual(startDate);
-    expect(component.toDate).toEqual(endDate);
-    expect(component.displayDate).toEqual('2023/7/1 - 2023/7/5');
-  });
-
-  it('should reset dates when clearDates is called', () => {
-    component.fromDate = new NgbDate(2023, 7, 1);
-    component.toDate = new NgbDate(2023, 7, 5);
-    component.displayDate = '2023/7/1 - 2023/7/5';
-    component.clearDates();
-
-    expect(component.fromDate).toBeNull();
-    expect(component.toDate).toBeNull();
-    expect(component.displayDate).toBeNull();
-  });
-
-  it('should emit dateSelected event when dates are selected or cleared', () => {
-    const fromDate = new NgbDate(2023, 7, 1);
-    const toDate = new NgbDate(2023, 7, 5);
-
-    let emittedFromDate: NgbDateStruct;
-    let emittedToDate: NgbDateStruct;
-
-    component.dateSelected.subscribe((dates: { fromDate: NgbDateStruct, toDate: NgbDateStruct }) => {
-      emittedFromDate = dates.fromDate;
-      emittedToDate = dates.toDate;
+        fixture = TestBed.createComponent(DateRangePickerComponent);
+        component = fixture.componentInstance;
+        fixture.detectChanges();
     });
 
-    // Select dates
-    component.selectDate(fromDate);
-    expect(emittedFromDate).toEqual(fromDate);
-    expect(emittedToDate).toBeUndefined();
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
 
-    component.selectDate(toDate);
-    expect(emittedFromDate).toEqual(fromDate);
-    expect(emittedToDate).toEqual(toDate);
+    it('should initialize', () => {
+        expect(component.fromDate).toBeUndefined();
+        expect(component.toDate).toBeUndefined();
+        expect(component.readonly).toBeFalsy();
+        expect(component.displayDate).toBeNull();
+    });
 
-    // Clear dates
-    component.clearDates();
-    expect(emittedFromDate).toBeNull();
-    expect(emittedToDate).toBeNull();
-  });
+    it('should select date when no dates are selected', () => {
+        const date = new NgbDate(2023, 7, 1);
+        component.selectDate(date);
 
-  it('should determine if date is hovered', () => {
-    component.fromDate = new NgbDate(2023, 7, 1);
-    component.hoveredDate = new NgbDate(2023, 7, 5);
+        expect(component.fromDate).toEqual(date);
+        expect(component.toDate).toBeUndefined();
+        expect(component.displayDate).toEqual('2023/7/1');
+    });
 
-    // Hovered date should be between from date and hovered date
-    const hoveredDate1 = new NgbDate(2023, 7, 3);
-    expect(component.isHovered(hoveredDate1)).toBeTrue();
+    it('should select start date when start date exists and end date does not', () => {
+        const startDate = new NgbDate(2023, 7, 1);
+        const endDate = new NgbDate(2023, 7, 5);
+        component.fromDate = startDate;
+        component.selectDate(endDate);
 
-    // Should not be hovered if outside range
-    const hoveredDate2 = new NgbDate(2023, 6, 30);
-    expect(component.isHovered(hoveredDate2)).toBeFalse();
-  });
+        expect(component.fromDate).toEqual(startDate);
+        expect(component.toDate).toEqual(endDate);
+        expect(component.displayDate).toEqual('2023/7/1 - 2023/7/5');
+    });
 
-  it('should determine if date is inside range', () => {
-    component.fromDate = new NgbDate(2023, 7, 1);
-    component.toDate = new NgbDate(2023, 7, 5);
+    it('should reset dates when clearDates is called', () => {
+        component.fromDate = new NgbDate(2023, 7, 1);
+        component.toDate = new NgbDate(2023, 7, 5);
+        component.displayDate = '2023/7/1 - 2023/7/5';
+        component.clearDates();
 
-    // Inside range should be between from date and to date
-    const insideDate1 = new NgbDate(2023, 7, 3);
-    expect(component.isInside(insideDate1)).toBeTrue();
+        expect(component.fromDate).toBeNull();
+        expect(component.toDate).toBeNull();
+        expect(component.displayDate).toBeNull();
+    });
 
-    // Should not be inside range if outside range
-    const insideDate2 = new NgbDate(2023, 6, 30);
-    expect(component.isInside(insideDate2)).toBeFalse();
-  });
+    it('should emit dateSelected event when dates are selected or cleared', () => {
+        const fromDate = new NgbDate(2023, 7, 1);
+        const toDate = new NgbDate(2023, 7, 5);
 
-  it('should determine if date is part of range', () => {
-    component.fromDate = new NgbDate(2023, 7, 1);
-    component.toDate = new NgbDate(2023, 7, 5);
-    component.hoveredDate = new NgbDate(2023, 7, 3);
+        let emittedFromDate: NgbDateStruct;
+        let emittedToDate: NgbDateStruct;
 
-    // Convert NgbDateStruct to NgbDate for range checking
-    const fromDateNgbDate: NgbDate = new NgbDate(component.fromDate.year, component.fromDate.month, component.fromDate.day);
-    const toDateNgbDate: NgbDate = new NgbDate(component.toDate.year, component.toDate.month, component.toDate.day);
-    const hoveredDateNgbDate: NgbDate = new NgbDate(component.hoveredDate.year, component.hoveredDate.month, component.hoveredDate.day);
+        component.dateSelected.subscribe((dates: {
+            fromDate: NgbDateStruct;
+            toDate: NgbDateStruct;
+        }) => {
+            emittedFromDate = dates.fromDate;
+            emittedToDate = dates.toDate;
+        });
 
-    // From date, to date, hovered date, and inside date should be part of range
-    expect(component.isRange(fromDateNgbDate)).toBeTrue();
-    expect(component.isRange(toDateNgbDate)).toBeTrue();
-    expect(component.isRange(hoveredDateNgbDate)).toBeTrue();
+        // Select dates
+        component.selectDate(fromDate);
+        expect(emittedFromDate).toEqual(fromDate);
+        expect(emittedToDate).toBeUndefined();
 
-    const insideDate: NgbDate = new NgbDate(2023, 7, 3);
-    expect(component.isRange(insideDate)).toBeTrue();
+        component.selectDate(toDate);
+        expect(emittedFromDate).toEqual(fromDate);
+        expect(emittedToDate).toEqual(toDate);
 
-    // Date outside range should not be part of range
-    const outsideDate: NgbDate = new NgbDate(2023, 6, 30);
-    expect(component.isRange(outsideDate)).toBeFalse();
-  });
+        // Clear dates
+        component.clearDates();
+        expect(emittedFromDate).toBeNull();
+        expect(emittedToDate).toBeNull();
+    });
+
+    it('should determine if date is hovered', () => {
+        component.fromDate = new NgbDate(2023, 7, 1);
+        component.hoveredDate = new NgbDate(2023, 7, 5);
+
+        // Hovered date should be between from date and hovered date
+        const hoveredDate1 = new NgbDate(2023, 7, 3);
+        expect(component.isHovered(hoveredDate1)).toBe(true);
+
+        // Should not be hovered if outside range
+        const hoveredDate2 = new NgbDate(2023, 6, 30);
+        expect(component.isHovered(hoveredDate2)).toBe(false);
+    });
+
+    it('should determine if date is inside range', () => {
+        component.fromDate = new NgbDate(2023, 7, 1);
+        component.toDate = new NgbDate(2023, 7, 5);
+
+        // Inside range should be between from date and to date
+        const insideDate1 = new NgbDate(2023, 7, 3);
+        expect(component.isInside(insideDate1)).toBe(true);
+
+        // Should not be inside range if outside range
+        const insideDate2 = new NgbDate(2023, 6, 30);
+        expect(component.isInside(insideDate2)).toBe(false);
+    });
+
+    it('should determine if date is part of range', () => {
+        component.fromDate = new NgbDate(2023, 7, 1);
+        component.toDate = new NgbDate(2023, 7, 5);
+        component.hoveredDate = new NgbDate(2023, 7, 3);
+
+        // Convert NgbDateStruct to NgbDate for range checking
+        const fromDateNgbDate: NgbDate = new NgbDate(component.fromDate.year, component.fromDate.month, component.fromDate.day);
+        const toDateNgbDate: NgbDate = new NgbDate(component.toDate.year, component.toDate.month, component.toDate.day);
+        const hoveredDateNgbDate: NgbDate = new NgbDate(component.hoveredDate.year, component.hoveredDate.month, component.hoveredDate.day);
+
+        // From date, to date, hovered date, and inside date should be part of range
+        expect(component.isRange(fromDateNgbDate)).toBe(true);
+        expect(component.isRange(toDateNgbDate)).toBe(true);
+        expect(component.isRange(hoveredDateNgbDate)).toBe(true);
+
+        const insideDate: NgbDate = new NgbDate(2023, 7, 3);
+        expect(component.isRange(insideDate)).toBe(true);
+
+        // Date outside range should not be part of range
+        const outsideDate: NgbDate = new NgbDate(2023, 6, 30);
+        expect(component.isRange(outsideDate)).toBe(false);
+    });
 
 });

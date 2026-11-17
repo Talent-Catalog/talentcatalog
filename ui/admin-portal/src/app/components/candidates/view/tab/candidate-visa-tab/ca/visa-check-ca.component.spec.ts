@@ -13,13 +13,13 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
+
+import type {MockedObject} from "vitest";
 import {VisaCheckCaComponent} from "./visa-check-ca.component";
 import {ComponentFixture, TestBed} from "@angular/core/testing";
 import {Component, CUSTOM_ELEMENTS_SCHEMA, ChangeDetectionStrategy} from "@angular/core";
 import {MockCandidate} from "../../../../../../MockData/MockCandidate";
-import {
-  mockCandidateIntakeData
-} from "../../candidate-intake-tab/candidate-intake-tab.component.spec";
+import {mockCandidateIntakeData} from "../../candidate-intake-tab/candidate-intake-tab.component.spec";
 import {CandidateVisa, CandidateVisaJobCheck} from "../../../../../../model/candidate";
 import {NgbAccordionModule, NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {provideHttpClientTesting} from "@angular/common/http/testing";
@@ -27,68 +27,70 @@ import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/commo
 import {AuthorizationService} from "../../../../../../services/authorization.service";
 import {ReadOnlyInputsDirective} from "../../../../../../directives/read-only-inputs.directive";
 import {LocalStorageService} from "../../../../../../services/local-storage.service";
+import {expect, vi} from 'vitest';
 
 // Mock IntProtectionComponent to include input elements for testing
 @Component({
-  selector: 'app-int-protection',
-  template: `
+    selector: 'app-int-protection',
+    template: `
     <ng-select></ng-select>
     <input type="text"/>
     <textarea></textarea>
     <app-date-picker></app-date-picker>
     <ngx-wig></ngx-wig>
   `,
-  changeDetection: ChangeDetectionStrategy.Eager,
-  standalone: false
+    changeDetection: ChangeDetectionStrategy.Eager,
+    standalone: false
 })
 class MockIntProtectionComponent {
-  // No isEditable method; inputs are controlled by parent directive
 }
 
 describe('VisaCheckCaComponent', () => {
-  let component: VisaCheckCaComponent;
-  let fixture: ComponentFixture<VisaCheckCaComponent>;
-  let authorizationServiceSpy: jasmine.SpyObj<AuthorizationService>;
-  const mockCandidate = new MockCandidate();
+    let component: VisaCheckCaComponent;
+    let fixture: ComponentFixture<VisaCheckCaComponent>;
+    let authorizationServiceSpy: MockedObject<AuthorizationService>;
+    const mockCandidate = new MockCandidate();
 
-  beforeEach(async () => {
-    const authServiceSpyObj = jasmine.createSpyObj('AuthorizationService', ['isEditableCandidate']);
-    await TestBed.configureTestingModule({
-      imports: [NgbAccordionModule],
-      declarations: [VisaCheckCaComponent, ReadOnlyInputsDirective, MockIntProtectionComponent],
-      providers: [
-        {provide: NgbModal, useValue: {}},
-        {provide: LocalStorageService, useValue: {}},
-        {provide: AuthorizationService, useValue: authServiceSpyObj},
-        provideHttpClient(withXhr(), withInterceptorsFromDi()),
-        provideHttpClientTesting()
-      ],
-      schemas: [CUSTOM_ELEMENTS_SCHEMA]
-    }).compileComponents();
-  });
+    beforeEach(async () => {
+        const authServiceSpyObj = {
+            isEditableCandidate: vi.fn().mockName("AuthorizationService.isEditableCandidate")
+        };
+        await TestBed.configureTestingModule({
+            imports: [NgbAccordionModule],
+            declarations: [VisaCheckCaComponent, ReadOnlyInputsDirective, MockIntProtectionComponent],
+            providers: [
+                { provide: NgbModal, useValue: {} },
+                { provide: LocalStorageService, useValue: {} },
+                { provide: AuthorizationService, useValue: authServiceSpyObj },
+                provideHttpClient(withXhr(), withInterceptorsFromDi()),
+                provideHttpClientTesting()
+            ],
+            schemas: [CUSTOM_ELEMENTS_SCHEMA]
+        }).compileComponents();
+    });
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(VisaCheckCaComponent);
-    component = fixture.componentInstance;
-    authorizationServiceSpy = TestBed.inject(AuthorizationService) as jasmine.SpyObj<AuthorizationService>;
+    beforeEach(() => {
+        fixture = TestBed.createComponent(VisaCheckCaComponent);
+        component = fixture.componentInstance;
+        authorizationServiceSpy = TestBed.inject(AuthorizationService) as MockedObject<AuthorizationService>;
 
-    component.candidate = mockCandidate;
-    component.candidateIntakeData = mockCandidateIntakeData;
-    component.visaCheckRecord = {
-      candidateVisaJobChecks: [
-        { id: 1, occupation: { id: 1, name: 'Job 1' } } as CandidateVisaJobCheck,
-        { id: 2, occupation: { id: 2, name: 'Job 2' } } as CandidateVisaJobCheck
-      ]
-    } as CandidateVisa;
+        component.candidate = mockCandidate;
+        component.candidateIntakeData = mockCandidateIntakeData;
+        component.visaCheckRecord = {
+            candidateVisaJobChecks: [
+                { id: 1, occupation: { id: 1, name: 'Job 1' } } as CandidateVisaJobCheck,
+                { id: 2, occupation: { id: 2, name: 'Job 2' } } as CandidateVisaJobCheck
+            ]
+        } as CandidateVisa;
 
-    fixture.detectChanges(); // trigger data binding
-  });
+        fixture.detectChanges(); // trigger data binding
+    });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
 
-  it('should select the first job by default', () => {
-    expect(component.selectedJob).toEqual(component.visaCheckRecord.candidateVisaJobChecks[0]);
-  });
+    it('should select the first job by default', () => {
+        expect(component.selectedJob).toEqual(component.visaCheckRecord.candidateVisaJobChecks[0]);
+    });
 });

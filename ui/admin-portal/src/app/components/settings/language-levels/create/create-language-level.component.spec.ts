@@ -14,6 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
+import type {MockedObject} from "vitest";
 import {ReactiveFormsModule, UntypedFormBuilder} from "@angular/forms";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {provideHttpClientTesting} from "@angular/common/http/testing";
@@ -24,76 +25,82 @@ import {CreateLanguageLevelComponent} from "./create-language-level.component";
 import {ComponentFixture, fakeAsync, TestBed, tick} from "@angular/core/testing";
 import {LanguageLevel} from "../../../../model/language-level";
 import {of, throwError} from "rxjs";
+import {expect, vi} from 'vitest';
 
 describe('CreateLanguageLevelComponent', () => {
-  let component: CreateLanguageLevelComponent;
-  let fixture: ComponentFixture<CreateLanguageLevelComponent>;
-  let languageLevelServiceSpy: jasmine.SpyObj<LanguageLevelService>;
-  let ngbActiveModalSpy: jasmine.SpyObj<NgbActiveModal>;
-  let formBuilder: UntypedFormBuilder;
-  const languageLevel: LanguageLevel = { id: 1, level: 5, name: 'Advanced', cefrLevel: 'B2', status: 'active' };
+    let component: CreateLanguageLevelComponent;
+    let fixture: ComponentFixture<CreateLanguageLevelComponent>;
+    let languageLevelServiceSpy: MockedObject<LanguageLevelService>;
+    let ngbActiveModalSpy: MockedObject<NgbActiveModal>;
+    let formBuilder: UntypedFormBuilder;
+    const languageLevel: LanguageLevel = { id: 1, level: 5, name: 'Advanced', cefrLevel: 'B2', status: 'active' };
 
-  beforeEach(async () => {
-    const languageLevelServiceSpyObj = jasmine.createSpyObj('LanguageLevelService', ['create']);
-    const ngbActiveModalSpyObj = jasmine.createSpyObj('NgbActiveModal', ['close', 'dismiss']);
+    beforeEach(async () => {
+        const languageLevelServiceSpyObj = {
+            create: vi.fn().mockName("LanguageLevelService.create")
+        };
+        const ngbActiveModalSpyObj = {
+            close: vi.fn().mockName("NgbActiveModal.close"),
+            dismiss: vi.fn().mockName("NgbActiveModal.dismiss")
+        };
 
-    await TestBed.configureTestingModule({
-      declarations: [CreateLanguageLevelComponent],
-      imports: [ReactiveFormsModule,NgSelectModule],
-      providers: [
-        { provide: LanguageLevelService, useValue: languageLevelServiceSpyObj },
-        { provide: NgbActiveModal, useValue: ngbActiveModalSpyObj },
-        provideHttpClient(withXhr(), withInterceptorsFromDi()),
-        provideHttpClientTesting()
-      ]
-    }).compileComponents();
+        await TestBed.configureTestingModule({
+            declarations: [CreateLanguageLevelComponent],
+            imports: [ReactiveFormsModule, NgSelectModule],
+            providers: [
+                { provide: LanguageLevelService, useValue: languageLevelServiceSpyObj },
+                { provide: NgbActiveModal, useValue: ngbActiveModalSpyObj },
+                provideHttpClient(withXhr(), withInterceptorsFromDi()),
+                provideHttpClientTesting()
+            ]
+        }).compileComponents();
 
-    languageLevelServiceSpy = TestBed.inject(LanguageLevelService) as jasmine.SpyObj<LanguageLevelService>;
-    ngbActiveModalSpy = TestBed.inject(NgbActiveModal) as jasmine.SpyObj<NgbActiveModal>;
-    formBuilder = TestBed.inject(UntypedFormBuilder);
-  });
-
-  beforeEach(() => {
-    fixture = TestBed.createComponent(CreateLanguageLevelComponent);
-    component = fixture.componentInstance;
-    languageLevelServiceSpy.create.and.returnValue(of(languageLevel));
-
-    fixture.detectChanges();
-  });
-
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
-
-  it('should call onSave and close modal when language level is successfully created', fakeAsync(() => {
-    component.languageLevelForm.patchValue({ level: 5, name: 'Advanced', cefrLevel: 'B2', status: 'active' });
-
-    component.onSave();
-    tick(); // Waiting for async operation to complete
-
-    expect(languageLevelServiceSpy.create).toHaveBeenCalledWith({
-      level: 5,
-      name: 'Advanced',
-      cefrLevel: 'B2',
-      status: 'active'
+        languageLevelServiceSpy = TestBed.inject(LanguageLevelService) as MockedObject<LanguageLevelService>;
+        ngbActiveModalSpy = TestBed.inject(NgbActiveModal) as MockedObject<NgbActiveModal>;
+        formBuilder = TestBed.inject(UntypedFormBuilder);
     });
-    expect(ngbActiveModalSpy.close).toHaveBeenCalledWith(languageLevel);
-    expect(component.saving).toBeFalse();
-  }));
 
-  it('should handle error when creating language level fails', fakeAsync(() => {
-    const errorResponse = { status: 500, message: 'Internal Server Error' };
-    languageLevelServiceSpy.create.and.returnValue(throwError(errorResponse));
+    beforeEach(() => {
+        fixture = TestBed.createComponent(CreateLanguageLevelComponent);
+        component = fixture.componentInstance;
+        languageLevelServiceSpy.create.mockReturnValue(of(languageLevel));
 
-    component.onSave();
-    tick(); // Waiting for async operation to complete
+        fixture.detectChanges();
+    });
 
-    expect(component.error).toEqual(errorResponse);
-    expect(component.saving).toBeFalse();
-  }));
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
 
-  it('should dismiss modal when dismiss is called', () => {
-    component.dismiss();
-    expect(ngbActiveModalSpy.dismiss).toHaveBeenCalledWith(false);
-  });
+    it('should call onSave and close modal when language level is successfully created', fakeAsync(() => {
+        component.languageLevelForm.patchValue({ level: 5, name: 'Advanced', cefrLevel: 'B2', status: 'active' });
+
+        component.onSave();
+        tick(); // Waiting for async operation to complete
+
+        expect(languageLevelServiceSpy.create).toHaveBeenCalledWith({
+            level: 5,
+            name: 'Advanced',
+            cefrLevel: 'B2',
+            status: 'active'
+        });
+        expect(ngbActiveModalSpy.close).toHaveBeenCalledWith(languageLevel);
+        expect(component.saving).toBe(false);
+    }));
+
+    it('should handle error when creating language level fails', fakeAsync(() => {
+        const errorResponse = { status: 500, message: 'Internal Server Error' };
+        languageLevelServiceSpy.create.mockReturnValue(throwError(errorResponse));
+
+        component.onSave();
+        tick(); // Waiting for async operation to complete
+
+        expect(component.error).toEqual(errorResponse);
+        expect(component.saving).toBe(false);
+    }));
+
+    it('should dismiss modal when dismiss is called', () => {
+        component.dismiss();
+        expect(ngbActiveModalSpy.dismiss).toHaveBeenCalledWith(false);
+    });
 });

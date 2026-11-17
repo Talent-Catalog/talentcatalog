@@ -14,6 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
+import type {MockedObject} from "vitest";
 import {CreateUpdateUserComponent} from "./create-update-user.component";
 import {ComponentFixture, TestBed, waitForAsync} from "@angular/core/testing";
 import {UserService} from "../../../../services/user.service";
@@ -32,178 +33,192 @@ import {SearchUserRequest} from "../../../../model/base";
 import {Role} from "../../../../model/user";
 import {config_test} from "../../../../../config-test";
 import {AuthenticationService} from "../../../../services/authentication.service";
+import {expect, vi} from 'vitest';
 
 describe('CreateUpdateUserComponent', () => {
-  let component: CreateUpdateUserComponent;
-  let fixture: ComponentFixture<CreateUpdateUserComponent>;
-  let userServiceSpy: jasmine.SpyObj<UserService>;
-  let authenticationServiceSpy: jasmine.SpyObj<AuthenticationService>;
-  let authServiceSpy: jasmine.SpyObj<AuthorizationService>;
-  let countryServiceSpy: jasmine.SpyObj<CountryService>;
-  let partnerServiceSpy: jasmine.SpyObj<PartnerService>;
-  const mockUser = new MockUser();
-  const updatedMockUser = mockUser;
-  const mockSearchUserReq:SearchUserRequest = {
-    partnerId: mockUser.partner.id,
-    role: Role.systemadmin
-  }
-  beforeEach(waitForAsync(() => {
-    const userServiceSpyObj = jasmine.createSpyObj('UserService', ['create', 'update', 'search']);
-    const authenticationServiceSpyObj = jasmine.createSpyObj('AuthenticationService', ['getLoggedInUser']);
-    const authServiceSpyObj = jasmine.createSpyObj('AuthorizationService', ['getLoggedInRole', 'canAssignPartner']);
-    const countryServiceSpyObj = jasmine.createSpyObj('CountryService', ['listCountriesRestricted']);
-    const partnerServiceSpyObj = jasmine.createSpyObj('PartnerService', ['listPartners']);
+    let component: CreateUpdateUserComponent;
+    let fixture: ComponentFixture<CreateUpdateUserComponent>;
+    let userServiceSpy: MockedObject<UserService>;
+    let authenticationServiceSpy: MockedObject<AuthenticationService>;
+    let authServiceSpy: MockedObject<AuthorizationService>;
+    let countryServiceSpy: MockedObject<CountryService>;
+    let partnerServiceSpy: MockedObject<PartnerService>;
+    const mockUser = new MockUser();
+    const updatedMockUser = mockUser;
+    const mockSearchUserReq: SearchUserRequest = {
+        partnerId: mockUser.partner.id,
+        role: Role.systemadmin
+    };
+    beforeEach(waitForAsync(() => {
+        const userServiceSpyObj = {
+            create: vi.fn().mockName("UserService.create"),
+            update: vi.fn().mockName("UserService.update"),
+            search: vi.fn().mockName("UserService.search")
+        };
+        const authenticationServiceSpyObj = {
+            getLoggedInUser: vi.fn().mockName("AuthenticationService.getLoggedInUser")
+        };
+        const authServiceSpyObj = {
+            getLoggedInRole: vi.fn().mockName("AuthorizationService.getLoggedInRole"),
+            canAssignPartner: vi.fn().mockName("AuthorizationService.canAssignPartner")
+        };
+        const countryServiceSpyObj = {
+            listCountriesRestricted: vi.fn().mockName("CountryService.listCountriesRestricted")
+        };
+        const partnerServiceSpyObj = {
+            listPartners: vi.fn().mockName("PartnerService.listPartners")
+        };
 
-    TestBed.configureTestingModule({
-      declarations: [CreateUpdateUserComponent],
-      imports: [FormsModule,ReactiveFormsModule,NgSelectModule],
-      providers: [
-        NgbActiveModal,
-        { provide: UserService, useValue: userServiceSpyObj },
-        { provide: AuthenticationService, useValue: authenticationServiceSpyObj },
-        { provide: AuthorizationService, useValue: authServiceSpyObj },
-        { provide: CountryService, useValue: countryServiceSpyObj },
-        { provide: PartnerService, useValue: partnerServiceSpyObj },
-        provideHttpClient(withXhr(), withInterceptorsFromDi()),
-        provideHttpClientTesting()
-      ],
-      schemas: [NO_ERRORS_SCHEMA]
-    }).compileComponents();
+        TestBed.configureTestingModule({
+            declarations: [CreateUpdateUserComponent],
+            imports: [FormsModule, ReactiveFormsModule, NgSelectModule],
+            providers: [
+                NgbActiveModal,
+                { provide: UserService, useValue: userServiceSpyObj },
+                { provide: AuthenticationService, useValue: authenticationServiceSpyObj },
+                { provide: AuthorizationService, useValue: authServiceSpyObj },
+                { provide: CountryService, useValue: countryServiceSpyObj },
+                { provide: PartnerService, useValue: partnerServiceSpyObj },
+                provideHttpClient(withXhr(), withInterceptorsFromDi()),
+                provideHttpClientTesting()
+            ],
+            schemas: [NO_ERRORS_SCHEMA]
+        }).compileComponents();
 
-    userServiceSpy = TestBed.inject(UserService) as jasmine.SpyObj<UserService>;
-    authenticationServiceSpy = TestBed.inject(AuthenticationService) as jasmine.SpyObj<AuthenticationService>;
-    authServiceSpy = TestBed.inject(AuthorizationService) as jasmine.SpyObj<AuthorizationService>;
-    countryServiceSpy = TestBed.inject(CountryService) as jasmine.SpyObj<CountryService>;
-    partnerServiceSpy = TestBed.inject(PartnerService) as jasmine.SpyObj<PartnerService>;
+        userServiceSpy = TestBed.inject(UserService) as MockedObject<UserService>;
+        authenticationServiceSpy = TestBed.inject(AuthenticationService) as MockedObject<AuthenticationService>;
+        authServiceSpy = TestBed.inject(AuthorizationService) as MockedObject<AuthorizationService>;
+        countryServiceSpy = TestBed.inject(CountryService) as MockedObject<CountryService>;
+        partnerServiceSpy = TestBed.inject(PartnerService) as MockedObject<PartnerService>;
 
-    userServiceSpy.create.and.returnValue(of(mockUser));
-    userServiceSpy.update.and.returnValue(of(updatedMockUser));
-    userServiceSpy.search.and.returnValue(of([mockUser]));
+        userServiceSpy.create.mockReturnValue(of(mockUser));
+        userServiceSpy.update.mockReturnValue(of(updatedMockUser));
+        userServiceSpy.search.mockReturnValue(of([mockUser]));
 
-    authServiceSpy.getLoggedInRole.and.returnValue(mockSearchUserReq.role);
-    authServiceSpy.canAssignPartner.and.returnValue(true);
+        authServiceSpy.getLoggedInRole.mockReturnValue(mockSearchUserReq.role);
+        authServiceSpy.canAssignPartner.mockReturnValue(true);
 
-    authenticationServiceSpy.getLoggedInUser.and.returnValue(mockUser);
+        authenticationServiceSpy.getLoggedInUser.mockReturnValue(mockUser);
 
-    countryServiceSpy.listCountriesRestricted.and.returnValue(of([]));
-    partnerServiceSpy.listPartners.and.returnValue(of([]));
-  }));
+        countryServiceSpy.listCountriesRestricted.mockReturnValue(of([]));
+        partnerServiceSpy.listPartners.mockReturnValue(of([]));
+    }));
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(CreateUpdateUserComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
-
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
-
-  it('should initialize form with user data if user is provided', () => {
-    component.user = mockUser;
-    component.ngOnInit();
-    expect(component.userForm.value.email).toBe('john.doe@example.com');
-    expect(component.userForm.value.username).toBe('mockuser');
-    expect(component.userForm.value.firstName).toBe('John');
-    expect(component.userForm.value.lastName).toBe('Doe');
-  });
-
-  it('should call create method on save for new user', () => {
-    component.user = null; // Ensure it's a new user
-    component.ngOnInit();
-    component.userForm.setValue({
-      email: config_test.credentials.email,
-      username: config_test.credentials.username,
-      firstName: 'New',
-      lastName: 'User',
-      partnerId: 1,
-      status: 'active',
-      role: 'user',
-      jobCreator: false,
-      approverId: null,
-      purpose: '',
-      sourceCountries: [],
-      readOnly: false,
-      usingMfa: true,
-      password: config_test.credentials.password
+    beforeEach(() => {
+        fixture = TestBed.createComponent(CreateUpdateUserComponent);
+        component = fixture.componentInstance;
+        fixture.detectChanges();
     });
-    component.onSave();
-    expect(userServiceSpy.create).toHaveBeenCalled();
-  });
 
-  it('should call update method on save for existing user', () => {
-    component.user = updatedMockUser;
-    component.ngOnInit();
-    component.onSave();
-    expect(userServiceSpy.update).toHaveBeenCalled();
-  });
-
-  it('should display an error message on save failure', () => {
-    userServiceSpy.create.and.returnValue(throwError('error'));
-    component.user = null; // Ensure it's a new user
-    component.ngOnInit();
-    component.userForm.setValue({
-      email: config_test.credentials.email,
-      username: config_test.credentials.username,
-      firstName: 'New',
-      lastName: 'User',
-      partnerId: 1,
-      status: 'active',
-      role: 'user',
-      jobCreator: false,
-      approverId: null,
-      purpose: '',
-      sourceCountries: [],
-      readOnly: false,
-      usingMfa: true,
-      password: config_test.credentials.password
+    it('should create', () => {
+        expect(component).toBeTruthy();
     });
-    component.onSave();
-    expect(component.error).toBe('error');
-  });
 
-  it('should filter role options based on logged-in role', () => {
-    authServiceSpy.getLoggedInRole.and.returnValue(Role.admin);
-    component.ngOnInit();
-    expect(component.roleOptions.some(role => role.key === 'systemadmin')).toBeFalse();
-  });
-
-  it('should correctly identify if the component is in create mode', () => {
-    component.user = null; // Ensure it's a new user
-    expect(component.create).toBeTrue();
-    component.user = mockUser;
-    expect(component.create).toBeFalse();
-  });
-
-  it('should close the modal on successful save', () => {
-    const activeModal = TestBed.inject(NgbActiveModal);
-    spyOn(activeModal, 'close');
-    component.user = null; // Ensure it's a new user
-    component.ngOnInit();
-    component.userForm.setValue({
-      email: config_test.credentials.email,
-      username: config_test.credentials.username,
-      firstName: 'New',
-      lastName: 'User',
-      partnerId: 1,
-      status: 'active',
-      role: 'user',
-      jobCreator: false,
-      approverId: null,
-      purpose: '',
-      sourceCountries: [],
-      readOnly: false,
-      usingMfa: true,
-      password: config_test.credentials.password
+    it('should initialize form with user data if user is provided', () => {
+        component.user = mockUser;
+        component.ngOnInit();
+        expect(component.userForm.value.email).toBe('john.doe@example.com');
+        expect(component.userForm.value.username).toBe('mockuser');
+        expect(component.userForm.value.firstName).toBe('John');
+        expect(component.userForm.value.lastName).toBe('Doe');
     });
-    component.onSave();
-    expect(activeModal.close).toHaveBeenCalled();
-  });
 
-  it('should populate form with approvers on init', () => {
-    userServiceSpy.search.and.returnValue(of([mockUser]));
-    component.ngOnInit();
-    expect(component.approvers.length).toBe(1);
-    expect(component.approvers[0].firstName).toBe('John');
-  });
+    it('should call create method on save for new user', () => {
+        component.user = null; // Ensure it's a new user
+        component.ngOnInit();
+        component.userForm.setValue({
+            email: config_test.credentials.email,
+            username: config_test.credentials.username,
+            firstName: 'New',
+            lastName: 'User',
+            partnerId: 1,
+            status: 'active',
+            role: 'user',
+            jobCreator: false,
+            approverId: null,
+            purpose: '',
+            sourceCountries: [],
+            readOnly: false,
+            usingMfa: true,
+            password: config_test.credentials.password
+        });
+        component.onSave();
+        expect(userServiceSpy.create).toHaveBeenCalled();
+    });
+
+    it('should call update method on save for existing user', () => {
+        component.user = updatedMockUser;
+        component.ngOnInit();
+        component.onSave();
+        expect(userServiceSpy.update).toHaveBeenCalled();
+    });
+
+    it('should display an error message on save failure', () => {
+        userServiceSpy.create.mockReturnValue(throwError('error'));
+        component.user = null; // Ensure it's a new user
+        component.ngOnInit();
+        component.userForm.setValue({
+            email: config_test.credentials.email,
+            username: config_test.credentials.username,
+            firstName: 'New',
+            lastName: 'User',
+            partnerId: 1,
+            status: 'active',
+            role: 'user',
+            jobCreator: false,
+            approverId: null,
+            purpose: '',
+            sourceCountries: [],
+            readOnly: false,
+            usingMfa: true,
+            password: config_test.credentials.password
+        });
+        component.onSave();
+        expect(component.error).toBe('error');
+    });
+
+    it('should filter role options based on logged-in role', () => {
+        authServiceSpy.getLoggedInRole.mockReturnValue(Role.admin);
+        component.ngOnInit();
+        expect(component.roleOptions.some(role => role.key === 'systemadmin')).toBe(false);
+    });
+
+    it('should correctly identify if the component is in create mode', () => {
+        component.user = null; // Ensure it's a new user
+        expect(component.create).toBe(true);
+        component.user = mockUser;
+        expect(component.create).toBe(false);
+    });
+
+    it('should close the modal on successful save', () => {
+        const activeModal = TestBed.inject(NgbActiveModal);
+        vi.spyOn(activeModal, 'close').mockReturnValue(undefined);
+        component.user = null; // Ensure it's a new user
+        component.ngOnInit();
+        component.userForm.setValue({
+            email: config_test.credentials.email,
+            username: config_test.credentials.username,
+            firstName: 'New',
+            lastName: 'User',
+            partnerId: 1,
+            status: 'active',
+            role: 'user',
+            jobCreator: false,
+            approverId: null,
+            purpose: '',
+            sourceCountries: [],
+            readOnly: false,
+            usingMfa: true,
+            password: config_test.credentials.password
+        });
+        component.onSave();
+        expect(activeModal.close).toHaveBeenCalled();
+    });
+
+    it('should populate form with approvers on init', () => {
+        userServiceSpy.search.mockReturnValue(of([mockUser]));
+        component.ngOnInit();
+        expect(component.approvers.length).toBe(1);
+        expect(component.approvers[0].firstName).toBe('John');
+    });
 });

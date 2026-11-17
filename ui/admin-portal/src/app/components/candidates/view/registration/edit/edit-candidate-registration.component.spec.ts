@@ -13,6 +13,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
+
+import type {MockedObject} from "vitest";
 import {EditCandidateRegistrationComponent} from "./edit-candidate-registration.component";
 import {ComponentFixture, TestBed} from "@angular/core/testing";
 import {CandidateService} from "../../../../../services/candidate.service";
@@ -26,87 +28,94 @@ import {CountryService} from "../../../../../services/country.service";
 import {MockCandidate} from "../../../../../MockData/MockCandidate";
 import {of} from "rxjs";
 import {UnhcrStatus, YesNo, YesNoUnsure} from "../../../../../model/candidate";
+import {expect, vi} from 'vitest';
 
 describe('EditCandidateRegistrationComponent', () => {
-  let component: EditCandidateRegistrationComponent;
-  let fixture: ComponentFixture<EditCandidateRegistrationComponent>;
-  let mockCandidateService: jasmine.SpyObj<CandidateService>;
-  let modalService: jasmine.SpyObj<NgbActiveModal>;
+    let component: EditCandidateRegistrationComponent;
+    let fixture: ComponentFixture<EditCandidateRegistrationComponent>;
+    let mockCandidateService: MockedObject<CandidateService>;
+    let modalService: MockedObject<NgbActiveModal>;
 
-  const mockCandidate = new MockCandidate();
-  beforeEach(async () => {
-    mockCandidateService = jasmine.createSpyObj('CandidateService', ['get', 'updateRegistration']);
-    const modalServiceSpy = jasmine.createSpyObj('NgbActiveModal', ['open','close']);
+    const mockCandidate = new MockCandidate();
+    beforeEach(async () => {
+        mockCandidateService = ({
+            get: vi.fn().mockName("CandidateService.get"),
+            updateRegistration: vi.fn().mockName("CandidateService.updateRegistration")
+        } as unknown as typeof mockCandidateService);
+        const modalServiceSpy = {
+            open: vi.fn().mockName("NgbActiveModal.open"),
+            close: vi.fn().mockName("NgbActiveModal.close")
+        };
 
-    await TestBed.configureTestingModule({
-      declarations: [EditCandidateRegistrationComponent],
-      imports: [FormsModule,ReactiveFormsModule, NgSelectModule,NgxWigModule],
-      providers: [
-        UntypedFormBuilder,
-        { provide: NgbActiveModal, useValue: modalServiceSpy },
-        { provide: CandidateService, useValue: mockCandidateService },
-        { provide: CountryService, useValue: {} },
-        provideHttpClient(withXhr(), withInterceptorsFromDi()),
-        provideHttpClientTesting()
-      ]
-    }).compileComponents();
-    modalService = TestBed.inject(NgbActiveModal) as jasmine.SpyObj<NgbActiveModal>;
+        await TestBed.configureTestingModule({
+            declarations: [EditCandidateRegistrationComponent],
+            imports: [FormsModule, ReactiveFormsModule, NgSelectModule, NgxWigModule],
+            providers: [
+                UntypedFormBuilder,
+                { provide: NgbActiveModal, useValue: modalServiceSpy },
+                { provide: CandidateService, useValue: mockCandidateService },
+                { provide: CountryService, useValue: {} },
+                provideHttpClient(withXhr(), withInterceptorsFromDi()),
+                provideHttpClientTesting()
+            ]
+        }).compileComponents();
+        modalService = TestBed.inject(NgbActiveModal) as MockedObject<NgbActiveModal>;
 
-  });
-
-  beforeEach(() => {
-    fixture = TestBed.createComponent(EditCandidateRegistrationComponent);
-    component = fixture.componentInstance;
-
-    mockCandidateService.get.and.returnValue(of(mockCandidate));
-
-    fixture.detectChanges();
-  });
-
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
-
-  it('should fetch candidate details on init', () => {
-    const candidateData = mockCandidate;
-
-    mockCandidateService.get.and.returnValue(of(candidateData));
-
-    component.ngOnInit();
-
-    expect(mockCandidateService.get).toHaveBeenCalled();
-    expect(component.candidateForm.value).toEqual({
-      externalId: 'ABC123',
-      externalIdSource: 'Source',
-      partnerRef: 'Ref',
-      unhcrNumber: 'UNHCR123',
-      unhcrStatus: UnhcrStatus.RegisteredAsylum,
-      unhcrConsent: YesNo.Yes,
-      unrwaRegistered: YesNoUnsure.No,
-      unrwaNumber: '123'
-    });
-  });
-
-  it('should update candidate registration on save', () => {
-    const updatedCandidateData = mockCandidate;
-
-    mockCandidateService.updateRegistration.and.returnValue(of(updatedCandidateData));
-
-    component.candidateId = 1;
-    component.candidateForm.setValue({
-      externalId: '456',
-      externalIdSource: 'newSource',
-      partnerRef: 'newPartner456',
-      unhcrNumber: 'UNHCR456',
-      unhcrStatus: 'pending',
-      unhcrConsent: 'no',
-      unrwaRegistered: 'no',
-      unrwaNumber: 'UNRWA456'
     });
 
-    component.onSave();
+    beforeEach(() => {
+        fixture = TestBed.createComponent(EditCandidateRegistrationComponent);
+        component = fixture.componentInstance;
 
-    expect(mockCandidateService.updateRegistration).toHaveBeenCalledWith(1, component.candidateForm.value);
-    expect(component.saving).toBe(false);
-  });
+        mockCandidateService.get.mockReturnValue(of(mockCandidate));
+
+        fixture.detectChanges();
+    });
+
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
+
+    it('should fetch candidate details on init', () => {
+        const candidateData = mockCandidate;
+
+        mockCandidateService.get.mockReturnValue(of(candidateData));
+
+        component.ngOnInit();
+
+        expect(mockCandidateService.get).toHaveBeenCalled();
+        expect(component.candidateForm.value).toEqual({
+            externalId: 'ABC123',
+            externalIdSource: 'Source',
+            partnerRef: 'Ref',
+            unhcrNumber: 'UNHCR123',
+            unhcrStatus: UnhcrStatus.RegisteredAsylum,
+            unhcrConsent: YesNo.Yes,
+            unrwaRegistered: YesNoUnsure.No,
+            unrwaNumber: '123'
+        });
+    });
+
+    it('should update candidate registration on save', () => {
+        const updatedCandidateData = mockCandidate;
+
+        mockCandidateService.updateRegistration.mockReturnValue(of(updatedCandidateData));
+
+        component.candidateId = 1;
+        component.candidateForm.setValue({
+            externalId: '456',
+            externalIdSource: 'newSource',
+            partnerRef: 'newPartner456',
+            unhcrNumber: 'UNHCR456',
+            unhcrStatus: 'pending',
+            unhcrConsent: 'no',
+            unrwaRegistered: 'no',
+            unrwaNumber: 'UNRWA456'
+        });
+
+        component.onSave();
+
+        expect(mockCandidateService.updateRegistration).toHaveBeenCalledWith(1, component.candidateForm.value);
+        expect(component.saving).toBe(false);
+    });
 });

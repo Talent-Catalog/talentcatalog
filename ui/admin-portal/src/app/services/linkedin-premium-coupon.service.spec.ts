@@ -4,6 +4,7 @@ import {LinkedinPremiumCouponService} from './linkedin-premium-coupon.service';
 import {HttpTestingController, provideHttpClientTesting} from "@angular/common/http/testing";
 import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {environment} from "../../environments/environment";
+import {expect} from 'vitest';
 
 describe('LinkedinPremiumCouponService', () => {
   let service: LinkedinPremiumCouponService;

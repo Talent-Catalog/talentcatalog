@@ -22,70 +22,71 @@ import {provideHttpClientTesting} from "@angular/common/http/testing";
 import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {CandidateService} from "../../../../services/candidate.service";
 import {YesNoUnsure} from "../../../../model/candidate";
+import {expect} from 'vitest';
 
 describe('VisaIssuesComponent', () => {
-  let component: VisaIssuesComponent;
-  let fixture: ComponentFixture<VisaIssuesComponent>;
+    let component: VisaIssuesComponent;
+    let fixture: ComponentFixture<VisaIssuesComponent>;
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      declarations: [ VisaIssuesComponent,AutosaveStatusComponent ],
-      imports: [ReactiveFormsModule, NgSelectModule ],
-      providers: [
-        { provide: CandidateService },
-        provideHttpClient(withXhr(), withInterceptorsFromDi()),
-        provideHttpClientTesting()
-      ]
-    })
-    .compileComponents();
-  });
+    beforeEach(async () => {
+        await TestBed.configureTestingModule({
+            declarations: [VisaIssuesComponent, AutosaveStatusComponent],
+            imports: [ReactiveFormsModule, NgSelectModule],
+            providers: [
+                { provide: CandidateService },
+                provideHttpClient(withXhr(), withInterceptorsFromDi()),
+                provideHttpClientTesting()
+            ]
+        })
+            .compileComponents();
+    });
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(VisaIssuesComponent);
-    component = fixture.componentInstance;
-    component.candidateIntakeData = {
-      visaIssues: YesNoUnsure.Yes,
-      visaIssuesNotes: 'Worked for a foreign government'
-    };
-    component.editable = true;
-    fixture.detectChanges();
-  });
+    beforeEach(() => {
+        fixture = TestBed.createComponent(VisaIssuesComponent);
+        component = fixture.componentInstance;
+        component.candidateIntakeData = {
+            visaIssues: YesNoUnsure.Yes,
+            visaIssuesNotes: 'Worked for a foreign government'
+        };
+        component.editable = true;
+        fixture.detectChanges();
+    });
 
-  it('should initialize the form controls with the correct default values', () => {
-    expect(component.form.get('visaIssues').value).toBe(YesNoUnsure.Yes);
-    expect(component.form.get('visaIssuesNotes').value).toBe('Worked for a foreign government');
-  });
+    it('should initialize the form controls with the correct default values', () => {
+        expect(component.form.get('visaIssues').value).toBe(YesNoUnsure.Yes);
+        expect(component.form.get('visaIssuesNotes').value).toBe('Worked for a foreign government');
+    });
 
-  it('should enable the form controls when editable is true', () => {
-    expect(component.form.get('visaIssues').enabled).toBeTrue();
-    expect(component.form.get('visaIssuesNotes').enabled).toBeTrue();
-  });
+    it('should enable the form controls when editable is true', () => {
+        expect(component.form.get('visaIssues').enabled).toBe(true);
+        expect(component.form.get('visaIssuesNotes').enabled).toBe(true);
+    });
 
-  it('should disable the form controls when editable is false', () => {
-    component.editable = false;
-    component.ngOnInit();
-    fixture.detectChanges();
+    it('should disable the form controls when editable is false', () => {
+        component.editable = false;
+        component.ngOnInit();
+        fixture.detectChanges();
 
-    expect(component.form.get('visaIssues').disabled).toBeTrue();
-    expect(component.form.get('visaIssuesNotes').disabled).toBeTrue();
-  });
+        expect(component.form.get('visaIssues').disabled).toBe(true);
+        expect(component.form.get('visaIssuesNotes').disabled).toBe(true);
+    });
 
-  it('should return true for hasNotes when visaIssues is Yes, No, or Unsure', () => {
-    component.form.get('visaIssues').setValue('Yes');
-    expect(component.hasNotes).toBeTrue();
+    it('should return true for hasNotes when visaIssues is Yes, No, or Unsure', () => {
+        component.form.get('visaIssues').setValue('Yes');
+        expect(component.hasNotes).toBe(true);
 
-    component.form.get('visaIssues').setValue('No');
-    expect(component.hasNotes).toBeTrue();
+        component.form.get('visaIssues').setValue('No');
+        expect(component.hasNotes).toBe(true);
 
-    component.form.get('visaIssues').setValue('Unsure');
-    expect(component.hasNotes).toBeTrue();
-  });
+        component.form.get('visaIssues').setValue('Unsure');
+        expect(component.hasNotes).toBe(true);
+    });
 
-  it('should return false for hasNotes when visaIssues is null or an empty string', () => {
-    component.form.get('visaIssues').setValue(null);
-    expect(component.hasNotes).toBeFalse();
+    it('should return false for hasNotes when visaIssues is null or an empty string', () => {
+        component.form.get('visaIssues').setValue(null);
+        expect(component.hasNotes).toBe(false);
 
-    component.form.get('visaIssues').setValue('');
-    expect(component.hasNotes).toBeFalse();
-  });
+        component.form.get('visaIssues').setValue('');
+        expect(component.hasNotes).toBe(false);
+    });
 });

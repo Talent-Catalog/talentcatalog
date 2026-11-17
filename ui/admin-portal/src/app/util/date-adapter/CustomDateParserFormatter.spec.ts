@@ -16,6 +16,7 @@
 
 import {CustomDateParserFormatter} from "./ngb-date-adapter";
 import {NgbDateStruct} from "@ng-bootstrap/ng-bootstrap";
+import {expect} from 'vitest';
 
 describe('CustomDateParserFormatter', () => {
   let formatter: CustomDateParserFormatter;

@@ -25,77 +25,85 @@ import {CandidateService} from "../../../../services/candidate.service";
 import {CandidateOccupationService} from "../../../../services/candidate-occupation.service";
 import {CandidateJobExperienceService} from "../../../../services/candidate-job-experience.service";
 import {MockCandidate} from "../../../../MockData/MockCandidate";
-import {
-  ViewCandidateJobExperienceComponent
-} from "./experience/view-candidate-job-experience.component";
+import {ViewCandidateJobExperienceComponent} from "./experience/view-candidate-job-experience.component";
+import {expect, vi} from 'vitest';
 
 describe('ViewCandidateOccupationComponent', () => {
-  let component: ViewCandidateOccupationComponent;
-  let fixture: ComponentFixture<ViewCandidateOccupationComponent>;
-  let mockModalService: any;
-  let mockCandidateService: any;
-  let mockCandidateOccupationService: any;
-  let mockCandidateJobExperienceService: any;
-  const mockCandidate = new MockCandidate();
-  beforeEach(waitForAsync(() => {
-    mockModalService = jasmine.createSpyObj('NgbModal', ['open']);
-    mockCandidateService = jasmine.createSpyObj('CandidateService', ['get', 'updateCandidate']);
-    mockCandidateOccupationService = jasmine.createSpyObj('CandidateOccupationService', ['get']);
-    mockCandidateJobExperienceService = jasmine.createSpyObj('CandidateJobExperienceService', ['search']);
+    let component: ViewCandidateOccupationComponent;
+    let fixture: ComponentFixture<ViewCandidateOccupationComponent>;
+    let mockModalService: any;
+    let mockCandidateService: any;
+    let mockCandidateOccupationService: any;
+    let mockCandidateJobExperienceService: any;
+    const mockCandidate = new MockCandidate();
+    beforeEach(waitForAsync(() => {
+        mockModalService = {
+            open: vi.fn().mockName("NgbModal.open")
+        };
+        mockCandidateService = {
+            get: vi.fn().mockName("CandidateService.get"),
+            updateCandidate: vi.fn().mockName("CandidateService.updateCandidate")
+        };
+        mockCandidateOccupationService = {
+            get: vi.fn().mockName("CandidateOccupationService.get")
+        };
+        mockCandidateJobExperienceService = {
+            search: vi.fn().mockName("CandidateJobExperienceService.search")
+        };
 
-    TestBed.configureTestingModule({
-      declarations: [ ViewCandidateOccupationComponent, ViewCandidateJobExperienceComponent ],
-      imports: [FormsModule,ReactiveFormsModule, NgSelectModule,NgxWigModule],
-      // schemas: [NO_ERRORS_SCHEMA],
-      providers: [
-        UntypedFormBuilder,
-        { provide: NgbModal, useValue: mockModalService },
-        { provide: CandidateService, useValue: mockCandidateService },
-        { provide: CandidateOccupationService, useValue: mockCandidateOccupationService },
-        { provide: CandidateJobExperienceService, useValue: mockCandidateJobExperienceService },
-        provideHttpClient(withXhr(), withInterceptorsFromDi()),
-        provideHttpClientTesting()
-      ]
-    })
-    .compileComponents();
-  }));
+        TestBed.configureTestingModule({
+            declarations: [ViewCandidateOccupationComponent, ViewCandidateJobExperienceComponent],
+            imports: [FormsModule, ReactiveFormsModule, NgSelectModule, NgxWigModule],
+            // schemas: [NO_ERRORS_SCHEMA],
+            providers: [
+                UntypedFormBuilder,
+                { provide: NgbModal, useValue: mockModalService },
+                { provide: CandidateService, useValue: mockCandidateService },
+                { provide: CandidateOccupationService, useValue: mockCandidateOccupationService },
+                { provide: CandidateJobExperienceService, useValue: mockCandidateJobExperienceService },
+                provideHttpClient(withXhr(), withInterceptorsFromDi()),
+                provideHttpClientTesting()
+            ]
+        })
+            .compileComponents();
+    }));
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(ViewCandidateOccupationComponent);
-    component = fixture.componentInstance;
-    component.candidate = mockCandidate;
-    fixture.detectChanges();
-  });
+    beforeEach(() => {
+        fixture = TestBed.createComponent(ViewCandidateOccupationComponent);
+        component = fixture.componentInstance;
+        component.candidate = mockCandidate;
+        fixture.detectChanges();
+    });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
 
-  it('should initialize correctly and set up experiences', () => {
-    // Trigger ngOnChanges manually
-    component.ngOnChanges({  candidate: {
-        currentValue: component.candidate,
-        previousValue: null,
-        firstChange: true,
-        isFirstChange: () => true
-      }} );
+    it('should initialize correctly and set up experiences', () => {
+        // Trigger ngOnChanges manually
+        component.ngOnChanges({ candidate: {
+                currentValue: component.candidate,
+                previousValue: null,
+                firstChange: true,
+                isFirstChange: () => true
+            } });
 
-    expect(component.orderOccupation).toBe(true);
-    expect(component.experiences).toEqual(component.candidate.candidateJobExperiences);
-  });
+        expect(component.orderOccupation).toBe(true);
+        expect(component.experiences).toEqual(component.candidate.candidateJobExperiences);
+    });
 
-  afterEach(() => {
-    // mockCandidate is a single shared instance across all tests in this file;
-    // reset any principalOccupation mutation so later tests aren't affected by test order.
-    (mockCandidate as any).principalOccupation = undefined;
-  });
+    afterEach(() => {
+        // mockCandidate is a single shared instance across all tests in this file;
+        // reset any principalOccupation mutation so later tests aren't affected by test order.
+        (mockCandidate as any).principalOccupation = undefined;
+    });
 
-  it('should identify the principal occupation', () => {
-    const occupation = component.candidate.candidateOccupations[0];
-    component.candidate.principalOccupation = occupation;
+    it('should identify the principal occupation', () => {
+        const occupation = component.candidate.candidateOccupations[0];
+        component.candidate.principalOccupation = occupation;
 
-    expect(component.isPrincipal(occupation)).toBeTrue();
-    expect(component.isPrincipal({id: occupation.id + 1} as any)).toBeFalse();
-  });
+        expect(component.isPrincipal(occupation)).toBe(true);
+        expect(component.isPrincipal({ id: occupation.id + 1 } as any)).toBe(false);
+    });
 
 });

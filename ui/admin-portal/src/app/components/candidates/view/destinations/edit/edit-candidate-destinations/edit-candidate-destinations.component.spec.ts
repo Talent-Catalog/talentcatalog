@@ -14,6 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
+import type {MockedObject} from "vitest";
 import {ComponentFixture, TestBed, waitForAsync} from '@angular/core/testing';
 
 import {EditCandidateDestinationsComponent} from './edit-candidate-destinations.component';
@@ -23,81 +24,85 @@ import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/commo
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {of, throwError} from "rxjs";
-import {
-  CandidateDestinationService
-} from "../../../../../../services/candidate-destination.service";
+import {CandidateDestinationService} from "../../../../../../services/candidate-destination.service";
 import {MockCandidate} from "../../../../../../MockData/MockCandidate";
+import {expect, vi} from 'vitest';
 
 describe('EditCandidateDestinationsComponent', () => {
-  let component: EditCandidateDestinationsComponent;
-  let fixture: ComponentFixture<EditCandidateDestinationsComponent>;
-  let candidateDestinationServiceSpy: jasmine.SpyObj<CandidateDestinationService>;
-  let activeModalSpy: jasmine.SpyObj<NgbActiveModal>;
-  const mockCandidate = new MockCandidate();
-  const mockCandidateDestination = mockCandidate.candidateDestinations[0];
+    let component: EditCandidateDestinationsComponent;
+    let fixture: ComponentFixture<EditCandidateDestinationsComponent>;
+    let candidateDestinationServiceSpy: MockedObject<CandidateDestinationService>;
+    let activeModalSpy: MockedObject<NgbActiveModal>;
+    const mockCandidate = new MockCandidate();
+    const mockCandidateDestination = mockCandidate.candidateDestinations[0];
 
-  beforeEach(waitForAsync(() => {
-    const candidateDestinationSpy = jasmine.createSpyObj('CandidateDestinationService', ['update']);
-    const activeModalMock = jasmine.createSpyObj('NgbActiveModal', ['close', 'dismiss']);
+    beforeEach(waitForAsync(() => {
+        const candidateDestinationSpy = {
+            update: vi.fn().mockName("CandidateDestinationService.update")
+        };
+        const activeModalMock = {
+            close: vi.fn().mockName("NgbActiveModal.close"),
+            dismiss: vi.fn().mockName("NgbActiveModal.dismiss")
+        };
 
-    TestBed.configureTestingModule({
-      declarations: [EditCandidateDestinationsComponent],
-      imports: [FormsModule,ReactiveFormsModule, NgSelectModule],
-      providers: [
-        { provide: NgbActiveModal, useValue: activeModalMock },
-        { provide: CandidateDestinationService, useValue: candidateDestinationSpy },
-        provideHttpClient(withXhr(), withInterceptorsFromDi()),
-        provideHttpClientTesting()
-      ]
-    }).compileComponents();
+        TestBed.configureTestingModule({
+            declarations: [EditCandidateDestinationsComponent],
+            imports: [FormsModule, ReactiveFormsModule, NgSelectModule],
+            providers: [
+                { provide: NgbActiveModal, useValue: activeModalMock },
+                { provide: CandidateDestinationService, useValue: candidateDestinationSpy },
+                provideHttpClient(withXhr(), withInterceptorsFromDi()),
+                provideHttpClientTesting()
+            ]
+        }).compileComponents();
 
-    candidateDestinationServiceSpy = TestBed.inject(CandidateDestinationService) as jasmine.SpyObj<CandidateDestinationService>;
-    activeModalSpy = TestBed.inject(NgbActiveModal) as jasmine.SpyObj<NgbActiveModal>;
-  }));
+        candidateDestinationServiceSpy = TestBed.inject(CandidateDestinationService) as MockedObject<CandidateDestinationService>;
+        activeModalSpy = TestBed.inject(NgbActiveModal) as MockedObject<NgbActiveModal>;
+    }));
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(EditCandidateDestinationsComponent);
-    component = fixture.componentInstance;
-    component.candidateDestination = mockCandidateDestination;
-    fixture.detectChanges();
-  });
+    beforeEach(() => {
+        fixture = TestBed.createComponent(EditCandidateDestinationsComponent);
+        component = fixture.componentInstance;
+        component.candidateDestination = mockCandidateDestination;
+        fixture.detectChanges();
+    });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
 
-  it('should initialize the form with candidateDestination data', () => {
-    expect(component.form).toBeDefined();
-    expect(component.form.controls['interest'].value).toBe('Yes');
-    expect(component.form.controls['notes'].value).toBe('I like this country.');
-  });
+    it('should initialize the form with candidateDestination data', () => {
+        expect(component.form).toBeDefined();
+        expect(component.form.controls['interest'].value).toBe('Yes');
+        expect(component.form.controls['notes'].value).toBe('I like this country.');
+    });
 
-  it('form should be valid when filled correctly', () => {
-    expect(component.form.valid).toBeTruthy();
-  });
+    it('form should be valid when filled correctly', () => {
+        expect(component.form.valid).toBeTruthy();
+    });
 
-  it('should call the update method on the service when form is valid and submitted', () => {
-    candidateDestinationServiceSpy.update.and.returnValue(of(mockCandidateDestination));
+    it('should call the update method on the service when form is valid and submitted', () => {
+        candidateDestinationServiceSpy.update.mockReturnValue(of(mockCandidateDestination));
 
-    component.onSave();
+        component.onSave();
 
-    expect(candidateDestinationServiceSpy.update.calls.count()).toBe(1);
-    expect(activeModalSpy.close.calls.count()).toBe(1);
-  });
+        expect(vi.mocked(candidateDestinationServiceSpy.update).mock.calls.length).toBe(1);
+        expect(vi.mocked(activeModalSpy.close).mock.calls.length).toBe(1);
+    });
 
-  it('should handle errors on form submission', () => {
-    const mockError = 'An error occurred';
-    candidateDestinationServiceSpy.update.and.returnValue(throwError(mockError));
+    it('should handle errors on form submission', () => {
+        const mockError = 'An error occurred';
+        candidateDestinationServiceSpy.update.mockReturnValue(throwError(mockError));
 
-    component.onSave();
+        component.onSave();
 
-    expect(component.error).toBe(mockError);
-    expect(candidateDestinationServiceSpy.update.calls.count()).toBe(1);
-    expect(activeModalSpy.close.calls.count()).toBe(0);
-  });
+        expect(component.error).toBe(mockError);
+        expect(vi.mocked(candidateDestinationServiceSpy.update).mock.calls.length).toBe(1);
+        expect(vi.mocked(activeModalSpy.close).mock.calls.length).toBe(0);
+    });
 
-  it('should dismiss the modal without saving changes', () => {
-    component.dismiss();
-    expect(activeModalSpy.dismiss.calls.count()).toBe(1);
-  });
+    it('should dismiss the modal without saving changes', () => {
+        component.dismiss();
+        expect(vi.mocked(activeModalSpy.dismiss).mock.calls.length).toBe(1);
+    });
 });

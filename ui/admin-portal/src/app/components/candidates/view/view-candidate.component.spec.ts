@@ -13,6 +13,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
+
+import type {MockedObject} from "vitest";
 import {fakeAsync, flushMicrotasks, tick} from '@angular/core/testing';
 import {Title} from '@angular/platform-browser';
 import {ActivatedRoute, convertToParamMap, Router} from '@angular/router';
@@ -34,619 +36,567 @@ import {LocalStorageService} from '../../../services/local-storage.service';
 import {SavedListCandidateService} from '../../../services/saved-list-candidate.service';
 import {SavedListService} from '../../../services/saved-list.service';
 import {ViewCandidateComponent} from './view-candidate.component';
+import {expect, vi} from 'vitest';
 
 describe('ViewCandidateComponent', () => {
-  let component: ViewCandidateComponent;
-  let candidate: MockCandidate;
-  let updatedCandidate$: Subject<Candidate>;
-  let candidateService: jasmine.SpyObj<CandidateService>;
-  let chatService: jasmine.SpyObj<ChatService>;
-  let savedListService: jasmine.SpyObj<SavedListService>;
-  let candidateSavedListService: jasmine.SpyObj<CandidateSavedListService>;
-  let savedListCandidateService: jasmine.SpyObj<SavedListCandidateService>;
-  let localStorageService: jasmine.SpyObj<LocalStorageService>;
-  let router: jasmine.SpyObj<Router>;
-  let modalService: jasmine.SpyObj<NgbModal>;
-  let titleService: jasmine.SpyObj<Title>;
-  let authorizationService: jasmine.SpyObj<AuthorizationService>;
-  let authenticationService: jasmine.SpyObj<AuthenticationService>;
-  let route: {paramMap: any};
-
-  beforeEach(() => {
-    candidate = new MockCandidate();
-    candidate.user = {
-      ...candidate.user,
-      firstName: 'Jane',
-      lastName: 'Doe'
-    };
-    updatedCandidate$ = new Subject<Candidate>();
-
-    candidateService = jasmine.createSpyObj<CandidateService>(
-      'CandidateService',
-      [
-        'candidateUpdated',
-        'getByNumber',
-        'updateStatus',
-        'downloadCv',
-        'generateToken',
-        'updateNotificationPreference'
-      ]
-    );
-    chatService = jasmine.createSpyObj<ChatService>(
-      'ChatService',
-      ['getCandidateProspectChat', 'create', 'markChatAsRead']
-    );
-    savedListService = jasmine.createSpyObj<SavedListService>(
-      'SavedListService',
-      ['searchPaged']
-    );
-    candidateSavedListService =
-      jasmine.createSpyObj<CandidateSavedListService>(
-        'CandidateSavedListService',
-        ['search', 'replace']
-      );
-    savedListCandidateService =
-      jasmine.createSpyObj<SavedListCandidateService>(
-        'SavedListCandidateService',
-        ['merge', 'remove']
-      );
-    localStorageService = jasmine.createSpyObj<LocalStorageService>(
-      'LocalStorageService',
-      ['get', 'set']
-    );
-    router = jasmine.createSpyObj<Router>('Router', ['navigate']);
-    modalService = jasmine.createSpyObj<NgbModal>('NgbModal', ['open']);
-    titleService = jasmine.createSpyObj<Title>('Title', ['setTitle']);
-    authorizationService = jasmine.createSpyObj<AuthorizationService>(
-      'AuthorizationService',
-      [
-        'canViewCandidateCV',
-        'isAnAdmin',
-        'isEditableCandidate',
-        'canEraseCandidateData',
-        'canViewPrivateCandidateInfo',
-        'canAccessSalesforce',
-        'canAccessGoogleDrive',
-        'isReadOnly',
-        'canSeeGlobalLists',
-        'canSeeJobDetails',
-        'canViewCandidateName',
-        'canViewChats'
-      ]
-    );
-    authenticationService = jasmine.createSpyObj<AuthenticationService>(
-      'AuthenticationService',
-      ['isGrnInstance', 'getLoggedInUser']
-    );
-    route = {
-      paramMap: of(convertToParamMap({candidateNumber: candidate.candidateNumber}))
+    let component: ViewCandidateComponent;
+    let candidate: MockCandidate;
+    let updatedCandidate$: Subject<Candidate>;
+    let candidateService: MockedObject<CandidateService>;
+    let chatService: MockedObject<ChatService>;
+    let savedListService: MockedObject<SavedListService>;
+    let candidateSavedListService: MockedObject<CandidateSavedListService>;
+    let savedListCandidateService: MockedObject<SavedListCandidateService>;
+    let localStorageService: MockedObject<LocalStorageService>;
+    let router: MockedObject<Router>;
+    let modalService: MockedObject<NgbModal>;
+    let titleService: MockedObject<Title>;
+    let authorizationService: MockedObject<AuthorizationService>;
+    let authenticationService: MockedObject<AuthenticationService>;
+    let route: {
+        paramMap: any;
     };
 
-    const loggedInUser = new MockUser();
-    loggedInUser.partner = {
-      ...loggedInUser.partner,
-      id: candidate.user.partner?.id,
-      defaultSourcePartner: true
-    };
+    beforeEach(() => {
+        candidate = new MockCandidate();
+        candidate.user = {
+            ...candidate.user,
+            firstName: 'Jane',
+            lastName: 'Doe'
+        };
+        updatedCandidate$ = new Subject<Candidate>();
 
-    candidateService.candidateUpdated.and.returnValue(
-      updatedCandidate$.asObservable()
-    );
-    candidateService.getByNumber.and.returnValue(of(candidate));
-    candidateService.generateToken.and.returnValue(of('token-123'));
-    candidateService.updateStatus.and.returnValue(of(null));
-    candidateService.updateNotificationPreference.and.returnValue(of(null));
-    chatService.getCandidateProspectChat.and.returnValue(
-      of({id: 11} as any)
-    );
-    chatService.create.and.returnValue(of({id: 12} as any));
-    savedListService.searchPaged.and.returnValue(
-      of({content: [MockSavedList]} as any)
-    );
-    candidateSavedListService.search.and.returnValue(of([]));
-    candidateSavedListService.replace.and.returnValue(of(null));
-    savedListCandidateService.merge.and.returnValue(of(null));
-    savedListCandidateService.remove.and.returnValue(of(null));
-    localStorageService.get.and.returnValue('General');
-    authenticationService.isGrnInstance.and.returnValue(true);
-    authenticationService.getLoggedInUser.and.returnValue(loggedInUser);
-    authorizationService.canSeeGlobalLists.and.returnValue(true);
+        candidateService = ({
+            candidateUpdated: vi.fn().mockName("CandidateService.candidateUpdated"),
+            getByNumber: vi.fn().mockName("CandidateService.getByNumber"),
+            updateStatus: vi.fn().mockName("CandidateService.updateStatus"),
+            downloadCv: vi.fn().mockName("CandidateService.downloadCv"),
+            generateToken: vi.fn().mockName("CandidateService.generateToken"),
+            updateNotificationPreference: vi.fn().mockName("CandidateService.updateNotificationPreference")
+        } as unknown as typeof candidateService);
+        chatService = ({
+            getCandidateProspectChat: vi.fn().mockName("ChatService.getCandidateProspectChat"),
+            create: vi.fn().mockName("ChatService.create"),
+            markChatAsRead: vi.fn().mockName("ChatService.markChatAsRead")
+        } as unknown as typeof chatService);
+        savedListService = ({
+            searchPaged: vi.fn().mockName("SavedListService.searchPaged")
+        } as unknown as typeof savedListService);
+        candidateSavedListService = ({
+            search: vi.fn().mockName("CandidateSavedListService.search"),
+            replace: vi.fn().mockName("CandidateSavedListService.replace")
+        } as unknown as typeof candidateSavedListService);
+        savedListCandidateService = ({
+            merge: vi.fn().mockName("SavedListCandidateService.merge"),
+            remove: vi.fn().mockName("SavedListCandidateService.remove")
+        } as unknown as typeof savedListCandidateService);
+        localStorageService = ({
+            get: vi.fn().mockName("LocalStorageService.get"),
+            set: vi.fn().mockName("LocalStorageService.set")
+        } as unknown as typeof localStorageService);
+        router = ({
+            navigate: vi.fn().mockName("Router.navigate")
+        } as unknown as typeof router);
+        modalService = ({
+            open: vi.fn().mockName("NgbModal.open")
+        } as unknown as typeof modalService);
+        titleService = ({
+            setTitle: vi.fn().mockName("Title.setTitle")
+        } as unknown as typeof titleService);
+        authorizationService = ({
+            canViewCandidateCV: vi.fn().mockName("AuthorizationService.canViewCandidateCV"),
+            isAnAdmin: vi.fn().mockName("AuthorizationService.isAnAdmin"),
+            isEditableCandidate: vi.fn().mockName("AuthorizationService.isEditableCandidate"),
+            canEraseCandidateData: vi.fn().mockName("AuthorizationService.canEraseCandidateData"),
+            canViewPrivateCandidateInfo: vi.fn().mockName("AuthorizationService.canViewPrivateCandidateInfo"),
+            canAccessSalesforce: vi.fn().mockName("AuthorizationService.canAccessSalesforce"),
+            canAccessGoogleDrive: vi.fn().mockName("AuthorizationService.canAccessGoogleDrive"),
+            isReadOnly: vi.fn().mockName("AuthorizationService.isReadOnly"),
+            canSeeGlobalLists: vi.fn().mockName("AuthorizationService.canSeeGlobalLists"),
+            canSeeJobDetails: vi.fn().mockName("AuthorizationService.canSeeJobDetails"),
+            canViewCandidateName: vi.fn().mockName("AuthorizationService.canViewCandidateName"),
+            canViewChats: vi.fn().mockName("AuthorizationService.canViewChats")
+        } as unknown as typeof authorizationService);
+        authenticationService = ({
+            isGrnInstance: vi.fn().mockName("AuthenticationService.isGrnInstance"),
+            getLoggedInUser: vi.fn().mockName("AuthenticationService.getLoggedInUser")
+        } as unknown as typeof authenticationService);
+        route = {
+            paramMap: of(convertToParamMap({ candidateNumber: candidate.candidateNumber }))
+        };
 
-    component = new ViewCandidateComponent(
-      candidateService,
-      chatService,
-      savedListService,
-      candidateSavedListService,
-      localStorageService,
-      savedListCandidateService,
-      route as ActivatedRoute,
-      router,
-      modalService,
-      titleService,
-      authorizationService,
-      authenticationService
-    );
-    component.candidate = candidate;
-  });
+        const loggedInUser = new MockUser();
+        loggedInUser.partner = {
+            ...loggedInUser.partner,
+            id: candidate.user.partner?.id,
+            defaultSourcePartner: true
+        };
 
-  it('should initialize, load the profile, lists, token, chat, and updated candidate', fakeAsync(() => {
-    component.ngOnInit();
+        candidateService.candidateUpdated.mockReturnValue(updatedCandidate$.asObservable());
+        candidateService.getByNumber.mockReturnValue(of(candidate));
+        candidateService.generateToken.mockReturnValue(of('token-123'));
+        candidateService.updateStatus.mockReturnValue(of(null));
+        candidateService.updateNotificationPreference.mockReturnValue(of(null));
+        chatService.getCandidateProspectChat.mockReturnValue(of({ id: 11 } as any));
+        chatService.create.mockReturnValue(of({ id: 12 } as any));
+        savedListService.searchPaged.mockReturnValue(of({ content: [MockSavedList] } as any));
+        candidateSavedListService.search.mockReturnValue(of([]));
+        candidateSavedListService.replace.mockReturnValue(of(null));
+        savedListCandidateService.merge.mockReturnValue(of(null));
+        savedListCandidateService.remove.mockReturnValue(of(null));
+        localStorageService.get.mockReturnValue('General');
+        authenticationService.isGrnInstance.mockReturnValue(true);
+        authenticationService.getLoggedInUser.mockReturnValue(loggedInUser);
+        authorizationService.canSeeGlobalLists.mockReturnValue(true);
 
-    const listResults: SavedList[][] = [];
-    component.lists$.subscribe(results => listResults.push(results));
-    component.listsInput$.next('job');
-    tick(300);
-
-    const refreshed = {
-      ...candidate,
-      status: 'inactive'
-    } as Candidate;
-    candidateService.getByNumber.and.returnValue(of(refreshed));
-    updatedCandidate$.next(refreshed);
-
-    expect(component.showAspirations).toBeTrue();
-    expect(component.loggedInUser).toBe(authenticationService.getLoggedInUser());
-    expect(component.activeTabId).toBe('General');
-    expect(component.selectedLists).toEqual([]);
-    expect(component.token).toBe('token-123');
-    expect(component.candidateChat).toEqual({id: 11} as any);
-    expect(component.candidateProspectTabVisible).toBeTrue();
-    expect(component.uploadedCvAvailable).toBeTrue();
-    expect(component.listsLoading).toBeFalse();
-    expect(listResults).toEqual([[MockSavedList]]);
-    expect(component.candidate).toBe(refreshed);
-  }));
-
-  it('should return an empty list when typeahead searching fails', () => {
-    savedListService.searchPaged.and.returnValue(
-      throwError(() => new Error('Search failed'))
-    );
-
-    let result: SavedList[];
-    component['doListSearch']('missing').subscribe(value => result = value);
-
-    expect(result).toEqual([]);
-  });
-
-  it('should handle a missing candidate', () => {
-    candidateService.getByNumber.and.returnValue(of(null));
-
-    component.refreshCandidateProfile();
-
-    expect(component.loadingError).toBeTrue();
-    expect(component.error)
-    .toBe(`There is no candidate with number: ${candidate.candidateNumber}`);
-    expect(component.loading).toBeFalse();
-  });
-
-  it('should handle a candidate-loading error', () => {
-    const error = new Error('Candidate request failed');
-    candidateService.getByNumber.and.returnValue(throwError(error));
-
-    component.refreshCandidateProfile();
-
-    expect(component.loadingError).toBeTrue();
-    expect(component.error).toBe(error);
-    expect(component.loading).toBeFalse();
-  });
-
-  it('should handle an error while loading selected lists', () => {
-    const error = new Error('List request failed');
-    candidateSavedListService.search.and.returnValue(
-      throwError(error)
-    );
-
-    component['loadSelectedLists']();
-
-    expect(component.error).toBe(error);
-    expect(component.loading).toBeFalse();
-  });
-
-  it('should expose the JobChatType enum', () => {
-    expect(component.JobChatType).toBe(JobChatType);
-  });
-
-  it('should delete a candidate and navigate home', fakeAsync(() => {
-    const info: UpdateCandidateStatusInfo =
-      {status: CandidateStatus.deleted} as UpdateCandidateStatusInfo;
-    const modalRef = createModalRef(Promise.resolve(info));
-    modalService.open.and.returnValue(modalRef);
-
-    component.deleteCandidate();
-    flushMicrotasks();
-
-    expect(modalRef.componentInstance.candidateStatus).toBe(CandidateStatus.deleted);
-    expect(candidateService.updateStatus).toHaveBeenCalledWith({
-      candidateIds: [candidate.id],
-      info
+        component = new ViewCandidateComponent(candidateService, chatService, savedListService, candidateSavedListService, localStorageService, savedListCandidateService, route as ActivatedRoute, router, modalService, titleService, authorizationService, authenticationService);
+        component.candidate = candidate;
     });
-  }));
 
-  it('should erase candidate data and navigate home', fakeAsync(() => {
-    const modalRef = createModalRef(Promise.resolve(true));
-    modalService.open.and.returnValue(modalRef);
+    it('should initialize, load the profile, lists, token, chat, and updated candidate', fakeAsync(() => {
+        component.ngOnInit();
 
-    component.eraseCandidateData();
-    flushMicrotasks();
+        const listResults: SavedList[][] = [];
+        component.lists$.subscribe(results => listResults.push(results));
+        component.listsInput$.next('job');
+        tick(300);
 
-    expect(modalRef.componentInstance.candidate).toBe(candidate);
-    expect(router.navigate).toHaveBeenCalledWith(['/']);
-  }));
+        const refreshed = {
+            ...candidate,
+            status: 'inactive'
+        } as Candidate;
+        candidateService.getByNumber.mockReturnValue(of(refreshed));
+        updatedCandidate$.next(refreshed);
 
-  it('should edit and update the candidate status', fakeAsync(() => {
-    const info = {status: 'inactive'} as any;
-    const originalStatus = candidate.status;
-    const modalRef = createModalRef(Promise.resolve(info));
-    modalService.open.and.returnValue(modalRef);
+        expect(component.showAspirations).toBe(true);
+        expect(component.loggedInUser).toBe(authenticationService.getLoggedInUser());
+        expect(component.activeTabId).toBe('General');
+        expect(component.selectedLists).toEqual([]);
+        expect(component.token).toBe('token-123');
+        expect(component.candidateChat).toEqual({ id: 11 } as any);
+        expect(component.candidateProspectTabVisible).toBe(true);
+        expect(component.uploadedCvAvailable).toBe(true);
+        expect(component.listsLoading).toBe(false);
+        expect(listResults).toEqual([[MockSavedList]]);
+        expect(component.candidate).toBe(refreshed);
+    }));
 
-    component.editCandidateStatus();
-    flushMicrotasks();
+    it('should return an empty list when typeahead searching fails', () => {
+        savedListService.searchPaged.mockReturnValue(throwError(() => new Error('Search failed')));
 
-    expect(modalRef.componentInstance.candidateStatus).toBe(originalStatus);
-    expect(candidateService.updateStatus).toHaveBeenCalledWith({
-      candidateIds: [candidate.id],
-      info
+        let result: SavedList[];
+        component['doListSearch']('missing').subscribe(value => result = value);
+
+        expect(result).toEqual([]);
     });
-    expect(component.candidate.status).toBe('inactive');
-    expect(component.loading).toBeFalse();
-  }));
 
-  it('should handle a status-update error', () => {
-    const error = new Error('Status update failed');
-    candidateService.updateStatus.and.returnValue(throwError(error));
+    it('should handle a missing candidate', () => {
+        candidateService.getByNumber.mockReturnValue(of(null));
 
-    component['updateCandidateStatus']({status: 'inactive'} as any);
+        component.refreshCandidateProfile();
 
-    expect(component.error).toBe(error);
-    expect(component.loading).toBeFalse();
-  });
-
-  it('should set a title with and without a candidate name', () => {
-    component.setCandidate(candidate);
-    expect(titleService.setTitle).toHaveBeenCalledWith(
-      `${candidate.user.firstName} ${candidate.user.lastName} ` +
-      candidate.candidateNumber
-    );
-
-    const candidateWithoutName = {
-      ...candidate,
-      user: {...candidate.user, firstName: null, lastName: null}
-    } as Candidate;
-    component.setCandidate(candidateWithoutName);
-
-    expect(titleService.setTitle)
-    .toHaveBeenCalledWith(candidate.candidateNumber);
-  });
-
-  it('should create a candidate chat', () => {
-    component.createChat();
-
-    expect(chatService.create).toHaveBeenCalledWith({
-      type: JobChatType.CandidateProspect,
-      candidateId: candidate.id
+        expect(component.loadingError).toBe(true);
+        expect(component.error)
+            .toBe(`There is no candidate with number: ${candidate.candidateNumber}`);
+        expect(component.loading).toBe(false);
     });
-    expect(component.candidateChat).toEqual({id: 12} as any);
-    expect(component.loadingButton).toBeFalse();
-  });
 
-  it('should handle an error while creating a chat', () => {
-    const error = new Error('Chat failed');
-    chatService.create.and.returnValue(throwError(error));
+    it('should handle a candidate-loading error', () => {
+        const error = new Error('Candidate request failed');
+        candidateService.getByNumber.mockReturnValue(throwError(error));
 
-    component.createChat();
+        component.refreshCandidateProfile();
 
-    expect(component.error).toBe(error);
-    expect(component.loadingButton).toBeFalse();
-  });
-
-  it('should open the generated-CV modal when names are viewable', () => {
-    authorizationService.canViewCandidateName.and.returnValue(true);
-    const modalRef = createModalRef(new Promise(() => undefined));
-    modalService.open.and.returnValue(modalRef);
-
-    component.downloadGeneratedCV();
-
-    expect(modalRef.componentInstance.candidateId).toBe(candidate.id);
-  });
-
-  it('should download an anonymous generated CV', () => {
-    authorizationService.canViewCandidateName.and.returnValue(false);
-    const blob = new Blob(['cv'], {type: 'application/pdf'});
-    candidateService.downloadCv.and.returnValue(of(blob));
-    const tab = {location: {href: ''}} as Window;
-    spyOn(window, 'open').and.returnValue(tab);
-    spyOn(URL, 'createObjectURL').and.returnValue('blob:cv');
-
-    component.downloadGeneratedCV();
-
-    expect(candidateService.downloadCv).toHaveBeenCalledWith({
-      candidateId: candidate.id,
-      showName: false,
-      showContact: false
+        expect(component.loadingError).toBe(true);
+        expect(component.error).toBe(error);
+        expect(component.loading).toBe(false);
     });
-    expect(tab.location.href).toBe('blob:cv');
-  });
 
-  it('should handle an anonymous CV download error', () => {
-    authorizationService.canViewCandidateName.and.returnValue(false);
-    const error = new Error('Download failed');
-    candidateService.downloadCv.and.returnValue(throwError(error));
-    spyOn(window, 'open').and.returnValue(
-      {location: {href: ''}} as Window
-    );
+    it('should handle an error while loading selected lists', () => {
+        const error = new Error('List request failed');
+        candidateSavedListService.search.mockReturnValue(throwError(error));
 
-    component.downloadGeneratedCV();
+        component['loadSelectedLists']();
 
-    expect(component.error).toBe(error);
-  });
+        expect(component.error).toBe(error);
+        expect(component.loading).toBe(false);
+    });
 
-  it('should change tabs and finish loading synchronous tabs', fakeAsync(() => {
-    component.activeTabId = 'General';
+    it('should expose the JobChatType enum', () => {
+        expect(component.JobChatType).toBe(JobChatType);
+    });
 
-    component.onTabChanged('Experience');
-    tick();
+    it('should delete a candidate and navigate home', fakeAsync(() => {
+        const info: UpdateCandidateStatusInfo = { status: CandidateStatus.deleted } as UpdateCandidateStatusInfo;
+        const modalRef = createModalRef(Promise.resolve(info));
+        modalService.open.mockReturnValue(modalRef);
 
-    expect(component.activeTabId).toBe('Experience');
-    expect(localStorageService.set)
-    .toHaveBeenCalledWith('CandidateLastTab', 'Experience');
-    expect(component.tabLoading).toBeFalse();
+        component.deleteCandidate();
+        flushMicrotasks();
 
-    localStorageService.set.calls.reset();
-    component.onTabChanged('Experience');
-    expect(localStorageService.set).not.toHaveBeenCalled();
-  }));
+        expect(modalRef.componentInstance.candidateStatus).toBe(CandidateStatus.deleted);
+        expect(candidateService.updateStatus).toHaveBeenCalledWith({
+            candidateIds: [candidate.id],
+            info
+        });
+    }));
 
-  it('should update loading only for the active tab', () => {
-    component.activeTabId = 'Visa';
+    it('should erase candidate data and navigate home', fakeAsync(() => {
+        const modalRef = createModalRef(Promise.resolve(true));
+        modalService.open.mockReturnValue(modalRef);
 
-    component.onTabLoadingChange({tabId: 'Visa', loading: true});
-    expect(component.tabLoading).toBeTrue();
+        component.eraseCandidateData();
+        flushMicrotasks();
 
-    component.onTabLoadingChange({tabId: 'General', loading: false});
-    expect(component.tabLoading).toBeTrue();
-  });
+        expect(modalRef.componentInstance.candidate).toBe(candidate);
+        expect(router.navigate).toHaveBeenCalledWith(['/']);
+    }));
 
-  it('should build the public CV URL for the current environment', () => {
-    component.token = 'abc';
+    it('should edit and update the candidate status', fakeAsync(() => {
+        const info = { status: 'inactive' } as any;
+        const originalStatus = candidate.status;
+        const modalRef = createModalRef(Promise.resolve(info));
+        modalService.open.mockReturnValue(modalRef);
 
-    expect(component.publicCvUrl()).toBe(
-      `${document.location.protocol}//${document.location.hostname}` +
-      '/public-portal/cv/abc'
-    );
-  });
+        component.editCandidateStatus();
+        flushMicrotasks();
 
-  it('should delegate authorization checks', () => {
-    authorizationService.canViewCandidateCV.and.returnValue(true);
-    authorizationService.isAnAdmin.and.returnValue(true);
-    authorizationService.isEditableCandidate.and.returnValue(true);
-    authorizationService.canEraseCandidateData.and.returnValue(true);
-    authorizationService.canViewPrivateCandidateInfo.and.returnValue(true);
-    authorizationService.canAccessSalesforce.and.returnValue(true);
-    authorizationService.canAccessGoogleDrive.and.returnValue(true);
-    authorizationService.isReadOnly.and.returnValue(true);
-    authorizationService.canSeeGlobalLists.and.returnValue(true);
-    authorizationService.canSeeJobDetails.and.returnValue(true);
-    authorizationService.canViewCandidateName.and.returnValue(true);
-    authorizationService.canViewChats.and.returnValue(true);
+        expect(modalRef.componentInstance.candidateStatus).toBe(originalStatus);
+        expect(candidateService.updateStatus).toHaveBeenCalledWith({
+            candidateIds: [candidate.id],
+            info
+        });
+        expect(component.candidate.status).toBe('inactive');
+        expect(component.loading).toBe(false);
+    }));
 
-    expect(component.isCVViewable()).toBeTrue();
-    expect(component.isAnAdmin()).toBeTrue();
-    expect(component.isEditable()).toBeTrue();
-    expect(component.canEraseCandidateData()).toBeTrue();
-    expect(component.canViewPrivateInfo()).toBeTrue();
-    expect(component.canAccessSalesforce()).toBeTrue();
-    expect(component.canAccessGoogleDrive()).toBeTrue();
-    expect(component.isReadOnlyUser()).toBeTrue();
-    expect(component['canSeeGlobalLists']()).toBeTrue();
-    expect(component.canSeeJobDetails()).toBeTrue();
-    expect(component.canViewCandidateName()).toBeTrue();
-    expect(component.canViewChats()).toBeTrue();
-  });
+    it('should handle a status-update error', () => {
+        const error = new Error('Status update failed');
+        candidateService.updateStatus.mockReturnValue(throwError(error));
 
-  it('should only allow marking a candidate as deleted when editable and not already deleted', () => {
-    authorizationService.isEditableCandidate.and.returnValue(true);
-    candidate.status = 'active';
-    expect(component.canMarkAsDeleted()).toBeTrue();
+        component['updateCandidateStatus']({ status: 'inactive' } as any);
 
-    authorizationService.isEditableCandidate.and.returnValue(false);
-    candidate.status = 'active';
-    expect(component.canMarkAsDeleted()).toBeFalse();
+        expect(component.error).toBe(error);
+        expect(component.loading).toBe(false);
+    });
 
-    authorizationService.isEditableCandidate.and.returnValue(true);
-    candidate.status = 'deleted';
-    expect(component.canMarkAsDeleted()).toBeFalse();
-  });
+    it('should set a title with and without a candidate name', () => {
+        component.setCandidate(candidate);
+        expect(titleService.setTitle).toHaveBeenCalledWith(`${candidate.user.firstName} ${candidate.user.lastName} ` +
+            candidate.candidateNumber);
 
-  it('should mark the candidate chat as read', () => {
-    component.candidateChat = {id: 21} as any;
+        const candidateWithoutName = {
+            ...candidate,
+            user: { ...candidate.user, firstName: null, lastName: null }
+        } as Candidate;
+        component.setCandidate(candidateWithoutName);
 
-    component.onMarkCandidateChatAsRead();
+        expect(titleService.setTitle)
+            .toHaveBeenCalledWith(candidate.candidateNumber);
+    });
 
-    expect(chatService.markChatAsRead)
-    .toHaveBeenCalledWith(component.candidateChat);
-  });
+    it('should create a candidate chat', () => {
+        component.createChat();
 
-  it('should select and compare lists', () => {
-    const addSpy = spyOn<any>(component, 'addCandidateToList');
+        expect(chatService.create).toHaveBeenCalledWith({
+            type: JobChatType.CandidateProspect,
+            candidateId: candidate.id
+        });
+        expect(component.candidateChat).toEqual({ id: 12 } as any);
+        expect(component.loadingButton).toBe(false);
+    });
 
-    component.onItemSelect({id: '42'});
+    it('should handle an error while creating a chat', () => {
+        const error = new Error('Chat failed');
+        chatService.create.mockReturnValue(throwError(error));
 
-    expect(addSpy).toHaveBeenCalledWith(42, false);
-    expect(component.compareLists({id: 1}, {id: 1})).toBeTrue();
-  });
+        component.createChat();
 
-  it('should remove a candidate from a selected list', fakeAsync(() => {
-    component.selectedLists = [
-      {id: 1, name: 'One'},
-      {id: 2, name: 'Two'}
-    ] as SavedList[];
-    const modalRef = createModalRef(Promise.resolve(true));
-    modalService.open.and.returnValue(modalRef);
+        expect(component.error).toBe(error);
+        expect(component.loadingButton).toBe(false);
+    });
 
-    component.onItemDeSelect(component.selectedLists[0]);
-    flushMicrotasks();
+    it('should open the generated-CV modal when names are viewable', () => {
+        authorizationService.canViewCandidateName.mockReturnValue(true);
+        const modalRef = createModalRef(new Promise(() => undefined));
+        modalService.open.mockReturnValue(modalRef);
 
-    expect(modalRef.componentInstance.message).toContain('Jane');
-    expect(savedListCandidateService.remove).toHaveBeenCalledWith(
-      1,
-      {candidateIds: [candidate.id]}
-    );
-    expect(component.selectedLists.map(list => list.id)).toEqual([2]);
-    expect(component.savingList).toBeFalse();
-  }));
+        component.downloadGeneratedCV();
 
-  it('should create a list and add the candidate with reload', fakeAsync(() => {
-    const savedList = {id: 9, name: 'New'} as SavedList;
-    modalService.open.and.returnValue(
-      createModalRef(Promise.resolve(savedList))
-    );
-    const loadSelectedListsSpy =
-      spyOn<any>(component, 'loadSelectedLists');
+        expect(modalRef.componentInstance.candidateId).toBe(candidate.id);
+    });
 
-    component.onNewList();
-    flushMicrotasks();
+    it('should download an anonymous generated CV', () => {
+        authorizationService.canViewCandidateName.mockReturnValue(false);
+        const blob = new Blob(['cv'], { type: 'application/pdf' });
+        candidateService.downloadCv.mockReturnValue(of(blob));
+        const tab = { location: { href: '' } } as Window;
+        vi.spyOn(window, 'open').mockReturnValue(tab);
+        vi.spyOn(URL, 'createObjectURL').mockReturnValue('blob:cv');
 
-    expect(savedListCandidateService.merge).toHaveBeenCalledWith(
-      9,
-      {candidateIds: [candidate.id]}
-    );
-    expect(loadSelectedListsSpy).toHaveBeenCalled();
-    expect(component.savingList).toBeFalse();
-  }));
+        component.downloadGeneratedCV();
 
-  it('should handle an error while adding a candidate to a list', () => {
-    const error = new Error('Add failed');
-    savedListCandidateService.merge.and.returnValue(
-      throwError(error)
-    );
+        expect(candidateService.downloadCv).toHaveBeenCalledWith({
+            candidateId: candidate.id,
+            showName: false,
+            showContact: false
+        });
+        expect(tab.location.href).toBe('blob:cv');
+    });
 
-    component['addCandidateToList'](5, false);
+    it('should handle an anonymous CV download error', () => {
+        authorizationService.canViewCandidateName.mockReturnValue(false);
+        const error = new Error('Download failed');
+        candidateService.downloadCv.mockReturnValue(throwError(error));
+        vi.spyOn(window, 'open').mockReturnValue({ location: { href: '' } } as Window);
 
-    expect(component.error).toBe(error);
-    expect(component.savingList).toBeFalse();
-  });
+        component.downloadGeneratedCV();
 
-  it('should replace candidate lists and collect their IDs', () => {
-    const lists = [
-      {id: 3, name: 'Three'},
-      {id: 4, name: 'Four'}
-    ] as SavedList[];
+        expect(component.error).toBe(error);
+    });
 
-    component['setCandidateLists'](lists);
+    it('should change tabs and finish loading synchronous tabs', fakeAsync(() => {
+        component.activeTabId = 'General';
 
-    expect(candidateSavedListService.replace).toHaveBeenCalledWith(
-      candidate.id,
-      {savedListIds: [3, 4]}
-    );
-    expect(component.savingList).toBeFalse();
-  });
+        component.onTabChanged('Experience');
+        tick();
 
-  it('should handle an error while replacing candidate lists', () => {
-    const error = new Error('Replace failed');
-    candidateSavedListService.replace.and.returnValue(
-      throwError(error)
-    );
+        expect(component.activeTabId).toBe('Experience');
+        expect(localStorageService.set)
+            .toHaveBeenCalledWith('CandidateLastTab', 'Experience');
+        expect(component.tabLoading).toBe(false);
 
-    component['setCandidateLists']([]);
+        localStorageService.set.mockClear();
+        component.onTabChanged('Experience');
+        expect(localStorageService.set).not.toHaveBeenCalled();
+    }));
 
-    expect(component.error).toBe(error);
-    expect(component.savingList).toBeFalse();
-  });
+    it('should update loading only for the active tab', () => {
+        component.activeTabId = 'Visa';
 
-  it('should handle an error while removing a candidate from a list', () => {
-    const error = new Error('Remove failed');
-    savedListCandidateService.remove.and.returnValue(
-      throwError(error)
-    );
+        component.onTabLoadingChange({ tabId: 'Visa', loading: true });
+        expect(component.tabLoading).toBe(true);
 
-    component['removeCandidateFromList'](1);
+        component.onTabLoadingChange({ tabId: 'General', loading: false });
+        expect(component.tabLoading).toBe(true);
+    });
 
-    expect(component.error).toBe(error);
-    expect(component.savingList).toBeFalse();
-  });
+    it('should build the public CV URL for the current environment', () => {
+        component.token = 'abc';
 
-  it('should handle token generation success and error', () => {
-    component.generateToken();
-    expect(component.token).toBe('token-123');
+        expect(component.publicCvUrl()).toBe(`${document.location.protocol}//${document.location.hostname}` +
+            '/public-portal/cv/abc');
+    });
 
-    const error = new Error('Token failed');
-    candidateService.generateToken.and.returnValue(
-      throwError(error)
-    );
-    component.generateToken();
-    expect(component.error).toBe(error);
-  });
+    it('should delegate authorization checks', () => {
+        authorizationService.canViewCandidateCV.mockReturnValue(true);
+        authorizationService.isAnAdmin.mockReturnValue(true);
+        authorizationService.isEditableCandidate.mockReturnValue(true);
+        authorizationService.canEraseCandidateData.mockReturnValue(true);
+        authorizationService.canViewPrivateCandidateInfo.mockReturnValue(true);
+        authorizationService.canAccessSalesforce.mockReturnValue(true);
+        authorizationService.canAccessGoogleDrive.mockReturnValue(true);
+        authorizationService.isReadOnly.mockReturnValue(true);
+        authorizationService.canSeeGlobalLists.mockReturnValue(true);
+        authorizationService.canSeeJobDetails.mockReturnValue(true);
+        authorizationService.canViewCandidateName.mockReturnValue(true);
+        authorizationService.canViewChats.mockReturnValue(true);
 
-  it('should open a tailored-CV modal with candidate details', () => {
-    const modalRef = createModalRef(new Promise(() => undefined));
-    modalService.open.and.returnValue(modalRef);
+        expect(component.isCVViewable()).toBe(true);
+        expect(component.isAnAdmin()).toBe(true);
+        expect(component.isEditable()).toBe(true);
+        expect(component.canEraseCandidateData()).toBe(true);
+        expect(component.canViewPrivateInfo()).toBe(true);
+        expect(component.canAccessSalesforce()).toBe(true);
+        expect(component.canAccessGoogleDrive()).toBe(true);
+        expect(component.isReadOnlyUser()).toBe(true);
+        expect(component['canSeeGlobalLists']()).toBe(true);
+        expect(component.canSeeJobDetails()).toBe(true);
+        expect(component.canViewCandidateName()).toBe(true);
+        expect(component.canViewChats()).toBe(true);
+    });
 
-    component.createTailoredCv();
+    it('should only allow marking a candidate as deleted when editable and not already deleted', () => {
+        authorizationService.isEditableCandidate.mockReturnValue(true);
+        candidate.status = 'active';
+        expect(component.canMarkAsDeleted()).toBe(true);
 
-    expect(modalRef.componentInstance.candidateId).toBe(candidate.id);
-    expect(modalRef.componentInstance.candidateNumber)
-    .toBe(candidate.candidateNumber);
-  });
+        authorizationService.isEditableCandidate.mockReturnValue(false);
+        candidate.status = 'active';
+        expect(component.canMarkAsDeleted()).toBe(false);
 
-  it('should compute and toggle notification preferences', fakeAsync(() => {
-    candidate.allNotifications = false;
-    expect(component.computeNotificationButtonLabel())
-    .toBe('Notification Opt In');
+        authorizationService.isEditableCandidate.mockReturnValue(true);
+        candidate.status = 'deleted';
+        expect(component.canMarkAsDeleted()).toBe(false);
+    });
 
-    const modalRef = createModalRef(Promise.resolve(true));
-    modalService.open.and.returnValue(modalRef);
-    const toggleSpy =
-      spyOn<any>(component, 'doToggleNotificationPreferences');
+    it('should mark the candidate chat as read', () => {
+        component.candidateChat = { id: 21 } as any;
 
-    component.toggleNotificationPreferences();
-    flushMicrotasks();
+        component.onMarkCandidateChatAsRead();
 
-    expect(modalRef.componentInstance.title)
-    .toBe("Override candidate's chat notification preferences?");
-    expect(toggleSpy).toHaveBeenCalled();
-  }));
+        expect(chatService.markChatAsRead)
+            .toHaveBeenCalledWith(component.candidateChat);
+    });
 
-  it('should update notification preferences and refresh the profile', () => {
-    candidate.allNotifications = false;
-    const refreshSpy = spyOn(component, 'refreshCandidateProfile');
+    it('should select and compare lists', () => {
+        const addSpy = vi.spyOn((component as any), 'addCandidateToList').mockReturnValue(undefined);
 
-    component['doToggleNotificationPreferences']();
+        component.onItemSelect({ id: '42' });
 
-    expect(candidateService.updateNotificationPreference)
-    .toHaveBeenCalledWith(candidate.id, {allNotifications: true});
-    expect(candidate.allNotifications).toBeTrue();
-    expect(refreshSpy).toHaveBeenCalled();
-  });
+        expect(addSpy).toHaveBeenCalledWith(42, false);
+        expect(component.compareLists({ id: 1 }, { id: 1 })).toBe(true);
+    });
 
-  it('should handle a notification-preference update error', () => {
-    const error = new Error('Preference failed');
-    candidateService.updateNotificationPreference.and.returnValue(
-      throwError(error)
-    );
+    it('should remove a candidate from a selected list', fakeAsync(() => {
+        component.selectedLists = [
+            { id: 1, name: 'One' },
+            { id: 2, name: 'Two' }
+        ] as SavedList[];
+        const modalRef = createModalRef(Promise.resolve(true));
+        modalService.open.mockReturnValue(modalRef);
 
-    component['doToggleNotificationPreferences']();
+        component.onItemDeSelect(component.selectedLists[0]);
+        flushMicrotasks();
 
-    expect(component.error).toBe(error);
-  });
+        expect(modalRef.componentInstance.message).toContain('Jane');
+        expect(savedListCandidateService.remove).toHaveBeenCalledWith(1, { candidateIds: [candidate.id] });
+        expect(component.selectedLists.map(list => list.id)).toEqual([2]);
+        expect(component.savingList).toBe(false);
+    }));
 
-  it('should refresh after mute changes and complete cleanup on destroy', () => {
-    const refreshSpy = spyOn(component, 'refreshCandidateProfile');
-    const destroyNextSpy = spyOn(component['destroy$'], 'next');
-    const destroyCompleteSpy = spyOn(component['destroy$'], 'complete');
+    it('should create a list and add the candidate with reload', fakeAsync(() => {
+        const savedList = { id: 9, name: 'New' } as SavedList;
+        modalService.open.mockReturnValue(createModalRef(Promise.resolve(savedList)));
+        const loadSelectedListsSpy = vi.spyOn((component as any), 'loadSelectedLists').mockReturnValue(undefined);
 
-    component.onMuteToggled();
-    component.ngOnDestroy();
+        component.onNewList();
+        flushMicrotasks();
 
-    expect(refreshSpy).toHaveBeenCalled();
-    expect(destroyNextSpy).toHaveBeenCalled();
-    expect(destroyCompleteSpy).toHaveBeenCalled();
-  });
+        expect(savedListCandidateService.merge).toHaveBeenCalledWith(9, { candidateIds: [candidate.id] });
+        expect(loadSelectedListsSpy).toHaveBeenCalled();
+        expect(component.savingList).toBe(false);
+    }));
 
-  function createModalRef(result: Promise<unknown>): NgbModalRef {
-    return {
-      componentInstance: {},
-      result
-    } as NgbModalRef;
-  }
+    it('should handle an error while adding a candidate to a list', () => {
+        const error = new Error('Add failed');
+        savedListCandidateService.merge.mockReturnValue(throwError(error));
+
+        component['addCandidateToList'](5, false);
+
+        expect(component.error).toBe(error);
+        expect(component.savingList).toBe(false);
+    });
+
+    it('should replace candidate lists and collect their IDs', () => {
+        const lists = [
+            { id: 3, name: 'Three' },
+            { id: 4, name: 'Four' }
+        ] as SavedList[];
+
+        component['setCandidateLists'](lists);
+
+        expect(candidateSavedListService.replace).toHaveBeenCalledWith(candidate.id, { savedListIds: [3, 4] });
+        expect(component.savingList).toBe(false);
+    });
+
+    it('should handle an error while replacing candidate lists', () => {
+        const error = new Error('Replace failed');
+        candidateSavedListService.replace.mockReturnValue(throwError(error));
+
+        component['setCandidateLists']([]);
+
+        expect(component.error).toBe(error);
+        expect(component.savingList).toBe(false);
+    });
+
+    it('should handle an error while removing a candidate from a list', () => {
+        const error = new Error('Remove failed');
+        savedListCandidateService.remove.mockReturnValue(throwError(error));
+
+        component['removeCandidateFromList'](1);
+
+        expect(component.error).toBe(error);
+        expect(component.savingList).toBe(false);
+    });
+
+    it('should handle token generation success and error', () => {
+        component.generateToken();
+        expect(component.token).toBe('token-123');
+
+        const error = new Error('Token failed');
+        candidateService.generateToken.mockReturnValue(throwError(error));
+        component.generateToken();
+        expect(component.error).toBe(error);
+    });
+
+    it('should open a tailored-CV modal with candidate details', () => {
+        const modalRef = createModalRef(new Promise(() => undefined));
+        modalService.open.mockReturnValue(modalRef);
+
+        component.createTailoredCv();
+
+        expect(modalRef.componentInstance.candidateId).toBe(candidate.id);
+        expect(modalRef.componentInstance.candidateNumber)
+            .toBe(candidate.candidateNumber);
+    });
+
+    it('should compute and toggle notification preferences', fakeAsync(() => {
+        candidate.allNotifications = false;
+        expect(component.computeNotificationButtonLabel())
+            .toBe('Notification Opt In');
+
+        const modalRef = createModalRef(Promise.resolve(true));
+        modalService.open.mockReturnValue(modalRef);
+        const toggleSpy = vi.spyOn((component as any), 'doToggleNotificationPreferences').mockReturnValue(undefined);
+
+        component.toggleNotificationPreferences();
+        flushMicrotasks();
+
+        expect(modalRef.componentInstance.title)
+            .toBe("Override candidate's chat notification preferences?");
+        expect(toggleSpy).toHaveBeenCalled();
+    }));
+
+    it('should update notification preferences and refresh the profile', () => {
+        candidate.allNotifications = false;
+        const refreshSpy = vi.spyOn(component, 'refreshCandidateProfile').mockReturnValue(undefined);
+
+        component['doToggleNotificationPreferences']();
+
+        expect(candidateService.updateNotificationPreference)
+            .toHaveBeenCalledWith(candidate.id, { allNotifications: true });
+        expect(candidate.allNotifications).toBe(true);
+        expect(refreshSpy).toHaveBeenCalled();
+    });
+
+    it('should handle a notification-preference update error', () => {
+        const error = new Error('Preference failed');
+        candidateService.updateNotificationPreference.mockReturnValue(throwError(error));
+
+        component['doToggleNotificationPreferences']();
+
+        expect(component.error).toBe(error);
+    });
+
+    it('should refresh after mute changes and complete cleanup on destroy', () => {
+        const refreshSpy = vi.spyOn(component, 'refreshCandidateProfile').mockReturnValue(undefined);
+        const destroyNextSpy = vi.spyOn(component['destroy$'], 'next').mockReturnValue(undefined);
+        const destroyCompleteSpy = vi.spyOn(component['destroy$'], 'complete').mockReturnValue(undefined);
+
+        component.onMuteToggled();
+        component.ngOnDestroy();
+
+        expect(refreshSpy).toHaveBeenCalled();
+        expect(destroyNextSpy).toHaveBeenCalled();
+        expect(destroyCompleteSpy).toHaveBeenCalled();
+    });
+
+    function createModalRef(result: Promise<unknown>): NgbModalRef {
+        return {
+            componentInstance: {},
+            result
+        } as NgbModalRef;
+    }
 
 });

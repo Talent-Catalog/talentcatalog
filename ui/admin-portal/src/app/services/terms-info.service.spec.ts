@@ -3,6 +3,7 @@ import {TestBed} from '@angular/core/testing';
 import {TermsInfoService} from './terms-info.service';
 import {provideHttpClientTesting} from "@angular/common/http/testing";
 import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
+import {expect} from 'vitest';
 
 describe('TermsInfoService', () => {
   let service: TermsInfoService;

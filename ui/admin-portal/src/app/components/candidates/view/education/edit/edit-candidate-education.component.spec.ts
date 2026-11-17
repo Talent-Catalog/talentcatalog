@@ -14,6 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
+import type {MockedObject} from "vitest";
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {EditCandidateEducationComponent} from './edit-candidate-education.component';
 import {FormsModule, ReactiveFormsModule, UntypedFormBuilder} from '@angular/forms';
@@ -27,93 +28,103 @@ import {MockJob} from "../../../../../MockData/MockJob";
 import {provideHttpClientTesting} from "@angular/common/http/testing";
 import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {NgSelectModule} from "@ng-select/ng-select";
+import {expect, vi} from 'vitest';
 
 describe('EditCandidateEducationComponent', () => {
-  let component: EditCandidateEducationComponent;
-  let fixture: ComponentFixture<EditCandidateEducationComponent>;
-  let mockActiveModal: jasmine.SpyObj<NgbActiveModal>;
-  let mockCandidateEducationService: jasmine.SpyObj<CandidateEducationService>;
-  let mockCountryService: jasmine.SpyObj<CountryService>;
-  let mockEducationMajorService: jasmine.SpyObj<EducationMajorService>;
+    let component: EditCandidateEducationComponent;
+    let fixture: ComponentFixture<EditCandidateEducationComponent>;
+    let mockActiveModal: MockedObject<NgbActiveModal>;
+    let mockCandidateEducationService: MockedObject<CandidateEducationService>;
+    let mockCountryService: MockedObject<CountryService>;
+    let mockEducationMajorService: MockedObject<EducationMajorService>;
 
-  const mockCandidate = new MockCandidate();
-  beforeEach(async () => {
-    mockActiveModal = jasmine.createSpyObj('NgbActiveModal', ['close', 'dismiss']);
-    mockCandidateEducationService = jasmine.createSpyObj('CandidateEducationService', ['update']);
-    mockCountryService = jasmine.createSpyObj('CountryService', ['listCountries']);
-    mockEducationMajorService = jasmine.createSpyObj('EducationMajorService', ['listMajors']);
+    const mockCandidate = new MockCandidate();
+    beforeEach(async () => {
+        mockActiveModal = ({
+            close: vi.fn().mockName("NgbActiveModal.close"),
+            dismiss: vi.fn().mockName("NgbActiveModal.dismiss")
+        } as unknown as typeof mockActiveModal);
+        mockCandidateEducationService = ({
+            update: vi.fn().mockName("CandidateEducationService.update")
+        } as unknown as typeof mockCandidateEducationService);
+        mockCountryService = ({
+            listCountries: vi.fn().mockName("CountryService.listCountries")
+        } as unknown as typeof mockCountryService);
+        mockEducationMajorService = ({
+            listMajors: vi.fn().mockName("EducationMajorService.listMajors")
+        } as unknown as typeof mockEducationMajorService);
 
-    await TestBed.configureTestingModule({
-      declarations: [EditCandidateEducationComponent],
-      imports: [FormsModule,ReactiveFormsModule, NgSelectModule],
-      providers: [
-        UntypedFormBuilder,
-        {provide: NgbActiveModal, useValue: mockActiveModal},
-        {provide: CandidateEducationService, useValue: mockCandidateEducationService},
-        {provide: CountryService, useValue: mockCountryService},
-        {provide: EducationMajorService, useValue: mockEducationMajorService},
-        provideHttpClient(withXhr(), withInterceptorsFromDi()),
-        provideHttpClientTesting(),
-      ]
-    }).compileComponents();
-  });
-
-  beforeEach(() => {
-    fixture = TestBed.createComponent(EditCandidateEducationComponent);
-    component = fixture.componentInstance;
-
-    // Provide initial candidate education data
-    component.candidateEducation = mockCandidate.candidateEducations[0];
-
-    // Mock service responses
-    mockCountryService.listCountries.and.returnValue(of([MockJob.country]));
-    mockEducationMajorService.listMajors.and.returnValue(of([mockCandidate.candidateEducations[0].educationMajor]));
-
-    fixture.detectChanges();
-  });
-
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
-
-  it('should initialize the form with candidate education data', () => {
-    expect(component.candidateForm.value.courseName).toBe('B.Sc. in Computer Science');
-    expect(component.candidateForm.value.institution).toBe('University of Example');
-    expect(component.candidateForm.value.countryId).toBe(1);
-    expect(component.candidateForm.value.majorId).toBe(1);
-    expect(component.candidateForm.value.lengthOfCourseYears).toBe(4);
-    expect(component.candidateForm.value.yearCompleted).toBe('2012');
-    expect(component.candidateForm.value.educationType).toBe('Bachelor\'s Degree');
-    expect(component.candidateForm.value.incomplete).toBeFalse();
-  });
-
-  it('should call update service on save', () => {
-    mockCandidateEducationService.update.and.returnValue(of(component.candidateEducation));
-
-    component.onSave();
-
-    expect(mockCandidateEducationService.update).toHaveBeenCalledWith({
-      id: 1,
-      courseName: 'B.Sc. in Computer Science',
-      institution: 'University of Example',
-      countryId: 1,
-      majorId: 1,
-      yearCompleted: '2012',
-      lengthOfCourseYears: 4,
-      educationType: 'Bachelor\'s Degree',
-      incomplete: false
+        await TestBed.configureTestingModule({
+            declarations: [EditCandidateEducationComponent],
+            imports: [FormsModule, ReactiveFormsModule, NgSelectModule],
+            providers: [
+                UntypedFormBuilder,
+                { provide: NgbActiveModal, useValue: mockActiveModal },
+                { provide: CandidateEducationService, useValue: mockCandidateEducationService },
+                { provide: CountryService, useValue: mockCountryService },
+                { provide: EducationMajorService, useValue: mockEducationMajorService },
+                provideHttpClient(withXhr(), withInterceptorsFromDi()),
+                provideHttpClientTesting(),
+            ]
+        }).compileComponents();
     });
-    expect(mockActiveModal.close).toHaveBeenCalledWith(component.candidateEducation);
-  });
 
-  it('should handle update service error', () => {
-    const errorResponse = new Error('Update failed');
-    mockCandidateEducationService.update.and.returnValue(throwError(errorResponse));
+    beforeEach(() => {
+        fixture = TestBed.createComponent(EditCandidateEducationComponent);
+        component = fixture.componentInstance;
 
-    component.onSave();
+        // Provide initial candidate education data
+        component.candidateEducation = mockCandidate.candidateEducations[0];
 
-    expect(mockCandidateEducationService.update).toHaveBeenCalled();
-    expect(component.error).toBe(errorResponse);
-    expect(component.saving).toBeFalse();
-  });
+        // Mock service responses
+        mockCountryService.listCountries.mockReturnValue(of([MockJob.country]));
+        mockEducationMajorService.listMajors.mockReturnValue(of([mockCandidate.candidateEducations[0].educationMajor]));
+
+        fixture.detectChanges();
+    });
+
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
+
+    it('should initialize the form with candidate education data', () => {
+        expect(component.candidateForm.value.courseName).toBe('B.Sc. in Computer Science');
+        expect(component.candidateForm.value.institution).toBe('University of Example');
+        expect(component.candidateForm.value.countryId).toBe(1);
+        expect(component.candidateForm.value.majorId).toBe(1);
+        expect(component.candidateForm.value.lengthOfCourseYears).toBe(4);
+        expect(component.candidateForm.value.yearCompleted).toBe('2012');
+        expect(component.candidateForm.value.educationType).toBe('Bachelor\'s Degree');
+        expect(component.candidateForm.value.incomplete).toBe(false);
+    });
+
+    it('should call update service on save', () => {
+        mockCandidateEducationService.update.mockReturnValue(of(component.candidateEducation));
+
+        component.onSave();
+
+        expect(mockCandidateEducationService.update).toHaveBeenCalledWith({
+            id: 1,
+            courseName: 'B.Sc. in Computer Science',
+            institution: 'University of Example',
+            countryId: 1,
+            majorId: 1,
+            yearCompleted: '2012',
+            lengthOfCourseYears: 4,
+            educationType: 'Bachelor\'s Degree',
+            incomplete: false
+        });
+        expect(mockActiveModal.close).toHaveBeenCalledWith(component.candidateEducation);
+    });
+
+    it('should handle update service error', () => {
+        const errorResponse = new Error('Update failed');
+        mockCandidateEducationService.update.mockReturnValue(throwError(errorResponse));
+
+        component.onSave();
+
+        expect(mockCandidateEducationService.update).toHaveBeenCalled();
+        expect(component.error).toBe(errorResponse);
+        expect(component.saving).toBe(false);
+    });
 });

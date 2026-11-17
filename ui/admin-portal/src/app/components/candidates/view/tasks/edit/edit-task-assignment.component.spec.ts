@@ -13,6 +13,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
+
+import type {MockedObject} from "vitest";
 import {EditTaskAssignmentComponent} from "./edit-task-assignment.component";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {ComponentFixture, fakeAsync, TestBed, tick} from "@angular/core/testing";
@@ -23,95 +25,101 @@ import {MockCandidate} from "../../../../../MockData/MockCandidate";
 import {By} from "@angular/platform-browser";
 import {TaskAssignment} from "../../../../../model/task-assignment";
 import {of, throwError} from "rxjs";
+import {expect, vi} from 'vitest';
 
 describe('EditTaskAssignmentComponent', () => {
-  let component: EditTaskAssignmentComponent;
-  let fixture: ComponentFixture<EditTaskAssignmentComponent>;
-  let mockActiveModal: NgbActiveModal;
-  let mockTaskAssignmentService: jasmine.SpyObj<TaskAssignmentService>;
-  const mockCandidate = new MockCandidate();
-  beforeEach(async () => {
-    mockActiveModal = jasmine.createSpyObj('NgbActiveModal', ['close', 'dismiss']);
-    mockTaskAssignmentService = jasmine.createSpyObj('TaskAssignmentService', ['updateTaskAssignment']);
+    let component: EditTaskAssignmentComponent;
+    let fixture: ComponentFixture<EditTaskAssignmentComponent>;
+    let mockActiveModal: NgbActiveModal;
+    let mockTaskAssignmentService: MockedObject<TaskAssignmentService>;
+    const mockCandidate = new MockCandidate();
+    beforeEach(async () => {
+        mockActiveModal = ({
+            close: vi.fn().mockName("NgbActiveModal.close"),
+            dismiss: vi.fn().mockName("NgbActiveModal.dismiss")
+        } as unknown as typeof mockActiveModal);
+        mockTaskAssignmentService = ({
+            updateTaskAssignment: vi.fn().mockName("TaskAssignmentService.updateTaskAssignment")
+        } as unknown as typeof mockTaskAssignmentService);
 
-    await TestBed.configureTestingModule({
-      declarations: [ EditTaskAssignmentComponent ],
-      imports: [ ReactiveFormsModule ],
-      providers: [
-        { provide: NgbActiveModal, useValue: mockActiveModal },
-        { provide: TaskAssignmentService, useValue: mockTaskAssignmentService },
-        UntypedFormBuilder,
-        { provide: LOCALE_ID, useValue: 'en-US' }
-      ],
-      schemas: [NO_ERRORS_SCHEMA]
-    })
-    .compileComponents();
-  });
+        await TestBed.configureTestingModule({
+            declarations: [EditTaskAssignmentComponent],
+            imports: [ReactiveFormsModule],
+            providers: [
+                { provide: NgbActiveModal, useValue: mockActiveModal },
+                { provide: TaskAssignmentService, useValue: mockTaskAssignmentService },
+                UntypedFormBuilder,
+                { provide: LOCALE_ID, useValue: 'en-US' }
+            ],
+            schemas: [NO_ERRORS_SCHEMA]
+        })
+            .compileComponents();
+    });
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(EditTaskAssignmentComponent);
-    component = fixture.componentInstance;
+    beforeEach(() => {
+        fixture = TestBed.createComponent(EditTaskAssignmentComponent);
+        component = fixture.componentInstance;
 
-    // Mock data
-    component.taskAssignment = mockCandidate.taskAssignments[0];
+        // Mock data
+        component.taskAssignment = mockCandidate.taskAssignments[0];
 
-    component.loading = false;
-    component.saving = false;
-    component.error = '';
+        component.loading = false;
+        component.saving = false;
+        component.error = '';
 
-    fixture.detectChanges();
-  });
+        fixture.detectChanges();
+    });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
 
-  it('should initialize the form with due date and complete status', () => {
-    component.ngOnInit();
-    expect(component.form.value.dueDate).toBe(component.formatTbbDate(component.taskAssignment.dueDate));
-    expect(component.form.value.complete).toBe(component.isComplete);
-  });
+    it('should initialize the form with due date and complete status', () => {
+        component.ngOnInit();
+        expect(component.form.value.dueDate).toBe(component.formatTbbDate(component.taskAssignment.dueDate));
+        expect(component.form.value.complete).toBe(component.isComplete);
+    });
 
-  it('should display error message when error is set', fakeAsync(() => {
-    component.error = 'Sample error message';
-    fixture.detectChanges();
-    tick();
+    it('should display error message when error is set', fakeAsync(() => {
+        component.error = 'Sample error message';
+        fixture.detectChanges();
+        tick();
 
-    const errorAlert = fixture.debugElement.query(By.css('.alert-danger'));
-    expect(errorAlert.nativeElement.textContent).toContain('Sample error message');
-  }));
+        const errorAlert = fixture.debugElement.query(By.css('.alert-danger'));
+        expect(errorAlert.nativeElement.textContent).toContain('Sample error message');
+    }));
 
-  it('should call activeModal.close with taskAssignment when closeModal is called', () => {
-    const taskAssignment = {} as TaskAssignment;
-    component.closeModal(taskAssignment);
-    expect(mockActiveModal.close).toHaveBeenCalledWith(taskAssignment);
-  });
+    it('should call activeModal.close with taskAssignment when closeModal is called', () => {
+        const taskAssignment = {} as TaskAssignment;
+        component.closeModal(taskAssignment);
+        expect(mockActiveModal.close).toHaveBeenCalledWith(taskAssignment);
+    });
 
-  it('should call activeModal.dismiss when dismiss is called', () => {
-    component.dismiss();
-    expect(mockActiveModal.dismiss).toHaveBeenCalledWith(false);
-  });
+    it('should call activeModal.dismiss when dismiss is called', () => {
+        component.dismiss();
+        expect(mockActiveModal.dismiss).toHaveBeenCalledWith(false);
+    });
 
-  it('should call updateTaskAssignment on onSave and handle success', fakeAsync(() => {
-    const updatedTaskAssignment = { ...component.taskAssignment, completedDate: new Date() } as TaskAssignment;
-    mockTaskAssignmentService.updateTaskAssignment.and.returnValue(of(updatedTaskAssignment));
+    it('should call updateTaskAssignment on onSave and handle success', fakeAsync(() => {
+        const updatedTaskAssignment = { ...component.taskAssignment, completedDate: new Date() } as TaskAssignment;
+        mockTaskAssignmentService.updateTaskAssignment.mockReturnValue(of(updatedTaskAssignment));
 
-    component.onSave();
-    tick();
+        component.onSave();
+        tick();
 
-    expect(mockTaskAssignmentService.updateTaskAssignment).toHaveBeenCalled();
-    expect(mockActiveModal.close).toHaveBeenCalledWith(updatedTaskAssignment);
-    expect(component.saving).toBeFalse();
-  }));
+        expect(mockTaskAssignmentService.updateTaskAssignment).toHaveBeenCalled();
+        expect(mockActiveModal.close).toHaveBeenCalledWith(updatedTaskAssignment);
+        expect(component.saving).toBe(false);
+    }));
 
-  it('should call updateTaskAssignment on onSave and handle error', fakeAsync(() => {
-    mockTaskAssignmentService.updateTaskAssignment.and.returnValue(throwError('Error'));
+    it('should call updateTaskAssignment on onSave and handle error', fakeAsync(() => {
+        mockTaskAssignmentService.updateTaskAssignment.mockReturnValue(throwError('Error'));
 
-    component.onSave();
-    tick();
+        component.onSave();
+        tick();
 
-    expect(mockTaskAssignmentService.updateTaskAssignment).toHaveBeenCalled();
-    expect(component.error).toBe('Error');
-    expect(component.saving).toBeFalse();
-  }));
+        expect(mockTaskAssignmentService.updateTaskAssignment).toHaveBeenCalled();
+        expect(component.error).toBe('Error');
+        expect(component.saving).toBe(false);
+    }));
 });

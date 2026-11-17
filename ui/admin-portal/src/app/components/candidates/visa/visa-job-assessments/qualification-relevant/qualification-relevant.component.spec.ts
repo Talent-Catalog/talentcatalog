@@ -14,6 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
+import type {MockedObject} from "vitest";
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {ReactiveFormsModule, UntypedFormBuilder} from '@angular/forms';
 import {NgSelectModule} from '@ng-select/ng-select';
@@ -24,79 +25,82 @@ import {YesNo} from '../../../../../model/candidate';
 import {provideHttpClientTesting} from "@angular/common/http/testing";
 import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {AutosaveStatusComponent} from "../../../../util/autosave-status/autosave-status.component";
+import {expect, vi} from 'vitest';
 
 describe('QualificationRelevantComponent', () => {
-  let component: QualificationRelevantComponent;
-  let fixture: ComponentFixture<QualificationRelevantComponent>;
-  let candidateVisaCheckService: jasmine.SpyObj<CandidateVisaCheckService>;
+    let component: QualificationRelevantComponent;
+    let fixture: ComponentFixture<QualificationRelevantComponent>;
+    let candidateVisaCheckService: MockedObject<CandidateVisaCheckService>;
 
-  beforeEach(async () => {
-    const candidateVisaCheckServiceSpy = jasmine.createSpyObj('CandidateVisaCheckService', ['someMethod']);
+    beforeEach(async () => {
+        const candidateVisaCheckServiceSpy = {
+            someMethod: vi.fn().mockName("CandidateVisaCheckService.someMethod")
+        };
 
-    await TestBed.configureTestingModule({
-      declarations: [QualificationRelevantComponent,AutosaveStatusComponent],
-      imports: [ReactiveFormsModule, NgSelectModule],
-      providers: [
-        UntypedFormBuilder,
-        { provide: CandidateVisaCheckService, useValue: candidateVisaCheckServiceSpy },
-        provideHttpClient(withXhr(), withInterceptorsFromDi()),
-        provideHttpClientTesting()
-      ]
-    }).compileComponents();
+        await TestBed.configureTestingModule({
+            declarations: [QualificationRelevantComponent, AutosaveStatusComponent],
+            imports: [ReactiveFormsModule, NgSelectModule],
+            providers: [
+                UntypedFormBuilder,
+                { provide: CandidateVisaCheckService, useValue: candidateVisaCheckServiceSpy },
+                provideHttpClient(withXhr(), withInterceptorsFromDi()),
+                provideHttpClientTesting()
+            ]
+        }).compileComponents();
 
-    candidateVisaCheckService = TestBed.inject(CandidateVisaCheckService) as jasmine.SpyObj<CandidateVisaCheckService>;
-  });
+        candidateVisaCheckService = TestBed.inject(CandidateVisaCheckService) as MockedObject<CandidateVisaCheckService>;
+    });
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(QualificationRelevantComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges(); // ngOnInit() is called here
-  });
+    beforeEach(() => {
+        fixture = TestBed.createComponent(QualificationRelevantComponent);
+        component = fixture.componentInstance;
+        fixture.detectChanges(); // ngOnInit() is called here
+    });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
 
-  it('should initialize form with visaJobQualification and visaJobQualificationNotes controls', () => {
-    expect(component.form.contains('visaJobQualification')).toBeTrue();
-    expect(component.form.contains('visaJobQualificationNotes')).toBeTrue();
-  });
+    it('should initialize form with visaJobQualification and visaJobQualificationNotes controls', () => {
+        expect(component.form.contains('visaJobQualification')).toBe(true);
+        expect(component.form.contains('visaJobQualificationNotes')).toBe(true);
+    });
 
-  it('should display error message when error is set', () => {
-    component.error = 'Some error message';
-    fixture.detectChanges();
-    const errorElement: HTMLElement = fixture.nativeElement.querySelector('div');
-    expect(errorElement.textContent).toContain('Some error message');
-  });
+    it('should display error message when error is set', () => {
+        component.error = 'Some error message';
+        fixture.detectChanges();
+        const errorElement: HTMLElement = fixture.nativeElement.querySelector('div');
+        expect(errorElement.textContent).toContain('Some error message');
+    });
 
-  it('should initialize form controls with values from visaJobCheck', () => {
-    component.visaJobCheck = { id: 123, qualification: YesNo.Yes, qualificationNotes: 'Relevant experience' };
-    component.ngOnInit();
-    expect(component.form.value.visaJobId).toBe(123);
-    expect(component.form.value.visaJobQualification).toBe(YesNo.Yes);
-    expect(component.form.value.visaJobQualificationNotes).toBe('Relevant experience');
-  });
+    it('should initialize form controls with values from visaJobCheck', () => {
+        component.visaJobCheck = { id: 123, qualification: YesNo.Yes, qualificationNotes: 'Relevant experience' };
+        component.ngOnInit();
+        expect(component.form.value.visaJobId).toBe(123);
+        expect(component.form.value.visaJobQualification).toBe(YesNo.Yes);
+        expect(component.form.value.visaJobQualificationNotes).toBe('Relevant experience');
+    });
 
-  it('should set relevantQualificationOptions correctly', () => {
-    const expectedOptions: EnumOption[] = enumOptions(YesNo);
-    expect(component.relevantQualificationOptions).toEqual(expectedOptions);
-  });
+    it('should set relevantQualificationOptions correctly', () => {
+        const expectedOptions: EnumOption[] = enumOptions(YesNo);
+        expect(component.relevantQualificationOptions).toEqual(expectedOptions);
+    });
 
-  it('should render form elements when editable is true', () => {
-    component.editable = true;
-    fixture.detectChanges();
-    const qualificationElement = fixture.nativeElement.querySelector('#visaJobQualification');
-    const notesElement = fixture.nativeElement.querySelector('#visaJobQualificationNotes');
-    expect(qualificationElement).toBeTruthy();
-    expect(notesElement).toBeTruthy();
-  });
+    it('should render form elements when editable is true', () => {
+        component.editable = true;
+        fixture.detectChanges();
+        const qualificationElement = fixture.nativeElement.querySelector('#visaJobQualification');
+        const notesElement = fixture.nativeElement.querySelector('#visaJobQualificationNotes');
+        expect(qualificationElement).toBeTruthy();
+        expect(notesElement).toBeTruthy();
+    });
 
-  it('should not render form elements when editable is false', () => {
-    component.editable = false;
-    fixture.detectChanges();
-    const qualificationElement = fixture.nativeElement.querySelector('#visaJobQualification');
-    const notesElement = fixture.nativeElement.querySelector('#visaJobQualificationNotes');
-    expect(qualificationElement).toBeFalsy();
-    expect(notesElement).toBeFalsy();
-  });
+    it('should not render form elements when editable is false', () => {
+        component.editable = false;
+        fixture.detectChanges();
+        const qualificationElement = fixture.nativeElement.querySelector('#visaJobQualification');
+        const notesElement = fixture.nativeElement.querySelector('#visaJobQualificationNotes');
+        expect(qualificationElement).toBeFalsy();
+        expect(notesElement).toBeFalsy();
+    });
 });

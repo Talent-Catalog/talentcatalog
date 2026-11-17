@@ -17,6 +17,7 @@
 import {ExtendDatePipe} from "./extend-date-pipe";
 import {TestBed} from "@angular/core/testing";
 import {LOCALE_ID} from "@angular/core";
+import {expect} from 'vitest';
 
 describe('ExtendDatePipe', () => {
   let pipe: ExtendDatePipe;

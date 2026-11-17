@@ -17,6 +17,7 @@
 import {CandidateDestination} from "./candidate-destination";
 import {MockCandidate} from "../MockData/MockCandidate";
 import {YesNoUnsure} from "./candidate";
+import {expect} from 'vitest';
 
 describe('CandidateDestination Interface', () => {
   const mockCandidate = new MockCandidate();

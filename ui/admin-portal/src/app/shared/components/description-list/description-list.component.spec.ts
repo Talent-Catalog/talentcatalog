@@ -1,6 +1,7 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { DescriptionListComponent } from './description-list.component';
+import {DescriptionListComponent} from './description-list.component';
+import {expect} from 'vitest';
 
 describe('DescriptionListComponent', () => {
   let component: DescriptionListComponent;

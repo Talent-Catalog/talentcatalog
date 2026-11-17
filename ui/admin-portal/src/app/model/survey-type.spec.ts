@@ -15,6 +15,7 @@
  */
 
 import {SurveyType} from "./survey-type";
+import {expect} from 'vitest';
 
 describe('SurveyType Interface', () => {
   it('should have an id property of type number', () => {

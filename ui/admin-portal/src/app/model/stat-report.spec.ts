@@ -17,6 +17,7 @@
 import {DataRow} from './data-row';
 import {ChartType} from 'chart.js';
 import {StatReport} from './stat-report';
+import {expect} from 'vitest';
 
 // Mock objects
 const mockDataRow: DataRow = {

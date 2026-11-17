@@ -1,12 +1,10 @@
-import { TestBed } from '@angular/core/testing';
-import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
-import { provideHttpClient, withInterceptorsFromDi, withXhr } from '@angular/common/http';
-import { DuolingoCouponService } from './duolingo-coupon.service';
-import { environment } from '../../environments/environment';
-import {
-  DuolingoCouponResponse,
-  DuolingoCouponStatus
-} from '../model/duolingo-coupon';
+import {TestBed} from '@angular/core/testing';
+import {HttpTestingController, provideHttpClientTesting} from '@angular/common/http/testing';
+import {provideHttpClient, withInterceptorsFromDi, withXhr} from '@angular/common/http';
+import {DuolingoCouponService} from './duolingo-coupon.service';
+import {environment} from '../../environments/environment';
+import {DuolingoCouponResponse, DuolingoCouponStatus} from '../model/duolingo-coupon';
+import {expect} from 'vitest';
 
 describe('DuolingoCouponService', () => {
   let service: DuolingoCouponService;

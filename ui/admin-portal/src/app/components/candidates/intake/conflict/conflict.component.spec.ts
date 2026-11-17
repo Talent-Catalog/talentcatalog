@@ -22,52 +22,53 @@ import {NgSelectModule} from "@ng-select/ng-select";
 import {FormsModule, ReactiveFormsModule, UntypedFormBuilder} from "@angular/forms";
 import {CandidateService} from "../../../../services/candidate.service";
 import {AutosaveStatusComponent} from "../../../util/autosave-status/autosave-status.component";
+import {expect} from 'vitest';
 
 describe('ConflictComponent', () => {
-  let component: ConflictComponent;
-  let fixture: ComponentFixture<ConflictComponent>;
+    let component: ConflictComponent;
+    let fixture: ComponentFixture<ConflictComponent>;
 
-  const mockCandidateService = {
-    candidateIntakeData: {
-      conflict: YesNo.Yes, // Mocking conflict data
-      conflictNotes: 'Test conflict notes' // Mocking conflict notes data
-    }
-  };
-
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      declarations: [ConflictComponent,AutosaveStatusComponent],
-      imports: [NgSelectModule,FormsModule,ReactiveFormsModule],
-      providers: [
-        UntypedFormBuilder,
-        { provide: CandidateService, useValue: mockCandidateService },
-        provideHttpClient(withXhr(), withInterceptorsFromDi()),
-        provideHttpClientTesting()
-      ]
-    }).compileComponents();
-  });
-
-  beforeEach(() => {
-    fixture = TestBed.createComponent(ConflictComponent);
-    component = fixture.componentInstance;
-
-    component.candidateIntakeData = {
-      conflict: YesNo.Yes, // Mocking conflict data
-      conflictNotes: 'Test conflict notes' // Mocking conflict notes data
+    const mockCandidateService = {
+        candidateIntakeData: {
+            conflict: YesNo.Yes, // Mocking conflict data
+            conflictNotes: 'Test conflict notes' // Mocking conflict notes data
+        }
     };
-    fixture.detectChanges();
-  });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+    beforeEach(async () => {
+        await TestBed.configureTestingModule({
+            declarations: [ConflictComponent, AutosaveStatusComponent],
+            imports: [NgSelectModule, FormsModule, ReactiveFormsModule],
+            providers: [
+                UntypedFormBuilder,
+                { provide: CandidateService, useValue: mockCandidateService },
+                provideHttpClient(withXhr(), withInterceptorsFromDi()),
+                provideHttpClientTesting()
+            ]
+        }).compileComponents();
+    });
 
-  it('should initialize form with candidate data', () => {
-    // Access the form control values
-    const conflictControl = component.form.get('conflict');
-    const conflictNotesControl = component.form.get('conflictNotes');
-    // Check if form controls are initialized with the correct values
-    expect(conflictControl.value).toEqual(mockCandidateService.candidateIntakeData.conflict);
-    expect(conflictNotesControl.value).toEqual(mockCandidateService.candidateIntakeData.conflictNotes);
-  });
+    beforeEach(() => {
+        fixture = TestBed.createComponent(ConflictComponent);
+        component = fixture.componentInstance;
+
+        component.candidateIntakeData = {
+            conflict: YesNo.Yes, // Mocking conflict data
+            conflictNotes: 'Test conflict notes' // Mocking conflict notes data
+        };
+        fixture.detectChanges();
+    });
+
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
+
+    it('should initialize form with candidate data', () => {
+        // Access the form control values
+        const conflictControl = component.form.get('conflict');
+        const conflictNotesControl = component.form.get('conflictNotes');
+        // Check if form controls are initialized with the correct values
+        expect(conflictControl.value).toEqual(mockCandidateService.candidateIntakeData.conflict);
+        expect(conflictNotesControl.value).toEqual(mockCandidateService.candidateIntakeData.conflictNotes);
+    });
 });

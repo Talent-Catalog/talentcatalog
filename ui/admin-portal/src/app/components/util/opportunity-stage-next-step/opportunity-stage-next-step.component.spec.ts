@@ -14,6 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
+import type {MockedObject} from "vitest";
 import {OpportunityStageNextStepComponent} from "./opportunity-stage-next-step.component";
 import {ComponentFixture, TestBed} from "@angular/core/testing";
 import {AuthorizationService} from "../../../services/authorization.service";
@@ -28,139 +29,149 @@ import {mockCandidateOpportunity} from "../../../MockData/MockCandidateOpportuni
 import {OpportunityProgressParams} from "../../../model/opportunity";
 import {EditOppComponent} from "../../opportunity/edit-opp/edit-opp.component";
 import {of, throwError} from "rxjs";
+import {expect, vi} from 'vitest';
 
 describe('OpportunityStageNextStepComponent', () => {
-  let component: OpportunityStageNextStepComponent;
-  let fixture: ComponentFixture<OpportunityStageNextStepComponent>;
-  let authServiceSpy: jasmine.SpyObj<AuthorizationService>;
-  let candidateOpportunityServiceSpy: jasmine.SpyObj<CandidateOpportunityService>;
-  let jobServiceSpy: jasmine.SpyObj<JobService>;
-  let modalServiceSpy: jasmine.SpyObj<NgbModal>;
+    let component: OpportunityStageNextStepComponent;
+    let fixture: ComponentFixture<OpportunityStageNextStepComponent>;
+    let authServiceSpy: MockedObject<AuthorizationService>;
+    let candidateOpportunityServiceSpy: MockedObject<CandidateOpportunityService>;
+    let jobServiceSpy: MockedObject<JobService>;
+    let modalServiceSpy: MockedObject<NgbModal>;
 
-  beforeEach(async () => {
-    const authSpy = jasmine.createSpyObj('AuthorizationService', ['canEditCandidateOpp', 'canChangeJobStage']);
-    const candidateOppSpy = jasmine.createSpyObj('CandidateOpportunityService', ['updateCandidateOpportunity']);
-    const jobSpy = jasmine.createSpyObj('JobService', ['update']);
-    const modalSpy = jasmine.createSpyObj('NgbModal', ['open']);
+    beforeEach(async () => {
+        const authSpy = {
+            canEditCandidateOpp: vi.fn().mockName("AuthorizationService.canEditCandidateOpp"),
+            canChangeJobStage: vi.fn().mockName("AuthorizationService.canChangeJobStage")
+        };
+        const candidateOppSpy = {
+            updateCandidateOpportunity: vi.fn().mockName("CandidateOpportunityService.updateCandidateOpportunity")
+        };
+        const jobSpy = {
+            update: vi.fn().mockName("JobService.update")
+        };
+        const modalSpy = {
+            open: vi.fn().mockName("NgbModal.open")
+        };
 
-    await TestBed.configureTestingModule({
-      declarations: [OpportunityStageNextStepComponent],
-      imports: [FormsModule, ReactiveFormsModule, NgbModule],
-      providers: [
-        { provide: AuthorizationService, useValue: authSpy },
-        { provide: CandidateOpportunityService, useValue: candidateOppSpy },
-        { provide: JobService, useValue: jobSpy },
-        { provide: NgbModal, useValue: modalSpy },
-        provideHttpClient(withXhr(), withInterceptorsFromDi()),
-        provideHttpClientTesting()
-      ]
-    }).compileComponents();
+        await TestBed.configureTestingModule({
+            declarations: [OpportunityStageNextStepComponent],
+            imports: [FormsModule, ReactiveFormsModule, NgbModule],
+            providers: [
+                { provide: AuthorizationService, useValue: authSpy },
+                { provide: CandidateOpportunityService, useValue: candidateOppSpy },
+                { provide: JobService, useValue: jobSpy },
+                { provide: NgbModal, useValue: modalSpy },
+                provideHttpClient(withXhr(), withInterceptorsFromDi()),
+                provideHttpClientTesting()
+            ]
+        }).compileComponents();
 
-    authServiceSpy = TestBed.inject(AuthorizationService) as jasmine.SpyObj<AuthorizationService>;
-    candidateOpportunityServiceSpy = TestBed.inject(CandidateOpportunityService) as jasmine.SpyObj<CandidateOpportunityService>;
-    jobServiceSpy = TestBed.inject(JobService) as jasmine.SpyObj<JobService>;
-    modalServiceSpy = TestBed.inject(NgbModal) as jasmine.SpyObj<NgbModal>;
-  });
+        authServiceSpy = TestBed.inject(AuthorizationService) as MockedObject<AuthorizationService>;
+        candidateOpportunityServiceSpy = TestBed.inject(CandidateOpportunityService) as MockedObject<CandidateOpportunityService>;
+        jobServiceSpy = TestBed.inject(JobService) as MockedObject<JobService>;
+        modalServiceSpy = TestBed.inject(NgbModal) as MockedObject<NgbModal>;
+    });
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(OpportunityStageNextStepComponent);
-    component = fixture.componentInstance;
-    component.opp = mockCandidateOpportunity;
-    fixture.detectChanges();
-  });
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+    beforeEach(() => {
+        fixture = TestBed.createComponent(OpportunityStageNextStepComponent);
+        component = fixture.componentInstance;
+        component.opp = mockCandidateOpportunity;
+        fixture.detectChanges();
+    });
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
 
-  it('should display progress card when opp is provided', () => {
-    component.opp = mockCandidateOpportunity;
-    fixture.detectChanges();
-    const card = fixture.debugElement.query(By.css('tc-card'));
-    expect(card).toBeTruthy();
-  });
+    it('should display progress card when opp is provided', () => {
+        component.opp = mockCandidateOpportunity;
+        fixture.detectChanges();
+        const card = fixture.debugElement.query(By.css('tc-card'));
+        expect(card).toBeTruthy();
+    });
 
-  it('should display tc-loading indicator when updating', () => {
-    component.updating = true;
-    authServiceSpy.canEditCandidateOpp.and.returnValue(true);
-    fixture.detectChanges();
-    const loadingIndicator = fixture.debugElement.query(By.css('tc-loading'));
-    expect(loadingIndicator).toBeTruthy();
-  });
+    it('should display tc-loading indicator when updating', () => {
+        component.updating = true;
+        authServiceSpy.canEditCandidateOpp.mockReturnValue(true);
+        fixture.detectChanges();
+        const loadingIndicator = fixture.debugElement.query(By.css('tc-loading'));
+        expect(loadingIndicator).toBeTruthy();
+    });
 
-  it('should display error message when error is set', () => {
-    component.error = 'Some error';
-    fixture.detectChanges();
-    const errorElement = fixture.debugElement.query(By.css('.alert-danger'));
-    expect(errorElement).toBeTruthy();
-    expect(errorElement.nativeElement.textContent).toContain('Some error');
-  });
+    it('should display error message when error is set', () => {
+        component.error = 'Some error';
+        fixture.detectChanges();
+        const errorElement = fixture.debugElement.query(By.css('.alert-danger'));
+        expect(errorElement).toBeTruthy();
+        expect(errorElement.nativeElement.textContent).toContain('Some error');
+    });
 
-  it('should call editOppProgress when edit button is clicked', () => {
-    component.opp = mockCandidateOpportunity;
-    spyOn(component, 'editOppProgress');
-    component.updating = true;
-    authServiceSpy.canEditCandidateOpp.and.returnValue(true);
-    fixture.detectChanges();
-    const button = fixture.debugElement.query(By.css('.edit-opp-progress-btn'));
-    button.triggerEventHandler('onClick', null);
+    it('should call editOppProgress when edit button is clicked', () => {
+        component.opp = mockCandidateOpportunity;
+        vi.spyOn(component, 'editOppProgress').mockReturnValue(undefined);
+        component.updating = true;
+        authServiceSpy.canEditCandidateOpp.mockReturnValue(true);
+        fixture.detectChanges();
+        const button = fixture.debugElement.query(By.css('.edit-opp-progress-btn'));
+        button.triggerEventHandler('onClick', null);
 
-    fixture.detectChanges();
-    expect(component.editOppProgress).toHaveBeenCalled();
-  });
+        fixture.detectChanges();
+        expect(component.editOppProgress).toHaveBeenCalled();
+    });
 
-  it('should open EditOppComponent modal on editOppProgress', () => {
-    component.opp = mockCandidateOpportunity;
-    const modalRef = {
-      componentInstance: { opp: null },
-      result: Promise.resolve({} as OpportunityProgressParams)
-    };
-    modalServiceSpy.open.and.returnValue(modalRef as any);
+    it('should open EditOppComponent modal on editOppProgress', () => {
+        component.opp = mockCandidateOpportunity;
+        const modalRef = {
+            componentInstance: { opp: null },
+            result: Promise.resolve({} as OpportunityProgressParams)
+        };
+        modalServiceSpy.open.mockReturnValue(modalRef as any);
 
-    component.editOppProgress();
-    expect(modalServiceSpy.open).toHaveBeenCalledWith(EditOppComponent, { size: 'lg' });
-  });
+        component.editOppProgress();
+        expect(modalServiceSpy.open).toHaveBeenCalledWith(EditOppComponent, { size: 'lg' });
+    });
 
-  it('should update opportunity on successful modal result', async () => {
-    component.opp = mockCandidateOpportunity;
-    const modalRef = {
-      componentInstance: { opp: null },
-      result: Promise.resolve({} as OpportunityProgressParams)
-    };
-    modalServiceSpy.open.and.returnValue(modalRef as any);
-    spyOn(component as any, 'doUpdate'); // Use 'any' type to access private method
+    it('should update opportunity on successful modal result', async () => {
+        component.opp = mockCandidateOpportunity;
+        const modalRef = {
+            componentInstance: { opp: null },
+            result: Promise.resolve({} as OpportunityProgressParams)
+        };
+        modalServiceSpy.open.mockReturnValue(modalRef as any);
+        vi.spyOn(component as any, 'doUpdate').mockReturnValue(undefined); // Use 'any' type to access private method
 
-    component.editOppProgress();
-    await modalRef.result;
+        component.editOppProgress();
+        await modalRef.result;
 
-    expect((component as any).doUpdate).toHaveBeenCalledWith({});
-  });
+        expect((component as any).doUpdate).toHaveBeenCalledWith({});
+    });
 
-  it('should set updating and error on failed doUpdate', () => {
-    component.opp = mockCandidateOpportunity;
-    candidateOpportunityServiceSpy.updateCandidateOpportunity.and.returnValue(throwError('Error'));
+    it('should set updating and error on failed doUpdate', () => {
+        component.opp = mockCandidateOpportunity;
+        candidateOpportunityServiceSpy.updateCandidateOpportunity.mockReturnValue(throwError('Error'));
 
-    (component as any).doUpdate({} as OpportunityProgressParams);
-    expect(component.updating).toBeFalse();
-    expect(component.error).toBe('Error');
-  });
+        (component as any).doUpdate({} as OpportunityProgressParams);
+        expect(component.updating).toBe(false);
+        expect(component.error).toBe('Error');
+    });
 
-  it('should emit oppProgressUpdated on successful update', () => {
-    component.opp = mockCandidateOpportunity;
-    const updatedOpp = mockCandidateOpportunity;
-    updatedOpp.id=2;
-    candidateOpportunityServiceSpy.updateCandidateOpportunity.and.returnValue(of(updatedOpp));
-    spyOn(component.oppProgressUpdated, 'emit');
+    it('should emit oppProgressUpdated on successful update', () => {
+        component.opp = mockCandidateOpportunity;
+        const updatedOpp = mockCandidateOpportunity;
+        updatedOpp.id = 2;
+        candidateOpportunityServiceSpy.updateCandidateOpportunity.mockReturnValue(of(updatedOpp));
+        vi.spyOn(component.oppProgressUpdated, 'emit').mockReturnValue(undefined);
 
-    (component as any).doUpdate({} as OpportunityProgressParams);
-    expect(component.oppProgressUpdated.emit).toHaveBeenCalledWith(updatedOpp);
-    expect(component.updating).toBeFalse();
-  });
+        (component as any).doUpdate({} as OpportunityProgressParams);
+        expect(component.oppProgressUpdated.emit).toHaveBeenCalledWith(updatedOpp);
+        expect(component.updating).toBe(false);
+    });
 
-  it('should determine editable based on permissions', () => {
-    component.opp = mockCandidateOpportunity
-    authServiceSpy.canEditCandidateOpp.and.returnValue(true);
-    authServiceSpy.canChangeJobStage.and.returnValue(false);
+    it('should determine editable based on permissions', () => {
+        component.opp = mockCandidateOpportunity;
+        authServiceSpy.canEditCandidateOpp.mockReturnValue(true);
+        authServiceSpy.canChangeJobStage.mockReturnValue(false);
 
-    expect(component.editable).toBeTrue();
-  });
+        expect(component.editable).toBe(true);
+    });
 });

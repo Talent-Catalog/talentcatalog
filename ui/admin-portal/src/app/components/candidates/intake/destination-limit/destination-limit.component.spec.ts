@@ -22,35 +22,36 @@ import {AutosaveStatusComponent} from "../../../util/autosave-status/autosave-st
 import {provideHttpClientTesting} from "@angular/common/http/testing";
 import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {NgSelectModule} from "@ng-select/ng-select";
+import {expect} from 'vitest';
 
 describe('DestinationLimitComponent', () => {
-  let component: DestinationLimitComponent;
-  let fixture: ComponentFixture<DestinationLimitComponent>;
+    let component: DestinationLimitComponent;
+    let fixture: ComponentFixture<DestinationLimitComponent>;
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      declarations: [DestinationLimitComponent,AutosaveStatusComponent],
-      imports: [NgSelectModule,FormsModule,ReactiveFormsModule],
-      providers: [UntypedFormBuilder, CandidateService, provideHttpClient(withXhr(), withInterceptorsFromDi()), provideHttpClientTesting()]
-    })
-    .compileComponents();
-  });
-  beforeEach(() => {
-    fixture = TestBed.createComponent(DestinationLimitComponent);
-    component = fixture.componentInstance;
-    component.candidateIntakeData = {
-      destLimit: YesNo.Yes, // Set any required fields
-      destLimitNotes: 'Test notes' // Set any required fields
-    };
-    fixture.detectChanges();
-  });
+    beforeEach(async () => {
+        await TestBed.configureTestingModule({
+            declarations: [DestinationLimitComponent, AutosaveStatusComponent],
+            imports: [NgSelectModule, FormsModule, ReactiveFormsModule],
+            providers: [UntypedFormBuilder, CandidateService, provideHttpClient(withXhr(), withInterceptorsFromDi()), provideHttpClientTesting()]
+        })
+            .compileComponents();
+    });
+    beforeEach(() => {
+        fixture = TestBed.createComponent(DestinationLimitComponent);
+        component = fixture.componentInstance;
+        component.candidateIntakeData = {
+            destLimit: YesNo.Yes, // Set any required fields
+            destLimitNotes: 'Test notes' // Set any required fields
+        };
+        fixture.detectChanges();
+    });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
 
-  it('should initialize with provided candidate intake data', () => {
-    expect(component.form.value.destLimit).toBe(YesNo.Yes);
-    expect(component.form.value.destLimitNotes).toBe('Test notes');
-  });
+    it('should initialize with provided candidate intake data', () => {
+        expect(component.form.value.destLimit).toBe(YesNo.Yes);
+        expect(component.form.value.destLimitNotes).toBe('Test notes');
+    });
 });

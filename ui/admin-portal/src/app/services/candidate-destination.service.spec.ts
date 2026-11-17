@@ -23,6 +23,7 @@ import {CandidateDestination} from '../model/candidate-destination';
 import {YesNoUnsure} from "../model/candidate";
 import {MockJob} from "../MockData/MockJob";
 import {MockCandidate} from "../MockData/MockCandidate";
+import {expect} from 'vitest';
 
 describe('CandidateDestinationService', () => {
   let service: CandidateDestinationService;

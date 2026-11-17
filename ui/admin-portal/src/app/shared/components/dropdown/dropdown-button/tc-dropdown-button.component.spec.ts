@@ -2,6 +2,7 @@ import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {provideRouter} from '@angular/router';
 
 import {TcDropdownButtonComponent} from './tc-dropdown-button.component';
+import {expect} from 'vitest';
 
 describe('TcDropdownButtonComponent', () => {
   let component: TcDropdownButtonComponent;

@@ -22,6 +22,7 @@ import {environment} from '../../environments/environment';
 import {HelpLink, SearchHelpLinkRequest, UpdateHelpLinkRequest} from '../model/help-link';
 import {SearchResults} from '../model/search-results';
 import {MockJob} from "../MockData/MockJob";
+import {expect} from 'vitest';
 
 describe('HelpLinkService', () => {
   let service: HelpLinkService;

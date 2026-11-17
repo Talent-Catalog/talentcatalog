@@ -14,16 +14,10 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {
-  checkForAbandoned,
-  checkForCompleted,
-  checkForOngoing,
-  checkForOverdue,
-  TaskAssignment,
-  taskAssignmentSort
-} from './task-assignment';
+import {checkForAbandoned, checkForCompleted, checkForOngoing, checkForOverdue, TaskAssignment, taskAssignmentSort} from './task-assignment';
 import {Task, TaskType, UploadType} from './task';
 import {Status} from "./base";
+import {expect} from 'vitest';
 
 describe('Task Assignment Sort Function', () => {
   const mockTask1: Task = {

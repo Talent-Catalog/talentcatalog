@@ -14,14 +14,12 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
+import type {MockedObject} from "vitest";
 import {provideHttpClientTesting} from "@angular/common/http/testing";
 import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {By} from "@angular/platform-browser";
 import {DatePipe, TitleCasePipe} from "@angular/common";
-import {
-  mockPublishedDocColumnConfig,
-  mockPublishedDocColumnConfigs
-} from "../../../MockData/MockPublishDoc";
+import {mockPublishedDocColumnConfig, mockPublishedDocColumnConfigs} from "../../../MockData/MockPublishDoc";
 import {PublishedDocColumnSelectorComponent} from "./published-doc-column-selector.component";
 import {ComponentFixture, TestBed} from "@angular/core/testing";
 import {FormsModule} from "@angular/forms";
@@ -30,87 +28,93 @@ import {NgSelectModule} from "@ng-select/ng-select";
 import {DragulaModule, DragulaService} from "ng2-dragula";
 import {PublishedDocColumnService} from "../../../services/published-doc-column.service";
 import {CandidateSourceService} from "../../../services/candidate-source.service";
+import {expect, vi} from 'vitest';
 
 describe('PublishedDocColumnSelectorComponent', () => {
-  let component: PublishedDocColumnSelectorComponent;
-  let fixture: ComponentFixture<PublishedDocColumnSelectorComponent>;
-  let publishedDocColumnServiceSpy: jasmine.SpyObj<PublishedDocColumnService>;
-  let activeModalSpy: jasmine.SpyObj<NgbActiveModal>;
-  beforeEach(async () => {
-    const publishedDocColumnService = jasmine.createSpyObj('PublishedDocColumnService', ['getDefaultColumns']);
-    const activeModal = jasmine.createSpyObj('NgbActiveModal', ['dismiss', 'close']);
-    await TestBed.configureTestingModule({
+    let component: PublishedDocColumnSelectorComponent;
+    let fixture: ComponentFixture<PublishedDocColumnSelectorComponent>;
+    let publishedDocColumnServiceSpy: MockedObject<PublishedDocColumnService>;
+    let activeModalSpy: MockedObject<NgbActiveModal>;
+    beforeEach(async () => {
+        const publishedDocColumnService = {
+            getDefaultColumns: vi.fn().mockName("PublishedDocColumnService.getDefaultColumns")
+        };
+        const activeModal = {
+            dismiss: vi.fn().mockName("NgbActiveModal.dismiss"),
+            close: vi.fn().mockName("NgbActiveModal.close")
+        };
+        await TestBed.configureTestingModule({
 
-      declarations: [ PublishedDocColumnSelectorComponent],
-      imports: [
-        FormsModule,
-        NgbDropdownModule,
-        NgSelectModule,
-        DragulaModule.forRoot()
-      ],
-      providers: [
-        { provide: PublishedDocColumnService, useValue: publishedDocColumnService },
-        DatePipe,
-        TitleCasePipe,
-        CandidateSourceService,
-        { provide: NgbActiveModal, useValue: activeModal },
-        NgbDropdownConfig,
-        DragulaService,
-        provideHttpClient(withXhr(), withInterceptorsFromDi()),
-        provideHttpClientTesting()
-      ]
-    })
-    .compileComponents();
-    activeModalSpy = TestBed.inject(NgbActiveModal) as jasmine.SpyObj<NgbActiveModal>;
-    publishedDocColumnServiceSpy = TestBed.inject(PublishedDocColumnService) as jasmine.SpyObj<PublishedDocColumnService>;
-  });
-  beforeEach(() => {
-    fixture = TestBed.createComponent(PublishedDocColumnSelectorComponent);
-    component = fixture.componentInstance;
-    component.selectedColumns = mockPublishedDocColumnConfigs;
-    fixture.detectChanges();
-  });
+            declarations: [PublishedDocColumnSelectorComponent],
+            imports: [
+                FormsModule,
+                NgbDropdownModule,
+                NgSelectModule,
+                DragulaModule.forRoot()
+            ],
+            providers: [
+                { provide: PublishedDocColumnService, useValue: publishedDocColumnService },
+                DatePipe,
+                TitleCasePipe,
+                CandidateSourceService,
+                { provide: NgbActiveModal, useValue: activeModal },
+                NgbDropdownConfig,
+                DragulaService,
+                provideHttpClient(withXhr(), withInterceptorsFromDi()),
+                provideHttpClientTesting()
+            ]
+        })
+            .compileComponents();
+        activeModalSpy = TestBed.inject(NgbActiveModal) as MockedObject<NgbActiveModal>;
+        publishedDocColumnServiceSpy = TestBed.inject(PublishedDocColumnService) as MockedObject<PublishedDocColumnService>;
+    });
+    beforeEach(() => {
+        fixture = TestBed.createComponent(PublishedDocColumnSelectorComponent);
+        component = fixture.componentInstance;
+        component.selectedColumns = mockPublishedDocColumnConfigs;
+        fixture.detectChanges();
+    });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
 
-  it('should display error message when error exists', () => {
-    component.selectedColumns = mockPublishedDocColumnConfigs;
-    component.error = 'Error message';
-    fixture.detectChanges();
-    const alertElement = fixture.debugElement.query(By.css('.alert-danger'));
-    expect(alertElement).toBeTruthy();
-    expect(alertElement.nativeElement.textContent).toContain('Error message');
-  });
+    it('should display error message when error exists', () => {
+        component.selectedColumns = mockPublishedDocColumnConfigs;
+        component.error = 'Error message';
+        fixture.detectChanges();
+        const alertElement = fixture.debugElement.query(By.css('.alert-danger'));
+        expect(alertElement).toBeTruthy();
+        expect(alertElement.nativeElement.textContent).toContain('Error message');
+    });
 
-  it('should remove column when removeColumn is called', () => {
-    component.selectedColumns = [mockPublishedDocColumnConfig];
-    component.removeColumn(mockPublishedDocColumnConfig);
-    expect(component.selectedColumns.length).toBe(0);
-  });
+    it('should remove column when removeColumn is called', () => {
+        component.selectedColumns = [mockPublishedDocColumnConfig];
+        component.removeColumn(mockPublishedDocColumnConfig);
+        expect(component.selectedColumns.length).toBe(0);
+    });
 
-  it('should add column when addColumn is called', () => {
-    component.addColumn(mockPublishedDocColumnConfig);
-    expect(component.selectedColumns.length).toBe(3);
-    expect(component.selectedColumns[2].columnDef.key).toBe('mockKey');
-  });
+    it('should add column when addColumn is called', () => {
+        component.addColumn(mockPublishedDocColumnConfig);
+        expect(component.selectedColumns.length).toBe(3);
+        expect(component.selectedColumns[2].columnDef.key).toBe('mockKey');
+    });
 
-  it('should update field when update is called', () => {
-    const field = mockPublishedDocColumnConfig;
-    expect(component.update(field)).toEqual(field);
-  });
+    it('should update field when update is called', () => {
+        const field = mockPublishedDocColumnConfig;
+        expect(component.update(field)).toEqual(field);
+    });
 
-  it('should call activeModal.close(selectedColumns) when submit is called', () => {
-    component.selectedColumns = mockPublishedDocColumnConfigs;
-    component.submit();
-    expect(activeModalSpy.close).toHaveBeenCalledWith(component.selectedColumns);
-  });
+    it('should call activeModal.close(selectedColumns) when submit is called', () => {
+        component.selectedColumns = mockPublishedDocColumnConfigs;
+        component.submit();
+        expect(activeModalSpy.close).toHaveBeenCalledWith(component.selectedColumns);
+    });
 
-  it('should call activeModal.dismiss(false) when cancel is called', () => {
-    component.cancel();
-    expect(activeModalSpy.dismiss).toHaveBeenCalledWith(false);
-  });
+    it('should call activeModal.dismiss(false) when cancel is called', () => {
+        component.cancel();
+        expect(activeModalSpy.dismiss).toHaveBeenCalledWith(false);
+    });
 
 
 });

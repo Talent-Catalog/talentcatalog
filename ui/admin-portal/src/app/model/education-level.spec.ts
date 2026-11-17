@@ -15,6 +15,7 @@
  */
 
 import {EducationLevel} from "./education-level";
+import {expect} from 'vitest';
 
 describe('EducationLevel interface', () => {
   it('should create an EducationLevel instance', () => {

@@ -14,6 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
+import type {MockedObject} from "vitest";
 import {SfJoblinkComponent, SfJoblinkValidationEvent} from "./sf-joblink.component";
 import {ComponentFixture, TestBed, waitForAsync} from "@angular/core/testing";
 import {SalesforceService} from "../../../services/salesforce.service";
@@ -23,106 +24,110 @@ import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/commo
 import {NgSelectModule} from "@ng-select/ng-select";
 import {of, throwError} from "rxjs";
 import {mockCandidateOpportunity} from "../../../MockData/MockCandidateOpportunity";
+import {expect, vi} from 'vitest';
 
 describe('SfJoblinkComponent', () => {
-  let component: SfJoblinkComponent;
-  let fixture: ComponentFixture<SfJoblinkComponent>;
-  let salesforceServiceSpy: jasmine.SpyObj<SalesforceService>;
+    let component: SfJoblinkComponent;
+    let fixture: ComponentFixture<SfJoblinkComponent>;
+    let salesforceServiceSpy: MockedObject<SalesforceService>;
 
-  beforeEach(waitForAsync(() => {
-    const spy = jasmine.createSpyObj('SalesforceService', ['getOpportunity'],['pipe']);
+    beforeEach(waitForAsync(() => {
+        // TODO: vitest-migration: Cannot transform jasmine.createSpyObj with a dynamic property map. Please migrate this manually. See: https://vitest.dev/api/vi.html#vi-fn
+        const spy = {
+            getOpportunity: vi.fn().mockName("SalesforceService.getOpportunity")
+        };
 
-    TestBed.configureTestingModule({
-      declarations: [SfJoblinkComponent],
-      imports: [ReactiveFormsModule,FormsModule,NgSelectModule],
-      providers: [
-        UntypedFormBuilder,
-        { provide: SalesforceService, useValue: spy },
-        provideHttpClient(withXhr(), withInterceptorsFromDi()),
-        provideHttpClientTesting()
-      ]
-    }).compileComponents();
+        TestBed.configureTestingModule({
+            declarations: [SfJoblinkComponent],
+            imports: [ReactiveFormsModule, FormsModule, NgSelectModule],
+            providers: [
+                UntypedFormBuilder,
+                { provide: SalesforceService, useValue: spy },
+                provideHttpClient(withXhr(), withInterceptorsFromDi()),
+                provideHttpClientTesting()
+            ]
+        }).compileComponents();
 
-    salesforceServiceSpy = TestBed.inject(SalesforceService) as jasmine.SpyObj<SalesforceService>;
-  }));
+        salesforceServiceSpy = TestBed.inject(SalesforceService) as MockedObject<SalesforceService>;
+    }));
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(SfJoblinkComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
-
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
-
-  it('should initialize form with sfJoblink control', () => {
-    expect(component.form.contains('sfJoblink')).toBe(true);
-  });
-
-  it('should show error message for invalid URL pattern', () => {
-    const input = component.form.controls['sfJoblink'];
-    input.setValue('invalid-url');
-    input.markAsTouched();
-    fixture.detectChanges();
-
-    const errorMessage = fixture.nativeElement.querySelector('tc-alert');
-    expect(errorMessage).toBeTruthy();
-  });
-
-  it('should validate empty URL as valid', (done: DoneFn) => {
-    component.ngOnInit();
-    const control = component.form.controls['sfJoblink'];
-    control.setValue('');
-
-    (component as any).sfJoblinkValidator()(control).subscribe(result => {
-      expect(result).toBeNull();
-      done();
+    beforeEach(() => {
+        fixture = TestBed.createComponent(SfJoblinkComponent);
+        component = fixture.componentInstance;
+        fixture.detectChanges();
     });
-  });
 
-
-  it('should validate valid salesforce URL', (done: DoneFn) => {
-    salesforceServiceSpy.getOpportunity.and.returnValue(of(mockCandidateOpportunity));
-    spyOn(component.sfJoblinkValidation, 'emit').and.callThrough();
-    component.ngOnInit();
-    const control = component.form.controls['sfJoblink'];
-    control.setValue('https://valid.salesforce.com');
-
-    (component as any).sfJoblinkValidator()(control).subscribe(result => {
-      expect(result).toBeNull();
-      expect(component.sfJoblinkValidation.emit).toHaveBeenCalledWith(jasmine.any(SfJoblinkValidationEvent));
-      expect(salesforceServiceSpy.getOpportunity).toHaveBeenCalled();
-      done();
+    it('should create', () => {
+        expect(component).toBeTruthy();
     });
-  });
 
-
-  it('should invalidate URL with null opportunity', (done: DoneFn) => {
-    salesforceServiceSpy.getOpportunity.and.returnValue(of(null));
-
-    component.ngOnInit();
-    const control = component.form.controls['sfJoblink'];
-    control.setValue('https://invalid.salesforce.com');
-
-    (component as any).sfJoblinkValidator()(control).subscribe(result => {
-      expect(result).toEqual({ 'invalidSfJoblink': true });
-      done();
+    it('should initialize form with sfJoblink control', () => {
+        expect(component.form.contains('sfJoblink')).toBe(true);
     });
-  });
 
-  it('should handle error during validation', (done: DoneFn) => {
-    const error = new Error('Server error');
-    salesforceServiceSpy.getOpportunity.and.returnValue(throwError(error));
-    spyOn(component.updateError, 'emit').and.callThrough();
-    component.ngOnInit();
-    const control = component.form.controls['sfJoblink'];
-    control.setValue('https://error.salesforce.com');
+    it('should show error message for invalid URL pattern', () => {
+        const input = component.form.controls['sfJoblink'];
+        input.setValue('invalid-url');
+        input.markAsTouched();
+        fixture.detectChanges();
 
-    (component as any).sfJoblinkValidator()(control).subscribe(result => {
-      expect(result).toBeNull();
-      expect(component.updateError.emit).toHaveBeenCalledWith(error);
-      done();
+        const errorMessage = fixture.nativeElement.querySelector('tc-alert');
+        expect(errorMessage).toBeTruthy();
     });
-  });
+
+    it('should validate empty URL as valid', async () => {
+        component.ngOnInit();
+        const control = component.form.controls['sfJoblink'];
+        control.setValue('');
+
+        (component as any).sfJoblinkValidator()(control).subscribe(result => {
+            expect(result).toBeNull();
+            ;
+        });
+    });
+
+
+    it('should validate valid salesforce URL', async () => {
+        salesforceServiceSpy.getOpportunity.mockReturnValue(of(mockCandidateOpportunity));
+        vi.spyOn(component.sfJoblinkValidation, 'emit');
+        component.ngOnInit();
+        const control = component.form.controls['sfJoblink'];
+        control.setValue('https://valid.salesforce.com');
+
+        (component as any).sfJoblinkValidator()(control).subscribe(result => {
+            expect(result).toBeNull();
+            expect(component.sfJoblinkValidation.emit).toHaveBeenCalledWith(expect.any(SfJoblinkValidationEvent));
+            expect(salesforceServiceSpy.getOpportunity).toHaveBeenCalled();
+            ;
+        });
+    });
+
+
+    it('should invalidate URL with null opportunity', async () => {
+        salesforceServiceSpy.getOpportunity.mockReturnValue(of(null));
+
+        component.ngOnInit();
+        const control = component.form.controls['sfJoblink'];
+        control.setValue('https://invalid.salesforce.com');
+
+        (component as any).sfJoblinkValidator()(control).subscribe(result => {
+            expect(result).toEqual({ 'invalidSfJoblink': true });
+            ;
+        });
+    });
+
+    it('should handle error during validation', async () => {
+        const error = new Error('Server error');
+        salesforceServiceSpy.getOpportunity.mockReturnValue(throwError(error));
+        vi.spyOn(component.updateError, 'emit');
+        component.ngOnInit();
+        const control = component.form.controls['sfJoblink'];
+        control.setValue('https://error.salesforce.com');
+
+        (component as any).sfJoblinkValidator()(control).subscribe(result => {
+            expect(result).toBeNull();
+            expect(component.updateError.emit).toHaveBeenCalledWith(error);
+            ;
+        });
+    });
 });

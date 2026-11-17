@@ -14,6 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
+import type {MockedObject} from "vitest";
 import {LanguageLevelFormControlComponent} from "./language-level-form-control.component";
 import {ComponentFixture, TestBed} from "@angular/core/testing";
 import {LanguageService} from "../../../../services/language.service";
@@ -24,120 +25,125 @@ import {ReactiveFormsModule} from "@angular/forms";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {NO_ERRORS_SCHEMA} from "@angular/core";
 import {of} from "rxjs";
+import {expect, vi} from 'vitest';
 
 describe('LanguageLevelFormControlComponent', () => {
-  let component: LanguageLevelFormControlComponent;
-  let fixture: ComponentFixture<LanguageLevelFormControlComponent>;
-  let languageService: jasmine.SpyObj<LanguageService>;
-  let languageLevelService: jasmine.SpyObj<LanguageLevelService>;
+    let component: LanguageLevelFormControlComponent;
+    let fixture: ComponentFixture<LanguageLevelFormControlComponent>;
+    let languageService: MockedObject<LanguageService>;
+    let languageLevelService: MockedObject<LanguageLevelService>;
 
-  const mockLanguages: Language[] = [{ id: 1, name: 'English',status:'active' }, { id: 2, name: 'Spanish',status:'inactive' }];
-  const mockLanguageLevels: LanguageLevel[] = [
-    { id:1, level: 1, name: 'Basic', cefrLevel: 'A1', status:'active' },
-    { id:2, level: 2, name: 'Intermediate', cefrLevel: 'B1', status:'active' },
-    { id:3, level: 3, name: 'Advanced', cefrLevel: 'B2', status:'active'  }
-  ];
+    const mockLanguages: Language[] = [{ id: 1, name: 'English', status: 'active' }, { id: 2, name: 'Spanish', status: 'inactive' }];
+    const mockLanguageLevels: LanguageLevel[] = [
+        { id: 1, level: 1, name: 'Basic', cefrLevel: 'A1', status: 'active' },
+        { id: 2, level: 2, name: 'Intermediate', cefrLevel: 'B1', status: 'active' },
+        { id: 3, level: 3, name: 'Advanced', cefrLevel: 'B2', status: 'active' }
+    ];
 
-  beforeEach(async () => {
-    const languageServiceSpy = jasmine.createSpyObj('LanguageService', ['listLanguages']);
-    const languageLevelServiceSpy = jasmine.createSpyObj('LanguageLevelService', ['listLanguageLevels']);
+    beforeEach(async () => {
+        const languageServiceSpy = {
+            listLanguages: vi.fn().mockName("LanguageService.listLanguages")
+        };
+        const languageLevelServiceSpy = {
+            listLanguageLevels: vi.fn().mockName("LanguageLevelService.listLanguageLevels")
+        };
 
-    await TestBed.configureTestingModule({
-      imports: [ReactiveFormsModule, NgSelectModule],
-      declarations: [LanguageLevelFormControlComponent],
-      providers: [
-        { provide: LanguageService, useValue: languageServiceSpy },
-        { provide: LanguageLevelService, useValue: languageLevelServiceSpy }
-      ],
-      schemas: [NO_ERRORS_SCHEMA]
-    }).compileComponents();
+        await TestBed.configureTestingModule({
+            imports: [ReactiveFormsModule, NgSelectModule],
+            declarations: [LanguageLevelFormControlComponent],
+            providers: [
+                { provide: LanguageService, useValue: languageServiceSpy },
+                { provide: LanguageLevelService, useValue: languageLevelServiceSpy }
+            ],
+            schemas: [NO_ERRORS_SCHEMA]
+        }).compileComponents();
 
-    languageService = TestBed.inject(LanguageService) as jasmine.SpyObj<LanguageService>;
-    languageLevelService = TestBed.inject(LanguageLevelService) as jasmine.SpyObj<LanguageLevelService>;
+        languageService = TestBed.inject(LanguageService) as MockedObject<LanguageService>;
+        languageLevelService = TestBed.inject(LanguageLevelService) as MockedObject<LanguageLevelService>;
 
-    languageService.listLanguages.and.returnValue(of(mockLanguages));
-    languageLevelService.listLanguageLevels.and.returnValue(of(mockLanguageLevels));
-  });
-
-  beforeEach(() => {
-    fixture = TestBed.createComponent(LanguageLevelFormControlComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
-
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
-
-  it('should initialize form with default values', () => {
-    expect(component.form).toBeDefined();
-    expect(component.form.value).toEqual({
-      languageId: null,
-      writtenLevel: null,
-      spokenLevel: null
+        languageService.listLanguages.mockReturnValue(of(mockLanguages));
+        languageLevelService.listLanguageLevels.mockReturnValue(of(mockLanguageLevels));
     });
-  });
 
-  it('should populate languages on init', () => {
-    expect(languageService.listLanguages).toHaveBeenCalled();
-    expect(component.languages).toEqual(mockLanguages);
-  });
+    beforeEach(() => {
+        fixture = TestBed.createComponent(LanguageLevelFormControlComponent);
+        component = fixture.componentInstance;
+        fixture.detectChanges();
+    });
 
-  it('should populate language levels on init', () => {
-    expect(languageLevelService.listLanguageLevels).toHaveBeenCalled();
-    expect(component.languageLevels).toEqual(mockLanguageLevels);
-  });
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
 
-  it('should emit modelUpdated event on form value changes', () => {
-    spyOn(component.modelUpdated, 'emit');
-    component.form.controls['languageId'].setValue(1);
-    expect(component.modelUpdated.emit).toHaveBeenCalledWith(component.form.value);
-  });
+    it('should initialize form with default values', () => {
+        expect(component.form).toBeDefined();
+        expect(component.form.value).toEqual({
+            languageId: null,
+            writtenLevel: null,
+            spokenLevel: null
+        });
+    });
 
-  it('should toggle showMenu when toggle is called', () => {
-    component.showMenu = false;
-    component.toggle();
-    expect(component.showMenu).toBeTrue();
-    component.toggle();
-    expect(component.showMenu).toBeFalse();
-  });
+    it('should populate languages on init', () => {
+        expect(languageService.listLanguages).toHaveBeenCalled();
+        expect(component.languages).toEqual(mockLanguages);
+    });
 
-  it('should close the menu when close is called', () => {
-    component.showMenu = true;
-    component.close();
-    expect(component.showMenu).toBeFalse();
-  });
+    it('should populate language levels on init', () => {
+        expect(languageLevelService.listLanguageLevels).toHaveBeenCalled();
+        expect(component.languageLevels).toEqual(mockLanguageLevels);
+    });
 
-  it('should clear proficiencies when clearProficiencies is called', () => {
-    component.form.patchValue({ spokenLevel: 1, writtenLevel: 2 });
-    component.clearProficiencies();
-    expect(component.form.value.spokenLevel).toBeNull();
-    expect(component.form.value.writtenLevel).toBeNull();
-  });
+    it('should emit modelUpdated event on form value changes', () => {
+        vi.spyOn(component.modelUpdated, 'emit').mockReturnValue(undefined);
+        component.form.controls['languageId'].setValue(1);
+        expect(component.modelUpdated.emit).toHaveBeenCalledWith(component.form.value);
+    });
 
-  it('should clear spoken level when clearSpoken is called', () => {
-    component.form.patchValue({ spokenLevel: 1 });
-    component.clearSpoken();
-    expect(component.form.value.spokenLevel).toBeNull();
-  });
+    it('should toggle showMenu when toggle is called', () => {
+        component.showMenu = false;
+        component.toggle();
+        expect(component.showMenu).toBe(true);
+        component.toggle();
+        expect(component.showMenu).toBe(false);
+    });
 
-  it('should clear written level when clearWritten is called', () => {
-    component.form.patchValue({ writtenLevel: 1 });
-    component.clearWritten();
-    expect(component.form.value.writtenLevel).toBeNull();
-  });
+    it('should close the menu when close is called', () => {
+        component.showMenu = true;
+        component.close();
+        expect(component.showMenu).toBe(false);
+    });
 
-  it('should disable language input when languageDisabled is true', () => {
-    component.languageDisabled = true;
-    component.ngOnInit();
-    expect(component.form.controls['languageId'].disabled).toBeTrue();
-  });
+    it('should clear proficiencies when clearProficiencies is called', () => {
+        component.form.patchValue({ spokenLevel: 1, writtenLevel: 2 });
+        component.clearProficiencies();
+        expect(component.form.value.spokenLevel).toBeNull();
+        expect(component.form.value.writtenLevel).toBeNull();
+    });
 
-  it('should render level correctly', () => {
-    component.languages = mockLanguages;
-    component.languageLevels = mockLanguageLevels;
-    component.form.patchValue({ languageId: 1, writtenLevel: 2, spokenLevel: 3 });
-    const levelString = component.renderLevel();
-    expect(levelString).toBe('English (Spoken: Advanced, Written: Intermediate)');
-  });
+    it('should clear spoken level when clearSpoken is called', () => {
+        component.form.patchValue({ spokenLevel: 1 });
+        component.clearSpoken();
+        expect(component.form.value.spokenLevel).toBeNull();
+    });
+
+    it('should clear written level when clearWritten is called', () => {
+        component.form.patchValue({ writtenLevel: 1 });
+        component.clearWritten();
+        expect(component.form.value.writtenLevel).toBeNull();
+    });
+
+    it('should disable language input when languageDisabled is true', () => {
+        component.languageDisabled = true;
+        component.ngOnInit();
+        expect(component.form.controls['languageId'].disabled).toBe(true);
+    });
+
+    it('should render level correctly', () => {
+        component.languages = mockLanguages;
+        component.languageLevels = mockLanguageLevels;
+        component.form.patchValue({ languageId: 1, writtenLevel: 2, spokenLevel: 3 });
+        const levelString = component.renderLevel();
+        expect(levelString).toBe('English (Spoken: Advanced, Written: Intermediate)');
+    });
 });

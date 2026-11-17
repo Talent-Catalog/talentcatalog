@@ -15,6 +15,7 @@
  */
 
 import {Industry} from "./industry";
+import {expect} from 'vitest';
 
 describe('Industry', () => {
   it('should create an Industry instance', () => {

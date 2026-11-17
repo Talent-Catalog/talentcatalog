@@ -14,6 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
+import type {MockedObject} from "vitest";
 import {JoblinkComponent} from "./joblink.component";
 import {ComponentFixture, TestBed} from "@angular/core/testing";
 import {JobService} from "../../../services/job.service";
@@ -23,61 +24,66 @@ import {of} from "rxjs";
 import {MockJob} from "../../../MockData/MockJob";
 import {SearchResults} from "../../../model/search-results";
 import {Job} from "../../../model/job";
+import {expect, vi} from 'vitest';
 
 describe('JoblinkComponent', () => {
-  let component: JoblinkComponent;
-  let fixture: ComponentFixture<JoblinkComponent>;
-  let jobService: jasmine.SpyObj<JobService>;
-  const searchResults: SearchResults<Job> = {
-    first: false,
-    last: false,
-    number: 0,
-    size: 0,
-    totalPages: 0,
-    totalElements: 1, content: [MockJob] };
-  beforeEach(async () => {
-    const jobServiceSpy = jasmine.createSpyObj('JobService', ['searchPaged', 'get']);
+    let component: JoblinkComponent;
+    let fixture: ComponentFixture<JoblinkComponent>;
+    let jobService: MockedObject<JobService>;
+    const searchResults: SearchResults<Job> = {
+        first: false,
+        last: false,
+        number: 0,
+        size: 0,
+        totalPages: 0,
+        totalElements: 1, content: [MockJob]
+    };
+    beforeEach(async () => {
+        const jobServiceSpy = {
+            searchPaged: vi.fn().mockName("JobService.searchPaged"),
+            get: vi.fn().mockName("JobService.get")
+        };
 
-    await TestBed.configureTestingModule({
-      imports: [FormsModule, NgbTypeaheadModule],
-      declarations: [ JoblinkComponent ],
-      providers: [
-        { provide: JobService, useValue: jobServiceSpy }
-      ]
-    })
-    .compileComponents();
+        await TestBed.configureTestingModule({
+            imports: [FormsModule, NgbTypeaheadModule],
+            declarations: [JoblinkComponent],
+            providers: [
+                { provide: JobService, useValue: jobServiceSpy }
+            ]
+        })
+            .compileComponents();
 
-    jobService = TestBed.inject(JobService) as jasmine.SpyObj<JobService>;
-  });
-
-  beforeEach(() => {
-    fixture = TestBed.createComponent(JoblinkComponent);
-    component = fixture.componentInstance;
-    jobService.get.and.returnValue(of(MockJob));
-    jobService.searchPaged.and.returnValue(of(searchResults));
-    fixture.detectChanges();
-  });
-
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
-
-  it('should initialize correctly', () => {
-    component.jobId = 1;
-    component.currentJobName = 'XYZ';
-
-    component.ngOnChanges({});
-
-    expect(component.searchHeading).toBe('Change job association');
-  });
-
-  it('should emit job selection correctly', (done) => {
-    const job = { name: 'Developer', id: 1 };
-    component.jobSelection.subscribe(selectedJob => {
-      expect(selectedJob).toEqual(job);
-      done();
+        jobService = TestBed.inject(JobService) as MockedObject<JobService>;
     });
 
-    component.selectSearchResult({ item: job } as NgbTypeaheadSelectItemEvent);
-  });
+    beforeEach(() => {
+        fixture = TestBed.createComponent(JoblinkComponent);
+        component = fixture.componentInstance;
+        jobService.get.mockReturnValue(of(MockJob));
+        jobService.searchPaged.mockReturnValue(of(searchResults));
+        fixture.detectChanges();
+    });
+
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
+
+    it('should initialize correctly', () => {
+        component.jobId = 1;
+        component.currentJobName = 'XYZ';
+
+        component.ngOnChanges({});
+
+        expect(component.searchHeading).toBe('Change job association');
+    });
+
+    it('should emit job selection correctly', async () => {
+        const job = { name: 'Developer', id: 1 };
+        component.jobSelection.subscribe(selectedJob => {
+            expect(selectedJob).toEqual(job);
+            ;
+        });
+
+        component.selectSearchResult({ item: job } as NgbTypeaheadSelectItemEvent);
+    });
 });

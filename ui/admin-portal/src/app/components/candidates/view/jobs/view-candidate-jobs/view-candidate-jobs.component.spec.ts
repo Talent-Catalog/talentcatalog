@@ -20,43 +20,42 @@ import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {ViewCandidateJobsComponent} from "./view-candidate-jobs.component";
 import {ComponentFixture, TestBed} from "@angular/core/testing";
 import {MockCandidate} from "../../../../../MockData/MockCandidate";
-import {
-  CandidateOppsComponent
-} from "../../../../candidate-opp/candidate-opps/candidate-opps.component";
+import {CandidateOppsComponent} from "../../../../candidate-opp/candidate-opps/candidate-opps.component";
+import {expect} from 'vitest';
 
 describe('ViewCandidateJobsComponent', () => {
-  let component: ViewCandidateJobsComponent;
-  let fixture: ComponentFixture<ViewCandidateJobsComponent>;
+    let component: ViewCandidateJobsComponent;
+    let fixture: ComponentFixture<ViewCandidateJobsComponent>;
 
-  const mockCandidate = new MockCandidate();
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      imports: [FormsModule,ReactiveFormsModule],
-      providers: [provideHttpClient(withXhr(), withInterceptorsFromDi()), provideHttpClientTesting()],
-      declarations: [ ViewCandidateJobsComponent, CandidateOppsComponent ]
-    })
-    .compileComponents();
-  });
+    const mockCandidate = new MockCandidate();
+    beforeEach(async () => {
+        await TestBed.configureTestingModule({
+            imports: [FormsModule, ReactiveFormsModule],
+            providers: [provideHttpClient(withXhr(), withInterceptorsFromDi()), provideHttpClientTesting()],
+            declarations: [ViewCandidateJobsComponent, CandidateOppsComponent]
+        })
+            .compileComponents();
+    });
 
-  beforeEach(() => {
+    beforeEach(() => {
 
-    fixture = TestBed.createComponent(ViewCandidateJobsComponent);
-    component = fixture.componentInstance;
-    component.candidate = mockCandidate;
-    fixture.detectChanges();
-  });
+        fixture = TestBed.createComponent(ViewCandidateJobsComponent);
+        component = fixture.componentInstance;
+        component.candidate = mockCandidate;
+        fixture.detectChanges();
+    });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
 
-  it('should initialize with provided inputs', () => {
-    const preview = true;
-    component.candidate = mockCandidate;
-    component.preview = preview;
-    fixture.detectChanges();
+    it('should initialize with provided inputs', () => {
+        const preview = true;
+        component.candidate = mockCandidate;
+        component.preview = preview;
+        fixture.detectChanges();
 
-    expect(component.candidate).toBe(mockCandidate);
-    expect(component.preview).toBe(preview);
-  });
+        expect(component.candidate).toBe(mockCandidate);
+        expect(component.preview).toBe(preview);
+    });
 });

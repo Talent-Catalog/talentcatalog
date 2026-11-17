@@ -22,58 +22,59 @@ import {NgSelectModule} from "@ng-select/ng-select";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {CandidateService} from "../../../../services/candidate.service";
 import {CandidateIntakeData, IntRecruitReason} from "../../../../model/candidate";
+import {expect} from 'vitest';
 
 describe('IntRecruitmentComponent', () => {
-  let component: IntRecruitmentComponent;
-  let fixture: ComponentFixture<IntRecruitmentComponent>;
-  const mockCandidateIntakeData: CandidateIntakeData = {
-    intRecruitReasons: [IntRecruitReason.Other],
-    intRecruitOther: "Other"
-  }
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      declarations: [IntRecruitmentComponent, AutosaveStatusComponent],
-      imports: [NgSelectModule,FormsModule,ReactiveFormsModule],
-      providers: [
-        { provide: CandidateService },
-        provideHttpClient(withXhr(), withInterceptorsFromDi()),
-        provideHttpClientTesting()
-      ]
-    }).compileComponents();
-  });
+    let component: IntRecruitmentComponent;
+    let fixture: ComponentFixture<IntRecruitmentComponent>;
+    const mockCandidateIntakeData: CandidateIntakeData = {
+        intRecruitReasons: [IntRecruitReason.Other],
+        intRecruitOther: "Other"
+    };
+    beforeEach(async () => {
+        await TestBed.configureTestingModule({
+            declarations: [IntRecruitmentComponent, AutosaveStatusComponent],
+            imports: [NgSelectModule, FormsModule, ReactiveFormsModule],
+            providers: [
+                { provide: CandidateService },
+                provideHttpClient(withXhr(), withInterceptorsFromDi()),
+                provideHttpClientTesting()
+            ]
+        }).compileComponents();
+    });
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(IntRecruitmentComponent);
-    component = fixture.componentInstance;
-    component.candidateIntakeData = mockCandidateIntakeData; // Assign mock candidate data
-    fixture.detectChanges();
-  });
+    beforeEach(() => {
+        fixture = TestBed.createComponent(IntRecruitmentComponent);
+        component = fixture.componentInstance;
+        component.candidateIntakeData = mockCandidateIntakeData; // Assign mock candidate data
+        fixture.detectChanges();
+    });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
 
-  it('should initialize form with candidate data', () => {
-    expect(component.form.get('intRecruitReasons').value[0]).toEqual({ key: 'Other', stringValue: 'Other' });
-    expect(component.form.get('intRecruitOther').value).toEqual(mockCandidateIntakeData.intRecruitOther);
-  });
+    it('should initialize form with candidate data', () => {
+        expect(component.form.get('intRecruitReasons').value[0]).toEqual({ key: 'Other', stringValue: 'Other' });
+        expect(component.form.get('intRecruitOther').value).toEqual(mockCandidateIntakeData.intRecruitOther);
+    });
 
-  it('should display other textarea when "Other" option is selected', () => {
-    // Simulate selecting "Other" option
-    component.form.get('intRecruitReasons').setValue([{ key: 'Other', stringValue: 'Other' }]);
-    fixture.detectChanges();
+    it('should display other textarea when "Other" option is selected', () => {
+        // Simulate selecting "Other" option
+        component.form.get('intRecruitReasons').setValue([{ key: 'Other', stringValue: 'Other' }]);
+        fixture.detectChanges();
 
-    const otherTextarea = fixture.nativeElement.querySelector('#intRecruitOther');
-    expect(otherTextarea).toBeTruthy();
-  });
+        const otherTextarea = fixture.nativeElement.querySelector('#intRecruitOther');
+        expect(otherTextarea).toBeTruthy();
+    });
 
-  it('should not display other textarea when "Other" option is not selected', () => {
-    // Simulate selecting other options
-    component.form.get('intRecruitReasons').setValue([{ key: 'Option1', stringValue: 'Option 1' }]);
-    fixture.detectChanges();
+    it('should not display other textarea when "Other" option is not selected', () => {
+        // Simulate selecting other options
+        component.form.get('intRecruitReasons').setValue([{ key: 'Option1', stringValue: 'Option 1' }]);
+        fixture.detectChanges();
 
-    const otherTextarea = fixture.nativeElement.querySelector('#intRecruitOther');
-    expect(otherTextarea).toBeFalsy();
-  });
+        const otherTextarea = fixture.nativeElement.querySelector('#intRecruitOther');
+        expect(otherTextarea).toBeFalsy();
+    });
 });
 

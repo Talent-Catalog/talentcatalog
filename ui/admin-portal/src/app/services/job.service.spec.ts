@@ -24,6 +24,7 @@ import {UpdateLinkRequest} from '../components/util/input/input-link/input-link.
 import {JobChatUserInfo} from '../model/chat';
 import {environment} from "../../environments/environment";
 import {MockJob} from "../MockData/MockJob";
+import {expect} from 'vitest';
 
 describe('JobService', () => {
   let service: JobService;

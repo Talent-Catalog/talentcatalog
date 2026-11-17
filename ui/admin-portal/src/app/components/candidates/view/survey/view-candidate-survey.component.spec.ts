@@ -13,6 +13,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
+
+import type {MockedObject} from "vitest";
 import {ViewCandidateSurveyComponent} from "./view-candidate-survey.component";
 import {ComponentFixture, TestBed} from "@angular/core/testing";
 import {MockCandidate} from "../../../../MockData/MockCandidate";
@@ -22,61 +24,64 @@ import {CandidateService} from "../../../../services/candidate.service";
 import {NgbNavModule} from "@ng-bootstrap/ng-bootstrap";
 import {provideHttpClientTesting} from "@angular/common/http/testing";
 import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
+import {expect, vi} from 'vitest';
 
 describe('ViewCandidateSurveyComponent', () => {
-  let component: ViewCandidateSurveyComponent;
-  let fixture: ComponentFixture<ViewCandidateSurveyComponent>;
+    let component: ViewCandidateSurveyComponent;
+    let fixture: ComponentFixture<ViewCandidateSurveyComponent>;
 
-  const candidate = new MockCandidate();
-  let candidateService: jasmine.SpyObj<CandidateService>;
+    const candidate = new MockCandidate();
+    let candidateService: MockedObject<CandidateService>;
 
-  beforeEach(async () => {
-    const candidateServiceSpy = jasmine.createSpyObj('CandidateService', ['updateCandidate']);
-    await TestBed.configureTestingModule({
-      declarations: [ ViewCandidateSurveyComponent ],
-      providers: [
-        { provide: CandidateService, userValue: candidateServiceSpy },
-        provideHttpClient(withXhr(), withInterceptorsFromDi()),
-        provideHttpClientTesting()
-      ],
-      imports: [NgbNavModule],
-      schemas: [CUSTOM_ELEMENTS_SCHEMA]
-    }).compileComponents();
+    beforeEach(async () => {
+        const candidateServiceSpy = {
+            updateCandidate: vi.fn().mockName("CandidateService.updateCandidate")
+        };
+        await TestBed.configureTestingModule({
+            declarations: [ViewCandidateSurveyComponent],
+            providers: [
+                { provide: CandidateService, userValue: candidateServiceSpy },
+                provideHttpClient(withXhr(), withInterceptorsFromDi()),
+                provideHttpClientTesting()
+            ],
+            imports: [NgbNavModule],
+            schemas: [CUSTOM_ELEMENTS_SCHEMA]
+        }).compileComponents();
 
-    candidateService = TestBed.inject(CandidateService) as jasmine.SpyObj<CandidateService>;
-  });
+        candidateService = TestBed.inject(CandidateService) as MockedObject<CandidateService>;
+    });
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(ViewCandidateSurveyComponent);
-    component = fixture.componentInstance;
-    component.candidate = candidate;
-    component.editable = true; // Assume component is editable for testing the button visibility
-    fixture.detectChanges();
-  });
+    beforeEach(() => {
+        fixture = TestBed.createComponent(ViewCandidateSurveyComponent);
+        component = fixture.componentInstance;
+        component.candidate = candidate;
+        component.editable = true; // Assume component is editable for testing the button visibility
+        fixture.detectChanges();
+    });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
 
-  it('should display candidate survey source', () => {
-    const sourceEl: HTMLElement = fixture.debugElement.query(By.css('[appHighlightSearch]')).nativeElement;
-    expect(sourceEl.textContent).toContain('Survey');
-  });
+    it('should display candidate survey source', () => {
+        const sourceEl: HTMLElement = fixture.debugElement.query(By.css('[appHighlightSearch]')).nativeElement;
+        expect(sourceEl.textContent).toContain('Survey');
+    });
 
-  it('should display candidate survey comment', () => {
-    const commentEl: HTMLElement = fixture.debugElement.queryAll(By.css('[appHighlightSearch]'))[1].nativeElement;
-    expect(commentEl.textContent).toContain('Referred by a friend');
-  });
+    it('should display candidate survey comment', () => {
+        const commentEl: HTMLElement = fixture.debugElement.queryAll(By.css('[appHighlightSearch]'))[1].nativeElement;
+        expect(commentEl.textContent).toContain('Referred by a friend');
+    });
 
-  it('should display the edit button when editable is true', () => {
-    const editButton = fixture.nativeElement.querySelector('tc-card-header tc-button');
-    expect(editButton).toBeTruthy();
-  });
+    it('should display the edit button when editable is true', () => {
+        const editButton = fixture.nativeElement.querySelector('tc-card-header tc-button');
+        expect(editButton).toBeTruthy();
+    });
 
-  it('should not display the edit button when editable is false', () => {
-    component.editable = false;
-    fixture.detectChanges();
-    const buttonEl: DebugElement = fixture.debugElement.query(By.css('.btn-secondary'));
-    expect(buttonEl).toBeNull();
-  });
+    it('should not display the edit button when editable is false', () => {
+        component.editable = false;
+        fixture.detectChanges();
+        const buttonEl: DebugElement = fixture.debugElement.query(By.css('.btn-secondary'));
+        expect(buttonEl).toBeNull();
+    });
 });

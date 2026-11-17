@@ -14,15 +14,14 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
+import type {MockedObject} from "vitest";
 import {AuthenticationService} from "../../../../../services/authentication.service";
 import {JobService} from "../../../../../services/job.service";
 import {ComponentFixture, TestBed} from "@angular/core/testing";
 import {JobIntakeTabComponent} from "./job-intake-tab.component";
 import {MockJob} from "../../../../../MockData/MockJob";
 import {NgbAccordionModule, NgbModule} from "@ng-bootstrap/ng-bootstrap";
-import {
-  CostCommitEmployerComponent
-} from "../../../intake/cost-commit-employer/cost-commit-employer.component";
+import {CostCommitEmployerComponent} from "../../../intake/cost-commit-employer/cost-commit-employer.component";
 import {FormsModule, ReactiveFormsModule, UntypedFormBuilder} from "@angular/forms";
 import {NgxWigModule} from "ngx-wig";
 import {MockPartner} from "../../../../../MockData/MockPartner";
@@ -32,62 +31,68 @@ import {MockJobOppIntake} from "../../../../../MockData/MockJobOppIntake";
 import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {TranslateModule} from "@ngx-translate/core";
 import {CUSTOM_ELEMENTS_SCHEMA} from "@angular/core";
+import {expect, vi} from 'vitest';
 
 describe('JobIntakeTabComponent', () => {
-  let component: JobIntakeTabComponent;
-  let fixture: ComponentFixture<JobIntakeTabComponent>;
-  let authServiceSpy: jasmine.SpyObj<AuthenticationService>;
-  let jobServiceSpy: jasmine.SpyObj<JobService>;
-  beforeEach(async () => {
-    const authServiceSpyObj = jasmine.createSpyObj('AuthenticationService', ['getLoggedInUser']);
-    const jobServiceObj = jasmine.createSpyObj('JobService', ['updateIntakeData', 'get']);
-    await TestBed.configureTestingModule({
-      declarations: [ JobIntakeTabComponent,CostCommitEmployerComponent,AutosaveStatusComponent],
-      imports:[NgbAccordionModule,NgbModule,NgxWigModule,FormsModule,
-        ReactiveFormsModule,TranslateModule.forRoot()],
-      providers: [
-        { provide: AuthenticationService, useValue: authServiceSpyObj },
-        { provide: JobService, useValue: jobServiceObj  },
-        UntypedFormBuilder,
-        provideHttpClient(withXhr(), withInterceptorsFromDi())
-      ],
-      schemas: [CUSTOM_ELEMENTS_SCHEMA]
-    })
-    .compileComponents();
+    let component: JobIntakeTabComponent;
+    let fixture: ComponentFixture<JobIntakeTabComponent>;
+    let authServiceSpy: MockedObject<AuthenticationService>;
+    let jobServiceSpy: MockedObject<JobService>;
+    beforeEach(async () => {
+        const authServiceSpyObj = {
+            getLoggedInUser: vi.fn().mockName("AuthenticationService.getLoggedInUser")
+        };
+        const jobServiceObj = {
+            updateIntakeData: vi.fn().mockName("JobService.updateIntakeData"),
+            get: vi.fn().mockName("JobService.get")
+        };
+        await TestBed.configureTestingModule({
+            declarations: [JobIntakeTabComponent, CostCommitEmployerComponent, AutosaveStatusComponent],
+            imports: [NgbAccordionModule, NgbModule, NgxWigModule, FormsModule,
+                ReactiveFormsModule, TranslateModule.forRoot()],
+            providers: [
+                { provide: AuthenticationService, useValue: authServiceSpyObj },
+                { provide: JobService, useValue: jobServiceObj },
+                UntypedFormBuilder,
+                provideHttpClient(withXhr(), withInterceptorsFromDi())
+            ],
+            schemas: [CUSTOM_ELEMENTS_SCHEMA]
+        })
+            .compileComponents();
 
-    authServiceSpy = TestBed.inject(AuthenticationService) as jasmine.SpyObj<AuthenticationService>;
-    jobServiceSpy = TestBed.inject(JobService) as jasmine.SpyObj<JobService>; // Inject the spy object
-    authServiceSpyObj.getLoggedInUser.and.returnValue(MockPartner);
-   });
+        authServiceSpy = TestBed.inject(AuthenticationService) as MockedObject<AuthenticationService>;
+        jobServiceSpy = TestBed.inject(JobService) as MockedObject<JobService>; // Inject the spy object
+        authServiceSpyObj.getLoggedInUser.mockReturnValue(MockPartner);
+    });
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(JobIntakeTabComponent);
-    component = fixture.componentInstance;
-    component.job = MockJob;
-    fixture.detectChanges();
-  });
+    beforeEach(() => {
+        fixture = TestBed.createComponent(JobIntakeTabComponent);
+        component = fixture.componentInstance;
+        component.job = MockJob;
+        fixture.detectChanges();
+    });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-    expect(jobServiceSpy).toBeTruthy(); // Add this line to check if the spy is injected
-  });
-  it('should display loading state when loading is true', () => {
-    component.loading = true;
-    fixture.detectChanges();
-    const loadingElement = fixture.nativeElement.querySelector('tc-loading');
-    expect(loadingElement).toBeTruthy();
-  });
-  it('should display error message when error is set', () => {
-    const errorMessage = 'An error occurred.';
-    component.error = errorMessage;
-    fixture.detectChanges();
-    const errorElement = fixture.nativeElement.querySelector('tc-alert');
-    expect(errorElement.textContent).toContain(errorMessage);
-  });
-  it('should emit intakeChanged event when onIntakeChanged is called', () => {
-    const jobOppIntake: JobOppIntake = new MockJobOppIntake(); // Add your test data here
-    const emitSpy = spyOn(component.intakeChanged, 'emit');
-    component.onIntakeChanged(jobOppIntake);
-    expect(emitSpy).toHaveBeenCalledWith(jobOppIntake);
-  });
+    it('should create', () => {
+        expect(component).toBeTruthy();
+        expect(jobServiceSpy).toBeTruthy(); // Add this line to check if the spy is injected
+    });
+    it('should display loading state when loading is true', () => {
+        component.loading = true;
+        fixture.detectChanges();
+        const loadingElement = fixture.nativeElement.querySelector('tc-loading');
+        expect(loadingElement).toBeTruthy();
+    });
+    it('should display error message when error is set', () => {
+        const errorMessage = 'An error occurred.';
+        component.error = errorMessage;
+        fixture.detectChanges();
+        const errorElement = fixture.nativeElement.querySelector('tc-alert');
+        expect(errorElement.textContent).toContain(errorMessage);
+    });
+    it('should emit intakeChanged event when onIntakeChanged is called', () => {
+        const jobOppIntake: JobOppIntake = new MockJobOppIntake(); // Add your test data here
+        const emitSpy = vi.spyOn(component.intakeChanged, 'emit').mockReturnValue(undefined);
+        component.onIntakeChanged(jobOppIntake);
+        expect(emitSpy).toHaveBeenCalledWith(jobOppIntake);
+    });
 });

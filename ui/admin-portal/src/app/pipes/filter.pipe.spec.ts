@@ -15,6 +15,7 @@
  */
 
 import {FilterPipe} from './filter.pipe';
+import {expect} from 'vitest';
 
 describe('FilterPipe', () => {
   let pipe: FilterPipe;

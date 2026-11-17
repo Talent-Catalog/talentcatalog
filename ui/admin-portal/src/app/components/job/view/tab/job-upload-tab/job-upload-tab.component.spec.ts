@@ -21,33 +21,34 @@ import {MockJob} from "../../../../../MockData/MockJob";
 import {ViewJobUploadsComponent} from "../../uploads/view-job-uploads/view-job-uploads.component";
 import {provideHttpClientTesting} from "@angular/common/http/testing";
 import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
+import {expect, vi} from 'vitest';
 
 describe('JobUploadTabComponent', () => {
-  let component: JobUploadTabComponent;
-  let fixture: ComponentFixture<JobUploadTabComponent>;
+    let component: JobUploadTabComponent;
+    let fixture: ComponentFixture<JobUploadTabComponent>;
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      providers: [provideHttpClient(withXhr(), withInterceptorsFromDi()), provideHttpClientTesting()],
-      declarations: [ JobUploadTabComponent ,ViewJobUploadsComponent]
-    })
-    .compileComponents();
-  });
+    beforeEach(async () => {
+        await TestBed.configureTestingModule({
+            providers: [provideHttpClient(withXhr(), withInterceptorsFromDi()), provideHttpClientTesting()],
+            declarations: [JobUploadTabComponent, ViewJobUploadsComponent]
+        })
+            .compileComponents();
+    });
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(JobUploadTabComponent);
-    component = fixture.componentInstance;
-    component.job = MockJob;
-    fixture.detectChanges();
-  });
+    beforeEach(() => {
+        fixture = TestBed.createComponent(JobUploadTabComponent);
+        component = fixture.componentInstance;
+        component.job = MockJob;
+        fixture.detectChanges();
+    });
 
-  it('should emit jobUpdated event when onJobUpdated is called', () => {
-    const job: Job = {...MockJob};
-    spyOn(component.jobUpdated, 'emit');
+    it('should emit jobUpdated event when onJobUpdated is called', () => {
+        const job: Job = { ...MockJob };
+        vi.spyOn(component.jobUpdated, 'emit').mockReturnValue(undefined);
 
-    component.onJobUpdated(job);
+        component.onJobUpdated(job);
 
-    expect(component.jobUpdated.emit).toHaveBeenCalledWith(job);
-  });
+        expect(component.jobUpdated.emit).toHaveBeenCalledWith(job);
+    });
 
 });

@@ -13,46 +13,43 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
+
+import type {MockedObject} from "vitest";
 import {CandidateAdditionalInfoTabComponent} from "./candidate-additional-info-tab.component";
 import {CandidateService} from "../../../../../services/candidate.service";
 import {ComponentFixture, TestBed} from "@angular/core/testing";
 import {MockCandidate} from "../../../../../MockData/MockCandidate";
 import {ViewCandidateSurveyComponent} from "../../survey/view-candidate-survey.component";
-import {
-  ViewCandidateMediaWillingnessComponent
-} from "../../media/view-candidate-media-willingness.component";
-import {
-  ViewCandidateSpecialLinksComponent
-} from "../../special-links/view-candidate-special-links.component";
-import {
-  ViewCandidateAttachmentComponent
-} from "../../attachment/view-candidate-attachment.component";
+import {ViewCandidateMediaWillingnessComponent} from "../../media/view-candidate-media-willingness.component";
+import {ViewCandidateSpecialLinksComponent} from "../../special-links/view-candidate-special-links.component";
+import {ViewCandidateAttachmentComponent} from "../../attachment/view-candidate-attachment.component";
 import {provideHttpClientTesting} from "@angular/common/http/testing";
 import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
+import {expect} from 'vitest';
 
 describe('CandidateAdditionalInfoTabComponent', () => {
-  let component: CandidateAdditionalInfoTabComponent;
-  let fixture: ComponentFixture<CandidateAdditionalInfoTabComponent>;
-  let candidateServiceSpy: jasmine.SpyObj<CandidateService>;
-  const mockCandidate = new MockCandidate();
-  beforeEach(async () => {
+    let component: CandidateAdditionalInfoTabComponent;
+    let fixture: ComponentFixture<CandidateAdditionalInfoTabComponent>;
+    let candidateServiceSpy: MockedObject<CandidateService>;
+    const mockCandidate = new MockCandidate();
+    beforeEach(async () => {
 
-    await TestBed.configureTestingModule({
-      providers: [provideHttpClient(withXhr(), withInterceptorsFromDi()), provideHttpClientTesting()],
-      declarations: [ CandidateAdditionalInfoTabComponent,ViewCandidateSurveyComponent,ViewCandidateSurveyComponent,
-        ViewCandidateMediaWillingnessComponent,ViewCandidateSpecialLinksComponent,ViewCandidateAttachmentComponent ],
-    })
-    .compileComponents();
-  });
+        await TestBed.configureTestingModule({
+            providers: [provideHttpClient(withXhr(), withInterceptorsFromDi()), provideHttpClientTesting()],
+            declarations: [CandidateAdditionalInfoTabComponent, ViewCandidateSurveyComponent, ViewCandidateSurveyComponent,
+                ViewCandidateMediaWillingnessComponent, ViewCandidateSpecialLinksComponent, ViewCandidateAttachmentComponent],
+        })
+            .compileComponents();
+    });
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(CandidateAdditionalInfoTabComponent);
-    component = fixture.componentInstance;
-    component.candidate = mockCandidate;
-    fixture.detectChanges();
-  });
+    beforeEach(() => {
+        fixture = TestBed.createComponent(CandidateAdditionalInfoTabComponent);
+        component = fixture.componentInstance;
+        component.candidate = mockCandidate;
+        fixture.detectChanges();
+    });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
 });

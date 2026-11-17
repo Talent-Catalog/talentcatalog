@@ -14,98 +14,99 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
+import {NO_ERRORS_SCHEMA} from '@angular/core';
 import {ChartComponent} from "./chart.component";
 import {ComponentFixture, TestBed} from "@angular/core/testing";
 import {DataRow} from "../../../model/data-row";
-import {NgChartsModule} from "ng2-charts";
+import {expect} from 'vitest';
 
 describe('ChartComponent', () => {
-  let component: ChartComponent;
-  let fixture: ComponentFixture<ChartComponent>;
+    let component: ChartComponent;
+    let fixture: ComponentFixture<ChartComponent>;
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      imports: [NgChartsModule],
-      declarations: [ChartComponent]
-    }).compileComponents();
-  });
-
-  beforeEach(() => {
-    fixture = TestBed.createComponent(ChartComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
-
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
-
-  it('should initialize doughnut chart correctly', () => {
-    const chartData: DataRow[] = [
-      { label: 'Label 1', value: 10 },
-      { label: 'Label 2', value: 20 },
-      { label: 'Label 3', value: 30 }
-    ];
-
-    component.chartData = chartData;
-    component.chartType = 'doughnut';
-    component.chartLegend = true;
-
-    component.ngOnInit();
-    expect(component.chartLabels).toEqual(['Label 1', 'Label 2', 'Label 3']);
-    expect(component.chartDataSet).toEqual({
-      labels: ['Label 1', 'Label 2', 'Label 3'],
-      datasets: [
-        { data: [10, 20, 30] }
-      ]
+    beforeEach(async () => {
+        await TestBed.configureTestingModule({
+            schemas: [NO_ERRORS_SCHEMA],
+            declarations: [ChartComponent]
+        }).compileComponents();
     });
-    expect(component.chartOptions).toEqual({ responsive: true });
-  });
 
-  it('should initialize bar chart correctly', () => {
-    const chartData: DataRow[] = [
-      { label: 'Label 1', value: 10 },
-      { label: 'Label 2', value: 20 },
-      { label: 'Label 3', value: 30 }
-    ];
-
-    component.chartData = chartData;
-    component.chartType = 'bar';
-    component.chartLegend = false;
-
-    component.ngOnInit();
-
-    expect(component.chartLabels).toEqual(['Label 1', 'Label 2', 'Label 3']);
-    expect(component.chartDataSet).toEqual({
-      labels: ['Label 1', 'Label 2', 'Label 3'],
-      datasets: [
-        { data: [10, 20, 30] }
-      ]
+    beforeEach(() => {
+        fixture = TestBed.createComponent(ChartComponent);
+        component = fixture.componentInstance;
+        fixture.detectChanges();
     });
-    expect(component.chartOptions).toEqual({
-      responsive: true,
-      scales: {
-        y: {
-          beginAtZero: true,
-          min: 0
-        }
-      }
+
+    it('should create', () => {
+        expect(component).toBeTruthy();
     });
-  });
 
-  it('should not initialize chart with data if chartData is not provided', () => {
-    component.chartType = 'doughnut';
-    component.chartLegend = true;
+    it('should initialize doughnut chart correctly', () => {
+        const chartData: DataRow[] = [
+            { label: 'Label 1', value: 10 },
+            { label: 'Label 2', value: 20 },
+            { label: 'Label 3', value: 30 }
+        ];
 
-    component.ngOnInit();
+        component.chartData = chartData;
+        component.chartType = 'doughnut';
+        component.chartLegend = true;
 
-    expect(component.chartLabels).toEqual([]);
-    expect(component.chartDataSet).toEqual({
-      labels: [],
-      datasets: [
-        { data: [] }
-      ]
+        component.ngOnInit();
+        expect(component.chartLabels).toEqual(['Label 1', 'Label 2', 'Label 3']);
+        expect(component.chartDataSet).toEqual({
+            labels: ['Label 1', 'Label 2', 'Label 3'],
+            datasets: [
+                { data: [10, 20, 30] }
+            ]
+        });
+        expect(component.chartOptions).toEqual({ responsive: true });
     });
-    expect(component.chartOptions).toEqual({});
-  });
+
+    it('should initialize bar chart correctly', () => {
+        const chartData: DataRow[] = [
+            { label: 'Label 1', value: 10 },
+            { label: 'Label 2', value: 20 },
+            { label: 'Label 3', value: 30 }
+        ];
+
+        component.chartData = chartData;
+        component.chartType = 'bar';
+        component.chartLegend = false;
+
+        component.ngOnInit();
+
+        expect(component.chartLabels).toEqual(['Label 1', 'Label 2', 'Label 3']);
+        expect(component.chartDataSet).toEqual({
+            labels: ['Label 1', 'Label 2', 'Label 3'],
+            datasets: [
+                { data: [10, 20, 30] }
+            ]
+        });
+        expect(component.chartOptions).toEqual({
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    min: 0
+                }
+            }
+        });
+    });
+
+    it('should not initialize chart with data if chartData is not provided', () => {
+        component.chartType = 'doughnut';
+        component.chartLegend = true;
+
+        component.ngOnInit();
+
+        expect(component.chartLabels).toEqual([]);
+        expect(component.chartDataSet).toEqual({
+            labels: [],
+            datasets: [
+                { data: [] }
+            ]
+        });
+        expect(component.chartOptions).toEqual({});
+    });
 });

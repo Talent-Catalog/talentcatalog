@@ -14,6 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
+import type {MockedObject} from "vitest";
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {ReactiveFormsModule, UntypedFormBuilder} from '@angular/forms';
 import {OccupationSubcategoryComponent} from './occupation-subcategory.component';
@@ -22,55 +23,58 @@ import {provideHttpClientTesting} from "@angular/common/http/testing";
 import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {AutosaveStatusComponent} from "../../../../util/autosave-status/autosave-status.component";
+import {expect, vi} from 'vitest';
 
 describe('OccupationSubcategoryComponent', () => {
-  let component: OccupationSubcategoryComponent;
-  let fixture: ComponentFixture<OccupationSubcategoryComponent>;
-  let candidateVisaCheckService: jasmine.SpyObj<CandidateVisaCheckService>;
+    let component: OccupationSubcategoryComponent;
+    let fixture: ComponentFixture<OccupationSubcategoryComponent>;
+    let candidateVisaCheckService: MockedObject<CandidateVisaCheckService>;
 
-  beforeEach(async () => {
-    const candidateVisaCheckServiceSpy = jasmine.createSpyObj('CandidateVisaCheckService', ['someMethod']);
+    beforeEach(async () => {
+        const candidateVisaCheckServiceSpy = {
+            someMethod: vi.fn().mockName("CandidateVisaCheckService.someMethod")
+        };
 
-    await TestBed.configureTestingModule({
-      declarations: [OccupationSubcategoryComponent,AutosaveStatusComponent],
-      imports: [ReactiveFormsModule,NgSelectModule],
-      providers: [
-        UntypedFormBuilder,
-        { provide: CandidateVisaCheckService, useValue: candidateVisaCheckServiceSpy },
-        provideHttpClient(withXhr(), withInterceptorsFromDi()),
-        provideHttpClientTesting()
-      ]
-    }).compileComponents();
+        await TestBed.configureTestingModule({
+            declarations: [OccupationSubcategoryComponent, AutosaveStatusComponent],
+            imports: [ReactiveFormsModule, NgSelectModule],
+            providers: [
+                UntypedFormBuilder,
+                { provide: CandidateVisaCheckService, useValue: candidateVisaCheckServiceSpy },
+                provideHttpClient(withXhr(), withInterceptorsFromDi()),
+                provideHttpClientTesting()
+            ]
+        }).compileComponents();
 
-    candidateVisaCheckService = TestBed.inject(CandidateVisaCheckService) as jasmine.SpyObj<CandidateVisaCheckService>;
-  });
+        candidateVisaCheckService = TestBed.inject(CandidateVisaCheckService) as MockedObject<CandidateVisaCheckService>;
+    });
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(OccupationSubcategoryComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges(); // ngOnInit() is called here
-  });
+    beforeEach(() => {
+        fixture = TestBed.createComponent(OccupationSubcategoryComponent);
+        component = fixture.componentInstance;
+        fixture.detectChanges(); // ngOnInit() is called here
+    });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
 
-  it('should initialize form with visaJobOccupationSubCategory control', () => {
-    expect(component.form.contains('visaJobOccupationSubCategory')).toBeTrue();
-  });
+    it('should initialize form with visaJobOccupationSubCategory control', () => {
+        expect(component.form.contains('visaJobOccupationSubCategory')).toBe(true);
+    });
 
 
-  it('should display error message when error is set', () => {
-    component.error = 'Some error message';
-    fixture.detectChanges();
-    const errorElement: HTMLElement = fixture.nativeElement.querySelector('div');
-    expect(errorElement.textContent).toContain('Some error message');
-  });
+    it('should display error message when error is set', () => {
+        component.error = 'Some error message';
+        fixture.detectChanges();
+        const errorElement: HTMLElement = fixture.nativeElement.querySelector('div');
+        expect(errorElement.textContent).toContain('Some error message');
+    });
 
-  it('should initialize form controls with values from visaJobCheck', () => {
-    component.visaJobCheck = { id: 123, occupationSubCategory: 'Software Developer' };
-    component.ngOnInit();
-    expect(component.form.value.visaJobId).toBe(123);
-    expect(component.form.value.visaJobOccupationSubCategory).toBe('Software Developer');
-  });
+    it('should initialize form controls with values from visaJobCheck', () => {
+        component.visaJobCheck = { id: 123, occupationSubCategory: 'Software Developer' };
+        component.ngOnInit();
+        expect(component.form.value.visaJobId).toBe(123);
+        expect(component.form.value.visaJobOccupationSubCategory).toBe('Software Developer');
+    });
 });

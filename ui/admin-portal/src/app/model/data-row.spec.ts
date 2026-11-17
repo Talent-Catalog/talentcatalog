@@ -15,6 +15,7 @@
  */
 
 import {DataRow} from "./data-row";
+import {expect} from 'vitest';
 
 describe('DataRow interface', () => {
   it('should create a DataRow instance', () => {

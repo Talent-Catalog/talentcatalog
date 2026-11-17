@@ -21,6 +21,7 @@ import {LanguageService} from './language.service';
 import {environment} from '../../environments/environment';
 import {Language, SystemLanguage} from '../model/language';
 import {SearchResults} from '../model/search-results';
+import {expect} from 'vitest';
 
 describe('LanguageService', () => {
   let service: LanguageService;

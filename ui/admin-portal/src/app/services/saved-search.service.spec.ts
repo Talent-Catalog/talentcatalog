@@ -21,111 +21,112 @@ import {SavedSearchService} from './saved-search.service';
 import {environment} from '../../environments/environment';
 import {SavedSearch, SavedSearchRequest, SavedSearchType} from '../model/saved-search';
 import {MockSavedSearch} from "../MockData/MockSavedSearch";
+import {expect} from 'vitest';
 
 describe('SavedSearchService', () => {
-  let service: SavedSearchService;
-  let httpMock: HttpTestingController;
-  const apiUrl = environment.apiUrl + '/saved-search';
+    let service: SavedSearchService;
+    let httpMock: HttpTestingController;
+    const apiUrl = environment.apiUrl + '/saved-search';
 
-  beforeEach(() => {
-    TestBed.configureTestingModule({
-      providers: [SavedSearchService, provideHttpClient(withXhr(), withInterceptorsFromDi()), provideHttpClientTesting()],
+    beforeEach(() => {
+        TestBed.configureTestingModule({
+            providers: [SavedSearchService, provideHttpClient(withXhr(), withInterceptorsFromDi()), provideHttpClientTesting()],
+        });
+
+        service = TestBed.inject(SavedSearchService);
+        httpMock = TestBed.inject(HttpTestingController);
     });
 
-    service = TestBed.inject(SavedSearchService);
-    httpMock = TestBed.inject(HttpTestingController);
-  });
-
-  afterEach(() => {
-    httpMock.verify();
-  });
-
-  it('should be created', () => {
-    expect(service).toBeTruthy();
-  });
-
-  it('should fetch saved search by ID', () => {
-    const dummySavedSearch: SavedSearch = new MockSavedSearch();
-    service.get(1).subscribe(savedSearch => {
-      expect(savedSearch).toEqual(dummySavedSearch);
+    afterEach(() => {
+        httpMock.verify();
     });
 
-    const req = httpMock.expectOne(`${apiUrl}/1`);
-    expect(req.request.method).toBe('GET');
-    req.flush(dummySavedSearch);
-  });
-
-  it('should create a new saved search', () => {
-    const newSavedSearchRequest: SavedSearchRequest = { name: 'New Search', savedSearchType: SavedSearchType.job };
-    const createdSavedSearch: SavedSearch = { id: 2, name: 'New Search', savedSearchType: SavedSearchType.job } as SavedSearch;
-
-    service.create(newSavedSearchRequest).subscribe(savedSearch => {
-      expect(savedSearch).toEqual(createdSavedSearch);
+    it('should be created', () => {
+        expect(service).toBeTruthy();
     });
 
-    const req = httpMock.expectOne(apiUrl);
-    expect(req.request.method).toBe('POST');
-    req.flush(createdSavedSearch);
-  });
+    it('should fetch saved search by ID', () => {
+        const dummySavedSearch: SavedSearch = new MockSavedSearch();
+        service.get(1).subscribe(savedSearch => {
+            expect(savedSearch).toEqual(dummySavedSearch);
+        });
 
-  it('should update an existing saved search', () => {
-    const updatedSavedSearchRequest: SavedSearchRequest = { id: 1, name: 'Updated Search', savedSearchType: SavedSearchType.other };
-    const updatedSavedSearch: SavedSearch = { id: 1, name: 'Updated Search', savedSearchType: SavedSearchType.profession} as SavedSearch;
-
-    service.update(updatedSavedSearchRequest).subscribe(savedSearch => {
-      expect(savedSearch).toEqual(updatedSavedSearch);
+        const req = httpMock.expectOne(`${apiUrl}/1`);
+        expect(req.request.method).toBe('GET');
+        req.flush(dummySavedSearch);
     });
 
-    const req = httpMock.expectOne(`${apiUrl}/1`);
-    expect(req.request.method).toBe('PUT');
-    req.flush(updatedSavedSearch);
-  });
+    it('should create a new saved search', () => {
+        const newSavedSearchRequest: SavedSearchRequest = { name: 'New Search', savedSearchType: SavedSearchType.job };
+        const createdSavedSearch: SavedSearch = { id: 2, name: 'New Search', savedSearchType: SavedSearchType.job } as SavedSearch;
 
-  it('should delete a saved search by ID', () => {
-    service.delete(1).subscribe(result => {
-      expect(result).toBeTrue();
+        service.create(newSavedSearchRequest).subscribe(savedSearch => {
+            expect(savedSearch).toEqual(createdSavedSearch);
+        });
+
+        const req = httpMock.expectOne(apiUrl);
+        expect(req.request.method).toBe('POST');
+        req.flush(createdSavedSearch);
     });
 
-    const req = httpMock.expectOne(`${apiUrl}/1`);
-    expect(req.request.method).toBe('DELETE');
-    req.flush(true);
-  });
+    it('should update an existing saved search', () => {
+        const updatedSavedSearchRequest: SavedSearchRequest = { id: 1, name: 'Updated Search', savedSearchType: SavedSearchType.other };
+        const updatedSavedSearch: SavedSearch = { id: 1, name: 'Updated Search', savedSearchType: SavedSearchType.profession } as SavedSearch;
 
-  it('should fetch the default saved search', () => {
-    const defaultSavedSearch: SavedSearch = { id: 1, name: 'Default Search', savedSearchType:SavedSearchType.job } as SavedSearch;
+        service.update(updatedSavedSearchRequest).subscribe(savedSearch => {
+            expect(savedSearch).toEqual(updatedSavedSearch);
+        });
 
-    service.getDefault().subscribe(savedSearch => {
-      expect(savedSearch).toEqual(defaultSavedSearch);
+        const req = httpMock.expectOne(`${apiUrl}/1`);
+        expect(req.request.method).toBe('PUT');
+        req.flush(updatedSavedSearch);
     });
 
-    const req = httpMock.expectOne(`${apiUrl}/default`);
-    expect(req.request.method).toBe('GET');
-    req.flush(defaultSavedSearch);
-  });
+    it('should delete a saved search by ID', () => {
+        service.delete(1).subscribe(result => {
+            expect(result).toBe(true);
+        });
 
-  it('should assign a job to a saved search', () => {
-    const updatedSavedSearch: SavedSearch = { id: 1, name: 'Search', sfJobOpp: {id: 456} } as unknown as SavedSearch;
-
-    service.updateJob(1, 456).subscribe(savedSearch => {
-      expect(savedSearch).toEqual(updatedSavedSearch);
+        const req = httpMock.expectOne(`${apiUrl}/1`);
+        expect(req.request.method).toBe('DELETE');
+        req.flush(true);
     });
 
-    const req = httpMock.expectOne(`${apiUrl}/job/1`);
-    expect(req.request.method).toBe('PUT');
-    expect(req.request.body).toEqual({jobId: 456});
-    req.flush(updatedSavedSearch);
-  });
+    it('should fetch the default saved search', () => {
+        const defaultSavedSearch: SavedSearch = { id: 1, name: 'Default Search', savedSearchType: SavedSearchType.job } as SavedSearch;
 
-  it('should clear a saved search job association by passing null', () => {
-    const updatedSavedSearch: SavedSearch = { id: 1, name: 'Search', sfJobOpp: null } as unknown as SavedSearch;
+        service.getDefault().subscribe(savedSearch => {
+            expect(savedSearch).toEqual(defaultSavedSearch);
+        });
 
-    service.updateJob(1, null).subscribe(savedSearch => {
-      expect(savedSearch).toEqual(updatedSavedSearch);
+        const req = httpMock.expectOne(`${apiUrl}/default`);
+        expect(req.request.method).toBe('GET');
+        req.flush(defaultSavedSearch);
     });
 
-    const req = httpMock.expectOne(`${apiUrl}/job/1`);
-    expect(req.request.method).toBe('PUT');
-    expect(req.request.body).toEqual({jobId: null});
-    req.flush(updatedSavedSearch);
-  });
+    it('should assign a job to a saved search', () => {
+        const updatedSavedSearch: SavedSearch = { id: 1, name: 'Search', sfJobOpp: { id: 456 } } as unknown as SavedSearch;
+
+        service.updateJob(1, 456).subscribe(savedSearch => {
+            expect(savedSearch).toEqual(updatedSavedSearch);
+        });
+
+        const req = httpMock.expectOne(`${apiUrl}/job/1`);
+        expect(req.request.method).toBe('PUT');
+        expect(req.request.body).toEqual({ jobId: 456 });
+        req.flush(updatedSavedSearch);
+    });
+
+    it('should clear a saved search job association by passing null', () => {
+        const updatedSavedSearch: SavedSearch = { id: 1, name: 'Search', sfJobOpp: null } as unknown as SavedSearch;
+
+        service.updateJob(1, null).subscribe(savedSearch => {
+            expect(savedSearch).toEqual(updatedSavedSearch);
+        });
+
+        const req = httpMock.expectOne(`${apiUrl}/job/1`);
+        expect(req.request.method).toBe('PUT');
+        expect(req.request.body).toEqual({ jobId: null });
+        req.flush(updatedSavedSearch);
+    });
 });

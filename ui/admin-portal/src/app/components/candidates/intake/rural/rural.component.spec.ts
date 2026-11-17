@@ -22,41 +22,42 @@ import {ReactiveFormsModule} from "@angular/forms";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {CandidateService} from "../../../../services/candidate.service";
 import {YesNoUnsure} from "../../../../model/candidate";
+import {expect} from 'vitest';
 
 describe('RuralComponent', () => {
-  let component: RuralComponent;
-  let fixture: ComponentFixture<RuralComponent>;
+    let component: RuralComponent;
+    let fixture: ComponentFixture<RuralComponent>;
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      declarations: [ RuralComponent,AutosaveStatusComponent ],
-      imports: [ReactiveFormsModule, NgSelectModule ],
-      providers: [
-        { provide: CandidateService },
-        provideHttpClient(withXhr(), withInterceptorsFromDi()),
-        provideHttpClientTesting()
-      ]
-    })
-    .compileComponents();
-  });
+    beforeEach(async () => {
+        await TestBed.configureTestingModule({
+            declarations: [RuralComponent, AutosaveStatusComponent],
+            imports: [ReactiveFormsModule, NgSelectModule],
+            providers: [
+                { provide: CandidateService },
+                provideHttpClient(withXhr(), withInterceptorsFromDi()),
+                provideHttpClientTesting()
+            ]
+        })
+            .compileComponents();
+    });
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(RuralComponent);
-    component = fixture.componentInstance;
-    component.candidateIntakeData = {
-      intRecruitRural: YesNoUnsure.Yes,
-      intRecruitRuralNotes: 'I am open to rural areas if there is good internet connectivity.'
-    };
-    fixture.detectChanges();
-  });
+    beforeEach(() => {
+        fixture = TestBed.createComponent(RuralComponent);
+        component = fixture.componentInstance;
+        component.candidateIntakeData = {
+            intRecruitRural: YesNoUnsure.Yes,
+            intRecruitRuralNotes: 'I am open to rural areas if there is good internet connectivity.'
+        };
+        fixture.detectChanges();
+    });
 
-  it('should initialize the form controls with the correct default values', () => {
-    expect(component.form.get('intRecruitRural').value).toBe(YesNoUnsure.Yes);
-    expect(component.form.get('intRecruitRuralNotes').value).toBe('I am open to rural areas if there is good internet connectivity.');
-  });
+    it('should initialize the form controls with the correct default values', () => {
+        expect(component.form.get('intRecruitRural').value).toBe(YesNoUnsure.Yes);
+        expect(component.form.get('intRecruitRuralNotes').value).toBe('I am open to rural areas if there is good internet connectivity.');
+    });
 
-  it('should display the intRecruitRuralNotes textarea', () => {
-    const intRecruitRuralNotesTextarea = fixture.nativeElement.querySelector('#intRecruitRuralNotes');
-    expect(intRecruitRuralNotesTextarea).toBeTruthy();
-  });
+    it('should display the intRecruitRuralNotes textarea', () => {
+        const intRecruitRuralNotesTextarea = fixture.nativeElement.querySelector('#intRecruitRuralNotes');
+        expect(intRecruitRuralNotesTextarea).toBeTruthy();
+    });
 });

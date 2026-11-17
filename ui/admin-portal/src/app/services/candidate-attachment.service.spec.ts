@@ -17,15 +17,11 @@
 import {TestBed} from '@angular/core/testing';
 import {HttpTestingController, provideHttpClientTesting} from '@angular/common/http/testing';
 import {provideHttpClient, withInterceptorsFromDi, withXhr} from '@angular/common/http';
-import {
-  CandidateAttachmentService,
-  ListByUploadTypeRequest,
-  SearchCandidateAttachmentsRequest,
-  UpdateCandidateAttachmentRequest
-} from './candidate-attachment.service';
+import {CandidateAttachmentService, ListByUploadTypeRequest, SearchCandidateAttachmentsRequest, UpdateCandidateAttachmentRequest} from './candidate-attachment.service';
 import {environment} from '../../environments/environment';
 import {CandidateAttachment, CandidateAttachmentRequest} from '../model/candidate-attachment';
 import {UploadType} from "../model/task";
+import {expect} from 'vitest';
 
 describe('CandidateAttachmentService', () => {
   let service: CandidateAttachmentService;

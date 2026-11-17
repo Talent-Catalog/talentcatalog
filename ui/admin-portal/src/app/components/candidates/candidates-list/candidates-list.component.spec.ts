@@ -28,94 +28,101 @@ import {FormsModule, ReactiveFormsModule, UntypedFormBuilder} from "@angular/for
 import {CommonModule, DatePipe, TitleCasePipe} from "@angular/common";
 import {SortedByComponent} from "../../util/sort/sorted-by.component";
 import {NgSelectModule} from "@ng-select/ng-select";
-import {
-  CandidateSourceDescriptionComponent
-} from "../../util/candidate-source-description/candidate-source-description.component";
+import {CandidateSourceDescriptionComponent} from "../../util/candidate-source-description/candidate-source-description.component";
 import {AutosaveStatusComponent} from "../../util/autosave-status/autosave-status.component";
 import {RouterLinkStubDirective} from "../../login/login.component.spec";
+import {expect, vi} from 'vitest';
 
 describe('CandidatesListComponent', () => {
-  let component: CandidatesListComponent;
-  let fixture: ComponentFixture<CandidatesListComponent>;
-  let mockActivatedRoute: any;
-  let mockRouter: any;
-  let mockSavedListService: any;
-  let mockModalService: any;
-  let mockLocation: any;
+    let component: CandidatesListComponent;
+    let fixture: ComponentFixture<CandidatesListComponent>;
+    let mockActivatedRoute: any;
+    let mockRouter: any;
+    let mockSavedListService: any;
+    let mockModalService: any;
+    let mockLocation: any;
 
-  beforeEach(waitForAsync(() => {
-    mockActivatedRoute = {
-      paramMap: of({ get: (param: string) => '1' }), // Mocking route parameters
-      queryParamMap: of({ get: (param: string) => null }) // Mocking query parameters
-    };
+    beforeEach(waitForAsync(() => {
+        mockActivatedRoute = {
+            paramMap: of({ get: (param: string) => '1' }), // Mocking route parameters
+            queryParamMap: of({ get: (param: string) => null }) // Mocking query parameters
+        };
 
-    mockRouter = jasmine.createSpyObj('Router', ['navigate']);
-    mockSavedListService = jasmine.createSpyObj('SavedListService', ['get']);
-    mockModalService = jasmine.createSpyObj('NgbModal', ['open']);
-    mockLocation = jasmine.createSpyObj('Location', ['back']);
-    mockSavedListService.get.and.returnValue(of(MockSavedList));
-    TestBed.configureTestingModule({
-      declarations: [CandidatesListComponent, CandidateSourceDescriptionComponent, AutosaveStatusComponent, RouterLinkStubDirective ,ShowCandidatesComponent, SortedByComponent],
-      imports: [NgbTypeaheadModule,CommonModule, FormsModule, ReactiveFormsModule,NgSelectModule
-      ],
-      providers: [
-        UntypedFormBuilder,
-        DatePipe,
-        TitleCasePipe,
-        { provide: ActivatedRoute, useValue: mockActivatedRoute },
-        { provide: Router, useValue: mockRouter },
-        { provide: SavedListService, useValue: mockSavedListService },
-        { provide: NgbModal, useValue: mockModalService },
-        { provide: Location, useValue: mockLocation },
-        provideHttpClient(withXhr(), withInterceptorsFromDi()),
-        provideHttpClientTesting()
-      ]
-    })
-    .compileComponents();
-  }));
+        mockRouter = {
+            navigate: vi.fn().mockName("Router.navigate")
+        };
+        mockSavedListService = {
+            get: vi.fn().mockName("SavedListService.get")
+        };
+        mockModalService = {
+            open: vi.fn().mockName("NgbModal.open")
+        };
+        mockLocation = {
+            back: vi.fn().mockName("Location.back")
+        };
+        mockSavedListService.get.mockReturnValue(of(MockSavedList));
+        TestBed.configureTestingModule({
+            declarations: [CandidatesListComponent, CandidateSourceDescriptionComponent, AutosaveStatusComponent, RouterLinkStubDirective, ShowCandidatesComponent, SortedByComponent],
+            imports: [NgbTypeaheadModule, CommonModule, FormsModule, ReactiveFormsModule, NgSelectModule
+            ],
+            providers: [
+                UntypedFormBuilder,
+                DatePipe,
+                TitleCasePipe,
+                { provide: ActivatedRoute, useValue: mockActivatedRoute },
+                { provide: Router, useValue: mockRouter },
+                { provide: SavedListService, useValue: mockSavedListService },
+                { provide: NgbModal, useValue: mockModalService },
+                { provide: Location, useValue: mockLocation },
+                provideHttpClient(withXhr(), withInterceptorsFromDi()),
+                provideHttpClientTesting()
+            ]
+        })
+            .compileComponents();
+    }));
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(CandidatesListComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
-
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
-
-  it('should load saved list on initialization', () => {
-    const savedList: SavedList = MockSavedList;
-
-    mockSavedListService.get.and.returnValue(of(savedList));
-
-    fixture.detectChanges();
-
-    expect(component.savedList).toEqual(savedList);
-    expect(component.loading).toBe(false);
-  });
-
-  it('should handle errors from saved list service', () => {
-    const errorMessage = 'Error fetching saved list';
-    mockSavedListService.get.and.returnValue(throwError(errorMessage));
-    component.ngOnInit();
-    fixture.detectChanges();
-    expect(component.error).toEqual(errorMessage);
-    expect(component.loading).toBe(false);
-  });
-
-  it('should create a new list when no ID is specified in the route', waitForAsync(() => {
-    mockActivatedRoute.paramMap = of({ get: (param: string) => null }); // Set id param to null
-
-    const createdList: SavedList = MockSavedList; // Assuming you have a mock SavedList object
-    const modalResultPromise = Promise.resolve(createdList);
-    mockModalService.open.and.returnValue({ result: modalResultPromise });
-    component.ngOnInit();
-
-    modalResultPromise.then(() => {
-      expect(mockRouter.navigate).toHaveBeenCalled();
-    }).catch(error => {
-      console.error('Error:', error); // Log any errors
+    beforeEach(() => {
+        fixture = TestBed.createComponent(CandidatesListComponent);
+        component = fixture.componentInstance;
+        fixture.detectChanges();
     });
-  }));
+
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
+
+    it('should load saved list on initialization', () => {
+        const savedList: SavedList = MockSavedList;
+
+        mockSavedListService.get.mockReturnValue(of(savedList));
+
+        fixture.detectChanges();
+
+        expect(component.savedList).toEqual(savedList);
+        expect(component.loading).toBe(false);
+    });
+
+    it('should handle errors from saved list service', () => {
+        const errorMessage = 'Error fetching saved list';
+        mockSavedListService.get.mockReturnValue(throwError(errorMessage));
+        component.ngOnInit();
+        fixture.detectChanges();
+        expect(component.error).toEqual(errorMessage);
+        expect(component.loading).toBe(false);
+    });
+
+    it('should create a new list when no ID is specified in the route', waitForAsync(() => {
+        mockActivatedRoute.paramMap = of({ get: (param: string) => null }); // Set id param to null
+
+        const createdList: SavedList = MockSavedList; // Assuming you have a mock SavedList object
+        const modalResultPromise = Promise.resolve(createdList);
+        mockModalService.open.mockReturnValue({ result: modalResultPromise });
+        component.ngOnInit();
+
+        modalResultPromise.then(() => {
+            expect(mockRouter.navigate).toHaveBeenCalled();
+        }).catch(error => {
+            console.error('Error:', error); // Log any errors
+        });
+    }));
 });

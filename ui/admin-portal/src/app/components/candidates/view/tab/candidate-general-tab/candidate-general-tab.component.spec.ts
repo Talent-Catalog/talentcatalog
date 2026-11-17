@@ -17,9 +17,7 @@ import {CandidateGeneralTabComponent} from "./candidate-general-tab.component";
 import {ComponentFixture, TestBed} from "@angular/core/testing";
 import {MockCandidate} from "../../../../../MockData/MockCandidate";
 import {ViewCandidateLanguageComponent} from "../../language/view-candidate-language.component";
-import {
-  ViewCandidateRegistrationComponent
-} from "../../registration/view-candidate-registration.component";
+import {ViewCandidateRegistrationComponent} from "../../registration/view-candidate-registration.component";
 import {ViewCandidateContactComponent} from "../../contact/view-candidate-contact.component";
 import {provideHttpClientTesting} from "@angular/common/http/testing";
 import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
@@ -29,81 +27,80 @@ import {ViewCandidateAccountComponent} from "../../account/view-candidate-accoun
 import {CUSTOM_ELEMENTS_SCHEMA} from "@angular/core";
 import {DatePipe} from "@angular/common";
 import {RouterTestingModule} from "@angular/router/testing";
+import {expect} from 'vitest';
 
 describe('CandidateGeneralTabComponent', () => {
-  let component: CandidateGeneralTabComponent;
-  let fixture: ComponentFixture<CandidateGeneralTabComponent>;
-  const mockCandidate = new MockCandidate();
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      imports: [FormsModule,ReactiveFormsModule, NgSelectModule,RouterTestingModule],
-      declarations: [ CandidateGeneralTabComponent,ViewCandidateLanguageComponent,ViewCandidateAccountComponent,ViewCandidateRegistrationComponent,ViewCandidateContactComponent ],
-      providers: [DatePipe, provideHttpClient(withXhr(), withInterceptorsFromDi()), provideHttpClientTesting()],
-      schemas: [CUSTOM_ELEMENTS_SCHEMA]
-    })
-    .compileComponents();
-  });
-
-  beforeEach(() => {
-    fixture = TestBed.createComponent(CandidateGeneralTabComponent);
-    component = fixture.componentInstance;
-    component.candidate=mockCandidate;
-    fixture.detectChanges();
-  });
-
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
-
-  it('should initialize with null error', () => {
-    expect(component.error).toBeNull();
-  });
-
-  it('should not display additional functionalities for non-admin users', () => {
-    component.adminUser = false;
-    fixture.detectChanges();
-
-    const additionalFunctionalityElement = fixture.nativeElement.querySelector('app-view-candidate-account');
-    expect(additionalFunctionalityElement).toBeNull();
-  });
-
-  it('should display additional functionalities for admin users', () => {
-    component.adminUser = true;
-    fixture.detectChanges();
-
-    const additionalFunctionalityElement = fixture.nativeElement.querySelector('app-view-candidate-account');
-    expect(additionalFunctionalityElement).not.toBeNull();
-  });
-
-  it('should not change loading state when candidate data changes', () => {
-    const candidate = mockCandidate;
-
-    component.loading = false;
-    component.ngOnChanges({
-      candidate:
-        {
-          previousValue: null,
-          currentValue: candidate,
-          firstChange: true,
-          isFirstChange: () => true
-        }
-    });
-    expect(component.loading).toBe(false);
-  });
-
-  it('should update result with candidate data when data changes', () => {
-    const candidate = mockCandidate;
-
-    component.ngOnChanges({
-      candidate:
-        {
-          previousValue: null,
-          currentValue: candidate,
-          firstChange: true,
-          isFirstChange: () => true
-        }
+    let component: CandidateGeneralTabComponent;
+    let fixture: ComponentFixture<CandidateGeneralTabComponent>;
+    const mockCandidate = new MockCandidate();
+    beforeEach(async () => {
+        await TestBed.configureTestingModule({
+            imports: [FormsModule, ReactiveFormsModule, NgSelectModule, RouterTestingModule],
+            declarations: [CandidateGeneralTabComponent, ViewCandidateLanguageComponent, ViewCandidateAccountComponent, ViewCandidateRegistrationComponent, ViewCandidateContactComponent],
+            providers: [DatePipe, provideHttpClient(withXhr(), withInterceptorsFromDi()), provideHttpClientTesting()],
+            schemas: [CUSTOM_ELEMENTS_SCHEMA]
+        })
+            .compileComponents();
     });
 
-    expect(component.result).toEqual(candidate);
-  });
+    beforeEach(() => {
+        fixture = TestBed.createComponent(CandidateGeneralTabComponent);
+        component = fixture.componentInstance;
+        component.candidate = mockCandidate;
+        fixture.detectChanges();
+    });
+
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
+
+    it('should initialize with null error', () => {
+        expect(component.error).toBeNull();
+    });
+
+    it('should not display additional functionalities for non-admin users', () => {
+        component.adminUser = false;
+        fixture.detectChanges();
+
+        const additionalFunctionalityElement = fixture.nativeElement.querySelector('app-view-candidate-account');
+        expect(additionalFunctionalityElement).toBeNull();
+    });
+
+    it('should display additional functionalities for admin users', () => {
+        component.adminUser = true;
+        fixture.detectChanges();
+
+        const additionalFunctionalityElement = fixture.nativeElement.querySelector('app-view-candidate-account');
+        expect(additionalFunctionalityElement).not.toBeNull();
+    });
+
+    it('should not change loading state when candidate data changes', () => {
+        const candidate = mockCandidate;
+
+        component.loading = false;
+        component.ngOnChanges({
+            candidate: {
+                previousValue: null,
+                currentValue: candidate,
+                firstChange: true,
+                isFirstChange: () => true
+            }
+        });
+        expect(component.loading).toBe(false);
+    });
+
+    it('should update result with candidate data when data changes', () => {
+        const candidate = mockCandidate;
+
+        component.ngOnChanges({
+            candidate: {
+                previousValue: null,
+                currentValue: candidate,
+                firstChange: true,
+                isFirstChange: () => true
+            }
+        });
+
+        expect(component.result).toEqual(candidate);
+    });
 });

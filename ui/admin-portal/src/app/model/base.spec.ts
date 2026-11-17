@@ -14,73 +14,77 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
+import type {MockedObject} from "vitest";
 import {TestBed} from '@angular/core/testing';
 import {User} from './user';
 import {AuthenticationService} from '../services/authentication.service';
 import {EMAIL_REGEX, findHasId, indexOfHasId, salesforceUrlRegExp} from "./base";
 import {MockUser} from "../MockData/MockUser";
+import {expect, vi} from 'vitest';
 
 
 describe('Miscellaneous Tests', () => {
-  let authenticationService: jasmine.SpyObj<AuthenticationService>;
-  let mockUser: User;
+    let authenticationService: MockedObject<AuthenticationService>;
+    let mockUser: User;
 
-  beforeEach(() => {
-    const spy = jasmine.createSpyObj('AuthenticationService', ['getLoggedInUser']);
-    TestBed.configureTestingModule({
-      providers: [
-        {provide: AuthenticationService, useValue: spy}
-      ]
-    });
-    authenticationService = TestBed.inject(AuthenticationService) as jasmine.SpyObj<AuthenticationService>;
+    beforeEach(() => {
+        const spy = {
+            getLoggedInUser: vi.fn().mockName("AuthenticationService.getLoggedInUser")
+        };
+        TestBed.configureTestingModule({
+            providers: [
+                { provide: AuthenticationService, useValue: spy }
+            ]
+        });
+        authenticationService = TestBed.inject(AuthenticationService) as MockedObject<AuthenticationService>;
 
-    mockUser = new MockUser();
-  });
-
-  it('should return the index of a HasId object', () => {
-    const hasIds = [{ id: 1 }, { id: 2 }, { id: 3 }];
-    expect(indexOfHasId(2, hasIds)).toBe(1);
-    expect(indexOfHasId(4, hasIds)).toBe(-1);
-  });
-
-  it('should find a HasId object', () => {
-    const hasIds = [{ id: 1 }, { id: 2 }, { id: 3 }];
-    expect(findHasId(2, hasIds)).toEqual({ id: 2 });
-    expect(findHasId(4, hasIds)).toBeNull();
-  });
-
-  it('should validate email regex', () => {
-    const validEmails = ['test@example.com', 'user.name+tag+sorting@example.com', 'user@sub.domain.com'];
-    const invalidEmails = ['plainaddress', '@missingusername.com', 'username@.com', 'username@.com.'];
-
-    validEmails.forEach(email => {
-      expect(new RegExp(EMAIL_REGEX).test(email)).toBeTrue();
+        mockUser = new MockUser();
     });
 
-    invalidEmails.forEach(email => {
-      expect(new RegExp(EMAIL_REGEX).test(email)).toBeFalse();
-    });
-  });
-
-  it('should validate Salesforce URL regex', () => {
-    const validUrls = [
-      'https://talentbeyondboundaries.lightning.force.com/lightning/r/Opportunity/123456789012345',
-      'https://talentbeyondboundaries.lightning.force.com/lightning/r/Account/123456789012345'
-    ];
-    const invalidUrls = [
-      'https://talentbeyondboundaries.lightning.force.com/lightning/r/Opportunity/',
-      'https://talentbeyondboundaries.lightning.force.com/lightning/r/123456789012345',
-      'https://example.com/lightning/r/Opportunity/123456789012345',
-      'https://talentbeyondboundaries.lightning.force.com/lightning/r/Opportunity/123'
-    ];
-
-    validUrls.forEach(url => {
-      expect(salesforceUrlRegExp.test(url)).toBeTrue();
+    it('should return the index of a HasId object', () => {
+        const hasIds = [{ id: 1 }, { id: 2 }, { id: 3 }];
+        expect(indexOfHasId(2, hasIds)).toBe(1);
+        expect(indexOfHasId(4, hasIds)).toBe(-1);
     });
 
-    invalidUrls.forEach(url => {
-      expect(salesforceUrlRegExp.test(url)).toBeFalse();
+    it('should find a HasId object', () => {
+        const hasIds = [{ id: 1 }, { id: 2 }, { id: 3 }];
+        expect(findHasId(2, hasIds)).toEqual({ id: 2 });
+        expect(findHasId(4, hasIds)).toBeNull();
     });
-  });
+
+    it('should validate email regex', () => {
+        const validEmails = ['test@example.com', 'user.name+tag+sorting@example.com', 'user@sub.domain.com'];
+        const invalidEmails = ['plainaddress', '@missingusername.com', 'username@.com', 'username@.com.'];
+
+        validEmails.forEach(email => {
+            expect(new RegExp(EMAIL_REGEX).test(email)).toBe(true);
+        });
+
+        invalidEmails.forEach(email => {
+            expect(new RegExp(EMAIL_REGEX).test(email)).toBe(false);
+        });
+    });
+
+    it('should validate Salesforce URL regex', () => {
+        const validUrls = [
+            'https://talentbeyondboundaries.lightning.force.com/lightning/r/Opportunity/123456789012345',
+            'https://talentbeyondboundaries.lightning.force.com/lightning/r/Account/123456789012345'
+        ];
+        const invalidUrls = [
+            'https://talentbeyondboundaries.lightning.force.com/lightning/r/Opportunity/',
+            'https://talentbeyondboundaries.lightning.force.com/lightning/r/123456789012345',
+            'https://example.com/lightning/r/Opportunity/123456789012345',
+            'https://talentbeyondboundaries.lightning.force.com/lightning/r/Opportunity/123'
+        ];
+
+        validUrls.forEach(url => {
+            expect(salesforceUrlRegExp.test(url)).toBe(true);
+        });
+
+        invalidUrls.forEach(url => {
+            expect(salesforceUrlRegExp.test(url)).toBe(false);
+        });
+    });
 
 });

@@ -1,6 +1,7 @@
 import {CandidateAssistanceType, OfferToAssist} from './offer-to-assist';
 import {User} from "./user";
 import {Partner} from "./partner";
+import {expect} from 'vitest';
 
 describe('OfferToAssist', () => {
   it('should create a valid OfferToAssist object', () => {

@@ -15,6 +15,7 @@
  */
 
 import {TruncatePipe} from './truncate.pipe';
+import {expect} from 'vitest';
 
 describe('TruncatePipe', () => {
   let pipe: TruncatePipe;

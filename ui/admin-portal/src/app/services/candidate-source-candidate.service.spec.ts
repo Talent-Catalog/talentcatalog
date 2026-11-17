@@ -23,122 +23,123 @@ import {Candidate} from '../model/candidate';
 import {SearchResults} from '../model/search-results';
 import {CandidateSource, PagedSearchRequest, SearchCandidateSourcesRequest} from '../model/base';
 import {MockCandidate} from "../MockData/MockCandidate";
+import {expect, vi} from 'vitest';
 
 describe('CandidateSourceCandidateService', () => {
-  let service: CandidateSourceCandidateService;
-  let httpMock: HttpTestingController;
+    let service: CandidateSourceCandidateService;
+    let httpMock: HttpTestingController;
 
-  const savedListApiUrl = environment.apiUrl + '/saved-list-candidate';
-  const savedSearchApiUrl = environment.apiUrl + '/saved-search-candidate';
+    const savedListApiUrl = environment.apiUrl + '/saved-list-candidate';
+    const savedSearchApiUrl = environment.apiUrl + '/saved-search-candidate';
 
-  beforeEach(() => {
-    TestBed.configureTestingModule({
-      providers: [CandidateSourceCandidateService, provideHttpClient(withXhr(), withInterceptorsFromDi()), provideHttpClientTesting()]
+    beforeEach(() => {
+        TestBed.configureTestingModule({
+            providers: [CandidateSourceCandidateService, provideHttpClient(withXhr(), withInterceptorsFromDi()), provideHttpClientTesting()]
+        });
+        service = TestBed.inject(CandidateSourceCandidateService);
+        httpMock = TestBed.inject(HttpTestingController);
+
+        // Mock the isSavedSearch function
+        (service as any).isSavedSearch = vi.fn().mockName('isSavedSearch');
     });
-    service = TestBed.inject(CandidateSourceCandidateService);
-    httpMock = TestBed.inject(HttpTestingController);
 
-    // Mock the isSavedSearch function
-    (service as any).isSavedSearch = jasmine.createSpy('isSavedSearch');
-  });
-
-  afterEach(() => {
-    httpMock.verify();
-  });
-
-  describe('list', () => {
-    it('should make a GET request to the correct URL for listing candidates', () => {
-      const source: CandidateSource = { id: 1 } as CandidateSource;
-      const mockResponse: Candidate[] = [new MockCandidate()];
-
-      (service as any).isSavedSearch.and.returnValue(false);
-
-      service.list(source).subscribe(response => {
-        expect(response).toEqual(mockResponse);
-      });
-
-      const req = httpMock.expectOne(`${savedListApiUrl}/${source.id}/list`);
-      expect(req.request.method).toBe('GET');
-      req.flush(mockResponse);
+    afterEach(() => {
+        httpMock.verify();
     });
-  });
 
-  describe('isEmpty', () => {
-    it('should make a GET request to the correct URL for checking if source is empty', () => {
-      const source: CandidateSource = { id: 1 } as CandidateSource;
-      const mockResponse = true;
+    describe('list', () => {
+        it('should make a GET request to the correct URL for listing candidates', () => {
+            const source: CandidateSource = { id: 1 } as CandidateSource;
+            const mockResponse: Candidate[] = [new MockCandidate()];
 
-      (service as any).isSavedSearch.and.returnValue(false);
+            (service as any).isSavedSearch.mockReturnValue(false);
 
-      service.isEmpty(source).subscribe(response => {
-        expect(response).toBe(mockResponse);
-      });
+            service.list(source).subscribe(response => {
+                expect(response).toEqual(mockResponse);
+            });
 
-      const req = httpMock.expectOne(`${savedListApiUrl}/${source.id}/is-empty`);
-      expect(req.request.method).toBe('GET');
-      req.flush(mockResponse);
+            const req = httpMock.expectOne(`${savedListApiUrl}/${source.id}/list`);
+            expect(req.request.method).toBe('GET');
+            req.flush(mockResponse);
+        });
     });
-  });
 
-  describe('search', () => {
-    it('should make a POST request to the correct URL for searching candidates', () => {
-      const source: CandidateSource = { id: 1 } as CandidateSource;
-      const request: SearchCandidateSourcesRequest = {
-        keyword:'Test'
-      };
-      const mockResponse: Candidate[] = [
-        new MockCandidate()
-      ];
+    describe('isEmpty', () => {
+        it('should make a GET request to the correct URL for checking if source is empty', () => {
+            const source: CandidateSource = { id: 1 } as CandidateSource;
+            const mockResponse = true;
 
-      (service as any).isSavedSearch.and.returnValue(false);
+            (service as any).isSavedSearch.mockReturnValue(false);
 
-      service.search(source, request).subscribe(response => {
-        expect(response).toEqual(mockResponse);
-      });
+            service.isEmpty(source).subscribe(response => {
+                expect(response).toBe(mockResponse);
+            });
 
-      const req = httpMock.expectOne(`${savedListApiUrl}/${source.id}/search`);
-      expect(req.request.method).toBe('POST');
-      expect(req.request.body).toEqual(request);
-      req.flush(mockResponse);
+            const req = httpMock.expectOne(`${savedListApiUrl}/${source.id}/is-empty`);
+            expect(req.request.method).toBe('GET');
+            req.flush(mockResponse);
+        });
     });
-  });
 
-  describe('searchPaged', () => {
-    it('should make a POST request to the correct URL for searching candidates with pagination', () => {
-      const source: CandidateSource = { id: 1 } as CandidateSource;
-      const request: SearchCandidateSourcesRequest = { keyword:'test' };
-      const mockResponse: SearchResults<Candidate> = {number:1,size:10,totalPages:1,totalElements:1,first:true,last:false, content: [new MockCandidate()] };
+    describe('search', () => {
+        it('should make a POST request to the correct URL for searching candidates', () => {
+            const source: CandidateSource = { id: 1 } as CandidateSource;
+            const request: SearchCandidateSourcesRequest = {
+                keyword: 'Test'
+            };
+            const mockResponse: Candidate[] = [
+                new MockCandidate()
+            ];
 
-      (service as any).isSavedSearch.and.returnValue(false);
+            (service as any).isSavedSearch.mockReturnValue(false);
 
-      service.searchPaged(source, request).subscribe(response => {
-        expect(response).toEqual(mockResponse);
-      });
+            service.search(source, request).subscribe(response => {
+                expect(response).toEqual(mockResponse);
+            });
 
-      const req = httpMock.expectOne(`${savedListApiUrl}/${source.id}/search-paged`);
-      expect(req.request.method).toBe('POST');
-      expect(req.request.body).toEqual(request);
-      req.flush(mockResponse);
+            const req = httpMock.expectOne(`${savedListApiUrl}/${source.id}/search`);
+            expect(req.request.method).toBe('POST');
+            expect(req.request.body).toEqual(request);
+            req.flush(mockResponse);
+        });
     });
-  });
 
-  describe('export', () => {
-    it('should make a POST request to the correct URL for exporting candidates', () => {
-      const source: CandidateSource = { id: 1 } as CandidateSource;
-      const request: PagedSearchRequest = { pageNumber:1};
-      const mockResponse = new Blob();
+    describe('searchPaged', () => {
+        it('should make a POST request to the correct URL for searching candidates with pagination', () => {
+            const source: CandidateSource = { id: 1 } as CandidateSource;
+            const request: SearchCandidateSourcesRequest = { keyword: 'test' };
+            const mockResponse: SearchResults<Candidate> = { number: 1, size: 10, totalPages: 1, totalElements: 1, first: true, last: false, content: [new MockCandidate()] };
 
-      (service as any).isSavedSearch.and.returnValue(false);
+            (service as any).isSavedSearch.mockReturnValue(false);
 
-      service.export(source, request).subscribe(response => {
-        expect(response).toEqual(mockResponse);
-      });
+            service.searchPaged(source, request).subscribe(response => {
+                expect(response).toEqual(mockResponse);
+            });
 
-      const req = httpMock.expectOne(`${savedListApiUrl}/${source.id}/export/csv`);
-      expect(req.request.method).toBe('POST');
-      expect(req.request.body).toEqual(request);
-      expect(req.request.responseType).toBe('blob');
-      req.flush(mockResponse);
+            const req = httpMock.expectOne(`${savedListApiUrl}/${source.id}/search-paged`);
+            expect(req.request.method).toBe('POST');
+            expect(req.request.body).toEqual(request);
+            req.flush(mockResponse);
+        });
     });
-  });
+
+    describe('export', () => {
+        it('should make a POST request to the correct URL for exporting candidates', () => {
+            const source: CandidateSource = { id: 1 } as CandidateSource;
+            const request: PagedSearchRequest = { pageNumber: 1 };
+            const mockResponse = new Blob();
+
+            (service as any).isSavedSearch.mockReturnValue(false);
+
+            service.export(source, request).subscribe(response => {
+                expect(response).toEqual(mockResponse);
+            });
+
+            const req = httpMock.expectOne(`${savedListApiUrl}/${source.id}/export/csv`);
+            expect(req.request.method).toBe('POST');
+            expect(req.request.body).toEqual(request);
+            expect(req.request.responseType).toBe('blob');
+            req.flush(mockResponse);
+        });
+    });
 });

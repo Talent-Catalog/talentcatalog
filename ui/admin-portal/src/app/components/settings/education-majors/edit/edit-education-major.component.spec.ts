@@ -13,6 +13,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
+
+import type {MockedObject} from "vitest";
 import {EditEducationMajorComponent} from "./edit-education-major.component";
 import {EducationMajorService} from "../../../../services/education-major.service";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
@@ -23,87 +25,94 @@ import {provideHttpClientTesting} from "@angular/common/http/testing";
 import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {of, throwError} from "rxjs";
 import {EducationMajor} from "../../../../model/education-major";
+import {expect, vi} from 'vitest';
 
 describe('EditEducationMajorComponent', () => {
-  let component: EditEducationMajorComponent;
-  let fixture: ComponentFixture<EditEducationMajorComponent>;
-  let educationMajorServiceSpy: jasmine.SpyObj<EducationMajorService>;
-  let ngbActiveModalSpy: jasmine.SpyObj<NgbActiveModal>;
-  let formBuilder: UntypedFormBuilder;
-  // @ts-expect-error
-  const educationMajor: EducationMajor = { name: 'Test', status: 'active' };
+    let component: EditEducationMajorComponent;
+    let fixture: ComponentFixture<EditEducationMajorComponent>;
+    let educationMajorServiceSpy: MockedObject<EducationMajorService>;
+    let ngbActiveModalSpy: MockedObject<NgbActiveModal>;
+    let formBuilder: UntypedFormBuilder;
+    // @ts-expect-error
+    const educationMajor: EducationMajor = { name: 'Test', status: 'active' };
 
-  beforeEach(async () => {
-    const educationMajorServiceSpyObj = jasmine.createSpyObj('EducationMajorService', ['get', 'update']);
-    const ngbActiveModalSpyObj = jasmine.createSpyObj('NgbActiveModal', ['close', 'dismiss']);
+    beforeEach(async () => {
+        const educationMajorServiceSpyObj = {
+            get: vi.fn().mockName("EducationMajorService.get"),
+            update: vi.fn().mockName("EducationMajorService.update")
+        };
+        const ngbActiveModalSpyObj = {
+            close: vi.fn().mockName("NgbActiveModal.close"),
+            dismiss: vi.fn().mockName("NgbActiveModal.dismiss")
+        };
 
-    await TestBed.configureTestingModule({
-      declarations: [EditEducationMajorComponent],
-      imports: [ReactiveFormsModule,NgSelectModule],
-      providers: [
-        { provide: EducationMajorService, useValue: educationMajorServiceSpyObj },
-        { provide: NgbActiveModal, useValue: ngbActiveModalSpyObj },
-        provideHttpClient(withXhr(), withInterceptorsFromDi()),
-        provideHttpClientTesting()
-      ]
-    }).compileComponents();
+        await TestBed.configureTestingModule({
+            declarations: [EditEducationMajorComponent],
+            imports: [ReactiveFormsModule, NgSelectModule],
+            providers: [
+                { provide: EducationMajorService, useValue: educationMajorServiceSpyObj },
+                { provide: NgbActiveModal, useValue: ngbActiveModalSpyObj },
+                provideHttpClient(withXhr(), withInterceptorsFromDi()),
+                provideHttpClientTesting()
+            ]
+        }).compileComponents();
 
-    educationMajorServiceSpy = TestBed.inject(EducationMajorService) as jasmine.SpyObj<EducationMajorService>;
-    ngbActiveModalSpy = TestBed.inject(NgbActiveModal) as jasmine.SpyObj<NgbActiveModal>;
-    formBuilder = TestBed.inject(UntypedFormBuilder);
-  });
+        educationMajorServiceSpy = TestBed.inject(EducationMajorService) as MockedObject<EducationMajorService>;
+        ngbActiveModalSpy = TestBed.inject(NgbActiveModal) as MockedObject<NgbActiveModal>;
+        formBuilder = TestBed.inject(UntypedFormBuilder);
+    });
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(EditEducationMajorComponent);
-    component = fixture.componentInstance;
-    component.educationMajorId = 1; // Mock education major ID
-    educationMajorServiceSpy.get.and.returnValue(of(educationMajor));
-    educationMajorServiceSpy.update.and.returnValue(of(educationMajor));
+    beforeEach(() => {
+        fixture = TestBed.createComponent(EditEducationMajorComponent);
+        component = fixture.componentInstance;
+        component.educationMajorId = 1; // Mock education major ID
+        educationMajorServiceSpy.get.mockReturnValue(of(educationMajor));
+        educationMajorServiceSpy.update.mockReturnValue(of(educationMajor));
 
-    fixture.detectChanges();
-  });
+        fixture.detectChanges();
+    });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
 
-  it('should initialize form with education major data', fakeAsync(() => {
-    component.ngOnInit();
-    tick(); // Waiting for async operation to complete
+    it('should initialize form with education major data', fakeAsync(() => {
+        component.ngOnInit();
+        tick(); // Waiting for async operation to complete
 
-    expect(component.educationMajorForm.value).toEqual(educationMajor);
-    expect(component.loading).toBeFalse();
-  }));
+        expect(component.educationMajorForm.value).toEqual(educationMajor);
+        expect(component.loading).toBe(false);
+    }));
 
-  it('should call onSave and close modal when education major is successfully updated', fakeAsync(() => {
+    it('should call onSave and close modal when education major is successfully updated', fakeAsync(() => {
 
-    component.ngOnInit();
-    tick(); // Waiting for async operation to complete
-    component.onSave();
-    tick(); // Waiting for async operation to complete
+        component.ngOnInit();
+        tick(); // Waiting for async operation to complete
+        component.onSave();
+        tick(); // Waiting for async operation to complete
 
-    expect(educationMajorServiceSpy.update).toHaveBeenCalledWith(1, educationMajor);
-    expect(ngbActiveModalSpy.close).toHaveBeenCalledWith(educationMajor);
-    expect(component.saving).toBeFalse();
-  }));
+        expect(educationMajorServiceSpy.update).toHaveBeenCalledWith(1, educationMajor);
+        expect(ngbActiveModalSpy.close).toHaveBeenCalledWith(educationMajor);
+        expect(component.saving).toBe(false);
+    }));
 
-  it('should handle error when education major update fails', fakeAsync(() => {
-    const educationMajor: EducationMajor = { id: 1, name: 'Test', status: 'active' };
-    const errorResponse = { status: 500, message: 'Internal Server Error' };
-    educationMajorServiceSpy.get.and.returnValue(of(educationMajor));
-    educationMajorServiceSpy.update.and.returnValue(throwError(errorResponse));
+    it('should handle error when education major update fails', fakeAsync(() => {
+        const educationMajor: EducationMajor = { id: 1, name: 'Test', status: 'active' };
+        const errorResponse = { status: 500, message: 'Internal Server Error' };
+        educationMajorServiceSpy.get.mockReturnValue(of(educationMajor));
+        educationMajorServiceSpy.update.mockReturnValue(throwError(errorResponse));
 
-    component.ngOnInit();
-    tick(); // Waiting for async operation to complete
-    component.onSave();
-    tick(); // Waiting for async operation to complete
+        component.ngOnInit();
+        tick(); // Waiting for async operation to complete
+        component.onSave();
+        tick(); // Waiting for async operation to complete
 
-    expect(component.error).toEqual(errorResponse);
-    expect(component.saving).toBeFalse();
-  }));
+        expect(component.error).toEqual(errorResponse);
+        expect(component.saving).toBe(false);
+    }));
 
-  it('should dismiss modal when dismiss is called', () => {
-    component.dismiss();
-    expect(ngbActiveModalSpy.dismiss).toHaveBeenCalledWith(false);
-  });
+    it('should dismiss modal when dismiss is called', () => {
+        component.dismiss();
+        expect(ngbActiveModalSpy.dismiss).toHaveBeenCalledWith(false);
+    });
 });

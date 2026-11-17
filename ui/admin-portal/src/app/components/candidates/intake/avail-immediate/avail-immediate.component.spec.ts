@@ -24,50 +24,51 @@ import {CandidateService} from "../../../../services/candidate.service";
 import {AvailImmediateReason, YesNo} from "../../../../model/candidate";
 import {AutosaveStatusComponent} from "../../../util/autosave-status/autosave-status.component";
 import {MockCandidate} from "../../../../MockData/MockCandidate";
+import {expect} from 'vitest';
 
 describe('AvailImmediateComponent', () => {
-  let component: AvailImmediateComponent;
-  let fixture: ComponentFixture<AvailImmediateComponent>;
-  let fb: UntypedFormBuilder;
+    let component: AvailImmediateComponent;
+    let fixture: ComponentFixture<AvailImmediateComponent>;
+    let fb: UntypedFormBuilder;
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      declarations: [AvailImmediateComponent, AutosaveStatusComponent],
-      imports: [NgSelectModule,FormsModule,ReactiveFormsModule],
-      providers: [
-        UntypedFormBuilder,
-        { provide: CandidateService },
-        provideHttpClient(withXhr(), withInterceptorsFromDi()),
-        provideHttpClientTesting()
-      ]
-    }).compileComponents();
+    beforeEach(async () => {
+        await TestBed.configureTestingModule({
+            declarations: [AvailImmediateComponent, AutosaveStatusComponent],
+            imports: [NgSelectModule, FormsModule, ReactiveFormsModule],
+            providers: [
+                UntypedFormBuilder,
+                { provide: CandidateService },
+                provideHttpClient(withXhr(), withInterceptorsFromDi()),
+                provideHttpClientTesting()
+            ]
+        }).compileComponents();
 
-    fb = TestBed.inject(UntypedFormBuilder);
-  });
+        fb = TestBed.inject(UntypedFormBuilder);
+    });
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(AvailImmediateComponent);
-    component = fixture.componentInstance;
-    component.entity= new MockCandidate();
-    component.candidateIntakeData = {
-      availImmediate: YesNo.Yes,
-      availImmediateJobOps: 'Software Development',
-      availImmediateReason: AvailImmediateReason.Health,
-      availImmediateNotes: 'Some additional notes'
-    };
-    fixture.detectChanges(); // Trigger initial data binding
-  });
+    beforeEach(() => {
+        fixture = TestBed.createComponent(AvailImmediateComponent);
+        component = fixture.componentInstance;
+        component.entity = new MockCandidate();
+        component.candidateIntakeData = {
+            availImmediate: YesNo.Yes,
+            availImmediateJobOps: 'Software Development',
+            availImmediateReason: AvailImmediateReason.Health,
+            availImmediateNotes: 'Some additional notes'
+        };
+        fixture.detectChanges(); // Trigger initial data binding
+    });
 
-  it('should initialize the form correctly with the provided data', () => {
-    expect(component.form).toBeTruthy();
-    const availImmediateControl = component.form.get('availImmediate');
-    const availImmediateJobOpsControl = component.form.get('availImmediateJobOps');
-    const availImmediateReasonControl = component.form.get('availImmediateReason');
-    const availImmediateNotesControl = component.form.get('availImmediateNotes');
+    it('should initialize the form correctly with the provided data', () => {
+        expect(component.form).toBeTruthy();
+        const availImmediateControl = component.form.get('availImmediate');
+        const availImmediateJobOpsControl = component.form.get('availImmediateJobOps');
+        const availImmediateReasonControl = component.form.get('availImmediateReason');
+        const availImmediateNotesControl = component.form.get('availImmediateNotes');
 
-    expect(availImmediateControl.value).toBe(YesNo.Yes);
-    expect(availImmediateJobOpsControl.value).toBe('Software Development');
-    expect(availImmediateReasonControl.value).toBe(AvailImmediateReason.Health);
-    expect(availImmediateNotesControl.value).toBe('Some additional notes');
-  });
+        expect(availImmediateControl.value).toBe(YesNo.Yes);
+        expect(availImmediateJobOpsControl.value).toBe('Software Development');
+        expect(availImmediateReasonControl.value).toBe(AvailImmediateReason.Health);
+        expect(availImmediateNotesControl.value).toBe('Some additional notes');
+    });
 });

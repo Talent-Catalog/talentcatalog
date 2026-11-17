@@ -20,6 +20,7 @@ import {provideHttpClient, withInterceptorsFromDi, withXhr} from '@angular/commo
 import {AddReactionRequest, ReactionService} from './reaction.service';
 import {Reaction} from '../model/reaction';
 import {environment} from '../../environments/environment';
+import {expect} from 'vitest';
 
 describe('ReactionService', () => {
   let service: ReactionService;

@@ -1,6 +1,7 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { TcCardComponent } from './tc-card.component';
+import {TcCardComponent} from './tc-card.component';
+import {expect} from 'vitest';
 
 describe('TcCardComponent', () => {
   let component: TcCardComponent;

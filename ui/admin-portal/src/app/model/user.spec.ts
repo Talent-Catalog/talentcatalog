@@ -15,6 +15,7 @@
  */
 
 import {Role, roleGreaterThan, User} from './user';
+import {expect} from 'vitest';
 
 describe('User Class', () => {
   let user: User;

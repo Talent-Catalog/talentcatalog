@@ -22,6 +22,7 @@ import {environment} from '../../environments/environment';
 import {Translation} from '../model/translation';
 import {SearchResults} from '../model/search-results';
 import {TranslatedObject} from '../model/translated-object';
+import {expect} from 'vitest';
 
 describe('TranslationService', () => {
   let service: TranslationService;

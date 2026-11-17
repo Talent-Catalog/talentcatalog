@@ -17,78 +17,76 @@
 import {TestBed} from '@angular/core/testing';
 import {HttpTestingController, provideHttpClientTesting} from '@angular/common/http/testing';
 import {provideHttpClient, withInterceptorsFromDi, withXhr} from '@angular/common/http';
-import {
-  CandidateDependantService,
-  CreateCandidateDependantRequest
-} from './candidate-dependant.service';
+import {CandidateDependantService, CreateCandidateDependantRequest} from './candidate-dependant.service';
 import {environment} from '../../environments/environment';
 import {CandidateDependant, DependantRelations, Registrations, YesNo} from '../model/candidate';
+import {expect} from 'vitest';
 
 describe('CandidateDependantService', () => {
-  let service: CandidateDependantService;
-  let httpMock: HttpTestingController;
-  const apiUrl = environment.apiUrl + '/candidate-dependant';
+    let service: CandidateDependantService;
+    let httpMock: HttpTestingController;
+    const apiUrl = environment.apiUrl + '/candidate-dependant';
 
-  beforeEach(() => {
-    TestBed.configureTestingModule({
-      providers: [CandidateDependantService, provideHttpClient(withXhr(), withInterceptorsFromDi()), provideHttpClientTesting()]
-    });
-    service = TestBed.inject(CandidateDependantService);
-    httpMock = TestBed.inject(HttpTestingController);
-  });
-
-  afterEach(() => {
-    httpMock.verify();
-  });
-
-  it('should be created', () => {
-    expect(service).toBeTruthy();
-  });
-
-  it('should create a candidate dependant', () => {
-    const candidateId = 1;
-    const request: CreateCandidateDependantRequest = {
-      relation: DependantRelations.Child,
-      relationOther: 'Other Relation',
-      dob: '2010-05-15',
-      name: 'John Doe',
-      registered: Registrations.UNHCR,
-      registeredNumber: '12345',
-      registeredNotes: 'Notes',
-      healthConcern: YesNo.No,
-      healthNotes: 'No health concerns'
-    };
-    const mockResponse: CandidateDependant = {
-      id: 1,
-      relation: DependantRelations.Child,
-      relationOther: 'Other Relation',
-      dob: '2010-05-15',
-      name: 'John Doe',
-      registered: Registrations.UNHCR,
-      registeredNumber: '12345',
-      registeredNotes: 'Notes',
-      healthConcern: YesNo.Yes,
-      healthNotes: 'No health concerns'
-    };
-
-    service.create(candidateId, request).subscribe((dependant) => {
-      expect(dependant).toEqual(mockResponse);
+    beforeEach(() => {
+        TestBed.configureTestingModule({
+            providers: [CandidateDependantService, provideHttpClient(withXhr(), withInterceptorsFromDi()), provideHttpClientTesting()]
+        });
+        service = TestBed.inject(CandidateDependantService);
+        httpMock = TestBed.inject(HttpTestingController);
     });
 
-    const req = httpMock.expectOne(`${apiUrl}/${candidateId}`);
-    expect(req.request.method).toBe('POST');
-    req.flush(mockResponse);
-  });
-
-  it('should delete a candidate dependant', () => {
-    const dependantId = 1;
-
-    service.delete(dependantId).subscribe((response) => {
-      expect(response).toBeTrue();
+    afterEach(() => {
+        httpMock.verify();
     });
 
-    const req = httpMock.expectOne(`${apiUrl}/${dependantId}`);
-    expect(req.request.method).toBe('DELETE');
-    req.flush(true);
-  });
+    it('should be created', () => {
+        expect(service).toBeTruthy();
+    });
+
+    it('should create a candidate dependant', () => {
+        const candidateId = 1;
+        const request: CreateCandidateDependantRequest = {
+            relation: DependantRelations.Child,
+            relationOther: 'Other Relation',
+            dob: '2010-05-15',
+            name: 'John Doe',
+            registered: Registrations.UNHCR,
+            registeredNumber: '12345',
+            registeredNotes: 'Notes',
+            healthConcern: YesNo.No,
+            healthNotes: 'No health concerns'
+        };
+        const mockResponse: CandidateDependant = {
+            id: 1,
+            relation: DependantRelations.Child,
+            relationOther: 'Other Relation',
+            dob: '2010-05-15',
+            name: 'John Doe',
+            registered: Registrations.UNHCR,
+            registeredNumber: '12345',
+            registeredNotes: 'Notes',
+            healthConcern: YesNo.Yes,
+            healthNotes: 'No health concerns'
+        };
+
+        service.create(candidateId, request).subscribe((dependant) => {
+            expect(dependant).toEqual(mockResponse);
+        });
+
+        const req = httpMock.expectOne(`${apiUrl}/${candidateId}`);
+        expect(req.request.method).toBe('POST');
+        req.flush(mockResponse);
+    });
+
+    it('should delete a candidate dependant', () => {
+        const dependantId = 1;
+
+        service.delete(dependantId).subscribe((response) => {
+            expect(response).toBe(true);
+        });
+
+        const req = httpMock.expectOne(`${apiUrl}/${dependantId}`);
+        expect(req.request.method).toBe('DELETE');
+        req.flush(true);
+    });
 });

@@ -22,52 +22,53 @@ import {provideHttpClientTesting} from "@angular/common/http/testing";
 import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {MockJob} from "../../../../../MockData/MockJob";
 import {RouterLinkStubDirective} from "../../../../login/login.component.spec";
+import {expect} from 'vitest';
 
 describe('EditJobInfoComponent', () => {
-  let component: EditJobInfoComponent;
-  let fixture: ComponentFixture<EditJobInfoComponent>;
-  let modalService: NgbModal;
-  let ngbActiveModal: NgbActiveModal;
-  let fb: UntypedFormBuilder;
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      declarations: [ EditJobInfoComponent,RouterLinkStubDirective ],
-      providers: [
-        { provide: NgbModal  },
-        { provide: NgbActiveModal  },
-        { provide: UntypedFormBuilder  },
-        provideHttpClient(withXhr(), withInterceptorsFromDi()),
-        provideHttpClientTesting(),
-      ]
-    })
-    .compileComponents();
+    let component: EditJobInfoComponent;
+    let fixture: ComponentFixture<EditJobInfoComponent>;
+    let modalService: NgbModal;
+    let ngbActiveModal: NgbActiveModal;
+    let fb: UntypedFormBuilder;
+    beforeEach(async () => {
+        await TestBed.configureTestingModule({
+            declarations: [EditJobInfoComponent, RouterLinkStubDirective],
+            providers: [
+                { provide: NgbModal },
+                { provide: NgbActiveModal },
+                { provide: UntypedFormBuilder },
+                provideHttpClient(withXhr(), withInterceptorsFromDi()),
+                provideHttpClientTesting(),
+            ]
+        })
+            .compileComponents();
 
-    modalService = TestBed.inject(NgbModal);
-    ngbActiveModal = TestBed.inject(NgbActiveModal);
-    fb = TestBed.inject(UntypedFormBuilder);
-  });
+        modalService = TestBed.inject(NgbModal);
+        ngbActiveModal = TestBed.inject(NgbActiveModal);
+        fb = TestBed.inject(UntypedFormBuilder);
+    });
 
-  beforeEach(() => { // Use this block for component creation
-    fixture = TestBed.createComponent(EditJobInfoComponent);
-    component = fixture.componentInstance;
+    beforeEach(() => {
+        fixture = TestBed.createComponent(EditJobInfoComponent);
+        component = fixture.componentInstance;
 
-     // Provide a mock Job object
-    component.job = MockJob;
+        // Provide a mock Job object
+        component.job = MockJob;
 
-    fixture.detectChanges();
-  });
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+        fixture.detectChanges();
+    });
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
 
-  it('should initialize jobForm with correct values', () => {
-    component.jobForm = new UntypedFormBuilder().group(MockJob);
-    // Access the form controls
-    const name = component.jobForm.get('name');
-    const submissionDueDateControl = component.jobForm.get('submissionDueDate');
-    const contactUserControl = component.jobForm.get('contactUser');
-    expect(name.value).toEqual(component.job.name);
-    expect(submissionDueDateControl.value.toDateString()).toEqual(component.job.submissionDueDate.toDateString());
-    expect(contactUserControl.value).toEqual(component.job.contactUser);
-   });
+    it('should initialize jobForm with correct values', () => {
+        component.jobForm = new UntypedFormBuilder().group(MockJob);
+        // Access the form controls
+        const name = component.jobForm.get('name');
+        const submissionDueDateControl = component.jobForm.get('submissionDueDate');
+        const contactUserControl = component.jobForm.get('contactUser');
+        expect(name.value).toEqual(component.job.name);
+        expect(submissionDueDateControl.value.toDateString()).toEqual(component.job.submissionDueDate.toDateString());
+        expect(contactUserControl.value).toEqual(component.job.contactUser);
+    });
 });

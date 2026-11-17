@@ -22,59 +22,60 @@ import {FormsModule, ReactiveFormsModule, UntypedFormBuilder} from "@angular/for
 import {AutosaveStatusComponent} from "../../../util/autosave-status/autosave-status.component";
 import {CandidateService} from "../../../../services/candidate.service";
 import {CandidateIntakeData, DrivingLicenseStatus, YesNo} from "../../../../model/candidate";
+import {expect} from 'vitest';
 
 describe('DrivingLicenseComponent', () => {
-  let component: DrivingLicenseComponent;
-  let fixture: ComponentFixture<DrivingLicenseComponent>;
+    let component: DrivingLicenseComponent;
+    let fixture: ComponentFixture<DrivingLicenseComponent>;
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      declarations: [ DrivingLicenseComponent,AutosaveStatusComponent ],
-      imports: [NgSelectModule,FormsModule,ReactiveFormsModule],
-      providers: [UntypedFormBuilder, CandidateService, provideHttpClient(withXhr(), withInterceptorsFromDi()), provideHttpClientTesting()]
-    })
-    .compileComponents();
-  });
+    beforeEach(async () => {
+        await TestBed.configureTestingModule({
+            declarations: [DrivingLicenseComponent, AutosaveStatusComponent],
+            imports: [NgSelectModule, FormsModule, ReactiveFormsModule],
+            providers: [UntypedFormBuilder, CandidateService, provideHttpClient(withXhr(), withInterceptorsFromDi()), provideHttpClientTesting()]
+        })
+            .compileComponents();
+    });
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(DrivingLicenseComponent);
-    component = fixture.componentInstance;
-    component.countries = []; // Provide empty array of countries
+    beforeEach(() => {
+        fixture = TestBed.createComponent(DrivingLicenseComponent);
+        component = fixture.componentInstance;
+        component.countries = []; // Provide empty array of countries
 
-    fixture.detectChanges();
-  });
+        fixture.detectChanges();
+    });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
 
-  it('should initialize form group and controls', () => {
-    expect(component.form).toBeDefined();
-    expect(component.form.controls['canDrive']).toBeDefined();
-    expect(component.form.controls['drivingLicense']).toBeDefined();
-    expect(component.form.controls['drivingLicenseExp']).toBeDefined();
-    expect(component.form.controls['drivingLicenseCountryId']).toBeDefined();
-  });
+    it('should initialize form group and controls', () => {
+        expect(component.form).toBeDefined();
+        expect(component.form.controls['canDrive']).toBeDefined();
+        expect(component.form.controls['drivingLicense']).toBeDefined();
+        expect(component.form.controls['drivingLicenseExp']).toBeDefined();
+        expect(component.form.controls['drivingLicenseCountryId']).toBeDefined();
+    });
 
-  it('should initialize form controls with default values', () => {
-    expect(component.canDrive).toBeNull(); // By default, it should be undefined
-    expect(component.drivingLicense).toBeNull(); // By default, it should be undefined
-    expect(component.form.controls['drivingLicenseExp'].value).toBeNull(); // By default, it should be null
-    expect(component.form.controls['drivingLicenseCountryId'].value).toBeNull(); // By default, it should be null
-  });
+    it('should initialize form controls with default values', () => {
+        expect(component.canDrive).toBeNull(); // By default, it should be undefined
+        expect(component.drivingLicense).toBeNull(); // By default, it should be undefined
+        expect(component.form.controls['drivingLicenseExp'].value).toBeNull(); // By default, it should be null
+        expect(component.form.controls['drivingLicenseCountryId'].value).toBeNull(); // By default, it should be null
+    });
 
-  it('should initialize form controls with provided input data', () => {
-    const testData = {
-      canDrive: YesNo.Yes,
-      drivingLicense: DrivingLicenseStatus.Valid,
-      drivingLicenseExp:'No',
-    } as CandidateIntakeData;
+    it('should initialize form controls with provided input data', () => {
+        const testData = {
+            canDrive: YesNo.Yes,
+            drivingLicense: DrivingLicenseStatus.Valid,
+            drivingLicenseExp: 'No',
+        } as CandidateIntakeData;
 
-    component.candidateIntakeData = testData;
-    component.ngOnInit(); // Trigger initialization
+        component.candidateIntakeData = testData;
+        component.ngOnInit(); // Trigger initialization
 
-    expect(component.canDrive).toEqual(testData.canDrive);
-    expect(component.drivingLicense).toEqual(testData.drivingLicense);
-    expect(component.form.controls['drivingLicenseExp'].value).toEqual('No');
-  });
+        expect(component.canDrive).toEqual(testData.canDrive);
+        expect(component.drivingLicense).toEqual(testData.drivingLicense);
+        expect(component.form.controls['drivingLicenseExp'].value).toEqual('No');
+    });
 });

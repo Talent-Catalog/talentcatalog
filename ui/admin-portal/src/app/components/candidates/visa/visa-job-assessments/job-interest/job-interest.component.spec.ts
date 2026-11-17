@@ -23,61 +23,62 @@ import {provideHttpClientTesting} from "@angular/common/http/testing";
 import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {MockCandidateVisaJobCheck} from "../../../../../MockData/MockCandidateVisaCheck";
 import {NgSelectModule} from "@ng-select/ng-select";
+import {expect} from 'vitest';
 
 describe('JobInterestComponent', () => {
-  let component: JobInterestComponent;
-  let fixture: ComponentFixture<JobInterestComponent>;
-  let fb: UntypedFormBuilder;
+    let component: JobInterestComponent;
+    let fixture: ComponentFixture<JobInterestComponent>;
+    let fb: UntypedFormBuilder;
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      declarations: [JobInterestComponent,AutosaveStatusComponent],
-      imports: [ReactiveFormsModule,NgSelectModule],
-      providers: [UntypedFormBuilder, provideHttpClient(withXhr(), withInterceptorsFromDi()), provideHttpClientTesting()]
-    }).compileComponents();
-  });
+    beforeEach(async () => {
+        await TestBed.configureTestingModule({
+            declarations: [JobInterestComponent, AutosaveStatusComponent],
+            imports: [ReactiveFormsModule, NgSelectModule],
+            providers: [UntypedFormBuilder, provideHttpClient(withXhr(), withInterceptorsFromDi()), provideHttpClientTesting()]
+        }).compileComponents();
+    });
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(JobInterestComponent);
-    component = fixture.componentInstance;
-    fb = TestBed.inject(UntypedFormBuilder);
-    component.visaJobCheck = MockCandidateVisaJobCheck;
-    fixture.detectChanges();
-  });
+    beforeEach(() => {
+        fixture = TestBed.createComponent(JobInterestComponent);
+        component = fixture.componentInstance;
+        fb = TestBed.inject(UntypedFormBuilder);
+        component.visaJobCheck = MockCandidateVisaJobCheck;
+        fixture.detectChanges();
+    });
 
-  it('should create the component', () => {
-    expect(component).toBeTruthy();
-  });
+    it('should create the component', () => {
+        expect(component).toBeTruthy();
+    });
 
-  it('should have a form with visaJobInterest and visaJobInterestNotes controls', () => {
-    expect(component.form.contains('visaJobInterest')).toBeTrue();
-    expect(component.form.contains('visaJobInterestNotes')).toBeTrue();
-  });
+    it('should have a form with visaJobInterest and visaJobInterestNotes controls', () => {
+        expect(component.form.contains('visaJobInterest')).toBe(true);
+        expect(component.form.contains('visaJobInterestNotes')).toBe(true);
+    });
 
-  it('should have initial values for form controls', () => {
-    const testVisaJobCheck: CandidateVisaJobCheck = {
-      id: 1,
-      interest: YesNo.Yes,
-      interestNotes: 'Sample notes'
-    };
-    component.visaJobCheck = testVisaJobCheck;
-    component.ngOnInit();
-    expect(component.form.get('visaJobInterest')?.value).toEqual(testVisaJobCheck.interest);
-    expect(component.form.get('visaJobInterestNotes')?.value).toEqual(testVisaJobCheck.interestNotes);
-  });
+    it('should have initial values for form controls', () => {
+        const testVisaJobCheck: CandidateVisaJobCheck = {
+            id: 1,
+            interest: YesNo.Yes,
+            interestNotes: 'Sample notes'
+        };
+        component.visaJobCheck = testVisaJobCheck;
+        component.ngOnInit();
+        expect(component.form.get('visaJobInterest')?.value).toEqual(testVisaJobCheck.interest);
+        expect(component.form.get('visaJobInterestNotes')?.value).toEqual(testVisaJobCheck.interestNotes);
+    });
 
-  it('should return true for hasNotes when visaJobInterest is "Yes"', () => {
-    component.form.get('visaJobInterest')?.setValue(YesNo.Yes);
-    expect(component.hasNotes).toBeTrue();
-  });
+    it('should return true for hasNotes when visaJobInterest is "Yes"', () => {
+        component.form.get('visaJobInterest')?.setValue(YesNo.Yes);
+        expect(component.hasNotes).toBe(true);
+    });
 
-  it('should return true for hasNotes when visaJobInterest is "No"', () => {
-    component.form.get('visaJobInterest')?.setValue(YesNo.No);
-    expect(component.hasNotes).toBeTrue();
-  });
+    it('should return true for hasNotes when visaJobInterest is "No"', () => {
+        component.form.get('visaJobInterest')?.setValue(YesNo.No);
+        expect(component.hasNotes).toBe(true);
+    });
 
-  it('should return false for hasNotes when visaJobInterest is null', () => {
-    component.form.get('visaJobInterest')?.setValue(null);
-    expect(component.hasNotes).toBeFalse();
-  });
+    it('should return false for hasNotes when visaJobInterest is null', () => {
+        component.form.get('visaJobInterest')?.setValue(null);
+        expect(component.hasNotes).toBe(false);
+    });
 });

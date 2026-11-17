@@ -14,6 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
+import type {MockedObject} from "vitest";
 import {OldIntakeInputComponent} from "./old-intake-input.component";
 import {CandidateService} from "../../../services/candidate.service";
 import {CandidateNoteService} from "../../../services/candidate-note.service";
@@ -26,113 +27,120 @@ import {By} from "@angular/platform-browser";
 import {of, throwError} from "rxjs";
 import {MockCandidate} from "../../../MockData/MockCandidate";
 import {DatePickerComponent} from "../date-picker/date-picker.component";
+import {expect, vi} from 'vitest';
 
 describe('OldIntakeInputComponent', () => {
-  let component: OldIntakeInputComponent;
-  let fixture: ComponentFixture<OldIntakeInputComponent>;
-  let candidateServiceSpy: jasmine.SpyObj<CandidateService>;
-  let candidateNoteServiceSpy: jasmine.SpyObj<CandidateNoteService>;
-  let activeModalSpy: jasmine.SpyObj<NgbActiveModal>;
+    let component: OldIntakeInputComponent;
+    let fixture: ComponentFixture<OldIntakeInputComponent>;
+    let candidateServiceSpy: MockedObject<CandidateService>;
+    let candidateNoteServiceSpy: MockedObject<CandidateNoteService>;
+    let activeModalSpy: MockedObject<NgbActiveModal>;
 
-  beforeEach(async () => {
-    const candidateSpy = jasmine.createSpyObj('CandidateService', ['completeIntake']);
-    const noteSpy = jasmine.createSpyObj('CandidateNoteService', ['create']);
-    const modalSpy = jasmine.createSpyObj('NgbActiveModal', ['close', 'dismiss']);
+    beforeEach(async () => {
+        const candidateSpy = {
+            completeIntake: vi.fn().mockName("CandidateService.completeIntake")
+        };
+        const noteSpy = {
+            create: vi.fn().mockName("CandidateNoteService.create")
+        };
+        const modalSpy = {
+            close: vi.fn().mockName("NgbActiveModal.close"),
+            dismiss: vi.fn().mockName("NgbActiveModal.dismiss")
+        };
 
-    await TestBed.configureTestingModule({
-      declarations: [OldIntakeInputComponent,DatePickerComponent],
-      imports: [FormsModule, ReactiveFormsModule, NgbModule, NgbDatepickerModule],
-      providers: [
-        { provide: CandidateService, useValue: candidateSpy },
-        { provide: CandidateNoteService, useValue: noteSpy },
-        { provide: NgbActiveModal, useValue: modalSpy },
-        provideHttpClient(withXhr(), withInterceptorsFromDi()),
-        provideHttpClientTesting()
-      ]
-    }).compileComponents();
+        await TestBed.configureTestingModule({
+            declarations: [OldIntakeInputComponent, DatePickerComponent],
+            imports: [FormsModule, ReactiveFormsModule, NgbModule, NgbDatepickerModule],
+            providers: [
+                { provide: CandidateService, useValue: candidateSpy },
+                { provide: CandidateNoteService, useValue: noteSpy },
+                { provide: NgbActiveModal, useValue: modalSpy },
+                provideHttpClient(withXhr(), withInterceptorsFromDi()),
+                provideHttpClientTesting()
+            ]
+        }).compileComponents();
 
-    fixture = TestBed.createComponent(OldIntakeInputComponent);
-    component = fixture.componentInstance;
-    candidateServiceSpy = TestBed.inject(CandidateService) as jasmine.SpyObj<CandidateService>;
-    candidateNoteServiceSpy = TestBed.inject(CandidateNoteService) as jasmine.SpyObj<CandidateNoteService>;
-    activeModalSpy = TestBed.inject(NgbActiveModal) as jasmine.SpyObj<NgbActiveModal>;
-    fixture.detectChanges();
-  });
-
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
-
-  it('should initialize form on ngOnInit', () => {
-    component.ngOnInit();
-    expect(component.form).toBeDefined();
-    expect(component.form.controls.oldIntakeCompletedDate).toBeDefined();
-    expect(component.form.controls.oldIntakeCompletedBy).toBeDefined();
-  });
-
-  it('should display error message when error is set', () => {
-    component.error = 'Some error';
-    fixture.detectChanges();
-    const errorElement = fixture.debugElement.query(By.css('.alert-danger'));
-    expect(errorElement).toBeTruthy();
-    expect(errorElement.nativeElement.textContent).toContain('Some error');
-  });
-
-  it('should call candidateService.completeIntake and create note on save', () => {
-    component.candidate = new MockCandidate();
-    component.fullIntake = true;
-    component.form.controls.oldIntakeCompletedDate.setValue('2024-01-01');
-    component.form.controls.oldIntakeCompletedBy.setValue('Tester');
-    candidateServiceSpy.completeIntake.and.returnValue(of(component.candidate));
-    candidateNoteServiceSpy.create.and.returnValue(of({} as any));
-
-    component.onSave();
-
-    expect(candidateServiceSpy.completeIntake).toHaveBeenCalledWith(1, {
-      // @ts-expect-error
-      completedDate: '2024-01-01',
-      fullIntake: true
+        fixture = TestBed.createComponent(OldIntakeInputComponent);
+        component = fixture.componentInstance;
+        candidateServiceSpy = TestBed.inject(CandidateService) as MockedObject<CandidateService>;
+        candidateNoteServiceSpy = TestBed.inject(CandidateNoteService) as MockedObject<CandidateNoteService>;
+        activeModalSpy = TestBed.inject(NgbActiveModal) as MockedObject<NgbActiveModal>;
+        fixture.detectChanges();
     });
-    expect(candidateNoteServiceSpy.create).toHaveBeenCalledWith({
-      candidateId: 1,
-      title: 'Original intake data entered: Full Intake conducted on 2024-01-01 by Tester.',
-      comment: 'See details below on who/when this data was entered into the TC. Can find original document in candidates Google drive.'
+
+    it('should create', () => {
+        expect(component).toBeTruthy();
     });
-  });
 
-  it('should set error and stop saving if completeIntake fails', () => {
-    component.candidate = { id: '123' } as any;
-    candidateServiceSpy.completeIntake.and.returnValue(throwError('Error'));
+    it('should initialize form on ngOnInit', () => {
+        component.ngOnInit();
+        expect(component.form).toBeDefined();
+        expect(component.form.controls.oldIntakeCompletedDate).toBeDefined();
+        expect(component.form.controls.oldIntakeCompletedBy).toBeDefined();
+    });
 
-    component.onSave();
+    it('should display error message when error is set', () => {
+        component.error = 'Some error';
+        fixture.detectChanges();
+        const errorElement = fixture.debugElement.query(By.css('.alert-danger'));
+        expect(errorElement).toBeTruthy();
+        expect(errorElement.nativeElement.textContent).toContain('Some error');
+    });
 
-    expect(component.error).toBe('Error');
-    expect(component.saving).toBeFalse();
-  });
+    it('should call candidateService.completeIntake and create note on save', () => {
+        component.candidate = new MockCandidate();
+        component.fullIntake = true;
+        component.form.controls.oldIntakeCompletedDate.setValue('2024-01-01');
+        component.form.controls.oldIntakeCompletedBy.setValue('Tester');
+        candidateServiceSpy.completeIntake.mockReturnValue(of(component.candidate));
+        candidateNoteServiceSpy.create.mockReturnValue(of({} as any));
 
-  it('should set error and stop saving if createNote fails', () => {
-    component.candidate = { id: '123' } as any;
-    candidateServiceSpy.completeIntake.and.returnValue(of(component.candidate));
-    candidateNoteServiceSpy.create.and.returnValue(throwError('Error'));
+        component.onSave();
 
-    component.onSave();
+        expect(candidateServiceSpy.completeIntake).toHaveBeenCalledWith(1, {
+            completedDate: '2024-01-01',
+            fullIntake: true
+        });
+        expect(candidateNoteServiceSpy.create).toHaveBeenCalledWith({
+            candidateId: 1,
+            title: 'Original intake data entered: Full Intake conducted on 2024-01-01 by Tester.',
+            comment: 'See details below on who/when this data was entered into the TC. Can find original document in candidates Google drive.'
+        });
+    });
 
-    expect(component.error).toBe('Error');
-    expect(component.saving).toBeFalse();
-  });
+    it('should set error and stop saving if completeIntake fails', () => {
+        component.candidate = { id: '123' } as any;
+        candidateServiceSpy.completeIntake.mockReturnValue(throwError('Error'));
 
-  it('should close the modal on successful save', () => {
-    component.candidate = { id: '123' } as any;
-    candidateServiceSpy.completeIntake.and.returnValue(of(component.candidate));
-    candidateNoteServiceSpy.create.and.returnValue(of({} as any));
+        component.onSave();
 
-    component.onSave();
+        expect(component.error).toBe('Error');
+        expect(component.saving).toBe(false);
+    });
 
-    expect(activeModalSpy.close).toHaveBeenCalledWith(component.candidate);
-  });
+    it('should set error and stop saving if createNote fails', () => {
+        component.candidate = { id: '123' } as any;
+        candidateServiceSpy.completeIntake.mockReturnValue(of(component.candidate));
+        candidateNoteServiceSpy.create.mockReturnValue(throwError('Error'));
 
-  it('should dismiss the modal on dismiss', () => {
-    component.dismiss();
-    expect(activeModalSpy.dismiss).toHaveBeenCalledWith(false);
-  });
+        component.onSave();
+
+        expect(component.error).toBe('Error');
+        expect(component.saving).toBe(false);
+    });
+
+    it('should close the modal on successful save', () => {
+        component.candidate = { id: '123' } as any;
+        candidateServiceSpy.completeIntake.mockReturnValue(of(component.candidate));
+        candidateNoteServiceSpy.create.mockReturnValue(of({} as any));
+
+        component.onSave();
+
+        expect(activeModalSpy.close).toHaveBeenCalledWith(component.candidate);
+    });
+
+    it('should dismiss the modal on dismiss', () => {
+        component.dismiss();
+        expect(activeModalSpy.dismiss).toHaveBeenCalledWith(false);
+    });
 });

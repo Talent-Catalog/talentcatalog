@@ -19,6 +19,7 @@ import {HttpTestingController, provideHttpClientTesting} from '@angular/common/h
 import {provideHttpClient, withInterceptorsFromDi, withXhr} from '@angular/common/http';
 import {BrandingInfo, BrandingService} from './branding.service';
 import {environment} from '../../environments/environment';
+import {expect} from 'vitest';
 
 describe('BrandingService', () => {
   let service: BrandingService;

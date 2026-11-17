@@ -22,49 +22,50 @@ import {NgSelectModule} from "@ng-select/ng-select";
 import {CandidateService} from "../../../../services/candidate.service";
 import {YesNoUnsure} from "../../../../model/candidate";
 import {AutosaveStatusComponent} from "../../../util/autosave-status/autosave-status.component";
+import {expect} from 'vitest';
 
 describe('ReturnHomeSafeComponent', () => {
-  let component: ReturnHomeSafeComponent;
-  let fixture: ComponentFixture<ReturnHomeSafeComponent>;
+    let component: ReturnHomeSafeComponent;
+    let fixture: ComponentFixture<ReturnHomeSafeComponent>;
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      declarations: [ ReturnHomeSafeComponent,AutosaveStatusComponent ],
-      imports: [ReactiveFormsModule, NgSelectModule ],
-      providers: [
-        { provide: CandidateService },
-        provideHttpClient(withXhr(), withInterceptorsFromDi()),
-        provideHttpClientTesting()
-      ]
-    })
-    .compileComponents();
-  });
+    beforeEach(async () => {
+        await TestBed.configureTestingModule({
+            declarations: [ReturnHomeSafeComponent, AutosaveStatusComponent],
+            imports: [ReactiveFormsModule, NgSelectModule],
+            providers: [
+                { provide: CandidateService },
+                provideHttpClient(withXhr(), withInterceptorsFromDi()),
+                provideHttpClientTesting()
+            ]
+        })
+            .compileComponents();
+    });
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(ReturnHomeSafeComponent);
-    component = fixture.componentInstance;
-    component.candidateIntakeData = {
-      returnHomeSafe: YesNoUnsure.Yes
-    };
-    component.editable = false;  // Set editable to false to test the disabled state
-    fixture.detectChanges();
-  });
+    beforeEach(() => {
+        fixture = TestBed.createComponent(ReturnHomeSafeComponent);
+        component = fixture.componentInstance;
+        component.candidateIntakeData = {
+            returnHomeSafe: YesNoUnsure.Yes
+        };
+        component.editable = false; // Set editable to false to test the disabled state
+        fixture.detectChanges();
+    });
 
-  it('should initialize the form control with the correct default value', () => {
-    expect(component.form.get('returnHomeSafe').value).toBe(YesNoUnsure.Yes);
-  });
+    it('should initialize the form control with the correct default value', () => {
+        expect(component.form.get('returnHomeSafe').value).toBe(YesNoUnsure.Yes);
+    });
 
-  it('should disable the form control when the component is not editable', () => {
-    const control = component.form.get('returnHomeSafe');
-    expect(control.disabled).toBeTrue();
-  });
+    it('should disable the form control when the component is not editable', () => {
+        const control = component.form.get('returnHomeSafe');
+        expect(control.disabled).toBe(true);
+    });
 
-  it('should enable the form control when the component is editable', () => {
-    component.editable = true;  // Set editable to true to test the enabled state
-    component.ngOnInit();  // Reinitialize the form
-    fixture.detectChanges();
+    it('should enable the form control when the component is editable', () => {
+        component.editable = true; // Set editable to true to test the enabled state
+        component.ngOnInit(); // Reinitialize the form
+        fixture.detectChanges();
 
-    const control = component.form.get('returnHomeSafe');
-    expect(control.disabled).toBeFalse();
-  });
+        const control = component.form.get('returnHomeSafe');
+        expect(control.disabled).toBe(false);
+    });
 });

@@ -16,6 +16,7 @@
 
 import {TestBed} from '@angular/core/testing';
 import {LocalStorageService} from "./local-storage.service";
+import {expect} from 'vitest';
 
 
 describe('LocalStorageService', () => {

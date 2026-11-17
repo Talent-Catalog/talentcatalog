@@ -1,6 +1,7 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 
 import {TcTableComponent} from './tc-table.component';
+import {expect} from 'vitest';
 
 describe('TcTableComponent', () => {
   let component: TcTableComponent;

@@ -20,219 +20,205 @@ import {of} from "rxjs";
 import {provideRouter} from "@angular/router";
 
 import {TcDateRangePickerComponent} from './tc-date-range-picker.component';
+import {expect, vi} from 'vitest';
 
 describe('TcDateRangePickerComponent', () => {
-  let component: TcDateRangePickerComponent;
-  let fixture: ComponentFixture<TcDateRangePickerComponent>;
+    let component: TcDateRangePickerComponent;
+    let fixture: ComponentFixture<TcDateRangePickerComponent>;
 
-  beforeEach(() => {
-    TestBed.configureTestingModule({
-      imports: [
-        TcDateRangePickerComponent,
-        NgbDatepickerModule
-      ],
-      providers: [
-        provideRouter([]),
-        {
-          provide: LanguageService,
-          useValue: { loadDatePickerLanguageData: () => of(null) }
-        }
-      ]
+    beforeEach(() => {
+        TestBed.configureTestingModule({
+            imports: [
+                TcDateRangePickerComponent,
+                NgbDatepickerModule
+            ],
+            providers: [
+                provideRouter([]),
+                {
+                    provide: LanguageService,
+                    useValue: { loadDatePickerLanguageData: () => of(null) }
+                }
+            ]
+        });
+        fixture = TestBed.createComponent(TcDateRangePickerComponent);
+        component = fixture.componentInstance;
+        fixture.detectChanges();
     });
-    fixture = TestBed.createComponent(TcDateRangePickerComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
-
-  it('should initialize displayDate and load date picker language data', () => {
-    const languageService = TestBed.inject(LanguageService) as any;
-
-    const loadSpy = spyOn(
-      languageService,
-      'loadDatePickerLanguageData'
-    ).and.returnValue(of(null));
-
-    component.displayDate = 'old value';
-
-    component.ngOnInit();
-
-    expect(component.displayDate).toBeNull();
-    expect(loadSpy).toHaveBeenCalled();
-  });
-
-  it('should initialize without calling language setup when service method is unavailable', () => {
-    const originalService = (component as any).languageService;
-    (component as any).languageService = {};
-
-    component.displayDate = 'old value';
-
-    expect(() => component.ngOnInit()).not.toThrow();
-    expect(component.displayDate).toBeNull();
-
-    (component as any).languageService = originalService;
-  });
-
-  it('should select the first date', () => {
-    const selectedDate = new NgbDate(2026, 7, 10);
-    const emitSpy = spyOn(component.dateSelected, 'emit');
-
-    component.fromDate = null;
-    component.toDate = null;
-
-    component.selectDate(selectedDate);
-
-    expect(component.fromDate).toBe(selectedDate);
-    expect(component.toDate).toBeNull();
-    expect(component.displayDate).toBe('2026/7/10');
-    expect(emitSpy).toHaveBeenCalledWith({
-      fromDate: selectedDate,
-      toDate: null
+    it('should create', () => {
+        expect(component).toBeTruthy();
     });
-  });
 
-  it('should select a later second date as the range end', () => {
-    const fromDate = new NgbDate(2026, 7, 10);
-    const toDate = new NgbDate(2026, 7, 15);
-    const emitSpy = spyOn(component.dateSelected, 'emit');
+    it('should initialize displayDate and load date picker language data', () => {
+        const languageService = TestBed.inject(LanguageService) as any;
 
-    component.fromDate = fromDate;
-    component.toDate = null;
+        const loadSpy = vi.spyOn(languageService, 'loadDatePickerLanguageData').mockReturnValue(of(null));
 
-    component.selectDate(toDate);
+        component.displayDate = 'old value';
 
-    expect(component.fromDate).toBe(fromDate);
-    expect(component.toDate).toBe(toDate);
-    expect(component.displayDate)
-    .toBe('2026/7/10 - 2026/7/15');
-    expect(emitSpy).toHaveBeenCalledWith({
-      fromDate,
-      toDate
+        component.ngOnInit();
+
+        expect(component.displayDate).toBeNull();
+        expect(loadSpy).toHaveBeenCalled();
     });
-  });
 
-  it('should restart the range when selected date is before the current start', () => {
-    const previousFromDate = new NgbDate(2026, 7, 10);
-    const selectedDate = new NgbDate(2026, 7, 5);
+    it('should initialize without calling language setup when service method is unavailable', () => {
+        const originalService = (component as any).languageService;
+        (component as any).languageService = {};
 
-    component.fromDate = previousFromDate;
-    component.toDate = null;
+        component.displayDate = 'old value';
 
-    component.selectDate(selectedDate);
+        expect(() => component.ngOnInit()).not.toThrow();
+        expect(component.displayDate).toBeNull();
 
-    expect(component.fromDate).toBe(selectedDate);
-    expect(component.toDate).toBeNull();
-    expect(component.displayDate).toBe('2026/7/5');
-  });
-
-  it('should restart the range when a complete range already exists', () => {
-    const selectedDate = new NgbDate(2026, 8, 1);
-
-    component.fromDate = new NgbDate(2026, 7, 10);
-    component.toDate = new NgbDate(2026, 7, 15);
-
-    component.selectDate(selectedDate);
-
-    expect(component.fromDate).toBe(selectedDate);
-    expect(component.toDate).toBeNull();
-    expect(component.displayDate).toBe('2026/8/1');
-  });
-
-  it('should return true when date is hovered inside an unfinished range', () => {
-    component.fromDate = new NgbDate(2026, 7, 10);
-    component.toDate = null;
-    component.hoveredDate = new NgbDate(2026, 7, 20);
-
-    const date = new NgbDate(2026, 7, 15);
-
-    expect(component.isHovered(date)).toBeTrue();
-  });
-
-  it('should return false when hover range conditions are not satisfied', () => {
-    const date = new NgbDate(2026, 7, 15);
-
-    component.fromDate = null;
-    component.toDate = null;
-    component.hoveredDate = null;
-
-    expect(component.isHovered(date)).toBeFalsy();
-
-    component.fromDate = new NgbDate(2026, 7, 10);
-    component.toDate = new NgbDate(2026, 7, 20);
-    component.hoveredDate = new NgbDate(2026, 7, 25);
-
-    expect(component.isHovered(date)).toBeFalsy();
-  });
-
-  it('should detect a date inside the selected range', () => {
-    component.fromDate = new NgbDate(2026, 7, 10);
-    component.toDate = new NgbDate(2026, 7, 20);
-
-    expect(
-      component.isInside(new NgbDate(2026, 7, 15))
-    ).toBeTrue();
-
-    expect(
-      component.isInside(new NgbDate(2026, 7, 25))
-    ).toBeFalse();
-  });
-
-  it('should detect range boundaries, inside dates and hovered dates', () => {
-    const fromDate = new NgbDate(2026, 7, 10);
-    const toDate = new NgbDate(2026, 7, 20);
-
-    component.fromDate = fromDate;
-    component.toDate = toDate;
-    component.hoveredDate = null;
-
-    expect(component.isRange(fromDate)).toBeTrue();
-    expect(component.isRange(toDate)).toBeTrue();
-
-    expect(
-      component.isRange(new NgbDate(2026, 7, 15))
-    ).toBeTrue();
-
-    expect(
-      component.isRange(new NgbDate(2026, 7, 25))
-    ).toBeFalse();
-
-    component.toDate = null;
-    component.hoveredDate = new NgbDate(2026, 7, 20);
-
-    expect(
-      component.isRange(new NgbDate(2026, 7, 15))
-    ).toBeTrue();
-  });
-  it('should render a date and return an empty string for a null date', () => {
-    expect(component.renderDate(null)).toBe('');
-    expect(
-      component.renderDate({
-        year: 2026,
-        month: 7,
-        day: 21
-      })
-    ).toBe('2026/7/21');
-  });
-
-  it('should clear dates and emit an empty range', () => {
-    const emitSpy = spyOn(component.dateSelected, 'emit');
-
-    component.fromDate = new NgbDate(2026, 7, 10);
-    component.toDate = new NgbDate(2026, 7, 20);
-    component.displayDate = '2026/7/10 - 2026/7/20';
-
-    component.clearDates();
-
-    expect(component.fromDate).toBeNull();
-    expect(component.toDate).toBeNull();
-    expect(component.displayDate).toBeNull();
-    expect(emitSpy).toHaveBeenCalledWith({
-      fromDate: null,
-      toDate: null
+        (component as any).languageService = originalService;
     });
-  });
+
+    it('should select the first date', () => {
+        const selectedDate = new NgbDate(2026, 7, 10);
+        const emitSpy = vi.spyOn(component.dateSelected, 'emit').mockReturnValue(undefined);
+
+        component.fromDate = null;
+        component.toDate = null;
+
+        component.selectDate(selectedDate);
+
+        expect(component.fromDate).toBe(selectedDate);
+        expect(component.toDate).toBeNull();
+        expect(component.displayDate).toBe('2026/7/10');
+        expect(emitSpy).toHaveBeenCalledWith({
+            fromDate: selectedDate,
+            toDate: null
+        });
+    });
+
+    it('should select a later second date as the range end', () => {
+        const fromDate = new NgbDate(2026, 7, 10);
+        const toDate = new NgbDate(2026, 7, 15);
+        const emitSpy = vi.spyOn(component.dateSelected, 'emit').mockReturnValue(undefined);
+
+        component.fromDate = fromDate;
+        component.toDate = null;
+
+        component.selectDate(toDate);
+
+        expect(component.fromDate).toBe(fromDate);
+        expect(component.toDate).toBe(toDate);
+        expect(component.displayDate)
+            .toBe('2026/7/10 - 2026/7/15');
+        expect(emitSpy).toHaveBeenCalledWith({
+            fromDate,
+            toDate
+        });
+    });
+
+    it('should restart the range when selected date is before the current start', () => {
+        const previousFromDate = new NgbDate(2026, 7, 10);
+        const selectedDate = new NgbDate(2026, 7, 5);
+
+        component.fromDate = previousFromDate;
+        component.toDate = null;
+
+        component.selectDate(selectedDate);
+
+        expect(component.fromDate).toBe(selectedDate);
+        expect(component.toDate).toBeNull();
+        expect(component.displayDate).toBe('2026/7/5');
+    });
+
+    it('should restart the range when a complete range already exists', () => {
+        const selectedDate = new NgbDate(2026, 8, 1);
+
+        component.fromDate = new NgbDate(2026, 7, 10);
+        component.toDate = new NgbDate(2026, 7, 15);
+
+        component.selectDate(selectedDate);
+
+        expect(component.fromDate).toBe(selectedDate);
+        expect(component.toDate).toBeNull();
+        expect(component.displayDate).toBe('2026/8/1');
+    });
+
+    it('should return true when date is hovered inside an unfinished range', () => {
+        component.fromDate = new NgbDate(2026, 7, 10);
+        component.toDate = null;
+        component.hoveredDate = new NgbDate(2026, 7, 20);
+
+        const date = new NgbDate(2026, 7, 15);
+
+        expect(component.isHovered(date)).toBe(true);
+    });
+
+    it('should return false when hover range conditions are not satisfied', () => {
+        const date = new NgbDate(2026, 7, 15);
+
+        component.fromDate = null;
+        component.toDate = null;
+        component.hoveredDate = null;
+
+        expect(component.isHovered(date)).toBeFalsy();
+
+        component.fromDate = new NgbDate(2026, 7, 10);
+        component.toDate = new NgbDate(2026, 7, 20);
+        component.hoveredDate = new NgbDate(2026, 7, 25);
+
+        expect(component.isHovered(date)).toBeFalsy();
+    });
+
+    it('should detect a date inside the selected range', () => {
+        component.fromDate = new NgbDate(2026, 7, 10);
+        component.toDate = new NgbDate(2026, 7, 20);
+
+        expect(component.isInside(new NgbDate(2026, 7, 15))).toBe(true);
+
+        expect(component.isInside(new NgbDate(2026, 7, 25))).toBe(false);
+    });
+
+    it('should detect range boundaries, inside dates and hovered dates', () => {
+        const fromDate = new NgbDate(2026, 7, 10);
+        const toDate = new NgbDate(2026, 7, 20);
+
+        component.fromDate = fromDate;
+        component.toDate = toDate;
+        component.hoveredDate = null;
+
+        expect(component.isRange(fromDate)).toBe(true);
+        expect(component.isRange(toDate)).toBe(true);
+
+        expect(component.isRange(new NgbDate(2026, 7, 15))).toBe(true);
+
+        expect(component.isRange(new NgbDate(2026, 7, 25))).toBe(false);
+
+        component.toDate = null;
+        component.hoveredDate = new NgbDate(2026, 7, 20);
+
+        expect(component.isRange(new NgbDate(2026, 7, 15))).toBe(true);
+    });
+    it('should render a date and return an empty string for a null date', () => {
+        expect(component.renderDate(null)).toBe('');
+        expect(component.renderDate({
+            year: 2026,
+            month: 7,
+            day: 21
+        })).toBe('2026/7/21');
+    });
+
+    it('should clear dates and emit an empty range', () => {
+        const emitSpy = vi.spyOn(component.dateSelected, 'emit').mockReturnValue(undefined);
+
+        component.fromDate = new NgbDate(2026, 7, 10);
+        component.toDate = new NgbDate(2026, 7, 20);
+        component.displayDate = '2026/7/10 - 2026/7/20';
+
+        component.clearDates();
+
+        expect(component.fromDate).toBeNull();
+        expect(component.toDate).toBeNull();
+        expect(component.displayDate).toBeNull();
+        expect(emitSpy).toHaveBeenCalledWith({
+            fromDate: null,
+            toDate: null
+        });
+    });
 
 });

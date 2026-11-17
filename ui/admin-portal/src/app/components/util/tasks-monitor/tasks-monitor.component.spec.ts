@@ -20,6 +20,7 @@ import {TaskAssignment} from "../../../model/task-assignment";
 import {MockCandidate} from "../../../MockData/MockCandidate";
 import {Status} from "../../../model/base";
 import {TaskType, UploadType} from "../../../model/task";
+import {expect} from 'vitest';
 
 describe('TasksMonitorComponent', () => {
   let component: TasksMonitorComponent;

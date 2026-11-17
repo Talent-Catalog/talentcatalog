@@ -14,6 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
+import type {MockedObject} from "vitest";
 import {SelectJobCopyComponent} from "./select-job-copy.component";
 import {ComponentFixture, TestBed} from "@angular/core/testing";
 import {JobService} from "../../../services/job.service";
@@ -25,80 +26,86 @@ import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/commo
 import {MockJob} from "../../../MockData/MockJob";
 import {of, throwError} from "rxjs";
 import {Job} from "../../../model/job";
+import {expect, vi} from 'vitest';
 
 describe('SelectJobCopyComponent', () => {
-  let component: SelectJobCopyComponent;
-  let fixture: ComponentFixture<SelectJobCopyComponent>;
-  let jobServiceSpy: jasmine.SpyObj<JobService>;
-  let activeModalSpy: jasmine.SpyObj<NgbActiveModal>;
+    let component: SelectJobCopyComponent;
+    let fixture: ComponentFixture<SelectJobCopyComponent>;
+    let jobServiceSpy: MockedObject<JobService>;
+    let activeModalSpy: MockedObject<NgbActiveModal>;
 
-  beforeEach(async () => {
-    const jobService = jasmine.createSpyObj('JobService', ['search']);
-    const activeModal = jasmine.createSpyObj('NgbActiveModal', ['close', 'dismiss']);
+    beforeEach(async () => {
+        const jobService = {
+            search: vi.fn().mockName("JobService.search")
+        };
+        const activeModal = {
+            close: vi.fn().mockName("NgbActiveModal.close"),
+            dismiss: vi.fn().mockName("NgbActiveModal.dismiss")
+        };
 
-    await TestBed.configureTestingModule({
-      declarations: [SelectJobCopyComponent],
-      imports: [ReactiveFormsModule,FormsModule,NgSelectModule],
-      providers: [
-        { provide: JobService, useValue: jobService },
-        { provide: NgbActiveModal, useValue: activeModal },
-        UntypedFormBuilder,
-        provideHttpClient(withXhr(), withInterceptorsFromDi()),
-        provideHttpClientTesting(),
-      ],
-    }).compileComponents();
+        await TestBed.configureTestingModule({
+            declarations: [SelectJobCopyComponent],
+            imports: [ReactiveFormsModule, FormsModule, NgSelectModule],
+            providers: [
+                { provide: JobService, useValue: jobService },
+                { provide: NgbActiveModal, useValue: activeModal },
+                UntypedFormBuilder,
+                provideHttpClient(withXhr(), withInterceptorsFromDi()),
+                provideHttpClientTesting(),
+            ],
+        }).compileComponents();
 
-    jobServiceSpy = TestBed.inject(JobService) as jasmine.SpyObj<JobService>;
-    activeModalSpy = TestBed.inject(NgbActiveModal) as jasmine.SpyObj<NgbActiveModal>;
-  });
+        jobServiceSpy = TestBed.inject(JobService) as MockedObject<JobService>;
+        activeModalSpy = TestBed.inject(NgbActiveModal) as MockedObject<NgbActiveModal>;
+    });
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(SelectJobCopyComponent);
-    component = fixture.componentInstance;
-    jobServiceSpy.search.and.returnValue(of());
-    fixture.detectChanges();
-  });
+    beforeEach(() => {
+        fixture = TestBed.createComponent(SelectJobCopyComponent);
+        component = fixture.componentInstance;
+        jobServiceSpy.search.mockReturnValue(of());
+        fixture.detectChanges();
+    });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
 
-  it('should initialize component with loading state', () => {
-    expect(component.loading).toBeTrue(); // Initially, loading should be true
-  });
+    it('should initialize component with loading state', () => {
+        expect(component.loading).toBe(true); // Initially, loading should be true
+    });
 
-  it('should fetch jobs on component initialization', () => {
-    const mockJobs: Job[] = [MockJob];
-    jobServiceSpy.search.and.returnValue(of(mockJobs));
+    it('should fetch jobs on component initialization', () => {
+        const mockJobs: Job[] = [MockJob];
+        jobServiceSpy.search.mockReturnValue(of(mockJobs));
 
-    component.ngOnInit();
+        component.ngOnInit();
 
-    expect(component.loading).toBeFalse(); // Loading should be false after fetching
-    expect(component.jobsToCopy).toEqual(mockJobs); // Jobs should be populated
-  });
+        expect(component.loading).toBe(false); // Loading should be false after fetching
+        expect(component.jobsToCopy).toEqual(mockJobs); // Jobs should be populated
+    });
 
-  it('should handle error when fetching jobs', () => {
-    const errorMessage = 'Error fetching jobs';
-    jobServiceSpy.search.and.returnValue(throwError(errorMessage));
+    it('should handle error when fetching jobs', () => {
+        const errorMessage = 'Error fetching jobs';
+        jobServiceSpy.search.mockReturnValue(throwError(errorMessage));
 
-    component.ngOnInit();
+        component.ngOnInit();
 
-    expect(component.error).toEqual(errorMessage); // Error message should be set
-  });
+        expect(component.error).toEqual(errorMessage); // Error message should be set
+    });
 
-  it('should close modal with selected job id on select', () => {
-    const selectedJobId = 1;
-    component.form.patchValue({ jobToCopyId: selectedJobId });
+    it('should close modal with selected job id on select', () => {
+        const selectedJobId = 1;
+        component.form.patchValue({ jobToCopyId: selectedJobId });
 
-    component.onSelect();
+        component.onSelect();
 
-    expect(activeModalSpy.close).toHaveBeenCalledWith(selectedJobId); // Modal should be closed with selected job id
-  });
+        expect(activeModalSpy.close).toHaveBeenCalledWith(selectedJobId); // Modal should be closed with selected job id
+    });
 
-  it('should dismiss modal on cancel', () => {
-    component.onCancel();
+    it('should dismiss modal on cancel', () => {
+        component.onCancel();
 
-    expect(activeModalSpy.dismiss).toHaveBeenCalled(); // Modal should be dismissed
-  });
+        expect(activeModalSpy.dismiss).toHaveBeenCalled(); // Modal should be dismissed
+    });
 
 });

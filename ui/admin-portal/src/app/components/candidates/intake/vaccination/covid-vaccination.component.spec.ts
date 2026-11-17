@@ -24,75 +24,76 @@ import {DatePickerComponent} from "../../../util/date-picker/date-picker.compone
 import {AutosaveStatusComponent} from "../../../util/autosave-status/autosave-status.component";
 import {CandidateService} from "../../../../services/candidate.service";
 import {VaccinationStatus, YesNo} from "../../../../model/candidate";
+import {expect} from 'vitest';
 
 describe('CovidVaccinationComponent', () => {
-  let component: CovidVaccinationComponent;
-  let fixture: ComponentFixture<CovidVaccinationComponent>;
+    let component: CovidVaccinationComponent;
+    let fixture: ComponentFixture<CovidVaccinationComponent>;
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      declarations: [ CovidVaccinationComponent, DatePickerComponent, AutosaveStatusComponent ], // Include the date picker component
-      imports: [NgbDatepickerModule, NgSelectModule, FormsModule, ReactiveFormsModule ],
-      providers: [
-        { provide: CandidateService },
-        provideHttpClient(withXhr(), withInterceptorsFromDi()),
-        provideHttpClientTesting()
-      ]
-    })
-    .compileComponents();
-  });
+    beforeEach(async () => {
+        await TestBed.configureTestingModule({
+            declarations: [CovidVaccinationComponent, DatePickerComponent, AutosaveStatusComponent], // Include the date picker component
+            imports: [NgbDatepickerModule, NgSelectModule, FormsModule, ReactiveFormsModule],
+            providers: [
+                { provide: CandidateService },
+                provideHttpClient(withXhr(), withInterceptorsFromDi()),
+                provideHttpClientTesting()
+            ]
+        })
+            .compileComponents();
+    });
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(CovidVaccinationComponent);
-    component = fixture.componentInstance;
-    component.candidateIntakeData = {
-      covidVaccinated: YesNo.Yes,
-      covidVaccinatedStatus: VaccinationStatus.Full,
-      covidVaccinatedDate: '2021-08-15',
-      covidVaccineName: 'Pfizer',
-      covidVaccineNotes: 'No side effects.'
-    };
-    fixture.detectChanges();
-  });
+    beforeEach(() => {
+        fixture = TestBed.createComponent(CovidVaccinationComponent);
+        component = fixture.componentInstance;
+        component.candidateIntakeData = {
+            covidVaccinated: YesNo.Yes,
+            covidVaccinatedStatus: VaccinationStatus.Full,
+            covidVaccinatedDate: '2021-08-15',
+            covidVaccineName: 'Pfizer',
+            covidVaccineNotes: 'No side effects.'
+        };
+        fixture.detectChanges();
+    });
 
-  it('should initialize the form controls with the correct default values', () => {
-    expect(component.form.get('covidVaccinated').value).toBe(YesNo.Yes);
-    expect(component.form.get('covidVaccinatedStatus').value).toBe(VaccinationStatus.Full);
-    expect(component.form.get('covidVaccinatedDate').value).toBe('2021-08-15');
-    expect(component.form.get('covidVaccineName').value).toBe('Pfizer');
-    expect(component.form.get('covidVaccineNotes').value).toBe('No side effects.');
-  });
+    it('should initialize the form controls with the correct default values', () => {
+        expect(component.form.get('covidVaccinated').value).toBe(YesNo.Yes);
+        expect(component.form.get('covidVaccinatedStatus').value).toBe(VaccinationStatus.Full);
+        expect(component.form.get('covidVaccinatedDate').value).toBe('2021-08-15');
+        expect(component.form.get('covidVaccineName').value).toBe('Pfizer');
+        expect(component.form.get('covidVaccineNotes').value).toBe('No side effects.');
+    });
 
-  it('should display the covidVaccinatedStatus select when covidVaccinated is Yes', () => {
-    component.form.get('covidVaccinated').setValue('Yes');
-    fixture.detectChanges();
-    const covidVaccinatedStatusSelect = fixture.nativeElement.querySelector('#covidVaccinatedStatus');
-    expect(covidVaccinatedStatusSelect).toBeTruthy();
-  });
+    it('should display the covidVaccinatedStatus select when covidVaccinated is Yes', () => {
+        component.form.get('covidVaccinated').setValue('Yes');
+        fixture.detectChanges();
+        const covidVaccinatedStatusSelect = fixture.nativeElement.querySelector('#covidVaccinatedStatus');
+        expect(covidVaccinatedStatusSelect).toBeTruthy();
+    });
 
-  it('should display the covidVaccinatedDate date picker when covidVaccinated is Yes', () => {
-    component.form.get('covidVaccinated').setValue('Yes');
-    fixture.detectChanges();
-    const covidVaccinatedDateDatePicker = fixture.nativeElement.querySelector('#covidVaccinatedDate');
-    expect(covidVaccinatedDateDatePicker).toBeTruthy();
-  });
+    it('should display the covidVaccinatedDate date picker when covidVaccinated is Yes', () => {
+        component.form.get('covidVaccinated').setValue('Yes');
+        fixture.detectChanges();
+        const covidVaccinatedDateDatePicker = fixture.nativeElement.querySelector('#covidVaccinatedDate');
+        expect(covidVaccinatedDateDatePicker).toBeTruthy();
+    });
 
-  it('should display the covidVaccineName input when covidVaccinated is Yes', () => {
-    component.form.get('covidVaccinated').setValue('Yes');
-    fixture.detectChanges();
-    const covidVaccineNameInput = fixture.nativeElement.querySelector('#covidVaccineName');
-    expect(covidVaccineNameInput).toBeTruthy();
-  });
+    it('should display the covidVaccineName input when covidVaccinated is Yes', () => {
+        component.form.get('covidVaccinated').setValue('Yes');
+        fixture.detectChanges();
+        const covidVaccineNameInput = fixture.nativeElement.querySelector('#covidVaccineName');
+        expect(covidVaccineNameInput).toBeTruthy();
+    });
 
-  it('should display the covidVaccineNotes textarea when covidVaccinated is Yes or No', () => {
-    component.form.get('covidVaccinated').setValue('Yes');
-    fixture.detectChanges();
-    let covidVaccineNotesTextarea = fixture.nativeElement.querySelector('#covidVaccineNotes');
-    expect(covidVaccineNotesTextarea).toBeTruthy();
+    it('should display the covidVaccineNotes textarea when covidVaccinated is Yes or No', () => {
+        component.form.get('covidVaccinated').setValue('Yes');
+        fixture.detectChanges();
+        let covidVaccineNotesTextarea = fixture.nativeElement.querySelector('#covidVaccineNotes');
+        expect(covidVaccineNotesTextarea).toBeTruthy();
 
-    component.form.get('covidVaccinated').setValue('No');
-    fixture.detectChanges();
-    covidVaccineNotesTextarea = fixture.nativeElement.querySelector('#covidVaccineNotes');
-    expect(covidVaccineNotesTextarea).toBeTruthy();
-  });
+        component.form.get('covidVaccinated').setValue('No');
+        fixture.detectChanges();
+        covidVaccineNotesTextarea = fixture.nativeElement.querySelector('#covidVaccineNotes');
+        expect(covidVaccineNotesTextarea).toBeTruthy();
+    });
 });

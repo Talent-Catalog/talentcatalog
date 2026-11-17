@@ -14,6 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
+import type {MockedObject} from "vitest";
 import {TestBed} from '@angular/core/testing';
 import {UntypedFormBuilder} from '@angular/forms';
 import {of, Subject} from 'rxjs';
@@ -21,101 +22,97 @@ import {of, Subject} from 'rxjs';
 import {IntakeComponentBase} from './IntakeComponentBase';
 import {CandidateService} from '../../../services/candidate.service';
 import {CrossTabSyncService} from '../../../services/cross-tab-sync.service';
+import {expect, vi} from 'vitest';
 
 class TestIntakeComponent extends IntakeComponentBase {
-  constructor(fb: UntypedFormBuilder, candidateService: CandidateService) {
-    super(fb, candidateService);
-  }
+    constructor(fb: UntypedFormBuilder, candidateService: CandidateService) {
+        super(fb, candidateService);
+    }
 
-  ngOnInit(): void {
-    this.form = this.fb.group({
-      status: [''],
-      options: [[]]
-    });
-  }
+    ngOnInit(): void {
+        this.form = this.fb.group({
+            status: [''],
+            options: [[]]
+        });
+    }
 }
 
 describe('IntakeComponentBase', () => {
-  let component: TestIntakeComponent;
-  let candidateService: jasmine.SpyObj<CandidateService>;
-  let crossTabSyncService: jasmine.SpyObj<CrossTabSyncService>;
+    let component: TestIntakeComponent;
+    let candidateService: MockedObject<CandidateService>;
+    let crossTabSyncService: MockedObject<CrossTabSyncService>;
 
-  beforeEach(() => {
-    candidateService = jasmine.createSpyObj<CandidateService>(
-      'CandidateService',
-      ['updateIntakeData']
-    );
-    candidateService.updateIntakeData.and.returnValue(of(void 0));
+    beforeEach(() => {
+        candidateService = ({
+            updateIntakeData: vi.fn().mockName("CandidateService.updateIntakeData")
+        } as unknown as typeof candidateService);
+        candidateService.updateIntakeData.mockReturnValue(of(void 0));
 
-    const candidateUpdatedSubject =
-      new Subject<{id: number; ts: number}>();
+        const candidateUpdatedSubject = new Subject<{
+            id: number;
+            ts: number;
+        }>();
 
-    crossTabSyncService = jasmine.createSpyObj<CrossTabSyncService>(
-      'CrossTabSyncService',
-      ['broadcastCandidateUpdated'],
-      {
-        candidateUpdated$: candidateUpdatedSubject.asObservable()
-      }
-    );
+        crossTabSyncService = ({
+            broadcastCandidateUpdated: vi.fn().mockName("CrossTabSyncService.broadcastCandidateUpdated"),
+            candidateUpdated$: candidateUpdatedSubject.asObservable()
+        } as unknown as typeof crossTabSyncService);
 
-    TestBed.configureTestingModule({
-      providers: [
-        UntypedFormBuilder,
-        {provide: CandidateService, useValue: candidateService},
-        {provide: CrossTabSyncService, useValue: crossTabSyncService}
-      ]
+        TestBed.configureTestingModule({
+            providers: [
+                UntypedFormBuilder,
+                { provide: CandidateService, useValue: candidateService },
+                { provide: CrossTabSyncService, useValue: crossTabSyncService }
+            ]
+        });
+
+        TestBed.runInInjectionContext(() => {
+            component = new TestIntakeComponent(TestBed.inject(UntypedFormBuilder), candidateService);
+        });
+
+        component.ngOnInit();
+        component.entity = { id: 10 } as any;
+        component.candidateIntakeData = {} as any;
     });
 
-    TestBed.runInInjectionContext(() => {
-      component = new TestIntakeComponent(
-        TestBed.inject(UntypedFormBuilder),
-        candidateService
-      );
+    it('should return entity as candidate', () => {
+        expect(component.candidate).toBe(component.entity as any);
     });
 
-    component.ngOnInit();
-    component.entity = {id: 10} as any;
-    component.candidateIntakeData = {} as any;
-  });
+    it('should convert selected enum options to enum keys', () => {
+        const formValue = {
+            options: [
+                { key: 'ONE', stringValue: 'One' },
+                { key: 'TWO', stringValue: 'Two' }
+            ],
+            unchanged: 'value'
+        };
 
-  it('should return entity as candidate', () => {
-    expect(component.candidate).toBe(component.entity as any);
-  });
+        const result = component.preprocessFormValues(formValue) as any;
 
-  it('should convert selected enum options to enum keys', () => {
-    const formValue = {
-      options: [
-        {key: 'ONE', stringValue: 'One'},
-        {key: 'TWO', stringValue: 'Two'}
-      ],
-      unchanged: 'value'
-    };
-
-    const result = component.preprocessFormValues(formValue) as any;
-
-    expect(result).toEqual({
-      options: ['ONE', 'TWO'],
-      unchanged: 'value'
+        expect(result).toEqual({
+            options: ['ONE', 'TWO'],
+            unchanged: 'value'
+        });
     });
-  });
 
-  it('should broadcast candidate update after successful save', () => {
-    component.onSuccessfulSave();
+    it('should broadcast candidate update after successful save', () => {
+        component.onSuccessfulSave();
 
-    expect(crossTabSyncService.broadcastCandidateUpdated).toHaveBeenCalledWith(10);
-  });
+        expect(crossTabSyncService.broadcastCandidateUpdated).toHaveBeenCalledWith(10);
+    });
 
-  it('should set NoResponse on a form control', () => {
-    component.setNoResponse('status');
+    it('should set NoResponse on a form control', () => {
+        component.setNoResponse('status');
 
-    expect(component.form.get('status')?.value).toBe('NoResponse');
-  });
+        expect(component.form.get('status')?.value).toBe('NoResponse');
+    });
 
-  it('should update candidate intake data when a field changes', () => {
-    component.updateDataOnFieldChange('status');
+    it('should update candidate intake data when a field changes', () => {
+        component.updateDataOnFieldChange('status');
 
-    component.form.get('status')?.setValue('Complete');
+        component.form.get('status')?.setValue('Complete');
 
-    expect((component.candidateIntakeData as any).status).toBe('Complete');
-  });
+        expect((component.candidateIntakeData as any).status).toBe('Complete');
+    });
 });
