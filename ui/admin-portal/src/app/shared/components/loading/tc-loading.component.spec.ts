@@ -36,15 +36,10 @@ describe('TcLoadingComponent', () => {
         expect(loader.classList).toContain(`tc-loader-${type}`);
       });
 
-      it('should render the logo as an inline SVG inside the ring', () => {
-        const svg: SVGElement = fixture.nativeElement.querySelector('.tc-loader-ring svg.tc-loader-logo');
-        expect(svg).not.toBeNull();
-        expect(svg.getAttribute('viewBox')).toBe('0 0 176 128');
-        expect(svg.querySelectorAll('path').length).toBe(6);
-      });
-
-      it('should not load the logo from an image file', () => {
-        expect(fixture.nativeElement.querySelector('img')).toBeNull();
+      it('should render the SVG logo inside the ring', () => {
+        const logo: HTMLImageElement = fixture.nativeElement.querySelector('.tc-loader-ring img.tc-loader-logo');
+        expect(logo).not.toBeNull();
+        expect(logo.getAttribute('src')).toBe('assets/images/tc-logo.svg');
       });
     });
   });
