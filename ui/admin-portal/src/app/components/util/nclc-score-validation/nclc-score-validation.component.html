@@ -16,6 +16,7 @@
 
 <tc-input type="number"
        [(ngModel)]="this.value"
+       [ngModelOptions]="{standalone: true}"
        (ngModelChange)="update()"
        placeholder="1-10"
        style="width: 80px"
