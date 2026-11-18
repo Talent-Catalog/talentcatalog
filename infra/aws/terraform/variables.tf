@@ -406,18 +406,33 @@ variable "spring_datasource_url" {
   default     = ""
 }
 
+### Legacy S3 credentials (TC-1560 - IAM access key rotation):
+### aws_access_key / aws_secret_key are only used by the server's legacy S3ResourceHelper, which
+### reads TBB-owned S3 for the translation migration (see issue #3324). When disabled, the
+### AWS_CREDENTIALS_ACCESSKEY / AWS_CREDENTIALS_SECRETKEY parameters are not created, the task
+### definition simply omits those environment variables, and application.yml defaults them to
+### empty so S3ResourceHelper falls back to anonymous credentials.
+
+variable "enable_legacy_s3_credentials" {
+  type        = bool
+  description = "Whether this environment gets the legacy TBB S3 credentials (TC-1560). When false, AWS_CREDENTIALS_ACCESSKEY / AWS_CREDENTIALS_SECRETKEY are not created and aws_access_key / aws_secret_key need not be supplied."
+  default     = true
+}
+
 # --- Secret parameters (values loaded from secrets.auto.tfvars) ---
 
 variable "aws_access_key" {
   type        = string
-  description = "AWS access key for S3 access"
+  description = "AWS access key for legacy TBB S3 access. Required when enable_legacy_s3_credentials = true."
   sensitive   = true
+  default     = ""
 }
 
 variable "aws_secret_key" {
   type        = string
-  description = "AWS secret key for S3 access"
+  description = "AWS secret key for legacy TBB S3 access. Required when enable_legacy_s3_credentials = true."
   sensitive   = true
+  default     = ""
 }
 
 variable "duolingo_api_secret" {
