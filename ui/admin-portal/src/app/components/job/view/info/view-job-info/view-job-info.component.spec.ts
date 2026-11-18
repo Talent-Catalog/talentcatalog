@@ -19,7 +19,7 @@ import {ViewJobInfoComponent} from './view-job-info.component';
 import {NgbModal, NgbModalRef} from '@ng-bootstrap/ng-bootstrap';
 import {EditJobInfoComponent} from "../edit-job-info/edit-job-info.component";
 import {MockJob} from "../../../../../MockData/MockJob";
-import {RouterLinkStubDirective} from "../../../../login/login.component.spec";
+import {RouterLinkStubDirective} from "../../../../../../test-helpers/router-link-stub.directive";
 import {AuthorizationService} from "../../../../../services/authorization.service";
 import {By} from "@angular/platform-browser";
 import {expect, vi} from 'vitest';

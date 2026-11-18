@@ -24,7 +24,7 @@ import {NgSelectModule} from "@ng-select/ng-select";
 import {NgbDatepickerModule} from "@ng-bootstrap/ng-bootstrap";
 import {ActivatedRoute} from "@angular/router";
 import {DatePickerComponent} from "../util/date-picker/date-picker.component";
-import {RouterLinkStubDirective} from "../login/login.component.spec";
+import {RouterLinkStubDirective} from "../../../test-helpers/router-link-stub.directive";
 import {provideHttpClientTesting} from "@angular/common/http/testing";
 import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {SavedListService} from "../../services/saved-list.service";

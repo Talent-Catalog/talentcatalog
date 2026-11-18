@@ -34,7 +34,7 @@ import {ViewJobInfoComponent} from "../info/view-job-info/view-job-info.componen
 import {ViewJobSummaryComponent} from "../summary/view-job-summary/view-job-summary.component";
 import {ChatReadStatusComponent} from "../../../chat/chat-read-status/chat-read-status.component";
 import {ReactiveFormsModule, UntypedFormBuilder} from "@angular/forms";
-import {RouterLinkStubDirective} from "../../../login/login.component.spec";
+import {RouterLinkStubDirective} from "../../../../../test-helpers/router-link-stub.directive";
 import {AutosaveStatusComponent} from "../../../util/autosave-status/autosave-status.component";
 import {expect, vi} from 'vitest';
 // Mock isStarredByMe function

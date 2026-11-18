@@ -18,7 +18,7 @@ import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {JobGeneralTabComponent} from './job-general-tab.component';
 import {MockJob} from "../../../../../MockData/MockJob";
 import {ViewJobInfoComponent} from "../../info/view-job-info/view-job-info.component";
-import {RouterLinkStubDirective} from "../../../../login/login.component.spec";
+import {RouterLinkStubDirective} from "../../../../../../test-helpers/router-link-stub.directive";
 import {Job} from "../../../../../model/job";
 import {AuthorizationService} from "../../../../../services/authorization.service";
 import {expect, vi} from 'vitest';

@@ -23,18 +23,10 @@ import {ActivatedRoute, Router} from '@angular/router';
 import {AuthenticationService} from "../../services/authentication.service";
 import {of} from "rxjs";
 
-import {Directive, Input} from '@angular/core';
+import {RouterLinkStubDirective} from '../../../test-helpers/router-link-stub.directive';
 import {config_test} from "../../../config-test";
 import {expect, vi} from 'vitest';
 
-@Directive({
-    selector: "[routerLink]", // Stub directive for routerLink
-    standalone: false
-})
-export class RouterLinkStubDirective {
-    @Input('routerLink')
-    linkParams: any;
-}
 
 describe('LoginComponent', () => {
     let component: LoginComponent;

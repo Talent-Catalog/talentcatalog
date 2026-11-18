@@ -25,7 +25,7 @@ import {SortedByComponent} from "../../util/sort/sorted-by.component";
 import {NgbPagination} from "@ng-bootstrap/ng-bootstrap";
 import {By} from "@angular/platform-browser";
 import {MockCandidate} from "../../../MockData/MockCandidate";
-import {RouterLinkStubDirective} from "../../login/login.component.spec";
+import {RouterLinkStubDirective} from "../../../../test-helpers/router-link-stub.directive";
 import {CandidateService} from "../../../services/candidate.service";
 import {SearchResults} from "../../../model/search-results";
 import {of} from "rxjs";

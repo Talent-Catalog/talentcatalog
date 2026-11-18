@@ -15,6 +15,7 @@
     "src/test.ts",
     "src/test-setup.ts",
     "src/test-global-custom-elements.ts",
-    "src/**/*.spec.ts"
+    "src/**/*.spec.ts",
+    "src/test-helpers/**/*.ts"
   ]
 }

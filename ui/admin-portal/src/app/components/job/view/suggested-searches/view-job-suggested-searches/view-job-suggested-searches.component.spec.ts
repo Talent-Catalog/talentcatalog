@@ -29,7 +29,7 @@ import {ActivatedRoute, Router} from "@angular/router";
 import {of} from "rxjs";
 import {MockSavedSearch} from "../../../../../MockData/MockSavedSearch";
 import {JobPrepSuggestedSearches} from "../../../../../model/job-prep-item";
-import {RouterLinkStubDirective} from "../../../../login/login.component.spec";
+import {RouterLinkStubDirective} from "../../../../../../test-helpers/router-link-stub.directive";
 import {expect, vi} from 'vitest';
 
 describe('ViewJobSuggestedSearchesComponent', () => {

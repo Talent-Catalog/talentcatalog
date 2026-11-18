@@ -29,7 +29,7 @@ import {MockUser} from "../../../MockData/MockUser";
 import {SavedSearchSubtype, SavedSearchType} from "../../../model/saved-search";
 import {BrowseCandidateSourcesComponent} from "../../candidates/show/browse/browse-candidate-sources.component";
 import {ReactiveFormsModule, UntypedFormBuilder} from "@angular/forms";
-import {RouterLinkStubDirective} from "../../login/login.component.spec";
+import {RouterLinkStubDirective} from "../../../../test-helpers/router-link-stub.directive";
 import {RouterTestingModule} from "@angular/router/testing";
 import {DatePipe, TitleCasePipe} from "@angular/common";
 import {LocalStorageService} from "../../../services/local-storage.service";

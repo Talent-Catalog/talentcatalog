@@ -27,7 +27,7 @@ import {MockSavedList} from "../../../MockData/MockSavedList";
 import {SearchResults} from "../../../model/search-results";
 import {SavedList} from "../../../model/saved-list";
 import {MockUser} from "../../../MockData/MockUser";
-import {RouterLinkStubDirective} from "../../login/login.component.spec";
+import {RouterLinkStubDirective} from "../../../../test-helpers/router-link-stub.directive";
 import {CreateExternalLinkComponent} from "./create/create-external-link.component";
 import {EditExternalLinkComponent} from "./edit/edit-external-link.component";
 import {ConfirmationComponent} from "../../util/confirm/confirmation.component";

@@ -28,7 +28,7 @@ import {FormsModule, ReactiveFormsModule, UntypedFormBuilder} from "@angular/for
 import {NgbAccordionModule, NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {AutosaveStatusComponent} from "../../../../../util/autosave-status/autosave-status.component";
-import {RouterLinkStubDirective} from "../../../../../login/login.component.spec";
+import {RouterLinkStubDirective} from "../../../../../../../test-helpers/router-link-stub.directive";
 import {DependantsComponent} from "../../../../intake/dependants/dependants.component";
 import {Component, CUSTOM_ELEMENTS_SCHEMA, ChangeDetectionStrategy} from "@angular/core";
 import {AuthorizationService} from "../../../../../../services/authorization.service";

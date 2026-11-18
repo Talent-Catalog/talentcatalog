@@ -44,7 +44,7 @@ jobs:
         run: npm ci
         working-directory: ui/admin-portal
 
-      # Step 4: Run Angular tests using Karma
+      # Step 4: Run Angular tests using Vitest
       - name: Run Admin Portal tests with coverage
         run: npm run test:coverage
         working-directory: ui/admin-portal

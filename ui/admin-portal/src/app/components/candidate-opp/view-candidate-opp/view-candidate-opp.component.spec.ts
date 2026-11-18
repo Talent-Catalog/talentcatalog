@@ -26,7 +26,7 @@ import {of} from "rxjs";
 import {provideHttpClientTesting} from "@angular/common/http/testing";
 import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {mockCandidateOpportunity} from "../../../MockData/MockCandidateOpportunity";
-import {RouterLinkStubDirective} from "../../login/login.component.spec";
+import {RouterLinkStubDirective} from "../../../../test-helpers/router-link-stub.directive";
 import {MockPartner} from "../../../MockData/MockPartner";
 import {OpportunityStageNextStepComponent} from "../../util/opportunity-stage-next-step/opportunity-stage-next-step.component";
 import {MockJobChat} from "../../../MockData/MockJobChat";

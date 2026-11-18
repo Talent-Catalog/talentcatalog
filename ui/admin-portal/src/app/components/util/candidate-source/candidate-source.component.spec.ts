@@ -28,7 +28,7 @@ import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {CandidateSource, DtoType} from "../../../model/base";
 import {MockCandidateSource} from "../../../MockData/MockCandidateSource";
 import {of, throwError} from "rxjs";
-import {RouterLinkStubDirective} from "../../login/login.component.spec";
+import {RouterLinkStubDirective} from "../../../../test-helpers/router-link-stub.directive";
 import {MockSavedSearch} from "../../../MockData/MockSavedSearch";
 import {MockSavedList} from "../../../MockData/MockSavedList";
 import {CandidateSourceCacheService} from "../../../services/candidate-source-cache.service";

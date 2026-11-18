@@ -34,7 +34,7 @@ import {Location} from "@angular/common";
 import {MockJob} from "../../../MockData/MockJob";
 import {MockEmployer} from "../../../MockData/MockEmployer";
 import {MockSavedList} from "../../../MockData/MockSavedList";
-import {RouterLinkStubDirective} from "../../login/login.component.spec";
+import {RouterLinkStubDirective} from "../../../../test-helpers/router-link-stub.directive";
 import {expect, vi} from 'vitest';
 
 

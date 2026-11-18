@@ -21,7 +21,7 @@ import {MockCandidate} from "../../../../MockData/MockCandidate";
 import {MockUser} from "../../../../MockData/MockUser";
 import {provideHttpClientTesting} from "@angular/common/http/testing";
 import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
-import {RouterLinkStubDirective} from "../../../login/login.component.spec";
+import {RouterLinkStubDirective} from "../../../../../test-helpers/router-link-stub.directive";
 import {Candidate} from "../../../../model/candidate";
 import {User} from "../../../../model/user";
 import {expect, vi} from 'vitest';

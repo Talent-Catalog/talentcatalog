@@ -21,7 +21,7 @@ import {UntypedFormBuilder} from "@angular/forms";
 import {provideHttpClientTesting} from "@angular/common/http/testing";
 import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {MockJob} from "../../../../../MockData/MockJob";
-import {RouterLinkStubDirective} from "../../../../login/login.component.spec";
+import {RouterLinkStubDirective} from "../../../../../../test-helpers/router-link-stub.directive";
 import {expect} from 'vitest';
 
 describe('EditJobInfoComponent', () => {

@@ -28,7 +28,7 @@ import {NgbNavModule} from "@ng-bootstrap/ng-bootstrap";
 import {MockPartner} from "../../../MockData/MockPartner";
 import {AuthenticationService} from "../../../services/authentication.service";
 import {OpportunityStageNextStepComponent} from "../../util/opportunity-stage-next-step/opportunity-stage-next-step.component";
-import {RouterLinkStubDirective} from "../../login/login.component.spec";
+import {RouterLinkStubDirective} from "../../../../test-helpers/router-link-stub.directive";
 import {CUSTOM_ELEMENTS_SCHEMA} from "@angular/core";
 import {expect, vi} from 'vitest';
 

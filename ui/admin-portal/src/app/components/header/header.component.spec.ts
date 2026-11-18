@@ -28,7 +28,7 @@ import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/commo
 import {of, throwError} from "rxjs";
 import {Candidate} from "../../model/candidate";
 import {MockCandidate} from "../../MockData/MockCandidate";
-import {RouterLinkStubDirective} from "../login/login.component.spec";
+import {RouterLinkStubDirective} from "../../../test-helpers/router-link-stub.directive";
 import {RouterTestingModule} from "@angular/router/testing";
 import {CandidateNameNumSearchComponent} from "../util/candidate-name-num-search/candidate-name-num-search.component";
 import {User} from "../../model/user";

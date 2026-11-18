@@ -30,7 +30,7 @@ import {SortedByComponent} from "../../util/sort/sorted-by.component";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {CandidateSourceDescriptionComponent} from "../../util/candidate-source-description/candidate-source-description.component";
 import {AutosaveStatusComponent} from "../../util/autosave-status/autosave-status.component";
-import {RouterLinkStubDirective} from "../../login/login.component.spec";
+import {RouterLinkStubDirective} from "../../../../test-helpers/router-link-stub.directive";
 import {expect, vi} from 'vitest';
 
 describe('CandidatesListComponent', () => {

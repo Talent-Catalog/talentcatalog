@@ -24,7 +24,7 @@ import {ViewJobSuggestedSearchesComponent} from "../../suggested-searches/view-j
 import {provideHttpClientTesting} from "@angular/common/http/testing";
 import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {MockJobPrepItem} from "../../../../../MockData/MockJobPrepItem";
-import {RouterLinkStubDirective} from "../../../../login/login.component.spec";
+import {RouterLinkStubDirective} from "../../../../../../test-helpers/router-link-stub.directive";
 import {expect, vi} from 'vitest';
 
 describe('JobSuggestedSearchesTabComponent', () => {

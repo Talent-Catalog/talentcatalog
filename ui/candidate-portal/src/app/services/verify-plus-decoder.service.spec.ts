@@ -108,34 +108,15 @@ describe('VerifyPlusDecoderService', () => {
         expect(result).toBe(cachedModule);
     });
 
-    it.skip('should decode the UNHCR sample fixture image', async () => {
-        const response = await fetch('/base/docs/verify-plus/unhcr-sample.png');
-        if (!response.ok) {
-            // TODO: vitest-migration: The pending() function was converted to a skipped test (`it.skip`). See: https://vitest.dev/api/vi.html#it-skip
-            // pending('UNHCR fixture image is not available in Karma static files.');
-            ;
-            return;
-        }
+    it('should reuse the initialized decoder for repeated UNHCR fixture decoding', async () => {
+        const imageData = await loadFixtureImageData('/docs/verify-plus/unhcr-sample.png');
+        const first = await service.decode(imageData);
+        const moduleReady = (service as any).moduleReady;
+        const second = await service.decode(imageData);
 
-        const blob = await response.blob();
-        const image = await loadImage(URL.createObjectURL(blob));
-
-        const canvas = document.createElement('canvas');
-        canvas.width = image.naturalWidth;
-        canvas.height = image.naturalHeight;
-
-        const context = canvas.getContext('2d');
-        if (!context) {
-            expect.fail('Unable to create 2D canvas context for fixture decode test.');
-            return;
-        }
-
-        context.drawImage(image, 0, 0);
-        const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
-        const decoded = await service.decode(imageData);
-
-        expect(decoded).toBeTruthy();
-        expect(decoded!.length).toBeGreaterThan(1000);
+        expect(first).toBeTruthy();
+        expect(second).toBe(first);
+        expect((service as any).moduleReady).toBe(moduleReady);
     });
 
 });
