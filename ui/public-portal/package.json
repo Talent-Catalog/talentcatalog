@@ -40,10 +40,10 @@
     "@angular/cli": "^22.2.3",
     "@angular/compiler-cli": "^22.2.3",
     "@types/node": "^24.0.0",
-    "@vitest/coverage-istanbul": "^4.1.12",
+    "@vitest/coverage-istanbul": "^5.1.1",
     "istanbul-lib-instrument": "^6.0.3",
     "jsdom": "^31.0.0",
     "typescript": "~6.0.3",
-    "vitest": "^4.1.12"
+    "vitest": "^5.1.1"
   }
 }

@@ -62,12 +62,12 @@
     "@angular/compiler-cli": "^22.2.3",
     "@angular/language-service": "^22.2.3",
     "@types/node": "^24.0.0",
-    "@vitest/coverage-istanbul": "^4.1.12",
+    "@vitest/coverage-istanbul": "^5.1.1",
     "istanbul-lib-instrument": "^6.0.3",
     "jsdom": "^31.0.1",
     "sass": "^1.55.0",
     "tslib": "^2.4.0",
     "typescript": "~6.0.3",
-    "vitest": "^4.1.12"
+    "vitest": "^5.1.1"
   }
 }
