@@ -21,52 +21,53 @@ import {CandidateVisaCheckService} from '../../../../../services/candidate-visa-
 import {AutosaveStatusComponent} from "../../../../util/autosave-status/autosave-status.component";
 import {provideHttpClientTesting} from "@angular/common/http/testing";
 import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
+import {expect} from 'vitest';
 
 describe('EligiblePathwaysComponent', () => {
-  let component: EligiblePathwaysComponent;
-  let fixture: ComponentFixture<EligiblePathwaysComponent>;
+    let component: EligiblePathwaysComponent;
+    let fixture: ComponentFixture<EligiblePathwaysComponent>;
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      declarations: [EligiblePathwaysComponent,AutosaveStatusComponent],
-      imports: [ReactiveFormsModule],
-      providers: [UntypedFormBuilder, CandidateVisaCheckService, provideHttpClient(withXhr(), withInterceptorsFromDi()), provideHttpClientTesting()]
-    }).compileComponents();
-  });
+    beforeEach(async () => {
+        await TestBed.configureTestingModule({
+            declarations: [EligiblePathwaysComponent, AutosaveStatusComponent],
+            imports: [ReactiveFormsModule],
+            providers: [UntypedFormBuilder, CandidateVisaCheckService, provideHttpClient(withXhr(), withInterceptorsFromDi()), provideHttpClientTesting()]
+        }).compileComponents();
+    });
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(EligiblePathwaysComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
+    beforeEach(() => {
+        fixture = TestBed.createComponent(EligiblePathwaysComponent);
+        component = fixture.componentInstance;
+        fixture.detectChanges();
+    });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
 
-  it('should initialize form with visaJobEligiblePathways value', () => {
-    const mockVisaJobCheck = {
-      id: 1,
-      eligiblePathways: 'Skilled Migration, Family Stream'
-    };
+    it('should initialize form with visaJobEligiblePathways value', () => {
+        const mockVisaJobCheck = {
+            id: 1,
+            eligiblePathways: 'Skilled Migration, Family Stream'
+        };
 
-    component.visaJobCheck = mockVisaJobCheck;
-    component.ngOnInit();
+        component.visaJobCheck = mockVisaJobCheck;
+        component.ngOnInit();
 
-    expect(component.form.get('visaJobEligiblePathways').value).toBe('Skilled Migration, Family Stream');
-  });
+        expect(component.form.get('visaJobEligiblePathways').value).toBe('Skilled Migration, Family Stream');
+    });
 
-  it('should update visaJobEligiblePathways value on form changes', () => {
-    const mockVisaJobCheck = {
-      id: 1,
-      eligiblePathways: 'Skilled Migration, Family Stream'
-    };
-    const newEligiblePathways = 'Employer Nomination Scheme';
+    it('should update visaJobEligiblePathways value on form changes', () => {
+        const mockVisaJobCheck = {
+            id: 1,
+            eligiblePathways: 'Skilled Migration, Family Stream'
+        };
+        const newEligiblePathways = 'Employer Nomination Scheme';
 
-    component.visaJobCheck = {id:2,eligiblePathways:newEligiblePathways};
-    component.ngOnInit();
-    component.form.get('visaJobEligiblePathways').setValue(newEligiblePathways);
+        component.visaJobCheck = { id: 2, eligiblePathways: newEligiblePathways };
+        component.ngOnInit();
+        component.form.get('visaJobEligiblePathways').setValue(newEligiblePathways);
 
-    expect(component.visaJobCheck.eligiblePathways).toBe(newEligiblePathways);
-  });
+        expect(component.visaJobCheck.eligiblePathways).toBe(newEligiblePathways);
+    });
 });

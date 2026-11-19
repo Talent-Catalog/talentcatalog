@@ -24,62 +24,63 @@ import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/commo
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {CommonModule} from "@angular/common";
 import {CandidateOppsComponent} from "../candidate-opps/candidate-opps.component";
+import {expect, vi} from 'vitest';
 
 describe('CandidateOppsWithDetailComponent', () => {
-  let component: CandidateOppsWithDetailComponent;
-  let fixture: ComponentFixture<CandidateOppsWithDetailComponent>;
+    let component: CandidateOppsWithDetailComponent;
+    let fixture: ComponentFixture<CandidateOppsWithDetailComponent>;
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      declarations: [CandidateOppsWithDetailComponent,CandidateOppsComponent],
-      imports: [ReactiveFormsModule,FormsModule,CommonModule],
-      providers: [provideHttpClient(withXhr(), withInterceptorsFromDi()), provideHttpClientTesting()],
+    beforeEach(async () => {
+        await TestBed.configureTestingModule({
+            declarations: [CandidateOppsWithDetailComponent, CandidateOppsComponent],
+            imports: [ReactiveFormsModule, FormsModule, CommonModule],
+            providers: [provideHttpClient(withXhr(), withInterceptorsFromDi()), provideHttpClientTesting()],
 
-    })
-    .compileComponents();
-  });
+        })
+            .compileComponents();
+    });
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(CandidateOppsWithDetailComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
+    beforeEach(() => {
+        fixture = TestBed.createComponent(CandidateOppsWithDetailComponent);
+        component = fixture.componentInstance;
+        fixture.detectChanges();
+    });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
 
-  it('should initialize with default values and configurations', () => {
-    // Check if component initializes with default values
-    expect(component.error).toBeUndefined();
-    expect(component.loading).toBeFalsy();
-    expect(component.selectedOpp).toBeUndefined();
-  });
+    it('should initialize with default values and configurations', () => {
+        // Check if component initializes with default values
+        expect(component.error).toBeUndefined();
+        expect(component.loading).toBeFalsy();
+        expect(component.selectedOpp).toBeUndefined();
+    });
 
-  it('should assign selected opportunity when a candidate opportunity is selected', () => {
-    const mockOpp: CandidateOpportunity = mockCandidateOpportunity;
+    it('should assign selected opportunity when a candidate opportunity is selected', () => {
+        const mockOpp: CandidateOpportunity = mockCandidateOpportunity;
 
-    component.onOppSelected(mockOpp);
+        component.onOppSelected(mockOpp);
 
-    expect(component.selectedOpp).toEqual(mockOpp);
-  });
+        expect(component.selectedOpp).toEqual(mockOpp);
+    });
 
-  it('should propagate update event appropriately when an opportunity is updated', () => {
-    // Mock candidate opportunity
-    const mockOpp: CandidateOpportunity = mockCandidateOpportunity;
-    component.candidateOpps = [mockOpp];
-    // Spy on emit method of candidateOppUpdated EventEmitter
-    spyOn(component.candidateOppUpdated, 'emit');
-    // Call onCandidateOppUpdated with the mock opportunity
-    component.onCandidateOppUpdated(mockOpp);
-    // If candidateOpps is defined, it should emit the updated opportunity
-    expect(component.candidateOppUpdated.emit).toHaveBeenCalledWith(mockOpp);
-    spyOn(component.candidateOppsComponent, 'search');
+    it('should propagate update event appropriately when an opportunity is updated', () => {
+        // Mock candidate opportunity
+        const mockOpp: CandidateOpportunity = mockCandidateOpportunity;
+        component.candidateOpps = [mockOpp];
+        // Spy on emit method of candidateOppUpdated EventEmitter
+        vi.spyOn(component.candidateOppUpdated, 'emit').mockReturnValue(undefined);
+        // Call onCandidateOppUpdated with the mock opportunity
+        component.onCandidateOppUpdated(mockOpp);
+        // If candidateOpps is defined, it should emit the updated opportunity
+        expect(component.candidateOppUpdated.emit).toHaveBeenCalledWith(mockOpp);
+        vi.spyOn(component.candidateOppsComponent, 'search').mockReturnValue(undefined);
 
-    component.candidateOpps = null;
-    // If searchBy is defined, it should call the search method of the child component
-    component.searchBy = SearchOppsBy.starredByMe;
-    component.onCandidateOppUpdated(mockOpp);
-    expect(component.candidateOppsComponent.search).toHaveBeenCalled();
-  });
+        component.candidateOpps = null;
+        // If searchBy is defined, it should call the search method of the child component
+        component.searchBy = SearchOppsBy.starredByMe;
+        component.onCandidateOppUpdated(mockOpp);
+        expect(component.candidateOppsComponent.search).toHaveBeenCalled();
+    });
 });

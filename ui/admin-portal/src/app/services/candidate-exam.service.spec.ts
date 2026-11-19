@@ -20,6 +20,7 @@ import {provideHttpClient, withInterceptorsFromDi, withXhr} from '@angular/commo
 import {CandidateExamService, CreateCandidateExamRequest} from './candidate-exam.service';
 import {environment} from '../../environments/environment';
 import {CandidateExam, Exam} from '../model/candidate';
+import {expect} from 'vitest';
 
 describe('CandidateExamService', () => {
   let service: CandidateExamService;

@@ -14,6 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
+import type {MockedObject} from "vitest";
 import {ViewCandidateExamComponent} from "./view-candidate-exam.component";
 import {CandidateExamService} from "../../../../services/candidate-exam.service";
 import {ComponentFixture, TestBed} from "@angular/core/testing";
@@ -27,145 +28,153 @@ import {CreateCandidateExamComponent} from "./create/create-candidate-exam.compo
 import {EditCandidateExamComponent} from "./edit/edit-candidate-exam.component";
 import {ConfirmationComponent} from "../../../util/confirm/confirmation.component";
 import {CandidateService} from "../../../../services/candidate.service";
+import {expect, vi} from 'vitest';
 
 describe('ViewCandidateExamComponent', () => {
-  let component: ViewCandidateExamComponent;
-  let fixture: ComponentFixture<ViewCandidateExamComponent>;
-  let mockCandidateExamService: jasmine.SpyObj<CandidateExamService>;
-  let mockModalService: jasmine.SpyObj<NgbModal>;
-  let mockCandidateService: jasmine.SpyObj<CandidateService>;
+    let component: ViewCandidateExamComponent;
+    let fixture: ComponentFixture<ViewCandidateExamComponent>;
+    let mockCandidateExamService: MockedObject<CandidateExamService>;
+    let mockModalService: MockedObject<NgbModal>;
+    let mockCandidateService: MockedObject<CandidateService>;
 
-  beforeEach(async () => {
-    // Mock CandidateExamService and NgbModal
-    mockCandidateExamService = jasmine.createSpyObj('CandidateExamService', ['list', 'delete']);
-    mockModalService = jasmine.createSpyObj('NgbModal', ['open']);
-    mockCandidateService = jasmine.createSpyObj('CandidateService', ['updateCandidate']);
+    beforeEach(async () => {
+        // Mock CandidateExamService and NgbModal
+        mockCandidateExamService = ({
+            list: vi.fn().mockName("CandidateExamService.list"),
+            delete: vi.fn().mockName("CandidateExamService.delete")
+        } as unknown as typeof mockCandidateExamService);
+        mockModalService = ({
+            open: vi.fn().mockName("NgbModal.open")
+        } as unknown as typeof mockModalService);
+        mockCandidateService = ({
+            updateCandidate: vi.fn().mockName("CandidateService.updateCandidate")
+        } as unknown as typeof mockCandidateService);
 
-    await TestBed.configureTestingModule({
-      declarations: [ViewCandidateExamComponent],
-      imports: [NgbModalModule],
-      providers: [
-        { provide: CandidateExamService, useValue: mockCandidateExamService },
-        { provide: CandidateService, useValue: mockCandidateService },
-        { provide: NgbModal, useValue: mockModalService },
-        NgbActiveModal,
-        provideHttpClient(withXhr(), withInterceptorsFromDi()),
-        provideHttpClientTesting(),
-      ],
-      schemas: [CUSTOM_ELEMENTS_SCHEMA],
-    }).compileComponents();
-  });
-
-  beforeEach(() => {
-    fixture = TestBed.createComponent(ViewCandidateExamComponent);
-    component = fixture.componentInstance;
-    component.candidate = new MockCandidate();
-    component.editable = true;
-    component.adminUser = true;
-    fixture.detectChanges();
-  });
-
-  it('should create the component', () => {
-    expect(component).toBeTruthy();
-  });
-
-  describe('createCandidateExam', () => {
-    it('should open the create candidate exam modal and update candidate service after returning successfully', async () => {
-      const mockModalRef = {
-        result: Promise.resolve('some data'),
-        componentInstance: {}
-      };
-      mockModalService.open.and.returnValue(mockModalRef as any);
-
-      component.createCandidateExam();
-
-      expect(mockModalService.open).toHaveBeenCalledWith(CreateCandidateExamComponent, {
-        centered: true,
-        backdrop: 'static',
-      });
-
-      await mockModalRef.result; // Wait for the promise to resolve
-
-      expect(mockCandidateService.updateCandidate).toHaveBeenCalled();
+        await TestBed.configureTestingModule({
+            declarations: [ViewCandidateExamComponent],
+            imports: [NgbModalModule],
+            providers: [
+                { provide: CandidateExamService, useValue: mockCandidateExamService },
+                { provide: CandidateService, useValue: mockCandidateService },
+                { provide: NgbModal, useValue: mockModalService },
+                NgbActiveModal,
+                provideHttpClient(withXhr(), withInterceptorsFromDi()),
+                provideHttpClientTesting(),
+            ],
+            schemas: [CUSTOM_ELEMENTS_SCHEMA],
+        }).compileComponents();
     });
 
-    it('should handle modal dismissal', async () => {
-      const mockModalRef = {
-        result: Promise.reject(),
-        componentInstance: {}
-      };
-      mockModalService.open.and.returnValue(mockModalRef as any);
-
-      component.createCandidateExam();
-
-      expect(mockModalService.open).toHaveBeenCalledWith(CreateCandidateExamComponent, {
-        centered: true,
-        backdrop: 'static',
-      });
-
-      await mockModalRef.result.catch(() => {}); // Wait for the promise to reject
-
-      expect(mockCandidateService.updateCandidate).not.toHaveBeenCalled(); // Shouldn't reload on dismissal
-    });
-  });
-
-  describe('editCandidateExam', () => {
-    it('should open the edit candidate exam modal and reload exams after closing', async () => {
-      const mockModalRef = {
-        result: Promise.resolve(),
-        componentInstance: {}
-      };
-      mockModalService.open.and.returnValue(mockModalRef as any);
-
-      component.editCandidateExam(new MockCandidate().candidateExams[0]);
-
-      expect(mockModalService.open).toHaveBeenCalledWith(EditCandidateExamComponent, {
-        centered: true,
-        backdrop: 'static',
-      });
-
-      await mockModalRef.result;
-
-      expect(mockCandidateService.updateCandidate).toHaveBeenCalled();
-    });
-  });
-
-  describe('deleteCandidateExam', () => {
-    it('should open the confirmation modal and delete the exam on confirmation', async () => {
-      const mockModalRef = {
-        result: Promise.resolve(true),
-        componentInstance: {}
-      };
-      const examToDelete = new MockCandidate().candidateExams[0];
-      mockModalService.open.and.returnValue(mockModalRef as any);
-      mockCandidateExamService.delete.and.returnValue(of(null));
-
-      component.deleteCandidateExam(examToDelete);
-
-      expect(mockModalService.open).toHaveBeenCalledWith(ConfirmationComponent, {
-        centered: true,
-        backdrop: 'static',
-      });
-
-      await mockModalRef.result;
-
-      expect(mockCandidateExamService.delete).toHaveBeenCalledWith(examToDelete.id);
-      expect(mockCandidateService.updateCandidate).toHaveBeenCalled();
+    beforeEach(() => {
+        fixture = TestBed.createComponent(ViewCandidateExamComponent);
+        component = fixture.componentInstance;
+        component.candidate = new MockCandidate();
+        component.editable = true;
+        component.adminUser = true;
+        fixture.detectChanges();
     });
 
-    it('should not delete the exam if confirmation is canceled', async () => {
-      const mockModalRef = {
-        result: Promise.resolve(false),
-        componentInstance: {}
-      };
-      mockModalService.open.and.returnValue(mockModalRef as any);
-
-      component.deleteCandidateExam(new MockCandidate().candidateExams[0]);
-
-      await mockModalRef.result;
-
-      expect(mockCandidateExamService.delete).not.toHaveBeenCalled();
-      expect(mockCandidateService.updateCandidate).not.toHaveBeenCalled();
+    it('should create the component', () => {
+        expect(component).toBeTruthy();
     });
-  });
+
+    describe('createCandidateExam', () => {
+        it('should open the create candidate exam modal and update candidate service after returning successfully', async () => {
+            const mockModalRef = {
+                result: Promise.resolve('some data'),
+                componentInstance: {}
+            };
+            mockModalService.open.mockReturnValue(mockModalRef as any);
+
+            component.createCandidateExam();
+
+            expect(mockModalService.open).toHaveBeenCalledWith(CreateCandidateExamComponent, {
+                centered: true,
+                backdrop: 'static',
+            });
+
+            await mockModalRef.result; // Wait for the promise to resolve
+
+            expect(mockCandidateService.updateCandidate).toHaveBeenCalled();
+        });
+
+        it('should handle modal dismissal', async () => {
+            const mockModalRef = {
+                result: Promise.reject(),
+                componentInstance: {}
+            };
+            mockModalService.open.mockReturnValue(mockModalRef as any);
+
+            component.createCandidateExam();
+
+            expect(mockModalService.open).toHaveBeenCalledWith(CreateCandidateExamComponent, {
+                centered: true,
+                backdrop: 'static',
+            });
+
+            await mockModalRef.result.catch(() => { }); // Wait for the promise to reject
+
+            expect(mockCandidateService.updateCandidate).not.toHaveBeenCalled(); // Shouldn't reload on dismissal
+        });
+    });
+
+    describe('editCandidateExam', () => {
+        it('should open the edit candidate exam modal and reload exams after closing', async () => {
+            const mockModalRef = {
+                result: Promise.resolve(),
+                componentInstance: {}
+            };
+            mockModalService.open.mockReturnValue(mockModalRef as any);
+
+            component.editCandidateExam(new MockCandidate().candidateExams[0]);
+
+            expect(mockModalService.open).toHaveBeenCalledWith(EditCandidateExamComponent, {
+                centered: true,
+                backdrop: 'static',
+            });
+
+            await mockModalRef.result;
+
+            expect(mockCandidateService.updateCandidate).toHaveBeenCalled();
+        });
+    });
+
+    describe('deleteCandidateExam', () => {
+        it('should open the confirmation modal and delete the exam on confirmation', async () => {
+            const mockModalRef = {
+                result: Promise.resolve(true),
+                componentInstance: {}
+            };
+            const examToDelete = new MockCandidate().candidateExams[0];
+            mockModalService.open.mockReturnValue(mockModalRef as any);
+            mockCandidateExamService.delete.mockReturnValue(of(null));
+
+            component.deleteCandidateExam(examToDelete);
+
+            expect(mockModalService.open).toHaveBeenCalledWith(ConfirmationComponent, {
+                centered: true,
+                backdrop: 'static',
+            });
+
+            await mockModalRef.result;
+
+            expect(mockCandidateExamService.delete).toHaveBeenCalledWith(examToDelete.id);
+            expect(mockCandidateService.updateCandidate).toHaveBeenCalled();
+        });
+
+        it('should not delete the exam if confirmation is canceled', async () => {
+            const mockModalRef = {
+                result: Promise.resolve(false),
+                componentInstance: {}
+            };
+            mockModalService.open.mockReturnValue(mockModalRef as any);
+
+            component.deleteCandidateExam(new MockCandidate().candidateExams[0]);
+
+            await mockModalRef.result;
+
+            expect(mockCandidateExamService.delete).not.toHaveBeenCalled();
+            expect(mockCandidateService.updateCandidate).not.toHaveBeenCalled();
+        });
+    });
 });

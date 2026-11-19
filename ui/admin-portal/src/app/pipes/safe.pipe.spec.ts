@@ -13,60 +13,65 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
+
+import type {Mock} from "vitest";
 import {SafePipe} from './safe.pipe';
 import {DomSanitizer} from '@angular/platform-browser';
+import {expect, vi} from 'vitest';
 
 describe('SafePipe', () => {
-  let pipe: SafePipe;
-  let sanitizer: DomSanitizer;
+    let pipe: SafePipe;
+    let sanitizer: DomSanitizer;
 
-  beforeEach(() => {
-    sanitizer = jasmine.createSpyObj('DomSanitizer', ['bypassSecurityTrustResourceUrl']);
-    pipe = new SafePipe(sanitizer);
-  });
+    beforeEach(() => {
+        sanitizer = ({
+            bypassSecurityTrustResourceUrl: vi.fn().mockName("DomSanitizer.bypassSecurityTrustResourceUrl")
+        } as unknown as typeof sanitizer);
+        pipe = new SafePipe(sanitizer);
+    });
 
-  it('should create an instance', () => {
-    expect(pipe).toBeTruthy();
-  });
+    it('should create an instance', () => {
+        expect(pipe).toBeTruthy();
+    });
 
-  it('should call DomSanitizer.bypassSecurityTrustResourceUrl', () => {
-    const url = 'https://example.com/image.jpg';
-    const safeUrl = 'safe-url';
-    (sanitizer.bypassSecurityTrustResourceUrl as jasmine.Spy).and.returnValue(safeUrl);
+    it('should call DomSanitizer.bypassSecurityTrustResourceUrl', () => {
+        const url = 'https://example.com/image.jpg';
+        const safeUrl = 'safe-url';
+        (sanitizer.bypassSecurityTrustResourceUrl as Mock).mockReturnValue(safeUrl);
 
-    const result = pipe.transform(url);
+        const result = pipe.transform(url);
 
-    expect(sanitizer.bypassSecurityTrustResourceUrl).toHaveBeenCalledWith(url);
-    expect(result).toEqual(safeUrl);
-  });
+        expect(sanitizer.bypassSecurityTrustResourceUrl).toHaveBeenCalledWith(url);
+        expect(result).toEqual(safeUrl);
+    });
 
-  it('should return null for empty url', () => {
-    const url = '';
-    (sanitizer.bypassSecurityTrustResourceUrl as jasmine.Spy).and.returnValue(null);
+    it('should return null for empty url', () => {
+        const url = '';
+        (sanitizer.bypassSecurityTrustResourceUrl as Mock).mockReturnValue(null);
 
-    const result = pipe.transform(url);
+        const result = pipe.transform(url);
 
-    expect(sanitizer.bypassSecurityTrustResourceUrl).toHaveBeenCalledWith(url);
-    expect(result).toBeNull();
-  });
+        expect(sanitizer.bypassSecurityTrustResourceUrl).toHaveBeenCalledWith(url);
+        expect(result).toBeNull();
+    });
 
-  it('should return null for null url', () => {
-    const url = null;
-    (sanitizer.bypassSecurityTrustResourceUrl as jasmine.Spy).and.returnValue(null);
+    it('should return null for null url', () => {
+        const url = null;
+        (sanitizer.bypassSecurityTrustResourceUrl as Mock).mockReturnValue(null);
 
-    const result = pipe.transform(url);
+        const result = pipe.transform(url);
 
-    expect(sanitizer.bypassSecurityTrustResourceUrl).toHaveBeenCalledWith(url);
-    expect(result).toBeNull();
-  });
+        expect(sanitizer.bypassSecurityTrustResourceUrl).toHaveBeenCalledWith(url);
+        expect(result).toBeNull();
+    });
 
-  it('should return null for undefined url', () => {
-    const url = undefined;
-    (sanitizer.bypassSecurityTrustResourceUrl as jasmine.Spy).and.returnValue(null);
+    it('should return null for undefined url', () => {
+        const url = undefined;
+        (sanitizer.bypassSecurityTrustResourceUrl as Mock).mockReturnValue(null);
 
-    const result = pipe.transform(url);
+        const result = pipe.transform(url);
 
-    expect(sanitizer.bypassSecurityTrustResourceUrl).toHaveBeenCalledWith(url);
-    expect(result).toBeNull();
-  });
+        expect(sanitizer.bypassSecurityTrustResourceUrl).toHaveBeenCalledWith(url);
+        expect(result).toBeNull();
+    });
 });

@@ -21,6 +21,7 @@ import {CandidateSkillService} from './candidate-skill.service';
 import {environment} from '../../environments/environment';
 import {SearchResults} from '../model/search-results';
 import {CandidateSkill} from '../model/candidate-skill';
+import {expect} from 'vitest';
 
 describe('CandidateSkillService', () => {
   let service: CandidateSkillService;

@@ -18,70 +18,71 @@ import {InputTextComponent} from "./input-text.component";
 import {ComponentFixture, fakeAsync, TestBed, tick} from "@angular/core/testing";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
+import {expect, vi} from 'vitest';
 
 describe('InputTextComponent', () => {
-  let component: InputTextComponent;
-  let fixture: ComponentFixture<InputTextComponent>;
-  let modalMock: Partial<NgbActiveModal>;
+    let component: InputTextComponent;
+    let fixture: ComponentFixture<InputTextComponent>;
+    let modalMock: Partial<NgbActiveModal>;
 
-  beforeEach(async () => {
-    modalMock = {
-      close: jasmine.createSpy('close'),
-      dismiss: jasmine.createSpy('dismiss')
-    };
+    beforeEach(async () => {
+        modalMock = {
+            close: vi.fn().mockName('close'),
+            dismiss: vi.fn().mockName('dismiss')
+        };
 
-    await TestBed.configureTestingModule({
-      imports: [FormsModule, ReactiveFormsModule],
-      declarations: [InputTextComponent],
-      providers: [
-        { provide: NgbActiveModal, useValue: modalMock }
-      ]
-    }).compileComponents();
-  });
+        await TestBed.configureTestingModule({
+            imports: [FormsModule, ReactiveFormsModule],
+            declarations: [InputTextComponent],
+            providers: [
+                { provide: NgbActiveModal, useValue: modalMock }
+            ]
+        }).compileComponents();
+    });
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(InputTextComponent);
-    component = fixture.componentInstance;
-    component.initialText = 'Initial text';
-    component.message = 'Please enter text';
-    component.nRows = 3;
-    fixture.detectChanges();
-  });
+    beforeEach(() => {
+        fixture = TestBed.createComponent(InputTextComponent);
+        component = fixture.componentInstance;
+        component.initialText = 'Initial text';
+        component.message = 'Please enter text';
+        component.nRows = 3;
+        fixture.detectChanges();
+    });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
 
-  it('should initialize form with initial text', () => {
-    expect(component.form.get('text').value).toBe('Initial text');
-  });
+    it('should initialize form with initial text', () => {
+        expect(component.form.get('text').value).toBe('Initial text');
+    });
 
-  it('should dismiss the modal when dismiss() is called', () => {
-    component.dismiss();
-    expect(modalMock.dismiss).toHaveBeenCalledWith(false);
-  });
+    it('should dismiss the modal when dismiss() is called', () => {
+        component.dismiss();
+        expect(modalMock.dismiss).toHaveBeenCalledWith(false);
+    });
 
-  it('should close the modal with form value when close() is called', fakeAsync(() => {
-    component.form.patchValue({ text: 'Updated text' });
-    fixture.detectChanges();
+    it('should close the modal with form value when close() is called', fakeAsync(() => {
+        component.form.patchValue({ text: 'Updated text' });
+        fixture.detectChanges();
 
-    component.close();
-    tick(); // Simulate async operation
+        component.close();
+        tick(); // Simulate async operation
 
-    expect(modalMock.close).toHaveBeenCalledWith('Updated text');
-  }));
+        expect(modalMock.close).toHaveBeenCalledWith('Updated text');
+    }));
 
-  it('should render the message if message is provided', () => {
-    const labelElement: HTMLElement = fixture.nativeElement.querySelector('tc-label');
-    expect(labelElement).toBeTruthy();
-    expect(labelElement.textContent).toContain('Please enter text');
-  });
+    it('should render the message if message is provided', () => {
+        const labelElement: HTMLElement = fixture.nativeElement.querySelector('tc-label');
+        expect(labelElement).toBeTruthy();
+        expect(labelElement.textContent).toContain('Please enter text');
+    });
 
-  it('should not render the message if message is not provided', () => {
-    component.message = null;
-    fixture.detectChanges();
+    it('should not render the message if message is not provided', () => {
+        component.message = null;
+        fixture.detectChanges();
 
-    const labelElement: HTMLElement = fixture.nativeElement.querySelector('tc-label');
-    expect(labelElement).toBeNull();
-  });
+        const labelElement: HTMLElement = fixture.nativeElement.querySelector('tc-label');
+        expect(labelElement).toBeNull();
+    });
 });

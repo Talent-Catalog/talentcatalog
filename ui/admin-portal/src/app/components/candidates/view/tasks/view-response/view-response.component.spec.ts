@@ -20,68 +20,71 @@ import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {NO_ERRORS_SCHEMA} from "@angular/core";
 import {By} from "@angular/platform-browser";
 import {MockCandidate} from "../../../../../MockData/MockCandidate";
+import {expect, vi} from 'vitest';
 
 describe('ViewResponseComponent', () => {
-  let component: ViewResponseComponent;
-  let fixture: ComponentFixture<ViewResponseComponent>;
-  let mockActiveModal: NgbActiveModal;
-  const mockCandidate = new MockCandidate();
-  beforeEach(async () => {
-    mockActiveModal = jasmine.createSpyObj('NgbActiveModal', ['close', 'dismiss']);
+    let component: ViewResponseComponent;
+    let fixture: ComponentFixture<ViewResponseComponent>;
+    let mockActiveModal: NgbActiveModal;
+    const mockCandidate = new MockCandidate();
+    beforeEach(async () => {
+        mockActiveModal = ({
+            close: vi.fn().mockName("NgbActiveModal.close"),
+            dismiss: vi.fn().mockName("NgbActiveModal.dismiss")
+        } as unknown as typeof mockActiveModal);
 
-    await TestBed.configureTestingModule({
-      declarations: [ ViewResponseComponent ],
-      providers: [
-        { provide: NgbActiveModal, useValue: mockActiveModal }
-      ],
-      schemas: [NO_ERRORS_SCHEMA]
-    })
-    .compileComponents();
-  });
+        await TestBed.configureTestingModule({
+            declarations: [ViewResponseComponent],
+            providers: [
+                { provide: NgbActiveModal, useValue: mockActiveModal }
+            ],
+            schemas: [NO_ERRORS_SCHEMA]
+        })
+            .compileComponents();
+    });
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(ViewResponseComponent);
-    component = fixture.componentInstance;
-    // Mock data
-    component.taskAssignment = mockCandidate.taskAssignments[0];
-    component.loading = false;
-    component.error = '';
+    beforeEach(() => {
+        fixture = TestBed.createComponent(ViewResponseComponent);
+        component = fixture.componentInstance;
+        // Mock data
+        component.taskAssignment = mockCandidate.taskAssignments[0];
+        component.loading = false;
+        component.error = '';
 
-    fixture.detectChanges();
-  });
+        fixture.detectChanges();
+    });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
 
-  it('should display task display answer', () => {
-    const descriptionItemDebug =
-      fixture.debugElement.query(By.css('tc-description-item'));
+    it('should display task display answer', () => {
+        const descriptionItemDebug = fixture.debugElement.query(By.css('tc-description-item'));
 
-    expect(descriptionItemDebug).toBeTruthy();
+        expect(descriptionItemDebug).toBeTruthy();
 
-    // Check the rendered answer text
-    const answerText = descriptionItemDebug.nativeElement.textContent.trim();
-    expect(answerText).toBe(component.taskAssignment.answer);
-  });
+        // Check the rendered answer text
+        const answerText = descriptionItemDebug.nativeElement.textContent.trim();
+        expect(answerText).toBe(component.taskAssignment.answer);
+    });
 
-  it('should display error message when error is set', fakeAsync(() => {
-    component.error = 'Sample error message';
-    fixture.detectChanges();
-    tick();
+    it('should display error message when error is set', fakeAsync(() => {
+        component.error = 'Sample error message';
+        fixture.detectChanges();
+        tick();
 
-    const errorAlert = fixture.debugElement.query(By.css('.alert-danger'));
+        const errorAlert = fixture.debugElement.query(By.css('.alert-danger'));
 
-    expect(errorAlert.nativeElement.textContent).toContain('Sample error message');
-  }));
+        expect(errorAlert.nativeElement.textContent).toContain('Sample error message');
+    }));
 
-  it('should call activeModal.close when close is called', () => {
-    component.close();
-    expect(mockActiveModal.close).toHaveBeenCalled();
-  });
+    it('should call activeModal.close when close is called', () => {
+        component.close();
+        expect(mockActiveModal.close).toHaveBeenCalled();
+    });
 
-  it('should call activeModal.dismiss when dismiss is called', () => {
-    component.dismiss();
-    expect(mockActiveModal.dismiss).toHaveBeenCalledWith(false);
-  });
+    it('should call activeModal.dismiss when dismiss is called', () => {
+        component.dismiss();
+        expect(mockActiveModal.dismiss).toHaveBeenCalledWith(false);
+    });
 });

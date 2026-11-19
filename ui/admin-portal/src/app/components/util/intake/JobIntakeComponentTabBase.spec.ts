@@ -14,6 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
+import type {MockedObject} from "vitest";
 import {fakeAsync, TestBed, tick} from '@angular/core/testing';
 import {of, throwError} from 'rxjs';
 
@@ -21,116 +22,113 @@ import {JobIntakeComponentTabBase} from './JobIntakeComponentTabBase';
 import {AuthenticationService} from '../../../services/authentication.service';
 import {AuthorizationService} from '../../../services/authorization.service';
 import {JobService} from '../../../services/job.service';
+import {expect, vi} from 'vitest';
 
 class TestJobIntakeTabComponent extends JobIntakeComponentTabBase {
-  dataLoaded = jasmine.createSpy('dataLoaded');
+    dataLoaded = vi.fn().mockName('dataLoaded');
 
-  protected onDataLoaded(init: boolean): void {
-    this.dataLoaded(init);
-  }
+    protected onDataLoaded(init: boolean): void {
+        this.dataLoaded(init);
+    }
 }
 
 describe('JobIntakeComponentTabBase', () => {
-  let component: TestJobIntakeTabComponent;
-  let authenticationService: jasmine.SpyObj<AuthenticationService>;
-  let authorizationService: jasmine.SpyObj<AuthorizationService>;
-  let jobService: jasmine.SpyObj<JobService>;
-  const loggedInUser = {id: 8, firstName: 'Test', lastName: 'User'} as any;
+    let component: TestJobIntakeTabComponent;
+    let authenticationService: MockedObject<AuthenticationService>;
+    let authorizationService: MockedObject<AuthorizationService>;
+    let jobService: MockedObject<JobService>;
+    const loggedInUser = { id: 8, firstName: 'Test', lastName: 'User' } as any;
 
-  beforeEach(() => {
-    authenticationService = jasmine.createSpyObj<AuthenticationService>(
-      'AuthenticationService',
-      ['getLoggedInUser']
-    );
-    authorizationService = jasmine.createSpyObj<AuthorizationService>(
-      'AuthorizationService',
-      ['isEmployerPartner']
-    );
-    jobService = jasmine.createSpyObj<JobService>('JobService', ['get']);
+    beforeEach(() => {
+        authenticationService = ({
+            getLoggedInUser: vi.fn().mockName("AuthenticationService.getLoggedInUser")
+        } as unknown as typeof authenticationService);
+        authorizationService = ({
+            isEmployerPartner: vi.fn().mockName("AuthorizationService.isEmployerPartner")
+        } as unknown as typeof authorizationService);
+        jobService = ({
+            get: vi.fn().mockName("JobService.get")
+        } as unknown as typeof jobService);
 
-    authenticationService.getLoggedInUser.and.returnValue(loggedInUser);
-    authorizationService.isEmployerPartner.and.returnValue(false);
+        authenticationService.getLoggedInUser.mockReturnValue(loggedInUser);
+        authorizationService.isEmployerPartner.mockReturnValue(false);
 
-    TestBed.configureTestingModule({
-      providers: [
-        {provide: AuthenticationService, useValue: authenticationService},
-        {provide: AuthorizationService, useValue: authorizationService},
-        {provide: JobService, useValue: jobService}
-      ]
+        TestBed.configureTestingModule({
+            providers: [
+                { provide: AuthenticationService, useValue: authenticationService },
+                { provide: AuthorizationService, useValue: authorizationService },
+                { provide: JobService, useValue: jobService }
+            ]
+        });
+
+        component = new TestJobIntakeTabComponent(authenticationService, authorizationService, jobService);
+        component.job = { id: 11 } as any;
     });
 
-    component = new TestJobIntakeTabComponent(
-      authenticationService,
-      authorizationService,
-      jobService
-    );
-    component.job = {id: 11} as any;
-  });
+    it('should initialize logged-in user in constructor', () => {
+        expect(component.loggedInUser).toBe(loggedInUser);
+        expect(authenticationService.getLoggedInUser).toHaveBeenCalled();
+    });
 
-  it('should initialize logged-in user in constructor', () => {
-    expect(component.loggedInUser).toBe(loggedInUser);
-    expect(authenticationService.getLoggedInUser).toHaveBeenCalled();
-  });
+    it('should run ngOnInit without side effects', () => {
+        expect(() => component.ngOnInit()).not.toThrow();
+    });
 
-  it('should run ngOnInit without side effects', () => {
-    expect(() => component.ngOnInit()).not.toThrow();
-  });
+    it('should show employer details to non-employer partners', () => {
+        authorizationService.isEmployerPartner.mockReturnValue(false);
 
-  it('should show employer details to non-employer partners', () => {
-    authorizationService.isEmployerPartner.and.returnValue(false);
+        expect(component.canViewEmployerDetails()).toBe(true);
+    });
 
-    expect(component.canViewEmployerDetails()).toBeTrue();
-  });
+    it('should hide employer details from employer partners', () => {
+        authorizationService.isEmployerPartner.mockReturnValue(true);
 
-  it('should hide employer details from employer partners', () => {
-    authorizationService.isEmployerPartner.and.returnValue(true);
+        expect(component.canViewEmployerDetails()).toBe(false);
+    });
 
-    expect(component.canViewEmployerDetails()).toBeFalse();
-  });
+    it('should load intake data on input changes', fakeAsync(() => {
+        const intake = { salary: '100' } as any;
+        jobService.get.mockReturnValue(of({ id: 11, jobOppIntake: intake } as any));
 
-  it('should load intake data on input changes', fakeAsync(() => {
-    const intake = {salary: '100'} as any;
-    jobService.get.and.returnValue(of({id: 11, jobOppIntake: intake} as any));
+        component.ngOnChanges({ job: {} as any });
+        tick();
 
-    component.ngOnChanges({job: {} as any});
-    tick();
+        expect(jobService.get).toHaveBeenCalledWith(11);
+        expect(component.jobIntakeData).toBe(intake);
+        expect(component.loading).toBe(false);
+        expect(component.error).toBeNull();
+        expect(component.dataLoaded).toHaveBeenCalledWith(true);
+    }));
 
-    expect(jobService.get).toHaveBeenCalledWith(11);
-    expect(component.jobIntakeData).toBe(intake);
-    expect(component.loading).toBeFalse();
-    expect(component.error).toBeNull();
-    expect(component.dataLoaded).toHaveBeenCalledWith(true);
-  }));
+    it('should load intake data during manual refresh', fakeAsync(() => {
+        const intake = { salary: '200' } as any;
+        jobService.get.mockReturnValue(of({ id: 11, jobOppIntake: intake } as any));
 
-  it('should load intake data during manual refresh', fakeAsync(() => {
-    const intake = {salary: '200'} as any;
-    jobService.get.and.returnValue(of({id: 11, jobOppIntake: intake} as any));
+        component.refreshIntakeData();
+        tick();
 
-    component.refreshIntakeData();
-    tick();
+        expect(component.jobIntakeData).toBe(intake);
+        expect(component.dataLoaded).toHaveBeenCalledWith(false);
+    }));
 
-    expect(component.jobIntakeData).toBe(intake);
-    expect(component.dataLoaded).toHaveBeenCalledWith(false);
-  }));
+    it('should create empty intake data when the job has none', fakeAsync(() => {
+        jobService.get.mockReturnValue(of({ id: 11, jobOppIntake: null } as any));
 
-  it('should create empty intake data when the job has none', fakeAsync(() => {
-    jobService.get.and.returnValue(of({id: 11, jobOppIntake: null} as any));
+        component.refreshIntakeData();
+        tick();
 
-    component.refreshIntakeData();
-    tick();
+        expect(component.jobIntakeData).toEqual({});
+        expect(component.dataLoaded).toHaveBeenCalledWith(false);
+    }));
 
-    expect(component.jobIntakeData).toEqual({});
-    expect(component.dataLoaded).toHaveBeenCalledWith(false);
-  }));
+    it('should expose loading errors', fakeAsync(() => {
+        jobService.get.mockReturnValue(throwError('load failed'));
 
-  it('should expose loading errors', fakeAsync(() => {
-    jobService.get.and.returnValue(throwError('load failed'));
+        component.refreshIntakeData();
+        tick();
 
-    component.refreshIntakeData();
-    tick();
-
-    expect(component.loading).toBeFalse();
-    expect(component.error).toBe('load failed');
-    expect(component.dataLoaded).not.toHaveBeenCalled();
-  }));
+        expect(component.loading).toBe(false);
+        expect(component.error).toBe('load failed');
+        expect(component.dataLoaded).not.toHaveBeenCalled();
+    }));
 });

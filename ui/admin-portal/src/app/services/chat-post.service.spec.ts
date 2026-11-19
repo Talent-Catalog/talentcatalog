@@ -21,6 +21,7 @@ import {ChatPostService} from './chat-post.service';
 import {ChatPost} from '../model/chat';
 import {UrlDto} from '../model/url-dto';
 import {environment} from '../../environments/environment';
+import {expect} from 'vitest';
 
 describe('ChatPostService', () => {
   let service: ChatPostService;

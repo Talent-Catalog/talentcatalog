@@ -14,16 +14,9 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {
-  ContentUpdateType,
-  isSavedList,
-  PublishedDocColumnContent,
-  PublishedDocColumnDef,
-  PublishedDocConstantSource,
-  SavedList,
-  UpdateSavedListContentsRequest
-} from "./saved-list";
+import {ContentUpdateType, isSavedList, PublishedDocColumnContent, PublishedDocColumnDef, PublishedDocConstantSource, SavedList, UpdateSavedListContentsRequest} from "./saved-list";
 import {CandidateStatus} from "./candidate";
+import {expect} from 'vitest';
 
 describe('SavedList Interface Tests', () => {
 

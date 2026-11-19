@@ -14,6 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
+import type {MockedObject} from "vitest";
 import {Component, EventEmitter, Input, Output, ChangeDetectionStrategy} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
@@ -28,325 +29,337 @@ import {TermsInfoDto} from '../../../model/terms-info-dto';
 import {TermsInfoService} from '../../../services/terms-info.service';
 
 @Component({
-  selector: 'tc-loading',
-  template: '',
-  changeDetection: ChangeDetectionStrategy.Eager,
-  standalone: false
+    selector: 'tc-loading',
+    template: '',
+    changeDetection: ChangeDetectionStrategy.Eager,
+    standalone: false
 })
 class TcLoadingStubComponent {
-  @Input() loading?: boolean;
+    @Input()
+    loading?: boolean;
 }
 
 @Component({
-  selector: 'tc-button',
-  template: '<ng-content></ng-content>',
-  changeDetection: ChangeDetectionStrategy.Eager,
-  standalone: false
+    selector: 'tc-button',
+    template: '<ng-content></ng-content>',
+    changeDetection: ChangeDetectionStrategy.Eager,
+    standalone: false
 })
 class TcButtonStubComponent {
-  @Input() color?: string;
-  @Input() disabled?: boolean;
-  @Output() onClick = new EventEmitter<void>();
+    @Input()
+    color?: string;
+    @Input()
+    disabled?: boolean;
+    @Output()
+    onClick = new EventEmitter<void>();
 }
 
 @Component({
-  selector: 'app-show-terms',
-  template: '<ng-content></ng-content>',
-  changeDetection: ChangeDetectionStrategy.Eager,
-  standalone: false
+    selector: 'app-show-terms',
+    template: '<ng-content></ng-content>',
+    changeDetection: ChangeDetectionStrategy.Eager,
+    standalone: false
 })
 class ShowTermsStubComponent {
-  @Input() requestTermsRead?: boolean;
-  @Output() termsRead = new EventEmitter<void>();
+    @Input()
+    requestTermsRead?: boolean;
+    @Output()
+    termsRead = new EventEmitter<void>();
 }
 
 @Component({
-  selector: 'app-error',
-  template: '',
-  changeDetection: ChangeDetectionStrategy.Eager,
-  standalone: false
+    selector: 'app-error',
+    template: '',
+    changeDetection: ChangeDetectionStrategy.Eager,
+    standalone: false
 })
 class ErrorStubComponent {
-  @Input() error?: unknown;
+    @Input()
+    error?: unknown;
 }
 
 function makeTerms(content: string, id = 'policy-1'): TermsInfoDto {
-  return {
-    id,
-    content
-  };
+    return {
+        id,
+        content
+    };
 }
 
 function makeCandidate(overrides: Partial<Candidate> = {}): Candidate {
-  return {
-    id: 1,
-    status: 'pending',
-    user: {
-      partner: {
-        name: 'Talent Beyond Boundaries',
-        websiteUrl: 'https://www.talentbeyondboundaries.org',
-        defaultSourcePartner: false
-      }
-    }
-  } as Candidate;
+    return {
+        id: 1,
+        status: 'pending',
+        user: {
+            partner: {
+                name: 'Talent Beyond Boundaries',
+                websiteUrl: 'https://www.talentbeyondboundaries.org',
+                defaultSourcePartner: false
+            }
+        }
+    } as Candidate;
 }
 
 describe('RegistrationSubmitComponent', () => {
-  let component: RegistrationSubmitComponent;
-  let fixture: ComponentFixture<RegistrationSubmitComponent>;
+    let component: RegistrationSubmitComponent;
+    let fixture: ComponentFixture<RegistrationSubmitComponent>;
 
-  let candidateServiceSpy: jasmine.SpyObj<CandidateService>;
-  let authenticationServiceSpy: jasmine.SpyObj<AuthenticationService>;
-  let termsInfoServiceSpy: jasmine.SpyObj<TermsInfoService>;
+    let candidateServiceSpy: MockedObject<CandidateService>;
+    let authenticationServiceSpy: MockedObject<AuthenticationService>;
+    let termsInfoServiceSpy: MockedObject<TermsInfoService>;
 
-  async function configureAndCreate(options?: {
-    candidate?: Candidate;
-    terms?: TermsInfoDto;
-    candidateError?: unknown;
-    termsError?: unknown;
-    submitError?: unknown;
-  }) {
-    candidateServiceSpy = jasmine.createSpyObj('CandidateService', [
-      'getCandidatePersonal',
-      'submitRegistration'
-    ]);
-    authenticationServiceSpy = jasmine.createSpyObj('AuthenticationService', ['setCandidateStatus']);
-    termsInfoServiceSpy = jasmine.createSpyObj('TermsInfoService', ['getCurrentCandidatePolicy']);
+    async function configureAndCreate(options?: {
+        candidate?: Candidate;
+        terms?: TermsInfoDto;
+        candidateError?: unknown;
+        termsError?: unknown;
+        submitError?: unknown;
+    }) {
+        candidateServiceSpy = {
+            getCandidatePersonal: vi.fn().mockName("CandidateService.getCandidatePersonal"),
+            submitRegistration: vi.fn().mockName("CandidateService.submitRegistration")
+        } as unknown as MockedObject<CandidateService>;
+        authenticationServiceSpy = {
+            setCandidateStatus: vi.fn().mockName("AuthenticationService.setCandidateStatus")
+        } as unknown as MockedObject<AuthenticationService>;
+        termsInfoServiceSpy = {
+            getCurrentCandidatePolicy: vi.fn().mockName("TermsInfoService.getCurrentCandidatePolicy")
+        } as unknown as MockedObject<TermsInfoService>;
 
-    const candidate = options?.candidate ?? makeCandidate();
-    const terms = options?.terms ?? makeTerms('<p>Policy content</p>');
+        const candidate = options?.candidate ?? makeCandidate();
+        const terms = options?.terms ?? makeTerms('<p>Policy content</p>');
 
-    if (options?.candidateError) {
-      candidateServiceSpy.getCandidatePersonal.and.returnValue(throwError(options.candidateError));
-    } else {
-      candidateServiceSpy.getCandidatePersonal.and.returnValue(of(candidate));
+        if (options?.candidateError) {
+            candidateServiceSpy.getCandidatePersonal.mockReturnValue(throwError(options.candidateError));
+        }
+        else {
+            candidateServiceSpy.getCandidatePersonal.mockReturnValue(of(candidate));
+        }
+
+        if (options?.termsError) {
+            termsInfoServiceSpy.getCurrentCandidatePolicy.mockReturnValue(throwError(options.termsError));
+        }
+        else {
+            termsInfoServiceSpy.getCurrentCandidatePolicy.mockReturnValue(of(terms));
+        }
+
+        if (options?.submitError) {
+            candidateServiceSpy.submitRegistration.mockReturnValue(throwError(options.submitError));
+        }
+        else {
+            candidateServiceSpy.submitRegistration.mockReturnValue(of({
+                status: 'pending'
+            } as Candidate));
+        }
+
+        await TestBed.configureTestingModule({
+            declarations: [
+                RegistrationSubmitComponent,
+                TcLoadingStubComponent,
+                TcButtonStubComponent,
+                ShowTermsStubComponent,
+                ErrorStubComponent
+            ],
+            imports: [TranslateModule.forRoot()],
+            providers: [
+                { provide: CandidateService, useValue: candidateServiceSpy },
+                { provide: AuthenticationService, useValue: authenticationServiceSpy },
+                { provide: TermsInfoService, useValue: termsInfoServiceSpy }
+            ]
+        }).compileComponents();
+
+        fixture = TestBed.createComponent(RegistrationSubmitComponent);
+        component = fixture.componentInstance;
+
+        fixture.detectChanges();
     }
 
-    if (options?.termsError) {
-      termsInfoServiceSpy.getCurrentCandidatePolicy.and.returnValue(throwError(options.termsError));
-    } else {
-      termsInfoServiceSpy.getCurrentCandidatePolicy.and.returnValue(of(terms));
-    }
+    afterEach(() => TestBed.resetTestingModule());
 
-    if (options?.submitError) {
-      candidateServiceSpy.submitRegistration.and.returnValue(throwError(options.submitError));
-    } else {
-      candidateServiceSpy.submitRegistration.and.returnValue(of({
-        status: 'pending'
-      } as Candidate));
-    }
+    it('should create', async () => {
+        await configureAndCreate();
 
-    await TestBed.configureTestingModule({
-      declarations: [
-        RegistrationSubmitComponent,
-        TcLoadingStubComponent,
-        TcButtonStubComponent,
-        ShowTermsStubComponent,
-        ErrorStubComponent
-      ],
-      imports: [TranslateModule.forRoot()],
-      providers: [
-        {provide: CandidateService, useValue: candidateServiceSpy},
-        {provide: AuthenticationService, useValue: authenticationServiceSpy},
-        {provide: TermsInfoService, useValue: termsInfoServiceSpy}
-      ]
-    }).compileComponents();
-
-    fixture = TestBed.createComponent(RegistrationSubmitComponent);
-    component = fixture.componentInstance;
-
-    fixture.detectChanges();
-  }
-
-  afterEach(() => TestBed.resetTestingModule());
-
-  it('should create', async () => {
-    await configureAndCreate();
-
-    expect(component).toBeTruthy();
-  });
-
-  describe('ngOnInit', () => {
-    it('should load the current privacy policy and candidate', async () => {
-      await configureAndCreate();
-
-      expect(termsInfoServiceSpy.getCurrentCandidatePolicy).toHaveBeenCalled();
-      expect(candidateServiceSpy.getCandidatePersonal).toHaveBeenCalled();
-      expect(component.currentPrivacyPolicy.id).toBe('policy-1');
-      expect(component.candidate.user.partner.name).toBe('Talent Beyond Boundaries');
-    });
-  });
-
-  describe('template tc components', () => {
-    it('should render tc-loading with the component loading state', async () => {
-      await configureAndCreate();
-      const loadingEl = fixture.debugElement.query(By.directive(TcLoadingStubComponent));
-
-      expect(loadingEl).toBeTruthy();
-      expect(loadingEl.componentInstance.loading).toBe(component.loading);
+        expect(component).toBeTruthy();
     });
 
-    it('should render the consent tc-button when consent is required', async () => {
-      await configureAndCreate({
-        terms: makeTerms('<p>Policy content</p>')
-      });
-      const buttons = fixture.debugElement.queryAll(By.directive(TcButtonStubComponent));
+    describe('ngOnInit', () => {
+        it('should load the current privacy policy and candidate', async () => {
+            await configureAndCreate();
 
-      expect(component.consentRequired).toBeTrue();
-      expect(buttons.length).toBe(1);
-      expect(buttons[0].componentInstance.color).toBe('success');
+            expect(termsInfoServiceSpy.getCurrentCandidatePolicy).toHaveBeenCalled();
+            expect(candidateServiceSpy.getCandidatePersonal).toHaveBeenCalled();
+            expect(component.currentPrivacyPolicy.id).toBe('policy-1');
+            expect(component.candidate.user.partner.name).toBe('Talent Beyond Boundaries');
+        });
     });
 
-    it('should render the no-consent tc-button when policy is empty and candidate is not managed by TBB', async () => {
-      TestBed.resetTestingModule();
-      await configureAndCreate({
-        terms: makeTerms(''),
-        candidate: makeCandidate({
-          user: {
-            partner: {
-              name: 'Partner',
-              websiteUrl: 'https://example.org',
-              defaultSourcePartner: false
-            }
-          } as any
-        })
-      });
+    describe('template tc components', () => {
+        it('should render tc-loading with the component loading state', async () => {
+            await configureAndCreate();
+            const loadingEl = fixture.debugElement.query(By.directive(TcLoadingStubComponent));
 
-      const buttons = fixture.debugElement.queryAll(By.directive(TcButtonStubComponent));
-      const showTerms = fixture.debugElement.query(By.directive(ShowTermsStubComponent));
+            expect(loadingEl).toBeTruthy();
+            expect(loadingEl.componentInstance.loading).toBe(component.loading);
+        });
 
-      expect(component.consentRequired).toBeFalse();
-      expect(buttons.length).toBe(1);
-      expect(showTerms).toBeNull();
+        it('should render the consent tc-button when consent is required', async () => {
+            await configureAndCreate({
+                terms: makeTerms('<p>Policy content</p>')
+            });
+            const buttons = fixture.debugElement.queryAll(By.directive(TcButtonStubComponent));
+
+            expect(component.consentRequired).toBe(true);
+            expect(buttons.length).toBe(1);
+            expect(buttons[0].componentInstance.color).toBe('success');
+        });
+
+        it('should render the no-consent tc-button when policy is empty and candidate is not managed by TBB', async () => {
+            TestBed.resetTestingModule();
+            await configureAndCreate({
+                terms: makeTerms(''),
+                candidate: makeCandidate({
+                    user: {
+                        partner: {
+                            name: 'Partner',
+                            websiteUrl: 'https://example.org',
+                            defaultSourcePartner: false
+                        }
+                    } as any
+                })
+            });
+
+            const buttons = fixture.debugElement.queryAll(By.directive(TcButtonStubComponent));
+            const showTerms = fixture.debugElement.query(By.directive(ShowTermsStubComponent));
+
+            expect(component.consentRequired).toBe(false);
+            expect(buttons.length).toBe(1);
+            expect(showTerms).toBeNull();
+        });
+
+        it('should render the show-terms child when policy content exists', async () => {
+            await configureAndCreate({
+                terms: makeTerms('<p>Policy content</p>')
+            });
+
+            expect(fixture.debugElement.query(By.directive(ShowTermsStubComponent))).toBeTruthy();
+        });
     });
 
-    it('should render the show-terms child when policy content exists', async () => {
-      await configureAndCreate({
-        terms: makeTerms('<p>Policy content</p>')
-      });
+    describe('consentRequired', () => {
+        it('should return true when policy content exists', async () => {
+            await configureAndCreate({
+                terms: makeTerms('<p>Policy content</p>')
+            });
 
-      expect(fixture.debugElement.query(By.directive(ShowTermsStubComponent))).toBeTruthy();
-    });
-  });
+            expect(component.consentRequired).toBe(true);
+        });
 
-  describe('consentRequired', () => {
-    it('should return true when policy content exists', async () => {
-      await configureAndCreate({
-        terms: makeTerms('<p>Policy content</p>')
-      });
+        it('should return true when candidate is managed by TBB even without policy content', async () => {
+            await configureAndCreate({
+                terms: makeTerms(''),
+                candidate: {
+                    ...makeCandidate(),
+                    user: {
+                        partner: {
+                            name: 'TBB',
+                            websiteUrl: 'https://example.org',
+                            defaultSourcePartner: true
+                        }
+                    } as any
+                } as Candidate
+            });
 
-      expect(component.consentRequired).toBeTrue();
-    });
+            expect(component.consentRequired).toBe(true);
+        });
 
-    it('should return true when candidate is managed by TBB even without policy content', async () => {
-      await configureAndCreate({
-        terms: makeTerms(''),
-        candidate: {
-          ...makeCandidate(),
-          user: {
-            partner: {
-              name: 'TBB',
-              websiteUrl: 'https://example.org',
-              defaultSourcePartner: true
-            }
-          } as any
-        } as Candidate
-      });
+        it('should return false when policy is empty and candidate is not managed by TBB', async () => {
+            await configureAndCreate({
+                terms: makeTerms(''),
+                candidate: makeCandidate({
+                    user: {
+                        partner: {
+                            name: 'Partner',
+                            websiteUrl: 'https://example.org',
+                            defaultSourcePartner: false
+                        }
+                    } as any
+                })
+            });
 
-      expect(component.consentRequired).toBeTrue();
-    });
-
-    it('should return false when policy is empty and candidate is not managed by TBB', async () => {
-      await configureAndCreate({
-        terms: makeTerms(''),
-        candidate: makeCandidate({
-          user: {
-            partner: {
-              name: 'Partner',
-              websiteUrl: 'https://example.org',
-              defaultSourcePartner: false
-            }
-          } as any
-        })
-      });
-
-      expect(component.consentRequired).toBeFalse();
-    });
-  });
-
-  describe('submit', () => {
-    beforeEach(async () => configureAndCreate());
-
-    it('should submit registration and update the candidate status on success', () => {
-      component.submit();
-
-      expect(candidateServiceSpy.submitRegistration).toHaveBeenCalledWith({
-        acceptedPrivacyPolicyId: 'policy-1'
-      });
-      expect(authenticationServiceSpy.setCandidateStatus).toHaveBeenCalledWith(CandidateStatus.pending);
-      expect(component.loading).toBeFalse();
-      expect(component.error).toBeNull();
+            expect(component.consentRequired).toBe(false);
+        });
     });
 
-    it('should set error and clear loading when submit fails', async () => {
-      TestBed.resetTestingModule();
-      const serverError = {status: 500};
-      await configureAndCreate({submitError: serverError});
+    describe('submit', () => {
+        beforeEach(async () => configureAndCreate());
 
-      component.submit();
+        it('should submit registration and update the candidate status on success', () => {
+            component.submit();
 
-      expect(component.error).toEqual(serverError);
-      expect(component.loading).toBeFalse();
-      expect(authenticationServiceSpy.setCandidateStatus).not.toHaveBeenCalled();
-    });
-  });
+            expect(candidateServiceSpy.submitRegistration).toHaveBeenCalledWith({
+                acceptedPrivacyPolicyId: 'policy-1'
+            });
+            expect(authenticationServiceSpy.setCandidateStatus).toHaveBeenCalledWith(CandidateStatus.pending);
+            expect(component.loading).toBe(false);
+            expect(component.error).toBeNull();
+        });
 
-  describe('helpers', () => {
-    beforeEach(async () => configureAndCreate());
+        it('should set error and clear loading when submit fails', async () => {
+            TestBed.resetTestingModule();
+            const serverError = { status: 500 };
+            await configureAndCreate({ submitError: serverError });
 
-    it('should return the partner description without website when full is false', () => {
-      expect(component.getPartnerDescription(false)).toBe('Talent Beyond Boundaries');
-    });
+            component.submit();
 
-    it('should return the partner description with website when full is true', () => {
-      expect(component.getPartnerDescription(true)).toBe(
-        'Talent Beyond Boundaries (https://www.talentbeyondboundaries.org)'
-      );
-    });
-
-    it('should return null when partner information is missing', async () => {
-      TestBed.resetTestingModule();
-      await configureAndCreate({
-        candidate: {
-          id: 1,
-          status: 'pending',
-          user: null
-        } as any
-      });
-
-      expect(component.getPartnerDescription(true)).toBeNull();
+            expect(component.error).toEqual(serverError);
+            expect(component.loading).toBe(false);
+            expect(authenticationServiceSpy.setCandidateStatus).not.toHaveBeenCalled();
+        });
     });
 
-    it('should set readTerms when setReadTerms is called', () => {
-      component.setReadTerms();
+    describe('helpers', () => {
+        beforeEach(async () => configureAndCreate());
 
-      expect(component.readTerms).toBeTrue();
+        it('should return the partner description without website when full is false', () => {
+            expect(component.getPartnerDescription(false)).toBe('Talent Beyond Boundaries');
+        });
+
+        it('should return the partner description with website when full is true', () => {
+            expect(component.getPartnerDescription(true)).toBe('Talent Beyond Boundaries (https://www.talentbeyondboundaries.org)');
+        });
+
+        it('should return null when partner information is missing', async () => {
+            TestBed.resetTestingModule();
+            await configureAndCreate({
+                candidate: {
+                    id: 1,
+                    status: 'pending',
+                    user: null
+                } as any
+            });
+
+            expect(component.getPartnerDescription(true)).toBeNull();
+        });
+
+        it('should set readTerms when setReadTerms is called', () => {
+            component.setReadTerms();
+
+            expect(component.readTerms).toBe(true);
+        });
     });
-  });
 
-  describe('error paths', () => {
-    it('should set error when terms fail to load', async () => {
-      const serverError = {status: 503};
-      await configureAndCreate({termsError: serverError});
+    describe('error paths', () => {
+        it('should set error when terms fail to load', async () => {
+            const serverError = { status: 503 };
+            await configureAndCreate({ termsError: serverError });
 
-      expect(component.error).toEqual(serverError);
+            expect(component.error).toEqual(serverError);
+        });
+
+        it('should set error when candidate fails to load', async () => {
+            const serverError = { status: 404 };
+            await configureAndCreate({ candidateError: serverError });
+
+            expect(component.error).toEqual(serverError);
+        });
     });
-
-    it('should set error when candidate fails to load', async () => {
-      const serverError = {status: 404};
-      await configureAndCreate({candidateError: serverError});
-
-      expect(component.error).toEqual(serverError);
-    });
-  });
 });

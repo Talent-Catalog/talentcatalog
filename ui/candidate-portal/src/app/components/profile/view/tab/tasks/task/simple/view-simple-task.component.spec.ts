@@ -24,93 +24,95 @@ import {ViewSimpleTaskComponent} from './view-simple-task.component';
 import {TaskAssignment} from '../../../../../../../model/task-assignment';
 import {TaskType} from '../../../../../../../model/task';
 
-@Component({selector: 'tc-label', template: '<ng-content></ng-content>', changeDetection: ChangeDetectionStrategy.Eager, standalone: false})
+@Component({ selector: 'tc-label', template: '<ng-content></ng-content>', changeDetection: ChangeDetectionStrategy.Eager, standalone: false })
 class TcLabelStubComponent {
-  @Input() for?: string;
+    @Input()
+    for?: string;
 }
 
-@Component({selector: 'tc-description', template: '<ng-content></ng-content>', changeDetection: ChangeDetectionStrategy.Eager, standalone: false})
-class TcDescriptionStubComponent {}
+@Component({ selector: 'tc-description', template: '<ng-content></ng-content>', changeDetection: ChangeDetectionStrategy.Eager, standalone: false })
+class TcDescriptionStubComponent {
+}
 
 function makeTaskAssignment(overrides: Partial<TaskAssignment> = {}): TaskAssignment {
-  return {
-    id: 1,
-    task: {
-      id: 1,
-      taskType: TaskType.Simple,
-      docLink: null
-    },
-    ...overrides
-  } as TaskAssignment;
+    return {
+        id: 1,
+        task: {
+            id: 1,
+            taskType: TaskType.Simple,
+            docLink: null
+        },
+        ...overrides
+    } as TaskAssignment;
 }
 
 describe('ViewSimpleTaskComponent', () => {
-  let component: ViewSimpleTaskComponent;
-  let fixture: ComponentFixture<ViewSimpleTaskComponent>;
+    let component: ViewSimpleTaskComponent;
+    let fixture: ComponentFixture<ViewSimpleTaskComponent>;
 
-  async function configureAndCreate(options?: {
-    selectedTask?: TaskAssignment;
-  }) {
-    await TestBed.configureTestingModule({
-      declarations: [
-        ViewSimpleTaskComponent,
-        TcLabelStubComponent,
-        TcDescriptionStubComponent
-      ],
-      imports: [ReactiveFormsModule, TranslateModule.forRoot()]
-    })
-    .compileComponents();
-
-    fixture = TestBed.createComponent(ViewSimpleTaskComponent);
-    component = fixture.componentInstance;
-    component.form = new FormGroup({
-      completed: new FormControl(false)
-    });
-    component.selectedTask = options?.selectedTask ?? makeTaskAssignment();
-    fixture.detectChanges();
-  }
-
-  afterEach(() => TestBed.resetTestingModule());
-
-  it('should create', async () => {
-    await configureAndCreate();
-
-    expect(component).toBeTruthy();
-  });
-
-  describe('template tc components', () => {
-    beforeEach(async () => configureAndCreate());
-
-    it('should render the migrated tc-label, checkbox, and tc-description', () => {
-      const label = fixture.debugElement.query(By.directive(TcLabelStubComponent));
-      const description = fixture.debugElement.query(By.directive(TcDescriptionStubComponent));
-      const checkbox = fixture.nativeElement.querySelector('input#completed') as HTMLInputElement;
-
-      expect(label.componentInstance.for).toBe('completed');
-      expect(description).toBeTruthy();
-      expect(checkbox).toBeTruthy();
-      expect(checkbox.type).toBe('checkbox');
-    });
-  });
-
-  describe('ngOnInit', () => {
-    it('should set hasDoc to false when there is no doc link', async () => {
-      await configureAndCreate();
-
-      expect(component.hasDoc).toBeFalse();
-    });
-
-    it('should set hasDoc to true when the task has a doc link', async () => {
-      await configureAndCreate({
-        selectedTask: makeTaskAssignment({
-          task: {
-            ...makeTaskAssignment().task,
-            docLink: 'https://example.com/task.pdf'
-          } as any
+    async function configureAndCreate(options?: {
+        selectedTask?: TaskAssignment;
+    }) {
+        await TestBed.configureTestingModule({
+            declarations: [
+                ViewSimpleTaskComponent,
+                TcLabelStubComponent,
+                TcDescriptionStubComponent
+            ],
+            imports: [ReactiveFormsModule, TranslateModule.forRoot()]
         })
-      });
+            .compileComponents();
 
-      expect(component.hasDoc).toBeTrue();
+        fixture = TestBed.createComponent(ViewSimpleTaskComponent);
+        component = fixture.componentInstance;
+        component.form = new FormGroup({
+            completed: new FormControl(false)
+        });
+        component.selectedTask = options?.selectedTask ?? makeTaskAssignment();
+        fixture.detectChanges();
+    }
+
+    afterEach(() => TestBed.resetTestingModule());
+
+    it('should create', async () => {
+        await configureAndCreate();
+
+        expect(component).toBeTruthy();
     });
-  });
+
+    describe('template tc components', () => {
+        beforeEach(async () => configureAndCreate());
+
+        it('should render the migrated tc-label, checkbox, and tc-description', () => {
+            const label = fixture.debugElement.query(By.directive(TcLabelStubComponent));
+            const description = fixture.debugElement.query(By.directive(TcDescriptionStubComponent));
+            const checkbox = fixture.nativeElement.querySelector('input#completed') as HTMLInputElement;
+
+            expect(label.componentInstance.for).toBe('completed');
+            expect(description).toBeTruthy();
+            expect(checkbox).toBeTruthy();
+            expect(checkbox.type).toBe('checkbox');
+        });
+    });
+
+    describe('ngOnInit', () => {
+        it('should set hasDoc to false when there is no doc link', async () => {
+            await configureAndCreate();
+
+            expect(component.hasDoc).toBe(false);
+        });
+
+        it('should set hasDoc to true when the task has a doc link', async () => {
+            await configureAndCreate({
+                selectedTask: makeTaskAssignment({
+                    task: {
+                        ...makeTaskAssignment().task,
+                        docLink: 'https://example.com/task.pdf'
+                    } as any
+                })
+            });
+
+            expect(component.hasDoc).toBe(true);
+        });
+    });
 });

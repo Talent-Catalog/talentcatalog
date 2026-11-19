@@ -23,40 +23,41 @@ import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/commo
 import {AutosaveStatusComponent} from "../../../../util/autosave-status/autosave-status.component";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {MockCandidateVisaJobCheck} from "../../../../../MockData/MockCandidateVisaCheck";
+import {expect} from 'vitest';
 
 describe('JobFamilyAusComponent', () => {
-  let component: JobFamilyAusComponent;
-  let fixture: ComponentFixture<JobFamilyAusComponent>;
-  let fb: UntypedFormBuilder;
+    let component: JobFamilyAusComponent;
+    let fixture: ComponentFixture<JobFamilyAusComponent>;
+    let fb: UntypedFormBuilder;
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      declarations: [JobFamilyAusComponent,AutosaveStatusComponent],
-      imports: [ReactiveFormsModule,NgSelectModule],
-      providers: [UntypedFormBuilder, provideHttpClient(withXhr(), withInterceptorsFromDi()), provideHttpClientTesting()]
-    }).compileComponents();
-  });
+    beforeEach(async () => {
+        await TestBed.configureTestingModule({
+            declarations: [JobFamilyAusComponent, AutosaveStatusComponent],
+            imports: [ReactiveFormsModule, NgSelectModule],
+            providers: [UntypedFormBuilder, provideHttpClient(withXhr(), withInterceptorsFromDi()), provideHttpClientTesting()]
+        }).compileComponents();
+    });
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(JobFamilyAusComponent);
-    component = fixture.componentInstance;
-    fb = TestBed.inject(UntypedFormBuilder);
-    component.visaCheckRecord = MockCandidateVisaJobCheck[0];
-    fixture.detectChanges();
-  });
+    beforeEach(() => {
+        fixture = TestBed.createComponent(JobFamilyAusComponent);
+        component = fixture.componentInstance;
+        fb = TestBed.inject(UntypedFormBuilder);
+        component.visaCheckRecord = MockCandidateVisaJobCheck[0];
+        fixture.detectChanges();
+    });
 
-  it('should create the component', () => {
-    expect(component).toBeTruthy();
-  });
+    it('should create the component', () => {
+        expect(component).toBeTruthy();
+    });
 
-  it('should have a form with visaJobFamilyAus control', () => {
-    expect(component.form.contains('visaJobFamilyAus')).toBeTrue();
-  });
+    it('should have a form with visaJobFamilyAus control', () => {
+        expect(component.form.contains('visaJobFamilyAus')).toBe(true);
+    });
 
-  it('should update form value when input changes', () => {
-    const testValue: YesNo = YesNo.Yes;
-    component.selectedJobCheck = { id: 1, familyAus: testValue } as CandidateVisaJobCheck;
-    component.ngOnInit();
-    expect(component.form.get('visaJobFamilyAus')?.value).toEqual(testValue);
-  });
+    it('should update form value when input changes', () => {
+        const testValue: YesNo = YesNo.Yes;
+        component.selectedJobCheck = { id: 1, familyAus: testValue } as CandidateVisaJobCheck;
+        component.ngOnInit();
+        expect(component.form.get('visaJobFamilyAus')?.value).toEqual(testValue);
+    });
 });

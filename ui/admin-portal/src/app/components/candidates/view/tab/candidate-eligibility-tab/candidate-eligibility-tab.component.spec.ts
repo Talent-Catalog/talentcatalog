@@ -17,49 +17,49 @@ import {CandidateEligibilityTabComponent} from "./candidate-eligibility-tab.comp
 import {ComponentFixture, TestBed} from "@angular/core/testing";
 import {MockCandidate} from "../../../../../MockData/MockCandidate";
 import {Candidate} from "../../../../../model/candidate";
+import {expect} from 'vitest';
 
 describe('CandidateEligibilityTabComponent', () => {
-  let component: CandidateEligibilityTabComponent;
-  let fixture: ComponentFixture<CandidateEligibilityTabComponent>;
+    let component: CandidateEligibilityTabComponent;
+    let fixture: ComponentFixture<CandidateEligibilityTabComponent>;
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      declarations: [ CandidateEligibilityTabComponent ]
-    })
-    .compileComponents();
-  });
-
-  beforeEach(() => {
-    fixture = TestBed.createComponent(CandidateEligibilityTabComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
-
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
-
-  it('should set initial state correctly', () => {
-    expect(component.error).toBeNull(); // Ensure error is null initially
-    expect(component.loading).toBeUndefined(); // Ensure loading is undefined initially
-    expect(component.result).toBeUndefined(); // Ensure result is undefined initially
-  });
-
-  it('should fetch candidate data when candidate changes', () => {
-    const candidate: Candidate = new MockCandidate();
-    component.candidate = candidate;
-
-    component.ngOnChanges({
-      candidate:
-        {
-          previousValue: null,
-          currentValue: candidate,
-          firstChange: true,
-          isFirstChange: () => true
-        }
+    beforeEach(async () => {
+        await TestBed.configureTestingModule({
+            declarations: [CandidateEligibilityTabComponent]
+        })
+            .compileComponents();
     });
-    expect(component.error).toBeNull(); // Ensure error is null after candidate data changes
-    expect(component.loading).toBe(false); // Ensure loading is false after candidate data changes
-    expect(component.result).toEqual(candidate); // Ensure candidate data is set correctly
-  });
+
+    beforeEach(() => {
+        fixture = TestBed.createComponent(CandidateEligibilityTabComponent);
+        component = fixture.componentInstance;
+        fixture.detectChanges();
+    });
+
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
+
+    it('should set initial state correctly', () => {
+        expect(component.error).toBeNull(); // Ensure error is null initially
+        expect(component.loading).toBeUndefined(); // Ensure loading is undefined initially
+        expect(component.result).toBeUndefined(); // Ensure result is undefined initially
+    });
+
+    it('should fetch candidate data when candidate changes', () => {
+        const candidate: Candidate = new MockCandidate();
+        component.candidate = candidate;
+
+        component.ngOnChanges({
+            candidate: {
+                previousValue: null,
+                currentValue: candidate,
+                firstChange: true,
+                isFirstChange: () => true
+            }
+        });
+        expect(component.error).toBeNull(); // Ensure error is null after candidate data changes
+        expect(component.loading).toBe(false); // Ensure loading is false after candidate data changes
+        expect(component.result).toEqual(candidate); // Ensure candidate data is set correctly
+    });
 });

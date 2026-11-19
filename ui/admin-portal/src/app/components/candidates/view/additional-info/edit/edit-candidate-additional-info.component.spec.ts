@@ -13,6 +13,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
+
+import type {MockedObject} from "vitest";
 import {EditCandidateAdditionalInfoComponent} from "./edit-candidate-additional-info.component";
 import {ComponentFixture, TestBed} from "@angular/core/testing";
 import {CandidateService} from "../../../../../services/candidate.service";
@@ -24,70 +26,74 @@ import {Candidate} from "../../../../../model/candidate";
 import {MockCandidate} from "../../../../../MockData/MockCandidate";
 import {of, throwError} from "rxjs";
 import {CreatedByComponent} from "../../../../util/user/created-by/created-by.component";
+import {expect, vi} from 'vitest';
 
 describe('EditCandidateAdditionalInfoComponent', () => {
-  let component: EditCandidateAdditionalInfoComponent;
-  let fixture: ComponentFixture<EditCandidateAdditionalInfoComponent>;
-  let candidateServiceSpy: jasmine.SpyObj<CandidateService>;
-  let fb: UntypedFormBuilder;
+    let component: EditCandidateAdditionalInfoComponent;
+    let fixture: ComponentFixture<EditCandidateAdditionalInfoComponent>;
+    let candidateServiceSpy: MockedObject<CandidateService>;
+    let fb: UntypedFormBuilder;
 
-  const mockCandidate: Candidate = new MockCandidate();
+    const mockCandidate: Candidate = new MockCandidate();
 
-  beforeEach(async () => {
-    const candidateServiceSpyObj = jasmine.createSpyObj('CandidateService', ['get', 'updateInfo']);
+    beforeEach(async () => {
+        const candidateServiceSpyObj = {
+            get: vi.fn().mockName("CandidateService.get"),
+            updateInfo: vi.fn().mockName("CandidateService.updateInfo")
+        };
 
-    await TestBed.configureTestingModule({
-      declarations: [EditCandidateAdditionalInfoComponent, CreatedByComponent],
-      imports: [FormsModule, ReactiveFormsModule],
-      providers: [
-        UntypedFormBuilder,
-        NgbActiveModal,
-        { provide: CandidateService, useValue: candidateServiceSpyObj },
-        provideHttpClient(withXhr(), withInterceptorsFromDi()),
-        provideHttpClientTesting()
-      ]
-    }).compileComponents();
-    fb = TestBed.inject(UntypedFormBuilder); // Inject FormBuilder
-    candidateServiceSpy = TestBed.inject(CandidateService) as jasmine.SpyObj<CandidateService>;
-    candidateServiceSpy.get.and.returnValue(of());
-  });
-
-  beforeEach(() => {
-    fixture = TestBed.createComponent(EditCandidateAdditionalInfoComponent);
-    component = fixture.componentInstance;
-    component.candidateId = 1; // Set a mock candidate id
-
-    // Initialize the form
-    component.candidateForm = fb.group({
-      additionalInfo: [mockCandidate.additionalInfo]
+        await TestBed.configureTestingModule({
+            declarations: [EditCandidateAdditionalInfoComponent, CreatedByComponent],
+            imports: [FormsModule, ReactiveFormsModule],
+            providers: [
+                UntypedFormBuilder,
+                NgbActiveModal,
+                { provide: CandidateService, useValue: candidateServiceSpyObj },
+                provideHttpClient(withXhr(), withInterceptorsFromDi()),
+                provideHttpClientTesting()
+            ]
+        }).compileComponents();
+        fb = TestBed.inject(UntypedFormBuilder); // Inject FormBuilder
+        candidateServiceSpy = TestBed.inject(CandidateService) as MockedObject<CandidateService>;
+        candidateServiceSpy.get.mockReturnValue(of());
     });
-    fixture.detectChanges();
-  });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+    beforeEach(() => {
+        fixture = TestBed.createComponent(EditCandidateAdditionalInfoComponent);
+        component = fixture.componentInstance;
+        component.candidateId = 1; // Set a mock candidate id
 
-  it('should initialize with loading state', () => {
-    expect(component.loading).toBeTrue();
-  });
+        // Initialize the form
+        component.candidateForm = fb.group({
+            additionalInfo: [mockCandidate.additionalInfo]
+        });
+        fixture.detectChanges();
+    });
 
-  it('should fetch candidate data on init', () => {
-    const candidate: Candidate = mockCandidate;
-    candidateServiceSpy.get.and.returnValue(of(candidate));
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
 
-    fixture.detectChanges();
+    it('should initialize with loading state', () => {
+        expect(component.loading).toBe(true);
+    });
 
-    expect(component.candidateForm.value.additionalInfo).toEqual(candidate.additionalInfo);
-    expect(candidateServiceSpy.get).toHaveBeenCalledWith(component.candidateId);
-  });
+    it('should fetch candidate data on init', () => {
+        const candidate: Candidate = mockCandidate;
+        candidateServiceSpy.get.mockReturnValue(of(candidate));
 
-  it('should handle error when fetching candidate data', () => {
-    const errorMessage = 'Error fetching candidate data';
-    candidateServiceSpy.updateInfo.and.returnValue(throwError(errorMessage)); // Use returnValue instead of and.throwError
+        fixture.detectChanges();
 
-    component.onSave();
+        expect(component.candidateForm.value.additionalInfo).toEqual(candidate.additionalInfo);
+        expect(candidateServiceSpy.get).toHaveBeenCalledWith(component.candidateId);
+    });
 
-    expect(component.error).toEqual(errorMessage);
-  });
+    it('should handle error when fetching candidate data', () => {
+        const errorMessage = 'Error fetching candidate data';
+        candidateServiceSpy.updateInfo.mockReturnValue(throwError(errorMessage)); // Use returnValue instead of and.throwError
+
+        component.onSave();
+
+        expect(component.error).toEqual(errorMessage);
+    });
 });

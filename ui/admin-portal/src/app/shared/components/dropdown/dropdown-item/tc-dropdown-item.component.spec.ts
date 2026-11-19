@@ -1,6 +1,7 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 
 import {TcDropdownItemComponent} from './tc-dropdown-item.component';
+import {expect} from 'vitest';
 
 describe('TcDropdownItemComponent', () => {
   let component: TcDropdownItemComponent;

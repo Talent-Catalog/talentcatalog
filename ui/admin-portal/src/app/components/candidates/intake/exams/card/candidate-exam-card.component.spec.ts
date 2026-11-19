@@ -13,6 +13,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
+
+import type {MockedObject} from "vitest";
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {CandidateExamCardComponent} from './candidate-exam-card.component';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
@@ -25,99 +27,102 @@ import {provideHttpClientTesting} from "@angular/common/http/testing";
 import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {AutosaveStatusComponent} from "../../../../util/autosave-status/autosave-status.component";
+import {expect, vi} from 'vitest';
 
 describe('CandidateExamCardComponent', () => {
-  let component: CandidateExamCardComponent;
-  let fixture: ComponentFixture<CandidateExamCardComponent>;
-  let candidateExamService: jasmine.SpyObj<CandidateExamService>;
+    let component: CandidateExamCardComponent;
+    let fixture: ComponentFixture<CandidateExamCardComponent>;
+    let candidateExamService: MockedObject<CandidateExamService>;
 
-  beforeEach(async () => {
-    const candidateExamServiceSpy = jasmine.createSpyObj('CandidateExamService', ['delete']);
+    beforeEach(async () => {
+        const candidateExamServiceSpy = {
+            delete: vi.fn().mockName("CandidateExamService.delete")
+        };
 
-    await TestBed.configureTestingModule({
-      imports: [NgSelectModule,FormsModule,ReactiveFormsModule],
-      declarations: [CandidateExamCardComponent,AutosaveStatusComponent],
-      providers: [
-        { provide: CandidateExamService, useValue: candidateExamServiceSpy },
-        provideHttpClient(withXhr(), withInterceptorsFromDi()),
-        provideHttpClientTesting()
-      ],
-      schemas: [NO_ERRORS_SCHEMA]
-    })
-    .compileComponents();
+        await TestBed.configureTestingModule({
+            imports: [NgSelectModule, FormsModule, ReactiveFormsModule],
+            declarations: [CandidateExamCardComponent, AutosaveStatusComponent],
+            providers: [
+                { provide: CandidateExamService, useValue: candidateExamServiceSpy },
+                provideHttpClient(withXhr(), withInterceptorsFromDi()),
+                provideHttpClientTesting()
+            ],
+            schemas: [NO_ERRORS_SCHEMA]
+        })
+            .compileComponents();
 
-    candidateExamService = TestBed.inject(CandidateExamService) as jasmine.SpyObj<CandidateExamService>;
-  });
-
-  beforeEach(() => {
-    fixture = TestBed.createComponent(CandidateExamCardComponent);
-    component = fixture.componentInstance;
-    component.candidateIntakeData = {
-      candidateExams: [
-        { id: 1, exam: Exam.TOEFL, score: '7.5', year: 2020, notes: 'Some notes', otherExam: null }
-      ]
-    };
-    component.myRecordIndex = 0;
-
-    fixture.detectChanges();
-  });
-
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
-
-  it('should initialize form with candidate exam data', () => {
-    expect(component.form.value).toEqual({
-      examId: 1,
-      examType: 'TOEFL',
-      otherExam: null,
-      examScore: '7.5',
-      examYear: 2020,
-      examNotes: 'Some notes'
+        candidateExamService = TestBed.inject(CandidateExamService) as MockedObject<CandidateExamService>;
     });
-  });
 
-  it('should display other exam input when exam type is "Other"', () => {
-    component.form.controls['examType'].setValue('Other');
-    fixture.detectChanges();
+    beforeEach(() => {
+        fixture = TestBed.createComponent(CandidateExamCardComponent);
+        component = fixture.componentInstance;
+        component.candidateIntakeData = {
+            candidateExams: [
+                { id: 1, exam: Exam.TOEFL, score: '7.5', year: 2020, notes: 'Some notes', otherExam: null }
+            ]
+        };
+        component.myRecordIndex = 0;
 
-    const otherExamInput = fixture.debugElement.query(By.css('input[id^="otherExam"]'));
-    expect(otherExamInput).toBeTruthy();
-  });
+        fixture.detectChanges();
+    });
 
-  it('should not display other exam input when exam type is not "Other"', () => {
-    component.form.controls['examType'].setValue('IELTS');
-    fixture.detectChanges();
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
 
-    const otherExamInput = fixture.debugElement.query(By.css('input[id^="otherExam"]'));
-    expect(otherExamInput).toBeFalsy();
-  });
+    it('should initialize form with candidate exam data', () => {
+        expect(component.form.value).toEqual({
+            examId: 1,
+            examType: 'TOEFL',
+            otherExam: null,
+            examScore: '7.5',
+            examYear: 2020,
+            examNotes: 'Some notes'
+        });
+    });
 
-  it('should call delete service and emit delete event on delete', () => {
-    spyOn(component.delete, 'emit');
-    candidateExamService.delete.and.returnValue(of());
+    it('should display other exam input when exam type is "Other"', () => {
+        component.form.controls['examType'].setValue('Other');
+        fixture.detectChanges();
 
-    component.doDelete();
+        const otherExamInput = fixture.debugElement.query(By.css('input[id^="otherExam"]'));
+        expect(otherExamInput).toBeTruthy();
+    });
 
-    expect(candidateExamService.delete).toHaveBeenCalledWith(1);
-    expect(component.delete.emit).toHaveBeenCalled();
-  });
+    it('should not display other exam input when exam type is not "Other"', () => {
+        component.form.controls['examType'].setValue('IELTS');
+        fixture.detectChanges();
 
-  it('should handle delete service error', () => {
-    candidateExamService.delete.and.returnValue(throwError('error'));
+        const otherExamInput = fixture.debugElement.query(By.css('input[id^="otherExam"]'));
+        expect(otherExamInput).toBeFalsy();
+    });
 
-    component.doDelete();
+    it('should call delete service and emit delete event on delete', () => {
+        vi.spyOn(component.delete, 'emit').mockReturnValue(undefined);
+        candidateExamService.delete.mockReturnValue(of());
 
-    expect(component.error).toBe('error');
-  });
+        component.doDelete();
 
-  it('should display exam details when an exam is selected', () => {
-    const examScoreInput = fixture.debugElement.query(By.css('app-ielts-score-validation'));
-    const examYearSelect = fixture.debugElement.query(By.css('ng-select[id^="examYear"]'));
-    const examNotesTextarea = fixture.debugElement.query(By.css('textarea[id^="examNotes"]'));
+        expect(candidateExamService.delete).toHaveBeenCalledWith(1);
+        expect(component.delete.emit).toHaveBeenCalled();
+    });
 
-    expect(examScoreInput).toBeTruthy();
-    expect(examYearSelect).toBeTruthy();
-    expect(examNotesTextarea).toBeTruthy();
-  });
+    it('should handle delete service error', () => {
+        candidateExamService.delete.mockReturnValue(throwError('error'));
+
+        component.doDelete();
+
+        expect(component.error).toBe('error');
+    });
+
+    it('should display exam details when an exam is selected', () => {
+        const examScoreInput = fixture.debugElement.query(By.css('app-ielts-score-validation'));
+        const examYearSelect = fixture.debugElement.query(By.css('ng-select[id^="examYear"]'));
+        const examNotesTextarea = fixture.debugElement.query(By.css('textarea[id^="examNotes"]'));
+
+        expect(examScoreInput).toBeTruthy();
+        expect(examYearSelect).toBeTruthy();
+        expect(examNotesTextarea).toBeTruthy();
+    });
 });

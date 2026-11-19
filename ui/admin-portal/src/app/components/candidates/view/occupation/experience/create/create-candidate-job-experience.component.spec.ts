@@ -13,6 +13,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
+
+import type {MockedObject} from "vitest";
 import {provideHttpClientTesting} from "@angular/common/http/testing";
 import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {FormsModule, ReactiveFormsModule, UntypedFormBuilder} from "@angular/forms";
@@ -24,157 +26,163 @@ import {ComponentFixture, TestBed} from "@angular/core/testing";
 import {CreateCandidateJobExperienceComponent} from "./create-candidate-job-experience.component";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {CountryService} from "../../../../../../services/country.service";
-import {
-  CandidateJobExperienceService
-} from "../../../../../../services/candidate-job-experience.service";
+import {CandidateJobExperienceService} from "../../../../../../services/candidate-job-experience.service";
 import {NO_ERRORS_SCHEMA} from "@angular/core";
 import {of, throwError} from "rxjs";
+import {expect, vi} from 'vitest';
 
 describe('CreateCandidateJobExperienceComponent', () => {
-  let component: CreateCandidateJobExperienceComponent;
-  let fixture: ComponentFixture<CreateCandidateJobExperienceComponent>;
-  let mockCandidateJobExperienceService: jasmine.SpyObj<CandidateJobExperienceService>;
-  let mockCountryService: jasmine.SpyObj<CountryService>;
-  let mockActiveModal: jasmine.SpyObj<NgbActiveModal>;
+    let component: CreateCandidateJobExperienceComponent;
+    let fixture: ComponentFixture<CreateCandidateJobExperienceComponent>;
+    let mockCandidateJobExperienceService: MockedObject<CandidateJobExperienceService>;
+    let mockCountryService: MockedObject<CountryService>;
+    let mockActiveModal: MockedObject<NgbActiveModal>;
 
-  beforeEach(async () => {
-    const candidateJobExperienceServiceSpy = jasmine.createSpyObj('CandidateJobExperienceService', ['create']);
-    const countryServiceSpy = jasmine.createSpyObj('CountryService', ['listCountries']);
-    const activeModalSpy = jasmine.createSpyObj('NgbActiveModal', ['close', 'dismiss']);
+    beforeEach(async () => {
+        const candidateJobExperienceServiceSpy = {
+            create: vi.fn().mockName("CandidateJobExperienceService.create")
+        };
+        const countryServiceSpy = {
+            listCountries: vi.fn().mockName("CountryService.listCountries")
+        };
+        const activeModalSpy = {
+            close: vi.fn().mockName("NgbActiveModal.close"),
+            dismiss: vi.fn().mockName("NgbActiveModal.dismiss")
+        };
 
-    await TestBed.configureTestingModule({
-      declarations: [CreateCandidateJobExperienceComponent],
-      imports: [FormsModule,ReactiveFormsModule, NgSelectModule,NgxWigModule],
-      providers: [
-        UntypedFormBuilder,
-        { provide: CandidateJobExperienceService, useValue: candidateJobExperienceServiceSpy },
-        { provide: CountryService, useValue: countryServiceSpy },
-        { provide: NgbActiveModal, useValue: activeModalSpy },
-        provideHttpClient(withXhr(), withInterceptorsFromDi()),
-        provideHttpClientTesting()
-      ],
-      schemas: [NO_ERRORS_SCHEMA]
-    }).compileComponents();
+        await TestBed.configureTestingModule({
+            declarations: [CreateCandidateJobExperienceComponent],
+            imports: [FormsModule, ReactiveFormsModule, NgSelectModule, NgxWigModule],
+            providers: [
+                UntypedFormBuilder,
+                { provide: CandidateJobExperienceService, useValue: candidateJobExperienceServiceSpy },
+                { provide: CountryService, useValue: countryServiceSpy },
+                { provide: NgbActiveModal, useValue: activeModalSpy },
+                provideHttpClient(withXhr(), withInterceptorsFromDi()),
+                provideHttpClientTesting()
+            ],
+            schemas: [NO_ERRORS_SCHEMA]
+        }).compileComponents();
 
-    mockCandidateJobExperienceService = TestBed.inject(CandidateJobExperienceService) as jasmine.SpyObj<CandidateJobExperienceService>;
-    mockCountryService = TestBed.inject(CountryService) as jasmine.SpyObj<CountryService>;
-    mockActiveModal = TestBed.inject(NgbActiveModal) as jasmine.SpyObj<NgbActiveModal>;
+        mockCandidateJobExperienceService = TestBed.inject(CandidateJobExperienceService) as MockedObject<CandidateJobExperienceService>;
+        mockCountryService = TestBed.inject(CountryService) as MockedObject<CountryService>;
+        mockActiveModal = TestBed.inject(NgbActiveModal) as MockedObject<NgbActiveModal>;
 
-    fixture = TestBed.createComponent(CreateCandidateJobExperienceComponent);
-    component = fixture.componentInstance;
-  });
-
-  beforeEach(() => {
-    mockCountryService.listCountries.and.returnValue(of([]));
-
-    component.candidateOccupationId = 1;
-    component.candidateId = 1;
-    component.ngOnInit();
-    fixture.detectChanges();
-  });
-
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
-
-  it('should initialize form with default values', () => {
-    expect(component.candidateForm.value).toEqual({
-      countryId: null,
-      companyName: null,
-      candidateOccupationId: component.candidateOccupationId,
-      role: null,
-      startDate: null,
-      endDate: null,
-      fullTime: null,
-      paid: null,
-      description: null
-    });
-  });
-
-  it('should load countries on init', () => {
-    expect(mockCountryService.listCountries).toHaveBeenCalled();
-    expect(component.countries.length).toBe(0); // Since we returned an empty array in the mock
-  });
-
-  it('should save candidate job experience on valid form submission', () => {
-    const mockJobExperience = { id: 1, role: 'Developer' } as any;
-    mockCandidateJobExperienceService.create.and.returnValue(of(mockJobExperience));
-
-    component.candidateForm.patchValue({
-      countryId: 1,
-      companyName: 'Company',
-      role: 'Developer',
-      startDate: new Date(),
-      endDate: new Date(),
-      fullTime: true,
-      paid: true,
-      description: 'Job description'
+        fixture = TestBed.createComponent(CreateCandidateJobExperienceComponent);
+        component = fixture.componentInstance;
     });
 
-    component.onSave();
+    beforeEach(() => {
+        mockCountryService.listCountries.mockReturnValue(of([]));
 
-    expect(component.saving).toBe(false);
-    expect(mockCandidateJobExperienceService.create).toHaveBeenCalledWith(component.candidateId, component.candidateForm.value);
-    expect(mockActiveModal.close).toHaveBeenCalledWith(mockJobExperience);
-  });
-
-  it('should handle save error', () => {
-    const error = 'Error saving job experience';
-    mockCandidateJobExperienceService.create.and.returnValue(throwError(error));
-
-    component.candidateForm.patchValue({
-      countryId: 1,
-      companyName: 'Company',
-      role: 'Developer',
-      startDate: new Date(),
-      endDate: new Date(),
-      fullTime: true,
-      paid: true,
-      description: 'Job description'
+        component.candidateOccupationId = 1;
+        component.candidateId = 1;
+        component.ngOnInit();
+        fixture.detectChanges();
     });
 
-    component.onSave();
-
-    expect(component.saving).toBe(false);
-    expect(component.error).toBe(error);
-    expect(mockActiveModal.close).not.toHaveBeenCalled();
-  });
-
-  describe('fullTime / paid select boundary', () => {
-
-    function selectOption(id: string, displayText: string) {
-      const select: NgSelectComponent = fixture.debugElement
-        .query(By.css(`ng-select#${id}`)).componentInstance;
-      select.select(select.itemsList.items.find(item => item.label === displayText));
-      fixture.detectChanges();
-    }
-
-    it('should produce actual booleans (not strings) from the Contract Type and Paid selects', () => {
-      selectOption('fullTime', 'Part Time');
-      selectOption('paid', 'Voluntary');
-      expect(component.candidateForm.value.fullTime).toBe(false);
-      expect(component.candidateForm.value.paid).toBe(false);
-
-      selectOption('fullTime', 'Full Time');
-      selectOption('paid', 'Paid');
-      expect(component.candidateForm.value.fullTime).toBe(true);
-      expect(component.candidateForm.value.paid).toBe(true);
+    it('should create', () => {
+        expect(component).toBeTruthy();
     });
 
-    it('should send actual booleans to the service on save', () => {
-      mockCandidateJobExperienceService.create.and.returnValue(of({id: 1} as any));
-      component.candidateForm.patchValue({
-        countryId: 1, companyName: 'Company', role: 'Developer',
-        startDate: new Date(), endDate: new Date(), description: 'Job description'
-      });
-      selectOption('fullTime', 'Part Time');
-      selectOption('paid', 'Paid');
-
-      component.onSave();
-
-      const sent = mockCandidateJobExperienceService.create.calls.mostRecent().args[1];
-      expect(sent.fullTime).toBe(false);
-      expect(sent.paid).toBe(true);
+    it('should initialize form with default values', () => {
+        expect(component.candidateForm.value).toEqual({
+            countryId: null,
+            companyName: null,
+            candidateOccupationId: component.candidateOccupationId,
+            role: null,
+            startDate: null,
+            endDate: null,
+            fullTime: null,
+            paid: null,
+            description: null
+        });
     });
-  });
+
+    it('should load countries on init', () => {
+        expect(mockCountryService.listCountries).toHaveBeenCalled();
+        expect(component.countries.length).toBe(0); // Since we returned an empty array in the mock
+    });
+
+    it('should save candidate job experience on valid form submission', () => {
+        const mockJobExperience = { id: 1, role: 'Developer' } as any;
+        mockCandidateJobExperienceService.create.mockReturnValue(of(mockJobExperience));
+
+        component.candidateForm.patchValue({
+            countryId: 1,
+            companyName: 'Company',
+            role: 'Developer',
+            startDate: new Date(),
+            endDate: new Date(),
+            fullTime: true,
+            paid: true,
+            description: 'Job description'
+        });
+
+        component.onSave();
+
+        expect(component.saving).toBe(false);
+        expect(mockCandidateJobExperienceService.create).toHaveBeenCalledWith(component.candidateId, component.candidateForm.value);
+        expect(mockActiveModal.close).toHaveBeenCalledWith(mockJobExperience);
+    });
+
+    it('should handle save error', () => {
+        const error = 'Error saving job experience';
+        mockCandidateJobExperienceService.create.mockReturnValue(throwError(error));
+
+        component.candidateForm.patchValue({
+            countryId: 1,
+            companyName: 'Company',
+            role: 'Developer',
+            startDate: new Date(),
+            endDate: new Date(),
+            fullTime: true,
+            paid: true,
+            description: 'Job description'
+        });
+
+        component.onSave();
+
+        expect(component.saving).toBe(false);
+        expect(component.error).toBe(error);
+        expect(mockActiveModal.close).not.toHaveBeenCalled();
+    });
+
+    describe('fullTime / paid select boundary', () => {
+
+        function selectOption(id: string, displayText: string) {
+            const select: NgSelectComponent = fixture.debugElement
+                .query(By.css(`ng-select#${id}`)).componentInstance;
+            select.select(select.itemsList.items.find(item => item.label === displayText));
+            fixture.detectChanges();
+        }
+
+        it('should produce actual booleans (not strings) from the Contract Type and Paid selects', () => {
+            selectOption('fullTime', 'Part Time');
+            selectOption('paid', 'Voluntary');
+            expect(component.candidateForm.value.fullTime).toBe(false);
+            expect(component.candidateForm.value.paid).toBe(false);
+
+            selectOption('fullTime', 'Full Time');
+            selectOption('paid', 'Paid');
+            expect(component.candidateForm.value.fullTime).toBe(true);
+            expect(component.candidateForm.value.paid).toBe(true);
+        });
+
+        it('should send actual booleans to the service on save', () => {
+            mockCandidateJobExperienceService.create.mockReturnValue(of({ id: 1 } as any));
+            component.candidateForm.patchValue({
+                countryId: 1, companyName: 'Company', role: 'Developer',
+                startDate: new Date(), endDate: new Date(), description: 'Job description'
+            });
+            selectOption('fullTime', 'Part Time');
+            selectOption('paid', 'Paid');
+
+            component.onSave();
+
+            const sent = vi.mocked(mockCandidateJobExperienceService.create).mock.lastCall[1];
+            expect(sent.fullTime).toBe(false);
+            expect(sent.paid).toBe(true);
+        });
+    });
 });

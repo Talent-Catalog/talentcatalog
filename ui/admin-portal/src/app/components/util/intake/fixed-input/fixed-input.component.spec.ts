@@ -17,58 +17,59 @@
 import {FixedInputComponent} from "./fixed-input.component";
 import {ComponentFixture, TestBed} from "@angular/core/testing";
 import {By} from "@angular/platform-browser";
+import {expect} from 'vitest';
 
 describe('FixedInputComponent', () => {
-  let component: FixedInputComponent;
-  let fixture: ComponentFixture<FixedInputComponent>;
+    let component: FixedInputComponent;
+    let fixture: ComponentFixture<FixedInputComponent>;
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      declarations: [ FixedInputComponent ]
-    })
-    .compileComponents();
-  });
+    beforeEach(async () => {
+        await TestBed.configureTestingModule({
+            declarations: [FixedInputComponent]
+        })
+            .compileComponents();
+    });
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(FixedInputComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
+    beforeEach(() => {
+        fixture = TestBed.createComponent(FixedInputComponent);
+        component = fixture.componentInstance;
+        fixture.detectChanges();
+    });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
 
-  it('should display the question', () => {
-    component.question = 'What is your name?';
-    fixture.detectChanges();
+    it('should display the question', () => {
+        component.question = 'What is your name?';
+        fixture.detectChanges();
 
-    const questionElement = fixture.debugElement.query(By.css('.question')).nativeElement;
-    expect(questionElement.textContent).toContain('What is your name?:');
-  });
+        const questionElement = fixture.debugElement.query(By.css('.question')).nativeElement;
+        expect(questionElement.textContent).toContain('What is your name?:');
+    });
 
-  it('should display the answer', () => {
-    component.answer = 'John Doe';
-    fixture.detectChanges();
+    it('should display the answer', () => {
+        component.answer = 'John Doe';
+        fixture.detectChanges();
 
-    const answerElement = fixture.debugElement.query(By.css('.answer')).nativeElement;
-    expect(answerElement.textContent).toBe('John Doe');
-  });
+        const answerElement = fixture.debugElement.query(By.css('.answer')).nativeElement;
+        expect(answerElement.textContent).toBe('John Doe');
+    });
 
-  it('should convert answer to string', () => {
-    component.answer = 12345;
-    fixture.detectChanges();
+    it('should convert answer to string', () => {
+        component.answer = 12345;
+        fixture.detectChanges();
 
-    const answerElement = fixture.debugElement.query(By.css('.answer')).nativeElement;
-    expect(answerElement.textContent).toBe('12345');
-  });
+        const answerElement = fixture.debugElement.query(By.css('.answer')).nativeElement;
+        expect(answerElement.textContent).toBe('12345');
+    });
 
-  it('should not display answer when it is null', () => {
-    component.answer = null;
-    fixture.detectChanges();
+    it('should not display answer when it is null', () => {
+        component.answer = null;
+        fixture.detectChanges();
 
-    const answerElement = fixture.debugElement.query(By.css('.answer'));
-    expect(answerElement).toBeNull();
-  });
+        const answerElement = fixture.debugElement.query(By.css('.answer'));
+        expect(answerElement).toBeNull();
+    });
 
 });

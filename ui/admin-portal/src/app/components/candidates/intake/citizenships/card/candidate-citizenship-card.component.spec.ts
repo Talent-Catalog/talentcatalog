@@ -13,6 +13,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
+
+import type {MockedObject} from "vitest";
 import {CandidateCitizenshipCardComponent} from "./candidate-citizenship-card.component";
 import {ComponentFixture, TestBed} from "@angular/core/testing";
 import {provideHttpClientTesting} from "@angular/common/http/testing";
@@ -25,56 +27,59 @@ import {CandidateCitizenshipService} from "../../../../../services/candidate-cit
 import {Country} from "../../../../../model/country";
 import {CandidateIntakeData, HasPassport} from "../../../../../model/candidate";
 import {of} from "rxjs";
+import {expect, vi} from 'vitest';
 
 describe('CandidateCitizenshipCardComponent', () => {
-  let component: CandidateCitizenshipCardComponent;
-  let fixture: ComponentFixture<CandidateCitizenshipCardComponent>;
-  let mockCitizenshipService: jasmine.SpyObj<CandidateCitizenshipService>;
+    let component: CandidateCitizenshipCardComponent;
+    let fixture: ComponentFixture<CandidateCitizenshipCardComponent>;
+    let mockCitizenshipService: MockedObject<CandidateCitizenshipService>;
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      declarations: [ CandidateCitizenshipCardComponent,AutosaveStatusComponent ],
-      imports: [NgSelectModule,FormsModule,ReactiveFormsModule],
-      providers: [
-        UntypedFormBuilder,
-        { provide: CandidateService},
-        { provide: CandidateCitizenshipService, useValue: jasmine.createSpyObj('CandidateCitizenshipService', ['delete']) },
-        provideHttpClient(withXhr(), withInterceptorsFromDi()),
-        provideHttpClientTesting()
-      ]
-    })
-    .compileComponents();
+    beforeEach(async () => {
+        await TestBed.configureTestingModule({
+            declarations: [CandidateCitizenshipCardComponent, AutosaveStatusComponent],
+            imports: [NgSelectModule, FormsModule, ReactiveFormsModule],
+            providers: [
+                UntypedFormBuilder,
+                { provide: CandidateService },
+                { provide: CandidateCitizenshipService, useValue: {
+                        delete: vi.fn().mockName("CandidateCitizenshipService.delete")
+                    } },
+                provideHttpClient(withXhr(), withInterceptorsFromDi()),
+                provideHttpClientTesting()
+            ]
+        })
+            .compileComponents();
 
-    mockCitizenshipService = TestBed.inject(CandidateCitizenshipService) as jasmine.SpyObj<CandidateCitizenshipService>;
-  });
+        mockCitizenshipService = TestBed.inject(CandidateCitizenshipService) as MockedObject<CandidateCitizenshipService>;
+    });
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(CandidateCitizenshipCardComponent);
-    component = fixture.componentInstance;
-    component.candidateIntakeData = {
-      candidateCitizenships: [
-        { id: 1, nationality: { name: 'Afghanistan' } as Country, hasPassport: HasPassport.ValidPassport, passportExp: '2025-12-31', notes: 'Valid passport' },
-        { id: 2, nationality: { name: 'Iran' } as Country, hasPassport: HasPassport.InvalidPassport, notes: 'No passport' }
-      ]
-    } as CandidateIntakeData;
-    component.myRecordIndex = 0; // Assuming the component is initialized with the first record
-    fixture.detectChanges();
-  });
+    beforeEach(() => {
+        fixture = TestBed.createComponent(CandidateCitizenshipCardComponent);
+        component = fixture.componentInstance;
+        component.candidateIntakeData = {
+            candidateCitizenships: [
+                { id: 1, nationality: { name: 'Afghanistan' } as Country, hasPassport: HasPassport.ValidPassport, passportExp: '2025-12-31', notes: 'Valid passport' },
+                { id: 2, nationality: { name: 'Iran' } as Country, hasPassport: HasPassport.InvalidPassport, notes: 'No passport' }
+            ]
+        } as CandidateIntakeData;
+        component.myRecordIndex = 0; // Assuming the component is initialized with the first record
+        fixture.detectChanges();
+    });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
 
-  it('should delete citizenship record and trigger deletion event', () => {
-    const deleteResponse = of(null);
-    mockCitizenshipService.delete.and.returnValue(deleteResponse);
+    it('should delete citizenship record and trigger deletion event', () => {
+        const deleteResponse = of(null);
+        mockCitizenshipService.delete.mockReturnValue(deleteResponse);
 
-    spyOn(component.delete, 'emit');
+        vi.spyOn(component.delete, 'emit').mockReturnValue(undefined);
 
-    component.doDelete();
+        component.doDelete();
 
-    expect(mockCitizenshipService.delete).toHaveBeenCalledWith(1); // Assuming the first record is being deleted
-    expect(component.delete.emit).toHaveBeenCalled();
-    expect(component.error).toBeFalsy();
-  });
+        expect(mockCitizenshipService.delete).toHaveBeenCalledWith(1); // Assuming the first record is being deleted
+        expect(component.delete.emit).toHaveBeenCalled();
+        expect(component.error).toBeFalsy();
+    });
 });

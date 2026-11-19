@@ -14,49 +14,49 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
+import type {MockedObject} from "vitest";
 import {AuthorizationService} from "./authorization.service";
 import {AuthenticationService} from "./authentication.service";
 import {TestBed} from "@angular/core/testing";
 
 
 describe('AuthorizationService', () => {
-  let service: AuthorizationService;
-  let authenticationServiceSpy: jasmine.SpyObj<AuthenticationService>;
+    let service: AuthorizationService;
+    let authenticationServiceSpy: MockedObject<AuthenticationService>;
 
-  beforeEach(() => {
-    authenticationServiceSpy = jasmine.createSpyObj<AuthenticationService>(
-      'AuthenticationService',
-      ['canViewChats']
-    );
+    beforeEach(() => {
+        authenticationServiceSpy = {
+            canViewChats: vi.fn().mockName("AuthenticationService.canViewChats")
+        } as unknown as MockedObject<AuthenticationService>;
 
-    TestBed.configureTestingModule({
-      providers: [
-        AuthorizationService,
-        {
-          provide: AuthenticationService,
-          useValue: authenticationServiceSpy
-        }
-      ]
+        TestBed.configureTestingModule({
+            providers: [
+                AuthorizationService,
+                {
+                    provide: AuthenticationService,
+                    useValue: authenticationServiceSpy
+                }
+            ]
+        });
+
+        service = TestBed.inject(AuthorizationService);
     });
 
-    service = TestBed.inject(AuthorizationService);
-  });
+    it('should be created', () => {
+        expect(service).toBeTruthy();
+    });
 
-  it('should be created', () => {
-    expect(service).toBeTruthy();
-  });
+    it('should return true when the authenticated user can view chats', () => {
+        authenticationServiceSpy.canViewChats.mockReturnValue(true);
 
-  it('should return true when the authenticated user can view chats', () => {
-    authenticationServiceSpy.canViewChats.and.returnValue(true);
+        expect(service.canViewChats()).toBe(true);
+        expect(authenticationServiceSpy.canViewChats).toHaveBeenCalled();
+    });
 
-    expect(service.canViewChats()).toBeTrue();
-    expect(authenticationServiceSpy.canViewChats).toHaveBeenCalled();
-  });
+    it('should return false when the authenticated user cannot view chats', () => {
+        authenticationServiceSpy.canViewChats.mockReturnValue(false);
 
-  it('should return false when the authenticated user cannot view chats', () => {
-    authenticationServiceSpy.canViewChats.and.returnValue(false);
-
-    expect(service.canViewChats()).toBeFalse();
-    expect(authenticationServiceSpy.canViewChats).toHaveBeenCalled();
-  });
+        expect(service.canViewChats()).toBe(false);
+        expect(authenticationServiceSpy.canViewChats).toHaveBeenCalled();
+    });
 });

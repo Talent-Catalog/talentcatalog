@@ -14,6 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
+import type {MockedObject} from "vitest";
 import {ViewPostComponent} from "./view-post.component";
 import {ComponentFixture, TestBed} from "@angular/core/testing";
 import {AddReactionRequest, ReactionService} from "../../../services/reaction.service";
@@ -28,131 +29,139 @@ import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/commo
 import {AuthenticationService} from "../../../services/authentication.service";
 import {MockUser} from "../../../MockData/MockUser";
 import {NgbTooltipModule} from "@ng-bootstrap/ng-bootstrap";
+import {expect, vi} from 'vitest';
 
 describe('ViewPostComponent', () => {
-  let component: ViewPostComponent;
-  let fixture: ComponentFixture<ViewPostComponent>;
-  let reactionServiceSpy: jasmine.SpyObj<ReactionService>;
-  let authenticationService: jasmine.SpyObj<AuthenticationService>;
+    let component: ViewPostComponent;
+    let fixture: ComponentFixture<ViewPostComponent>;
+    let reactionServiceSpy: MockedObject<ReactionService>;
+    let authenticationService: MockedObject<AuthenticationService>;
 
-  beforeEach(async () => {
-    const spy = jasmine.createSpyObj('ReactionService', ['addReaction', 'modifyReaction']);
-    const authSpy = jasmine.createSpyObj('AuthenticationService', ['getLoggedInUser']);
+    beforeEach(async () => {
+        const spy = {
+            addReaction: vi.fn().mockName("ReactionService.addReaction"),
+            modifyReaction: vi.fn().mockName("ReactionService.modifyReaction")
+        };
+        const authSpy = {
+            getLoggedInUser: vi.fn().mockName("AuthenticationService.getLoggedInUser")
+        };
 
-    await TestBed.configureTestingModule({
-      declarations: [ ViewPostComponent ],
-      imports: [NgbTooltipModule],
-      providers: [
-        { provide: ReactionService, useValue: spy },
-        { provide: AuthenticationService, useValue: authSpy },
-        provideHttpClient(withXhr(), withInterceptorsFromDi()),
-        provideHttpClientTesting()
-      ]
-    })
-    .compileComponents();
+        await TestBed.configureTestingModule({
+            declarations: [ViewPostComponent],
+            imports: [NgbTooltipModule],
+            providers: [
+                { provide: ReactionService, useValue: spy },
+                { provide: AuthenticationService, useValue: authSpy },
+                provideHttpClient(withXhr(), withInterceptorsFromDi()),
+                provideHttpClientTesting()
+            ]
+        })
+            .compileComponents();
 
-    reactionServiceSpy = TestBed.inject(ReactionService) as jasmine.SpyObj<ReactionService>;
-    authenticationService = TestBed.inject(AuthenticationService) as jasmine.SpyObj<AuthenticationService>;
-  });
-
-  beforeEach(() => {
-    fixture = TestBed.createComponent(ViewPostComponent);
-    component = fixture.componentInstance;
-    component.post = new MockChatPost();
-    authenticationService.getLoggedInUser.and.returnValue((new MockUser()));
-    fixture.detectChanges();
-  });
-
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
-
-  it('should toggle reaction picker visibility and set position on reaction button click', () => {
-    const event = { clientY: 300, clientX: 500 } as MouseEvent;
-    component.onClickReactionBtn(event);
-
-    // Calculate the expected position based on the provided client position
-    let expectedXPos = event.clientX - 370;
-    let expectedYPos = event.clientY;
-
-    // Adjust Y position based on the conditions in onClickReactionBtn method
-    if (event.clientY < 510 && window.innerHeight - event.clientY < 425) {
-      expectedYPos = event.clientY - 213;
-    } else if (window.innerHeight - event.clientY < 425 && event.clientY > 510) {
-      expectedYPos = event.clientY - 425;
-    }
-
-    expect(component.reactionPickerVisible).toBeTrue();
-    expect(component.reactionPickerXPos).toBe(expectedXPos);
-    expect(component.reactionPickerYPos).toBe(expectedYPos);
-
-    // Simulate another click to toggle off
-    component.onClickReactionBtn(event);
-    expect(component.reactionPickerVisible).toBeFalse();
-  });
-
-
-  it('should handle emoji selection and update reactions', () => {
-    const event = { emoji: { native: '😊' } };
-
-
-    reactionServiceSpy.addReaction.and.returnValue(of(MOCK_REACTIONS));
-
-    component.onSelectEmoji(event);
-
-    expect(component.reactionPickerVisible).toBeFalse();
-    expect(reactionServiceSpy.addReaction).toHaveBeenCalledWith(component.post.id, { emoji: '😊' } as AddReactionRequest);
-    expect(component.post.reactions.length).toBe(3);
-    expect(component.post.reactions[0].emoji).toBe('😊');
-  });
-
-  it('should update reaction when a reaction button is clicked', () => {
-    const reaction: Reaction = MOCK_REACTIONS[0];
-    reactionServiceSpy.modifyReaction.and.returnValue(of(MOCK_REACTIONS));
-    component.post = { id: 2 } as ChatPost;;
-
-    component.onSelectReaction(reaction);
-
-    expect(reactionServiceSpy.modifyReaction).toHaveBeenCalledWith(component.post.id, reaction.id);
-    expect(component.post.reactions.length).toBe(3);
-    expect(component.post.reactions[0].users.length).toBe(2);
-  });
-
-  it('should close reaction picker when current post changes', () => {
-    const newPost = { id: 2 } as ChatPost;
-    component.currentPost = newPost;
-    fixture.detectChanges();
-
-    component.ngOnChanges({
-      currentPost: {
-        currentValue: newPost,
-        previousValue: component.post,
-        firstChange: false,
-        isFirstChange: () => false
-      }
+        reactionServiceSpy = TestBed.inject(ReactionService) as MockedObject<ReactionService>;
+        authenticationService = TestBed.inject(AuthenticationService) as MockedObject<AuthenticationService>;
     });
 
-    expect(component.reactionPickerVisible).toBeFalse();
-    expect(component.isCurrentPost).toBeFalse();
-  });
+    beforeEach(() => {
+        fixture = TestBed.createComponent(ViewPostComponent);
+        component = fixture.componentInstance;
+        component.post = new MockChatPost();
+        authenticationService.getLoggedInUser.mockReturnValue((new MockUser()));
+        fixture.detectChanges();
+    });
+
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
+
+    it('should toggle reaction picker visibility and set position on reaction button click', () => {
+        const event = { clientY: 300, clientX: 500 } as MouseEvent;
+        component.onClickReactionBtn(event);
+
+        // Calculate the expected position based on the provided client position
+        let expectedXPos = event.clientX - 370;
+        let expectedYPos = event.clientY;
+
+        // Adjust Y position based on the conditions in onClickReactionBtn method
+        if (event.clientY < 510 && window.innerHeight - event.clientY < 425) {
+            expectedYPos = event.clientY - 213;
+        }
+        else if (window.innerHeight - event.clientY < 425 && event.clientY > 510) {
+            expectedYPos = event.clientY - 425;
+        }
+
+        expect(component.reactionPickerVisible).toBe(true);
+        expect(component.reactionPickerXPos).toBe(expectedXPos);
+        expect(component.reactionPickerYPos).toBe(expectedYPos);
+
+        // Simulate another click to toggle off
+        component.onClickReactionBtn(event);
+        expect(component.reactionPickerVisible).toBe(false);
+    });
 
 
-  it('should render post content as HTML or text based on isHtml function', () => {
-    component.post.content = '<p>This is <strong>HTML</strong> content.</p>';
-    fixture.detectChanges();
+    it('should handle emoji selection and update reactions', () => {
+        const event = { emoji: { native: '😊' } };
 
-    const content = fixture.debugElement.query(By.css('.message-text.html'));
-    expect(content).toBeTruthy();
 
-    component.post.content = 'This is plain text content.';
-    fixture.detectChanges();
+        reactionServiceSpy.addReaction.mockReturnValue(of(MOCK_REACTIONS));
 
-    const textContent = fixture.debugElement.query(By.css('.message-text.text'));
-    expect(textContent).toBeTruthy();
-  });
+        component.onSelectEmoji(event);
 
-  it('should return correct createdBy string', () => {
-    const createdByString = component.createdBy;
-    expect(createdByString).toBe('John Doe (MP)');
-  });
+        expect(component.reactionPickerVisible).toBe(false);
+        expect(reactionServiceSpy.addReaction).toHaveBeenCalledWith(component.post.id, { emoji: '😊' } as AddReactionRequest);
+        expect(component.post.reactions.length).toBe(3);
+        expect(component.post.reactions[0].emoji).toBe('😊');
+    });
+
+    it('should update reaction when a reaction button is clicked', () => {
+        const reaction: Reaction = MOCK_REACTIONS[0];
+        reactionServiceSpy.modifyReaction.mockReturnValue(of(MOCK_REACTIONS));
+        component.post = { id: 2 } as ChatPost;
+        ;
+
+        component.onSelectReaction(reaction);
+
+        expect(reactionServiceSpy.modifyReaction).toHaveBeenCalledWith(component.post.id, reaction.id);
+        expect(component.post.reactions.length).toBe(3);
+        expect(component.post.reactions[0].users.length).toBe(2);
+    });
+
+    it('should close reaction picker when current post changes', () => {
+        const newPost = { id: 2 } as ChatPost;
+        component.currentPost = newPost;
+        fixture.detectChanges();
+
+        component.ngOnChanges({
+            currentPost: {
+                currentValue: newPost,
+                previousValue: component.post,
+                firstChange: false,
+                isFirstChange: () => false
+            }
+        });
+
+        expect(component.reactionPickerVisible).toBe(false);
+        expect(component.isCurrentPost).toBe(false);
+    });
+
+
+    it('should render post content as HTML or text based on isHtml function', () => {
+        component.post.content = '<p>This is <strong>HTML</strong> content.</p>';
+        fixture.detectChanges();
+
+        const content = fixture.debugElement.query(By.css('.message-text.html'));
+        expect(content).toBeTruthy();
+
+        component.post.content = 'This is plain text content.';
+        fixture.detectChanges();
+
+        const textContent = fixture.debugElement.query(By.css('.message-text.text'));
+        expect(textContent).toBeTruthy();
+    });
+
+    it('should return correct createdBy string', () => {
+        const createdByString = component.createdBy;
+        expect(createdByString).toBe('John Doe (MP)');
+    });
 });

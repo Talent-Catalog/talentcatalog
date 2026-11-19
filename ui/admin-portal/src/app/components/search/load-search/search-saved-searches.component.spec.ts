@@ -14,7 +14,8 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {ComponentFixture, TestBed} from '@angular/core/testing';
+import type {MockedObject} from "vitest";
+import {ComponentFixture, TestBed, fakeAsync, tick} from '@angular/core/testing';
 import {ReactiveFormsModule} from '@angular/forms';
 import {of} from 'rxjs';
 import {SearchSavedSearchesComponent} from './search-saved-searches.component';
@@ -27,91 +28,103 @@ import {provideHttpClientTesting} from "@angular/common/http/testing";
 import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {RouterTestingModule} from "@angular/router/testing";
 import {CandidateSourceComponent} from "../../util/candidate-source/candidate-source.component";
+import {expect, vi} from 'vitest';
 
-const mockSearchResult:SearchResults<SavedSearch> = {
-  number : 1,
-  size : 10,
-  totalElements : 1,
-  totalPages : 1,
-  first : true,
-  last : true,
-  content : [new MockSavedSearch()] // Use the MockCandidateSource as content
-}
+const mockSearchResult: SearchResults<SavedSearch> = {
+    number: 1,
+    size: 10,
+    totalElements: 1,
+    totalPages: 1,
+    first: true,
+    last: true,
+    content: [new MockSavedSearch()] // Use the MockCandidateSource as content
+};
 
 describe('SearchSavedSearchesComponent', () => {
-  let component: SearchSavedSearchesComponent;
-  let fixture: ComponentFixture<SearchSavedSearchesComponent>;
-  let savedSearchServiceSpy: jasmine.SpyObj<SavedSearchService>;
-  let activeModalSpy: jasmine.SpyObj<NgbActiveModal>;
+    let component: SearchSavedSearchesComponent;
+    let fixture: ComponentFixture<SearchSavedSearchesComponent>;
+    let savedSearchServiceSpy: MockedObject<SavedSearchService>;
+    let activeModalSpy: MockedObject<NgbActiveModal>;
 
-  beforeEach(async () => {
-    const searchServiceSpy = jasmine.createSpyObj('SavedSearchService', ['searchPaged']);
-    const modalSpy = jasmine.createSpyObj('NgbActiveModal', ['close', 'dismiss']);
+    beforeEach(async () => {
+        const searchServiceSpy = {
+            searchPaged: vi.fn().mockName("SavedSearchService.searchPaged")
+        };
+        const modalSpy = {
+            close: vi.fn().mockName("NgbActiveModal.close"),
+            dismiss: vi.fn().mockName("NgbActiveModal.dismiss")
+        };
 
-    await TestBed.configureTestingModule({
-      declarations: [SearchSavedSearchesComponent,CandidateSourceComponent],
-      imports: [ReactiveFormsModule,RouterTestingModule,NgbPaginationModule],
-      providers: [
-        { provide: SavedSearchService, useValue: searchServiceSpy },
-        { provide: NgbActiveModal, useValue: modalSpy },
-        provideHttpClient(withXhr(), withInterceptorsFromDi()),
-        provideHttpClientTesting()
-      ]
-    }).compileComponents();
+        await TestBed.configureTestingModule({
+            declarations: [SearchSavedSearchesComponent, CandidateSourceComponent],
+            imports: [ReactiveFormsModule, RouterTestingModule, NgbPaginationModule],
+            providers: [
+                { provide: SavedSearchService, useValue: searchServiceSpy },
+                { provide: NgbActiveModal, useValue: modalSpy },
+                provideHttpClient(withXhr(), withInterceptorsFromDi()),
+                provideHttpClientTesting()
+            ]
+        }).compileComponents();
 
-    fixture = TestBed.createComponent(SearchSavedSearchesComponent);
-    component = fixture.componentInstance;
-    savedSearchServiceSpy = TestBed.inject(SavedSearchService) as jasmine.SpyObj<SavedSearchService>;
-    activeModalSpy = TestBed.inject(NgbActiveModal) as jasmine.SpyObj<NgbActiveModal>;
+        fixture = TestBed.createComponent(SearchSavedSearchesComponent);
+        component = fixture.componentInstance;
+        savedSearchServiceSpy = TestBed.inject(SavedSearchService) as MockedObject<SavedSearchService>;
+        activeModalSpy = TestBed.inject(NgbActiveModal) as MockedObject<NgbActiveModal>;
 
-    savedSearchServiceSpy.searchPaged.and.returnValue(of(mockSearchResult));
-  });
+        savedSearchServiceSpy.searchPaged.mockReturnValue(of(mockSearchResult));
+    });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
 
-  it('should initialize the form and perform search on init', () => {
-    fixture.detectChanges();
-    expect(component.searchForm).toBeTruthy();
-    expect(component.searchForm.controls['keyword']).toBeTruthy();
-    expect(savedSearchServiceSpy.searchPaged).toHaveBeenCalled();
-  });
+    it('should initialize the form and perform search on init', () => {
+        fixture.detectChanges();
+        expect(component.searchForm).toBeTruthy();
+        expect(component.searchForm.controls['keyword']).toBeTruthy();
+        expect(savedSearchServiceSpy.searchPaged).toHaveBeenCalled();
+    });
 
-  it('should perform search when form value changes', (done: DoneFn) => {
-    fixture.detectChanges();
-    component.searchForm.controls['keyword'].setValue('Test');
+    it('should perform search when form value changes', fakeAsync(() => {
+        fixture.detectChanges();
+        savedSearchServiceSpy.searchPaged.mockClear();
 
-    setTimeout(() => {
-      expect(savedSearchServiceSpy.searchPaged).toHaveBeenCalled();
-      done();
-    }, 500);
-  });
+        component.searchForm.controls['keyword'].setValue('Test');
 
-  it('should not display loading indicator when search is done', () => {
-    fixture.detectChanges();
-    component.search();
-    expect(component.loading).toBeFalsy();
-  });
+        tick(399);
+        expect(savedSearchServiceSpy.searchPaged).not.toHaveBeenCalled();
 
-  it('should update results after search is completed', () => {
-    fixture.detectChanges();
-    component.search();
-    expect(component.loading).toBeFalse();
-    expect(component.results.content.length).toBeGreaterThan(0);
-  });
+        tick(1);
+        expect(savedSearchServiceSpy.searchPaged).toHaveBeenCalledTimes(1);
+        expect(savedSearchServiceSpy.searchPaged).toHaveBeenCalledWith(
+            expect.objectContaining({keyword: 'Test'})
+        );
+    }));
 
-  it('should close the modal with selected search on selectSearch()', () => {
-    fixture.detectChanges();
-    const selectedSearch: SavedSearch = { id: 1, name: 'Search 1' } as SavedSearch;
-    component.selectSearch(selectedSearch);
-    expect(component.selectedSearch).toBe(selectedSearch);
-    expect(activeModalSpy.close).toHaveBeenCalledWith(selectedSearch);
-  });
+    it('should not display loading indicator when search is done', () => {
+        fixture.detectChanges();
+        component.search();
+        expect(component.loading).toBeFalsy();
+    });
 
-  it('should dismiss the modal on dismiss()', () => {
-    fixture.detectChanges();
-    component.dismiss();
-    expect(activeModalSpy.dismiss).toHaveBeenCalledWith(false);
-  });
+    it('should update results after search is completed', () => {
+        fixture.detectChanges();
+        component.search();
+        expect(component.loading).toBe(false);
+        expect(component.results.content.length).toBeGreaterThan(0);
+    });
+
+    it('should close the modal with selected search on selectSearch()', () => {
+        fixture.detectChanges();
+        const selectedSearch: SavedSearch = { id: 1, name: 'Search 1' } as SavedSearch;
+        component.selectSearch(selectedSearch);
+        expect(component.selectedSearch).toBe(selectedSearch);
+        expect(activeModalSpy.close).toHaveBeenCalledWith(selectedSearch);
+    });
+
+    it('should dismiss the modal on dismiss()', () => {
+        fixture.detectChanges();
+        component.dismiss();
+        expect(activeModalSpy.dismiss).toHaveBeenCalledWith(false);
+    });
 });

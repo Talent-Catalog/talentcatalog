@@ -16,39 +16,40 @@
 
 
 import {saveBlob} from "./file";
+import {expect, vi} from 'vitest';
 
 describe('saveBlob', () => {
-  let blob: Blob;
-  let filename: string;
+    let blob: Blob;
+    let filename: string;
 
-  beforeEach(() => {
-    blob = new Blob(['Hello, world!'], { type: 'text/plain' });
-    filename = 'hello.txt';
-  });
+    beforeEach(() => {
+        blob = new Blob(['Hello, world!'], { type: 'text/plain' });
+        filename = 'hello.txt';
+    });
 
-  it('should call msSaveBlob if navigator.msSaveBlob is available', () => {
-    const msSaveBlobMock = jasmine.createSpy('msSaveBlob').and.returnValue(true);
-    (navigator as any).msSaveBlob = msSaveBlobMock;
+    it('should call msSaveBlob if navigator.msSaveBlob is available', () => {
+        const msSaveBlobMock = vi.fn().mockName('msSaveBlob').mockReturnValue(true);
+        (navigator as any).msSaveBlob = msSaveBlobMock;
 
-    saveBlob(blob, filename);
+        saveBlob(blob, filename);
 
-    expect(msSaveBlobMock).toHaveBeenCalledWith(blob, filename);
-  });
+        expect(msSaveBlobMock).toHaveBeenCalledWith(blob, filename);
+    });
 
-  it('should create a link element and set attributes correctly if msSaveBlob is not available', () => {
-    const link = document.createElement('a');
-    const createElementSpy = spyOn(document, 'createElement').and.returnValue(link);
-    const removeChildSpy = spyOn(document.body, 'removeChild').and.callThrough();
+    it('should create a link element and set attributes correctly if msSaveBlob is not available', () => {
+        const link = document.createElement('a');
+        const createElementSpy = vi.spyOn(document, 'createElement').mockReturnValue(link);
+        const removeChildSpy = vi.spyOn(document.body, 'removeChild');
 
-    (navigator as any).msSaveBlob = undefined; // Ensure msSaveBlob is not available
+        (navigator as any).msSaveBlob = undefined; // Ensure msSaveBlob is not available
 
-    saveBlob(blob, filename);
+        saveBlob(blob, filename);
 
-    expect(createElementSpy).toHaveBeenCalledWith('a');
-    expect(link.href.startsWith('blob:')).toBeTrue();
-    expect(link.download).toBe(filename);
-    expect(link.style.visibility).toBe('hidden');
-    expect(removeChildSpy).toHaveBeenCalledWith(link);
-  });
+        expect(createElementSpy).toHaveBeenCalledWith('a');
+        expect(link.href.startsWith('blob:')).toBe(true);
+        expect(link.download).toBe(filename);
+        expect(link.style.visibility).toBe('hidden');
+        expect(removeChildSpy).toHaveBeenCalledWith(link);
+    });
 
 });

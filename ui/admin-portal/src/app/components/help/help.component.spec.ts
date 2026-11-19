@@ -14,6 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
+import type {MockedObject} from "vitest";
 import {HelpComponent} from "./help.component";
 import {ComponentFixture, TestBed} from "@angular/core/testing";
 import {HelpLinkService} from "../../services/help-link.service";
@@ -22,90 +23,93 @@ import {By} from "@angular/platform-browser";
 import {MOCK_HELP_LINK} from "../../MockData/MockHelpLink";
 import {NgbTooltip, NgbTooltipModule} from "@ng-bootstrap/ng-bootstrap";
 import {SearchHelpLinkRequest} from "../../model/help-link";
+import {expect, vi} from 'vitest';
 
 describe('HelpComponent', () => {
-  let component: HelpComponent;
-  let fixture: ComponentFixture<HelpComponent>;
-  let helpLinkService: jasmine.SpyObj<HelpLinkService>;
+    let component: HelpComponent;
+    let fixture: ComponentFixture<HelpComponent>;
+    let helpLinkService: MockedObject<HelpLinkService>;
 
-  beforeEach(async () => {
-    const helpLinkServiceSpy = jasmine.createSpyObj('HelpLinkService', ['fetch']);
+    beforeEach(async () => {
+        const helpLinkServiceSpy = {
+            fetch: vi.fn().mockName("HelpLinkService.fetch")
+        };
 
-    await TestBed.configureTestingModule({
-      declarations: [HelpComponent],
-      imports: [NgbTooltipModule],
-      providers: [
-        { provide: HelpLinkService, useValue: helpLinkServiceSpy }
-      ]
-    })
-    .compileComponents();
+        await TestBed.configureTestingModule({
+            declarations: [HelpComponent],
+            imports: [NgbTooltipModule],
+            providers: [
+                { provide: HelpLinkService, useValue: helpLinkServiceSpy }
+            ]
+        })
+            .compileComponents();
 
-    helpLinkService = TestBed.inject(HelpLinkService) as jasmine.SpyObj<HelpLinkService>;
-  });
+        helpLinkService = TestBed.inject(HelpLinkService) as MockedObject<HelpLinkService>;
+    });
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(HelpComponent);
-    component = fixture.componentInstance;
-    helpLinkService.fetch.and.returnValue(of([MOCK_HELP_LINK]));
+    beforeEach(() => {
+        fixture = TestBed.createComponent(HelpComponent);
+        component = fixture.componentInstance;
+        helpLinkService.fetch.mockReturnValue(of([MOCK_HELP_LINK]));
 
-    const mockRequest: SearchHelpLinkRequest = {
-      countryId: 1,
-      caseOppId: 123,
-      caseStage: 'Stage1',
-      focus: 'Focus1',
-      jobOppId: 456,
-      jobStage: 'Stage2',
-      nextStepName: 'NextStep1',
-      userId: 789
-    };
+        const mockRequest: SearchHelpLinkRequest = {
+            countryId: 1,
+            caseOppId: 123,
+            caseStage: 'Stage1',
+            focus: 'Focus1',
+            jobOppId: 456,
+            jobStage: 'Stage2',
+            nextStepName: 'NextStep1',
+            userId: 789
+        };
 
-    component.request = mockRequest; // Assign mock data to request input
-    fixture.detectChanges();
-  });
+        component.request = mockRequest; // Assign mock data to request input
+        fixture.detectChanges();
+    });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
 
-  it('should fetch help links on button click', (() => {
-    const tooltipDebugElement = fixture.debugElement.query(By.directive(NgbTooltip));
-    const tooltipDirective = tooltipDebugElement.injector.get(NgbTooltip);
+    it('should fetch help links on button click', (() => {
+        const tooltipDebugElement = fixture.debugElement.query(By.directive(NgbTooltip));
+        const tooltipDirective = tooltipDebugElement.injector.get(NgbTooltip);
 
-    tooltipDirective.shown.emit();
-    fixture.detectChanges();
+        tooltipDirective.shown.emit();
+        fixture.detectChanges();
 
-    expect(component.helpLinks).toEqual([MOCK_HELP_LINK]);
-    expect(component.loading).toBeFalse();
-    expect(component.error).toBeNull();
-  }));
+        expect(component.helpLinks).toEqual([MOCK_HELP_LINK]);
+        expect(component.loading).toBe(false);
+        expect(component.error).toBeNull();
+    }));
 
-  it('should display error if fetching help links fails', (() => {
-    const errorMessage = 'Failed to fetch help links';
-    helpLinkService.fetch.and.returnValue(throwError(errorMessage));
+    it('should display error if fetching help links fails', (() => {
+        const errorMessage = 'Failed to fetch help links';
+        helpLinkService.fetch.mockReturnValue(throwError(errorMessage));
 
-    const tooltipDebugElement = fixture.debugElement.query(By.directive(NgbTooltip));
-    const tooltipDirective = tooltipDebugElement.injector.get(NgbTooltip);
+        const tooltipDebugElement = fixture.debugElement.query(By.directive(NgbTooltip));
+        const tooltipDirective = tooltipDebugElement.injector.get(NgbTooltip);
 
-    tooltipDirective.shown.emit();
-    fixture.detectChanges();
+        tooltipDirective.shown.emit();
+        fixture.detectChanges();
 
-    expect(component.helpLinks).toBeUndefined();
-    expect(component.loading).toBeFalse();
-    expect(component.error).toBe(errorMessage);
-  }));
+        expect(component.helpLinks).toBeUndefined();
+        expect(component.loading).toBe(false);
+        expect(component.error).toBe(errorMessage);
+    }));
 
-  it('should display help links in tooltip content', (() => {
+    it('should display help links in tooltip content', (() => {
 
-    component.helpLinks = [MOCK_HELP_LINK];
-    fixture.detectChanges();
+        component.helpLinks = [MOCK_HELP_LINK];
+        fixture.detectChanges();
 
-    const button = fixture.debugElement.query(By.css('.help-tip-button')).nativeElement;
-    button.click(); // Trigger click to open tooltip
+        const button = fixture.debugElement.query(By.css('.help-tip-button')).nativeElement;
+        button.click(); // Trigger click to open tooltip
 
-    fixture.detectChanges();
+        fixture.detectChanges();
 
-    const helpTipContent = document.querySelector('.help-tips');
-    expect(helpTipContent.textContent).toContain('Example Help Link (USA)');
+        const helpTipContent = document.querySelector('.help-tips');
+        expect(helpTipContent.textContent).toContain('Example Help Link (USA)');
 
-  }));
+    }));
 });

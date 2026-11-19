@@ -22,28 +22,29 @@ import {NgbActiveModal, NgbModalModule} from "@ng-bootstrap/ng-bootstrap";
 import {ReactiveFormsModule, UntypedFormBuilder} from "@angular/forms";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {CUSTOM_ELEMENTS_SCHEMA} from "@angular/core";
+import {expect} from 'vitest';
 
 describe('CreateCandidateExamComponent', () => {
-  let component: CreateCandidateExamComponent;
-  let fixture: ComponentFixture<CreateCandidateExamComponent>;
+    let component: CreateCandidateExamComponent;
+    let fixture: ComponentFixture<CreateCandidateExamComponent>;
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      declarations: [ CreateCandidateExamComponent ],
-      imports: [NgbModalModule,ReactiveFormsModule,NgSelectModule],
-      providers: [NgbActiveModal,UntypedFormBuilder, provideHttpClient(withXhr(), withInterceptorsFromDi()), provideHttpClientTesting()],
-      schemas: [CUSTOM_ELEMENTS_SCHEMA]
-    })
-    .compileComponents();
-  });
+    beforeEach(async () => {
+        await TestBed.configureTestingModule({
+            declarations: [CreateCandidateExamComponent],
+            imports: [NgbModalModule, ReactiveFormsModule, NgSelectModule],
+            providers: [NgbActiveModal, UntypedFormBuilder, provideHttpClient(withXhr(), withInterceptorsFromDi()), provideHttpClientTesting()],
+            schemas: [CUSTOM_ELEMENTS_SCHEMA]
+        })
+            .compileComponents();
+    });
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(CreateCandidateExamComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
+    beforeEach(() => {
+        fixture = TestBed.createComponent(CreateCandidateExamComponent);
+        component = fixture.componentInstance;
+        fixture.detectChanges();
+    });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
 });

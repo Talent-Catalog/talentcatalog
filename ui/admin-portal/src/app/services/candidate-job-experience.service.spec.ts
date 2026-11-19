@@ -21,6 +21,7 @@ import {TestBed} from "@angular/core/testing";
 import {CandidateJobExperience} from "../model/candidate-job-experience";
 import {environment} from "../../environments/environment";
 import {SearchResults} from "../model/search-results";
+import {expect} from 'vitest';
 
 describe('CandidateJobExperienceService', () => {
   let service: CandidateJobExperienceService;

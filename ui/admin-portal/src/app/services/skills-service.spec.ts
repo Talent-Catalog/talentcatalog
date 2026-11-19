@@ -4,6 +4,7 @@ import {provideHttpClient, withInterceptorsFromDi, withXhr} from '@angular/commo
 
 import {SkillsService, ExtractSkillsRequest} from './skills.service';
 import {SkillName} from '../model/skill';
+import {expect} from 'vitest';
 
 describe('SkillsService', () => {
   let service: SkillsService;

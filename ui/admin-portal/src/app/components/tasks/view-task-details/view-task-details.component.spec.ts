@@ -18,48 +18,49 @@ import {ComponentFixture, TestBed} from "@angular/core/testing";
 import {MockCandidate} from "../../../MockData/MockCandidate";
 import {UploadType} from "../../../model/task";
 import {UpdatedByComponent} from "../../util/user/updated-by/updated-by.component";
+import {expect} from 'vitest';
 
 describe('ViewTaskDetailsComponent', () => {
-  let component: ViewTaskDetailsComponent;
-  let fixture: ComponentFixture<ViewTaskDetailsComponent>;
+    let component: ViewTaskDetailsComponent;
+    let fixture: ComponentFixture<ViewTaskDetailsComponent>;
 
-  const mockCandidate = new MockCandidate();
-  const mockTasks = mockCandidate.taskAssignments.slice(0, 3).map(assignment => assignment.task);
+    const mockCandidate = new MockCandidate();
+    const mockTasks = mockCandidate.taskAssignments.slice(0, 3).map(assignment => assignment.task);
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      declarations: [ ViewTaskDetailsComponent,UpdatedByComponent ]
-    })
-    .compileComponents();
-  });
+    beforeEach(async () => {
+        await TestBed.configureTestingModule({
+            declarations: [ViewTaskDetailsComponent, UpdatedByComponent]
+        })
+            .compileComponents();
+    });
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(ViewTaskDetailsComponent);
-    component = fixture.componentInstance;
-    component.task = mockTasks[0];
-    fixture.detectChanges();
-  });
+    beforeEach(() => {
+        fixture = TestBed.createComponent(ViewTaskDetailsComponent);
+        component = fixture.componentInstance;
+        component.task = mockTasks[0];
+        fixture.detectChanges();
+    });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
 
-  it('should display task details correctly', () => {
-    const compiled = fixture.nativeElement;
-    expect(compiled.querySelector('strong').textContent).toContain(mockTasks[0].displayName);
-    expect(compiled.querySelector('span').textContent).toContain(mockTasks[0].taskType);
-    expect(compiled.querySelector('.font-italic').textContent).toContain(mockTasks[0].description);
-  });
+    it('should display task details correctly', () => {
+        const compiled = fixture.nativeElement;
+        expect(compiled.querySelector('strong').textContent).toContain(mockTasks[0].displayName);
+        expect(compiled.querySelector('span').textContent).toContain(mockTasks[0].taskType);
+        expect(compiled.querySelector('.font-italic').textContent).toContain(mockTasks[0].description);
+    });
 
-  it('should set uploadTypeString on ngOnInit', () => {
-    expect(component.uploadTypeString).toBe('cv');
-  });
+    it('should set uploadTypeString on ngOnInit', () => {
+        expect(component.uploadTypeString).toBe('cv');
+    });
 
-  it('should update uploadTypeString on ngOnChanges', () => {
-    const newTask = { ...mockTasks[0], uploadType: UploadType.degree };
-    component.task = newTask;
-    component.ngOnChanges({});
-    expect(component.uploadTypeString).toBe('degree');
-  });
+    it('should update uploadTypeString on ngOnChanges', () => {
+        const newTask = { ...mockTasks[0], uploadType: UploadType.degree };
+        component.task = newTask;
+        component.ngOnChanges({});
+        expect(component.uploadTypeString).toBe('degree');
+    });
 });
 

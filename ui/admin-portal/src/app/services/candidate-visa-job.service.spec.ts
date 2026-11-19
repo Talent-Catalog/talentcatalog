@@ -21,73 +21,74 @@ import {CandidateVisaJobService, CreateCandidateVisaJobRequest} from './candidat
 import {environment} from '../../environments/environment';
 import {CandidateVisaJobCheck} from '../model/candidate';
 import {MockJob} from "../MockData/MockJob";
+import {expect} from 'vitest';
 
 describe('CandidateVisaJobService', () => {
-  let service: CandidateVisaJobService;
-  let httpMock: HttpTestingController;
+    let service: CandidateVisaJobService;
+    let httpMock: HttpTestingController;
 
-  beforeEach(() => {
-    TestBed.configureTestingModule({
-      providers: [CandidateVisaJobService, provideHttpClient(withXhr(), withInterceptorsFromDi()), provideHttpClientTesting()]
+    beforeEach(() => {
+        TestBed.configureTestingModule({
+            providers: [CandidateVisaJobService, provideHttpClient(withXhr(), withInterceptorsFromDi()), provideHttpClientTesting()]
+        });
+
+        service = TestBed.inject(CandidateVisaJobService);
+        httpMock = TestBed.inject(HttpTestingController);
     });
 
-    service = TestBed.inject(CandidateVisaJobService);
-    httpMock = TestBed.inject(HttpTestingController);
-  });
-
-  afterEach(() => {
-    httpMock.verify();
-  });
-
-  it('should be created', () => {
-    expect(service).toBeTruthy();
-  });
-
-  describe('get', () => {
-    it('should return a CandidateVisaJobCheck object when called', () => {
-      const mockJobCheck: CandidateVisaJobCheck = {
-        id: 1,
-        jobOpp: MockJob,
-      };
-
-      service.get(1).subscribe((jobCheck: CandidateVisaJobCheck) => {
-        expect(jobCheck).toEqual(mockJobCheck);
-      });
-
-      const req = httpMock.expectOne(`${environment.apiUrl}/candidate-visa-job/1`);
-      expect(req.request.method).toBe('GET');
-      req.flush(mockJobCheck);
+    afterEach(() => {
+        httpMock.verify();
     });
-  });
 
-  describe('create', () => {
-    it('should return a CandidateVisaJobCheck object when created successfully', () => {
-      const mockJobCheck: CandidateVisaJobCheck = {
-        id: 1,
-        jobOpp: MockJob,
-      };
-      const requestPayload: CreateCandidateVisaJobRequest = { jobOppId: 456 };
-
-      service.create(1, requestPayload).subscribe((jobCheck: CandidateVisaJobCheck) => {
-        expect(jobCheck).toEqual(mockJobCheck);
-      });
-
-      const req = httpMock.expectOne(`${environment.apiUrl}/candidate-visa-job/1`);
-      expect(req.request.method).toBe('POST');
-      expect(req.request.body).toEqual(requestPayload);
-      req.flush(mockJobCheck);
+    it('should be created', () => {
+        expect(service).toBeTruthy();
     });
-  });
 
-  describe('delete', () => {
-    it('should return true when delete is successful', () => {
-      service.delete(1).subscribe((response: boolean) => {
-        expect(response).toBeTrue();
-      });
+    describe('get', () => {
+        it('should return a CandidateVisaJobCheck object when called', () => {
+            const mockJobCheck: CandidateVisaJobCheck = {
+                id: 1,
+                jobOpp: MockJob,
+            };
 
-      const req = httpMock.expectOne(`${environment.apiUrl}/candidate-visa-job/1`);
-      expect(req.request.method).toBe('DELETE');
-      req.flush(true);
+            service.get(1).subscribe((jobCheck: CandidateVisaJobCheck) => {
+                expect(jobCheck).toEqual(mockJobCheck);
+            });
+
+            const req = httpMock.expectOne(`${environment.apiUrl}/candidate-visa-job/1`);
+            expect(req.request.method).toBe('GET');
+            req.flush(mockJobCheck);
+        });
     });
-  });
+
+    describe('create', () => {
+        it('should return a CandidateVisaJobCheck object when created successfully', () => {
+            const mockJobCheck: CandidateVisaJobCheck = {
+                id: 1,
+                jobOpp: MockJob,
+            };
+            const requestPayload: CreateCandidateVisaJobRequest = { jobOppId: 456 };
+
+            service.create(1, requestPayload).subscribe((jobCheck: CandidateVisaJobCheck) => {
+                expect(jobCheck).toEqual(mockJobCheck);
+            });
+
+            const req = httpMock.expectOne(`${environment.apiUrl}/candidate-visa-job/1`);
+            expect(req.request.method).toBe('POST');
+            expect(req.request.body).toEqual(requestPayload);
+            req.flush(mockJobCheck);
+        });
+    });
+
+    describe('delete', () => {
+        it('should return true when delete is successful', () => {
+            service.delete(1).subscribe((response: boolean) => {
+                expect(response).toBe(true);
+            });
+
+            const req = httpMock.expectOne(`${environment.apiUrl}/candidate-visa-job/1`);
+            expect(req.request.method).toBe('DELETE');
+            req.flush(true);
+        });
+    });
 });

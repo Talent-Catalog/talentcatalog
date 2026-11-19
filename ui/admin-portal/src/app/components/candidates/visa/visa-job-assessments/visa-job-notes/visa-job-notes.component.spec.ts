@@ -22,41 +22,42 @@ import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/commo
 import {AutosaveStatusComponent} from "../../../../util/autosave-status/autosave-status.component";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {MockCandidateVisaJobCheck} from "../../../../../MockData/MockCandidateVisaCheck";
+import {expect} from 'vitest';
 
 describe('VisaJobNotesComponent', () => {
-  let component: VisaJobNotesComponent;
-  let fixture: ComponentFixture<VisaJobNotesComponent>;
+    let component: VisaJobNotesComponent;
+    let fixture: ComponentFixture<VisaJobNotesComponent>;
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      declarations: [VisaJobNotesComponent,AutosaveStatusComponent],
-      imports: [ReactiveFormsModule,NgSelectModule],
-      providers: [UntypedFormBuilder, provideHttpClient(withXhr(), withInterceptorsFromDi()), provideHttpClientTesting()] // Provide the FormBuilder
-    }).compileComponents();
-  });
+    beforeEach(async () => {
+        await TestBed.configureTestingModule({
+            declarations: [VisaJobNotesComponent, AutosaveStatusComponent],
+            imports: [ReactiveFormsModule, NgSelectModule],
+            providers: [UntypedFormBuilder, provideHttpClient(withXhr(), withInterceptorsFromDi()), provideHttpClientTesting()] // Provide the FormBuilder
+        }).compileComponents();
+    });
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(VisaJobNotesComponent);
-    component = fixture.componentInstance;
-    component.visaJobCheck = MockCandidateVisaJobCheck;
-    fixture.detectChanges();
-  });
+    beforeEach(() => {
+        fixture = TestBed.createComponent(VisaJobNotesComponent);
+        component = fixture.componentInstance;
+        component.visaJobCheck = MockCandidateVisaJobCheck;
+        fixture.detectChanges();
+    });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
 
-  it('should display error message if error is set', () => {
-    component.error = 'Some error occurred';
-    fixture.detectChanges();
-    const errorElement: HTMLElement = fixture.nativeElement.querySelector('div');
-    expect(errorElement.textContent).toContain('Some error occurred');
-  });
+    it('should display error message if error is set', () => {
+        component.error = 'Some error occurred';
+        fixture.detectChanges();
+        const errorElement: HTMLElement = fixture.nativeElement.querySelector('div');
+        expect(errorElement.textContent).toContain('Some error occurred');
+    });
 
-  it('should set form control with provided notes', () => {
-    const notes = 'Mock job notes';
-    component.ngOnInit();
-    const textarea: HTMLTextAreaElement = fixture.nativeElement.querySelector('textarea');
-    expect(textarea.value).toBe(notes);
-  });
+    it('should set form control with provided notes', () => {
+        const notes = 'Mock job notes';
+        component.ngOnInit();
+        const textarea: HTMLTextAreaElement = fixture.nativeElement.querySelector('textarea');
+        expect(textarea.value).toBe(notes);
+    });
 });

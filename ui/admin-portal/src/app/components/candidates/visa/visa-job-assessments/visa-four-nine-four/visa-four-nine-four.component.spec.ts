@@ -21,41 +21,42 @@ import {AutosaveStatusComponent} from "../../../../util/autosave-status/autosave
 import {NgSelectModule} from "@ng-select/ng-select";
 import {provideHttpClientTesting} from "@angular/common/http/testing";
 import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
+import {expect} from 'vitest';
 
 describe('VisaFourNineFourComponent', () => {
-  let component: VisaFourNineFourComponent;
-  let fixture: ComponentFixture<VisaFourNineFourComponent>;
+    let component: VisaFourNineFourComponent;
+    let fixture: ComponentFixture<VisaFourNineFourComponent>;
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      declarations: [VisaFourNineFourComponent,AutosaveStatusComponent],
-      imports: [ReactiveFormsModule,NgSelectModule],
-      providers: [UntypedFormBuilder, provideHttpClient(withXhr(), withInterceptorsFromDi()), provideHttpClientTesting()] // Provide the FormBuilder
-    }).compileComponents();
-  });
+    beforeEach(async () => {
+        await TestBed.configureTestingModule({
+            declarations: [VisaFourNineFourComponent, AutosaveStatusComponent],
+            imports: [ReactiveFormsModule, NgSelectModule],
+            providers: [UntypedFormBuilder, provideHttpClient(withXhr(), withInterceptorsFromDi()), provideHttpClientTesting()] // Provide the FormBuilder
+        }).compileComponents();
+    });
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(VisaFourNineFourComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
+    beforeEach(() => {
+        fixture = TestBed.createComponent(VisaFourNineFourComponent);
+        component = fixture.componentInstance;
+        fixture.detectChanges();
+    });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
 
-  it('should display error message if error is set', () => {
-    component.error = 'Some error occurred';
-    fixture.detectChanges();
-    const errorElement: HTMLElement = fixture.nativeElement.querySelector('div');
-    expect(errorElement.textContent).toContain('Some error occurred');
-  });
+    it('should display error message if error is set', () => {
+        component.error = 'Some error occurred';
+        fixture.detectChanges();
+        const errorElement: HTMLElement = fixture.nativeElement.querySelector('div');
+        expect(errorElement.textContent).toContain('Some error occurred');
+    });
 
-  it('should display notes section when eligible for 494', () => {
-    component.form.get('visaJobEligible494')?.setValue('Yes');
-    fixture.detectChanges();
-    const notesElement: HTMLElement = fixture.nativeElement.querySelector('tc-textarea#visaJobEligible494Notes');
-    expect(notesElement).toBeTruthy();
-  });
+    it('should display notes section when eligible for 494', () => {
+        component.form.get('visaJobEligible494')?.setValue('Yes');
+        fixture.detectChanges();
+        const notesElement: HTMLElement = fixture.nativeElement.querySelector('tc-textarea#visaJobEligible494Notes');
+        expect(notesElement).toBeTruthy();
+    });
 
 });

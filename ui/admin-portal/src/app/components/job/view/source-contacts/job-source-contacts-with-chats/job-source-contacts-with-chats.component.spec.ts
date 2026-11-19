@@ -14,6 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
+import type {MockedObject} from "vitest";
 import {ComponentFixture, TestBed, waitForAsync} from '@angular/core/testing';
 import {JobSourceContactsWithChatsComponent} from './job-source-contacts-with-chats.component';
 import {AuthenticationService} from '../../../../../services/authentication.service';
@@ -23,17 +24,13 @@ import {Partner} from '../../../../../model/partner';
 import {CreateChatRequest, JobChat, JobChatType} from '../../../../../model/chat';
 import {Job} from '../../../../../model/job';
 import {of} from 'rxjs';
-import {
-  ViewJobSourceContactsComponent
-} from "../view-job-source-contacts/view-job-source-contacts.component";
+import {ViewJobSourceContactsComponent} from "../view-job-source-contacts/view-job-source-contacts.component";
 import {PartnerService} from "../../../../../services/partner.service";
 import {provideHttpClientTesting} from "@angular/common/http/testing";
 import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {ViewPostComponent} from "../../../../chat/view-post/view-post.component";
 import {ViewChatPostsComponent} from "../../../../chat/view-chat-posts/view-chat-posts.component";
-import {
-  CreateUpdatePostComponent
-} from "../../../../chat/create-update-post/create-update-post.component";
+import {CreateUpdatePostComponent} from "../../../../chat/create-update-post/create-update-post.component";
 import {ReactiveFormsModule, UntypedFormBuilder} from "@angular/forms";
 import {QuillModule} from "ngx-quill";
 import {MockPartner} from "../../../../../MockData/MockPartner";
@@ -42,92 +39,107 @@ import {MockJob} from "../../../../../MockData/MockJob";
 import {MockChatPost} from "../../../../../MockData/MockChatPost";
 import {TranslateModule} from "@ngx-translate/core";
 import {NgbModule} from "@ng-bootstrap/ng-bootstrap";
+import {expect, vi} from 'vitest';
 
 describe('JobSourceContactsWithChatsComponent', () => {
-   let component: JobSourceContactsWithChatsComponent;
-   let fixture: ComponentFixture<JobSourceContactsWithChatsComponent>;
-   let partnerService: jasmine.SpyObj<PartnerService>;
-   let chatService: jasmine.SpyObj<ChatService>;
-   beforeEach(waitForAsync(() => {
-    const authSpy = jasmine.createSpyObj('AuthenticationService', ['getLoggedInUser']);
-    authSpy.getLoggedInUser.and.returnValue(MockPartner);
+    let component: JobSourceContactsWithChatsComponent;
+    let fixture: ComponentFixture<JobSourceContactsWithChatsComponent>;
+    let partnerService: MockedObject<PartnerService>;
+    let chatService: MockedObject<ChatService>;
+    beforeEach(waitForAsync(() => {
+        const authSpy = {
+            getLoggedInUser: vi.fn().mockName("AuthenticationService.getLoggedInUser")
+        };
+        authSpy.getLoggedInUser.mockReturnValue(MockPartner);
 
-    const authzSpy = jasmine.createSpyObj('AuthorizationService',
-      ['isViewingAsSource', 'isSourcePartner', 'isDefaultSourcePartner', 'isJobCreator', 'canViewChats']);
-    authzSpy.isSourcePartner.and.returnValue(true);
-    authzSpy.isDefaultSourcePartner.and.returnValue(false);
-    authzSpy.canViewChats.and.returnValue(true);
+        const authzSpy = {
+            isViewingAsSource: vi.fn().mockName("AuthorizationService.isViewingAsSource"),
+            isSourcePartner: vi.fn().mockName("AuthorizationService.isSourcePartner"),
+            isDefaultSourcePartner: vi.fn().mockName("AuthorizationService.isDefaultSourcePartner"),
+            isJobCreator: vi.fn().mockName("AuthorizationService.isJobCreator"),
+            canViewChats: vi.fn().mockName("AuthorizationService.canViewChats")
+        };
+        authzSpy.isSourcePartner.mockReturnValue(true);
+        authzSpy.isDefaultSourcePartner.mockReturnValue(false);
+        authzSpy.canViewChats.mockReturnValue(true);
 
-    chatService = jasmine.createSpyObj('ChatService', ['getOrCreate','getChatIsRead$','getChatPosts$', 'markChatAsRead']);
-    chatService.getOrCreate.and.returnValue(of(new MockJobChat()));
-    chatService.getChatPosts$.and.returnValue(of(new MockChatPost()));
-    chatService.getChatIsRead$.and.returnValue(of(false));
-    partnerService = jasmine.createSpyObj('PartnerService',['listSourcePartners']);
-    partnerService.listSourcePartners.and.returnValue(of([])); // Mock listSourcePartners response
+        chatService = ({
+            getOrCreate: vi.fn().mockName("ChatService.getOrCreate"),
+            getChatIsRead$: vi.fn().mockName("ChatService.getChatIsRead$"),
+            getChatPosts$: vi.fn().mockName("ChatService.getChatPosts$"),
+            markChatAsRead: vi.fn().mockName("ChatService.markChatAsRead")
+        } as unknown as typeof chatService);
+        chatService.getOrCreate.mockReturnValue(of(new MockJobChat()));
+        chatService.getChatPosts$.mockReturnValue(of(new MockChatPost()));
+        chatService.getChatIsRead$.mockReturnValue(of(false));
+        partnerService = ({
+            listSourcePartners: vi.fn().mockName("PartnerService.listSourcePartners")
+        } as unknown as typeof partnerService);
+        partnerService.listSourcePartners.mockReturnValue(of([])); // Mock listSourcePartners response
 
-     // partnerService.listSourcePartners.and.returnValue();
-    TestBed.configureTestingModule({
-      declarations: [JobSourceContactsWithChatsComponent,ViewPostComponent,CreateUpdatePostComponent,ViewJobSourceContactsComponent,ViewChatPostsComponent],
-      imports: [QuillModule,ReactiveFormsModule,TranslateModule.forRoot(),NgbModule ],
-      providers: [
-        { provide: AuthenticationService, useValue: authSpy },
-        { provide: AuthorizationService, useValue: authzSpy },
-        { provide: ChatService, useValue: chatService },
-        { provide: PartnerService, useValue: partnerService },
-        { provide: UntypedFormBuilder },
-        provideHttpClient(withXhr(), withInterceptorsFromDi()),
-        provideHttpClientTesting(),
+        // partnerService.listSourcePartners.and.returnValue();
+        TestBed.configureTestingModule({
+            declarations: [JobSourceContactsWithChatsComponent, ViewPostComponent, CreateUpdatePostComponent, ViewJobSourceContactsComponent, ViewChatPostsComponent],
+            imports: [QuillModule, ReactiveFormsModule, TranslateModule.forRoot(), NgbModule],
+            providers: [
+                { provide: AuthenticationService, useValue: authSpy },
+                { provide: AuthorizationService, useValue: authzSpy },
+                { provide: ChatService, useValue: chatService },
+                { provide: PartnerService, useValue: partnerService },
+                { provide: UntypedFormBuilder },
+                provideHttpClient(withXhr(), withInterceptorsFromDi()),
+                provideHttpClientTesting(),
 
-      ]
-    })
-    .compileComponents();
+            ]
+        })
+            .compileComponents();
 
-  }));
+    }));
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(JobSourceContactsWithChatsComponent);
-    component = fixture.componentInstance;
-     partnerService = TestBed.inject(PartnerService) as jasmine.SpyObj<PartnerService>;
-    component.job = MockJob;
+    beforeEach(() => {
+        fixture = TestBed.createComponent(JobSourceContactsWithChatsComponent);
+        component = fixture.componentInstance;
+        partnerService = TestBed.inject(PartnerService) as MockedObject<PartnerService>;
+        component.job = MockJob;
 
-    fixture.detectChanges();
-  });
+        fixture.detectChanges();
+    });
 
-  it('should create', () => {
+    it('should create', () => {
 
-    expect(component).toBeTruthy();
+        expect(component).toBeTruthy();
 
-  });
+    });
 
-  it('should fetch job chat when source partner is selected', () => {
-    const mockJob: Job = MockJob// Create a mock job
-    const mockPartner: Partner = new MockPartner(); // Create a mock partner
-    component.job = mockJob;
+    it('should fetch job chat when source partner is selected', () => {
+        const mockJob: Job = MockJob; // Create a mock job
+        const mockPartner: Partner = new MockPartner(); // Create a mock partner
+        component.job = mockJob;
 
-    component.onSourcePartnerSelected(mockPartner);
+        component.onSourcePartnerSelected(mockPartner);
 
-    const expectedRequest: CreateChatRequest = {
-      type: JobChatType.JobCreatorSourcePartner,
-      jobId: mockJob.id,
-      sourcePartnerId: mockPartner.id
-    };
-    expect(chatService.getOrCreate).toHaveBeenCalledWith(expectedRequest);
-  });
-  it('should update chat header based on user and selected partner', () => {
-    const mockJob: Job = MockJob// Create a mock job
-    const mockPartner: Partner = new MockPartner(); // Create a mock partner
-    mockPartner.name = 'XYZ';
-    component.job = mockJob;
-    component.onSourcePartnerSelected(mockPartner);
-    expect(component.chatHeader).toBe('Chat with source partner: XYZ');
-  });
+        const expectedRequest: CreateChatRequest = {
+            type: JobChatType.JobCreatorSourcePartner,
+            jobId: mockJob.id,
+            sourcePartnerId: mockPartner.id
+        };
+        expect(chatService.getOrCreate).toHaveBeenCalledWith(expectedRequest);
+    });
+    it('should update chat header based on user and selected partner', () => {
+        const mockJob: Job = MockJob; // Create a mock job
+        const mockPartner: Partner = new MockPartner(); // Create a mock partner
+        mockPartner.name = 'XYZ';
+        component.job = mockJob;
+        component.onSourcePartnerSelected(mockPartner);
+        expect(component.chatHeader).toBe('Chat with source partner: XYZ');
+    });
 
-  it('should mark chat as read when requested', () => {
-    const mockChat:JobChat = new MockJobChat();  // Mock chat object
-    component.selectedSourcePartnerChat = mockChat;
+    it('should mark chat as read when requested', () => {
+        const mockChat: JobChat = new MockJobChat(); // Mock chat object
+        component.selectedSourcePartnerChat = mockChat;
 
-    component.onMarkChatAsRead();
+        component.onMarkChatAsRead();
 
-     expect(chatService.markChatAsRead).toHaveBeenCalledWith(mockChat);
-  });
+        expect(chatService.markChatAsRead).toHaveBeenCalledWith(mockChat);
+    });
 });

@@ -17,89 +17,85 @@ import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {CandidateEducationTabComponent} from './candidate-education-tab.component';
 import {Candidate} from "../../../../../model/candidate";
 import {MockCandidate} from "../../../../../MockData/MockCandidate";
-import {
-  ViewCandidateCertificationComponent
-} from "../../certification/view-candidate-certification.component";
+import {ViewCandidateCertificationComponent} from "../../certification/view-candidate-certification.component";
 import {ViewCandidateEducationComponent} from "../../education/view-candidate-education.component";
 import {provideHttpClientTesting} from "@angular/common/http/testing";
 import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {CUSTOM_ELEMENTS_SCHEMA} from "@angular/core";
+import {expect} from 'vitest';
 
 describe('CandidateEducationTabComponent', () => {
-  let component: CandidateEducationTabComponent;
-  let fixture: ComponentFixture<CandidateEducationTabComponent>;
-  const mockCandidate = new MockCandidate();
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      imports: [FormsModule,ReactiveFormsModule, NgSelectModule],
-      providers: [provideHttpClient(withXhr(), withInterceptorsFromDi()), provideHttpClientTesting()],
-      declarations: [CandidateEducationTabComponent,ViewCandidateCertificationComponent,ViewCandidateEducationComponent],
-      schemas: [CUSTOM_ELEMENTS_SCHEMA]
-    })
-    .compileComponents();
-  });
-
-  beforeEach(() => {
-    fixture = TestBed.createComponent(CandidateEducationTabComponent);
-    component = fixture.componentInstance;
-    component.candidate = mockCandidate;
-    fixture.detectChanges();
-  });
-
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
-
-  it('should fetch candidate education information on initialization', () => {
-    const candidate: Candidate = mockCandidate; // Provide a sample candidate object for testing
-    component.candidate = candidate;
-
-    component.ngOnInit();
-    component.ngOnChanges({
-      candidate:
-        {
-          previousValue: null,
-          currentValue: mockCandidate,
-          firstChange: true,
-          isFirstChange: () => true
-        }
-    });
-    expect(component.error).toBe(null); // Ensure error is set to null after initialization
-    expect(component.loading).toBe(false); // Ensure loading is set to false after initialization
-    expect(component.result).toEqual(candidate); // Ensure candidate education information is set correctly
-  });
-
-  it('should fetch candidate education information when candidate data changes', () => {
-    const initialCandidate: Candidate = mockCandidate;
-    const updatedCandidate: Candidate = mockCandidate;
-    updatedCandidate.id = 2;
-    component.candidate = initialCandidate;
-
-    component.ngOnChanges({
-      candidate:
-        {
-          previousValue: null,
-          currentValue: initialCandidate,
-          firstChange: true,
-          isFirstChange: () => true
-        }
+    let component: CandidateEducationTabComponent;
+    let fixture: ComponentFixture<CandidateEducationTabComponent>;
+    const mockCandidate = new MockCandidate();
+    beforeEach(async () => {
+        await TestBed.configureTestingModule({
+            imports: [FormsModule, ReactiveFormsModule, NgSelectModule],
+            providers: [provideHttpClient(withXhr(), withInterceptorsFromDi()), provideHttpClientTesting()],
+            declarations: [CandidateEducationTabComponent, ViewCandidateCertificationComponent, ViewCandidateEducationComponent],
+            schemas: [CUSTOM_ELEMENTS_SCHEMA]
+        })
+            .compileComponents();
     });
 
-    expect(component.loading).toBe(false); // Ensure loading is set to false after candidate education information is fetched
-    expect(component.result).toEqual(initialCandidate); // Ensure candidate education information is set correctly
-
-    component.ngOnChanges({
-      candidate:
-        {
-          previousValue: initialCandidate,
-          currentValue: updatedCandidate,
-          firstChange: true,
-          isFirstChange: () => true
-        }
+    beforeEach(() => {
+        fixture = TestBed.createComponent(CandidateEducationTabComponent);
+        component = fixture.componentInstance;
+        component.candidate = mockCandidate;
+        fixture.detectChanges();
     });
-    expect(component.loading).toBe(false); // Ensure loading is set to false after candidate education information is fetched
-    expect(component.result).toEqual(updatedCandidate); // Ensure candidate education information is updated correctly
-  });
+
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
+
+    it('should fetch candidate education information on initialization', () => {
+        const candidate: Candidate = mockCandidate; // Provide a sample candidate object for testing
+        component.candidate = candidate;
+
+        component.ngOnInit();
+        component.ngOnChanges({
+            candidate: {
+                previousValue: null,
+                currentValue: mockCandidate,
+                firstChange: true,
+                isFirstChange: () => true
+            }
+        });
+        expect(component.error).toBe(null); // Ensure error is set to null after initialization
+        expect(component.loading).toBe(false); // Ensure loading is set to false after initialization
+        expect(component.result).toEqual(candidate); // Ensure candidate education information is set correctly
+    });
+
+    it('should fetch candidate education information when candidate data changes', () => {
+        const initialCandidate: Candidate = mockCandidate;
+        const updatedCandidate: Candidate = mockCandidate;
+        updatedCandidate.id = 2;
+        component.candidate = initialCandidate;
+
+        component.ngOnChanges({
+            candidate: {
+                previousValue: null,
+                currentValue: initialCandidate,
+                firstChange: true,
+                isFirstChange: () => true
+            }
+        });
+
+        expect(component.loading).toBe(false); // Ensure loading is set to false after candidate education information is fetched
+        expect(component.result).toEqual(initialCandidate); // Ensure candidate education information is set correctly
+
+        component.ngOnChanges({
+            candidate: {
+                previousValue: initialCandidate,
+                currentValue: updatedCandidate,
+                firstChange: true,
+                isFirstChange: () => true
+            }
+        });
+        expect(component.loading).toBe(false); // Ensure loading is set to false after candidate education information is fetched
+        expect(component.result).toEqual(updatedCandidate); // Ensure candidate education information is updated correctly
+    });
 });

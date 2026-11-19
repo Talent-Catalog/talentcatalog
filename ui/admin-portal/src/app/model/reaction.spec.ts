@@ -15,6 +15,7 @@
  */
 import {Reaction} from './reaction';
 import {DisplayUser} from './user';
+import {expect} from 'vitest';
 
 describe('Reaction Interface Tests', () => {
   let testReaction: Reaction;

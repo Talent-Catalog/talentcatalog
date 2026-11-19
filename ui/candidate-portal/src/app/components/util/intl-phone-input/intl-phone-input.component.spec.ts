@@ -1,11 +1,7 @@
+import type {Mock, MockedObject} from "vitest";
 import {Component, forwardRef, Input, ChangeDetectionStrategy} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
-import {
-  ControlValueAccessor,
-  FormsModule,
-  NG_VALUE_ACCESSOR,
-  UntypedFormControl
-} from '@angular/forms';
+import {ControlValueAccessor, FormsModule, NG_VALUE_ACCESSOR, UntypedFormControl} from '@angular/forms';
 import {By} from '@angular/platform-browser';
 import {provideHttpClientTesting} from '@angular/common/http/testing';
 import {provideHttpClient, withInterceptorsFromDi, withXhr} from '@angular/common/http';
@@ -18,8 +14,8 @@ import {CountryService} from '../../../services/country.service';
 import {Country} from '../../../model/country';
 
 @Component({
-  selector: 'tc-input',
-  template: `
+    selector: 'tc-input',
+    template: `
     <input
       [type]="type"
       [placeholder]="placeholder"
@@ -28,308 +24,282 @@ import {Country} from '../../../model/country';
       (blur)="onTouched()"
     >
   `,
-  providers: [
-    {
-      provide: NG_VALUE_ACCESSOR,
-      useExisting: forwardRef(() => TcInputStubComponent),
-      multi: true
-    }
-  ],
-  changeDetection: ChangeDetectionStrategy.Eager,
-  standalone: false
+    providers: [
+        {
+            provide: NG_VALUE_ACCESSOR,
+            useExisting: forwardRef(() => TcInputStubComponent),
+            multi: true
+        }
+    ],
+    changeDetection: ChangeDetectionStrategy.Eager,
+    standalone: false
 })
 class TcInputStubComponent implements ControlValueAccessor {
-  @Input() type: string;
-  @Input() placeholder: string;
+    @Input()
+    type: string;
+    @Input()
+    placeholder: string;
 
-  value: string;
+    value: string;
 
-  private onChange: (value: string) => void = () => {
-  };
-  onTouched: () => void = () => {
-  };
+    private onChange: (value: string) => void = () => {
+    };
+    onTouched: () => void = () => {
+    };
 
-  writeValue(value: string): void {
-    this.value = value;
-  }
+    writeValue(value: string): void {
+        this.value = value;
+    }
 
-  registerOnChange(fn: (value: string) => void): void {
-    this.onChange = fn;
-  }
+    registerOnChange(fn: (value: string) => void): void {
+        this.onChange = fn;
+    }
 
-  registerOnTouched(fn: () => void): void {
-    this.onTouched = fn;
-  }
+    registerOnTouched(fn: () => void): void {
+        this.onTouched = fn;
+    }
 
-  setDisabledState(isDisabled: boolean): void {
-    // Not needed for these tests.
-  }
+    setDisabledState(isDisabled: boolean): void {
+        // Not needed for these tests.
+    }
 
-  handleInput(event: Event): void {
-    const value = (event.target as HTMLInputElement).value;
-    this.value = value;
-    this.onChange(value);
-  }
+    handleInput(event: Event): void {
+        const value = (event.target as HTMLInputElement).value;
+        this.value = value;
+        this.onChange(value);
+    }
 }
 
 @Component({
-  selector: 'tc-error-message',
-  template: '<ng-content></ng-content>',
-  changeDetection: ChangeDetectionStrategy.Eager,
-  standalone: false
+    selector: 'tc-error-message',
+    template: '<ng-content></ng-content>',
+    changeDetection: ChangeDetectionStrategy.Eager,
+    standalone: false
 })
 class TcErrorMessageStubComponent {
 }
 
 describe('IntlPhoneInputComponent', () => {
-  let component: IntlPhoneInputComponent;
-  let fixture: ComponentFixture<IntlPhoneInputComponent>;
-  let countryServiceSpy: jasmine.SpyObj<CountryService>;
+    let component: IntlPhoneInputComponent;
+    let fixture: ComponentFixture<IntlPhoneInputComponent>;
+    let countryServiceSpy: MockedObject<CountryService>;
 
-  const mockCountries: Country[] = [
-    {
-      id: 1,
-      name: 'Canada',
-      isoCode: 'CA',
-      status: 'active',
-      translatedName: null
-    },
-    {
-      id: 99,
-      name: 'Stateless',
-      isoCode: null,
-      status: 'active',
-      translatedName: null
-    }
-  ];
-
-  beforeEach(async () => {
-    countryServiceSpy = jasmine.createSpyObj<CountryService>(
-      'CountryService',
-      ['listCountries']
-    );
-
-    await TestBed.configureTestingModule({
-      declarations: [
-        IntlPhoneInputComponent,
-        TcInputStubComponent,
-        TcErrorMessageStubComponent
-      ],
-      imports: [
-        FormsModule,
-        NgSelectModule
-      ],
-      providers: [
+    const mockCountries: Country[] = [
         {
-          provide: CountryService,
-          useValue: countryServiceSpy
+            id: 1,
+            name: 'Canada',
+            isoCode: 'CA',
+            status: 'active',
+            translatedName: null
         },
-        provideHttpClient(withXhr(), withInterceptorsFromDi()),
-        provideHttpClientTesting()
-      ]
-    }).compileComponents();
-  });
+        {
+            id: 99,
+            name: 'Stateless',
+            isoCode: null,
+            status: 'active',
+            translatedName: null
+        }
+    ];
 
-  beforeEach(() => {
-    countryServiceSpy.listCountries.and.returnValue(of(mockCountries));
+    beforeEach(async () => {
+        countryServiceSpy = {
+            listCountries: vi.fn().mockName("CountryService.listCountries")
+        } as unknown as MockedObject<CountryService>;
 
-    fixture = TestBed.createComponent(IntlPhoneInputComponent);
-    component = fixture.componentInstance;
+        await TestBed.configureTestingModule({
+            declarations: [
+                IntlPhoneInputComponent,
+                TcInputStubComponent,
+                TcErrorMessageStubComponent
+            ],
+            imports: [
+                FormsModule,
+                NgSelectModule
+            ],
+            providers: [
+                {
+                    provide: CountryService,
+                    useValue: countryServiceSpy
+                },
+                provideHttpClient(withXhr(), withInterceptorsFromDi()),
+                provideHttpClientTesting()
+            ]
+        }).compileComponents();
+    });
 
-    component.control = new UntypedFormControl('+61400123456');
+    beforeEach(() => {
+        countryServiceSpy.listCountries.mockReturnValue(of(mockCountries));
 
-    const mockPhoneNumber = {
-      nationalNumber: '400123456',
-      country: 'AU'
-    } as PhoneNumber;
+        fixture = TestBed.createComponent(IntlPhoneInputComponent);
+        component = fixture.componentInstance;
 
-    spyOn(component, 'checkForValidity').and.callThrough();
-    spyOn(component, 'getPhoneNumberFromString')
-    .and.returnValue(mockPhoneNumber);
-    spyOn(component, 'getPhoneNumberValidity')
-    .and.returnValue(true);
-    spyOn(component, 'getInternationalFormat')
-    .and.returnValue('+61 400 123 456');
+        component.control = new UntypedFormControl('+61400123456');
 
-    fixture.detectChanges();
-  });
+        const mockPhoneNumber = {
+            nationalNumber: '400123456',
+            country: 'AU'
+        } as PhoneNumber;
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+        vi.spyOn(component, 'checkForValidity');
+        vi.spyOn(component, 'getPhoneNumberFromString').mockReturnValue(mockPhoneNumber);
+        vi.spyOn(component, 'getPhoneNumberValidity').mockReturnValue(true);
+        vi.spyOn(component, 'getInternationalFormat').mockReturnValue('+61 400 123 456');
 
-  it('should load and filter countries without iso codes', () => {
-    expect(countryServiceSpy.listCountries).toHaveBeenCalled();
+        fixture.detectChanges();
+    });
 
-    expect(component.countries.length).toBe(1);
-    expect(component.countries[0].isoCode).toBe('CA');
-    expect(component.countries[0].countryCode).toBe('(+1)');
-    expect(component.loading).toBeFalse();
-  });
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
 
-  it('should set the iso code and number from the initial phone number', () => {
-    expect(component.isoCode).toBe('AU');
-    expect(component.number).toBe('400123456');
-  });
+    it('should load and filter countries without iso codes', () => {
+        expect(countryServiceSpy.listCountries).toHaveBeenCalled();
 
-  it('should return the calling code for a valid iso code', () => {
-    expect(component.getCountryCodeStringFromIso('CA')).toBe('(+1)');
-  });
+        expect(component.countries.length).toBe(1);
+        expect(component.countries[0].isoCode).toBe('CA');
+        expect(component.countries[0].countryCode).toBe('(+1)');
+        expect(component.loading).toBe(false);
+    });
 
-  it('should return null for an invalid iso code', () => {
-    expect(component.getCountryCodeStringFromIso('INVALID')).toBeNull();
-  });
+    it('should set the iso code and number from the initial phone number', () => {
+        expect(component.isoCode).toBe('AU');
+        expect(component.number).toBe('400123456');
+    });
 
-  it('should display an error when a country code is required', () => {
-    component.isoCode = null;
-    component.number = '123456789';
+    it('should return the calling code for a valid iso code', () => {
+        expect(component.getCountryCodeStringFromIso('CA')).toBe('(+1)');
+    });
 
-    fixture.detectChanges();
+    it('should return null for an invalid iso code', () => {
+        expect(component.getCountryCodeStringFromIso('INVALID')).toBeNull();
+    });
 
-    const error = fixture.debugElement.query(
-      By.css('#codeRequired')
-    );
+    it('should display an error when a country code is required', () => {
+        component.isoCode = null;
+        component.number = '123456789';
 
-    expect(error).toBeTruthy();
-  });
+        fixture.detectChanges();
 
-  it('should display an invalid-number error', () => {
-    component.isValidNumber = false;
-    component.isoCode = 'CA';
-    component.number = '123456789';
+        const error = fixture.debugElement.query(By.css('#codeRequired'));
 
-    fixture.detectChanges();
+        expect(error).toBeTruthy();
+    });
 
-    const error = fixture.debugElement.query(
-      By.css('#invalidNumber')
-    );
+    it('should display an invalid-number error', () => {
+        component.isValidNumber = false;
+        component.isoCode = 'CA';
+        component.number = '123456789';
 
-    expect(error).toBeTruthy();
-  });
+        fixture.detectChanges();
 
-  it('should call checkForValidity when the phone number changes', () => {
-    (component.checkForValidity as jasmine.Spy).calls.reset();
+        const error = fixture.debugElement.query(By.css('#invalidNumber'));
 
-    const input = fixture.debugElement.query(
-      By.css('tc-input input')
-    );
+        expect(error).toBeTruthy();
+    });
 
-    input.nativeElement.value = '123456789';
-    input.nativeElement.dispatchEvent(new Event('input'));
+    it('should call checkForValidity when the phone number changes', () => {
+        (component.checkForValidity as Mock).mockClear();
 
-    fixture.detectChanges();
+        const input = fixture.debugElement.query(By.css('tc-input input'));
 
-    expect(component.number).toBe('123456789');
-    expect(component.checkForValidity).toHaveBeenCalled();
-  });
+        input.nativeElement.value = '123456789';
+        input.nativeElement.dispatchEvent(new Event('input'));
 
-  it('should validate when both number and iso code exist', () => {
-    component.number = '0420123456';
-    component.isoCode = 'AU';
+        fixture.detectChanges();
 
-    spyOn(component, 'validatePhoneNumber');
+        expect(component.number).toBe('123456789');
+        expect(component.checkForValidity).toHaveBeenCalled();
+    });
 
-    component.checkForValidity();
+    it('should validate when both number and iso code exist', () => {
+        component.number = '0420123456';
+        component.isoCode = 'AU';
 
-    expect(component.validatePhoneNumber).toHaveBeenCalled();
-  });
+        vi.spyOn(component, 'validatePhoneNumber').mockReturnValue(undefined);
 
-  it('should require an iso code when a number exists', () => {
-    component.number = '123456789';
-    component.isoCode = null;
+        component.checkForValidity();
 
-    component.checkForValidity();
+        expect(component.validatePhoneNumber).toHaveBeenCalled();
+    });
 
-    expect(component.control.hasError('phoneInvalid')).toBeTrue();
-  });
+    it('should require an iso code when a number exists', () => {
+        component.number = '123456789';
+        component.isoCode = null;
 
-  it('should update the control when the phone number is valid', () => {
-    component.number = '070 123 4567';
-    component.isoCode = 'AF';
+        component.checkForValidity();
 
-    const phoneNumber = {
-      nationalNumber: '701234567',
-      country: 'AF'
-    } as PhoneNumber;
+        expect(component.control.hasError('phoneInvalid')).toBe(true);
+    });
 
-    (
-      component.getPhoneNumberFromString as jasmine.Spy
-    ).and.returnValue(phoneNumber);
+    it('should update the control when the phone number is valid', () => {
+        component.number = '070 123 4567';
+        component.isoCode = 'AF';
 
-    (
-      component.getPhoneNumberValidity as jasmine.Spy
-    ).and.returnValue(true);
+        const phoneNumber = {
+            nationalNumber: '701234567',
+            country: 'AF'
+        } as PhoneNumber;
 
-    (
-      component.getInternationalFormat as jasmine.Spy
-    ).and.returnValue('+93 70 123 4567');
+        (component.getPhoneNumberFromString as Mock).mockReturnValue(phoneNumber);
 
-    component.validatePhoneNumber();
+        (component.getPhoneNumberValidity as Mock).mockReturnValue(true);
 
-    expect(component.control.value).toBe('+93 70 123 4567');
-    expect(component.isValidNumber).toBeTrue();
-  });
+        (component.getInternationalFormat as Mock).mockReturnValue('+93 70 123 4567');
 
-  it('should set an error when the phone number is invalid', () => {
-    component.number = '070 123 4567';
-    component.isoCode = 'GB';
+        component.validatePhoneNumber();
 
-    (
-      component.getPhoneNumberValidity as jasmine.Spy
-    ).and.returnValue(false);
+        expect(component.control.value).toBe('+93 70 123 4567');
+        expect(component.isValidNumber).toBe(true);
+    });
 
-    component.validatePhoneNumber();
+    it('should set an error when the phone number is invalid', () => {
+        component.number = '070 123 4567';
+        component.isoCode = 'GB';
 
-    expect(component.control.hasError('phoneInvalid')).toBeTrue();
-    expect(component.isValidNumber).toBeFalse();
-  });
+        (component.getPhoneNumberValidity as Mock).mockReturnValue(false);
 
-  it('should remove the phone number when number is empty', () => {
-    component.number = '';
-    component.isoCode = 'CA';
-    component.control.setValue('+1 555 555 5555');
-    component.control.setErrors({phoneInvalid: true});
+        component.validatePhoneNumber();
 
-    component.checkForValidity();
+        expect(component.control.hasError('phoneInvalid')).toBe(true);
+        expect(component.isValidNumber).toBe(false);
+    });
 
-    expect(component.control.value).toBeNull();
-    expect(component.control.errors).toBeNull();
-  });
+    it('should remove the phone number when number is empty', () => {
+        component.number = '';
+        component.isoCode = 'CA';
+        component.control.setValue('+1 555 555 5555');
+        component.control.setErrors({ phoneInvalid: true });
 
-  it('should search countries by name', () => {
-    expect(
-      component.searchCountry('can', mockCountries[0])
-    ).toBeTrue();
-  });
+        component.checkForValidity();
 
-  it('should search countries by calling code', () => {
-    const country = {
-      ...mockCountries[0],
-      countryCode: '(+1)'
-    };
+        expect(component.control.value).toBeNull();
+        expect(component.control.errors).toBeNull();
+    });
 
-    expect(
-      component.searchCountry('+1', country)
-    ).toBeTrue();
-  });
+    it('should search countries by name', () => {
+        expect(component.searchCountry('can', mockCountries[0])).toBe(true);
+    });
 
-  it('should set an error when loading countries fails', () => {
-    const errorFixture = TestBed.createComponent(
-      IntlPhoneInputComponent
-    );
+    it('should search countries by calling code', () => {
+        const country = {
+            ...mockCountries[0],
+            countryCode: '(+1)'
+        };
 
-    const errorComponent = errorFixture.componentInstance;
-    errorComponent.control = new UntypedFormControl(null);
+        expect(component.searchCountry('+1', country)).toBe(true);
+    });
 
-    countryServiceSpy.listCountries.and.returnValue(
-      throwError('Unable to load countries')
-    );
+    it('should set an error when loading countries fails', () => {
+        const errorFixture = TestBed.createComponent(IntlPhoneInputComponent);
 
-    errorFixture.detectChanges();
+        const errorComponent = errorFixture.componentInstance;
+        errorComponent.control = new UntypedFormControl(null);
 
-    expect(errorComponent.error).toBe(
-      'Unable to load countries'
-    );
-    expect(errorComponent.loading).toBeFalse();
-  });
+        countryServiceSpy.listCountries.mockReturnValue(throwError('Unable to load countries'));
+
+        errorFixture.detectChanges();
+
+        expect(errorComponent.error).toBe('Unable to load countries');
+        expect(errorComponent.loading).toBe(false);
+    });
 });

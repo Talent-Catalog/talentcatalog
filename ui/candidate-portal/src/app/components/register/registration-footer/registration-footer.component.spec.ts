@@ -19,23 +19,23 @@ import {ComponentFixture, TestBed, waitForAsync} from '@angular/core/testing';
 import {RegistrationFooterComponent} from './registration-footer.component';
 
 describe('RegistrationFooterComponent', () => {
-  let component: RegistrationFooterComponent;
-  let fixture: ComponentFixture<RegistrationFooterComponent>;
+    let component: RegistrationFooterComponent;
+    let fixture: ComponentFixture<RegistrationFooterComponent>;
 
-  beforeEach(waitForAsync(() => {
-    TestBed.configureTestingModule({
-      declarations: [ RegistrationFooterComponent ]
-    })
-    .compileComponents();
-  }));
+    beforeEach(waitForAsync(() => {
+        TestBed.configureTestingModule({
+            declarations: [RegistrationFooterComponent]
+        })
+            .compileComponents();
+    }));
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(RegistrationFooterComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
+    beforeEach(() => {
+        fixture = TestBed.createComponent(RegistrationFooterComponent);
+        component = fixture.componentInstance;
+        fixture.detectChanges();
+    });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
 });

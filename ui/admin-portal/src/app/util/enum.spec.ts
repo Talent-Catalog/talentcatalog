@@ -15,135 +15,126 @@
  */
 
 
-import {
-  enumKeys,
-  enumKeysToEnumOptions,
-  EnumOption,
-  enumOptions,
-  enumStringValues,
-  getOrdinal,
-  isEnumOption,
-  isEnumOptionArray,
-  toEnumKey
-} from "./enum";
+import {enumKeys, enumKeysToEnumOptions, EnumOption, enumOptions, enumStringValues, getOrdinal, isEnumOption, isEnumOptionArray, toEnumKey} from "./enum";
+import {expect} from 'vitest';
 
 enum CandidateStatus {
-  draft = "draft (inactive)",
-  active = "active",
-  pending = "pending",
+    draft = "draft (inactive)",
+    active = "active",
+    pending = "pending"
 }
 
 describe('Enum Utilities', () => {
-  const candidateStatusEnum = CandidateStatus;
+    const candidateStatusEnum = CandidateStatus;
 
-  describe('enumOptions', () => {
-    it('should convert an enum to an array of EnumOptions', () => {
-      const result = enumOptions(candidateStatusEnum);
-      expect(result).toEqual([
-        { key: 'draft', stringValue: 'draft (inactive)' },
-        { key: 'active', stringValue: 'active' },
-        { key: 'pending', stringValue: 'pending' },
-      ]);
-    });
-  });
-
-  describe('enumKeysToEnumOptions', () => {
-    it('should convert an array of keys to an array of EnumOptions', () => {
-      const keys = ['draft', 'active', 'pending'];
-      const result = enumKeysToEnumOptions(keys, candidateStatusEnum);
-      expect(result).toEqual([
-        { key: 'draft', stringValue: 'draft (inactive)' },
-        { key: 'active', stringValue: 'active' },
-        { key: 'pending', stringValue: 'pending' },
-      ]);
+    describe('enumOptions', () => {
+        it('should convert an enum to an array of EnumOptions', () => {
+            const result = enumOptions(candidateStatusEnum);
+            expect(result).toEqual([
+                { key: 'draft', stringValue: 'draft (inactive)' },
+                { key: 'active', stringValue: 'active' },
+                { key: 'pending', stringValue: 'pending' },
+            ]);
+        });
     });
 
-    it('should handle an empty array', () => {
-      const result = enumKeysToEnumOptions([], candidateStatusEnum);
-      expect(result).toEqual([]);
-    });
-  });
+    describe('enumKeysToEnumOptions', () => {
+        it('should convert an array of keys to an array of EnumOptions', () => {
+            const keys = ['draft', 'active', 'pending'];
+            const result = enumKeysToEnumOptions(keys, candidateStatusEnum);
+            expect(result).toEqual([
+                { key: 'draft', stringValue: 'draft (inactive)' },
+                { key: 'active', stringValue: 'active' },
+                { key: 'pending', stringValue: 'pending' },
+            ]);
+        });
 
-  describe('enumKeys', () => {
-    it('should return all keys in the enum', () => {
-      const result = enumKeys(candidateStatusEnum);
-      expect(result).toEqual(['draft', 'active', 'pending']);
-    });
-  });
-
-  describe('enumStringValues', () => {
-    it('should return all string values in the enum', () => {
-      const result = enumStringValues(candidateStatusEnum);
-      expect(result).toEqual(['draft (inactive)', 'active', 'pending']);
-    });
-  });
-
-  describe('isEnumOption', () => {
-    it('should return true for valid EnumOption', () => {
-      const validOption: EnumOption = { key: 'draft', stringValue: 'draft (inactive)' };
-      expect(isEnumOption(validOption)).toBeTrue();
+        it('should handle an empty array', () => {
+            const result = enumKeysToEnumOptions([], candidateStatusEnum);
+            expect(result).toEqual([]);
+        });
     });
 
-    it('should return false for invalid EnumOption', () => {
-      const invalidOption = { key: 'draft' };
-      expect(isEnumOption(invalidOption)).toBeFalse();
-    });
-  });
-
-  describe('isEnumOptionArray', () => {
-    it('should return true for valid EnumOption array', () => {
-      const validOptionArray: EnumOption[] = [
-        { key: 'draft', stringValue: 'draft (inactive)' },
-        { key: 'active', stringValue: 'active' },
-      ];
-      expect(isEnumOptionArray(validOptionArray)).toBeTrue();
+    describe('enumKeys', () => {
+        it('should return all keys in the enum', () => {
+            const result = enumKeys(candidateStatusEnum);
+            expect(result).toEqual(['draft', 'active', 'pending']);
+        });
     });
 
-    it('should return false for invalid EnumOption array', () => {
-      const invalidOptionArray = [{ key: 'draft' }];
-      expect(isEnumOptionArray(invalidOptionArray)).toBeFalse();
+    describe('enumStringValues', () => {
+        it('should return all string values in the enum', () => {
+            const result = enumStringValues(candidateStatusEnum);
+            expect(result).toEqual(['draft (inactive)', 'active', 'pending']);
+        });
     });
 
-    it('should return false for non-array input', () => {
-      expect(isEnumOptionArray('not an array')).toBeFalse();
+    describe('isEnumOption', () => {
+        it('should return true for valid EnumOption', () => {
+            const validOption: EnumOption = { key: 'draft', stringValue: 'draft (inactive)' };
+            expect(isEnumOption(validOption)).toBe(true);
+        });
+
+        it('should return false for invalid EnumOption', () => {
+            const invalidOption = { key: 'draft' };
+            expect(isEnumOption(invalidOption)).toBe(false);
+        });
     });
 
-    it('should return false for an array of numbers', () => {
-      expect(isEnumOptionArray([1, 2, 3])).toBeFalse();
-    });
-  });
+    describe('isEnumOptionArray', () => {
+        it('should return true for valid EnumOption array', () => {
+            const validOptionArray: EnumOption[] = [
+                { key: 'draft', stringValue: 'draft (inactive)' },
+                { key: 'active', stringValue: 'active' },
+            ];
+            expect(isEnumOptionArray(validOptionArray)).toBe(true);
+        });
 
-  describe('getOrdinal', () => {
-    it('should return the index of a key in the enum', () => {
-      const result = getOrdinal(candidateStatusEnum, 'active');
-      expect(result).toBe(1);
-    });
+        it('should return false for invalid EnumOption array', () => {
+            const invalidOptionArray = [{ key: 'draft' }];
+            expect(isEnumOptionArray(invalidOptionArray)).toBe(false);
+        });
 
-    it('should return -1 for a non-existent key', () => {
-      const result = getOrdinal(candidateStatusEnum, 'nonExistent');
-      expect(result).toBe(-1);
-    });
-  });
+        it('should return false for non-array input', () => {
+            expect(isEnumOptionArray('not an array')).toBe(false);
+        });
 
-  describe('toEnumKey', () => {
-    it('should return the same value if it is already a key', () => {
-      const result = toEnumKey(candidateStatusEnum, 'draft');
-      expect(result).toBe('draft');
-    });
-
-    it('should return the key for a given string value', () => {
-      const result = toEnumKey(candidateStatusEnum, 'draft (inactive)');
-      expect(result).toBe('draft');
+        it('should return false for an array of numbers', () => {
+            expect(isEnumOptionArray([1, 2, 3])).toBe(false);
+        });
     });
 
-    it('should return the key when the string value matches its own key name', () => {
-      const result = toEnumKey(candidateStatusEnum, 'active');
-      expect(result).toBe('active');
+    describe('getOrdinal', () => {
+        it('should return the index of a key in the enum', () => {
+            const result = getOrdinal(candidateStatusEnum, 'active');
+            expect(result).toBe(1);
+        });
+
+        it('should return -1 for a non-existent key', () => {
+            const result = getOrdinal(candidateStatusEnum, 'nonExistent');
+            expect(result).toBe(-1);
+        });
     });
 
-    it('should return undefined if the value is neither a key nor a string value', () => {
-      const result = toEnumKey(candidateStatusEnum, 'nonExistent');
-      expect(result).toBeUndefined();
+    describe('toEnumKey', () => {
+        it('should return the same value if it is already a key', () => {
+            const result = toEnumKey(candidateStatusEnum, 'draft');
+            expect(result).toBe('draft');
+        });
+
+        it('should return the key for a given string value', () => {
+            const result = toEnumKey(candidateStatusEnum, 'draft (inactive)');
+            expect(result).toBe('draft');
+        });
+
+        it('should return the key when the string value matches its own key name', () => {
+            const result = toEnumKey(candidateStatusEnum, 'active');
+            expect(result).toBe('active');
+        });
+
+        it('should return undefined if the value is neither a key nor a string value', () => {
+            const result = toEnumKey(candidateStatusEnum, 'nonExistent');
+            expect(result).toBeUndefined();
+        });
     });
-  });
 });

@@ -21,160 +21,161 @@ import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {By} from "@angular/platform-browser";
 
 describe('TcRadioComponent', () => {
-  let component: TcRadioComponent;
-  let fixture: ComponentFixture<TcRadioComponent>;
+    let component: TcRadioComponent;
+    let fixture: ComponentFixture<TcRadioComponent>;
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      imports: [TcRadioComponent, FormsModule, ReactiveFormsModule]
-    }).compileComponents();
-  });
+    beforeEach(async () => {
+        await TestBed.configureTestingModule({
+            imports: [TcRadioComponent, FormsModule, ReactiveFormsModule]
+        }).compileComponents();
+    });
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(TcRadioComponent);
-    component = fixture.componentInstance;
+    beforeEach(() => {
+        fixture = TestBed.createComponent(TcRadioComponent);
+        component = fixture.componentInstance;
 
-    component.id = 'radio1';
-    component.name = 'testGroup';
-    component.label = 'Option 1';
-    component.value = 1;
+        component.id = 'radio1';
+        component.name = 'testGroup';
+        component.label = 'Option 1';
+        component.value = 1;
 
-    fixture.detectChanges();
-  });
+        fixture.detectChanges();
+    });
 
-  it('should create the component', () => {
-    expect(component).toBeTruthy();
-  });
+    it('should create the component', () => {
+        expect(component).toBeTruthy();
+    });
 
-  it('should display the label', () => {
-    const labelEl = fixture.nativeElement.querySelector('label');
-    expect(labelEl.textContent).toContain('Option 1');
-  });
+    it('should display the label', () => {
+        const labelEl = fixture.nativeElement.querySelector('label');
+        expect(labelEl.textContent).toContain('Option 1');
+    });
 
-  it('should emit change event when clicked', () => {
-    spyOn(component.change, 'emit');
+    it('should emit change event when clicked', () => {
+        vi.spyOn(component.change, 'emit').mockReturnValue(undefined);
 
-    const inputEl = fixture.debugElement.query(By.css('input')).nativeElement;
-    inputEl.dispatchEvent(new Event('change'));
+        const inputEl = fixture.debugElement.query(By.css('input')).nativeElement;
+        inputEl.dispatchEvent(new Event('change'));
 
-    fixture.detectChanges();
+        fixture.detectChanges();
 
-    expect(component.change.emit).toHaveBeenCalledWith(1);
-  });
+        expect(component.change.emit).toHaveBeenCalledWith(1);
+    });
 
-  it('should update innerValue via writeValue (ControlValueAccessor)', () => {
-    component.writeValue(1);
-    expect(component.innerValue).toBe(1);
+    it('should update innerValue via writeValue (ControlValueAccessor)', () => {
+        component.writeValue(1);
+        expect(component.innerValue).toBe(1);
 
-    component.writeValue(2);
-    expect(component.innerValue).toBe(2);
-  });
+        component.writeValue(2);
+        expect(component.innerValue).toBe(2);
+    });
 
-  it('should call onChange callback when value changes', () => {
-    const onChangeSpy = jasmine.createSpy('onChange');
-    component.registerOnChange(onChangeSpy);
+    it('should call onChange callback when value changes', () => {
+        const onChangeSpy = vi.fn().mockName('onChange');
+        component.registerOnChange(onChangeSpy);
 
-    component.onChangeValue(1);
+        component.onChangeValue(1);
 
-    expect(onChangeSpy).toHaveBeenCalledWith(1);
-  });
+        expect(onChangeSpy).toHaveBeenCalledWith(1);
+    });
 
-  it('should call onTouched callback when value changes', () => {
-    const onTouchedSpy = jasmine.createSpy('onTouched');
-    component.registerOnTouched(onTouchedSpy);
+    it('should call onTouched callback when value changes', () => {
+        const onTouchedSpy = vi.fn().mockName('onTouched');
+        component.registerOnTouched(onTouchedSpy);
 
-    component.onChangeValue(1);
+        component.onChangeValue(1);
 
-    expect(onTouchedSpy).toHaveBeenCalled();
-  });
+        expect(onTouchedSpy).toHaveBeenCalled();
+    });
 
-  it('should reflect checked state correctly', () => {
-    component.writeValue(1);
-    fixture.detectChanges();
+    it('should reflect checked state correctly', () => {
+        component.writeValue(1);
+        fixture.detectChanges();
 
-    const inputEl = fixture.debugElement.query(By.css('input')).nativeElement;
-    expect(inputEl.checked).toBeTrue();
+        const inputEl = fixture.debugElement.query(By.css('input')).nativeElement;
+        expect(inputEl.checked).toBe(true);
 
-    component.writeValue(2);
-    fixture.detectChanges();
-    expect(inputEl.checked).toBeFalse();
-  });
+        component.writeValue(2);
+        fixture.detectChanges();
+        expect(inputEl.checked).toBe(false);
+    });
 
-  it('should work with boolean value', () => {
-    component.value = true;
-    component.writeValue(true);
-    fixture.detectChanges();
+    it('should work with boolean value', () => {
+        component.value = true;
+        component.writeValue(true);
+        fixture.detectChanges();
 
-    const inputEl = fixture.debugElement.query(By.css('input')).nativeElement;
-    expect(inputEl.checked).toBeTrue();
+        const inputEl = fixture.debugElement.query(By.css('input')).nativeElement;
+        expect(inputEl.checked).toBe(true);
 
-    component.writeValue(false);
-    fixture.detectChanges();
-    expect(inputEl.checked).toBeFalse();
-  });
+        component.writeValue(false);
+        fixture.detectChanges();
+        expect(inputEl.checked).toBe(false);
+    });
 
-  it('should not apply the radio id to the host element', () => {
-    const hostElement = fixture.debugElement.nativeElement as HTMLElement;
+    it('should not apply the radio id to the host element', () => {
+        const hostElement = fixture.debugElement.nativeElement as HTMLElement;
 
-    expect(hostElement.hasAttribute('id')).toBeFalse();
-  });
+        expect(hostElement.hasAttribute('id')).toBe(false);
+    });
 
-  it('should associate an external label with the input id', () => {
-    const radioHost = fixture.debugElement.nativeElement as HTMLElement;
-    const inputEl = fixture.debugElement.query(By.css('input')).nativeElement as HTMLInputElement;
-    const externalLabel = document.createElement('label');
-    const container = document.createElement('div');
-    externalLabel.htmlFor = inputEl.id;
-    externalLabel.textContent = 'External label';
-    container.appendChild(radioHost);
-    container.appendChild(externalLabel);
-    document.body.appendChild(container);
+    it('should associate an external label with the input id', () => {
+        const radioHost = fixture.debugElement.nativeElement as HTMLElement;
+        const inputEl = fixture.debugElement.query(By.css('input')).nativeElement as HTMLInputElement;
+        const externalLabel = document.createElement('label');
+        const container = document.createElement('div');
+        externalLabel.htmlFor = inputEl.id;
+        externalLabel.textContent = 'External label';
+        container.appendChild(radioHost);
+        container.appendChild(externalLabel);
+        document.body.appendChild(container);
 
-    expect(radioHost.hasAttribute('id')).toBeFalse();
-    expect(inputEl.id).toBe('radio1');
+        expect(radioHost.hasAttribute('id')).toBe(false);
+        expect(inputEl.id).toBe('radio1');
 
-    try {
-      expect(externalLabel.control?.id).toBe(inputEl.id);
-    } finally {
-      container.remove();
-    }
-  });
+        try {
+            expect(externalLabel.control?.id).toBe(inputEl.id);
+        }
+        finally {
+            container.remove();
+        }
+    });
 
-  it('should not set aria-label on the input by default', () => {
-    const inputEl = fixture.debugElement.query(By.css('input')).nativeElement as HTMLInputElement;
+    it('should not set aria-label on the input by default', () => {
+        const inputEl = fixture.debugElement.query(By.css('input')).nativeElement as HTMLInputElement;
 
-    expect(inputEl.hasAttribute('aria-label')).toBeFalse();
-  });
+        expect(inputEl.hasAttribute('aria-label')).toBe(false);
+    });
 
-  it('should expose ariaLabel as the input\'s accessible name, for use when the visible label is empty', () => {
-    component.label = '';
-    component.ariaLabel = 'Select Engineer as your principal occupation';
-    fixture.detectChanges();
+    it('should expose ariaLabel as the input\'s accessible name, for use when the visible label is empty', () => {
+        component.label = '';
+        component.ariaLabel = 'Select Engineer as your principal occupation';
+        fixture.detectChanges();
 
-    const inputEl = fixture.debugElement.query(By.css('input')).nativeElement as HTMLInputElement;
+        const inputEl = fixture.debugElement.query(By.css('input')).nativeElement as HTMLInputElement;
 
-    expect(inputEl.getAttribute('aria-label')).toBe('Select Engineer as your principal occupation');
-  });
+        expect(inputEl.getAttribute('aria-label')).toBe('Select Engineer as your principal occupation');
+    });
 
-  it('should expose ariaLabelledby as the input\'s accessible name', () => {
-    component.label = '';
-    component.ariaLabelledby = 'occupation-name-1';
-    fixture.detectChanges();
+    it('should expose ariaLabelledby as the input\'s accessible name', () => {
+        component.label = '';
+        component.ariaLabelledby = 'occupation-name-1';
+        fixture.detectChanges();
 
-    const inputEl = fixture.debugElement.query(By.css('input')).nativeElement as HTMLInputElement;
+        const inputEl = fixture.debugElement.query(By.css('input')).nativeElement as HTMLInputElement;
 
-    expect(inputEl.getAttribute('aria-labelledby')).toBe('occupation-name-1');
-  });
+        expect(inputEl.getAttribute('aria-labelledby')).toBe('occupation-name-1');
+    });
 
-  it('should prefer ariaLabelledby over ariaLabel when both are set', () => {
-    component.label = '';
-    component.ariaLabel = 'fallback label';
-    component.ariaLabelledby = 'occupation-name-1';
-    fixture.detectChanges();
+    it('should prefer ariaLabelledby over ariaLabel when both are set', () => {
+        component.label = '';
+        component.ariaLabel = 'fallback label';
+        component.ariaLabelledby = 'occupation-name-1';
+        fixture.detectChanges();
 
-    const inputEl = fixture.debugElement.query(By.css('input')).nativeElement as HTMLInputElement;
+        const inputEl = fixture.debugElement.query(By.css('input')).nativeElement as HTMLInputElement;
 
-    expect(inputEl.getAttribute('aria-labelledby')).toBe('occupation-name-1');
-    expect(inputEl.hasAttribute('aria-label')).toBeFalse();
-  });
+        expect(inputEl.getAttribute('aria-labelledby')).toBe('occupation-name-1');
+        expect(inputEl.hasAttribute('aria-label')).toBe(false);
+    });
 });

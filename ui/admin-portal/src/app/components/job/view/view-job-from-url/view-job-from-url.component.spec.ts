@@ -14,6 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
+import type {MockedObject} from "vitest";
 import {ComponentFixture, fakeAsync, TestBed, tick, waitForAsync} from '@angular/core/testing';
 import {ActivatedRoute, Router} from '@angular/router';
 import {of, throwError} from 'rxjs';
@@ -30,67 +31,73 @@ import {JobGeneralTabComponent} from "../tab/job-general-tab/job-general-tab.com
 import {ViewJobInfoComponent} from "../info/view-job-info/view-job-info.component";
 import {ChatReadStatusComponent} from "../../../chat/chat-read-status/chat-read-status.component";
 import {ViewJobSummaryComponent} from "../summary/view-job-summary/view-job-summary.component";
-import {RouterLinkStubDirective} from "../../../login/login.component.spec";
+import {RouterLinkStubDirective} from "../../../../../test-helpers/router-link-stub.directive";
 import {AutosaveStatusComponent} from "../../../util/autosave-status/autosave-status.component";
+import {expect, vi} from 'vitest';
 
 describe('ViewJobFromUrlComponent', () => {
-  let component: ViewJobFromUrlComponent;
-  let fixture: ComponentFixture<ViewJobFromUrlComponent>;
-  let mockJobService: jasmine.SpyObj<JobService>;
-  const mockActivatedRoute = {
-    paramMap: of({
-      get: (key: string) => '1' // Mock job ID
-    })
-  };
+    let component: ViewJobFromUrlComponent;
+    let fixture: ComponentFixture<ViewJobFromUrlComponent>;
+    let mockJobService: MockedObject<JobService>;
+    const mockActivatedRoute = {
+        paramMap: of({
+            get: (key: string) => '1' // Mock job ID
+        })
+    };
 
-  beforeEach(waitForAsync(() => {
-    mockJobService = jasmine.createSpyObj('JobService', ['get']);
-    mockJobService.get.and.returnValue(of(MockJob));
-    TestBed.configureTestingModule({
-      imports:[NgbNavModule,ReactiveFormsModule,CommonModule,NgbTooltipModule],
-      declarations: [ViewJobFromUrlComponent,AutosaveStatusComponent,ViewJobComponent,JobGeneralTabComponent,ViewJobInfoComponent,ChatReadStatusComponent,ViewJobSummaryComponent,RouterLinkStubDirective],
-      providers: [
-        { provide: Router, useClass: class { navigate = jasmine.createSpy('navigate'); events = of(); } }, // Mock Router
-        { provide: JobService, useValue: mockJobService },
-        { provide: ActivatedRoute, useValue: mockActivatedRoute },
-        provideHttpClient(withXhr(), withInterceptorsFromDi()),
-        provideHttpClientTesting()
-      ]
-    }).compileComponents();
-  }));
+    beforeEach(waitForAsync(() => {
+        mockJobService = ({
+            get: vi.fn().mockName("JobService.get")
+        } as unknown as typeof mockJobService);
+        mockJobService.get.mockReturnValue(of(MockJob));
+        TestBed.configureTestingModule({
+            imports: [NgbNavModule, ReactiveFormsModule, CommonModule, NgbTooltipModule],
+            declarations: [ViewJobFromUrlComponent, AutosaveStatusComponent, ViewJobComponent, JobGeneralTabComponent, ViewJobInfoComponent, ChatReadStatusComponent, ViewJobSummaryComponent, RouterLinkStubDirective],
+            providers: [
+                { provide: Router, useClass: class {
+                        navigate = vi.fn().mockName('navigate');
+                        events = of();
+                    } }, // Mock Router
+                { provide: JobService, useValue: mockJobService },
+                { provide: ActivatedRoute, useValue: mockActivatedRoute },
+                provideHttpClient(withXhr(), withInterceptorsFromDi()),
+                provideHttpClientTesting()
+            ]
+        }).compileComponents();
+    }));
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(ViewJobFromUrlComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
+    beforeEach(() => {
+        fixture = TestBed.createComponent(ViewJobFromUrlComponent);
+        component = fixture.componentInstance;
+        fixture.detectChanges();
+    });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
 
-  it('should load job based on ID from server', fakeAsync(() => {
-    // Arrange
-    const job = MockJob;
-    // Act
-    component.ngOnInit();
-    tick();
-    expect(component.error).toBeNull();
-    expect(mockJobService.get).toHaveBeenCalledWith(1); // Expecting to call get method with job ID 1
-    expect(component.job).toEqual(job); // Expecting loaded job to match the mock job
-    expect(component.loading).toBeFalse();
-  }));
-  //
-  it('should handle error when loading job', () => {
-    // Arrange
-    const errorMessage = 'Error occurred while loading job';
-    mockJobService.get.and.returnValue(throwError(errorMessage));
-    // Act
-    component.ngOnInit();
-    // Assert
-    expect(mockJobService.get).toHaveBeenCalledWith(1); // Expecting to call get method with job ID 1
-    expect(component.job).toBeNull(); // Expecting job to be null due to error
-    expect(component.error).toEqual(errorMessage); // Expecting error message to be set
-    expect(component.loading).toBeFalse();
-  });
+    it('should load job based on ID from server', fakeAsync(() => {
+        // Arrange
+        const job = MockJob;
+        // Act
+        component.ngOnInit();
+        tick();
+        expect(component.error).toBeNull();
+        expect(mockJobService.get).toHaveBeenCalledWith(1); // Expecting to call get method with job ID 1
+        expect(component.job).toEqual(job); // Expecting loaded job to match the mock job
+        expect(component.loading).toBe(false);
+    }));
+    //
+    it('should handle error when loading job', () => {
+        // Arrange
+        const errorMessage = 'Error occurred while loading job';
+        mockJobService.get.mockReturnValue(throwError(errorMessage));
+        // Act
+        component.ngOnInit();
+        // Assert
+        expect(mockJobService.get).toHaveBeenCalledWith(1); // Expecting to call get method with job ID 1
+        expect(component.job).toBeNull(); // Expecting job to be null due to error
+        expect(component.error).toEqual(errorMessage); // Expecting error message to be set
+        expect(component.loading).toBe(false);
+    });
 });

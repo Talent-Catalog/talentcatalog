@@ -13,13 +13,13 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
+
+import type {MockedObject} from "vitest";
 import {provideHttpClientTesting} from "@angular/common/http/testing";
 import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {MockCandidate} from "../../../../../../MockData/MockCandidate";
 import {ComponentFixture, TestBed} from "@angular/core/testing";
-import {
-  mockCandidateIntakeData
-} from "../../candidate-intake-tab/candidate-intake-tab.component.spec";
+import {mockCandidateIntakeData} from "../../candidate-intake-tab/candidate-intake-tab.component.spec";
 import {By} from '@angular/platform-browser';
 import {VisaCheckUkComponent} from "./visa-check-uk.component";
 import {MockCandidateVisa} from "../../../../../../MockData/MockCandidateVisa";
@@ -27,109 +27,110 @@ import {MockCandidateVisaJobCheck} from "../../../../../../MockData/MockCandidat
 import {FormsModule, ReactiveFormsModule, UntypedFormBuilder} from "@angular/forms";
 import {NgbAccordionModule, NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {NgSelectModule} from "@ng-select/ng-select";
-import {
-  AutosaveStatusComponent
-} from "../../../../../util/autosave-status/autosave-status.component";
-import {RouterLinkStubDirective} from "../../../../../login/login.component.spec";
+import {AutosaveStatusComponent} from "../../../../../util/autosave-status/autosave-status.component";
+import {RouterLinkStubDirective} from "../../../../../../../test-helpers/router-link-stub.directive";
 import {DependantsComponent} from "../../../../intake/dependants/dependants.component";
 import {Component, CUSTOM_ELEMENTS_SCHEMA, ChangeDetectionStrategy} from "@angular/core";
 import {AuthorizationService} from "../../../../../../services/authorization.service";
 import {LocalStorageService} from "../../../../../../services/local-storage.service";
 import {ReadOnlyInputsDirective} from "../../../../../../directives/read-only-inputs.directive";
+import {expect, vi} from 'vitest';
 
 // Mock IntProtectionComponent to include input elements for testing
 @Component({
-  selector: 'app-destination-family',
-  template: `
+    selector: 'app-destination-family',
+    template: `
     <ng-select></ng-select>
     <input type="text"/>
     <textarea></textarea>
     <app-date-picker></app-date-picker>
     <ngx-wig></ngx-wig>
   `,
-  changeDetection: ChangeDetectionStrategy.Eager,
-  standalone: false
+    changeDetection: ChangeDetectionStrategy.Eager,
+    standalone: false
 })
 class MockDestinationFamilyComponent {
-  // No isEditable method; inputs are controlled by parent directive
 }
 
 describe('VisaCheckUkComponent', () => {
-  let component: VisaCheckUkComponent;
-  let fixture: ComponentFixture<VisaCheckUkComponent>;
-  let authorizationServiceSpy: jasmine.SpyObj<AuthorizationService>;
-  const mockCandidate = new MockCandidate();
+    let component: VisaCheckUkComponent;
+    let fixture: ComponentFixture<VisaCheckUkComponent>;
+    let authorizationServiceSpy: MockedObject<AuthorizationService>;
+    const mockCandidate = new MockCandidate();
 
-  beforeEach(async () => {
-    const authServiceSpyObj = jasmine.createSpyObj('AuthorizationService', ['isEditableCandidate']);
+    beforeEach(async () => {
+        const authServiceSpyObj = {
+            isEditableCandidate: vi.fn().mockName("AuthorizationService.isEditableCandidate")
+        };
 
-    await TestBed.configureTestingModule({
-      declarations: [
-        VisaCheckUkComponent,
-        AutosaveStatusComponent,
-        ReadOnlyInputsDirective,
-        MockDestinationFamilyComponent,
-        RouterLinkStubDirective,
-        DependantsComponent],
-      imports: [NgSelectModule,FormsModule,ReactiveFormsModule,NgbAccordionModule],
-      providers: [UntypedFormBuilder,
-        {provide: NgbModal, useValue: {}},
-        {provide: LocalStorageService, useValue: {}},
-        {provide: AuthorizationService, useValue: authServiceSpyObj},
-        provideHttpClient(withXhr(), withInterceptorsFromDi()),
-        provideHttpClientTesting()],
-      schemas: [CUSTOM_ELEMENTS_SCHEMA]
-    }).compileComponents();
-  });
+        await TestBed.configureTestingModule({
+            declarations: [
+                VisaCheckUkComponent,
+                AutosaveStatusComponent,
+                ReadOnlyInputsDirective,
+                MockDestinationFamilyComponent,
+                RouterLinkStubDirective,
+                DependantsComponent
+            ],
+            imports: [NgSelectModule, FormsModule, ReactiveFormsModule, NgbAccordionModule],
+            providers: [UntypedFormBuilder,
+                { provide: NgbModal, useValue: {} },
+                { provide: LocalStorageService, useValue: {} },
+                { provide: AuthorizationService, useValue: authServiceSpyObj },
+                provideHttpClient(withXhr(), withInterceptorsFromDi()),
+                provideHttpClientTesting()],
+            schemas: [CUSTOM_ELEMENTS_SCHEMA]
+        }).compileComponents();
+    });
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(VisaCheckUkComponent);
-    component = fixture.componentInstance;
-    authorizationServiceSpy = TestBed.inject(AuthorizationService) as jasmine.SpyObj<AuthorizationService>;
+    beforeEach(() => {
+        fixture = TestBed.createComponent(VisaCheckUkComponent);
+        component = fixture.componentInstance;
+        authorizationServiceSpy = TestBed.inject(AuthorizationService) as MockedObject<AuthorizationService>;
 
-    // Assign mock data to component inputs
-    component.candidate = mockCandidate;
-    component.candidateIntakeData = {...mockCandidateIntakeData};
-    component.visaCheckRecord = {...MockCandidateVisa};
-    fixture.detectChanges();
-  });
+        // Assign mock data to component inputs
+        component.candidate = mockCandidate;
+        component.candidateIntakeData = { ...mockCandidateIntakeData };
+        component.visaCheckRecord = { ...MockCandidateVisa };
+        fixture.detectChanges();
+    });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
 
-  it('should default select the first job in the array on init', () => {
-    component.ngOnInit();
-    expect(component.selectedJob).toEqual(MockCandidateVisaJobCheck);
-  });
-  it('should pass the correct inputs to app-candidate-visa-job component', () => {
-    const candidateVisaJobComponent = fixture.debugElement.query(By.css('app-candidate-visa-job'));
-    expect(candidateVisaJobComponent).toBeTruthy();
-    expect(candidateVisaJobComponent.componentInstance.candidate).toEqual(mockCandidate);
-    expect(candidateVisaJobComponent.componentInstance.candidateIntakeData).toEqual(mockCandidateIntakeData);
-    expect(candidateVisaJobComponent.componentInstance.visaCheckRecord).toEqual(MockCandidateVisa);
-    expect(candidateVisaJobComponent.componentInstance.selectedJob).toEqual(MockCandidateVisaJobCheck);
-  });
+    it('should default select the first job in the array on init', () => {
+        component.ngOnInit();
+        expect(component.selectedJob).toEqual(MockCandidateVisaJobCheck);
+    });
+    it('should pass the correct inputs to app-candidate-visa-job component', () => {
+        const candidateVisaJobComponent = fixture.debugElement.query(By.css('app-candidate-visa-job'));
+        expect(candidateVisaJobComponent).toBeTruthy();
+        expect(candidateVisaJobComponent.componentInstance.candidate).toEqual(mockCandidate);
+        expect(candidateVisaJobComponent.componentInstance.candidateIntakeData).toEqual(mockCandidateIntakeData);
+        expect(candidateVisaJobComponent.componentInstance.visaCheckRecord).toEqual(MockCandidateVisa);
+        expect(candidateVisaJobComponent.componentInstance.selectedJob).toEqual(MockCandidateVisaJobCheck);
+    });
 
-  it('should render app-visa-job-check-uk component for the selected job', () => {
-    component.ngOnInit();
-    fixture.detectChanges();
+    it('should render app-visa-job-check-uk component for the selected job', () => {
+        component.ngOnInit();
+        fixture.detectChanges();
 
-    const visaJobCheckUkComponent = fixture.debugElement.query(By.css('app-visa-job-check-uk'));
-    expect(visaJobCheckUkComponent).toBeTruthy();
-    expect(visaJobCheckUkComponent.componentInstance.candidate).toEqual(mockCandidate);
-    expect(visaJobCheckUkComponent.componentInstance.candidateIntakeData).toEqual(mockCandidateIntakeData);
-    expect(visaJobCheckUkComponent.componentInstance.visaCheckRecord).toEqual(MockCandidateVisa);
-  });
+        const visaJobCheckUkComponent = fixture.debugElement.query(By.css('app-visa-job-check-uk'));
+        expect(visaJobCheckUkComponent).toBeTruthy();
+        expect(visaJobCheckUkComponent.componentInstance.candidate).toEqual(mockCandidate);
+        expect(visaJobCheckUkComponent.componentInstance.candidateIntakeData).toEqual(mockCandidateIntakeData);
+        expect(visaJobCheckUkComponent.componentInstance.visaCheckRecord).toEqual(MockCandidateVisa);
+    });
 
 
-  it('should not render app-visa-job-check-uk component for non-selected jobs', () => {
-    const otherJobCheck = { id: 2, jobTitle: 'Data Scientist' } as any;
-    component.visaCheckRecord.candidateVisaJobChecks.push(otherJobCheck);
-    component.ngOnInit();
-    fixture.detectChanges();
+    it('should not render app-visa-job-check-uk component for non-selected jobs', () => {
+        const otherJobCheck = { id: 2, jobTitle: 'Data Scientist' } as any;
+        component.visaCheckRecord.candidateVisaJobChecks.push(otherJobCheck);
+        component.ngOnInit();
+        fixture.detectChanges();
 
-    const visaJobCheckUkComponents = fixture.debugElement.queryAll(By.css('app-visa-job-check-uk'));
-    expect(visaJobCheckUkComponents.length).toBeLessThanOrEqual(2);
-  });
+        const visaJobCheckUkComponents = fixture.debugElement.queryAll(By.css('app-visa-job-check-uk'));
+        expect(visaJobCheckUkComponents.length).toBeLessThanOrEqual(2);
+    });
 });

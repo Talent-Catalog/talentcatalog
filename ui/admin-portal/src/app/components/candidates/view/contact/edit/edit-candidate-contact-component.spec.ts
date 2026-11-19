@@ -13,6 +13,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
+
+import type {MockedObject} from "vitest";
 import {EditCandidateContactComponent} from "./edit-candidate-contact.component";
 import {NgbActiveModal, NgbDatepickerModule} from "@ng-bootstrap/ng-bootstrap";
 import {CandidateService} from "../../../../../services/candidate.service";
@@ -25,76 +27,86 @@ import {NgSelectModule} from "@ng-select/ng-select";
 import {of} from "rxjs";
 import {MockCandidate} from "../../../../../MockData/MockCandidate";
 import {DatePickerComponent} from "../../../../util/date-picker/date-picker.component";
+import {expect, vi} from 'vitest';
 
 describe('EditCandidateContactComponent', () => {
-  let component: EditCandidateContactComponent;
-  let fixture: ComponentFixture<EditCandidateContactComponent>;
-  let activeModalSpy: jasmine.SpyObj<NgbActiveModal>;
-  let candidateServiceSpy: jasmine.SpyObj<CandidateService>;
-  let countryServiceSpy: jasmine.SpyObj<CountryService>;
-  let formBuilder: UntypedFormBuilder;
+    let component: EditCandidateContactComponent;
+    let fixture: ComponentFixture<EditCandidateContactComponent>;
+    let activeModalSpy: MockedObject<NgbActiveModal>;
+    let candidateServiceSpy: MockedObject<CandidateService>;
+    let countryServiceSpy: MockedObject<CountryService>;
+    let formBuilder: UntypedFormBuilder;
 
-  beforeEach(waitForAsync(() => {
-    const activeModalSpyObj = jasmine.createSpyObj('NgbActiveModal', ['close', 'dismiss']);
-    const candidateServiceSpyObj = jasmine.createSpyObj('CandidateService', ['get', 'update']);
-    const countryServiceSpyObj = jasmine.createSpyObj('CountryService', ['listCountries']);
+    beforeEach(waitForAsync(() => {
+        const activeModalSpyObj = {
+            close: vi.fn().mockName("NgbActiveModal.close"),
+            dismiss: vi.fn().mockName("NgbActiveModal.dismiss")
+        };
+        const candidateServiceSpyObj = {
+            get: vi.fn().mockName("CandidateService.get"),
+            update: vi.fn().mockName("CandidateService.update")
+        };
+        const countryServiceSpyObj = {
+            listCountries: vi.fn().mockName("CountryService.listCountries")
+        };
 
-    TestBed.configureTestingModule({
-      declarations: [EditCandidateContactComponent, DatePickerComponent],
-      imports: [FormsModule,ReactiveFormsModule, NgSelectModule, NgbDatepickerModule],
-      providers: [
-        { provide: NgbActiveModal, useValue: activeModalSpyObj },
-        { provide: CandidateService, useValue: candidateServiceSpyObj },
-        { provide: CountryService, useValue: countryServiceSpyObj },
-        UntypedFormBuilder,
-        provideHttpClient(withXhr(), withInterceptorsFromDi()),
-        provideHttpClientTesting(),
-      ],
-    }).compileComponents();
+        TestBed.configureTestingModule({
+            declarations: [EditCandidateContactComponent, DatePickerComponent],
+            imports: [FormsModule, ReactiveFormsModule, NgSelectModule, NgbDatepickerModule],
+            providers: [
+                { provide: NgbActiveModal, useValue: activeModalSpyObj },
+                { provide: CandidateService, useValue: candidateServiceSpyObj },
+                { provide: CountryService, useValue: countryServiceSpyObj },
+                UntypedFormBuilder,
+                provideHttpClient(withXhr(), withInterceptorsFromDi()),
+                provideHttpClientTesting(),
+            ],
+        }).compileComponents();
 
-    activeModalSpy = TestBed.inject(NgbActiveModal) as jasmine.SpyObj<NgbActiveModal>;
-    candidateServiceSpy = TestBed.inject(CandidateService) as jasmine.SpyObj<CandidateService>;
-    countryServiceSpy = TestBed.inject(CountryService) as jasmine.SpyObj<CountryService>;
-    formBuilder = TestBed.inject(UntypedFormBuilder);
-  }));
+        activeModalSpy = TestBed.inject(NgbActiveModal) as MockedObject<NgbActiveModal>;
+        candidateServiceSpy = TestBed.inject(CandidateService) as MockedObject<CandidateService>;
+        countryServiceSpy = TestBed.inject(CountryService) as MockedObject<CountryService>;
+        formBuilder = TestBed.inject(UntypedFormBuilder);
+    }));
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(EditCandidateContactComponent);
-    component = fixture.componentInstance;
-    component.candidate = new MockCandidate(); // Mock candidate ID
-    countryServiceSpy.listCountries.and.returnValue(of([]));
-    candidateServiceSpy.get.and.returnValue(of());
-    // component.candidateForm = formBuilder.group(new MockCandidate());
-    fixture.detectChanges();
-  });
+    beforeEach(() => {
+        fixture = TestBed.createComponent(EditCandidateContactComponent);
+        component = fixture.componentInstance;
+        component.candidate = new MockCandidate(); // Mock candidate ID
+        countryServiceSpy.listCountries.mockReturnValue(of([]));
+        candidateServiceSpy.get.mockReturnValue(of());
+        // component.candidateForm = formBuilder.group(new MockCandidate());
+        fixture.detectChanges();
+    });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
 
-  it('should initialize form with candidate details', () => {
-    // Trigger ngOnInit
-    component.ngOnInit();
-    // Expect the form controls to be initialized with the candidate details
-    expect(component.loading).toBeFalsy();
-    expect(component.error).toBeUndefined();
-    expect(component.candidateForm.value).toEqual({
-      firstName: component.candidate.user.firstName,
-      lastName: component.candidate.user.lastName,
-      gender: component.candidate.gender,
-      address1: component.candidate.address1,
-      city: component.candidate.city,
-      state: component.candidate.state,
-      countryId: component.candidate.country.id,
-      yearOfArrival: component.candidate.yearOfArrival,
-      phone: component.candidate.phone,
-      whatsapp: component.candidate.whatsapp,
-      email: component.candidate.user.email,
-      dob: component.candidate.dob,
-      nationalityId: component.candidate.nationality.id,
-      relocatedAddress: component.candidate.relocatedAddress,
-      relocatedCity: component.candidate.relocatedCity,
-      relocatedState: component.candidate.relocatedState,
-      relocatedCountryId: component.candidate.relocatedCountry.id,
-    });  });
+    it('should initialize form with candidate details', () => {
+        // Trigger ngOnInit
+        component.ngOnInit();
+        // Expect the form controls to be initialized with the candidate details
+        expect(component.loading).toBeFalsy();
+        expect(component.error).toBeUndefined();
+        expect(component.candidateForm.value).toEqual({
+            firstName: component.candidate.user.firstName,
+            lastName: component.candidate.user.lastName,
+            gender: component.candidate.gender,
+            address1: component.candidate.address1,
+            city: component.candidate.city,
+            state: component.candidate.state,
+            countryId: component.candidate.country.id,
+            yearOfArrival: component.candidate.yearOfArrival,
+            phone: component.candidate.phone,
+            whatsapp: component.candidate.whatsapp,
+            email: component.candidate.user.email,
+            dob: component.candidate.dob,
+            nationalityId: component.candidate.nationality.id,
+            relocatedAddress: component.candidate.relocatedAddress,
+            relocatedCity: component.candidate.relocatedCity,
+            relocatedState: component.candidate.relocatedState,
+            relocatedCountryId: component.candidate.relocatedCountry.id,
+        });
+    });
 });

@@ -143,6 +143,13 @@
                   "maximumError": "5mb"
                 }
               ]
+            },
+            "testing": {
+              "polyfills": [
+                "src/polyfills.ts",
+                "zone.js/testing",
+                "zone.js/plugins/vitest-patch"
+              ]
             }
           },
           "defaultConfiguration": ""
@@ -169,28 +176,18 @@
           }
         },
         "test": {
-          "builder": "@angular/build:karma",
+          "builder": "@angular/build:unit-test",
           "options": {
-            "main": "src/test.ts",
-            "polyfills": [
-              "src/polyfills.ts"
+            "buildTarget": "admin-portal:build:testing",
+            "tsConfig": "tsconfig.spec.json",
+            "setupFiles": [
+              "src/test-setup.ts"
             ],
-            "tsConfig": "src/tsconfig.spec.json",
-            "karmaConfig": "src/karma.conf.js",
-            "styles": [
-              "src/styles.scss"
-            ],
-            "scripts": [],
-            "assets": [
-              "src/favicon.ico",
-              "src/assets"
-            ],
-            "codeCoverage": true,
-            "stylePreprocessorOptions": {
-              "includePaths": [
-                "."
-              ]
-            }
+            "coverageReporters": [
+              "text-summary",
+              "html",
+              "lcov"
+            ]
           }
         }
       }

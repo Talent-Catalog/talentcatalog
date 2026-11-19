@@ -14,6 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
+import type {MockedObject} from "vitest";
 import {ReactiveFormsModule, UntypedFormBuilder} from "@angular/forms";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {provideHttpClientTesting} from "@angular/common/http/testing";
@@ -24,72 +25,78 @@ import {SystemLanguage} from "../../../../model/language";
 import {CreateLanguageComponent} from "./create-language.component";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {LanguageService} from "../../../../services/language.service";
+import {expect, vi} from 'vitest';
 
 describe('CreateLanguageComponent', () => {
-  let component: CreateLanguageComponent;
-  let fixture: ComponentFixture<CreateLanguageComponent>;
-  let languageServiceSpy: jasmine.SpyObj<LanguageService>;
-  let ngbActiveModalSpy: jasmine.SpyObj<NgbActiveModal>;
-  let formBuilder: UntypedFormBuilder;
-  // @ts-expect-error
-  const newLanguage: SystemLanguage = { langCode: 'fr' };
+    let component: CreateLanguageComponent;
+    let fixture: ComponentFixture<CreateLanguageComponent>;
+    let languageServiceSpy: MockedObject<LanguageService>;
+    let ngbActiveModalSpy: MockedObject<NgbActiveModal>;
+    let formBuilder: UntypedFormBuilder;
+    // @ts-expect-error
+    const newLanguage: SystemLanguage = { langCode: 'fr' };
 
-  beforeEach(async () => {
-    const languageServiceSpyObj = jasmine.createSpyObj('LanguageService', ['addSystemLanguage']);
-    const ngbActiveModalSpyObj = jasmine.createSpyObj('NgbActiveModal', ['close', 'dismiss']);
+    beforeEach(async () => {
+        const languageServiceSpyObj = {
+            addSystemLanguage: vi.fn().mockName("LanguageService.addSystemLanguage")
+        };
+        const ngbActiveModalSpyObj = {
+            close: vi.fn().mockName("NgbActiveModal.close"),
+            dismiss: vi.fn().mockName("NgbActiveModal.dismiss")
+        };
 
-    await TestBed.configureTestingModule({
-      declarations: [CreateLanguageComponent],
-      imports: [ReactiveFormsModule,NgSelectModule],
-      providers: [
-        { provide: LanguageService, useValue: languageServiceSpyObj },
-        { provide: NgbActiveModal, useValue: ngbActiveModalSpyObj },
-        provideHttpClient(withXhr(), withInterceptorsFromDi()),
-        provideHttpClientTesting()
-      ]
-    }).compileComponents();
+        await TestBed.configureTestingModule({
+            declarations: [CreateLanguageComponent],
+            imports: [ReactiveFormsModule, NgSelectModule],
+            providers: [
+                { provide: LanguageService, useValue: languageServiceSpyObj },
+                { provide: NgbActiveModal, useValue: ngbActiveModalSpyObj },
+                provideHttpClient(withXhr(), withInterceptorsFromDi()),
+                provideHttpClientTesting()
+            ]
+        }).compileComponents();
 
-    languageServiceSpy = TestBed.inject(LanguageService) as jasmine.SpyObj<LanguageService>;
-    ngbActiveModalSpy = TestBed.inject(NgbActiveModal) as jasmine.SpyObj<NgbActiveModal>;
-    formBuilder = TestBed.inject(UntypedFormBuilder);
-  });
+        languageServiceSpy = TestBed.inject(LanguageService) as MockedObject<LanguageService>;
+        ngbActiveModalSpy = TestBed.inject(NgbActiveModal) as MockedObject<NgbActiveModal>;
+        formBuilder = TestBed.inject(UntypedFormBuilder);
+    });
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(CreateLanguageComponent);
-    component = fixture.componentInstance;
-    languageServiceSpy.addSystemLanguage.and.returnValue(of(newLanguage));
+    beforeEach(() => {
+        fixture = TestBed.createComponent(CreateLanguageComponent);
+        component = fixture.componentInstance;
+        languageServiceSpy.addSystemLanguage.mockReturnValue(of(newLanguage));
 
-    fixture.detectChanges();
-  });
+        fixture.detectChanges();
+    });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
 
-  it('should call onSave and close modal when system language is successfully added', fakeAsync(() => {
-    component.languageForm.patchValue({ langCode: 'fr' });
+    it('should call onSave and close modal when system language is successfully added', fakeAsync(() => {
+        component.languageForm.patchValue({ langCode: 'fr' });
 
-    component.onSave();
-    tick(); // Waiting for async operation to complete
+        component.onSave();
+        tick(); // Waiting for async operation to complete
 
-    expect(languageServiceSpy.addSystemLanguage).toHaveBeenCalledWith('fr');
-    expect(ngbActiveModalSpy.close).toHaveBeenCalledWith(newLanguage);
-    expect(component.saving).toBeFalse();
-  }));
+        expect(languageServiceSpy.addSystemLanguage).toHaveBeenCalledWith('fr');
+        expect(ngbActiveModalSpy.close).toHaveBeenCalledWith(newLanguage);
+        expect(component.saving).toBe(false);
+    }));
 
-  it('should handle error when adding system language fails', fakeAsync(() => {
-    const errorResponse = { status: 500, message: 'Internal Server Error' };
-    languageServiceSpy.addSystemLanguage.and.returnValue(throwError(errorResponse));
+    it('should handle error when adding system language fails', fakeAsync(() => {
+        const errorResponse = { status: 500, message: 'Internal Server Error' };
+        languageServiceSpy.addSystemLanguage.mockReturnValue(throwError(errorResponse));
 
-    component.onSave();
-    tick(); // Waiting for async operation to complete
+        component.onSave();
+        tick(); // Waiting for async operation to complete
 
-    expect(component.error).toEqual(errorResponse);
-    expect(component.saving).toBeFalse();
-  }));
+        expect(component.error).toEqual(errorResponse);
+        expect(component.saving).toBe(false);
+    }));
 
-  it('should dismiss modal when dismiss is called', () => {
-    component.dismiss();
-    expect(ngbActiveModalSpy.dismiss).toHaveBeenCalledWith(false);
-  });
+    it('should dismiss modal when dismiss is called', () => {
+        component.dismiss();
+        expect(ngbActiveModalSpy.dismiss).toHaveBeenCalledWith(false);
+    });
 });

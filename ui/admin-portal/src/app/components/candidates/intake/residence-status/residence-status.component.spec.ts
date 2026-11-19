@@ -22,50 +22,51 @@ import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {AutosaveStatusComponent} from "../../../util/autosave-status/autosave-status.component";
 import {CandidateService} from "../../../../services/candidate.service";
 import {ResidenceStatus} from "../../../../model/candidate";
+import {expect} from 'vitest';
 
 describe('ResidenceStatusComponent', () => {
-  let component: ResidenceStatusComponent;
-  let fixture: ComponentFixture<ResidenceStatusComponent>;
+    let component: ResidenceStatusComponent;
+    let fixture: ComponentFixture<ResidenceStatusComponent>;
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      declarations: [ ResidenceStatusComponent,AutosaveStatusComponent ],
-      imports: [NgSelectModule, FormsModule, ReactiveFormsModule ],
-      providers: [
-        { provide: CandidateService },
-        provideHttpClient(withXhr(), withInterceptorsFromDi()),
-        provideHttpClientTesting()
-      ]
-    })
-    .compileComponents();
-  });
+    beforeEach(async () => {
+        await TestBed.configureTestingModule({
+            declarations: [ResidenceStatusComponent, AutosaveStatusComponent],
+            imports: [NgSelectModule, FormsModule, ReactiveFormsModule],
+            providers: [
+                { provide: CandidateService },
+                provideHttpClient(withXhr(), withInterceptorsFromDi()),
+                provideHttpClientTesting()
+            ]
+        })
+            .compileComponents();
+    });
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(ResidenceStatusComponent);
-    component = fixture.componentInstance;
-    component.candidateIntakeData = {
-      residenceStatus: ResidenceStatus.Other,
-      residenceStatusNotes: 'Living in a refugee camp'
-    };
-    fixture.detectChanges();
-  });
+    beforeEach(() => {
+        fixture = TestBed.createComponent(ResidenceStatusComponent);
+        component = fixture.componentInstance;
+        component.candidateIntakeData = {
+            residenceStatus: ResidenceStatus.Other,
+            residenceStatusNotes: 'Living in a refugee camp'
+        };
+        fixture.detectChanges();
+    });
 
-  it('should initialize the form controls with the correct default values', () => {
-    expect(component.form.get('residenceStatus').value).toBe(ResidenceStatus.Other);
-    expect(component.form.get('residenceStatusNotes').value).toBe('Living in a refugee camp');
-  });
+    it('should initialize the form controls with the correct default values', () => {
+        expect(component.form.get('residenceStatus').value).toBe(ResidenceStatus.Other);
+        expect(component.form.get('residenceStatusNotes').value).toBe('Living in a refugee camp');
+    });
 
-  it('should display the residence status notes textarea when residenceStatus is not null or NoResponse', () => {
-    component.form.patchValue({ residenceStatus: 'Refugee' });
-    fixture.detectChanges();
-    const notesTextarea = fixture.nativeElement.querySelector('#residenceStatusNotes');
-    expect(notesTextarea).toBeTruthy();
-  });
+    it('should display the residence status notes textarea when residenceStatus is not null or NoResponse', () => {
+        component.form.patchValue({ residenceStatus: 'Refugee' });
+        fixture.detectChanges();
+        const notesTextarea = fixture.nativeElement.querySelector('#residenceStatusNotes');
+        expect(notesTextarea).toBeTruthy();
+    });
 
-  it('should not display the residence status notes textarea when residenceStatus is null or NoResponse', () => {
-    component.form.patchValue({ residenceStatus: 'NoResponse' });
-    fixture.detectChanges();
-    const notesTextarea = fixture.nativeElement.querySelector('#residenceStatusNotes');
-    expect(notesTextarea).toBeFalsy();
-  });
+    it('should not display the residence status notes textarea when residenceStatus is null or NoResponse', () => {
+        component.form.patchValue({ residenceStatus: 'NoResponse' });
+        fixture.detectChanges();
+        const notesTextarea = fixture.nativeElement.querySelector('#residenceStatusNotes');
+        expect(notesTextarea).toBeFalsy();
+    });
 });

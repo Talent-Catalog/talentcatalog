@@ -24,115 +24,119 @@ import {of, throwError} from "rxjs";
 import {DebugElement} from "@angular/core";
 import {By} from "@angular/platform-browser";
 import {UploadType} from "../../../model/task";
+import {expect, vi} from 'vitest';
 
 describe('CvIconComponent', () => {
-  let component: CvIconComponent;
-  let fixture: ComponentFixture<CvIconComponent>;
-  let mockAuthService;
-  let mockCandidateAttachmentService;
-  const mockCanidiate = new MockCandidate();
-  beforeEach(async () => {
-    mockAuthService = jasmine.createSpyObj(['canViewCandidateCV']);
-    mockCandidateAttachmentService = jasmine.createSpyObj(['downloadAttachments']);
+    let component: CvIconComponent;
+    let fixture: ComponentFixture<CvIconComponent>;
+    let mockAuthService;
+    let mockCandidateAttachmentService;
+    const mockCanidiate = new MockCandidate();
+    beforeEach(async () => {
+        mockAuthService = {
+            canViewCandidateCV: vi.fn()
+        };
+        mockCandidateAttachmentService = {
+            downloadAttachments: vi.fn()
+        };
 
-    await TestBed.configureTestingModule({
-      declarations: [CvIconComponent],
-      providers: [
-        { provide: AuthorizationService, useValue: mockAuthService },
-        { provide: CandidateAttachmentService, useValue: mockCandidateAttachmentService }
-      ]
-    }).compileComponents();
+        await TestBed.configureTestingModule({
+            declarations: [CvIconComponent],
+            providers: [
+                { provide: AuthorizationService, useValue: mockAuthService },
+                { provide: CandidateAttachmentService, useValue: mockCandidateAttachmentService }
+            ]
+        }).compileComponents();
 
-    fixture = TestBed.createComponent(CvIconComponent);
-    component = fixture.componentInstance;
-  });
+        fixture = TestBed.createComponent(CvIconComponent);
+        component = fixture.componentInstance;
+    });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
 
-  it('should call getAttachments', () => {
-    spyOn(component, 'getAttachments');
-    component.ngOnInit();
-    expect(component.getAttachments).toHaveBeenCalled();
-  });
+    it('should call getAttachments', () => {
+        vi.spyOn(component, 'getAttachments').mockReturnValue(undefined);
+        component.ngOnInit();
+        expect(component.getAttachments).toHaveBeenCalled();
+    });
 
-  it('should populate cvs with single attachment if provided', () => {
-    const attachment: CandidateAttachment = mockCanidiate.candidateAttachments[0];
-    component.attachment = attachment;
-    component.getAttachments();
-    expect(component.cvs).toEqual([attachment]);
-  });
+    it('should populate cvs with single attachment if provided', () => {
+        const attachment: CandidateAttachment = mockCanidiate.candidateAttachments[0];
+        component.attachment = attachment;
+        component.getAttachments();
+        expect(component.cvs).toEqual([attachment]);
+    });
 
-  it('should populate cvs with candidate attachments if no single attachment is provided', () => {
-    const candidate: Candidate = mockCanidiate;
-    component.candidate = candidate;
-    component.getAttachments();
-    expect(component.cvs).toEqual(candidate.candidateAttachments.filter(
-      attachment => attachment.uploadType === UploadType.cv));
-  });
+    it('should populate cvs with candidate attachments if no single attachment is provided', () => {
+        const candidate: Candidate = mockCanidiate;
+        component.candidate = candidate;
+        component.getAttachments();
+        expect(component.cvs).toEqual(candidate.candidateAttachments.filter(attachment => attachment.uploadType === UploadType.cv));
+    });
 
-  it('should return true if user can view CV and cvs are present', () => {
-    mockAuthService.canViewCandidateCV.and.returnValue(true);
-    component.cvs = mockCanidiate.candidateAttachments;
-    expect(component.canOpen()).toBe(true);
-  });
+    it('should return true if user can view CV and cvs are present', () => {
+        mockAuthService.canViewCandidateCV.mockReturnValue(true);
+        component.cvs = mockCanidiate.candidateAttachments;
+        expect(component.canOpen()).toBe(true);
+    });
 
-  it('should return false if user cannot view CV', () => {
-    mockAuthService.canViewCandidateCV.and.returnValue(false);
-    component.cvs = mockCanidiate.candidateAttachments;
-    expect(component.canOpen()).toBe(false);
-  });
+    it('should return false if user cannot view CV', () => {
+        mockAuthService.canViewCandidateCV.mockReturnValue(false);
+        component.cvs = mockCanidiate.candidateAttachments;
+        expect(component.canOpen()).toBe(false);
+    });
 
-  it('should return false if cvs are not present', () => {
-    mockAuthService.canViewCandidateCV.and.returnValue(true);
-    component.cvs = [];
-    expect(component.canOpen()).toBe(false);
-  });
+    it('should return false if cvs are not present', () => {
+        mockAuthService.canViewCandidateCV.mockReturnValue(true);
+        component.cvs = [];
+        expect(component.canOpen()).toBe(false);
+    });
 
-  it('should set loading to false and call downloadAttachments', () => {
-    mockCandidateAttachmentService.downloadAttachments.and.returnValue(of(null));
-    component.cvs = mockCanidiate.candidateAttachments;
-    component.candidate = mockCanidiate;
-    component.openCVs();
-    expect(component.loading).toBe(false);
-    expect(mockCandidateAttachmentService.downloadAttachments).toHaveBeenCalledWith(component.candidate, component.cvs);
-  });
+    it('should set loading to false and call downloadAttachments', () => {
+        mockCandidateAttachmentService.downloadAttachments.mockReturnValue(of(null));
+        component.cvs = mockCanidiate.candidateAttachments;
+        component.candidate = mockCanidiate;
+        component.openCVs();
+        expect(component.loading).toBe(false);
+        expect(mockCandidateAttachmentService.downloadAttachments).toHaveBeenCalledWith(component.candidate, component.cvs);
+    });
 
-  it('should set loading to false after successful download', () => {
-    mockCandidateAttachmentService.downloadAttachments.and.returnValue(of(null));
-    component.cvs = mockCanidiate.candidateAttachments;
-    component.candidate = mockCanidiate;
-    component.openCVs();
-    expect(component.loading).toBe(false);
-  });
+    it('should set loading to false after successful download', () => {
+        mockCandidateAttachmentService.downloadAttachments.mockReturnValue(of(null));
+        component.cvs = mockCanidiate.candidateAttachments;
+        component.candidate = mockCanidiate;
+        component.openCVs();
+        expect(component.loading).toBe(false);
+    });
 
-  it('should set loading to false and error message if download fails', () => {
-    const error = 'Download failed';
-    mockCandidateAttachmentService.downloadAttachments.and.returnValue(throwError(error));
-    component.cvs = mockCanidiate.candidateAttachments;
-    component.candidate = mockCanidiate;
-    component.openCVs();
-    expect(component.loading).toBe(false);
-    expect(component.error).toBe(error);
-  });
-  it('should display loading spinner when loading is true', () => {
-    component.candidate = mockCanidiate;
-    component.loading = true;
-    fixture.detectChanges();
-    const spinner: DebugElement = fixture.debugElement.query(By.css('.fa-spinner'));
-    expect(spinner).toBeTruthy();
-  });
+    it('should set loading to false and error message if download fails', () => {
+        const error = 'Download failed';
+        mockCandidateAttachmentService.downloadAttachments.mockReturnValue(throwError(error));
+        component.cvs = mockCanidiate.candidateAttachments;
+        component.candidate = mockCanidiate;
+        component.openCVs();
+        expect(component.loading).toBe(false);
+        expect(component.error).toBe(error);
+    });
+    it('should display loading spinner when loading is true', () => {
+        component.candidate = mockCanidiate;
+        component.loading = true;
+        fixture.detectChanges();
+        const spinner: DebugElement = fixture.debugElement.query(By.css('.fa-spinner'));
+        expect(spinner).toBeTruthy();
+    });
 
-  it('should call openCVs when link is clicked', () => {
-    component.candidate = mockCanidiate;
-    spyOn(component, 'openCVs');
-    mockAuthService.canViewCandidateCV.and.returnValue(true);
-    component.cvs = mockCanidiate.candidateAttachments;
-    fixture.detectChanges();
-    const link: DebugElement = fixture.debugElement.query(By.css('.cv-icon'));
-    expect(link).toBeTruthy();
-    link.triggerEventHandler('click', null);
-    expect(component.openCVs).toHaveBeenCalled();
-  });
+    it('should call openCVs when link is clicked', () => {
+        component.candidate = mockCanidiate;
+        vi.spyOn(component, 'openCVs').mockReturnValue(undefined);
+        mockAuthService.canViewCandidateCV.mockReturnValue(true);
+        component.cvs = mockCanidiate.candidateAttachments;
+        fixture.detectChanges();
+        const link: DebugElement = fixture.debugElement.query(By.css('.cv-icon'));
+        expect(link).toBeTruthy();
+        link.triggerEventHandler('click', null);
+        expect(component.openCVs).toHaveBeenCalled();
+    });
 });

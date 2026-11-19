@@ -24,132 +24,134 @@ import {CandidateJobExperience} from '../../../model/candidate-job-experience';
 import {Country} from '../../../model/country';
 
 @Component({
-  selector: 'tc-button',
-  template: '<ng-content></ng-content>',
-  changeDetection: ChangeDetectionStrategy.Eager,
-  standalone: false
+    selector: 'tc-button',
+    template: '<ng-content></ng-content>',
+    changeDetection: ChangeDetectionStrategy.Eager,
+    standalone: false
 })
 class TcButtonStubComponent {
-  @Input() color?: string;
-  @Input() disabled?: boolean;
+    @Input()
+    color?: string;
+    @Input()
+    disabled?: boolean;
 }
 
 function makeCountry(id: number, name: string): Country {
-  return {
-    id,
-    name,
-    status: 'active',
-    translatedName: name
-  };
+    return {
+        id,
+        name,
+        status: 'active',
+        translatedName: name
+    };
 }
 
 function makeExperience(overrides: Partial<CandidateJobExperience> = {}): CandidateJobExperience {
-  return {
-    id: 1,
-    companyName: 'ACME',
-    role: 'Engineer',
-    startDate: '2020-01-01',
-    endDate: '2021-01-01',
-    fullTime: true,
-    paid: true,
-    description: 'Built systems',
-    country: makeCountry(1, 'Jordan'),
-    candidateOccupation: null as any,
-    ...overrides
-  };
+    return {
+        id: 1,
+        companyName: 'ACME',
+        role: 'Engineer',
+        startDate: '2020-01-01',
+        endDate: '2021-01-01',
+        fullTime: true,
+        paid: true,
+        description: 'Built systems',
+        country: makeCountry(1, 'Jordan'),
+        candidateOccupation: null as any,
+        ...overrides
+    };
 }
 
 describe('CandidateWorkExperienceCardComponent', () => {
-  let component: CandidateJobExperienceCardComponent;
-  let fixture: ComponentFixture<CandidateJobExperienceCardComponent>;
+    let component: CandidateJobExperienceCardComponent;
+    let fixture: ComponentFixture<CandidateJobExperienceCardComponent>;
 
-  async function configureAndCreate(options?: {
-    preview?: boolean;
-    disabled?: boolean;
-    experience?: CandidateJobExperience;
-    countries?: Country[];
-  }) {
-    await TestBed.configureTestingModule({
-      declarations: [CandidateJobExperienceCardComponent, TcButtonStubComponent],
-      imports: [TranslateModule.forRoot()]
-    }).compileComponents();
+    async function configureAndCreate(options?: {
+        preview?: boolean;
+        disabled?: boolean;
+        experience?: CandidateJobExperience;
+        countries?: Country[];
+    }) {
+        await TestBed.configureTestingModule({
+            declarations: [CandidateJobExperienceCardComponent, TcButtonStubComponent],
+            imports: [TranslateModule.forRoot()]
+        }).compileComponents();
 
-    fixture = TestBed.createComponent(CandidateJobExperienceCardComponent);
-    component = fixture.componentInstance;
-    component.preview = options?.preview ?? false;
-    component.disabled = options?.disabled ?? false;
-    component.experience = options?.experience ?? makeExperience();
-    component.countries = options?.countries ?? [makeCountry(1, 'Jordan'), makeCountry(2, 'Lebanon')];
+        fixture = TestBed.createComponent(CandidateJobExperienceCardComponent);
+        component = fixture.componentInstance;
+        component.preview = options?.preview ?? false;
+        component.disabled = options?.disabled ?? false;
+        component.experience = options?.experience ?? makeExperience();
+        component.countries = options?.countries ?? [makeCountry(1, 'Jordan'), makeCountry(2, 'Lebanon')];
 
-    fixture.detectChanges();
-  }
+        fixture.detectChanges();
+    }
 
-  afterEach(() => TestBed.resetTestingModule());
+    afterEach(() => TestBed.resetTestingModule());
 
-  it('should create', async () => {
-    await configureAndCreate();
-    expect(component).toBeTruthy();
-  });
-
-  describe('template', () => {
-    it('should render delete and edit tc-buttons when not in preview mode', async () => {
-      await configureAndCreate();
-
-      const buttons = fixture.debugElement.queryAll(By.directive(TcButtonStubComponent));
-
-      expect(buttons.length).toBe(2);
-      expect(buttons[0].componentInstance.color).toBe('error');
-      expect(buttons[1].componentInstance.color).toBe('info');
+    it('should create', async () => {
+        await configureAndCreate();
+        expect(component).toBeTruthy();
     });
 
-    it('should render experience details in the migrated layout', async () => {
-      await configureAndCreate();
-      const text = (fixture.nativeElement as HTMLElement).textContent || '';
+    describe('template', () => {
+        it('should render delete and edit tc-buttons when not in preview mode', async () => {
+            await configureAndCreate();
 
-      expect(text).toContain('Engineer');
-      expect(text).toContain('ACME');
-      expect(text).toContain('Jordan');
-      expect(text).toContain('CARD.JOBEXPERIENCE.LABEL.FULLTIME');
-      expect(text).toContain('CARD.JOBEXPERIENCE.LABEL.PAID');
-      expect(text).toContain('2020');
-      expect(text).toContain('2021');
-    });
-  });
+            const buttons = fixture.debugElement.queryAll(By.directive(TcButtonStubComponent));
 
-  describe('events', () => {
-    beforeEach(async () => configureAndCreate());
+            expect(buttons.length).toBe(2);
+            expect(buttons[0].componentInstance.color).toBe('error');
+            expect(buttons[1].componentInstance.color).toBe('info');
+        });
 
-    it('should emit onEdit with the current experience', () => {
-      const onEditSpy = spyOn(component.onEdit, 'emit');
+        it('should render experience details in the migrated layout', async () => {
+            await configureAndCreate();
+            const text = (fixture.nativeElement as HTMLElement).textContent || '';
 
-      component.edit();
-
-      expect(onEditSpy).toHaveBeenCalledWith(component.experience);
-    });
-
-    it('should emit onDelete with the current experience', () => {
-      const onDeleteSpy = spyOn(component.onDelete, 'emit');
-
-      component.delete();
-
-      expect(onDeleteSpy).toHaveBeenCalledWith(component.experience);
-    });
-  });
-
-  describe('helpers', () => {
-    beforeEach(async () => configureAndCreate());
-
-    it('should return the matching country name by id', () => {
-      expect(component.getCountryName(makeCountry(1, 'Ignored'))).toBe('Jordan');
+            expect(text).toContain('Engineer');
+            expect(text).toContain('ACME');
+            expect(text).toContain('Jordan');
+            expect(text).toContain('CARD.JOBEXPERIENCE.LABEL.FULLTIME');
+            expect(text).toContain('CARD.JOBEXPERIENCE.LABEL.PAID');
+            expect(text).toContain('2020');
+            expect(text).toContain('2021');
+        });
     });
 
-    it('should return undefined when the country is not found', () => {
-      expect(component.getCountryName(makeCountry(999, 'Missing'))).toBeUndefined();
+    describe('events', () => {
+        beforeEach(async () => configureAndCreate());
+
+        it('should emit onEdit with the current experience', () => {
+            const onEditSpy = vi.spyOn(component.onEdit, 'emit').mockReturnValue(undefined);
+
+            component.edit();
+
+            expect(onEditSpy).toHaveBeenCalledWith(component.experience);
+        });
+
+        it('should emit onDelete with the current experience', () => {
+            const onDeleteSpy = vi.spyOn(component.onDelete, 'emit').mockReturnValue(undefined);
+
+            component.delete();
+
+            expect(onDeleteSpy).toHaveBeenCalledWith(component.experience);
+        });
     });
 
-    it('should detect html content', () => {
-      expect(component.isHtml('<p>Hello</p>')).toBeTrue();
-      expect(component.isHtml('Hello')).toBeFalse();
+    describe('helpers', () => {
+        beforeEach(async () => configureAndCreate());
+
+        it('should return the matching country name by id', () => {
+            expect(component.getCountryName(makeCountry(1, 'Ignored'))).toBe('Jordan');
+        });
+
+        it('should return undefined when the country is not found', () => {
+            expect(component.getCountryName(makeCountry(999, 'Missing'))).toBeUndefined();
+        });
+
+        it('should detect html content', () => {
+            expect(component.isHtml('<p>Hello</p>')).toBe(true);
+            expect(component.isHtml('Hello')).toBe(false);
+        });
     });
-  });
 });

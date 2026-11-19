@@ -1,6 +1,7 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { TcIconComponent } from './tc-icon.component';
+import {TcIconComponent} from './tc-icon.component';
+import {expect} from 'vitest';
 
 describe('TcIconComponent', () => {
   let component: TcIconComponent;

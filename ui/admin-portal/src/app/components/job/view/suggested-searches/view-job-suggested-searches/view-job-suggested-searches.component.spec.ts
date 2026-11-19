@@ -14,6 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
+import type {MockedObject} from "vitest";
 import {ComponentFixture, TestBed, waitForAsync} from '@angular/core/testing';
 import {NgbModal, NgbModalRef} from '@ng-bootstrap/ng-bootstrap';
 import {InputTextComponent} from '../../../../util/input/input-text/input-text.component';
@@ -28,119 +29,125 @@ import {ActivatedRoute, Router} from "@angular/router";
 import {of} from "rxjs";
 import {MockSavedSearch} from "../../../../../MockData/MockSavedSearch";
 import {JobPrepSuggestedSearches} from "../../../../../model/job-prep-item";
-import {RouterLinkStubDirective} from "../../../../login/login.component.spec";
+import {RouterLinkStubDirective} from "../../../../../../test-helpers/router-link-stub.directive";
+import {expect, vi} from 'vitest';
 
 describe('ViewJobSuggestedSearchesComponent', () => {
-  let component: ViewJobSuggestedSearchesComponent;
-  let fixture: ComponentFixture<ViewJobSuggestedSearchesComponent>;
-  let jobService: jasmine.SpyObj<JobService>;
-  let modalService: jasmine.SpyObj<NgbModal>;
-  beforeEach(waitForAsync(() => {
-    const jobServiceSpy = jasmine.createSpyObj('JobService', ['createSuggestedSearch', 'removeSuggestedSearch']);
-    const modalServiceSpy = jasmine.createSpyObj('NgbModal', ['open']);
-     TestBed.configureTestingModule({
-      declarations: [ViewJobSuggestedSearchesComponent,RouterLinkStubDirective ,InputTextComponent],
-      providers: [
-        { provide: JobService, useValue: jobServiceSpy },
-        { provide: NgbModal, useValue: modalServiceSpy },
-        { provide: ActivatedRoute, useValue: { queryParams: of({}) } },
-        { provide: Router, useValue: { navigateByUrl: jasmine.createSpy('navigateByUrl') } },
-        provideHttpClient(withXhr(), withInterceptorsFromDi()),
-        provideHttpClientTesting(),
-      ]
-    }).compileComponents();
+    let component: ViewJobSuggestedSearchesComponent;
+    let fixture: ComponentFixture<ViewJobSuggestedSearchesComponent>;
+    let jobService: MockedObject<JobService>;
+    let modalService: MockedObject<NgbModal>;
+    beforeEach(waitForAsync(() => {
+        const jobServiceSpy = {
+            createSuggestedSearch: vi.fn().mockName("JobService.createSuggestedSearch"),
+            removeSuggestedSearch: vi.fn().mockName("JobService.removeSuggestedSearch")
+        };
+        const modalServiceSpy = {
+            open: vi.fn().mockName("NgbModal.open")
+        };
+        TestBed.configureTestingModule({
+            declarations: [ViewJobSuggestedSearchesComponent, RouterLinkStubDirective, InputTextComponent],
+            providers: [
+                { provide: JobService, useValue: jobServiceSpy },
+                { provide: NgbModal, useValue: modalServiceSpy },
+                { provide: ActivatedRoute, useValue: { queryParams: of({}) } },
+                { provide: Router, useValue: { navigateByUrl: vi.fn().mockName('navigateByUrl') } },
+                provideHttpClient(withXhr(), withInterceptorsFromDi()),
+                provideHttpClientTesting(),
+            ]
+        }).compileComponents();
 
-    jobService = TestBed.inject(JobService) as jasmine.SpyObj<JobService>;
-    modalService = TestBed.inject(NgbModal) as jasmine.SpyObj<NgbModal>;
-  }));
+        jobService = TestBed.inject(JobService) as MockedObject<JobService>;
+        modalService = TestBed.inject(NgbModal) as MockedObject<NgbModal>;
+    }));
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(ViewJobSuggestedSearchesComponent);
-    component = fixture.componentInstance;
+    beforeEach(() => {
+        fixture = TestBed.createComponent(ViewJobSuggestedSearchesComponent);
+        component = fixture.componentInstance;
 
-    // Mock job object
-    const job: Job = MockJob;
-    component.job = job;
+        // Mock job object
+        const job: Job = MockJob;
+        component.job = job;
 
-    fixture.detectChanges();
-  });
-
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
-
-  it('should add a suggested search to the job', () => {
-    const mockSuffix = 'search 1';
-    const mockSearch: SavedSearch = new MockSavedSearch();
-
-      jobService.createSuggestedSearch.and.returnValue(of({ ...component.job, suggestedSearches: [mockSearch] }));
-
-    // Create a mock modal instance
-    const mockModalRef: Partial<NgbModalRef> = {
-      componentInstance: {
-        title: '',
-        message: ''
-      },
-      result: Promise.resolve(mockSuffix)
-    };
-
-    // Stub NgbModal open method to return the mock modal instance
-    modalService.open.and.returnValue(mockModalRef as NgbModalRef);
-      component.addSearch();
-    // Expectations
-    expect(modalService.open).toHaveBeenCalledWith(InputTextComponent, jasmine.any(Object));
-    expect(mockModalRef.componentInstance.title).toEqual('Enter search name suffix');
-    expect(mockModalRef.componentInstance.message).toEqual('The search name will start with the job name. You just need to add a short suffix - eg "search 1" or "keyword search"');
-
-    // Use fakeAsync to wait for the promise to resolve
-    fixture.whenStable().then(() => {
-      // Expectations after promise is resolved
-      expect(jobService.createSuggestedSearch).toHaveBeenCalledWith(component.job.id, mockSuffix);
-      expect(component.saving).toBeFalse();
-      expect(component.error).toBeNull();
-      expect(component.job.suggestedSearches).toEqual([mockSearch]);
+        fixture.detectChanges();
     });
-  });
 
-  it('should remove a suggested search from the job', (() => {
-    const mockSearch: SavedSearch = new MockSavedSearch();
-    component.job.suggestedSearches = [mockSearch];
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
 
-    // Spy on the jobUpdated event emitter
-    spyOn(component.jobUpdated, 'emit').and.callThrough();
+    it('should add a suggested search to the job', () => {
+        const mockSuffix = 'search 1';
+        const mockSearch: SavedSearch = new MockSavedSearch();
 
-    // Set up the jobService spy to return an updated job after removal
-    const updatedJob: Job = { ...component.job, suggestedSearches: [] };
-    jobService.removeSuggestedSearch.and.returnValue(of(updatedJob));
+        jobService.createSuggestedSearch.mockReturnValue(of({ ...component.job, suggestedSearches: [mockSearch] }));
 
-    // Call the removeSearch method with the mock search
-    component.removeSearch(mockSearch);
+        // Create a mock modal instance
+        const mockModalRef: Partial<NgbModalRef> = {
+            componentInstance: {
+                title: '',
+                message: ''
+            },
+            result: Promise.resolve(mockSuffix)
+        };
 
-    // Expectations
-    expect(jobService.removeSuggestedSearch).toHaveBeenCalledWith(component.job.id, mockSearch.id);
+        // Stub NgbModal open method to return the mock modal instance
+        modalService.open.mockReturnValue(mockModalRef as NgbModalRef);
+        component.addSearch();
+        // Expectations
+        expect(modalService.open).toHaveBeenCalledWith(InputTextComponent, expect.any(Object));
+        expect(mockModalRef.componentInstance.title).toEqual('Enter search name suffix');
+        expect(mockModalRef.componentInstance.message).toEqual('The search name will start with the job name. You just need to add a short suffix - eg "search 1" or "keyword search"');
 
-    component.job = updatedJob;
-    // // Expectations after tick
-    expect(component.saving).toBeFalse(); // Assuming saving is set to false after completion
-    expect(component.error).toBeNull();
-    expect(component.job.suggestedSearches).toEqual([]);
-    expect(component.jobUpdated.emit).toHaveBeenCalledWith(updatedJob);
-  }));
+        // Use fakeAsync to wait for the promise to resolve
+        fixture.whenStable().then(() => {
+            // Expectations after promise is resolved
+            expect(jobService.createSuggestedSearch).toHaveBeenCalledWith(component.job.id, mockSuffix);
+            expect(component.saving).toBe(false);
+            expect(component.error).toBeNull();
+            expect(component.job.suggestedSearches).toEqual([mockSearch]);
+        });
+    });
+
+    it('should remove a suggested search from the job', (() => {
+        const mockSearch: SavedSearch = new MockSavedSearch();
+        component.job.suggestedSearches = [mockSearch];
+
+        // Spy on the jobUpdated event emitter
+        vi.spyOn(component.jobUpdated, 'emit');
+
+        // Set up the jobService spy to return an updated job after removal
+        const updatedJob: Job = { ...component.job, suggestedSearches: [] };
+        jobService.removeSuggestedSearch.mockReturnValue(of(updatedJob));
+
+        // Call the removeSearch method with the mock search
+        component.removeSearch(mockSearch);
+
+        // Expectations
+        expect(jobService.removeSuggestedSearch).toHaveBeenCalledWith(component.job.id, mockSearch.id);
+
+        component.job = updatedJob;
+        // // Expectations after tick
+        expect(component.saving).toBe(false); // Assuming saving is set to false after completion
+        expect(component.error).toBeNull();
+        expect(component.job.suggestedSearches).toEqual([]);
+        expect(component.jobUpdated.emit).toHaveBeenCalledWith(updatedJob);
+    }));
 
 
-  it('should highlight searches correctly', () => {
-    // Create a mock job object with suggested searches
-    const mockJob = MockJob;
-    mockJob.suggestedSearches = [new MockSavedSearch()]; // Mock data for suggested searches
+    it('should highlight searches correctly', () => {
+        // Create a mock job object with suggested searches
+        const mockJob = MockJob;
+        mockJob.suggestedSearches = [new MockSavedSearch()]; // Mock data for suggested searches
 
-    // Set the highlightItem to be a JobPrepSuggestedSearches instance
-    component.highlightItem = new JobPrepSuggestedSearches();
+        // Set the highlightItem to be a JobPrepSuggestedSearches instance
+        component.highlightItem = new JobPrepSuggestedSearches();
 
-    // Set the job input to the mock job object
-    component.job = mockJob;
+        // Set the job input to the mock job object
+        component.job = mockJob;
 
-    // Expect the highlightSearches method to return true
-    expect(component.highlightSearches()).toBeTrue();
-  });
+        // Expect the highlightSearches method to return true
+        expect(component.highlightSearches()).toBe(true);
+    });
 
 });

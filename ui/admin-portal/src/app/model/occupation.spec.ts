@@ -14,6 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import {Occupation} from "./occupation";
+import {expect} from 'vitest';
 
 describe('Occupation Interface', () => {
   it('should create a valid Occupation object', () => {

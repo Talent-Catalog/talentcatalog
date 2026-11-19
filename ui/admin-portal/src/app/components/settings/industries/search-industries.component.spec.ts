@@ -14,6 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
+import type {MockedObject} from "vitest";
 import {SearchIndustriesComponent} from "./search-industries.component";
 import {ComponentFixture, TestBed} from "@angular/core/testing";
 import {IndustryService} from "../../../services/industry.service";
@@ -28,143 +29,150 @@ import {MockUser} from "../../../MockData/MockUser";
 import {ConfirmationComponent} from "../../util/confirm/confirmation.component";
 import {EditIndustryComponent} from "./edit/edit-industry.component";
 import {CreateIndustryComponent} from "./create/create-industry.component";
+import {expect, vi} from 'vitest';
 
 describe('SearchIndustriesComponent', () => {
-  let component: SearchIndustriesComponent;
-  let fixture: ComponentFixture<SearchIndustriesComponent>;
-  let industryServiceSpy: jasmine.SpyObj<IndustryService>;
-  let modalServiceSpy: jasmine.SpyObj<NgbModal>;
-  let authServiceSpy: jasmine.SpyObj<AuthorizationService>;
-  const searchResults: SearchResults<Industry> = {
-    first: false,
-    last: false,
-    number: 0,
-    size: 0,
-    totalPages: 0,
-    totalElements: 1,
-    content: [{id:1,name:'IT',status:'active'}]
-  };
+    let component: SearchIndustriesComponent;
+    let fixture: ComponentFixture<SearchIndustriesComponent>;
+    let industryServiceSpy: MockedObject<IndustryService>;
+    let modalServiceSpy: MockedObject<NgbModal>;
+    let authServiceSpy: MockedObject<AuthorizationService>;
+    const searchResults: SearchResults<Industry> = {
+        first: false,
+        last: false,
+        number: 0,
+        size: 0,
+        totalPages: 0,
+        totalElements: 1,
+        content: [{ id: 1, name: 'IT', status: 'active' }]
+    };
 
-  beforeEach(async () => {
-    const industryServiceMock = jasmine.createSpyObj('IndustryService', ['search', 'delete']);
-    const modalServiceMock = jasmine.createSpyObj('NgbModal', ['open']);
-    const authServiceMock = jasmine.createSpyObj('AuthorizationService', ['isAnAdmin']);
+    beforeEach(async () => {
+        const industryServiceMock = {
+            search: vi.fn().mockName("IndustryService.search"),
+            delete: vi.fn().mockName("IndustryService.delete")
+        };
+        const modalServiceMock = {
+            open: vi.fn().mockName("NgbModal.open")
+        };
+        const authServiceMock = {
+            isAnAdmin: vi.fn().mockName("AuthorizationService.isAnAdmin")
+        };
 
-    await TestBed.configureTestingModule({
-      declarations: [SearchIndustriesComponent],
-      imports: [FormsModule, ReactiveFormsModule, NgbModule, NgSelectModule],
-      providers: [
-        UntypedFormBuilder,
-        { provide: IndustryService, useValue: industryServiceMock },
-        { provide: NgbModal, useValue: modalServiceMock },
-        { provide: AuthorizationService, useValue: authServiceMock }
-      ]
-    }).compileComponents();
+        await TestBed.configureTestingModule({
+            declarations: [SearchIndustriesComponent],
+            imports: [FormsModule, ReactiveFormsModule, NgbModule, NgSelectModule],
+            providers: [
+                UntypedFormBuilder,
+                { provide: IndustryService, useValue: industryServiceMock },
+                { provide: NgbModal, useValue: modalServiceMock },
+                { provide: AuthorizationService, useValue: authServiceMock }
+            ]
+        }).compileComponents();
 
-    fixture = TestBed.createComponent(SearchIndustriesComponent);
-    component = fixture.componentInstance;
-    industryServiceSpy = TestBed.inject(IndustryService) as jasmine.SpyObj<IndustryService>;
-    modalServiceSpy = TestBed.inject(NgbModal) as jasmine.SpyObj<NgbModal>;
-    authServiceSpy = TestBed.inject(AuthorizationService) as jasmine.SpyObj<AuthorizationService>;
+        fixture = TestBed.createComponent(SearchIndustriesComponent);
+        component = fixture.componentInstance;
+        industryServiceSpy = TestBed.inject(IndustryService) as MockedObject<IndustryService>;
+        modalServiceSpy = TestBed.inject(NgbModal) as MockedObject<NgbModal>;
+        authServiceSpy = TestBed.inject(AuthorizationService) as MockedObject<AuthorizationService>;
 
-    // Mock initial data and methods
-    industryServiceSpy.search.and.returnValue(of(searchResults));
-    authServiceSpy.isAnAdmin.and.returnValue(true);
-    component.loggedInUser = new MockUser();
-    fixture.detectChanges();
-  });
-
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
-
-  it('should initialize the form with default values', () => {
-    expect(component.searchForm.get('keyword').value).toBe('');
-    expect(component.searchForm.get('status').value).toBe('active');
-  });
-
-  it('should handle search results', () => {
-    component.search();
-
-    expect(component.results).toEqual(searchResults);
-    expect(component.loading).toBeFalse();
-  });
-
-  it('should open add industry modal', () => {
-    const modalRefMock = {
-      result: Promise.resolve(true)
-    } as any;
-    modalServiceSpy.open.and.returnValue(modalRefMock);
-
-    component.addIndustry();
-
-    expect(modalServiceSpy.open).toHaveBeenCalledWith(CreateIndustryComponent, {
-      centered: true,
-      backdrop: 'static'
+        // Mock initial data and methods
+        industryServiceSpy.search.mockReturnValue(of(searchResults));
+        authServiceSpy.isAnAdmin.mockReturnValue(true);
+        component.loggedInUser = new MockUser();
+        fixture.detectChanges();
     });
-  });
 
-  it('should open edit industry modal', () => {
-    const modalRefMock = {
-      componentInstance: {
-        industryId: null,
-        message: ''
-      },
-      result: Promise.resolve(true)
-    } as any;
-    modalServiceSpy.open.and.returnValue(modalRefMock);
-
-    const industry = { id: 1, name: 'Test Industry' };
-    component.editIndustry(industry);
-
-    expect(modalServiceSpy.open).toHaveBeenCalledWith(EditIndustryComponent, {
-      centered: true,
-      backdrop: 'static'
+    it('should create', () => {
+        expect(component).toBeTruthy();
     });
-    expect(modalRefMock.componentInstance.industryId).toEqual(industry.id);
-  });
 
-  it('should open delete industry confirmation modal', () => {
-    const modalRefMock = {
-      componentInstance: { message: '' },
-      result: Promise.resolve(true)
-    } as any;
-    modalServiceSpy.open.and.returnValue(modalRefMock);
-
-    const industry = { id: 1, name: 'Test Industry' };
-    component.deleteIndustry(industry);
-
-    expect(modalServiceSpy.open).toHaveBeenCalledWith(ConfirmationComponent, {
-      centered: true,
-      backdrop: 'static'
+    it('should initialize the form with default values', () => {
+        expect(component.searchForm.get('keyword').value).toBe('');
+        expect(component.searchForm.get('status').value).toBe('active');
     });
-  });
 
-  it('should delete industry', (done) => {
-    const industry = { id: 1, name: 'Test Industry' };
-    industryServiceSpy.delete.and.returnValue(of(true));
-    const modalRefMock = {
-      componentInstance: { message: '' },
-      result: Promise.resolve(true)
-    } as any;
-    modalServiceSpy.open.and.returnValue(modalRefMock);
+    it('should handle search results', () => {
+        component.search();
 
-    // Call the deleteIndustry method
-    component.deleteIndustry(industry);
+        expect(component.results).toEqual(searchResults);
+        expect(component.loading).toBe(false);
+    });
 
-    // Use setTimeout to allow async operations to complete
-    setTimeout(() => {
-      // Verify that the delete method was called
-      expect(industryServiceSpy.delete).toHaveBeenCalledWith(industry.id);
-      done();
-    }, 0);
-  });
+    it('should open add industry modal', () => {
+        const modalRefMock = {
+            result: Promise.resolve(true)
+        } as any;
+        modalServiceSpy.open.mockReturnValue(modalRefMock);
 
-  it('should check if the user is an admin', () => {
-    authServiceSpy.isAnAdmin.and.returnValue(true);
-    expect(component.isAnAdmin()).toBeTrue();
+        component.addIndustry();
 
-    authServiceSpy.isAnAdmin.and.returnValue(false);
-    expect(component.isAnAdmin()).toBeFalse();
-  });
+        expect(modalServiceSpy.open).toHaveBeenCalledWith(CreateIndustryComponent, {
+            centered: true,
+            backdrop: 'static'
+        });
+    });
+
+    it('should open edit industry modal', () => {
+        const modalRefMock = {
+            componentInstance: {
+                industryId: null,
+                message: ''
+            },
+            result: Promise.resolve(true)
+        } as any;
+        modalServiceSpy.open.mockReturnValue(modalRefMock);
+
+        const industry = { id: 1, name: 'Test Industry' };
+        component.editIndustry(industry);
+
+        expect(modalServiceSpy.open).toHaveBeenCalledWith(EditIndustryComponent, {
+            centered: true,
+            backdrop: 'static'
+        });
+        expect(modalRefMock.componentInstance.industryId).toEqual(industry.id);
+    });
+
+    it('should open delete industry confirmation modal', () => {
+        const modalRefMock = {
+            componentInstance: { message: '' },
+            result: Promise.resolve(true)
+        } as any;
+        modalServiceSpy.open.mockReturnValue(modalRefMock);
+
+        const industry = { id: 1, name: 'Test Industry' };
+        component.deleteIndustry(industry);
+
+        expect(modalServiceSpy.open).toHaveBeenCalledWith(ConfirmationComponent, {
+            centered: true,
+            backdrop: 'static'
+        });
+    });
+
+    it('should delete industry', async () => {
+        const industry = { id: 1, name: 'Test Industry' };
+        industryServiceSpy.delete.mockReturnValue(of(true));
+        const modalRefMock = {
+            componentInstance: { message: '' },
+            result: Promise.resolve(true)
+        } as any;
+        modalServiceSpy.open.mockReturnValue(modalRefMock);
+
+        // Call the deleteIndustry method
+        component.deleteIndustry(industry);
+
+        // Use setTimeout to allow async operations to complete
+        // ADMIN_AWAIT_UNHANDLED_TIMER_20261117
+        await new Promise<void>((resolve) => setTimeout(resolve, 0));
+        expect(industryServiceSpy.delete).toHaveBeenCalledWith(industry.id);
+        ;
+    });
+
+    it('should check if the user is an admin', () => {
+        authServiceSpy.isAnAdmin.mockReturnValue(true);
+        expect(component.isAnAdmin()).toBe(true);
+
+        authServiceSpy.isAnAdmin.mockReturnValue(false);
+        expect(component.isAnAdmin()).toBe(false);
+    });
 });

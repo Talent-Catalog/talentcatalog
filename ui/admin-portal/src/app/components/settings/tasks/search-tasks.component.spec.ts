@@ -13,6 +13,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
+
+import type {MockedObject} from "vitest";
 import {SearchTasksComponent} from "./search-tasks.component";
 import {TaskService} from "../../../services/task.service";
 import {ComponentFixture, TestBed} from "@angular/core/testing";
@@ -26,95 +28,102 @@ import {EditTaskComponent} from "./edit/edit-task.component";
 import {Task} from "../../../model/task";
 import {MockSavedList} from "../../../MockData/MockSavedList";
 import {MockUser} from "../../../MockData/MockUser";
+import {expect, vi} from 'vitest';
 
 describe('SearchTasksComponent', () => {
-  let component: SearchTasksComponent;
-  let fixture: ComponentFixture<SearchTasksComponent>;
-  let taskServiceSpy: jasmine.SpyObj<TaskService>;
-  let modalServiceSpy: jasmine.SpyObj<NgbModal>;
-  let authServiceSpy: jasmine.SpyObj<AuthorizationService>;
-  const mockResults: SearchResults<Task> = {
-    first: false,
-    last: false,
-    number: 0,
-    size: 0,
-    totalPages: 0,
-    totalElements: 1,
-    content: MockSavedList.tasks
-  };
+    let component: SearchTasksComponent;
+    let fixture: ComponentFixture<SearchTasksComponent>;
+    let taskServiceSpy: MockedObject<TaskService>;
+    let modalServiceSpy: MockedObject<NgbModal>;
+    let authServiceSpy: MockedObject<AuthorizationService>;
+    const mockResults: SearchResults<Task> = {
+        first: false,
+        last: false,
+        number: 0,
+        size: 0,
+        totalPages: 0,
+        totalElements: 1,
+        content: MockSavedList.tasks
+    };
 
-  beforeEach(async () => {
-    const taskSpy = jasmine.createSpyObj('TaskService', ['searchPaged']);
-    const modalSpy = jasmine.createSpyObj('NgbModal', ['open']);
-    const authSpy = jasmine.createSpyObj('AuthorizationService', ['isAnAdmin']);
+    beforeEach(async () => {
+        const taskSpy = {
+            searchPaged: vi.fn().mockName("TaskService.searchPaged")
+        };
+        const modalSpy = {
+            open: vi.fn().mockName("NgbModal.open")
+        };
+        const authSpy = {
+            isAnAdmin: vi.fn().mockName("AuthorizationService.isAnAdmin")
+        };
 
-    await TestBed.configureTestingModule({
-      declarations: [SearchTasksComponent],
-      imports: [FormsModule, ReactiveFormsModule, NgbModule, NgSelectModule],
-      providers: [
-        { provide: TaskService, useValue: taskSpy },
-        { provide: NgbModal, useValue: modalSpy },
-        { provide: AuthorizationService, useValue: authSpy },
-      ]
-    }).compileComponents();
+        await TestBed.configureTestingModule({
+            declarations: [SearchTasksComponent],
+            imports: [FormsModule, ReactiveFormsModule, NgbModule, NgSelectModule],
+            providers: [
+                { provide: TaskService, useValue: taskSpy },
+                { provide: NgbModal, useValue: modalSpy },
+                { provide: AuthorizationService, useValue: authSpy },
+            ]
+        }).compileComponents();
 
-    fixture = TestBed.createComponent(SearchTasksComponent);
-    component = fixture.componentInstance;
-    taskServiceSpy = TestBed.inject(TaskService) as jasmine.SpyObj<TaskService>;
-    modalServiceSpy = TestBed.inject(NgbModal) as jasmine.SpyObj<NgbModal>;
-    authServiceSpy = TestBed.inject(AuthorizationService) as jasmine.SpyObj<AuthorizationService>;
-  });
+        fixture = TestBed.createComponent(SearchTasksComponent);
+        component = fixture.componentInstance;
+        taskServiceSpy = TestBed.inject(TaskService) as MockedObject<TaskService>;
+        modalServiceSpy = TestBed.inject(NgbModal) as MockedObject<NgbModal>;
+        authServiceSpy = TestBed.inject(AuthorizationService) as MockedObject<AuthorizationService>;
+    });
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(SearchTasksComponent);
-    component = fixture.componentInstance;
-    taskServiceSpy.searchPaged.and.returnValue(of(mockResults));
-    component.loggedInUser = new MockUser();
-    fixture.detectChanges();
-  });
+    beforeEach(() => {
+        fixture = TestBed.createComponent(SearchTasksComponent);
+        component = fixture.componentInstance;
+        taskServiceSpy.searchPaged.mockReturnValue(of(mockResults));
+        component.loggedInUser = new MockUser();
+        fixture.detectChanges();
+    });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
 
-  it('should initialize forms and set default values', () => {
-    component.ngOnInit();
-    expect(component.searchForm).toBeDefined();
-    expect(component.pageNumber).toBe(1);
-    expect(component.pageSize).toBe(50);
-  });
+    it('should initialize forms and set default values', () => {
+        component.ngOnInit();
+        expect(component.searchForm).toBeDefined();
+        expect(component.pageNumber).toBe(1);
+        expect(component.pageSize).toBe(50);
+    });
 
-  it('should search tasks', () => {
+    it('should search tasks', () => {
 
-    component.search();
+        component.search();
 
-    expect(taskServiceSpy.searchPaged).toHaveBeenCalled();
-    expect(component.results).toEqual(mockResults);
-    expect(component.loading).toBeFalse();
-  });
+        expect(taskServiceSpy.searchPaged).toHaveBeenCalled();
+        expect(component.results).toEqual(mockResults);
+        expect(component.loading).toBe(false);
+    });
 
-  it('should handle search errors', () => {
-    taskServiceSpy.searchPaged.and.returnValue(throwError('Error'));
+    it('should handle search errors', () => {
+        taskServiceSpy.searchPaged.mockReturnValue(throwError('Error'));
 
-    component.search();
+        component.search();
 
-    expect(component.error).toBe('Error');
-    expect(component.loading).toBeFalse();
-  });
+        expect(component.error).toBe('Error');
+        expect(component.loading).toBe(false);
+    });
 
-  it('should open edit task modal', () => {
-    const task: Task = MockSavedList.tasks[0];
-    const modalRefMock = { componentInstance: { taskId: null }, result: Promise.resolve(true) } as any;
-    modalServiceSpy.open.and.returnValue(modalRefMock);
+    it('should open edit task modal', () => {
+        const task: Task = MockSavedList.tasks[0];
+        const modalRefMock = { componentInstance: { taskId: null }, result: Promise.resolve(true) } as any;
+        modalServiceSpy.open.mockReturnValue(modalRefMock);
 
-    component.editTask(task);
+        component.editTask(task);
 
-    expect(modalServiceSpy.open).toHaveBeenCalledWith(EditTaskComponent, { centered: true, backdrop: 'static' });
-    expect(modalRefMock.componentInstance.taskId).toBe(task.id);
-  });
+        expect(modalServiceSpy.open).toHaveBeenCalledWith(EditTaskComponent, { centered: true, backdrop: 'static' });
+        expect(modalRefMock.componentInstance.taskId).toBe(task.id);
+    });
 
-  it('should check if user is admin', () => {
-    authServiceSpy.isAnAdmin.and.returnValue(true);
-    expect(component.isAnAdmin()).toBeTrue();
-  });
+    it('should check if user is admin', () => {
+        authServiceSpy.isAnAdmin.mockReturnValue(true);
+        expect(component.isAnAdmin()).toBe(true);
+    });
 });

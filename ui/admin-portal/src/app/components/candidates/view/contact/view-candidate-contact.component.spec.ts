@@ -13,55 +13,62 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
+
+import type {MockedObject} from "vitest";
 import {ViewCandidateContactComponent} from "./view-candidate-contact.component";
 import {CandidateService} from "../../../../services/candidate.service";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
-import {ComponentFixture, TestBed, waitForAsync} from "@angular/core/testing";
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {provideHttpClientTesting} from "@angular/common/http/testing";
 import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {MockCandidate} from "../../../../MockData/MockCandidate";
+import {expect, vi} from 'vitest';
 
 describe('ViewCandidateContactComponent', () => {
-  let component: ViewCandidateContactComponent;
-  let fixture: ComponentFixture<ViewCandidateContactComponent>;
-  let candidateServiceSpy: jasmine.SpyObj<CandidateService>;
-  let modalServiceSpy: jasmine.SpyObj<NgbModal>;
+    let component: ViewCandidateContactComponent;
+    let fixture: ComponentFixture<ViewCandidateContactComponent>;
+    let candidateServiceSpy: MockedObject<CandidateService>;
+    let modalServiceSpy: MockedObject<NgbModal>;
 
-  beforeEach(waitForAsync(() => {
-    const candidateServiceSpyObj = jasmine.createSpyObj('CandidateService', ['get']);
-    const modalServiceSpyObj = jasmine.createSpyObj('NgbModal', ['open']);
+    beforeEach(async () => {
+        const candidateServiceSpyObj = {
+            get: vi.fn().mockName("CandidateService.get")
+        };
+        const modalServiceSpyObj = {
+            open: vi.fn().mockName("NgbModal.open")
+        };
 
-    TestBed.configureTestingModule({
-      imports: [FormsModule,ReactiveFormsModule, NgSelectModule],
-      declarations: [ViewCandidateContactComponent],
-      providers: [
-        { provide: CandidateService, useValue: candidateServiceSpyObj },
-        { provide: NgbModal, useValue: modalServiceSpyObj },
-        provideHttpClient(withXhr(), withInterceptorsFromDi()),
-        provideHttpClientTesting()
-      ]
-    }).compileComponents();
+        await TestBed.configureTestingModule({
+            imports: [FormsModule, ReactiveFormsModule, NgSelectModule],
+            declarations: [ViewCandidateContactComponent],
+            providers: [
+                { provide: CandidateService, useValue: candidateServiceSpyObj },
+                { provide: NgbModal, useValue: modalServiceSpyObj },
+                provideHttpClient(withXhr(), withInterceptorsFromDi()),
+                provideHttpClientTesting()
+            ]
+        }).compileComponents();
 
-    candidateServiceSpy = TestBed.inject(CandidateService) as jasmine.SpyObj<CandidateService>;
-    modalServiceSpy = TestBed.inject(NgbModal) as jasmine.SpyObj<NgbModal>;
-  }));
+        candidateServiceSpy = TestBed.inject(CandidateService) as MockedObject<CandidateService>;
+        modalServiceSpy = TestBed.inject(NgbModal) as MockedObject<NgbModal>;
+    });
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(ViewCandidateContactComponent);
-    component = fixture.componentInstance;
-    component.editable = true; // Mocking editable input
-    component.candidate = new MockCandidate();
-    fixture.detectChanges();
-  });
+    beforeEach(() => {
+        fixture = TestBed.createComponent(ViewCandidateContactComponent);
+        component = fixture.componentInstance;
+        component.editable = true; // Mocking editable input
+        component.candidate = new MockCandidate();
+        fixture.detectChanges();
+    });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
 
-  it('should initialize with correct initial state', () => {
-    expect(component.loading).toBeFalsy();
-    expect(component.error).toBeUndefined();
-  });
+    it('should initialize with correct initial state', () => {
+        expect(component.loading).toBeFalsy();
+        expect(component.error).toBeUndefined();
+    });
 });

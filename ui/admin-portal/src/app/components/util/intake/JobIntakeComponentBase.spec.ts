@@ -14,82 +14,83 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
+import type {MockedObject} from "vitest";
 import {TestBed} from '@angular/core/testing';
 import {UntypedFormBuilder} from '@angular/forms';
 import {of} from 'rxjs';
 
 import {JobIntakeComponentBase} from './JobIntakeComponentBase';
 import {JobService} from '../../../services/job.service';
+import {expect, vi} from 'vitest';
 
 class TestJobIntakeComponent extends JobIntakeComponentBase {
-  constructor(fb: UntypedFormBuilder, jobService: JobService) {
-    super(fb, jobService);
-  }
+    constructor(fb: UntypedFormBuilder, jobService: JobService) {
+        super(fb, jobService);
+    }
 
-  ngOnInit(): void {
-    this.form = this.fb.group({
-      availability: [''],
-      options: [[]]
-    });
-  }
+    ngOnInit(): void {
+        this.form = this.fb.group({
+            availability: [''],
+            options: [[]]
+        });
+    }
 }
 
 describe('JobIntakeComponentBase', () => {
-  let component: TestJobIntakeComponent;
-  let jobService: jasmine.SpyObj<JobService>;
+    let component: TestJobIntakeComponent;
+    let jobService: MockedObject<JobService>;
 
-  beforeEach(() => {
-    jobService = jasmine.createSpyObj<JobService>('JobService', ['updateIntakeData']);
-    jobService.updateIntakeData.and.returnValue(of(void 0));
+    beforeEach(() => {
+        jobService = ({
+            updateIntakeData: vi.fn().mockName("JobService.updateIntakeData")
+        } as unknown as typeof jobService);
+        jobService.updateIntakeData.mockReturnValue(of(void 0));
 
-    TestBed.configureTestingModule({
-      providers: [
-        UntypedFormBuilder,
-        {provide: JobService, useValue: jobService}
-      ]
+        TestBed.configureTestingModule({
+            providers: [
+                UntypedFormBuilder,
+                { provide: JobService, useValue: jobService }
+            ]
+        });
+
+        component = new TestJobIntakeComponent(TestBed.inject(UntypedFormBuilder), jobService);
+        component.ngOnInit();
+        component.entity = { id: 20 } as any;
+        component.componentKey = 'JOB.INTAKE';
     });
 
-    component = new TestJobIntakeComponent(
-      TestBed.inject(UntypedFormBuilder),
-      jobService
-    );
-    component.ngOnInit();
-    component.entity = {id: 20} as any;
-    component.componentKey = 'JOB.INTAKE';
-  });
-
-  it('should return entity as job', () => {
-    expect(component.job).toBe(component.entity as any);
-  });
-
-  it('should build component label key', () => {
-    expect(component.componentLabelKey).toBe('JOB.INTAKE.LABEL');
-  });
-
-  it('should build component tooltip key', () => {
-    expect(component.componentTooltipKey).toBe('JOB.INTAKE.TOOLTIP');
-  });
-
-  it('should convert enum options to enum keys', () => {
-    const formValue = {
-      options: [
-        {key: 'ONE', stringValue: 'One'},
-        {key: 'TWO', stringValue: 'Two'}
-      ],
-      unchanged: 'value'
-    };
-
-    const result = component.preprocessFormValues(formValue) as any;
-
-    expect(result).toEqual({
-      options: ['ONE', 'TWO'],
-      unchanged: 'value'
+    it('should return entity as job', () => {
+        expect(component.job).toBe(component.entity as any);
     });
-  });
 
-  it('should set NoResponse on a form control', () => {
-    component.setNoResponse('availability');
+    it('should build component label key', () => {
+        expect(component.componentLabelKey).toBe('JOB.INTAKE.LABEL');
+    });
 
-    expect(component.form.get('availability')?.value).toBe('NoResponse');
-  });
+    it('should build component tooltip key', () => {
+        expect(component.componentTooltipKey).toBe('JOB.INTAKE.TOOLTIP');
+    });
+
+    it('should convert enum options to enum keys', () => {
+        const formValue = {
+            options: [
+                { key: 'ONE', stringValue: 'One' },
+                { key: 'TWO', stringValue: 'Two' }
+            ],
+            unchanged: 'value'
+        };
+
+        const result = component.preprocessFormValues(formValue) as any;
+
+        expect(result).toEqual({
+            options: ['ONE', 'TWO'],
+            unchanged: 'value'
+        });
+    });
+
+    it('should set NoResponse on a form control', () => {
+        component.setNoResponse('availability');
+
+        expect(component.form.get('availability')?.value).toBe('NoResponse');
+    });
 });

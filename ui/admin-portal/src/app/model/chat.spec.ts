@@ -16,6 +16,7 @@
 
 import {ChatPost, CreateChatRequest, JobChat, JobChatType, JobChatUserInfo, Post} from "./chat";
 import {User} from "./user";
+import {expect} from 'vitest';
 
 describe('Job Chat and Post interface', () => {
   it('should create a Post instance', () => {

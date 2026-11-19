@@ -14,158 +14,177 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {
-  ComponentFixture,
-  discardPeriodicTasks,
-  fakeAsync,
-  flushMicrotasks,
-  TestBed,
-  tick
-} from '@angular/core/testing';
+import {ComponentFixture, discardPeriodicTasks, fakeAsync, flushMicrotasks, TestBed, tick} from '@angular/core/testing';
 import {NO_ERRORS_SCHEMA, Pipe, PipeTransform} from '@angular/core';
 
 import {VerifyPlusScannerComponent} from './verify-plus-scanner.component';
 import {VerifyPlusDecoderService} from '../../../services/verify-plus-decoder.service';
-
-@Pipe({name: 'translate', standalone: false})
-class MockTranslatePipe implements PipeTransform {
-  transform(value: string): string {
-    return value;
-  }
-}
+import {vi, type Mock} from 'vitest';
 
 describe('VerifyPlusScannerComponent', () => {
-  let component: VerifyPlusScannerComponent;
-  let fixture: ComponentFixture<VerifyPlusScannerComponent>;
-  let decoderService: jasmine.SpyObj<VerifyPlusDecoderService>;
-  let getUserMediaSpy: jasmine.Spy;
-  let enumerateDevicesSpy: jasmine.Spy;
-  let stopTrackSpy: jasmine.Spy;
+    let component: VerifyPlusScannerComponent;
+    let fixture: ComponentFixture<VerifyPlusScannerComponent>;
+    let decoderService: {
+      decode: Mock<VerifyPlusDecoderService['decode']>;
+    };
+    let getUserMediaSpy: Mock;
+    let enumerateDevicesSpy: Mock;
+    let stopTrackSpy: Mock;
 
-  const mediaTrack = {stop: () => undefined} as MediaStreamTrack;
-  const mediaStream = {getTracks: () => [mediaTrack]} as MediaStream;
+    const mediaTrack = { stop: () => undefined } as MediaStreamTrack;
+    const mediaStream = { getTracks: () => [mediaTrack] } as MediaStream;
 
-  beforeEach(() => {
-    jasmine.getEnv().allowRespy(true);
-    decoderService = jasmine.createSpyObj<VerifyPlusDecoderService>('VerifyPlusDecoderService', ['decode']);
-    stopTrackSpy = spyOn(mediaTrack, 'stop');
-    getUserMediaSpy = jasmine.createSpy('getUserMedia').and.resolveTo(mediaStream);
-    enumerateDevicesSpy = jasmine.createSpy('enumerateDevices').and.resolveTo([
-      {kind: 'videoinput'} as MediaDeviceInfo
-    ]);
-    spyOn(HTMLMediaElement.prototype, 'play').and.resolveTo();
-    spyOn(HTMLMediaElement.prototype, 'pause');
-
-    Object.defineProperty(navigator, 'mediaDevices', {
-      value: {
-        getUserMedia: getUserMediaSpy,
-        enumerateDevices: enumerateDevicesSpy
-      },
-      configurable: true
+    afterEach(() => {
+      fixture?.destroy();
+      vi.restoreAllMocks();
     });
 
-    TestBed.configureTestingModule({
-      declarations: [VerifyPlusScannerComponent, MockTranslatePipe],
-      providers: [
-        {provide: VerifyPlusDecoderService, useValue: decoderService}
-      ],
-      schemas: [NO_ERRORS_SCHEMA]
+    beforeEach(() => {
+        decoderService = {
+          decode: vi.fn<VerifyPlusDecoderService['decode']>()
+            .mockName('VerifyPlusDecoderService.decode')
+        };
+        stopTrackSpy = vi.spyOn(mediaTrack, 'stop').mockReturnValue(undefined);
+        getUserMediaSpy = vi.fn().mockName('getUserMedia').mockResolvedValue(mediaStream);
+        enumerateDevicesSpy = vi.fn().mockName('enumerateDevices').mockResolvedValue([
+            { kind: 'videoinput' } as MediaDeviceInfo
+        ]);
+        vi.spyOn(HTMLMediaElement.prototype, 'play').mockResolvedValue();
+        vi.spyOn(HTMLMediaElement.prototype, 'pause').mockReturnValue(undefined);
+
+        Object.defineProperty(navigator, 'mediaDevices', {
+            value: {
+                getUserMedia: getUserMediaSpy,
+                enumerateDevices: enumerateDevicesSpy
+            },
+            configurable: true
+        });
+
+        TestBed.configureTestingModule({
+            declarations: [VerifyPlusScannerComponent],
+            providers: [
+                { provide: VerifyPlusDecoderService, useValue: decoderService }
+            ],
+            schemas: [NO_ERRORS_SCHEMA]
+        });
+
+        fixture = TestBed.createComponent(VerifyPlusScannerComponent);
+        component = fixture.componentInstance;
+        fixture.detectChanges();
     });
 
-    fixture = TestBed.createComponent(VerifyPlusScannerComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+    it('should emit scanned payload on successful decode and stop stream', fakeAsync(() => {
+        vi.spyOn(component.scanned, 'emit').mockReturnValue(undefined);
+        // Avoid using the real canvas/video APIs in the unit test.
+        vi.spyOn(
+          component as unknown as {
+            captureFrame(): ImageData | null
+          },
+          'captureFrame'
+        ).mockReturnValue({} as ImageData);
 
-  it('should emit scanned payload on successful decode and stop stream', fakeAsync(() => {
-    spyOn(component.scanned, 'emit');
-    // Avoid using the real canvas/video APIs in the unit test.
-    spyOn<any>(component, 'captureFrame').and.returnValue({} as ImageData);
+        decoderService.decode.mockResolvedValue('payload-value');
 
-    decoderService.decode.and.resolveTo('payload-value');
+        component.scanning = true;
+        (component as any).stream = mediaStream;
+        (component as any).startDecodeLoop();
 
-    component.scanning = true;
-    (component as any).stream = mediaStream;
-    (component as any).startDecodeLoop();
+        tick(250);
+        flushMicrotasks();
 
-    tick(250);
-    flushMicrotasks();
+        expect(decoderService.decode).toHaveBeenCalled();
+        expect(component.scanned.emit).toHaveBeenCalledWith('payload-value');
+        expect(component.scanning).toBe(false);
+        expect(stopTrackSpy).toHaveBeenCalled();
 
-    expect(decoderService.decode).toHaveBeenCalled();
-    expect(component.scanned.emit).toHaveBeenCalledWith('payload-value');
-    expect(component.scanning).toBeFalse();
-    expect(stopTrackSpy).toHaveBeenCalled();
+        discardPeriodicTasks();
+    }));
 
-    discardPeriodicTasks();
-  }));
+    it('should mark invalid scan when decode misses', fakeAsync(() => {
+        vi.spyOn(
+          component as unknown as {
+            captureFrame(): ImageData | null;
+          },
+          'captureFrame'
+        ).mockReturnValue({} as ImageData);
 
-  it('should mark invalid scan when decode misses', fakeAsync(() => {
-    spyOn<any>(component, 'captureFrame').and.returnValue({} as ImageData);
-    decoderService.decode.and.resolveTo(null);
+        decoderService.decode.mockResolvedValue(null);
 
-    component.scanning = true;
-    (component as any).startDecodeLoop();
+        component.scanning = true;
+        (component as any).startDecodeLoop();
 
-    expect(component.invalidScan).toBeFalse();
+        expect(component.invalidScan).toBe(false);
 
-    tick(250);
-    flushMicrotasks();
+        tick(250);
+        flushMicrotasks();
 
-    expect(decoderService.decode).toHaveBeenCalled();
-    expect(component.invalidScan).toBeTrue();
+        expect(decoderService.decode).toHaveBeenCalled();
+        expect(component.invalidScan).toBe(true);
 
-    component.ngOnDestroy();
-    discardPeriodicTasks();
-  }));
+        component.ngOnDestroy();
+        discardPeriodicTasks();
+    }));
 
-  it('should set hasDevices false when no camera devices are available', fakeAsync(() => {
-    enumerateDevicesSpy.and.resolveTo([]);
-    component.startScanning();
-    tick();
-    expect(component.hasDevices).toBeFalse();
-    expect(component.scanning).toBeFalse();
-  }));
+    it('should set hasDevices false when no camera devices are available', fakeAsync(() => {
+        enumerateDevicesSpy.mockResolvedValue([]);
+        component.startScanning();
+        tick();
+        expect(component.hasDevices).toBe(false);
+        expect(component.scanning).toBe(false);
+    }));
 
-  it('should stop scanning when permission is denied', fakeAsync(() => {
-    getUserMediaSpy.and.rejectWith(new DOMException('denied', 'NotAllowedError'));
-    component.startScanning();
-    tick();
-    expect(component.cameraPermission).toBeFalse();
-    expect(component.scanning).toBeFalse();
-  }));
+    it('should stop scanning when permission is denied', fakeAsync(() => {
+        getUserMediaSpy.mockRejectedValue(new DOMException('denied', 'NotAllowedError'));
+        component.startScanning();
+        tick();
+        expect(component.cameraPermission).toBe(false);
+        expect(component.scanning).toBe(false);
+    }));
 
-  it('should emit scanner errors from decoder failures', fakeAsync(() => {
-    spyOn(component.scannerError, 'emit');
-    decoderService.decode.and.rejectWith(new Error('decoder-failed'));
+   it('should emit scanner errors from decoder failures', fakeAsync(() => {
+     const error = new Error('decoder-failed');
 
-    component.startScanning();
-    fixture.detectChanges();
-    tick();
-    fixture.detectChanges();
+     const errorSpy = vi.spyOn(component.scannerError, 'emit');
 
-    const video = fixture.nativeElement.querySelector('video') as HTMLVideoElement;
-    Object.defineProperty(video, 'videoWidth', {value: 640, configurable: true});
-    Object.defineProperty(video, 'videoHeight', {value: 480, configurable: true});
+     // Avoid real canvas APIs, which jsdom does not implement.
+     vi.spyOn(
+       component as unknown as {
+         captureFrame(): ImageData | null;
+       },
+       'captureFrame'
+     ).mockReturnValue({} as ImageData);
 
-    tick(260);
-    expect(component.scannerError.emit).toHaveBeenCalled();
-    component.ngOnDestroy();
-    discardPeriodicTasks();
-  }));
+     decoderService.decode.mockRejectedValue(error);
 
-  it('should stop camera tracks on destroy', fakeAsync(() => {
-    decoderService.decode.and.resolveTo(null);
+     component.startScanning();
+     fixture.detectChanges();
+     tick();
+     fixture.detectChanges();
 
-    component.startScanning();
-    fixture.detectChanges();
-    tick();
-    fixture.detectChanges();
+     tick(260);
+     flushMicrotasks();
 
-    component.ngOnDestroy();
-    expect(stopTrackSpy).toHaveBeenCalled();
-  }));
+     expect(decoderService.decode).toHaveBeenCalled();
+     expect(errorSpy).toHaveBeenCalledWith(error);
+     expect(component.scanning).toBe(false);
+
+     component.ngOnDestroy();
+     discardPeriodicTasks();
+   }));
+
+    it('should stop camera tracks on destroy', fakeAsync(() => {
+        decoderService.decode.mockResolvedValue(null);
+
+        component.startScanning();
+        fixture.detectChanges();
+        tick();
+        fixture.detectChanges();
+
+        component.ngOnDestroy();
+        expect(stopTrackSpy).toHaveBeenCalled();
+    }));
 });

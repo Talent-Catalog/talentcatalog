@@ -22,65 +22,66 @@ import {NgSelectModule} from "@ng-select/ng-select";
 import {FormsModule, ReactiveFormsModule, UntypedFormBuilder} from "@angular/forms";
 import {CandidateService} from "../../../../services/candidate.service";
 import {AutosaveStatusComponent} from "../../../util/autosave-status/autosave-status.component";
+import {expect} from 'vitest';
 
 describe('CrimeComponent', () => {
-  let component: CrimeComponent;
-  let fixture: ComponentFixture<CrimeComponent>;
+    let component: CrimeComponent;
+    let fixture: ComponentFixture<CrimeComponent>;
 
-  const mockCandidateService = {
-    candidateIntakeData: {
-      crimeConvict: YesNoUnsure.Yes, // Mocking crime convict data
-      crimeConvictNotes: 'Test crime convict notes' // Mocking crime convict notes data
-    }
-  };
+    const mockCandidateService = {
+        candidateIntakeData: {
+            crimeConvict: YesNoUnsure.Yes, // Mocking crime convict data
+            crimeConvictNotes: 'Test crime convict notes' // Mocking crime convict notes data
+        }
+    };
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      declarations: [CrimeComponent, AutosaveStatusComponent],
-      imports: [NgSelectModule,FormsModule,ReactiveFormsModule],
-      providers: [
-        UntypedFormBuilder,
-        { provide: CandidateService, useValue: mockCandidateService },
-        provideHttpClient(withXhr(), withInterceptorsFromDi()),
-        provideHttpClientTesting()
-      ]
-    }).compileComponents();
-  });
+    beforeEach(async () => {
+        await TestBed.configureTestingModule({
+            declarations: [CrimeComponent, AutosaveStatusComponent],
+            imports: [NgSelectModule, FormsModule, ReactiveFormsModule],
+            providers: [
+                UntypedFormBuilder,
+                { provide: CandidateService, useValue: mockCandidateService },
+                provideHttpClient(withXhr(), withInterceptorsFromDi()),
+                provideHttpClientTesting()
+            ]
+        }).compileComponents();
+    });
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(CrimeComponent);
-    component = fixture.componentInstance;
-    component.candidateIntakeData = mockCandidateService.candidateIntakeData;
-    // Manually trigger ngOnInit
-    component.ngOnInit();
+    beforeEach(() => {
+        fixture = TestBed.createComponent(CrimeComponent);
+        component = fixture.componentInstance;
+        component.candidateIntakeData = mockCandidateService.candidateIntakeData;
+        // Manually trigger ngOnInit
+        component.ngOnInit();
 
-    fixture.detectChanges();
-  });
+        fixture.detectChanges();
+    });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
 
-  it('should initialize form with candidate data', () => {
-    // Access the form control values
-    const crimeConvictControl = component.form.get('crimeConvict');
-    const crimeConvictNotesControl = component.form.get('crimeConvictNotes');
+    it('should initialize form with candidate data', () => {
+        // Access the form control values
+        const crimeConvictControl = component.form.get('crimeConvict');
+        const crimeConvictNotesControl = component.form.get('crimeConvictNotes');
 
-    // Check if form controls are initialized with the correct values
-    expect(crimeConvictControl.value).toEqual(mockCandidateService.candidateIntakeData.crimeConvict);
-    expect(crimeConvictNotesControl.value).toEqual(mockCandidateService.candidateIntakeData.crimeConvictNotes);
-  });
-  it('should show crime notes if crime is "Yes" or "Unsure"', () => {
-    // Set crimeConvict to "Yes"
-    component.form.get('crimeConvict').setValue(YesNoUnsure.Yes);
-    expect(component.hasNotes).toBeTrue();
+        // Check if form controls are initialized with the correct values
+        expect(crimeConvictControl.value).toEqual(mockCandidateService.candidateIntakeData.crimeConvict);
+        expect(crimeConvictNotesControl.value).toEqual(mockCandidateService.candidateIntakeData.crimeConvictNotes);
+    });
+    it('should show crime notes if crime is "Yes" or "Unsure"', () => {
+        // Set crimeConvict to "Yes"
+        component.form.get('crimeConvict').setValue(YesNoUnsure.Yes);
+        expect(component.hasNotes).toBe(true);
 
-    // Set crimeConvict to "Unsure"
-    component.form.get('crimeConvict').setValue(YesNoUnsure.Unsure);
-    expect(component.hasNotes).toBeTrue();
+        // Set crimeConvict to "Unsure"
+        component.form.get('crimeConvict').setValue(YesNoUnsure.Unsure);
+        expect(component.hasNotes).toBe(true);
 
-    // Set crimeConvict to "No"
-    component.form.get('crimeConvict').setValue(YesNoUnsure.No);
-    expect(component.hasNotes).toBeFalse();
-  });
+        // Set crimeConvict to "No"
+        component.form.get('crimeConvict').setValue(YesNoUnsure.No);
+        expect(component.hasNotes).toBe(false);
+    });
 });

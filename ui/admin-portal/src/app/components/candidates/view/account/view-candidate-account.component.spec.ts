@@ -21,62 +21,69 @@ import {MockCandidate} from "../../../../MockData/MockCandidate";
 import {MockUser} from "../../../../MockData/MockUser";
 import {provideHttpClientTesting} from "@angular/common/http/testing";
 import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
-import {RouterLinkStubDirective} from "../../../login/login.component.spec";
+import {RouterLinkStubDirective} from "../../../../../test-helpers/router-link-stub.directive";
 import {Candidate} from "../../../../model/candidate";
 import {User} from "../../../../model/user";
+import {expect, vi} from 'vitest';
 
 describe('ViewCandidateAccountComponent', () => {
-  let component: ViewCandidateAccountComponent;
-  let fixture: ComponentFixture<ViewCandidateAccountComponent>;
-  let mockUserService;
-  let mockModalService;
+    let component: ViewCandidateAccountComponent;
+    let fixture: ComponentFixture<ViewCandidateAccountComponent>;
+    let mockUserService;
+    let mockModalService;
 
-  const candidate: Candidate = new MockCandidate();
-  const user: User = new MockUser();
-  beforeEach(async () => {
-    mockUserService = jasmine.createSpyObj('UserService', ['get']);
-    mockModalService = jasmine.createSpyObj('NgbModal', ['open']);
+    const candidate: Candidate = new MockCandidate();
+    const user: User = new MockUser();
+    beforeEach(async () => {
+        mockUserService = {
+            get: vi.fn().mockName("UserService.get")
+        };
+        mockModalService = {
+            open: vi.fn().mockName("NgbModal.open")
+        };
 
-    await TestBed.configureTestingModule({
-      declarations: [ ViewCandidateAccountComponent,RouterLinkStubDirective ],
-      providers: [
-        { provide: UserService, useValue: mockUserService },
-        { provide: NgbModal, useValue: mockModalService },
-        provideHttpClient(withXhr(), withInterceptorsFromDi()),
-        provideHttpClientTesting()
-      ]
-    })
-    .compileComponents();
-  });
+        await TestBed.configureTestingModule({
+            declarations: [ViewCandidateAccountComponent, RouterLinkStubDirective],
+            providers: [
+                { provide: UserService, useValue: mockUserService },
+                { provide: NgbModal, useValue: mockModalService },
+                provideHttpClient(withXhr(), withInterceptorsFromDi()),
+                provideHttpClientTesting()
+            ]
+        })
+            .compileComponents();
+    });
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(ViewCandidateAccountComponent);
-    component = fixture.componentInstance;
-    component.user = candidate.user;
-    component.candidate = candidate;
-    fixture.detectChanges();
-  });
+    beforeEach(() => {
+        fixture = TestBed.createComponent(ViewCandidateAccountComponent);
+        component = fixture.componentInstance;
+        component.user = candidate.user;
+        component.candidate = candidate;
+        fixture.detectChanges();
+    });
 
-  it('should ', () => {
-    expect(component).toBeTruthy();
-  });
+    it('should ', () => {
+        expect(component).toBeTruthy();
+    });
 
-  it('should open the password update modal when reset link is clicked', () => {
-    const modalRef = { componentInstance: { user: null }, result: Promise.resolve(user) };
+    it('should open the password update modal when reset link is clicked', () => {
+        const modalRef = { componentInstance: { user: null }, result: Promise.resolve(user) };
 
-    mockModalService.open.and.returnValue(modalRef);
+        mockModalService.open.mockReturnValue(modalRef);
 
-    component.updatePassword(user);
+        component.updatePassword(user);
 
-    expect(mockModalService.open).toHaveBeenCalledOnceWith(jasmine.any(Function), { centered: true, backdrop: 'static' });
-    expect(modalRef.componentInstance.user).toEqual(user);
-  });
+        expect(mockModalService.open).toHaveBeenCalledTimes(1);
 
-  it('should hide password reset link if editable is false', () => {
-    component.editable = false;
-    fixture.detectChanges();
-    const compiled = fixture.nativeElement;
-    const resetLink = compiled.querySelector('a.small');
-    expect(resetLink).toBeFalsy();
-  });
+        expect(mockModalService.open).toHaveBeenCalledWith(expect.any(Function), { centered: true, backdrop: 'static' });
+        expect(modalRef.componentInstance.user).toEqual(user);
+    });
+
+    it('should hide password reset link if editable is false', () => {
+        component.editable = false;
+        fixture.detectChanges();
+        const compiled = fixture.nativeElement;
+        const resetLink = compiled.querySelector('a.small');
+        expect(resetLink).toBeFalsy();
+    });
 });

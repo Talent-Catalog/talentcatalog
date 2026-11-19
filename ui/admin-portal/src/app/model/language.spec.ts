@@ -15,6 +15,7 @@
  */
 
 import {Language, SystemLanguage} from "./language";
+import {expect} from 'vitest';
 
 describe('Language Interface', () => {
   it('should create a valid Language object', () => {

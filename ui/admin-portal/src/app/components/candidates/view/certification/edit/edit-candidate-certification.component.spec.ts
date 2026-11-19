@@ -14,13 +14,12 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
+import type {MockedObject} from "vitest";
 import {EditCandidateCertificationComponent} from "./edit-candidate-certification.component";
-import {ComponentFixture, TestBed, waitForAsync} from "@angular/core/testing";
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {CountryService} from "../../../../../services/country.service";
 import {NgbActiveModal, NgbDatepickerModule} from "@ng-bootstrap/ng-bootstrap";
-import {
-  CandidateCertificationService
-} from "../../../../../services/candidate-certification.service";
+import {CandidateCertificationService} from "../../../../../services/candidate-certification.service";
 import {DatePickerComponent} from "../../../../util/date-picker/date-picker.component";
 import {provideHttpClientTesting} from "@angular/common/http/testing";
 import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
@@ -28,82 +27,90 @@ import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {of, throwError} from "rxjs";
 import {CandidateCertification} from "../../../../../model/candidate-certification";
+import {expect, vi} from 'vitest';
 
 describe('EditCandidateCertificationComponent', () => {
-  let component: EditCandidateCertificationComponent;
-  let fixture: ComponentFixture<EditCandidateCertificationComponent>;
-  let candidateCertificationServiceSpy: jasmine.SpyObj<CandidateCertificationService>;
-  let countryServiceSpy: jasmine.SpyObj<CountryService>;
-  let activeModalSpy: jasmine.SpyObj<NgbActiveModal>;
+    let component: EditCandidateCertificationComponent;
+    let fixture: ComponentFixture<EditCandidateCertificationComponent>;
+    let candidateCertificationServiceSpy: MockedObject<CandidateCertificationService>;
+    let countryServiceSpy: MockedObject<CountryService>;
+    let activeModalSpy: MockedObject<NgbActiveModal>;
 
-  beforeEach(waitForAsync(() => {
-    const candidateCertificationSpy = jasmine.createSpyObj('CandidateCertificationService', ['update']);
-    const countrySpy = jasmine.createSpyObj('CountryService', ['listCountries']);
-    const activeModalMock = jasmine.createSpyObj('NgbActiveModal', ['close', 'dismiss']);
+    beforeEach(async () => {
+        const candidateCertificationSpy = {
+            update: vi.fn().mockName("CandidateCertificationService.update")
+        };
+        const countrySpy = {
+            listCountries: vi.fn().mockName("CountryService.listCountries")
+        };
+        const activeModalMock = {
+            close: vi.fn().mockName("NgbActiveModal.close"),
+            dismiss: vi.fn().mockName("NgbActiveModal.dismiss")
+        };
 
-    TestBed.configureTestingModule({
-      declarations: [EditCandidateCertificationComponent, DatePickerComponent],
-      imports: [FormsModule,ReactiveFormsModule, NgSelectModule, NgbDatepickerModule],
-      providers: [
-        { provide: NgbActiveModal, useValue: activeModalMock },
-        { provide: CandidateCertificationService, useValue: candidateCertificationSpy },
-        { provide: CountryService, useValue: countrySpy },
-        provideHttpClient(withXhr(), withInterceptorsFromDi()),
-        provideHttpClientTesting()
-      ]
-    }).compileComponents();
+        await TestBed.configureTestingModule({
+            declarations: [EditCandidateCertificationComponent, DatePickerComponent],
+            imports: [FormsModule, ReactiveFormsModule, NgSelectModule, NgbDatepickerModule],
+            providers: [
+                { provide: NgbActiveModal, useValue: activeModalMock },
+                { provide: CandidateCertificationService, useValue: candidateCertificationSpy },
+                { provide: CountryService, useValue: countrySpy },
+                provideHttpClient(withXhr(), withInterceptorsFromDi()),
+                provideHttpClientTesting()
+            ]
+        }).compileComponents();
 
-    candidateCertificationServiceSpy = TestBed.inject(CandidateCertificationService) as jasmine.SpyObj<CandidateCertificationService>;
-    countryServiceSpy = TestBed.inject(CountryService) as jasmine.SpyObj<CountryService>;
-    activeModalSpy = TestBed.inject(NgbActiveModal) as jasmine.SpyObj<NgbActiveModal>;
-  }));
+        candidateCertificationServiceSpy = TestBed.inject(CandidateCertificationService) as MockedObject<CandidateCertificationService>;
+        countryServiceSpy = TestBed.inject(CountryService) as MockedObject<CountryService>;
+        activeModalSpy = TestBed.inject(NgbActiveModal) as MockedObject<NgbActiveModal>;
+    });
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(EditCandidateCertificationComponent);
-    component = fixture.componentInstance;
-    component.candidateCertification = { id: 1, name: 'Course Name', institution: 'Institution', dateCompleted: '2024-05-29' } as CandidateCertification;
-    countryServiceSpy.listCountries.and.returnValue(of([]));
-    fixture.detectChanges();
-  });
+    beforeEach(() => {
+        fixture = TestBed.createComponent(EditCandidateCertificationComponent);
+        component = fixture.componentInstance;
+        component.candidateCertification = { id: 1, name: 'Course Name', institution: 'Institution', dateCompleted: '2024-05-29' } as CandidateCertification;
+        countryServiceSpy.listCountries.mockReturnValue(of([]));
+        fixture.detectChanges();
+    });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
 
-  it('should initialize the form with candidateCertification data', () => {
-    expect(component.candidateForm).toBeDefined();
-    expect(component.candidateForm.controls['name'].value).toBe('Course Name');
-    expect(component.candidateForm.controls['institution'].value).toBe('Institution');
-    expect(component.candidateForm.controls['dateCompleted'].value).toBe('2024-05-29');
-  });
+    it('should initialize the form with candidateCertification data', () => {
+        expect(component.candidateForm).toBeDefined();
+        expect(component.candidateForm.controls['name'].value).toBe('Course Name');
+        expect(component.candidateForm.controls['institution'].value).toBe('Institution');
+        expect(component.candidateForm.controls['dateCompleted'].value).toBe('2024-05-29');
+    });
 
-  it('form should be valid when filled correctly', () => {
-    expect(component.candidateForm.valid).toBeTruthy();
-  });
+    it('form should be valid when filled correctly', () => {
+        expect(component.candidateForm.valid).toBeTruthy();
+    });
 
-  it('should call the update method on the service when form is valid and submitted', () => {
-    const mockCertification = { id: 1, name: 'Course Name', institution: 'Institution', dateCompleted: '2024-05-29' };
-    candidateCertificationServiceSpy.update.and.returnValue(of(mockCertification));
+    it('should call the update method on the service when form is valid and submitted', () => {
+        const mockCertification = { id: 1, name: 'Course Name', institution: 'Institution', dateCompleted: '2024-05-29' };
+        candidateCertificationServiceSpy.update.mockReturnValue(of(mockCertification));
 
-    component.onSave();
+        component.onSave();
 
-    expect(candidateCertificationServiceSpy.update.calls.count()).toBe(1);
-    expect(activeModalSpy.close.calls.count()).toBe(1);
-  });
+        expect(vi.mocked(candidateCertificationServiceSpy.update).mock.calls.length).toBe(1);
+        expect(vi.mocked(activeModalSpy.close).mock.calls.length).toBe(1);
+    });
 
-  it('should handle errors on form submission', () => {
-    const mockError = 'An error occurred';
-    candidateCertificationServiceSpy.update.and.returnValue(throwError(mockError));
+    it('should handle errors on form submission', () => {
+        const mockError = 'An error occurred';
+        candidateCertificationServiceSpy.update.mockReturnValue(throwError(mockError));
 
-    component.onSave();
+        component.onSave();
 
-    expect(component.error).toBe(mockError);
-    expect(candidateCertificationServiceSpy.update.calls.count()).toBe(1);
-    expect(activeModalSpy.close.calls.count()).toBe(0);
-  });
+        expect(component.error).toBe(mockError);
+        expect(vi.mocked(candidateCertificationServiceSpy.update).mock.calls.length).toBe(1);
+        expect(vi.mocked(activeModalSpy.close).mock.calls.length).toBe(0);
+    });
 
-  it('should dismiss the modal without saving changes', () => {
-    component.dismiss();
-    expect(activeModalSpy.dismiss.calls.count()).toBe(1);
-  });
+    it('should dismiss the modal without saving changes', () => {
+        component.dismiss();
+        expect(vi.mocked(activeModalSpy.dismiss).mock.calls.length).toBe(1);
+    });
 });

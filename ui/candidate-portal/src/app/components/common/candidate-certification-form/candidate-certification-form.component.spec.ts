@@ -14,6 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
+import type {MockedObject} from "vitest";
 import {Component, EventEmitter, forwardRef, Input, NO_ERRORS_SCHEMA, Output, ChangeDetectionStrategy} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
@@ -29,244 +30,261 @@ import {CandidateService} from '../../../services/candidate.service';
 import {RegistrationService} from '../../../services/registration.service';
 
 @Component({
-  selector: 'tc-input',
-  template: '',
-  providers: [{
-    provide: NG_VALUE_ACCESSOR,
-    useExisting: forwardRef(() => TcInputStubComponent),
-    multi: true
-  }],
-  changeDetection: ChangeDetectionStrategy.Eager,
-  standalone: false
+    selector: 'tc-input',
+    template: '',
+    providers: [{
+            provide: NG_VALUE_ACCESSOR,
+            useExisting: forwardRef(() => TcInputStubComponent),
+            multi: true
+        }],
+    changeDetection: ChangeDetectionStrategy.Eager,
+    standalone: false
 })
 class TcInputStubComponent implements ControlValueAccessor {
-  @Input() id?: string;
-  @Input() type?: string;
-  @Input() formControlName?: string;
-  @Input() placeholder?: string;
-  writeValue(): void {}
-  registerOnChange(): void {}
-  registerOnTouched(): void {}
+    @Input()
+    id?: string;
+    @Input()
+    type?: string;
+    @Input()
+    formControlName?: string;
+    @Input()
+    placeholder?: string;
+    writeValue(): void { }
+    registerOnChange(): void { }
+    registerOnTouched(): void { }
 }
 
 @Component({
-  selector: 'app-date-picker',
-  template: '',
-  changeDetection: ChangeDetectionStrategy.Eager,
-  standalone: false
+    selector: 'app-date-picker',
+    template: '',
+    changeDetection: ChangeDetectionStrategy.Eager,
+    standalone: false
 })
 class DatePickerStubComponent {
-  @Input() id?: string;
-  @Input() control?: unknown;
+    @Input()
+    id?: string;
+    @Input()
+    control?: unknown;
 }
 
 @Component({
-  selector: 'tc-button',
-  template: '<ng-content></ng-content>',
-  changeDetection: ChangeDetectionStrategy.Eager,
-  standalone: false
+    selector: 'tc-button',
+    template: '<ng-content></ng-content>',
+    changeDetection: ChangeDetectionStrategy.Eager,
+    standalone: false
 })
 class TcButtonStubComponent {
-  @Input() disabled?: boolean;
-  @Output() onClick = new EventEmitter<void>();
+    @Input()
+    disabled?: boolean;
+    @Output()
+    onClick = new EventEmitter<void>();
 }
 
 function makeCertification(overrides: Partial<CandidateCertification> = {}): CandidateCertification {
-  return {
-    id: 1,
-    name: 'AWS Certified',
-    institution: 'Amazon',
-    dateCompleted: '2024-01-15',
-    ...overrides
-  };
+    return {
+        id: 1,
+        name: 'AWS Certified',
+        institution: 'Amazon',
+        dateCompleted: '2024-01-15',
+        ...overrides
+    };
 }
 
 describe('CandidateCertificationFormComponent', () => {
-  let component: CandidateCertificationFormComponent;
-  let fixture: ComponentFixture<CandidateCertificationFormComponent>;
+    let component: CandidateCertificationFormComponent;
+    let fixture: ComponentFixture<CandidateCertificationFormComponent>;
 
-  let candidateCertificationServiceSpy: jasmine.SpyObj<CandidateCertificationService>;
+    let candidateCertificationServiceSpy: MockedObject<CandidateCertificationService>;
 
-  async function configureAndCreate(options?: {
-    certificate?: CandidateCertification | null;
-    createError?: unknown;
-    updateError?: unknown;
-  }) {
-    candidateCertificationServiceSpy = jasmine.createSpyObj('CandidateCertificationService', [
-      'createCandidateCertification',
-      'update'
-    ]);
+    async function configureAndCreate(options?: {
+        certificate?: CandidateCertification | null;
+        createError?: unknown;
+        updateError?: unknown;
+    }) {
+        candidateCertificationServiceSpy = {
+            createCandidateCertification: vi.fn().mockName("CandidateCertificationService.createCandidateCertification"),
+            update: vi.fn().mockName("CandidateCertificationService.update")
+        } as unknown as MockedObject<CandidateCertificationService>;
 
-    if (options?.createError) {
-      candidateCertificationServiceSpy.createCandidateCertification.and.returnValue(throwError(options.createError));
-    } else {
-      candidateCertificationServiceSpy.createCandidateCertification.and.returnValue(of(makeCertification({id: 2})));
+        if (options?.createError) {
+            candidateCertificationServiceSpy.createCandidateCertification.mockReturnValue(throwError(options.createError));
+        }
+        else {
+            candidateCertificationServiceSpy.createCandidateCertification.mockReturnValue(of(makeCertification({ id: 2 })));
+        }
+
+        if (options?.updateError) {
+            candidateCertificationServiceSpy.update.mockReturnValue(throwError(options.updateError));
+        }
+        else {
+            candidateCertificationServiceSpy.update.mockReturnValue(of(makeCertification()));
+        }
+
+        await TestBed.configureTestingModule({
+            declarations: [
+                CandidateCertificationFormComponent,
+                TcInputStubComponent,
+                DatePickerStubComponent,
+                TcButtonStubComponent
+            ],
+            imports: [ReactiveFormsModule, TranslateModule.forRoot()],
+            providers: [
+                { provide: Router, useValue: {
+                        navigate: vi.fn().mockName("Router.navigate")
+                    } },
+                { provide: CandidateService, useValue: {
+                        noop: vi.fn().mockName("CandidateService.noop")
+                    } },
+                { provide: CandidateCertificationService, useValue: candidateCertificationServiceSpy },
+                { provide: RegistrationService, useValue: {
+                        next: vi.fn().mockName("RegistrationService.next"),
+                        back: vi.fn().mockName("RegistrationService.back")
+                    } }
+            ],
+            schemas: [NO_ERRORS_SCHEMA]
+        }).compileComponents();
+
+        fixture = TestBed.createComponent(CandidateCertificationFormComponent);
+        component = fixture.componentInstance;
+        component.certificate = options?.certificate ?? null;
+
+        const translateService = TestBed.inject(TranslateService);
+        translateService.use('en');
+
+        fixture.detectChanges();
     }
 
-    if (options?.updateError) {
-      candidateCertificationServiceSpy.update.and.returnValue(throwError(options.updateError));
-    } else {
-      candidateCertificationServiceSpy.update.and.returnValue(of(makeCertification()));
-    }
+    afterEach(() => TestBed.resetTestingModule());
 
-    await TestBed.configureTestingModule({
-      declarations: [
-        CandidateCertificationFormComponent,
-        TcInputStubComponent,
-        DatePickerStubComponent,
-        TcButtonStubComponent
-      ],
-      imports: [ReactiveFormsModule, TranslateModule.forRoot()],
-      providers: [
-        {provide: Router, useValue: jasmine.createSpyObj('Router', ['navigate'])},
-        {provide: CandidateService, useValue: jasmine.createSpyObj('CandidateService', ['noop'])},
-        {provide: CandidateCertificationService, useValue: candidateCertificationServiceSpy},
-        {provide: RegistrationService, useValue: jasmine.createSpyObj('RegistrationService', ['next', 'back'])}
-      ],
-      schemas: [NO_ERRORS_SCHEMA]
-    }).compileComponents();
-
-    fixture = TestBed.createComponent(CandidateCertificationFormComponent);
-    component = fixture.componentInstance;
-    component.certificate = options?.certificate ?? null;
-
-    const translateService = TestBed.inject(TranslateService);
-    translateService.use('en');
-
-    fixture.detectChanges();
-  }
-
-  afterEach(() => TestBed.resetTestingModule());
-
-  it('should create', async () => {
-    await configureAndCreate();
-    expect(component).toBeTruthy();
-  });
-
-  describe('ngOnInit', () => {
-    beforeEach(async () => configureAndCreate());
-
-    it('should build the expected form controls', () => {
-      expect(component.form.contains('name')).toBeTrue();
-      expect(component.form.contains('institution')).toBeTrue();
-      expect(component.form.contains('dateCompleted')).toBeTrue();
+    it('should create', async () => {
+        await configureAndCreate();
+        expect(component).toBeTruthy();
     });
 
-    it('should patch an existing certification into the form', async () => {
-      // This test needs a different input setup than the shared beforeEach fixture,
-      // so reset the TestBed before creating a fresh component instance.
-      TestBed.resetTestingModule();
-      await configureAndCreate({certificate: makeCertification()});
+    describe('ngOnInit', () => {
+        beforeEach(async () => configureAndCreate());
 
-      expect(component.form.value.id).toBe(1);
-      expect(component.form.value.name).toBe('AWS Certified');
-      expect(component.form.value.institution).toBe('Amazon');
-    });
-  });
+        it('should build the expected form controls', () => {
+            expect(component.form.contains('name')).toBe(true);
+            expect(component.form.contains('institution')).toBe(true);
+            expect(component.form.contains('dateCompleted')).toBe(true);
+        });
 
-  describe('template tc components', () => {
-    beforeEach(async () => configureAndCreate());
+        it('should patch an existing certification into the form', async () => {
+            // This test needs a different input setup than the shared beforeEach fixture,
+            // so reset the TestBed before creating a fresh component instance.
+            TestBed.resetTestingModule();
+            await configureAndCreate({ certificate: makeCertification() });
 
-    it('should render tc-input controls for migrated fields', () => {
-      const inputIds = fixture.debugElement.queryAll(By.directive(TcInputStubComponent))
-        .map(debugEl => debugEl.componentInstance.id);
-
-      expect(inputIds).toContain('name');
-      expect(inputIds).toContain('institution');
+            expect(component.form.value.id).toBe(1);
+            expect(component.form.value.name).toBe('AWS Certified');
+            expect(component.form.value.institution).toBe('Amazon');
+        });
     });
 
-    it('should render tc-label elements and a tc-button', () => {
-      const nativeElement = fixture.nativeElement as HTMLElement;
+    describe('template tc components', () => {
+        beforeEach(async () => configureAndCreate());
 
-      expect(nativeElement.querySelector('tc-label[for="name"]')).toBeTruthy();
-      expect(nativeElement.querySelector('tc-label[for="dateCompleted"]')).toBeTruthy();
-      expect(nativeElement.querySelectorAll('tc-button').length).toBe(1);
+        it('should render tc-input controls for migrated fields', () => {
+            const inputIds = fixture.debugElement.queryAll(By.directive(TcInputStubComponent))
+                .map(debugEl => debugEl.componentInstance.id);
+
+            expect(inputIds).toContain('name');
+            expect(inputIds).toContain('institution');
+        });
+
+        it('should render tc-label elements and a tc-button', () => {
+            const nativeElement = fixture.nativeElement as HTMLElement;
+
+            expect(nativeElement.querySelector('tc-label[for="name"]')).toBeTruthy();
+            expect(nativeElement.querySelector('tc-label[for="dateCompleted"]')).toBeTruthy();
+            expect(nativeElement.querySelectorAll('tc-button').length).toBe(1);
+        });
+
+        it('should render the migrated date field', () => {
+            const nativeElement = fixture.nativeElement as HTMLElement;
+
+            expect(nativeElement.querySelector('tc-label[for="dateCompleted"]')).toBeTruthy();
+            expect(component.form.contains('dateCompleted')).toBe(true);
+        });
     });
 
-    it('should render the migrated date field', () => {
-      const nativeElement = fixture.nativeElement as HTMLElement;
+    describe('save', () => {
+        beforeEach(async () => configureAndCreate());
 
-      expect(nativeElement.querySelector('tc-label[for="dateCompleted"]')).toBeTruthy();
-      expect(component.form.contains('dateCompleted')).toBeTrue();
+        it('should create a certification when the form has no id', () => {
+            const savedSpy = vi.spyOn(component.saved, 'emit').mockReturnValue(undefined);
+            component.form.patchValue({
+                name: 'Azure Certified',
+                institution: 'Microsoft',
+                dateCompleted: '2024-01-15'
+            });
+            component.form.markAsDirty();
+
+            component.save();
+
+            expect(candidateCertificationServiceSpy.createCandidateCertification).toHaveBeenCalledWith(component.form.value);
+            expect(savedSpy).toHaveBeenCalled();
+        });
+
+        it('should update a certification when the form has an id', async () => {
+            // This test needs a different input setup than the shared beforeEach fixture,
+            // so reset the TestBed before creating a fresh component instance.
+            TestBed.resetTestingModule();
+            await configureAndCreate({ certificate: makeCertification() });
+            component.form.patchValue({ name: 'Azure Certified' });
+            component.form.markAsDirty();
+
+            component.save();
+
+            expect(candidateCertificationServiceSpy.update).toHaveBeenCalledWith(component.form.value);
+        });
+
+        it('should emit the existing certification when the form is pristine', async () => {
+            // This test needs a different input setup than the shared beforeEach fixture,
+            // so reset the TestBed before creating a fresh component instance.
+            TestBed.resetTestingModule();
+            const certificate = makeCertification();
+            await configureAndCreate({ certificate });
+            const savedSpy = vi.spyOn(component.saved, 'emit').mockReturnValue(undefined);
+
+            component.save();
+
+            expect(savedSpy).toHaveBeenCalledWith(certificate);
+        });
+
+        it('should set error and clear saving when create fails', async () => {
+            // This test needs a different service setup than the shared beforeEach fixture,
+            // so reset the TestBed before creating a fresh component instance.
+            TestBed.resetTestingModule();
+            const serverError = { status: 500 };
+            await configureAndCreate({ createError: serverError });
+            component.form.patchValue({
+                name: 'Azure Certified',
+                institution: 'Microsoft',
+                dateCompleted: '2024-01-15'
+            });
+            component.form.markAsDirty();
+
+            component.save();
+
+            expect(component.error).toEqual(serverError);
+            expect(component.saving).toBe(false);
+        });
+
+        it('should set error and clear saving when update fails', async () => {
+            // This test needs a different input and service setup than the shared beforeEach fixture,
+            // so reset the TestBed before creating a fresh component instance.
+            TestBed.resetTestingModule();
+            const serverError = { status: 503 };
+            await configureAndCreate({ certificate: makeCertification(), updateError: serverError });
+            component.form.patchValue({ name: 'Azure Certified' });
+            component.form.markAsDirty();
+
+            component.save();
+
+            expect(component.error).toEqual(serverError);
+            expect(component.saving).toBe(false);
+        });
     });
-  });
-
-  describe('save', () => {
-    beforeEach(async () => configureAndCreate());
-
-    it('should create a certification when the form has no id', () => {
-      const savedSpy = spyOn(component.saved, 'emit');
-      component.form.patchValue({
-        name: 'Azure Certified',
-        institution: 'Microsoft',
-        dateCompleted: '2024-01-15'
-      });
-      component.form.markAsDirty();
-
-      component.save();
-
-      expect(candidateCertificationServiceSpy.createCandidateCertification).toHaveBeenCalledWith(component.form.value);
-      expect(savedSpy).toHaveBeenCalled();
-    });
-
-    it('should update a certification when the form has an id', async () => {
-      // This test needs a different input setup than the shared beforeEach fixture,
-      // so reset the TestBed before creating a fresh component instance.
-      TestBed.resetTestingModule();
-      await configureAndCreate({certificate: makeCertification()});
-      component.form.patchValue({name: 'Azure Certified'});
-      component.form.markAsDirty();
-
-      component.save();
-
-      expect(candidateCertificationServiceSpy.update).toHaveBeenCalledWith(component.form.value);
-    });
-
-    it('should emit the existing certification when the form is pristine', async () => {
-      // This test needs a different input setup than the shared beforeEach fixture,
-      // so reset the TestBed before creating a fresh component instance.
-      TestBed.resetTestingModule();
-      const certificate = makeCertification();
-      await configureAndCreate({certificate});
-      const savedSpy = spyOn(component.saved, 'emit');
-
-      component.save();
-
-      expect(savedSpy).toHaveBeenCalledWith(certificate);
-    });
-
-    it('should set error and clear saving when create fails', async () => {
-      // This test needs a different service setup than the shared beforeEach fixture,
-      // so reset the TestBed before creating a fresh component instance.
-      TestBed.resetTestingModule();
-      const serverError = {status: 500};
-      await configureAndCreate({createError: serverError});
-      component.form.patchValue({
-        name: 'Azure Certified',
-        institution: 'Microsoft',
-        dateCompleted: '2024-01-15'
-      });
-      component.form.markAsDirty();
-
-      component.save();
-
-      expect(component.error).toEqual(serverError);
-      expect(component.saving).toBeFalse();
-    });
-
-    it('should set error and clear saving when update fails', async () => {
-      // This test needs a different input and service setup than the shared beforeEach fixture,
-      // so reset the TestBed before creating a fresh component instance.
-      TestBed.resetTestingModule();
-      const serverError = {status: 503};
-      await configureAndCreate({certificate: makeCertification(), updateError: serverError});
-      component.form.patchValue({name: 'Azure Certified'});
-      component.form.markAsDirty();
-
-      component.save();
-
-      expect(component.error).toEqual(serverError);
-      expect(component.saving).toBeFalse();
-    });
-  });
 });

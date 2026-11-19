@@ -18,36 +18,37 @@ import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {ViewJobDescriptionComponent} from './view-job-description.component';
 import {SafePipe} from "../../../../../pipes/safe.pipe";
 import {MockJob} from "../../../../../MockData/MockJob";
+import {expect} from 'vitest';
 
 describe('ViewJobDescriptionComponent', () => {
-  let component: ViewJobDescriptionComponent;
-  let fixture: ComponentFixture<ViewJobDescriptionComponent>;
+    let component: ViewJobDescriptionComponent;
+    let fixture: ComponentFixture<ViewJobDescriptionComponent>;
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      declarations: [ ViewJobDescriptionComponent,SafePipe ],
-     })
-    .compileComponents();
-  });
+    beforeEach(async () => {
+        await TestBed.configureTestingModule({
+            declarations: [ViewJobDescriptionComponent, SafePipe],
+        })
+            .compileComponents();
+    });
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(ViewJobDescriptionComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
+    beforeEach(() => {
+        fixture = TestBed.createComponent(ViewJobDescriptionComponent);
+        component = fixture.componentInstance;
+        fixture.detectChanges();
+    });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
 
-  it('should safely load job description URL into iframe', () => {
+    it('should safely load job description URL into iframe', () => {
 
-    component.job = MockJob;
+        component.job = MockJob;
 
-    fixture.detectChanges();
+        fixture.detectChanges();
 
-    const iframeElement: HTMLIFrameElement = fixture.nativeElement.querySelector('iframe');
-    expect(iframeElement).toBeTruthy();
-    expect(iframeElement.src).toBe(component.jobDescription);
-  });
+        const iframeElement: HTMLIFrameElement = fixture.nativeElement.querySelector('iframe');
+        expect(iframeElement).toBeTruthy();
+        expect(iframeElement.src).toBe(component.jobDescription);
+    });
 });

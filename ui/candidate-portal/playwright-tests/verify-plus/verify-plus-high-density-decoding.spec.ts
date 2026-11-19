@@ -14,11 +14,11 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {test,} from '@playwright/test';
+import {test} from '@playwright/test';
 
-import {VERIFY_PLUS_HIGH_DENSITY_QR_FIXTURES,} from '../fixtures/verify-plus-qr.fixture';
+import {VERIFY_PLUS_HIGH_DENSITY_QR_FIXTURES} from '../fixtures/verify-plus-qr.fixture';
 
-import {runVerifyPlusQrDecodingScenario,} from '../support/verify-plus-qr-decoding.e2e';
+import {runVerifyPlusQrDecodingScenario} from '../support/verify-plus-qr-decoding.e2e';
 
 /**
  * Cross-browser decoding coverage for high-density Verify+ QR images.
@@ -30,32 +30,15 @@ import {runVerifyPlusQrDecodingScenario,} from '../support/verify-plus-qr-decodi
  * contain large encoded sections. Stable document markers and UNHCR IDs are
  * asserted through the shared fixture metadata instead.
  */
-test.describe(
-  'Verify+ high-density QR decoding',
-  () => {
-    for (
-      const fixture
-      of VERIFY_PLUS_HIGH_DENSITY_QR_FIXTURES
-      ) {
-      test(
-        `decodes ${fixture.fileName} with zxing-wasm`,
-        async ({
-                 page,
-               }, testInfo) => {
-          /*
-           * Leave enough time for cold WebKit and zxing-wasm initialization.
-           */
-          test.setTimeout(
-            120_000,
-          );
+test.describe('Verify+ high-density QR decoding', () => {
+    for (const fixture of VERIFY_PLUS_HIGH_DENSITY_QR_FIXTURES) {
+        test(`decodes ${fixture.fileName} with zxing-wasm`, async ({ page, }, testInfo) => {
+            /*
+             * Leave enough time for cold WebKit and zxing-wasm initialization.
+             */
+            test.setTimeout(120000);
 
-          await runVerifyPlusQrDecodingScenario(
-            page,
-            testInfo.project.testDir,
-            fixture,
-          );
-        },
-      );
+            await runVerifyPlusQrDecodingScenario(page, testInfo.project.testDir, fixture);
+        });
     }
-  },
-);
+});

@@ -15,6 +15,7 @@
  */
 
 import {CandidateNumberParser} from './candidate-number-parser';
+import {expect} from 'vitest';
 
 describe('CandidateNumberParser', () => {
   describe('parseCandidateNumbers', () => {

@@ -14,79 +14,82 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
+import type {MockedObject} from "vitest";
 import {EditCandidateStatusComponent} from "./edit-candidate-status.component";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {ComponentFixture, TestBed} from "@angular/core/testing";
 import {CandidateStatus, UpdateCandidateStatusInfo} from "../../../../model/candidate";
-import {
-  CandidateStatusSelectorComponent
-} from "../../../util/candidate-status-selector/candidate-status-selector.component";
+import {CandidateStatusSelectorComponent} from "../../../util/candidate-status-selector/candidate-status-selector.component";
 import {provideHttpClientTesting} from "@angular/common/http/testing";
 import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {NgxWigModule} from "ngx-wig";
+import {expect, vi} from 'vitest';
 
 describe('EditCandidateStatusComponent', () => {
-  let component: EditCandidateStatusComponent;
-  let fixture: ComponentFixture<EditCandidateStatusComponent>;
-  let activeModal: jasmine.SpyObj<NgbActiveModal>;
+    let component: EditCandidateStatusComponent;
+    let fixture: ComponentFixture<EditCandidateStatusComponent>;
+    let activeModal: MockedObject<NgbActiveModal>;
 
-  beforeEach(async () => {
-    const activeModalSpy = jasmine.createSpyObj('NgbActiveModal', ['close', 'dismiss']);
+    beforeEach(async () => {
+        const activeModalSpy = {
+            close: vi.fn().mockName("NgbActiveModal.close"),
+            dismiss: vi.fn().mockName("NgbActiveModal.dismiss")
+        };
 
-    await TestBed.configureTestingModule({
-      declarations: [
-        EditCandidateStatusComponent,
-        CandidateStatusSelectorComponent
-      ],
-      imports: [FormsModule,ReactiveFormsModule, NgSelectModule,NgxWigModule],
-      providers: [
-        { provide: NgbActiveModal, useValue: activeModalSpy },
-        provideHttpClient(withXhr(), withInterceptorsFromDi()),
-        provideHttpClientTesting()
-      ]
-    }).compileComponents();
+        await TestBed.configureTestingModule({
+            declarations: [
+                EditCandidateStatusComponent,
+                CandidateStatusSelectorComponent
+            ],
+            imports: [FormsModule, ReactiveFormsModule, NgSelectModule, NgxWigModule],
+            providers: [
+                { provide: NgbActiveModal, useValue: activeModalSpy },
+                provideHttpClient(withXhr(), withInterceptorsFromDi()),
+                provideHttpClientTesting()
+            ]
+        }).compileComponents();
 
-    activeModal = TestBed.inject(NgbActiveModal) as jasmine.SpyObj<NgbActiveModal>;
-  });
+        activeModal = TestBed.inject(NgbActiveModal) as MockedObject<NgbActiveModal>;
+    });
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(EditCandidateStatusComponent);
-    component = fixture.componentInstance;
-    component.candidateStatus = CandidateStatus.active;
-    fixture.detectChanges();
-  });
+    beforeEach(() => {
+        fixture = TestBed.createComponent(EditCandidateStatusComponent);
+        component = fixture.componentInstance;
+        component.candidateStatus = CandidateStatus.active;
+        fixture.detectChanges();
+    });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
 
-  it('should initialize with default candidate status if none is provided', () => {
-    expect(component.getInitialStatus()).toBe(CandidateStatus.active);
-  });
+    it('should initialize with default candidate status if none is provided', () => {
+        expect(component.getInitialStatus()).toBe(CandidateStatus.active);
+    });
 
-  it('should initialize with provided candidate status', () => {
-    component.candidateStatus = CandidateStatus.pending;
-    expect(component.getInitialStatus()).toBe(CandidateStatus.pending);
-  });
+    it('should initialize with provided candidate status', () => {
+        component.candidateStatus = CandidateStatus.pending;
+        expect(component.getInitialStatus()).toBe(CandidateStatus.pending);
+    });
 
-  it('should close the modal with status info on save', () => {
-    const statusInfo: UpdateCandidateStatusInfo = { status: CandidateStatus.active };
-    component.onStatusInfoUpdate(statusInfo);
+    it('should close the modal with status info on save', () => {
+        const statusInfo: UpdateCandidateStatusInfo = { status: CandidateStatus.active };
+        component.onStatusInfoUpdate(statusInfo);
 
-    component.onSave();
-    expect(activeModal.close).toHaveBeenCalledWith(statusInfo);
-  });
+        component.onSave();
+        expect(activeModal.close).toHaveBeenCalledWith(statusInfo);
+    });
 
-  it('should dismiss the modal on cancel', () => {
-    component.cancel();
-    expect(activeModal.dismiss).toHaveBeenCalled();
-  });
+    it('should dismiss the modal on cancel', () => {
+        component.cancel();
+        expect(activeModal.dismiss).toHaveBeenCalled();
+    });
 
-  it('should update candidateStatusInfo when onStatusInfoUpdate is called', () => {
-    const statusInfo: UpdateCandidateStatusInfo = { status: CandidateStatus.active };
-    component.onStatusInfoUpdate(statusInfo);
-    expect(component['candidateStatusInfo']).toBe(statusInfo);
-  });
+    it('should update candidateStatusInfo when onStatusInfoUpdate is called', () => {
+        const statusInfo: UpdateCandidateStatusInfo = { status: CandidateStatus.active };
+        component.onStatusInfoUpdate(statusInfo);
+        expect(component['candidateStatusInfo']).toBe(statusInfo);
+    });
 });

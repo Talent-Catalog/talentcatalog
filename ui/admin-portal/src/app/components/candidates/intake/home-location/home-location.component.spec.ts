@@ -21,38 +21,39 @@ import {NgSelectModule} from "@ng-select/ng-select";
 import {FormsModule, ReactiveFormsModule, UntypedFormBuilder} from "@angular/forms";
 import {CandidateService} from "../../../../services/candidate.service";
 import {AutosaveStatusComponent} from "../../../util/autosave-status/autosave-status.component";
+import {expect} from 'vitest';
 
 describe('HomeLocationComponent', () => {
-  let component: HomeLocationComponent;
-  let fixture: ComponentFixture<HomeLocationComponent>;
+    let component: HomeLocationComponent;
+    let fixture: ComponentFixture<HomeLocationComponent>;
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      imports: [NgSelectModule,FormsModule,ReactiveFormsModule],
-      declarations: [HomeLocationComponent,AutosaveStatusComponent],
-      providers: [
-        UntypedFormBuilder,
-        { provide: CandidateService },
-        provideHttpClient(withXhr(), withInterceptorsFromDi()),
-        provideHttpClientTesting()
-      ]
-    }).compileComponents();
-  });
+    beforeEach(async () => {
+        await TestBed.configureTestingModule({
+            imports: [NgSelectModule, FormsModule, ReactiveFormsModule],
+            declarations: [HomeLocationComponent, AutosaveStatusComponent],
+            providers: [
+                UntypedFormBuilder,
+                { provide: CandidateService },
+                provideHttpClient(withXhr(), withInterceptorsFromDi()),
+                provideHttpClientTesting()
+            ]
+        }).compileComponents();
+    });
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(HomeLocationComponent);
-    component = fixture.componentInstance;
-    component.candidateIntakeData = {
-      homeLocation: 'Test Location'
-    };
-    fixture.detectChanges(); // Trigger initial data binding
-  });
+    beforeEach(() => {
+        fixture = TestBed.createComponent(HomeLocationComponent);
+        component = fixture.componentInstance;
+        component.candidateIntakeData = {
+            homeLocation: 'Test Location'
+        };
+        fixture.detectChanges(); // Trigger initial data binding
+    });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
 
-  it('should initialize the form with candidate data', () => {
-    expect(component.form.get('homeLocation').value).toBe('Test Location');
-  });
+    it('should initialize the form with candidate data', () => {
+        expect(component.form.get('homeLocation').value).toBe('Test Location');
+    });
 });

@@ -16,6 +16,7 @@
 import {CandidatePipe} from "./candidate.pipe";
 import {Candidate} from "../model/candidate";
 import {MockCandidate} from "../MockData/MockCandidate";
+import {expect} from 'vitest';
 
 describe('CandidatePipe', () => {
   let pipe: CandidatePipe;

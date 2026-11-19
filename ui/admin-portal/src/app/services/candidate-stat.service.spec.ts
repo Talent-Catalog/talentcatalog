@@ -20,6 +20,7 @@ import {provideHttpClient, withInterceptorsFromDi, withXhr} from '@angular/commo
 import {CandidateStatService, CandidateStatsRequest} from './candidate-stat.service';
 import {environment} from '../../environments/environment';
 import {StatReport} from '../model/stat-report';
+import {expect} from 'vitest';
 
 describe('CandidateStatService', () => {
   let service: CandidateStatService;

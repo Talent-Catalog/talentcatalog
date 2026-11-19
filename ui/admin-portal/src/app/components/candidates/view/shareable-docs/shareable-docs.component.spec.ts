@@ -13,6 +13,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
+
+import type {Mock, MockedObject} from "vitest";
 import {ShareableDocsComponent} from "./shareable-docs.component";
 import {CandidateService} from "../../../../services/candidate.service";
 import {ComponentFixture, TestBed} from "@angular/core/testing";
@@ -25,67 +27,71 @@ import {Candidate} from "../../../../model/candidate";
 import {CandidateSource} from "../../../../model/base";
 import {CandidateAttachment} from "../../../../model/candidate-attachment";
 import {of} from "rxjs";
+import {expect, vi} from 'vitest';
 
 describe('ShareableDocsComponent', () => {
-  let component: ShareableDocsComponent;
-  let fixture: ComponentFixture<ShareableDocsComponent>;
-  let mockCandidateService: jasmine.SpyObj<CandidateService>;
+    let component: ShareableDocsComponent;
+    let fixture: ComponentFixture<ShareableDocsComponent>;
+    let mockCandidateService: MockedObject<CandidateService>;
 
-  beforeEach(async () => {
-    mockCandidateService = jasmine.createSpyObj('CandidateService', ['updateShareableDocs', 'updateCandidate']);
+    beforeEach(async () => {
+        mockCandidateService = ({
+            updateShareableDocs: vi.fn().mockName("CandidateService.updateShareableDocs"),
+            updateCandidate: vi.fn().mockName("CandidateService.updateCandidate")
+        } as unknown as typeof mockCandidateService);
 
-    await TestBed.configureTestingModule({
-      declarations: [ShareableDocsComponent],
-      imports: [ReactiveFormsModule, NgbTooltipModule],
-      providers: [
-        UntypedFormBuilder,
-        { provide: CandidateService, useValue: mockCandidateService },
-        provideHttpClient(withXhr(), withInterceptorsFromDi()),
-        provideHttpClientTesting()
-      ]
-    }).compileComponents();
-  });
-
-  beforeEach(() => {
-    fixture = TestBed.createComponent(ShareableDocsComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
-
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
-
-  it('should initialize form correctly', () => {
-    const candidate: Candidate = new MockCandidate();
-
-    // @ts-expect-error
-    const candidateSource: CandidateSource = { id: 1, name: 'source' };
-
-    component.candidate = candidate;
-    component.candidateSource = candidateSource;
-    component.ngOnInit();
-
-    expect(component.form.value).toEqual({
-      shareableCvAttachmentId: 3,
-      shareableDocAttachmentId: 4
+        await TestBed.configureTestingModule({
+            declarations: [ShareableDocsComponent],
+            imports: [ReactiveFormsModule, NgbTooltipModule],
+            providers: [
+                UntypedFormBuilder,
+                { provide: CandidateService, useValue: mockCandidateService },
+                provideHttpClient(withXhr(), withInterceptorsFromDi()),
+                provideHttpClientTesting()
+            ]
+        }).compileComponents();
     });
-  });
 
-  it('should update candidate shareable docs on save', () => {
-    const updatedCandidate: Candidate = new MockCandidate();
+    beforeEach(() => {
+        fixture = TestBed.createComponent(ShareableDocsComponent);
+        component = fixture.componentInstance;
+        fixture.detectChanges();
+    });
 
-    const updatedCv: CandidateAttachment = updatedCandidate.candidateAttachments[0];
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
 
-    mockCandidateService.updateShareableDocs.and.returnValue(of(updatedCandidate));
-    const emitSpy = component.candidateChange.emit as jasmine.Spy;
-    component.candidate = updatedCandidate;
-    component.form.setValue({ shareableCvAttachmentId: 2, shareableDocAttachmentId: 3 });
+    it('should initialize form correctly', () => {
+        const candidate: Candidate = new MockCandidate();
 
-    component.doSave(component.form.value);
+        // @ts-expect-error
+        const candidateSource: CandidateSource = { id: 1, name: 'source' };
 
-    expect(mockCandidateService.updateShareableDocs).toHaveBeenCalledWith(1, component.form.value);
-    expect(mockCandidateService.updateCandidate).toHaveBeenCalledWith(updatedCandidate);
-    expect(component.saving).toBe(false);
-  });
+        component.candidate = candidate;
+        component.candidateSource = candidateSource;
+        component.ngOnInit();
+
+        expect(component.form.value).toEqual({
+            shareableCvAttachmentId: 3,
+            shareableDocAttachmentId: 4
+        });
+    });
+
+    it('should update candidate shareable docs on save', () => {
+        const updatedCandidate: Candidate = new MockCandidate();
+
+        const updatedCv: CandidateAttachment = updatedCandidate.candidateAttachments[0];
+
+        mockCandidateService.updateShareableDocs.mockReturnValue(of(updatedCandidate));
+        const emitSpy = component.candidateChange.emit as Mock;
+        component.candidate = updatedCandidate;
+        component.form.setValue({ shareableCvAttachmentId: 2, shareableDocAttachmentId: 3 });
+
+        component.doSave(component.form.value);
+
+        expect(mockCandidateService.updateShareableDocs).toHaveBeenCalledWith(1, component.form.value);
+        expect(mockCandidateService.updateCandidate).toHaveBeenCalledWith(updatedCandidate);
+        expect(component.saving).toBe(false);
+    });
 });

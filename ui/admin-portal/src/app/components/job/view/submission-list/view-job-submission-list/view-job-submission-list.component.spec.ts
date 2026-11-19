@@ -26,63 +26,62 @@ import {ActivatedRoute} from "@angular/router";
 import {of} from "rxjs";
 import {SortedByComponent} from "../../../../util/sort/sorted-by.component";
 import {NgSelectModule} from "@ng-select/ng-select";
-import {
-  CandidateSourceDescriptionComponent
-} from "../../../../util/candidate-source-description/candidate-source-description.component";
+import {CandidateSourceDescriptionComponent} from "../../../../util/candidate-source-description/candidate-source-description.component";
 import {AutosaveStatusComponent} from "../../../../util/autosave-status/autosave-status.component";
 import {RouterTestingModule} from "@angular/router/testing";
 import {NgbModule} from "@ng-bootstrap/ng-bootstrap";
 import {MockJob} from "../../../../../MockData/MockJob";
+import {expect} from 'vitest';
 
 describe('ViewJobSubmissionListComponent', () => {
-  let component: ViewJobSubmissionListComponent;
-  let fixture: ComponentFixture<ViewJobSubmissionListComponent>;
-   beforeEach(waitForAsync(() => {
-     TestBed.configureTestingModule({
-      declarations: [ViewJobSubmissionListComponent, ShowCandidatesComponent,SortedByComponent, CandidateSourceDescriptionComponent,AutosaveStatusComponent
-      ],
-      imports: [
-        FormsModule,
-        ReactiveFormsModule,
-        NgbModule,
-        NgSelectModule,
-        RouterTestingModule
-      ],
+    let component: ViewJobSubmissionListComponent;
+    let fixture: ComponentFixture<ViewJobSubmissionListComponent>;
+    beforeEach(waitForAsync(() => {
+        TestBed.configureTestingModule({
+            declarations: [ViewJobSubmissionListComponent, ShowCandidatesComponent, SortedByComponent, CandidateSourceDescriptionComponent, AutosaveStatusComponent
+            ],
+            imports: [
+                FormsModule,
+                ReactiveFormsModule,
+                NgbModule,
+                NgSelectModule,
+                RouterTestingModule
+            ],
 
-       providers:[
-         DatePipe,
-         TitleCasePipe,
-         { provide: ActivatedRoute, useValue: { queryParams: of({}), snapshot: { data: {} } } }, // Mock ActivatedRoute
-          UntypedFormBuilder,
-          provideHttpClient(withXhr(), withInterceptorsFromDi()),
-          provideHttpClientTesting(),
-      ]
-    })
-    .compileComponents();
-   }));
+            providers: [
+                DatePipe,
+                TitleCasePipe,
+                { provide: ActivatedRoute, useValue: { queryParams: of({}), snapshot: { data: {} } } }, // Mock ActivatedRoute
+                UntypedFormBuilder,
+                provideHttpClient(withXhr(), withInterceptorsFromDi()),
+                provideHttpClientTesting(),
+            ]
+        })
+            .compileComponents();
+    }));
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(ViewJobSubmissionListComponent);
-    component = fixture.componentInstance;
-    component.job = MockJob;
-    fixture.detectChanges();
-  });
+    beforeEach(() => {
+        fixture = TestBed.createComponent(ViewJobSubmissionListComponent);
+        component = fixture.componentInstance;
+        component.job = MockJob;
+        fixture.detectChanges();
+    });
 
 
-  it('should render correctly when submission list is available for the job', () => {
-    const mockJob: Job = MockJob // Create a mock job with a submission list
-    component.job = mockJob;
+    it('should render correctly when submission list is available for the job', () => {
+        const mockJob: Job = MockJob; // Create a mock job with a submission list
+        component.job = mockJob;
 
-    fixture.detectChanges();
+        fixture.detectChanges();
 
-    const cardElement: HTMLElement = fixture.nativeElement.querySelector('.card');
-    const cardHeaderElement: HTMLElement = cardElement.querySelector('.card-header');
-    const cardBodyElement: HTMLElement = cardElement.querySelector('.card-body');
-    const showCandidatesComponent: HTMLElement = cardBodyElement.querySelector('app-show-candidates');
+        const cardElement: HTMLElement = fixture.nativeElement.querySelector('.card');
+        const cardHeaderElement: HTMLElement = cardElement.querySelector('.card-header');
+        const cardBodyElement: HTMLElement = cardElement.querySelector('.card-body');
+        const showCandidatesComponent: HTMLElement = cardBodyElement.querySelector('app-show-candidates');
 
-    expect(cardElement).toBeTruthy(); // Check if the card element exists
-    expect(cardHeaderElement.textContent).toContain('Submission List'); // Check if the card header contains "Submission List"
-    expect(cardBodyElement).toBeTruthy(); // Check if the card body exists
-    expect(showCandidatesComponent).toBeTruthy(); // Check if the ShowCandidatesComponent is rendered
-  });
+        expect(cardElement).toBeTruthy(); // Check if the card element exists
+        expect(cardHeaderElement.textContent).toContain('Submission List'); // Check if the card header contains "Submission List"
+        expect(cardBodyElement).toBeTruthy(); // Check if the card body exists
+        expect(showCandidatesComponent).toBeTruthy(); // Check if the ShowCandidatesComponent is rendered
+    });
 });

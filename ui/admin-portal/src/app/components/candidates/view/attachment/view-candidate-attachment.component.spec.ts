@@ -14,6 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
+import type {MockedObject} from "vitest";
 import {ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
 import {NO_ERRORS_SCHEMA} from '@angular/core';
 import {NgbModal, NgbModalRef} from '@ng-bootstrap/ng-bootstrap';
@@ -28,285 +29,256 @@ import {EditCandidateAttachmentComponent} from './edit/edit-candidate-attachment
 import {ConfirmationComponent} from '../../../util/confirm/confirmation.component';
 import {AttachmentType} from '../../../../model/candidate-attachment';
 import {UploadType} from '../../../../model/task';
+import {expect, vi} from 'vitest';
 
 describe('ViewCandidateAttachmentComponent', () => {
-  let component: ViewCandidateAttachmentComponent;
-  let fixture: ComponentFixture<ViewCandidateAttachmentComponent>;
+    let component: ViewCandidateAttachmentComponent;
+    let fixture: ComponentFixture<ViewCandidateAttachmentComponent>;
 
-  let candidateAttachmentService:
-    jasmine.SpyObj<CandidateAttachmentService>;
-  let candidateService: jasmine.SpyObj<CandidateService>;
-  let modalService: jasmine.SpyObj<NgbModal>;
+    let candidateAttachmentService: MockedObject<CandidateAttachmentService>;
+    let candidateService: MockedObject<CandidateService>;
+    let modalService: MockedObject<NgbModal>;
 
-  const candidate = {
-    id: 10,
-    candidateAttachments: []
-  } as any;
+    const candidate = {
+        id: 10,
+        candidateAttachments: []
+    } as any;
 
-  const attachment = {
-    id: 20,
-    name: 'passport.pdf',
-    type: AttachmentType.file
-  } as any;
+    const attachment = {
+        id: 20,
+        name: 'passport.pdf',
+        type: AttachmentType.file
+    } as any;
 
-  function modalRef(result: Promise<any>): NgbModalRef {
-    return {
-      componentInstance: {},
-      result,
-      close: jasmine.createSpy('close'),
-      dismiss: jasmine.createSpy('dismiss')
-    } as unknown as NgbModalRef;
-  }
+    function modalRef(result: Promise<any>): NgbModalRef {
+        return {
+            componentInstance: {},
+            result,
+            close: vi.fn().mockName('close'),
+            dismiss: vi.fn().mockName('dismiss')
+        } as unknown as NgbModalRef;
+    }
 
-  beforeEach(async () => {
-    candidateAttachmentService =
-      jasmine.createSpyObj<CandidateAttachmentService>(
-        'CandidateAttachmentService',
-        [
-          'deleteAttachment',
-          'downloadGoogleAttachment'
-        ]
-      );
+    beforeEach(async () => {
+        candidateAttachmentService = ({
+            deleteAttachment: vi.fn().mockName("CandidateAttachmentService.deleteAttachment"),
+            downloadGoogleAttachment: vi.fn().mockName("CandidateAttachmentService.downloadGoogleAttachment")
+        } as unknown as typeof candidateAttachmentService);
 
-    candidateService = jasmine.createSpyObj<CandidateService>(
-      'CandidateService',
-      ['updateCandidate']
-    );
+        candidateService = ({
+            updateCandidate: vi.fn().mockName("CandidateService.updateCandidate")
+        } as unknown as typeof candidateService);
 
-    modalService = jasmine.createSpyObj<NgbModal>(
-      'NgbModal',
-      ['open']
-    );
+        modalService = ({
+            open: vi.fn().mockName("NgbModal.open")
+        } as unknown as typeof modalService);
 
-    await TestBed.configureTestingModule({
-      declarations: [ViewCandidateAttachmentComponent],
-      providers: [
-        UntypedFormBuilder,
-        {
-          provide: CandidateAttachmentService,
-          useValue: candidateAttachmentService
-        },
-        {
-          provide: CandidateService,
-          useValue: candidateService
-        },
-        {
-          provide: NgbModal,
-          useValue: modalService
-        }
-      ],
-      schemas: [NO_ERRORS_SCHEMA]
-    })
-    .overrideTemplate(ViewCandidateAttachmentComponent, '')
-    .compileComponents();
+        await TestBed.configureTestingModule({
+            declarations: [ViewCandidateAttachmentComponent],
+            providers: [
+                UntypedFormBuilder,
+                {
+                    provide: CandidateAttachmentService,
+                    useValue: candidateAttachmentService
+                },
+                {
+                    provide: CandidateService,
+                    useValue: candidateService
+                },
+                {
+                    provide: NgbModal,
+                    useValue: modalService
+                }
+            ],
+            schemas: [NO_ERRORS_SCHEMA]
+        })
+            .overrideTemplate(ViewCandidateAttachmentComponent, '')
+            .compileComponents();
 
-    fixture = TestBed.createComponent(
-      ViewCandidateAttachmentComponent
-    );
-    component = fixture.componentInstance;
-    component.candidate = candidate;
-    component.editable = true;
+        fixture = TestBed.createComponent(ViewCandidateAttachmentComponent);
+        component = fixture.componentInstance;
+        component.candidate = candidate;
+        component.editable = true;
 
-    fixture.detectChanges();
-  });
-
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
-
-  it('should expose AttachmentType enum', () => {
-    expect(component.AttachmentType).toBe(AttachmentType);
-  });
-
-  it('should expose UploadType enum', () => {
-    expect(component.UploadType).toBe(UploadType);
-  });
-
-  it('should run ngOnInit', () => {
-    expect(() => component.ngOnInit()).not.toThrow();
-  });
-
-  describe('editCandidateAttachment', () => {
-    it('should open edit modal and refresh candidate after success', fakeAsync(() => {
-      const ref = modalRef(Promise.resolve(attachment));
-      modalService.open.and.returnValue(ref);
-
-      component.editCandidateAttachment(attachment);
-      tick();
-
-      expect(modalService.open).toHaveBeenCalledWith(
-        EditCandidateAttachmentComponent,
-        {
-          centered: true,
-          backdrop: 'static'
-        }
-      );
-      expect(ref.componentInstance.attachment).toBe(attachment);
-      expect(candidateService.updateCandidate)
-      .toHaveBeenCalledTimes(1);
-    }));
-
-    it('should ignore edit modal dismissal', fakeAsync(() => {
-      const ref = modalRef(Promise.reject('dismissed'));
-      modalService.open.and.returnValue(ref);
-
-      component.editCandidateAttachment(attachment);
-      tick();
-
-      expect(ref.componentInstance.attachment).toBe(attachment);
-      expect(candidateService.updateCandidate)
-      .not.toHaveBeenCalled();
-    }));
-  });
-
-  describe('addAttachment', () => {
-    it('should open create modal with explicit type and refresh after success', fakeAsync(() => {
-      const ref = modalRef(Promise.resolve(true));
-      modalService.open.and.returnValue(ref);
-
-      component.addAttachment('file');
-      tick();
-
-      expect(modalService.open).toHaveBeenCalledWith(
-        CreateCandidateAttachmentComponent,
-        {
-          centered: true,
-          backdrop: 'static'
-        }
-      );
-      expect(ref.componentInstance.candidateId)
-      .toBe(candidate.id);
-      expect(ref.componentInstance.type)
-      .toBe('file');
-      expect(candidateService.updateCandidate)
-      .toHaveBeenCalledTimes(1);
-    }));
-
-    it('should default type to link when type is falsy', fakeAsync(() => {
-      const ref = modalRef(Promise.resolve(true));
-      modalService.open.and.returnValue(ref);
-
-      component.addAttachment('');
-      tick();
-
-      expect(ref.componentInstance.type)
-      .toBe('link');
-      expect(candidateService.updateCandidate)
-      .toHaveBeenCalledTimes(1);
-    }));
-
-    it('should refresh candidate when create modal is dismissed', fakeAsync(() => {
-      const ref = modalRef(Promise.reject('dismissed'));
-      modalService.open.and.returnValue(ref);
-
-      component.addAttachment('file');
-      tick();
-
-      expect(candidateService.updateCandidate)
-      .toHaveBeenCalledTimes(1);
-    }));
-  });
-
-  describe('deleteCandidateAttachment', () => {
-    it('should delete after confirmation and refresh candidate', fakeAsync(() => {
-      const ref = modalRef(Promise.resolve(true));
-      modalService.open.and.returnValue(ref);
-      candidateAttachmentService.deleteAttachment
-      .and.returnValue(of(void 0));
-
-      component.deleteCandidateAttachment(attachment);
-      tick();
-
-      expect(modalService.open).toHaveBeenCalledWith(
-        ConfirmationComponent,
-        {
-          centered: true,
-          backdrop: 'static'
-        }
-      );
-      expect(ref.componentInstance.message)
-      .toBe(
-        'Are you sure you want to delete passport.pdf?'
-      );
-      expect(candidateAttachmentService.deleteAttachment)
-      .toHaveBeenCalledOnceWith(attachment.id);
-      expect(candidateService.updateCandidate)
-      .toHaveBeenCalledTimes(1);
-    }));
-
-    it('should expose delete error', fakeAsync(() => {
-      const error = new Error('delete failed');
-      const ref = modalRef(Promise.resolve(true));
-      modalService.open.and.returnValue(ref);
-      candidateAttachmentService.deleteAttachment
-      .and.returnValue(throwError(error));
-
-      component.deleteCandidateAttachment(attachment);
-      tick();
-
-      expect(component.error).toBe(error);
-      expect(candidateService.updateCandidate)
-      .not.toHaveBeenCalled();
-    }));
-
-    it('should not delete when confirmation is false', fakeAsync(() => {
-      modalService.open.and.returnValue(
-        modalRef(Promise.resolve(false))
-      );
-
-      component.deleteCandidateAttachment(attachment);
-      tick();
-
-      expect(candidateAttachmentService.deleteAttachment)
-      .not.toHaveBeenCalled();
-      expect(candidateService.updateCandidate)
-      .not.toHaveBeenCalled();
-    }));
-
-    it('should ignore delete modal dismissal', fakeAsync(() => {
-      modalService.open.and.returnValue(
-        modalRef(Promise.reject('dismissed'))
-      );
-
-      component.deleteCandidateAttachment(attachment);
-      tick();
-
-      expect(candidateAttachmentService.deleteAttachment)
-      .not.toHaveBeenCalled();
-      expect(candidateService.updateCandidate)
-      .not.toHaveBeenCalled();
-    }));
-  });
-
-  describe('downloadGoogleCandidateAttachment', () => {
-    it('should clear error, set loading and finish after success', () => {
-      candidateAttachmentService.downloadGoogleAttachment
-      .and.returnValue(of(void 0));
-
-      component.error = new Error('old error');
-      component.loading = false;
-
-      component.downloadGoogleCandidateAttachment(attachment);
-
-      expect(candidateAttachmentService.downloadGoogleAttachment)
-      .toHaveBeenCalledOnceWith(
-        attachment.id,
-        attachment.name
-      );
-      expect(component.error).toBeNull();
-      expect(component.loading).toBeFalse();
+        fixture.detectChanges();
     });
 
-    it('should expose download error and clear loading', () => {
-      const error = new Error('download failed');
-
-      candidateAttachmentService.downloadGoogleAttachment
-      .and.returnValue(throwError(error));
-
-      component.downloadGoogleCandidateAttachment(attachment);
-
-      expect(component.error).toBe(error);
-      expect(component.loading).toBeFalse();
+    it('should create', () => {
+        expect(component).toBeTruthy();
     });
-  });
+
+    it('should expose AttachmentType enum', () => {
+        expect(component.AttachmentType).toBe(AttachmentType);
+    });
+
+    it('should expose UploadType enum', () => {
+        expect(component.UploadType).toBe(UploadType);
+    });
+
+    it('should run ngOnInit', () => {
+        expect(() => component.ngOnInit()).not.toThrow();
+    });
+
+    describe('editCandidateAttachment', () => {
+        it('should open edit modal and refresh candidate after success', fakeAsync(() => {
+            const ref = modalRef(Promise.resolve(attachment));
+            modalService.open.mockReturnValue(ref);
+
+            component.editCandidateAttachment(attachment);
+            tick();
+
+            expect(modalService.open).toHaveBeenCalledWith(EditCandidateAttachmentComponent, {
+                centered: true,
+                backdrop: 'static'
+            });
+            expect(ref.componentInstance.attachment).toBe(attachment);
+            expect(candidateService.updateCandidate)
+                .toHaveBeenCalledTimes(1);
+        }));
+
+        it('should ignore edit modal dismissal', fakeAsync(() => {
+            const ref = modalRef(Promise.reject('dismissed'));
+            modalService.open.mockReturnValue(ref);
+
+            component.editCandidateAttachment(attachment);
+            tick();
+
+            expect(ref.componentInstance.attachment).toBe(attachment);
+            expect(candidateService.updateCandidate)
+                .not.toHaveBeenCalled();
+        }));
+    });
+
+    describe('addAttachment', () => {
+        it('should open create modal with explicit type and refresh after success', fakeAsync(() => {
+            const ref = modalRef(Promise.resolve(true));
+            modalService.open.mockReturnValue(ref);
+
+            component.addAttachment('file');
+            tick();
+
+            expect(modalService.open).toHaveBeenCalledWith(CreateCandidateAttachmentComponent, {
+                centered: true,
+                backdrop: 'static'
+            });
+            expect(ref.componentInstance.candidateId)
+                .toBe(candidate.id);
+            expect(ref.componentInstance.type)
+                .toBe('file');
+            expect(candidateService.updateCandidate)
+                .toHaveBeenCalledTimes(1);
+        }));
+
+        it('should default type to link when type is falsy', fakeAsync(() => {
+            const ref = modalRef(Promise.resolve(true));
+            modalService.open.mockReturnValue(ref);
+
+            component.addAttachment('');
+            tick();
+
+            expect(ref.componentInstance.type)
+                .toBe('link');
+            expect(candidateService.updateCandidate)
+                .toHaveBeenCalledTimes(1);
+        }));
+
+        it('should refresh candidate when create modal is dismissed', fakeAsync(() => {
+            const ref = modalRef(Promise.reject('dismissed'));
+            modalService.open.mockReturnValue(ref);
+
+            component.addAttachment('file');
+            tick();
+
+            expect(candidateService.updateCandidate)
+                .toHaveBeenCalledTimes(1);
+        }));
+    });
+
+    describe('deleteCandidateAttachment', () => {
+        it('should delete after confirmation and refresh candidate', fakeAsync(() => {
+            const ref = modalRef(Promise.resolve(true));
+            modalService.open.mockReturnValue(ref);
+            candidateAttachmentService.deleteAttachment.mockReturnValue(of(void 0));
+
+            component.deleteCandidateAttachment(attachment);
+            tick();
+
+            expect(modalService.open).toHaveBeenCalledWith(ConfirmationComponent, {
+                centered: true,
+                backdrop: 'static'
+            });
+            expect(ref.componentInstance.message)
+                .toBe('Are you sure you want to delete passport.pdf?');
+            expect(candidateAttachmentService.deleteAttachment).toHaveBeenCalledTimes(1);
+            expect(candidateAttachmentService.deleteAttachment).toHaveBeenCalledWith(attachment.id);
+            expect(candidateService.updateCandidate)
+                .toHaveBeenCalledTimes(1);
+        }));
+
+        it('should expose delete error', fakeAsync(() => {
+            const error = new Error('delete failed');
+            const ref = modalRef(Promise.resolve(true));
+            modalService.open.mockReturnValue(ref);
+            candidateAttachmentService.deleteAttachment.mockReturnValue(throwError(error));
+
+            component.deleteCandidateAttachment(attachment);
+            tick();
+
+            expect(component.error).toBe(error);
+            expect(candidateService.updateCandidate)
+                .not.toHaveBeenCalled();
+        }));
+
+        it('should not delete when confirmation is false', fakeAsync(() => {
+            modalService.open.mockReturnValue(modalRef(Promise.resolve(false)));
+
+            component.deleteCandidateAttachment(attachment);
+            tick();
+
+            expect(candidateAttachmentService.deleteAttachment)
+                .not.toHaveBeenCalled();
+            expect(candidateService.updateCandidate)
+                .not.toHaveBeenCalled();
+        }));
+
+        it('should ignore delete modal dismissal', fakeAsync(() => {
+            modalService.open.mockReturnValue(modalRef(Promise.reject('dismissed')));
+
+            component.deleteCandidateAttachment(attachment);
+            tick();
+
+            expect(candidateAttachmentService.deleteAttachment)
+                .not.toHaveBeenCalled();
+            expect(candidateService.updateCandidate)
+                .not.toHaveBeenCalled();
+        }));
+    });
+
+    describe('downloadGoogleCandidateAttachment', () => {
+        it('should clear error, set loading and finish after success', () => {
+            candidateAttachmentService.downloadGoogleAttachment.mockReturnValue(of(void 0));
+
+            component.error = new Error('old error');
+            component.loading = false;
+
+            component.downloadGoogleCandidateAttachment(attachment);
+
+            expect(candidateAttachmentService.downloadGoogleAttachment).toHaveBeenCalledTimes(1);
+
+            expect(candidateAttachmentService.downloadGoogleAttachment).toHaveBeenCalledWith(attachment.id, attachment.name);
+            expect(component.error).toBeNull();
+            expect(component.loading).toBe(false);
+        });
+
+        it('should expose download error and clear loading', () => {
+            const error = new Error('download failed');
+
+            candidateAttachmentService.downloadGoogleAttachment.mockReturnValue(throwError(error));
+
+            component.downloadGoogleCandidateAttachment(attachment);
+
+            expect(component.error).toBe(error);
+            expect(component.loading).toBe(false);
+        });
+    });
 });

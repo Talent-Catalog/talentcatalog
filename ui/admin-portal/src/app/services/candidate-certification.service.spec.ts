@@ -17,13 +17,10 @@
 import {TestBed} from '@angular/core/testing';
 import {HttpTestingController, provideHttpClientTesting} from '@angular/common/http/testing';
 import {provideHttpClient, withInterceptorsFromDi, withXhr} from '@angular/common/http';
-import {
-  CandidateCertificationService,
-  CreateCandidateCertificationRequest,
-  UpdateCandidateCertificationRequest
-} from './candidate-certification.service';
+import {CandidateCertificationService, CreateCandidateCertificationRequest, UpdateCandidateCertificationRequest} from './candidate-certification.service';
 import {environment} from '../../environments/environment';
 import {CandidateCertification} from '../model/candidate-certification';
+import {expect} from 'vitest';
 
 describe('CandidateCertificationService', () => {
   let service: CandidateCertificationService;

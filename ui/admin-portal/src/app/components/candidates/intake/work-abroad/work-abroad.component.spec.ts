@@ -22,71 +22,72 @@ import {AutosaveStatusComponent} from "../../../util/autosave-status/autosave-st
 import {provideHttpClientTesting} from "@angular/common/http/testing";
 import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {YesNo} from "../../../../model/candidate";
+import {expect} from 'vitest';
 
 describe('WorkAbroadComponent', () => {
-  let component: WorkAbroadComponent;
-  let fixture: ComponentFixture<WorkAbroadComponent>;
+    let component: WorkAbroadComponent;
+    let fixture: ComponentFixture<WorkAbroadComponent>;
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      declarations: [ WorkAbroadComponent, AutosaveStatusComponent ],
-      imports: [ReactiveFormsModule, NgSelectModule ],
-      providers: [
-        { provide: CandidateService },
-        provideHttpClient(withXhr(), withInterceptorsFromDi()),
-        provideHttpClientTesting()
-      ]
-    })
-    .compileComponents();
-  });
+    beforeEach(async () => {
+        await TestBed.configureTestingModule({
+            declarations: [WorkAbroadComponent, AutosaveStatusComponent],
+            imports: [ReactiveFormsModule, NgSelectModule],
+            providers: [
+                { provide: CandidateService },
+                provideHttpClient(withXhr(), withInterceptorsFromDi()),
+                provideHttpClientTesting()
+            ]
+        })
+            .compileComponents();
+    });
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(WorkAbroadComponent);
-    component = fixture.componentInstance;
-    component.candidateIntakeData = {
-      workAbroad: YesNo.Yes,
-      workAbroadNotes: 'Studied in Germany for 2 years'
-    };
-    fixture.detectChanges();
-  });
+    beforeEach(() => {
+        fixture = TestBed.createComponent(WorkAbroadComponent);
+        component = fixture.componentInstance;
+        component.candidateIntakeData = {
+            workAbroad: YesNo.Yes,
+            workAbroadNotes: 'Studied in Germany for 2 years'
+        };
+        fixture.detectChanges();
+    });
 
-  it('should initialize the form controls with the correct default values', () => {
-    expect(component.form.get('workAbroad').value).toBe(YesNo.Yes);
-    expect(component.form.get('workAbroadNotes').value).toBe('Studied in Germany for 2 years');
-  });
+    it('should initialize the form controls with the correct default values', () => {
+        expect(component.form.get('workAbroad').value).toBe(YesNo.Yes);
+        expect(component.form.get('workAbroadNotes').value).toBe('Studied in Germany for 2 years');
+    });
 
-  it('should display workAbroadNotes field when workAbroad is Yes', () => {
-    component.form.get('workAbroad').setValue('Yes');
-    fixture.detectChanges();
-    const notesField = fixture.nativeElement.querySelector('#workAbroadNotes');
-    expect(notesField).not.toBeNull();
-  });
+    it('should display workAbroadNotes field when workAbroad is Yes', () => {
+        component.form.get('workAbroad').setValue('Yes');
+        fixture.detectChanges();
+        const notesField = fixture.nativeElement.querySelector('#workAbroadNotes');
+        expect(notesField).not.toBeNull();
+    });
 
-  it('should hide workAbroadNotes field when workAbroad is No', () => {
-    component.form.get('workAbroad').setValue('No');
-    fixture.detectChanges();
-    const notesField = fixture.nativeElement.querySelector('#workAbroadNotes');
-    expect(notesField).toBeNull();
-  });
+    it('should hide workAbroadNotes field when workAbroad is No', () => {
+        component.form.get('workAbroad').setValue('No');
+        fixture.detectChanges();
+        const notesField = fixture.nativeElement.querySelector('#workAbroadNotes');
+        expect(notesField).toBeNull();
+    });
 
-  it('should display workAbroadNotes field when workAbroad is changed from No to Yes', () => {
-    component.form.get('workAbroad').setValue('No');
-    fixture.detectChanges();
-    let notesField = fixture.nativeElement.querySelector('#workAbroadNotes');
-    expect(notesField).toBeNull();
+    it('should display workAbroadNotes field when workAbroad is changed from No to Yes', () => {
+        component.form.get('workAbroad').setValue('No');
+        fixture.detectChanges();
+        let notesField = fixture.nativeElement.querySelector('#workAbroadNotes');
+        expect(notesField).toBeNull();
 
-    component.form.get('workAbroad').setValue('Yes');
-    fixture.detectChanges();
-    notesField = fixture.nativeElement.querySelector('#workAbroadNotes');
-    expect(notesField).not.toBeNull();
-  });
+        component.form.get('workAbroad').setValue('Yes');
+        fixture.detectChanges();
+        notesField = fixture.nativeElement.querySelector('#workAbroadNotes');
+        expect(notesField).not.toBeNull();
+    });
 
-  it('should initialize the form controls correctly when candidateIntakeData is null', () => {
-    component.candidateIntakeData = null;
-    component.ngOnInit();
-    fixture.detectChanges();
+    it('should initialize the form controls correctly when candidateIntakeData is null', () => {
+        component.candidateIntakeData = null;
+        component.ngOnInit();
+        fixture.detectChanges();
 
-    expect(component.form.get('workAbroad').value).toBeNull();
-    expect(component.form.get('workAbroadNotes').value).toBeNull();
-  });
+        expect(component.form.get('workAbroad').value).toBeNull();
+        expect(component.form.get('workAbroadNotes').value).toBeNull();
+    });
 });

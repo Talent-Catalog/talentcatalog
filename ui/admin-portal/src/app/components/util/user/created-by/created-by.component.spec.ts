@@ -21,6 +21,7 @@ import {UserPipe} from "../user.pipe";
 import {DatePipe} from "@angular/common";
 import {MockUser} from "../../../../MockData/MockUser";
 import {CUSTOM_ELEMENTS_SCHEMA} from "@angular/core";
+import {expect} from 'vitest';
 
 describe('CreatedByComponent', () => {
   let component: CreatedByComponent;

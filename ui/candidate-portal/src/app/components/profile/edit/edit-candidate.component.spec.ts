@@ -19,23 +19,23 @@ import {ComponentFixture, TestBed, waitForAsync} from '@angular/core/testing';
 import {EditCandidateComponent} from './edit-candidate.component';
 
 describe('EditCandidateComponent', () => {
-  let component: EditCandidateComponent;
-  let fixture: ComponentFixture<EditCandidateComponent>;
+    let component: EditCandidateComponent;
+    let fixture: ComponentFixture<EditCandidateComponent>;
 
-  beforeEach(waitForAsync(() => {
-    TestBed.configureTestingModule({
-      declarations: [ EditCandidateComponent ]
-    })
-    .compileComponents();
-  }));
+    beforeEach(waitForAsync(() => {
+        TestBed.configureTestingModule({
+            declarations: [EditCandidateComponent]
+        })
+            .compileComponents();
+    }));
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(EditCandidateComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
+    beforeEach(() => {
+        fixture = TestBed.createComponent(EditCandidateComponent);
+        component = fixture.componentInstance;
+        fixture.detectChanges();
+    });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
 });

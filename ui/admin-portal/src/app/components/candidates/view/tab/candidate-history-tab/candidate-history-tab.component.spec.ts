@@ -22,70 +22,69 @@ import {provideHttpClientTesting} from "@angular/common/http/testing";
 import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {NgSelectModule} from "@ng-select/ng-select";
+import {expect, vi} from 'vitest';
 
 describe('CandidateHistoryTabComponent', () => {
-  let component: CandidateHistoryTabComponent;
-  let fixture: ComponentFixture<CandidateHistoryTabComponent>;
-  const mockCandidate = new MockCandidate();
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      imports: [FormsModule,ReactiveFormsModule, NgSelectModule],
-      providers: [provideHttpClient(withXhr(), withInterceptorsFromDi()), provideHttpClientTesting()],
-      declarations: [ CandidateHistoryTabComponent,ViewCandidateNoteComponent ]
-    })
-    .compileComponents();
-  });
-
-  beforeEach(() => {
-    fixture = TestBed.createComponent(CandidateHistoryTabComponent);
-    component = fixture.componentInstance;
-    component.candidate = mockCandidate;
-    fixture.detectChanges();
-  });
-
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
-
-  it('should initialize with null error', () => {
-    expect(component.error).toBeNull();
-  });
-
-  it('should trigger onResize event when resize method is called', () => {
-    spyOn(component.onResize, 'emit');
-    component.resize();
-    expect(component.onResize.emit).toHaveBeenCalled();
-  });
-
-  it('should not change loading state when candidate data changes', () => {
-    const candidate = mockCandidate;
-
-    component.loading = false;
-    component.ngOnChanges({
-      candidate:
-        {
-          previousValue: null,
-          currentValue: candidate,
-          firstChange: true,
-          isFirstChange: () => true
-        }
+    let component: CandidateHistoryTabComponent;
+    let fixture: ComponentFixture<CandidateHistoryTabComponent>;
+    const mockCandidate = new MockCandidate();
+    beforeEach(async () => {
+        await TestBed.configureTestingModule({
+            imports: [FormsModule, ReactiveFormsModule, NgSelectModule],
+            providers: [provideHttpClient(withXhr(), withInterceptorsFromDi()), provideHttpClientTesting()],
+            declarations: [CandidateHistoryTabComponent, ViewCandidateNoteComponent]
+        })
+            .compileComponents();
     });
-    expect(component.loading).toBe(false);
-  });
 
-  it('should update result with candidate data when data changes', () => {
-    const candidate = mockCandidate
-
-    component.ngOnChanges({
-      candidate:
-        {
-          previousValue: null,
-          currentValue: candidate,
-          firstChange: true,
-          isFirstChange: () => true
-        }
+    beforeEach(() => {
+        fixture = TestBed.createComponent(CandidateHistoryTabComponent);
+        component = fixture.componentInstance;
+        component.candidate = mockCandidate;
+        fixture.detectChanges();
     });
-    expect(component.result).toEqual(candidate);
-  });
+
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
+
+    it('should initialize with null error', () => {
+        expect(component.error).toBeNull();
+    });
+
+    it('should trigger onResize event when resize method is called', () => {
+        vi.spyOn(component.onResize, 'emit').mockReturnValue(undefined);
+        component.resize();
+        expect(component.onResize.emit).toHaveBeenCalled();
+    });
+
+    it('should not change loading state when candidate data changes', () => {
+        const candidate = mockCandidate;
+
+        component.loading = false;
+        component.ngOnChanges({
+            candidate: {
+                previousValue: null,
+                currentValue: candidate,
+                firstChange: true,
+                isFirstChange: () => true
+            }
+        });
+        expect(component.loading).toBe(false);
+    });
+
+    it('should update result with candidate data when data changes', () => {
+        const candidate = mockCandidate;
+
+        component.ngOnChanges({
+            candidate: {
+                previousValue: null,
+                currentValue: candidate,
+                firstChange: true,
+                isFirstChange: () => true
+            }
+        });
+        expect(component.result).toEqual(candidate);
+    });
 
 });

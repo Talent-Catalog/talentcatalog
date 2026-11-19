@@ -24,53 +24,54 @@ import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/commo
 import {NgSelectModule} from "@ng-select/ng-select";
 import {MockCandidate} from "../../../../MockData/MockCandidate";
 import {CandidateIntakeData, LeftHomeReason} from "../../../../model/candidate";
+import {expect} from 'vitest';
 
 describe('LeftHomeReasonComponent', () => {
-  let component: LeftHomeReasonComponent;
-  let fixture: ComponentFixture<LeftHomeReasonComponent>;
-  const mockCandidateIntakeData: CandidateIntakeData = {
-    leftHomeReasons: [LeftHomeReason.Job],
-    leftHomeNotes: 'Notes'
-  };
-  beforeEach(waitForAsync(() => {
-    TestBed.configureTestingModule({
-      declarations: [ LeftHomeReasonComponent, AutosaveStatusComponent ],
-      imports: [NgSelectModule,FormsModule,ReactiveFormsModule],
+    let component: LeftHomeReasonComponent;
+    let fixture: ComponentFixture<LeftHomeReasonComponent>;
+    const mockCandidateIntakeData: CandidateIntakeData = {
+        leftHomeReasons: [LeftHomeReason.Job],
+        leftHomeNotes: 'Notes'
+    };
+    beforeEach(waitForAsync(() => {
+        TestBed.configureTestingModule({
+            declarations: [LeftHomeReasonComponent, AutosaveStatusComponent],
+            imports: [NgSelectModule, FormsModule, ReactiveFormsModule],
 
-      providers: [
-        UntypedFormBuilder,
-        { provide: CandidateService },
-        provideHttpClient(withXhr(), withInterceptorsFromDi()),
-        provideHttpClientTesting()
-      ]
-    })
-    .compileComponents();
-  }));
+            providers: [
+                UntypedFormBuilder,
+                { provide: CandidateService },
+                provideHttpClient(withXhr(), withInterceptorsFromDi()),
+                provideHttpClientTesting()
+            ]
+        })
+            .compileComponents();
+    }));
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(LeftHomeReasonComponent);
-    component = fixture.componentInstance;
-    component.entity = new MockCandidate();
-    fixture.detectChanges();
-  });
-
-  it('should create the component', () => {
-    expect(component).toBeTruthy();
-  });
-
-  it('should initialize the form with provided data', () => {
-    component.candidateIntakeData = mockCandidateIntakeData;
-    component.ngOnInit();
-    expect(component.form.value).toEqual({
-      leftHomeReasons: [{ key: 'Job Opportunities', stringValue: undefined }], // Adjusted to match the enum value
-      leftHomeNotes: 'Notes'
+    beforeEach(() => {
+        fixture = TestBed.createComponent(LeftHomeReasonComponent);
+        component = fixture.componentInstance;
+        component.entity = new MockCandidate();
+        fixture.detectChanges();
     });
-  });
 
-  it('should handle "Other" reason option properly', () => {
-    component.form.get('leftHomeReasons').setValue([{ key: 'Other', stringValue: 'Other' }]);
-    fixture.detectChanges();
-    expect(component.hasOther).toBeTruthy();
-    expect(component.form.get('leftHomeNotes').enabled).toBe(true);
-  });
+    it('should create the component', () => {
+        expect(component).toBeTruthy();
+    });
+
+    it('should initialize the form with provided data', () => {
+        component.candidateIntakeData = mockCandidateIntakeData;
+        component.ngOnInit();
+        expect(component.form.value).toEqual({
+            leftHomeReasons: [{ key: 'Job Opportunities', stringValue: undefined }], // Adjusted to match the enum value
+            leftHomeNotes: 'Notes'
+        });
+    });
+
+    it('should handle "Other" reason option properly', () => {
+        component.form.get('leftHomeReasons').setValue([{ key: 'Other', stringValue: 'Other' }]);
+        fixture.detectChanges();
+        expect(component.hasOther).toBeTruthy();
+        expect(component.form.get('leftHomeNotes').enabled).toBe(true);
+    });
 });

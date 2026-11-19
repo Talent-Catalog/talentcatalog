@@ -20,40 +20,41 @@ import {IneligiblePathwaysComponent} from './ineligible-pathways.component';
 import {AutosaveStatusComponent} from "../../../../util/autosave-status/autosave-status.component";
 import {provideHttpClientTesting} from "@angular/common/http/testing";
 import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
+import {expect} from 'vitest';
 
 describe('IneligiblePathwaysComponent', () => {
-  let component: IneligiblePathwaysComponent;
-  let fixture: ComponentFixture<IneligiblePathwaysComponent>;
-  let fb: UntypedFormBuilder;
+    let component: IneligiblePathwaysComponent;
+    let fixture: ComponentFixture<IneligiblePathwaysComponent>;
+    let fb: UntypedFormBuilder;
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      declarations: [IneligiblePathwaysComponent,AutosaveStatusComponent],
-      imports: [ReactiveFormsModule],
-      providers: [UntypedFormBuilder, provideHttpClient(withXhr(), withInterceptorsFromDi()), provideHttpClientTesting()]
-    }).compileComponents();
-  });
+    beforeEach(async () => {
+        await TestBed.configureTestingModule({
+            declarations: [IneligiblePathwaysComponent, AutosaveStatusComponent],
+            imports: [ReactiveFormsModule],
+            providers: [UntypedFormBuilder, provideHttpClient(withXhr(), withInterceptorsFromDi()), provideHttpClientTesting()]
+        }).compileComponents();
+    });
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(IneligiblePathwaysComponent);
-    component = fixture.componentInstance;
-    fb = TestBed.inject(UntypedFormBuilder);
-    fixture.detectChanges();
-  });
+    beforeEach(() => {
+        fixture = TestBed.createComponent(IneligiblePathwaysComponent);
+        component = fixture.componentInstance;
+        fb = TestBed.inject(UntypedFormBuilder);
+        fixture.detectChanges();
+    });
 
-  it('should create the component', () => {
-    expect(component).toBeTruthy();
-  });
+    it('should create the component', () => {
+        expect(component).toBeTruthy();
+    });
 
-  it('should have a form with visaJobIneligiblePathways control', () => {
-    expect(component.form.contains('visaJobIneligiblePathways')).toBeTrue();
-  });
+    it('should have a form with visaJobIneligiblePathways control', () => {
+        expect(component.form.contains('visaJobIneligiblePathways')).toBe(true);
+    });
 
-  it('should update form value when input changes', () => {
-    const testValue = 'Test ineligible pathways';
-    const textarea = fixture.nativeElement.querySelector('textarea');
-    textarea.value = testValue;
-    textarea.dispatchEvent(new Event('input'));
-    expect(component.form.get('visaJobIneligiblePathways')?.value).toEqual(testValue);
-  });
+    it('should update form value when input changes', () => {
+        const testValue = 'Test ineligible pathways';
+        const textarea = fixture.nativeElement.querySelector('textarea');
+        textarea.value = testValue;
+        textarea.dispatchEvent(new Event('input'));
+        expect(component.form.get('visaJobIneligiblePathways')?.value).toEqual(testValue);
+    });
 });

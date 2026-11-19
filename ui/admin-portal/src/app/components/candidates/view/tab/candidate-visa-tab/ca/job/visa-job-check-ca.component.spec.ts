@@ -13,6 +13,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
+
+import type {MockedObject} from "vitest";
 import {provideHttpClientTesting} from "@angular/common/http/testing";
 import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {provideRouter} from "@angular/router";
@@ -21,166 +23,133 @@ import {NgSelectModule} from "@ng-select/ng-select";
 import {VisaJobCheckCaComponent} from "./visa-job-check-ca.component";
 import {ComponentFixture, TestBed} from "@angular/core/testing";
 import {CandidateEducationService} from "../../../../../../../services/candidate-education.service";
-import {
-  CandidateOccupationService
-} from "../../../../../../../services/candidate-occupation.service";
+import {CandidateOccupationService} from "../../../../../../../services/candidate-occupation.service";
 import {MockCandidate} from "../../../../../../../MockData/MockCandidate";
-import {
-  mockCandidateIntakeData
-} from "../../../candidate-intake-tab/candidate-intake-tab.component.spec";
-import {
-  TcAccordionComponent
-} from "../../../../../../../shared/components/accordion/tc-accordion.component";
-import {
-  TcAccordionItemComponent
-} from "../../../../../../../shared/components/accordion/accordion-item/tc-accordion-item.component";
+import {mockCandidateIntakeData} from "../../../candidate-intake-tab/candidate-intake-tab.component.spec";
+import {TcAccordionComponent} from "../../../../../../../shared/components/accordion/tc-accordion.component";
+import {TcAccordionItemComponent} from "../../../../../../../shared/components/accordion/accordion-item/tc-accordion-item.component";
 import {By} from "@angular/platform-browser";
 import {of, throwError} from "rxjs";
 import {DependantsComponent} from "../../../../../intake/dependants/dependants.component";
-import {
-  VisaJobNotesComponent
-} from "../../../../../visa/visa-job-assessments/visa-job-notes/visa-job-notes.component";
+import {VisaJobNotesComponent} from "../../../../../visa/visa-job-assessments/visa-job-notes/visa-job-notes.component";
 import {FixedInputComponent} from "../../../../../../util/intake/fixed-input/fixed-input.component";
-import {
-  RelocatingDependantsComponent
-} from "../../../../../visa/visa-job-assessments/relocating-dependants/relocating-dependants.component";
-import {
-  JobEligibilityAssessmentComponent
-} from "../../../../../visa/visa-job-assessments/job-eligibility-assessment/job-eligibility-assessment.component";
-import {
-  JobInterestComponent
-} from "../../../../../visa/visa-job-assessments/job-interest/job-interest.component";
-import {
-  AgeRequirementComponent
-} from "../../../../../visa/visa-job-assessments/age-requirement/age-requirement.component";
-import {
-  RelevantWorkExpComponent
-} from "../../../../../visa/visa-job-assessments/relevant-work-exp/relevant-work-exp.component";
-import {
-  IneligiblePathwaysComponent
-} from "../../../../../visa/visa-job-assessments/ineligible-pathways/ineligible-pathways.component";
-import {
-  PreferredPathwaysComponent
-} from "../../../../../visa/visa-job-assessments/preferred-pathways/preferred-pathways.component";
-import {
-  EligiblePathwaysComponent
-} from "../../../../../visa/visa-job-assessments/eligible-pathways/eligible-pathways.component";
-import {
-  OccupationCategoryComponent
-} from "../../../../../visa/visa-job-assessments/occupation-category/occupation-category.component";
-import {
-  OccupationSubcategoryComponent
-} from "../../../../../visa/visa-job-assessments/occupation-subcategory/occupation-subcategory.component";
-import {
-  AutosaveStatusComponent
-} from "../../../../../../util/autosave-status/autosave-status.component";
-import {
-  VisaJobPutForwardComponent
-} from "../../../../../visa/visa-job-assessments/put-forward/visa-job-put-forward.component";
-import {
-  QualificationRelevantComponent
-} from "../../../../../visa/visa-job-assessments/qualification-relevant/qualification-relevant.component";
-import {
-  LanguageThresholdComponent
-} from "../../../../../visa/visa-job-assessments/language-threshold/language-threshold.component";
+import {RelocatingDependantsComponent} from "../../../../../visa/visa-job-assessments/relocating-dependants/relocating-dependants.component";
+import {JobEligibilityAssessmentComponent} from "../../../../../visa/visa-job-assessments/job-eligibility-assessment/job-eligibility-assessment.component";
+import {JobInterestComponent} from "../../../../../visa/visa-job-assessments/job-interest/job-interest.component";
+import {AgeRequirementComponent} from "../../../../../visa/visa-job-assessments/age-requirement/age-requirement.component";
+import {RelevantWorkExpComponent} from "../../../../../visa/visa-job-assessments/relevant-work-exp/relevant-work-exp.component";
+import {IneligiblePathwaysComponent} from "../../../../../visa/visa-job-assessments/ineligible-pathways/ineligible-pathways.component";
+import {PreferredPathwaysComponent} from "../../../../../visa/visa-job-assessments/preferred-pathways/preferred-pathways.component";
+import {EligiblePathwaysComponent} from "../../../../../visa/visa-job-assessments/eligible-pathways/eligible-pathways.component";
+import {OccupationCategoryComponent} from "../../../../../visa/visa-job-assessments/occupation-category/occupation-category.component";
+import {OccupationSubcategoryComponent} from "../../../../../visa/visa-job-assessments/occupation-subcategory/occupation-subcategory.component";
+import {AutosaveStatusComponent} from "../../../../../../util/autosave-status/autosave-status.component";
+import {VisaJobPutForwardComponent} from "../../../../../visa/visa-job-assessments/put-forward/visa-job-put-forward.component";
+import {QualificationRelevantComponent} from "../../../../../visa/visa-job-assessments/qualification-relevant/qualification-relevant.component";
+import {LanguageThresholdComponent} from "../../../../../visa/visa-job-assessments/language-threshold/language-threshold.component";
+import {expect, vi} from 'vitest';
 
 describe('VisaJobCheckCaComponent', () => {
-  let component: VisaJobCheckCaComponent;
-  let fixture: ComponentFixture<VisaJobCheckCaComponent>;
-  let candidateEducationServiceSpy: jasmine.SpyObj<CandidateEducationService>;
-  let candidateOccupationServiceSpy: jasmine.SpyObj<CandidateOccupationService>;
-  const mockCandidate = new MockCandidate();
+    let component: VisaJobCheckCaComponent;
+    let fixture: ComponentFixture<VisaJobCheckCaComponent>;
+    let candidateEducationServiceSpy: MockedObject<CandidateEducationService>;
+    let candidateOccupationServiceSpy: MockedObject<CandidateOccupationService>;
+    const mockCandidate = new MockCandidate();
 
-  beforeEach(async () => {
-    const educationSpy = jasmine.createSpyObj('CandidateEducationService', ['list']);
-    const occupationSpy = jasmine.createSpyObj('CandidateOccupationService', ['get']);
-    await TestBed.configureTestingModule({
-      imports: [FormsModule,ReactiveFormsModule,
-        NgSelectModule,
-        TcAccordionComponent,
-        TcAccordionItemComponent
-      ],
-      declarations: [ VisaJobCheckCaComponent,DependantsComponent,VisaJobNotesComponent,FixedInputComponent,
-        RelocatingDependantsComponent,JobEligibilityAssessmentComponent,JobInterestComponent,
-        AgeRequirementComponent,RelevantWorkExpComponent,IneligiblePathwaysComponent,PreferredPathwaysComponent,
-        EligiblePathwaysComponent,OccupationCategoryComponent,OccupationSubcategoryComponent
-        ,AutosaveStatusComponent,VisaJobPutForwardComponent,QualificationRelevantComponent,
-        LanguageThresholdComponent
-      ],
-      providers: [
-        provideRouter([]),
-        { provide: CandidateEducationService, useValue: educationSpy },
-        { provide: CandidateOccupationService, useValue: occupationSpy },
-        provideHttpClient(withXhr(), withInterceptorsFromDi()),
-        provideHttpClientTesting()
-      ],
-    })
-    .compileComponents();
+    beforeEach(async () => {
+        const educationSpy = {
+            list: vi.fn().mockName("CandidateEducationService.list")
+        };
+        const occupationSpy = {
+            get: vi.fn().mockName("CandidateOccupationService.get")
+        };
+        await TestBed.configureTestingModule({
+            imports: [FormsModule, ReactiveFormsModule,
+                NgSelectModule,
+                TcAccordionComponent,
+                TcAccordionItemComponent
+            ],
+            declarations: [VisaJobCheckCaComponent, DependantsComponent, VisaJobNotesComponent, FixedInputComponent,
+                RelocatingDependantsComponent, JobEligibilityAssessmentComponent, JobInterestComponent,
+                AgeRequirementComponent, RelevantWorkExpComponent, IneligiblePathwaysComponent, PreferredPathwaysComponent,
+                EligiblePathwaysComponent, OccupationCategoryComponent, OccupationSubcategoryComponent,
+                AutosaveStatusComponent, VisaJobPutForwardComponent, QualificationRelevantComponent,
+                LanguageThresholdComponent
+            ],
+            providers: [
+                provideRouter([]),
+                { provide: CandidateEducationService, useValue: educationSpy },
+                { provide: CandidateOccupationService, useValue: occupationSpy },
+                provideHttpClient(withXhr(), withInterceptorsFromDi()),
+                provideHttpClientTesting()
+            ],
+        })
+            .compileComponents();
 
-    candidateEducationServiceSpy = TestBed.inject(CandidateEducationService) as jasmine.SpyObj<CandidateEducationService>;
-    candidateOccupationServiceSpy = TestBed.inject(CandidateOccupationService) as jasmine.SpyObj<CandidateOccupationService>;
-  });
+        candidateEducationServiceSpy = TestBed.inject(CandidateEducationService) as MockedObject<CandidateEducationService>;
+        candidateOccupationServiceSpy = TestBed.inject(CandidateOccupationService) as MockedObject<CandidateOccupationService>;
+    });
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(VisaJobCheckCaComponent);
-    component = fixture.componentInstance;
-    component.candidate = mockCandidate;
-    component.candidateIntakeData = mockCandidateIntakeData;
-    component.visaCheckRecord = { country: { id: 1 } } as any; // Mock visa check record
-    component.selectedJobCheck = {} as any; // Mock selected job check
-    candidateOccupationServiceSpy.get.and.returnValue(of(mockCandidate.candidateOccupations));
-    candidateEducationServiceSpy.list.and.returnValue(of(mockCandidate.candidateEducations));
+    beforeEach(() => {
+        fixture = TestBed.createComponent(VisaJobCheckCaComponent);
+        component = fixture.componentInstance;
+        component.candidate = mockCandidate;
+        component.candidateIntakeData = mockCandidateIntakeData;
+        component.visaCheckRecord = { country: { id: 1 } } as any; // Mock visa check record
+        component.selectedJobCheck = {} as any; // Mock selected job check
+        candidateOccupationServiceSpy.get.mockReturnValue(of(mockCandidate.candidateOccupations));
+        candidateEducationServiceSpy.list.mockReturnValue(of(mockCandidate.candidateEducations));
 
-    fixture.detectChanges();
-  });
+        fixture.detectChanges();
+    });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
 
-  it('should fetch candidate occupations on init', () => {
-    const mockOccupations = mockCandidate.candidateOccupations;
+    it('should fetch candidate occupations on init', () => {
+        const mockOccupations = mockCandidate.candidateOccupations;
 
-    fixture.detectChanges(); // ngOnInit() gets called here
+        fixture.detectChanges(); // ngOnInit() gets called here
 
-    expect(component.candOccupations).toEqual(mockOccupations);
-    expect(candidateOccupationServiceSpy.get.calls.count()).toBe(1);
-  });
+        expect(component.candOccupations).toEqual(mockOccupations);
+        expect(vi.mocked(candidateOccupationServiceSpy.get).mock.calls.length).toBe(1);
+    });
 
-  it('should fetch candidate qualifications on init', () => {
-    const mockQualifications = mockCandidate.candidateEducations;
+    it('should fetch candidate qualifications on init', () => {
+        const mockQualifications = mockCandidate.candidateEducations;
 
-    fixture.detectChanges(); // ngOnInit() gets called here
+        fixture.detectChanges(); // ngOnInit() gets called here
 
-    expect(component.candQualifications).toEqual(mockQualifications);
-    expect(candidateEducationServiceSpy.list.calls.count()).toBe(1);
-  });
+        expect(component.candQualifications).toEqual(mockQualifications);
+        expect(vi.mocked(candidateEducationServiceSpy.list).mock.calls.length).toBe(1);
+    });
 
-  it('should handle error when fetching candidate occupations', () => {
-    candidateOccupationServiceSpy.get.and.returnValue(throwError('Error fetching occupations'));
+    it('should handle error when fetching candidate occupations', () => {
+        candidateOccupationServiceSpy.get.mockReturnValue(throwError('Error fetching occupations'));
 
-    component.ngOnInit(); // ngOnInit() gets called here
+        component.ngOnInit(); // ngOnInit() gets called here
 
-    expect(component.error).toBe('Error fetching occupations');
-  });
+        expect(component.error).toBe('Error fetching occupations');
+    });
 
-  it('should handle error when fetching candidate qualifications', () => {
-    candidateEducationServiceSpy.list.and.returnValue(throwError('Error fetching qualifications'));
+    it('should handle error when fetching candidate qualifications', () => {
+        candidateEducationServiceSpy.list.mockReturnValue(throwError('Error fetching qualifications'));
 
-    component.ngOnInit(); // ngOnInit() gets called here
+        component.ngOnInit(); // ngOnInit() gets called here
 
-    expect(component.error).toBe('Error fetching qualifications');
-  });
+        expect(component.error).toBe('Error fetching qualifications');
+    });
 
-  it('should open all panels after view init', () => {
-    fixture.detectChanges(); // ngOnInit() gets called here
+    it('should open all panels after view init', () => {
+        fixture.detectChanges(); // ngOnInit() gets called here
 
-    // Get the accordion component instance
-    const accordionDebugElement = fixture.debugElement.query(By.directive(TcAccordionComponent));
-    expect(accordionDebugElement).toBeTruthy();
+        // Get the accordion component instance
+        const accordionDebugElement = fixture.debugElement.query(By.directive(TcAccordionComponent));
+        expect(accordionDebugElement).toBeTruthy();
 
-    // The accordion items should be open (this is handled by the accordion component's allOpen input)
-    const accordionComponent = accordionDebugElement.componentInstance as TcAccordionComponent;
-    expect(accordionComponent.allOpen).toBe(true);
-  });
+        // The accordion items should be open (this is handled by the accordion component's allOpen input)
+        const accordionComponent = accordionDebugElement.componentInstance as TcAccordionComponent;
+        expect(accordionComponent.allOpen).toBe(true);
+    });
 });

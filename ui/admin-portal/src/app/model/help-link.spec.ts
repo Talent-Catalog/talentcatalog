@@ -14,18 +14,13 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {
-  HelpFocus,
-  HelpLink,
-  NextStepInfo,
-  SearchHelpLinkRequest,
-  UpdateHelpLinkRequest
-} from './help-link';
+import {HelpFocus, HelpLink, NextStepInfo, SearchHelpLinkRequest, UpdateHelpLinkRequest} from './help-link';
 import {CandidateOpportunityStage} from './candidate-opportunity';
 import {JobOpportunityStage} from './job';
 import {User} from './user';
 import {Country} from './country';
 import {MockUser} from "../MockData/MockUser";
+import {expect} from 'vitest';
 
 describe('HelpLink', () => {
   it('should create a HelpLink instance', () => {

@@ -13,170 +13,159 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
+import {vi} from 'vitest';
 import {TestBed} from '@angular/core/testing';
 import {VerifyPlusDecoderService} from './verify-plus-decoder.service';
 
 describe('VerifyPlusDecoderService', () => {
-  let service: VerifyPlusDecoderService;
+    let service: VerifyPlusDecoderService;
 
-  beforeEach(() => {
-    TestBed.configureTestingModule({
-      providers: [VerifyPlusDecoderService]
+    beforeEach(() => {
+    // BEGIN candidate Vitest real ZXing fixture setup (migration helper)
+    const nodeFs = process.getBuiltinModule('fs');
+    if (!nodeFs) throw new Error('Node fs is required by the real decoder test.');
+    const wasmBytes = nodeFs.readFileSync(
+      `${process.cwd()}/node_modules/zxing-wasm/dist/reader/zxing_reader.wasm`
+    );
+    const realFetch = globalThis.fetch.bind(globalThis);
+    vi.spyOn(globalThis, 'fetch').mockImplementation((input, init) => {
+      const requestedUrl = typeof input === 'string'
+        ? input
+        : input instanceof URL ? input.href : input.url;
+      if (/assets\/wasm\/zxing_reader\.wasm(?:\?.*)?$/.test(requestedUrl)) {
+        return Promise.resolve(new Response(
+          Uint8Array.from(wasmBytes) as unknown as BodyInit,
+          {headers: {'content-type': 'application/wasm'}}
+        ));
+      }
+      return realFetch(input, init);
+    });
+    // END candidate Vitest real ZXing fixture setup (migration helper)
+
+
+        TestBed.configureTestingModule({
+            providers: [VerifyPlusDecoderService]
+        });
+
+        service = TestBed.inject(VerifyPlusDecoderService);
     });
 
-    service = TestBed.inject(VerifyPlusDecoderService);
-  });
-
-  it('should be created', () => {
-    expect(service).toBeTruthy();
-  });
-
-  it('should have QR-code decoding options configured', () => {
-    expect((service as any).options).toEqual({
-      formats: ['QRCode'],
-      tryHarder: true,
-      tryRotate: true,
-      tryInvert: true,
-      tryDownscale: true,
-      maxNumberOfSymbols: 1
+    it('should be created', () => {
+        expect(service).toBeTruthy();
     });
-  });
 
-  it('should decode the UNHCR sample fixture image', async () => {
-    const imageData = await loadFixtureImageData(
-      '/docs/verify-plus/unhcr-sample.png'
-    );
+    it('should have QR-code decoding options configured', () => {
+        expect((service as any).options).toEqual({
+            formats: ['QRCode'],
+            tryHarder: true,
+            tryRotate: true,
+            tryInvert: true,
+            tryDownscale: true,
+            maxNumberOfSymbols: 1
+        });
+    });
 
-    const decoded = await service.decode(imageData);
+    it('should decode the UNHCR sample fixture image', async () => {
+        const imageData = await loadFixtureImageData('/docs/verify-plus/unhcr-sample.png');
 
-    expect(decoded).toBeTruthy();
-    expect(decoded!.length).toBeGreaterThan(1000);
-  });
+        const decoded = await service.decode(imageData);
 
-  it('should return null when the image contains no QR code', async () => {
-    const blankImage = createBlankImageData(100, 100);
+        expect(decoded).toBeTruthy();
+        expect(decoded!.length).toBeGreaterThan(1000);
+    });
 
-    const decoded = await service.decode(blankImage);
+    it('should return null when the image contains no QR code', async () => {
+        const blankImage = createBlankImageData(100, 100);
 
-    expect(decoded).toBeNull();
-  });
+        const decoded = await service.decode(blankImage);
 
-  it('should cache and reuse the initialized ZXing module', async () => {
-    const blankImage = createBlankImageData(50, 50);
+        expect(decoded).toBeNull();
+    });
 
-    await service.decode(blankImage);
+    it('should cache and reuse the initialized ZXing module', async () => {
+        const blankImage = createBlankImageData(50, 50);
 
-    const firstModulePromise =
-      (service as any).moduleReady;
+        await service.decode(blankImage);
 
-    expect(firstModulePromise).toBeTruthy();
+        const firstModulePromise = (service as any).moduleReady;
 
-    await service.decode(blankImage);
+        expect(firstModulePromise).toBeTruthy();
 
-    const secondModulePromise =
-      (service as any).moduleReady;
+        await service.decode(blankImage);
 
-    expect(secondModulePromise).toBe(
-      firstModulePromise
-    );
-  });
+        const secondModulePromise = (service as any).moduleReady;
 
-  it('should return an existing cached module from init', () => {
-    const cachedModule = Promise.resolve({});
+        expect(secondModulePromise).toBe(firstModulePromise);
+    });
 
-    (service as any).moduleReady = cachedModule;
+    it('should return an existing cached module from init', () => {
+        const cachedModule = Promise.resolve({});
 
-    const result = (service as any).init();
+        (service as any).moduleReady = cachedModule;
 
-    expect(result).toBe(cachedModule);
-  });
+        const result = (service as any).init();
 
-  it('should decode the UNHCR sample fixture image', async () => {
-    const response = await fetch('/base/docs/verify-plus/unhcr-sample.png');
-    if (!response.ok) {
-      pending('UNHCR fixture image is not available in Karma static files.');
-      return;
-    }
+        expect(result).toBe(cachedModule);
+    });
 
-    const blob = await response.blob();
-    const image = await loadImage(URL.createObjectURL(blob));
+    it('should reuse the initialized decoder for repeated UNHCR fixture decoding', async () => {
+        const imageData = await loadFixtureImageData('/docs/verify-plus/unhcr-sample.png');
+        const first = await service.decode(imageData);
+        const moduleReady = (service as any).moduleReady;
+        const second = await service.decode(imageData);
 
-    const canvas = document.createElement('canvas');
-    canvas.width = image.naturalWidth;
-    canvas.height = image.naturalHeight;
-
-    const context = canvas.getContext('2d');
-    if (!context) {
-      fail('Unable to create 2D canvas context for fixture decode test.');
-      return;
-    }
-
-    context.drawImage(image, 0, 0);
-    const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
-    const decoded = await service.decode(imageData);
-
-    expect(decoded).toBeTruthy();
-    expect(decoded!.length).toBeGreaterThan(1000);
-  });
+        expect(first).toBeTruthy();
+        expect(second).toBe(first);
+        expect((service as any).moduleReady).toBe(moduleReady);
+    });
 
 });
 
 function loadImage(url: string): Promise<HTMLImageElement> {
-  return new Promise((resolve, reject) => {
-    const image = new Image();
-    image.onload = () => resolve(image);
-    image.onerror = reject;
-    image.src = url;
-  });
+    return new Promise((resolve, reject) => {
+        const image = new Image();
+        image.onload = () => resolve(image);
+        image.onerror = reject;
+        image.src = url;
+    });
 }
 
-async function loadFixtureImageData(
-  path: string
-): Promise<ImageData> {
-  const image = await loadImage(path);
-
-  const canvas = document.createElement('canvas');
-  canvas.width = image.naturalWidth;
-  canvas.height = image.naturalHeight;
-
-  const context = canvas.getContext('2d');
-
-  if (!context) {
-    throw new Error(
-      'Unable to create 2D canvas context for QR fixture.'
-    );
+async function loadFixtureImageData(path: string): Promise<ImageData> {
+  const nodeFs = process.getBuiltinModule('fs');
+  const nodeModule = process.getBuiltinModule('module');
+  if (!nodeFs || !nodeModule) {
+    throw new Error('Node fs and module are required by the real PNG fixture test.');
   }
-
-  context.drawImage(image, 0, 0);
-
-  return context.getImageData(
-    0,
-    0,
-    canvas.width,
-    canvas.height
-  );
-}
-
-function createBlankImageData(
-  width: number,
-  height: number
-): ImageData {
-  const pixels = new Uint8ClampedArray(
-    width * height * 4
-  );
-
-  // Create a fully opaque white image.
-  for (let index = 0; index < pixels.length; index += 4) {
-    pixels[index] = 255;
-    pixels[index + 1] = 255;
-    pixels[index + 2] = 255;
-    pixels[index + 3] = 255;
+  const fixtureRelativePath = path.replace(/^\/+/, '');
+  if (fixtureRelativePath !== 'docs/verify-plus/unhcr-sample.png') {
+    throw new Error(`Unexpected Verify Plus PNG fixture path: ${path}`);
   }
-
+  const requireFromProject = nodeModule.createRequire(`${process.cwd()}/package.json`);
+  const pngjs = requireFromProject('pngjs') as {
+    PNG: {sync: {read(data: Uint8Array): {
+      width: number;
+      height: number;
+      data: Uint8Array;
+    }}};
+  };
+  const fileBytes = nodeFs.readFileSync(`${process.cwd()}/${fixtureRelativePath}`);
+  const png = pngjs.PNG.sync.read(fileBytes);
   return new ImageData(
-    pixels,
-    width,
-    height
+    new Uint8ClampedArray(png.data), png.width, png.height
   );
+}
+
+function createBlankImageData(width: number, height: number): ImageData {
+    const pixels = new Uint8ClampedArray(width * height * 4);
+
+    // Create a fully opaque white image.
+    for (let index = 0; index < pixels.length; index += 4) {
+        pixels[index] = 255;
+        pixels[index + 1] = 255;
+        pixels[index + 2] = 255;
+        pixels[index + 3] = 255;
+    }
+
+    return new ImageData(pixels, width, height);
 }
 

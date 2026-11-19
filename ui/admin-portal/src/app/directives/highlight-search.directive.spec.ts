@@ -23,125 +23,127 @@ import {By} from '@angular/platform-browser';
 import {NgControl} from "@angular/forms";
 import {Subject} from "rxjs";
 import {SearchQueryService} from "../services/search-query.service";
+import {expect, vi} from 'vitest';
 
 @Component({
-  template: `
+    template: `
     <div appLowercase></div>
     <div class="highlight" appHighlightSearch>Angular is amazing. Learn Angular today!</div>
     <div id="word-boundary-test" appHighlightSearch>It is a bite writing situation.</div>
   `,
-  changeDetection: ChangeDetectionStrategy.Eager,
-  standalone: false
+    changeDetection: ChangeDetectionStrategy.Eager,
+    standalone: false
 })
-class TestComponent {}
+class TestComponent {
+}
 describe('DirectiveModule', () => {
-  let fixture: ComponentFixture<TestComponent>;
-  let debugElement: DebugElement;
-  let searchTerms$: Subject<string[]>;
-  let searchServiceMock: any;
+    let fixture: ComponentFixture<TestComponent>;
+    let debugElement: DebugElement;
+    let searchTerms$: Subject<string[]>;
+    let searchServiceMock: any;
 
-  beforeEach(() => {
-    searchTerms$ = new Subject<string[]>();
-    searchServiceMock = {
-      currentSearchTerms$: searchTerms$.asObservable()
-    };
+    beforeEach(() => {
+        searchTerms$ = new Subject<string[]>();
+        searchServiceMock = {
+            currentSearchTerms$: searchTerms$.asObservable()
+        };
 
-    TestBed.configureTestingModule({
-      declarations: [TestComponent],
-      imports: [CommonModule, DirectiveModule],
-      providers: [
-        {provide: NgControl, useValue: {}},
-        { provide: SearchQueryService, useValue: searchServiceMock }
-      ]
+        TestBed.configureTestingModule({
+            declarations: [TestComponent],
+            imports: [CommonModule, DirectiveModule],
+            providers: [
+                { provide: NgControl, useValue: {} },
+                { provide: SearchQueryService, useValue: searchServiceMock }
+            ]
+        });
+
+        fixture = TestBed.createComponent(TestComponent);
+        debugElement = fixture.debugElement;
+        fixture.detectChanges();
     });
 
-    fixture = TestBed.createComponent(TestComponent);
-    debugElement = fixture.debugElement;
-    fixture.detectChanges();
-  });
-
-  it('should declare LowercaseDirective', () => {
-    const lowercaseDirective = debugElement.query(By.directive(LowercaseDirective));
-    expect(lowercaseDirective).toBeTruthy();
-  });
-
-  it('should declare HighlightSearchDirective', () => {
-    const highlightSearchDirective = debugElement.query(By.directive(HighlightSearchDirective));
-    expect(highlightSearchDirective).toBeTruthy();
-  });
-
-  it('should highlight matching search terms in the text', () => {
-    searchTerms$.next(['Angular']);
-    fixture.detectChanges();
-
-    const spans = fixture.nativeElement.querySelectorAll('span.highlight');
-    expect(spans.length).toBe(0);
-    spans.forEach(span => {
-      expect(span.textContent).toBe('Angular');
+    it('should declare LowercaseDirective', () => {
+        const lowercaseDirective = debugElement.query(By.directive(LowercaseDirective));
+        expect(lowercaseDirective).toBeTruthy();
     });
-  });
 
-  it('should not highlight anything if no match is found', () => {
-    searchTerms$.next(['React']);
-    fixture.detectChanges();
+    it('should declare HighlightSearchDirective', () => {
+        const highlightSearchDirective = debugElement.query(By.directive(HighlightSearchDirective));
+        expect(highlightSearchDirective).toBeTruthy();
+    });
 
-    const spans = fixture.nativeElement.querySelectorAll('span.highlight');
-    expect(spans.length).toBe(0);
-  });
+    it('should highlight matching search terms in the text', () => {
+        searchTerms$.next(['Angular']);
+        fixture.detectChanges();
 
-  it('should remove old highlights when new terms arrive', () => {
-    searchTerms$.next(['Angular']);
-    fixture.detectChanges();
-    let spans = fixture.nativeElement.querySelectorAll('span.highlight');
-    expect(spans.length).toBe(0);
+        const spans = fixture.nativeElement.querySelectorAll('span.highlight');
+        expect(spans.length).toBe(0);
+        spans.forEach(span => {
+            expect(span.textContent).toBe('Angular');
+        });
+    });
 
-    searchTerms$.next(['Learn']);
-    fixture.detectChanges();
-    spans = fixture.nativeElement.querySelectorAll('span.highlight');
-    expect(spans.length).toBe(0);
-  });
+    it('should not highlight anything if no match is found', () => {
+        searchTerms$.next(['React']);
+        fixture.detectChanges();
 
-  it('should not duplicate highlights on repeated change detection', () => {
-    searchTerms$.next(['Angular']);
-    fixture.detectChanges();
-    fixture.detectChanges(); // trigger again
-    const spans = fixture.nativeElement.querySelectorAll('span.highlight');
-    expect(spans.length).toBe(0);
-  });
+        const spans = fixture.nativeElement.querySelectorAll('span.highlight');
+        expect(spans.length).toBe(0);
+    });
 
-  it('should handle empty or undefined search terms safely', () => {
-    searchTerms$.next([]);
-    fixture.detectChanges();
-    let spans = fixture.nativeElement.querySelectorAll('span.highlight');
-    expect(spans.length).toBe(0);
+    it('should remove old highlights when new terms arrive', () => {
+        searchTerms$.next(['Angular']);
+        fixture.detectChanges();
+        let spans = fixture.nativeElement.querySelectorAll('span.highlight');
+        expect(spans.length).toBe(0);
 
-    searchTerms$.next(null);
-    fixture.detectChanges();
-    spans = fixture.nativeElement.querySelectorAll('span.highlight');
-    expect(spans.length).toBe(0);
-  });
+        searchTerms$.next(['Learn']);
+        fixture.detectChanges();
+        spans = fixture.nativeElement.querySelectorAll('span.highlight');
+        expect(spans.length).toBe(0);
+    });
 
-  it('should clean up subscriptions on destroy', () => {
-    const directiveInstance = debugElement.query(By.directive(HighlightSearchDirective)).injector.get(HighlightSearchDirective);
-    const destroySpy = spyOn<any>(directiveInstance['destroy$'], 'next').and.callThrough();
+    it('should not duplicate highlights on repeated change detection', () => {
+        searchTerms$.next(['Angular']);
+        fixture.detectChanges();
+        fixture.detectChanges(); // trigger again
+        const spans = fixture.nativeElement.querySelectorAll('span.highlight');
+        expect(spans.length).toBe(0);
+    });
 
-    fixture.destroy();
+    it('should handle empty or undefined search terms safely', () => {
+        searchTerms$.next([]);
+        fixture.detectChanges();
+        let spans = fixture.nativeElement.querySelectorAll('span.highlight');
+        expect(spans.length).toBe(0);
 
-    expect(destroySpy).toHaveBeenCalled();
-  });
+        searchTerms$.next(null);
+        fixture.detectChanges();
+        spans = fixture.nativeElement.querySelectorAll('span.highlight');
+        expect(spans.length).toBe(0);
+    });
 
-  it('should not highlight a search term inside another word', () => {
-    searchTerms$.next(['it']);
-    fixture.detectChanges();
+    it('should clean up subscriptions on destroy', () => {
+        const directiveInstance = debugElement.query(By.directive(HighlightSearchDirective)).injector.get(HighlightSearchDirective);
+        const destroySpy = vi.spyOn((directiveInstance['destroy$'] as any), 'next');
 
-    const testElement = fixture.nativeElement.querySelector('#word-boundary-test');
-    const spans = testElement.querySelectorAll('span.highlight');
+        fixture.destroy();
 
-    expect(spans.length).toBe(1);
-    expect(spans[0].textContent).toBe('It');
+        expect(destroySpy).toHaveBeenCalled();
+    });
 
-    expect(testElement.innerHTML).not.toContain('b<span class="highlight">it</span>e');
-    expect(testElement.innerHTML).not.toContain('wr<span class="highlight">it</span>ing');
-    expect(testElement.innerHTML).not.toContain('s<span class="highlight">it</span>uation');
-  });
+    it('should not highlight a search term inside another word', () => {
+        searchTerms$.next(['it']);
+        fixture.detectChanges();
+
+        const testElement = fixture.nativeElement.querySelector('#word-boundary-test');
+        const spans = testElement.querySelectorAll('span.highlight');
+
+        expect(spans.length).toBe(1);
+        expect(spans[0].textContent).toBe('It');
+
+        expect(testElement.innerHTML).not.toContain('b<span class="highlight">it</span>e');
+        expect(testElement.innerHTML).not.toContain('wr<span class="highlight">it</span>ing');
+        expect(testElement.innerHTML).not.toContain('s<span class="highlight">it</span>uation');
+    });
 });

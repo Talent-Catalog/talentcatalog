@@ -15,13 +15,10 @@
  */
 
 
-import {
-  AttachmentType,
-  CandidateAttachment,
-  CandidateAttachmentRequest
-} from "./candidate-attachment";
+import {AttachmentType, CandidateAttachment, CandidateAttachmentRequest} from "./candidate-attachment";
 import {UploadType} from "./task";
 import {User} from "./user";
+import {expect} from 'vitest';
 
 describe('CandidateAttachmentRequest', () => {
   it('should create an instance of CandidateAttachmentRequest with required fields', () => {

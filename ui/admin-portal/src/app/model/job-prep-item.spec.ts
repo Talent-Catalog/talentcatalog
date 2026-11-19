@@ -14,16 +14,10 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {
-  JobPrepDueDate,
-  JobPrepJD,
-  JobPrepJobSummary,
-  JobPrepJOI,
-  JobPrepSuggestedCandidates,
-  JobPrepSuggestedSearches
-} from "./job-prep-item";
+import {JobPrepDueDate, JobPrepJD, JobPrepJobSummary, JobPrepJOI, JobPrepSuggestedCandidates, JobPrepSuggestedSearches} from "./job-prep-item";
 import {Job} from "./job";
 import {MockSavedSearch} from "../MockData/MockSavedSearch";
+import {expect} from 'vitest';
 
 describe('JobPrepDueDate', () => {
   let item: JobPrepDueDate;

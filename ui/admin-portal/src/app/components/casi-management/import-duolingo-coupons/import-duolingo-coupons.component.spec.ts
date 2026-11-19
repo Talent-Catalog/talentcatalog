@@ -14,54 +14,56 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
+import type {MockedObject} from "vitest";
 import {NO_ERRORS_SCHEMA} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {of, throwError} from 'rxjs';
 import {DuolingoCouponService} from '../../../services/duolingo-coupon.service';
 import {ImportDuolingoCouponsComponent} from './import-duolingo-coupons.component';
+import {expect, vi} from 'vitest';
 
 describe('ImportDuolingoCouponsComponent', () => {
-  let component: ImportDuolingoCouponsComponent;
-  let fixture: ComponentFixture<ImportDuolingoCouponsComponent>;
-  let mockDuolingoCouponService: jasmine.SpyObj<DuolingoCouponService>;
+    let component: ImportDuolingoCouponsComponent;
+    let fixture: ComponentFixture<ImportDuolingoCouponsComponent>;
+    let mockDuolingoCouponService: MockedObject<DuolingoCouponService>;
 
-  beforeEach(async () => {
-    mockDuolingoCouponService = jasmine.createSpyObj('DuolingoCouponService', [
-      'importCoupons',
-      'countAvailableProctoredCoupons'
-    ]);
+    beforeEach(async () => {
+        mockDuolingoCouponService = ({
+            importCoupons: vi.fn().mockName("DuolingoCouponService.importCoupons"),
+            countAvailableProctoredCoupons: vi.fn().mockName("DuolingoCouponService.countAvailableProctoredCoupons")
+        } as unknown as typeof mockDuolingoCouponService);
 
-    await TestBed.configureTestingModule({
-      declarations: [ImportDuolingoCouponsComponent],
-      providers: [{provide: DuolingoCouponService, useValue: mockDuolingoCouponService}],
-      schemas: [NO_ERRORS_SCHEMA]
-    }).compileComponents();
+        await TestBed.configureTestingModule({
+            declarations: [ImportDuolingoCouponsComponent],
+            providers: [{ provide: DuolingoCouponService, useValue: mockDuolingoCouponService }],
+            schemas: [NO_ERRORS_SCHEMA]
+        }).compileComponents();
 
-    fixture = TestBed.createComponent(ImportDuolingoCouponsComponent);
-    component = fixture.componentInstance;
-    mockDuolingoCouponService.countAvailableProctoredCoupons.and.returnValue(of({count: 100}));
-    fixture.detectChanges();
-  });
+        fixture = TestBed.createComponent(ImportDuolingoCouponsComponent);
+        component = fixture.componentInstance;
+        mockDuolingoCouponService.countAvailableProctoredCoupons.mockReturnValue(of({ count: 100 }));
+        fixture.detectChanges();
+    });
 
-  it('should create the component', () => {
-    expect(component).toBeTruthy();
-  });
+    it('should create the component', () => {
+        expect(component).toBeTruthy();
+    });
 
-  it('should set an error message on service failure', () => {
-    component.selectedFile = new File([], 'coupons.csv');
-    mockDuolingoCouponService.importCoupons.and.returnValue(throwError(() => new Error('Error')));
+    it('should set an error message on service failure', () => {
+        component.selectedFile = new File([], 'coupons.csv');
+        mockDuolingoCouponService.importCoupons.mockReturnValue(throwError(() => new Error('Error')));
 
-    component.importCSV();
+        component.importCSV();
 
-    expect(component.working).toBeFalse();
-    expect(component.error).toBe('Failed to import the CSV file. Please try again.');
-  });
+        expect(component.working).toBe(false);
+        expect(component.error).toBe('Failed to import the CSV file. Please try again.');
+    });
 
-  it('should set an error message if no file is selected', () => {
-    component.selectedFile = null;
+    it('should set an error message if no file is selected', () => {
+        component.selectedFile = null;
 
-    component.importCSV();
+        component.importCSV();
 
-    expect(component.error).toBe('Please select a file to import.');
-  });
+        expect(component.error).toBe('Please select a file to import.');
+    });
 });

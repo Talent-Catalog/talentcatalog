@@ -17,27 +17,27 @@
 import {sanitizeEmailInput} from './base';
 
 describe('sanitizeEmailInput', () => {
-  it('returns a clean email address unchanged', () => {
-    expect(sanitizeEmailInput('example@example.com')).toBe('example@example.com');
-  });
+    it('returns a clean email address unchanged', () => {
+        expect(sanitizeEmailInput('example@example.com')).toBe('example@example.com');
+    });
 
-  it('trims leading and trailing whitespace', () => {
-    expect(sanitizeEmailInput('  example@example.com  ')).toBe('example@example.com');
-  });
+    it('trims leading and trailing whitespace', () => {
+        expect(sanitizeEmailInput('  example@example.com  ')).toBe('example@example.com');
+    });
 
-  it('leaves an ordinary space embedded in the middle of the address untouched', () => {
-    expect(sanitizeEmailInput('exam ple@example.com')).toBe('exam ple@example.com');
-  });
+    it('leaves an ordinary space embedded in the middle of the address untouched', () => {
+        expect(sanitizeEmailInput('exam ple@example.com')).toBe('exam ple@example.com');
+    });
 
-  it('returns an empty string unchanged', () => {
-    expect(sanitizeEmailInput('')).toBe('');
-  });
+    it('returns an empty string unchanged', () => {
+        expect(sanitizeEmailInput('')).toBe('');
+    });
 
-  it('returns null unchanged', () => {
-    expect(sanitizeEmailInput(null)).toBeNull();
-  });
+    it('returns null unchanged', () => {
+        expect(sanitizeEmailInput(null)).toBeNull();
+    });
 
-  it('returns undefined unchanged', () => {
-    expect(sanitizeEmailInput(undefined)).toBeUndefined();
-  });
+    it('returns undefined unchanged', () => {
+        expect(sanitizeEmailInput(undefined)).toBeUndefined();
+    });
 });

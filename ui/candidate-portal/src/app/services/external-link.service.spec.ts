@@ -17,64 +17,55 @@
 import {ExternalLinkService} from './external-link.service';
 
 describe('ExternalLinkService', () => {
-  let service: ExternalLinkService;
+    let service: ExternalLinkService;
 
-  beforeEach(() => {
-    service = new ExternalLinkService();
-  });
+    beforeEach(() => {
+        service = new ExternalLinkService();
+    });
 
-  it('should be created', () => {
-    expect(service).toBeTruthy();
-  });
+    it('should be created', () => {
+        expect(service).toBeTruthy();
+    });
 
-  it('should return the English eligibility link', () => {
-    expect(service.getLink('eligibility', 'en')).toBe(
-      'https://www.talentbeyondboundaries.org/talentcatalog/tbb-eligibility?lang=en'
-    );
-  });
+    it('should return the English eligibility link', () => {
+        expect(service.getLink('eligibility', 'en')).toBe('https://www.talentbeyondboundaries.org/talentcatalog/tbb-eligibility?lang=en');
+    });
 
-  it('should return the Arabic eligibility link', () => {
-    expect(service.getLink('eligibility', 'ar')).toBe(
-      'https://www.talentbeyondboundaries.org/talentcatalog/tbb-eligibility?lang=ar'
-    );
-  });
+    it('should return the Arabic eligibility link', () => {
+        expect(service.getLink('eligibility', 'ar')).toBe('https://www.talentbeyondboundaries.org/talentcatalog/tbb-eligibility?lang=ar');
+    });
 
-  it('should return the Spanish eligibility link', () => {
-    expect(service.getLink('eligibility', 'es')).toBe(
-      'https://www.talentbeyondboundaries.org/talentcatalog/tbb-eligibility?lang=es'
-    );
-  });
+    it('should return the Spanish eligibility link', () => {
+        expect(service.getLink('eligibility', 'es')).toBe('https://www.talentbeyondboundaries.org/talentcatalog/tbb-eligibility?lang=es');
+    });
 
-  it('should fall back to English when the language is unavailable', () => {
-    expect(service.getLink('eligibility', 'fa')).toBe(
-      'https://www.talentbeyondboundaries.org/talentcatalog/tbb-eligibility?lang=en'
-    );
-  });
+    it('should fall back to English when the language is unavailable', () => {
+        expect(service.getLink('eligibility', 'fa')).toBe('https://www.talentbeyondboundaries.org/talentcatalog/tbb-eligibility?lang=en');
+    });
 
-  it('should warn and return an empty string for an unknown category', () => {
-    const warningSpy = spyOn(console, 'warn');
+    it('should warn and return an empty string for an unknown category', () => {
+        const warningSpy = vi.spyOn(console, 'warn').mockReturnValue(undefined);
 
-    const result = service.getLink('unknown', 'en');
+        const result = service.getLink('unknown', 'en');
 
-    expect(result).toBe('');
-    expect(warningSpy).toHaveBeenCalledOnceWith(
-      'Category unknown not found.'
-    );
-  });
+        expect(result).toBe('');
+        expect(warningSpy).toHaveBeenCalledTimes(1);
+        expect(warningSpy).toHaveBeenCalledWith('Category unknown not found.');
+    });
 
-  it('should return an empty string when neither requested nor English links exist', () => {
-    (service as any).links.emptyCategory = {};
+    it('should return an empty string when neither requested nor English links exist', () => {
+        (service as any).links.emptyCategory = {};
 
-    expect(service.getLink('emptyCategory', 'fa')).toBe('');
-  });
+        expect(service.getLink('emptyCategory', 'fa')).toBe('');
+    });
 
-  it('should use the requested language before the English fallback', () => {
-    (service as any).links.testCategory = {
-      en: 'english-link',
-      fa: 'dari-link'
-    };
+    it('should use the requested language before the English fallback', () => {
+        (service as any).links.testCategory = {
+            en: 'english-link',
+            fa: 'dari-link'
+        };
 
-    expect(service.getLink('testCategory', 'fa'))
-    .toBe('dari-link');
-  });
+        expect(service.getLink('testCategory', 'fa'))
+            .toBe('dari-link');
+    });
 });

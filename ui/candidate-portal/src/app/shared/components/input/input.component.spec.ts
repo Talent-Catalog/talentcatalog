@@ -5,7 +5,7 @@ import {Component, ChangeDetectionStrategy} from '@angular/core';
 import {By} from '@angular/platform-browser';
 
 @Component({
-  template: `
+    template: `
     <tc-input
       id="reviewable"
       type="checkbox">
@@ -15,53 +15,48 @@ import {By} from '@angular/platform-browser';
       Should result of searches be reviewable?
     </label>
   `,
-  changeDetection: ChangeDetectionStrategy.Eager,
-  standalone: false
+    changeDetection: ChangeDetectionStrategy.Eager,
+    standalone: false
 })
-class HostComponent {}
+class HostComponent {
+}
 describe('InputComponent', () => {
-  let component: InputComponent;
-  let fixture: ComponentFixture<InputComponent>;
+    let component: InputComponent;
+    let fixture: ComponentFixture<InputComponent>;
 
-  beforeEach(() => {
-    TestBed.configureTestingModule({
-      imports: [InputComponent],
-      declarations: [HostComponent]
+    beforeEach(() => {
+        TestBed.configureTestingModule({
+            imports: [InputComponent],
+            declarations: [HostComponent]
+        });
+        fixture = TestBed.createComponent(InputComponent);
+        component = fixture.componentInstance;
+        fixture.detectChanges();
     });
-    fixture = TestBed.createComponent(InputComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
 
-  it('should allow an external label to toggle a checkbox', () => {
-    const hostFixture = TestBed.createComponent(HostComponent);
-    hostFixture.detectChanges();
+    it('should allow an external label to toggle a checkbox', () => {
+        const hostFixture = TestBed.createComponent(HostComponent);
+        hostFixture.detectChanges();
 
-    const inputComponent =
-      hostFixture.debugElement.query(By.directive(InputComponent));
+        const inputComponent = hostFixture.debugElement.query(By.directive(InputComponent));
 
-    const componentHost =
-      inputComponent.nativeElement as HTMLElement;
+        const componentHost = inputComponent.nativeElement as HTMLElement;
 
-    const nativeInput =
-      inputComponent.query(By.css('input')).nativeElement as HTMLInputElement;
+        const nativeInput = inputComponent.query(By.css('input')).nativeElement as HTMLInputElement;
 
-    const label =
-      hostFixture.nativeElement.querySelector(
-        'label[for="reviewable"]'
-      ) as HTMLLabelElement;
+        const label = hostFixture.nativeElement.querySelector('label[for="reviewable"]') as HTMLLabelElement;
 
-    expect(componentHost.hasAttribute('id')).toBeFalse();
-    expect(nativeInput.id).toBe('reviewable');
-    expect(nativeInput.checked).toBeFalse();
+        expect(componentHost.hasAttribute('id')).toBe(false);
+        expect(nativeInput.id).toBe('reviewable');
+        expect(nativeInput.checked).toBe(false);
 
-    label.click();
-    hostFixture.detectChanges();
+        label.click();
+        hostFixture.detectChanges();
 
-    expect(nativeInput.checked).toBeTrue();
-  });
+        expect(nativeInput.checked).toBe(true);
+    });
 });

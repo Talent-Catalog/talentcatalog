@@ -13,6 +13,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
+
+import type {MockedObject} from "vitest";
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {ReactiveFormsModule, UntypedFormBuilder} from '@angular/forms';
 import {PathwayAssessmentComponent} from './pathway-assessment.component';
@@ -22,69 +24,72 @@ import {provideHttpClientTesting} from "@angular/common/http/testing";
 import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {NgSelectModule} from "@ng-select/ng-select";
 import {AutosaveStatusComponent} from "../../../util/autosave-status/autosave-status.component";
+import {expect, vi} from 'vitest';
 
 describe('PathwayAssessmentComponent', () => {
-  let component: PathwayAssessmentComponent;
-  let fixture: ComponentFixture<PathwayAssessmentComponent>;
-  let candidateVisaCheckService: jasmine.SpyObj<CandidateVisaCheckService>;
+    let component: PathwayAssessmentComponent;
+    let fixture: ComponentFixture<PathwayAssessmentComponent>;
+    let candidateVisaCheckService: MockedObject<CandidateVisaCheckService>;
 
-  beforeEach(async () => {
-    const candidateVisaCheckServiceSpy = jasmine.createSpyObj('CandidateVisaCheckService', ['someMethod']);
+    beforeEach(async () => {
+        const candidateVisaCheckServiceSpy = {
+            someMethod: vi.fn().mockName("CandidateVisaCheckService.someMethod")
+        };
 
-    await TestBed.configureTestingModule({
-      imports: [ReactiveFormsModule, NgSelectModule],
-      declarations: [PathwayAssessmentComponent,AutosaveStatusComponent],
-      providers: [
-        UntypedFormBuilder,
-        {provide: CandidateVisaCheckService, useValue: candidateVisaCheckServiceSpy},
-        provideHttpClient(withXhr(), withInterceptorsFromDi()),
-        provideHttpClientTesting()
-      ]
-    }).compileComponents();
+        await TestBed.configureTestingModule({
+            imports: [ReactiveFormsModule, NgSelectModule],
+            declarations: [PathwayAssessmentComponent, AutosaveStatusComponent],
+            providers: [
+                UntypedFormBuilder,
+                { provide: CandidateVisaCheckService, useValue: candidateVisaCheckServiceSpy },
+                provideHttpClient(withXhr(), withInterceptorsFromDi()),
+                provideHttpClientTesting()
+            ]
+        }).compileComponents();
 
-    candidateVisaCheckService = TestBed.inject(CandidateVisaCheckService) as jasmine.SpyObj<CandidateVisaCheckService>;
-  });
+        candidateVisaCheckService = TestBed.inject(CandidateVisaCheckService) as MockedObject<CandidateVisaCheckService>;
+    });
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(PathwayAssessmentComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
+    beforeEach(() => {
+        fixture = TestBed.createComponent(PathwayAssessmentComponent);
+        component = fixture.componentInstance;
+        fixture.detectChanges();
+    });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
 
-  it('notes textarea should be displayed when visaPathwayAssessment is "Yes"', () => {
-    component.form.controls['visaPathwayAssessment'].setValue('Yes');
-    fixture.detectChanges();
-    const textarea = fixture.debugElement.query(By.css('#visaPathwayAssessmentNotes'));
-    expect(textarea).toBeTruthy();
-  });
+    it('notes textarea should be displayed when visaPathwayAssessment is "Yes"', () => {
+        component.form.controls['visaPathwayAssessment'].setValue('Yes');
+        fixture.detectChanges();
+        const textarea = fixture.debugElement.query(By.css('#visaPathwayAssessmentNotes'));
+        expect(textarea).toBeTruthy();
+    });
 
-  it('notes textarea should be displayed when visaPathwayAssessment is "No"', () => {
-    component.form.controls['visaPathwayAssessment'].setValue('No');
-    fixture.detectChanges();
-    const textarea = fixture.debugElement.query(By.css('#visaPathwayAssessmentNotes'));
-    expect(textarea).toBeTruthy();
-  });
+    it('notes textarea should be displayed when visaPathwayAssessment is "No"', () => {
+        component.form.controls['visaPathwayAssessment'].setValue('No');
+        fixture.detectChanges();
+        const textarea = fixture.debugElement.query(By.css('#visaPathwayAssessmentNotes'));
+        expect(textarea).toBeTruthy();
+    });
 
-  it('notes textarea should be displayed when visaPathwayAssessment is "Unsure"', () => {
-    component.form.controls['visaPathwayAssessment'].setValue('Unsure');
-    fixture.detectChanges();
-    const textarea = fixture.debugElement.query(By.css('#visaPathwayAssessmentNotes'));
-    expect(textarea).toBeTruthy();
-  });
+    it('notes textarea should be displayed when visaPathwayAssessment is "Unsure"', () => {
+        component.form.controls['visaPathwayAssessment'].setValue('Unsure');
+        fixture.detectChanges();
+        const textarea = fixture.debugElement.query(By.css('#visaPathwayAssessmentNotes'));
+        expect(textarea).toBeTruthy();
+    });
 
-  it('notes textarea should not be displayed when visaPathwayAssessment is set to a value other than "Yes", "No", or "Unsure"', () => {
-    component.form.controls['visaPathwayAssessment'].setValue(null);
-    fixture.detectChanges();
-    let textarea = fixture.debugElement.query(By.css('#visaPathwayAssessmentNotes'));
-    expect(textarea).toBeFalsy();
+    it('notes textarea should not be displayed when visaPathwayAssessment is set to a value other than "Yes", "No", or "Unsure"', () => {
+        component.form.controls['visaPathwayAssessment'].setValue(null);
+        fixture.detectChanges();
+        let textarea = fixture.debugElement.query(By.css('#visaPathwayAssessmentNotes'));
+        expect(textarea).toBeFalsy();
 
-    component.form.controls['visaPathwayAssessment'].setValue('Maybe');
-    fixture.detectChanges();
-    textarea = fixture.debugElement.query(By.css('#visaPathwayAssessmentNotes'));
-    expect(textarea).toBeFalsy();
-  });
+        component.form.controls['visaPathwayAssessment'].setValue('Maybe');
+        fixture.detectChanges();
+        textarea = fixture.debugElement.query(By.css('#visaPathwayAssessmentNotes'));
+        expect(textarea).toBeFalsy();
+    });
 });

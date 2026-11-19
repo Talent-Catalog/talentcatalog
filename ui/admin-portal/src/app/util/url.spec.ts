@@ -14,40 +14,38 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
+import type {MockedObject} from "vitest";
 import {Router, UrlTree} from '@angular/router';
 import {Location} from '@angular/common';
 import {getExternalHref} from "./url";
-import {Environment} from "../services/env.service";
-import {environment} from "../../environments/environment";
+import {expect, vi} from 'vitest';
 
 describe('getExternalHref', () => {
-  let routerMock: jasmine.SpyObj<Router>;
-  let locationMock: jasmine.SpyObj<Location>;
+    let routerMock: MockedObject<Router>;
+    let locationMock: MockedObject<Location>;
 
-  beforeEach(() => {
-    routerMock = jasmine.createSpyObj('Router', ['createUrlTree', 'serializeUrl']);
-    locationMock = jasmine.createSpyObj('Location', ['prepareExternalUrl']);
-  });
+    beforeEach(() => {
+        routerMock = ({
+            createUrlTree: vi.fn().mockName("Router.createUrlTree"),
+            serializeUrl: vi.fn().mockName("Router.serializeUrl")
+        } as unknown as typeof routerMock);
+        locationMock = ({
+            prepareExternalUrl: vi.fn().mockName("Location.prepareExternalUrl")
+        } as unknown as typeof locationMock);
+    });
 
-  it('should generate the correct external URL', () => {
-    const navigation = ['list', 1000];
-    const urlTreeMock = {} as UrlTree;
-    const serializedUrl = '/admin-portal/list/1000';
-    let externalUrl = 'https://tctalent.org/admin-portal'; // Default base URL
+    it('should generate the correct external URL', () => {
+        const navigation = ['list', 1000];
+        const urlTreeMock = {} as UrlTree;
+        const serializedUrl = '/admin-portal/list/1000';
+        routerMock.createUrlTree.mockReturnValue(urlTreeMock);
+        routerMock.serializeUrl.mockReturnValue(serializedUrl);
+        locationMock.prepareExternalUrl.mockReturnValue(serializedUrl);
 
-    if (environment.production) {
-      externalUrl = 'https://tctalent.org/admin-portal/list/1000';
-    } else {
-      externalUrl = 'http://localhost:9876/admin-portal/list/1000'; // Local development URL
-    }
-    routerMock.createUrlTree.and.returnValue(urlTreeMock);
-    routerMock.serializeUrl.and.returnValue(serializedUrl);
-    locationMock.prepareExternalUrl.and.returnValue(serializedUrl);
-
-    const result = getExternalHref(routerMock, locationMock, navigation);
-    console.log(Environment.Prod)
-    expect(routerMock.createUrlTree).toHaveBeenCalledWith(navigation);
-    expect(routerMock.serializeUrl).toHaveBeenCalledWith(urlTreeMock);
-    expect(locationMock.prepareExternalUrl).toHaveBeenCalledWith(serializedUrl);
-  });
+        const result = getExternalHref(routerMock, locationMock, navigation);
+        expect(result).toBe(`${document.location.origin}${serializedUrl}`);
+        expect(routerMock.createUrlTree).toHaveBeenCalledWith(navigation);
+        expect(routerMock.serializeUrl).toHaveBeenCalledWith(urlTreeMock);
+        expect(locationMock.prepareExternalUrl).toHaveBeenCalledWith(serializedUrl);
+    });
 });

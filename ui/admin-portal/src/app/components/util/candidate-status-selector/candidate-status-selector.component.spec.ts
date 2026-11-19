@@ -21,69 +21,69 @@ import {NgSelectModule} from "@ng-select/ng-select";
 import {NgxWigModule} from "ngx-wig";
 import {CandidateStatus, UpdateCandidateStatusInfo} from "../../../model/candidate";
 import {EnumOption, enumOptions, toEnumKey} from "../../../util/enum";
+import {expect, vi} from 'vitest';
 
 describe('CandidateStatusSelectorComponent', () => {
-  let component: CandidateStatusSelectorComponent;
-  let fixture: ComponentFixture<CandidateStatusSelectorComponent>;
-  let fb: UntypedFormBuilder;
+    let component: CandidateStatusSelectorComponent;
+    let fixture: ComponentFixture<CandidateStatusSelectorComponent>;
+    let fb: UntypedFormBuilder;
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      imports: [
-        ReactiveFormsModule,
-        NgSelectModule,
-        NgxWigModule
-      ],
-      declarations: [CandidateStatusSelectorComponent],
-      providers: [UntypedFormBuilder]
-    }).compileComponents();
-  });
+    beforeEach(async () => {
+        await TestBed.configureTestingModule({
+            imports: [
+                ReactiveFormsModule,
+                NgSelectModule,
+                NgxWigModule
+            ],
+            declarations: [CandidateStatusSelectorComponent],
+            providers: [UntypedFormBuilder]
+        }).compileComponents();
+    });
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(CandidateStatusSelectorComponent);
-    component = fixture.componentInstance;
-    fb = TestBed.inject(UntypedFormBuilder);
+    beforeEach(() => {
+        fixture = TestBed.createComponent(CandidateStatusSelectorComponent);
+        component = fixture.componentInstance;
+        fb = TestBed.inject(UntypedFormBuilder);
 
-    component.candidateStatus = CandidateStatus.active; // Assume 'active' is a valid status
-    fixture.detectChanges();
-  });
+        component.candidateStatus = CandidateStatus.active; // Assume 'active' is a valid status
+        fixture.detectChanges();
+    });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
 
-  it('should filter out draft option from candidateStatusOptions', () => {
-    const options: EnumOption[] = enumOptions(CandidateStatus);
-    const filteredOptions = options.filter(option =>
-      option.key !== toEnumKey(CandidateStatus, CandidateStatus.draft));
-    expect(component.candidateStatusOptions).toEqual(filteredOptions);
-  });
+    it('should filter out draft option from candidateStatusOptions', () => {
+        const options: EnumOption[] = enumOptions(CandidateStatus);
+        const filteredOptions = options.filter(option => option.key !== toEnumKey(CandidateStatus, CandidateStatus.draft));
+        expect(component.candidateStatusOptions).toEqual(filteredOptions);
+    });
 
-  it('should initialize form with candidateStatus, comment, and candidateMessage', () => {
-    expect(component.candidateStatusInfoForm.get('status').value).toBe(CandidateStatus.active);
-    expect(component.candidateStatusInfoForm.get('comment').value).toBeNull();
-    expect(component.candidateStatusInfoForm.get('candidateMessage').value).toBeNull();
-  });
+    it('should initialize form with candidateStatus, comment, and candidateMessage', () => {
+        expect(component.candidateStatusInfoForm.get('status').value).toBe(CandidateStatus.active);
+        expect(component.candidateStatusInfoForm.get('comment').value).toBeNull();
+        expect(component.candidateStatusInfoForm.get('candidateMessage').value).toBeNull();
+    });
 
-  it('should emit statusInfoUpdate event on form value changes', () => {
-    spyOn(component.statusInfoUpdate, 'emit');
+    it('should emit statusInfoUpdate event on form value changes', () => {
+        vi.spyOn(component.statusInfoUpdate, 'emit').mockReturnValue(undefined);
 
-    const formValue = {
-      status: CandidateStatus.autonomousEmployment,
-      comment: 'Test comment',
-      candidateMessage: 'Test message'
-    };
+        const formValue = {
+            status: CandidateStatus.autonomousEmployment,
+            comment: 'Test comment',
+            candidateMessage: 'Test message'
+        };
 
-    component.candidateStatusInfoForm.setValue(formValue);
-    fixture.detectChanges();
+        component.candidateStatusInfoForm.setValue(formValue);
+        fixture.detectChanges();
 
-    const expectedEvent: UpdateCandidateStatusInfo = {
-      status: formValue.status,
-      comment: formValue.comment,
-      candidateMessage: formValue.candidateMessage
-    };
+        const expectedEvent: UpdateCandidateStatusInfo = {
+            status: formValue.status,
+            comment: formValue.comment,
+            candidateMessage: formValue.candidateMessage
+        };
 
-    expect(component.statusInfoUpdate.emit).toHaveBeenCalledWith(expectedEvent);
-  });
+        expect(component.statusInfoUpdate.emit).toHaveBeenCalledWith(expectedEvent);
+    });
 
 });

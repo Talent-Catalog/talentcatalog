@@ -17,79 +17,80 @@
 import {NgxWigComponent} from 'ngx-wig';
 
 import {CUSTOM_CLEAR_FORMAT_BUTTON} from './clear-format';
+import {expect, vi} from 'vitest';
 
 describe('CUSTOM_CLEAR_FORMAT_BUTTON', () => {
-  it('should expose the clear-format button configuration', () => {
-    const button = CUSTOM_CLEAR_FORMAT_BUTTON.clearFormat;
+    it('should expose the clear-format button configuration', () => {
+        const button = CUSTOM_CLEAR_FORMAT_BUTTON.clearFormat;
 
-    expect(button.label).toBe('Clear Format');
-    expect(button.title).toBe('Clear Formatting');
-    expect(button.styleClass).toBe('nw-button');
-    expect(button.icon).toBe('fas fa-remove-format');
-  });
-
-  it('should replace the selected formatted content with plain text', () => {
-    const fragment = document.createDocumentFragment();
-    const formattedNode = document.createElement('strong');
-    fragment.appendChild(formattedNode);
-
-    const range = jasmine.createSpyObj<Range>(
-      'Range',
-      [
-        'cloneContents',
-        'deleteContents',
-        'insertNode',
-        'setStartAfter',
-        'collapse'
-      ]
-    );
-    range.cloneContents.and.returnValue(fragment);
-
-    const selection = jasmine.createSpyObj<Selection>(
-      'Selection',
-      ['getRangeAt', 'removeAllRanges', 'addRange']
-    );
-    Object.defineProperty(selection, 'rangeCount', {value: 1});
-    selection.getRangeAt.and.returnValue(range);
-    spyOn(window, 'getSelection').and.returnValue(selection);
-
-    const tempDiv = document.createElement('div');
-    Object.defineProperty(tempDiv, 'innerText', {
-      configurable: true,
-      value: 'Plain text'
+        expect(button.label).toBe('Clear Format');
+        expect(button.title).toBe('Clear Formatting');
+        expect(button.styleClass).toBe('nw-button');
+        expect(button.icon).toBe('fas fa-remove-format');
     });
-    spyOn(document, 'createElement').and.returnValue(tempDiv);
 
-    const textNode = document.createTextNode('Plain text');
-    const createTextNodeSpy = spyOn(document, 'createTextNode')
-    .and.returnValue(textNode);
+    it('should replace the selected formatted content with plain text', () => {
+        const fragment = document.createDocumentFragment();
+        const formattedNode = document.createElement('strong');
+        fragment.appendChild(formattedNode);
 
-    CUSTOM_CLEAR_FORMAT_BUTTON.clearFormat.command(
-      null as NgxWigComponent
-    );
+        const range = {
+            cloneContents: vi.fn().mockName("Range.cloneContents"),
+            deleteContents: vi.fn().mockName("Range.deleteContents"),
+            insertNode: vi.fn().mockName("Range.insertNode"),
+            setStartAfter: vi.fn().mockName("Range.setStartAfter"),
+            collapse: vi.fn().mockName("Range.collapse")
+        };
+        range.cloneContents.mockReturnValue(fragment);
 
-    expect(selection.getRangeAt).toHaveBeenCalledOnceWith(0);
-    expect(range.cloneContents).toHaveBeenCalled();
-    expect(range.deleteContents).toHaveBeenCalled();
-    expect(tempDiv.firstChild).toBe(formattedNode);
-    expect(createTextNodeSpy).toHaveBeenCalledOnceWith('Plain text');
-    expect(range.insertNode).toHaveBeenCalledOnceWith(textNode);
-    expect(range.setStartAfter).toHaveBeenCalledOnceWith(textNode);
-    expect(range.collapse).toHaveBeenCalledOnceWith(true);
-    expect(selection.removeAllRanges).toHaveBeenCalled();
-    expect(selection.addRange).toHaveBeenCalledOnceWith(range);
-  });
+        const selection = {
+            getRangeAt: vi.fn().mockName("Selection.getRangeAt"),
+            removeAllRanges: vi.fn().mockName("Selection.removeAllRanges"),
+            addRange: vi.fn().mockName("Selection.addRange")
+        };
+        Object.defineProperty(selection, 'rangeCount', { value: 1 });
+        selection.getRangeAt.mockReturnValue(range);
+        vi.spyOn(window, 'getSelection').mockReturnValue((selection as unknown as Selection));
 
-  it('should alert the user when no text is selected', () => {
-    spyOn(window, 'getSelection').and.returnValue(null);
-    const alertSpy = spyOn(window, 'alert');
+        const tempDiv = document.createElement('div');
+        Object.defineProperty(tempDiv, 'innerText', {
+            configurable: true,
+            value: 'Plain text'
+        });
+        vi.spyOn(document, 'createElement').mockReturnValue(tempDiv);
 
-    CUSTOM_CLEAR_FORMAT_BUTTON.clearFormat.command(
-      null as NgxWigComponent
-    );
+        const textNode = document.createTextNode('Plain text');
+        const createTextNodeSpy = vi.spyOn(document, 'createTextNode').mockReturnValue(textNode);
 
-    expect(alertSpy).toHaveBeenCalledOnceWith(
-      'Please select some text to clear formatting.'
-    );
-  });
+        CUSTOM_CLEAR_FORMAT_BUTTON.clearFormat.command(null as NgxWigComponent);
+
+        expect(selection.getRangeAt).toHaveBeenCalledTimes(1);
+
+        expect(selection.getRangeAt).toHaveBeenCalledWith(0);
+        expect(range.cloneContents).toHaveBeenCalled();
+        expect(range.deleteContents).toHaveBeenCalled();
+        expect(tempDiv.firstChild).toBe(formattedNode);
+        expect(createTextNodeSpy).toHaveBeenCalledTimes(1);
+        expect(createTextNodeSpy).toHaveBeenCalledWith('Plain text');
+        expect(range.insertNode).toHaveBeenCalledTimes(1);
+        expect(range.insertNode).toHaveBeenCalledWith(textNode);
+        expect(range.setStartAfter).toHaveBeenCalledTimes(1);
+        expect(range.setStartAfter).toHaveBeenCalledWith(textNode);
+        expect(range.collapse).toHaveBeenCalledTimes(1);
+        expect(range.collapse).toHaveBeenCalledWith(true);
+        expect(selection.removeAllRanges).toHaveBeenCalled();
+        expect(selection.addRange).toHaveBeenCalledTimes(1);
+        expect(selection.addRange).toHaveBeenCalledWith(range);
+    });
+
+    it('should alert the user when no text is selected', () => {
+        vi.spyOn(window, 'getSelection').mockReturnValue(null);
+        const alertSpy = vi.spyOn(window, 'alert').mockReturnValue(undefined);
+
+        CUSTOM_CLEAR_FORMAT_BUTTON.clearFormat.command(null as NgxWigComponent);
+
+        expect(alertSpy).toHaveBeenCalledTimes(1);
+
+        expect(alertSpy).toHaveBeenCalledWith('Please select some text to clear formatting.');
+    });
 });

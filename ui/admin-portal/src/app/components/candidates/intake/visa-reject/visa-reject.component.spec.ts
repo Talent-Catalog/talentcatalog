@@ -22,70 +22,71 @@ import {YesNoUnsure} from '../../../../model/candidate';
 import {provideHttpClientTesting} from "@angular/common/http/testing";
 import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {AutosaveStatusComponent} from "../../../util/autosave-status/autosave-status.component";
+import {expect} from 'vitest';
 
 describe('VisaRejectComponent', () => {
-  let component: VisaRejectComponent;
-  let fixture: ComponentFixture<VisaRejectComponent>;
+    let component: VisaRejectComponent;
+    let fixture: ComponentFixture<VisaRejectComponent>;
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      declarations: [ VisaRejectComponent, AutosaveStatusComponent ],
-      imports: [ReactiveFormsModule, NgSelectModule ],
-      providers: [
-        { provide: CandidateService },
-        provideHttpClient(withXhr(), withInterceptorsFromDi()),
-        provideHttpClientTesting()
-      ]
-    })
-    .compileComponents();
-  });
+    beforeEach(async () => {
+        await TestBed.configureTestingModule({
+            declarations: [VisaRejectComponent, AutosaveStatusComponent],
+            imports: [ReactiveFormsModule, NgSelectModule],
+            providers: [
+                { provide: CandidateService },
+                provideHttpClient(withXhr(), withInterceptorsFromDi()),
+                provideHttpClientTesting()
+            ]
+        })
+            .compileComponents();
+    });
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(VisaRejectComponent);
-    component = fixture.componentInstance;
-    component.candidateIntakeData = {
-      visaReject: YesNoUnsure.Yes,
-      visaRejectNotes: 'Rejected due to incomplete documentation'
-    };
-    component.editable = true;
-    fixture.detectChanges();
-  });
+    beforeEach(() => {
+        fixture = TestBed.createComponent(VisaRejectComponent);
+        component = fixture.componentInstance;
+        component.candidateIntakeData = {
+            visaReject: YesNoUnsure.Yes,
+            visaRejectNotes: 'Rejected due to incomplete documentation'
+        };
+        component.editable = true;
+        fixture.detectChanges();
+    });
 
-  it('should initialize the form controls with the correct default values', () => {
-    expect(component.form.get('visaReject').value).toBe(YesNoUnsure.Yes);
-    expect(component.form.get('visaRejectNotes').value).toBe('Rejected due to incomplete documentation');
-  });
+    it('should initialize the form controls with the correct default values', () => {
+        expect(component.form.get('visaReject').value).toBe(YesNoUnsure.Yes);
+        expect(component.form.get('visaRejectNotes').value).toBe('Rejected due to incomplete documentation');
+    });
 
-  it('should enable the form controls when editable is true', () => {
-    expect(component.form.get('visaReject').enabled).toBeTrue();
-    expect(component.form.get('visaRejectNotes').enabled).toBeTrue();
-  });
+    it('should enable the form controls when editable is true', () => {
+        expect(component.form.get('visaReject').enabled).toBe(true);
+        expect(component.form.get('visaRejectNotes').enabled).toBe(true);
+    });
 
-  it('should disable the form controls when editable is false', () => {
-    component.editable = false;
-    component.ngOnInit();
-    fixture.detectChanges();
+    it('should disable the form controls when editable is false', () => {
+        component.editable = false;
+        component.ngOnInit();
+        fixture.detectChanges();
 
-    expect(component.form.get('visaReject').disabled).toBeTrue();
-    expect(component.form.get('visaRejectNotes').disabled).toBeTrue();
-  });
+        expect(component.form.get('visaReject').disabled).toBe(true);
+        expect(component.form.get('visaRejectNotes').disabled).toBe(true);
+    });
 
-  it('should display visaRejectNotes field when visaReject is Yes or Unsure', () => {
-    component.form.get('visaReject').setValue('Yes');
-    fixture.detectChanges();
-    let notesField = fixture.nativeElement.querySelector('#visaRejectNotes');
-    expect(notesField).not.toBeNull();
+    it('should display visaRejectNotes field when visaReject is Yes or Unsure', () => {
+        component.form.get('visaReject').setValue('Yes');
+        fixture.detectChanges();
+        let notesField = fixture.nativeElement.querySelector('#visaRejectNotes');
+        expect(notesField).not.toBeNull();
 
-    component.form.get('visaReject').setValue('Unsure');
-    fixture.detectChanges();
-    notesField = fixture.nativeElement.querySelector('#visaRejectNotes');
-    expect(notesField).not.toBeNull();
-  });
+        component.form.get('visaReject').setValue('Unsure');
+        fixture.detectChanges();
+        notesField = fixture.nativeElement.querySelector('#visaRejectNotes');
+        expect(notesField).not.toBeNull();
+    });
 
-  it('should hide visaRejectNotes field when visaReject is No', () => {
-    component.form.get('visaReject').setValue('No');
-    fixture.detectChanges();
-    const notesField = fixture.nativeElement.querySelector('#visaRejectNotes');
-    expect(notesField).toBeNull();
-  });
+    it('should hide visaRejectNotes field when visaReject is No', () => {
+        component.form.get('visaReject').setValue('No');
+        fixture.detectChanges();
+        const notesField = fixture.nativeElement.querySelector('#visaRejectNotes');
+        expect(notesField).toBeNull();
+    });
 });

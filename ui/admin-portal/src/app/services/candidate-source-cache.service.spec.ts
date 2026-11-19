@@ -15,22 +15,33 @@
  */
 
 import {TestBed} from '@angular/core/testing';
+import {expect, vi} from 'vitest';
+import {CandidateSource} from '../model/base';
+import {SavedSearch} from '../model/saved-search';
 import {CandidateSourceCacheService} from './candidate-source-cache.service';
-import {CandidateSource} from "../model/base";
-import {SavedSearch} from "../model/saved-search";
+import {LocalStorageService} from './local-storage.service';
 
 describe('CandidateSourceCacheService', () => {
   let service: CandidateSourceCacheService;
+  let storage: {
+    get: ReturnType<typeof vi.fn>;
+    set: ReturnType<typeof vi.fn>;
+    remove: ReturnType<typeof vi.fn>;
+  };
 
   beforeEach(() => {
+    storage = {
+      get: vi.fn().mockReturnValue(null),
+      set: vi.fn(),
+      remove: vi.fn()
+    };
     TestBed.configureTestingModule({
-      providers: [CandidateSourceCacheService]
+      providers: [
+        CandidateSourceCacheService,
+        {provide: LocalStorageService, useValue: storage}
+      ]
     });
     service = TestBed.inject(CandidateSourceCacheService);
-
-    spyOn(localStorage, 'setItem');
-    spyOn(localStorage, 'getItem').and.returnValue(null);
-    spyOn(localStorage, 'removeItem');
   });
 
   it('should be created', () => {
@@ -39,85 +50,69 @@ describe('CandidateSourceCacheService', () => {
 
   describe('cacheKey', () => {
     it('should generate the correct cache key for a saved search', () => {
-      //Having defaultSearch with any value makes it look like a saved search
-      const source: SavedSearch = { id: 123, defaultSearch: false } as SavedSearch;
-
-      const expectedKey = 'SearchInfo123';
-      const result = service.cacheKey(source);
-
-      expect(result).toBe(expectedKey);
+      const source = {id: 123, defaultSearch: false} as SavedSearch;
+      expect(service.cacheKey(source)).toBe('SearchInfo123');
     });
 
     it('should generate the correct cache key for a list', () => {
-      const source: CandidateSource = { id: 456 } as CandidateSource;
-
-      const expectedKey = 'ListInfo456';
-      const result = service.cacheKey(source);
-
-      expect(result).toBe(expectedKey);
+      const source = {id: 456} as CandidateSource;
+      expect(service.cacheKey(source)).toBe('ListInfo456');
     });
   });
 
   describe('cache', () => {
     it('should cache source with the correct key and update cacheKeys', () => {
-      const source: CandidateSource = { id: 1 } as CandidateSource;
+      const source = {id: 1} as CandidateSource;
       const cacheKey = service.cacheKey(source);
       service.cache(cacheKey, source);
 
-      expect(localStorage.setItem).toHaveBeenCalledWith('tc-admin-' + cacheKey, JSON.stringify(source));
-      expect(service['cacheKeys'].has(cacheKey)).toBeTrue();
+      expect(storage.set).toHaveBeenCalledWith(cacheKey, source);
+      expect(service['cacheKeys'].has(cacheKey)).toBe(true);
     });
   });
 
   describe('getFromCache', () => {
     it('should retrieve cached source with the correct key', () => {
-      const source: CandidateSource = { id: 1 } as CandidateSource;
+      const source = {id: 1} as CandidateSource;
       const cacheKey = service.cacheKey(source);
-      (localStorage.getItem as jasmine.Spy).and.returnValue(JSON.stringify(source));
+      storage.get.mockReturnValue(source);
 
-      const result = service.getFromCache(cacheKey);
-
-      expect(result).toEqual(source);
-      expect(localStorage.getItem).toHaveBeenCalledWith('tc-admin-' + cacheKey);
+      expect(service.getFromCache(cacheKey)).toEqual(source);
+      expect(storage.get).toHaveBeenCalledWith(cacheKey);
     });
 
     it('should return null if no cached results are found', () => {
       const cacheKey = 'nonExistentKey';
-      (localStorage.getItem as jasmine.Spy).and.returnValue(null);
+      storage.get.mockReturnValue(null);
 
-      const result = service.getFromCache(cacheKey);
-
-      expect(result).toBeNull();
-      expect(localStorage.getItem).toHaveBeenCalledWith('tc-admin-' + cacheKey);
+      expect(service.getFromCache(cacheKey)).toBeNull();
+      expect(storage.get).toHaveBeenCalledWith(cacheKey);
     });
   });
 
   describe('removeFromCache', () => {
     it('should remove cached results with the correct key', () => {
       const cacheKey = 'someKey';
-      const deleteSpy = spyOn(service['cacheKeys'], 'delete').and.callThrough();
+      const deleteSpy = vi.spyOn(service['cacheKeys'], 'delete');
 
       service.removeFromCache(cacheKey);
-
-      expect(localStorage.removeItem).toHaveBeenCalledWith('tc-admin-' + cacheKey);
+      expect(storage.remove).toHaveBeenCalledWith(cacheKey);
       expect(deleteSpy).toHaveBeenCalledWith(cacheKey);
     });
   });
 
   describe('clearAll', () => {
-    it('should remove all cached keys from localStorage and clear cacheKeys set', () => {
+    it('should remove all cached keys and clear the cacheKeys set', () => {
       const cacheKeys = ['key1', 'key2', 'key3'];
       service['cacheKeys'] = new Set(cacheKeys);
-      const clearSpy = spyOn(service['cacheKeys'], 'clear').and.callThrough();
+      const clearSpy = vi.spyOn(service['cacheKeys'], 'clear');
 
       service.clearAll();
-
-      cacheKeys.forEach(cacheKey => {
-        expect(localStorage.removeItem).toHaveBeenCalledWith('tc-admin-' + cacheKey);
-      });
-      expect(clearSpy).toHaveBeenCalled();
+      for (const cacheKey of cacheKeys) {
+        expect(storage.remove).toHaveBeenCalledWith(cacheKey);
+      }
+      expect(clearSpy).toHaveBeenCalledTimes(1);
       expect(service['cacheKeys'].size).toBe(0);
     });
   });
-
 });

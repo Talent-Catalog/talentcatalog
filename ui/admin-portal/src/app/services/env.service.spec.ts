@@ -15,161 +15,116 @@
  */
 
 import {Environment, EnvService} from './env.service';
+import {expect, vi} from 'vitest';
 
 describe('EnvService', () => {
-  let service: EnvService;
+    let service: EnvService;
 
-  const stagingSfUrl =
-    'https://talentbeyondboundaries--sfstaging.sandbox.lightning.force.com/';
+    const stagingSfUrl = 'https://talentbeyondboundaries--sfstaging.sandbox.lightning.force.com/';
 
-  const productionSfUrl =
-    'https://talentbeyondboundaries.lightning.force.com/';
+    const productionSfUrl = 'https://talentbeyondboundaries.lightning.force.com/';
 
-  const stagingDashboardId =
-    '86f9d8cb-44a9-48fc-b516-eab1f87fc097';
+    const stagingDashboardId = '86f9d8cb-44a9-48fc-b516-eab1f87fc097';
 
-  const productionDashboardId =
-    '3d577f48-a4db-4e7d-95ed-6590d76829cc';
+    const productionDashboardId = '3d577f48-a4db-4e7d-95ed-6590d76829cc';
 
-  beforeEach(() => {
-    service = new EnvService();
-  });
+    beforeEach(() => {
+        service = new EnvService();
+    });
 
-  it('should create the service', () => {
-    expect(service).toBeTruthy();
-  });
+    it('should create the service', () => {
+        expect(service).toBeTruthy();
+    });
 
-  it('should have undefined values before initialization', () => {
-    expect(service.env).toBeUndefined();
-    expect(service.sfLightningUrl).toBeUndefined();
-    expect(service.allCandidatesDashboardId).toBeUndefined();
-    expect(service.presetWorkspaceId).toBeUndefined();
-  });
+    it('should have undefined values before initialization', () => {
+        expect(service.env).toBeUndefined();
+        expect(service.sfLightningUrl).toBeUndefined();
+        expect(service.allCandidatesDashboardId).toBeUndefined();
+        expect(service.presetWorkspaceId).toBeUndefined();
+    });
 
-  it('should initialize the local environment', async () => {
-    const regexTestSpy = spyOn(
-      RegExp.prototype,
-      'test'
-    ).and.returnValues(true);
+    it('should initialize the local environment', async () => {
+        const regexTestSpy = vi.spyOn(RegExp.prototype, 'test').mockReturnValueOnce(true);
 
-    await service.init();
+        await service.init();
 
-    expect(regexTestSpy).toHaveBeenCalledTimes(1);
-    expect(service.env).toBe(Environment.Local);
-    expect(service.sfLightningUrl).toBe(stagingSfUrl);
-    expect(service.allCandidatesDashboardId)
-    .toBe(stagingDashboardId);
-    expect(service.presetWorkspaceId).toBe('987e2e02');
-  });
+        expect(regexTestSpy).toHaveBeenCalledTimes(1);
+        expect(service.env).toBe(Environment.Local);
+        expect(service.sfLightningUrl).toBe(stagingSfUrl);
+        expect(service.allCandidatesDashboardId)
+            .toBe(stagingDashboardId);
+        expect(service.presetWorkspaceId).toBe('987e2e02');
+    });
 
-  it('should initialize staging for tctalent-test.org', async () => {
-    const regexTestSpy = spyOn(
-      RegExp.prototype,
-      'test'
-    ).and.returnValues(
-      false,
-      true
-    );
+    it('should initialize staging for tctalent-test.org', async () => {
+        const regexTestSpy = vi.spyOn(RegExp.prototype, 'test').mockReturnValueOnce(false).mockReturnValueOnce(true);
 
-    await service.init();
+        await service.init();
 
-    expect(regexTestSpy).toHaveBeenCalledTimes(2);
-    expect(service.env).toBe(Environment.Staging);
-    expect(service.sfLightningUrl).toBe(stagingSfUrl);
-    expect(service.allCandidatesDashboardId)
-    .toBe(stagingDashboardId);
-    expect(service.presetWorkspaceId).toBe('987e2e02');
-  });
+        expect(regexTestSpy).toHaveBeenCalledTimes(2);
+        expect(service.env).toBe(Environment.Staging);
+        expect(service.sfLightningUrl).toBe(stagingSfUrl);
+        expect(service.allCandidatesDashboardId)
+            .toBe(stagingDashboardId);
+        expect(service.presetWorkspaceId).toBe('987e2e02');
+    });
 
-  it('should initialize staging for test.plus.tctalent.org', async () => {
-    const regexTestSpy = spyOn(
-      RegExp.prototype,
-      'test'
-    ).and.returnValues(
-      false,
-      false,
-      true
-    );
+    it('should initialize staging for test.plus.tctalent.org', async () => {
+        const regexTestSpy = vi.spyOn(RegExp.prototype, 'test').mockReturnValueOnce(false).mockReturnValueOnce(false).mockReturnValueOnce(true);
 
-    await service.init();
+        await service.init();
 
-    expect(regexTestSpy).toHaveBeenCalledTimes(3);
-    expect(service.env).toBe(Environment.Staging);
-    expect(service.sfLightningUrl).toBe(stagingSfUrl);
-    expect(service.allCandidatesDashboardId)
-    .toBe(stagingDashboardId);
-    expect(service.presetWorkspaceId).toBe('987e2e02');
-  });
+        expect(regexTestSpy).toHaveBeenCalledTimes(3);
+        expect(service.env).toBe(Environment.Staging);
+        expect(service.sfLightningUrl).toBe(stagingSfUrl);
+        expect(service.allCandidatesDashboardId)
+            .toBe(stagingDashboardId);
+        expect(service.presetWorkspaceId).toBe('987e2e02');
+    });
 
-  it('should initialize production for tctalent.org', async () => {
-    const regexTestSpy = spyOn(
-      RegExp.prototype,
-      'test'
-    ).and.returnValues(
-      false,
-      false,
-      false,
-      true
-    );
+    it('should initialize production for tctalent.org', async () => {
+        const regexTestSpy = vi.spyOn(RegExp.prototype, 'test').mockReturnValueOnce(false).mockReturnValueOnce(false).mockReturnValueOnce(false).mockReturnValueOnce(true);
 
-    await service.init();
+        await service.init();
 
-    expect(regexTestSpy).toHaveBeenCalledTimes(4);
-    expect(service.env).toBe(Environment.Prod);
-    expect(service.sfLightningUrl).toBe(productionSfUrl);
-    expect(service.allCandidatesDashboardId)
-    .toBe(productionDashboardId);
-    expect(service.presetWorkspaceId).toBe('effaaec0');
-  });
+        expect(regexTestSpy).toHaveBeenCalledTimes(4);
+        expect(service.env).toBe(Environment.Prod);
+        expect(service.sfLightningUrl).toBe(productionSfUrl);
+        expect(service.allCandidatesDashboardId)
+            .toBe(productionDashboardId);
+        expect(service.presetWorkspaceId).toBe('effaaec0');
+    });
 
-  it('should initialize production for plus.tctalent.org', async () => {
-    const regexTestSpy = spyOn(
-      RegExp.prototype,
-      'test'
-    ).and.returnValues(
-      false,
-      false,
-      false,
-      false,
-      true
-    );
+    it('should initialize production for plus.tctalent.org', async () => {
+        const regexTestSpy = vi.spyOn(RegExp.prototype, 'test').mockReturnValueOnce(false).mockReturnValueOnce(false).mockReturnValueOnce(false).mockReturnValueOnce(false).mockReturnValueOnce(true);
 
-    await service.init();
+        await service.init();
 
-    expect(regexTestSpy).toHaveBeenCalledTimes(5);
-    expect(service.env).toBe(Environment.Prod);
-    expect(service.sfLightningUrl).toBe(productionSfUrl);
-    expect(service.allCandidatesDashboardId)
-    .toBe(productionDashboardId);
-    expect(service.presetWorkspaceId).toBe('effaaec0');
-  });
+        expect(regexTestSpy).toHaveBeenCalledTimes(5);
+        expect(service.env).toBe(Environment.Prod);
+        expect(service.sfLightningUrl).toBe(productionSfUrl);
+        expect(service.allCandidatesDashboardId)
+            .toBe(productionDashboardId);
+        expect(service.presetWorkspaceId).toBe('effaaec0');
+    });
 
-  it('should leave environment values undefined for an unknown hostname', async () => {
-    const regexTestSpy = spyOn(
-      RegExp.prototype,
-      'test'
-    ).and.returnValues(
-      false,
-      false,
-      false,
-      false,
-      false
-    );
+    it('should leave environment values undefined for an unknown hostname', async () => {
+        const regexTestSpy = vi.spyOn(RegExp.prototype, 'test').mockReturnValueOnce(false).mockReturnValueOnce(false).mockReturnValueOnce(false).mockReturnValueOnce(false).mockReturnValueOnce(false);
 
-    await service.init();
+        await service.init();
 
-    expect(regexTestSpy).toHaveBeenCalledTimes(5);
-    expect(service.env).toBeUndefined();
-    expect(service.sfLightningUrl).toBeUndefined();
-    expect(service.allCandidatesDashboardId).toBeUndefined();
-    expect(service.presetWorkspaceId).toBeUndefined();
-  });
+        expect(regexTestSpy).toHaveBeenCalledTimes(5);
+        expect(service.env).toBeUndefined();
+        expect(service.sfLightningUrl).toBeUndefined();
+        expect(service.allCandidatesDashboardId).toBeUndefined();
+        expect(service.presetWorkspaceId).toBeUndefined();
+    });
 
-  it('should resolve init with undefined', async () => {
-    spyOn(RegExp.prototype, 'test').and.returnValue(true);
+    it('should resolve init with undefined', async () => {
+        vi.spyOn(RegExp.prototype, 'test').mockReturnValue(true);
 
-    const result = await service.init();
+        const result = await service.init();
 
-    expect(result).toBeUndefined();
-  });
+        expect(result).toBeUndefined();
+    });
 });

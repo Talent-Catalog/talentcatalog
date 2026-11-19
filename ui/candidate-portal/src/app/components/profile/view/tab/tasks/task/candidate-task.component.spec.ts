@@ -14,7 +14,8 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {Component, EventEmitter, forwardRef, Input, Output, ChangeDetectionStrategy} from '@angular/core';
+import type {MockedObject} from "vitest";
+import {NO_ERRORS_SCHEMA, Component, EventEmitter, forwardRef, Input, Output, ChangeDetectionStrategy} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR, ReactiveFormsModule} from '@angular/forms';
@@ -27,245 +28,269 @@ import {TaskAssignment} from '../../../../../../model/task-assignment';
 import {TaskType} from '../../../../../../model/task';
 import {Status} from '../../../../../../model/base';
 
-@Component({selector: 'app-error', template: '', changeDetection: ChangeDetectionStrategy.Eager, standalone: false})
+@Component({ selector: 'app-error', template: '', changeDetection: ChangeDetectionStrategy.Eager, standalone: false })
 class ErrorStubComponent {
-  @Input() error?: unknown;
+    @Input()
+    error?: unknown;
 }
 
-@Component({selector: 'tc-button', template: '<ng-content></ng-content>', changeDetection: ChangeDetectionStrategy.Eager, standalone: false})
+@Component({ selector: 'tc-button', template: '<ng-content></ng-content>', changeDetection: ChangeDetectionStrategy.Eager, standalone: false })
 class TcButtonStubComponent {
-  @Input() size?: string;
-  @Input() color?: string;
-  @Input() disabled?: boolean;
-  @Output() onClick = new EventEmitter<void>();
+    @Input()
+    size?: string;
+    @Input()
+    color?: string;
+    @Input()
+    disabled?: boolean;
+    @Output()
+    onClick = new EventEmitter<void>();
 }
 
-@Component({selector: 'tc-label', template: '<ng-content></ng-content>', changeDetection: ChangeDetectionStrategy.Eager, standalone: false})
+@Component({ selector: 'tc-label', template: '<ng-content></ng-content>', changeDetection: ChangeDetectionStrategy.Eager, standalone: false })
 class TcLabelStubComponent {
-  @Input() for?: string;
+    @Input()
+    for?: string;
 }
 
 @Component({
-  selector: 'tc-textarea',
-  template: '',
-  providers: [{
-    provide: NG_VALUE_ACCESSOR,
-    useExisting: forwardRef(() => TcTextareaStubComponent),
-    multi: true
-  }],
-  changeDetection: ChangeDetectionStrategy.Eager,
-  standalone: false
+    selector: 'tc-textarea',
+    template: '',
+    providers: [{
+            provide: NG_VALUE_ACCESSOR,
+            useExisting: forwardRef(() => TcTextareaStubComponent),
+            multi: true
+        }],
+    changeDetection: ChangeDetectionStrategy.Eager,
+    standalone: false
 })
 class TcTextareaStubComponent implements ControlValueAccessor {
-  @Input() id?: string;
-  @Input() rows?: string | number;
-  @Input() formControlName?: string;
-  writeValue(): void {}
-  registerOnChange(): void {}
-  registerOnTouched(): void {}
+    @Input()
+    id?: string;
+    @Input()
+    rows?: string | number;
+    @Input()
+    formControlName?: string;
+    writeValue(): void { }
+    registerOnChange(): void { }
+    registerOnTouched(): void { }
 }
 
-@Component({selector: 'app-view-upload-task', template: '', changeDetection: ChangeDetectionStrategy.Eager, standalone: false})
+@Component({ selector: 'app-view-upload-task', template: '', changeDetection: ChangeDetectionStrategy.Eager, standalone: false })
 class ViewUploadTaskStubComponent {
-  @Input() form?: unknown;
-  @Input() candidate?: unknown;
-  @Input() selectedTask?: unknown;
-  @Output() successfulUpload = new EventEmitter<any>();
+    @Input()
+    form?: unknown;
+    @Input()
+    candidate?: unknown;
+    @Input()
+    selectedTask?: unknown;
+    @Output()
+    successfulUpload = new EventEmitter<any>();
 }
 
-@Component({selector: 'app-task-submitted', template: '', changeDetection: ChangeDetectionStrategy.Eager, standalone: false})
+@Component({ selector: 'app-task-submitted', template: '', changeDetection: ChangeDetectionStrategy.Eager, standalone: false })
 class TaskSubmittedStubComponent {
-  @Input() selectedTask?: unknown;
-  @Output() onReturnToTasksClick = new EventEmitter<void>();
+    @Input()
+    selectedTask?: unknown;
+    @Output()
+    onReturnToTasksClick = new EventEmitter<void>();
 }
 
-@Component({selector: 'app-task-abandoned', template: '', changeDetection: ChangeDetectionStrategy.Eager, standalone: false})
+@Component({ selector: 'app-task-abandoned', template: '', changeDetection: ChangeDetectionStrategy.Eager, standalone: false })
 class TaskAbandonedStubComponent {
-  @Input() selectedTask?: unknown;
-  @Output() onReturnToTasksClick = new EventEmitter<void>();
+    @Input()
+    selectedTask?: unknown;
+    @Output()
+    onReturnToTasksClick = new EventEmitter<void>();
 }
 
-@Component({selector: 'app-view-form-task', template: '', changeDetection: ChangeDetectionStrategy.Eager, standalone: false})
+@Component({ selector: 'app-view-form-task', template: '', changeDetection: ChangeDetectionStrategy.Eager, standalone: false })
 class ViewFormTaskStubComponent {
-  @Input() taskAssignment?: unknown;
-  @Input() candidate?: unknown;
-  @Input() readOnly?: boolean;
-  @Output() taskCompleted = new EventEmitter<any>();
+    @Input()
+    taskAssignment?: unknown;
+    @Input()
+    candidate?: unknown;
+    @Input()
+    readOnly?: boolean;
+    @Output()
+    taskCompleted = new EventEmitter<any>();
 }
 
-@Component({selector: 'app-view-simple-task', template: '', changeDetection: ChangeDetectionStrategy.Eager, standalone: false})
+@Component({ selector: 'app-view-simple-task', template: '', changeDetection: ChangeDetectionStrategy.Eager, standalone: false })
 class ViewSimpleTaskStubComponent {
-  @Input() form?: unknown;
-  @Input() selectedTask?: unknown;
+    @Input()
+    form?: unknown;
+    @Input()
+    selectedTask?: unknown;
 }
 
-@Component({selector: 'app-view-question-task', template: '', changeDetection: ChangeDetectionStrategy.Eager, standalone: false})
+@Component({ selector: 'app-view-question-task', template: '', changeDetection: ChangeDetectionStrategy.Eager, standalone: false })
 class ViewQuestionTaskStubComponent {
-  @Input() form?: unknown;
-  @Input() selectedTask?: unknown;
+    @Input()
+    form?: unknown;
+    @Input()
+    selectedTask?: unknown;
 }
 
 function makeTaskAssignment(overrides: Partial<TaskAssignment> = {}): TaskAssignment {
-  return {
-    id: 1,
-    abandonedDate: null,
-    candidateNotes: 'Existing note',
-    completedDate: null,
-    dueDate: new Date('2099-01-01'),
-    status: Status.active,
-    answer: 'Yes',
-    task: {
-      id: 1,
-      name: 'question',
-      description: 'Task description',
-      displayName: 'Question task',
-      optional: false,
-      docLink: null,
-      taskType: TaskType.Question,
-      daysToComplete: 1,
-      uploadType: null,
-      uploadSubfolderName: '',
-      uploadableFileTypes: '',
-      candidateAnswerField: '',
-      allowedAnswers: [
-        {name: 'yes', displayName: 'Yes'}
-      ]
-    } as any,
-    ...overrides
-  };
+    return {
+        id: 1,
+        abandonedDate: null,
+        candidateNotes: 'Existing note',
+        completedDate: null,
+        dueDate: new Date('2099-01-01'),
+        status: Status.active,
+        answer: 'Yes',
+        task: {
+            id: 1,
+            name: 'question',
+            description: 'Task description',
+            displayName: 'Question task',
+            optional: false,
+            docLink: null,
+            taskType: TaskType.Question,
+            daysToComplete: 1,
+            uploadType: null,
+            uploadSubfolderName: '',
+            uploadableFileTypes: '',
+            candidateAnswerField: '',
+            allowedAnswers: [
+                { name: 'yes', displayName: 'Yes' }
+            ]
+        } as any,
+        ...overrides
+    };
 }
 
 describe('CandidateTaskComponent', () => {
-  let component: CandidateTaskComponent;
-  let fixture: ComponentFixture<CandidateTaskComponent>;
-  let taskAssignmentServiceSpy: jasmine.SpyObj<TaskAssignmentService>;
+    let component: CandidateTaskComponent;
+    let fixture: ComponentFixture<CandidateTaskComponent>;
+    let taskAssignmentServiceSpy: MockedObject<TaskAssignmentService>;
 
-  async function configureAndCreate(options?: {
-    selectedTask?: TaskAssignment;
-    updateQuestionError?: unknown;
-  }) {
-    taskAssignmentServiceSpy = jasmine.createSpyObj('TaskAssignmentService', [
-      'updateQuestionTask',
-      'updateTaskAssignment',
-      'updateUploadTaskAssignment',
-      'updateTaskComment'
-    ]);
+    async function configureAndCreate(options?: {
+        selectedTask?: TaskAssignment;
+        updateQuestionError?: unknown;
+    }) {
+        taskAssignmentServiceSpy = {
+            updateQuestionTask: vi.fn().mockName("TaskAssignmentService.updateQuestionTask"),
+            updateTaskAssignment: vi.fn().mockName("TaskAssignmentService.updateTaskAssignment"),
+            updateUploadTaskAssignment: vi.fn().mockName("TaskAssignmentService.updateUploadTaskAssignment"),
+            updateTaskComment: vi.fn().mockName("TaskAssignmentService.updateTaskComment")
+        } as unknown as MockedObject<TaskAssignmentService>;
 
-    taskAssignmentServiceSpy.updateQuestionTask.and.returnValue(
-      options?.updateQuestionError
-        ? throwError(options.updateQuestionError)
-        : of(makeTaskAssignment())
-    );
-    taskAssignmentServiceSpy.updateTaskAssignment.and.returnValue(of(makeTaskAssignment()));
-    taskAssignmentServiceSpy.updateUploadTaskAssignment.and.returnValue(of(makeTaskAssignment()));
-    taskAssignmentServiceSpy.updateTaskComment.and.returnValue(of(makeTaskAssignment()));
+        taskAssignmentServiceSpy.updateQuestionTask.mockReturnValue(options?.updateQuestionError
+            ? throwError(options.updateQuestionError)
+            : of(makeTaskAssignment()));
+        taskAssignmentServiceSpy.updateTaskAssignment.mockReturnValue(of(makeTaskAssignment()));
+        taskAssignmentServiceSpy.updateUploadTaskAssignment.mockReturnValue(of(makeTaskAssignment()));
+        taskAssignmentServiceSpy.updateTaskComment.mockReturnValue(of(makeTaskAssignment()));
 
-    await TestBed.configureTestingModule({
+        await TestBed.configureTestingModule({
+            schemas: [NO_ERRORS_SCHEMA],
       declarations: [
-        CandidateTaskComponent,
-        ErrorStubComponent,
-        TcButtonStubComponent,
-        TcLabelStubComponent,
-        TcTextareaStubComponent,
-        ViewUploadTaskStubComponent,
-        TaskSubmittedStubComponent,
-        TaskAbandonedStubComponent,
-        ViewFormTaskStubComponent,
-        ViewSimpleTaskStubComponent,
-        ViewQuestionTaskStubComponent
-      ],
-      imports: [ReactiveFormsModule, TranslateModule.forRoot()],
-      providers: [
-        {provide: TaskAssignmentService, useValue: taskAssignmentServiceSpy}
-      ]
-    }).compileComponents();
+                CandidateTaskComponent,
+                ErrorStubComponent,
+                TcButtonStubComponent,
+                TcLabelStubComponent,
+                TcTextareaStubComponent,
+                ViewUploadTaskStubComponent,
+                TaskSubmittedStubComponent,
+                TaskAbandonedStubComponent,
+                ViewFormTaskStubComponent,
+                ViewSimpleTaskStubComponent,
+                ViewQuestionTaskStubComponent
+            ],
+            imports: [ReactiveFormsModule, TranslateModule.forRoot()],
+            providers: [
+                { provide: TaskAssignmentService, useValue: taskAssignmentServiceSpy }
+            ]
+        }).compileComponents();
 
-    fixture = TestBed.createComponent(CandidateTaskComponent);
-    component = fixture.componentInstance;
-    component.selectedTask = options?.selectedTask ?? makeTaskAssignment();
-    component.candidate = {id: 1} as any;
+        fixture = TestBed.createComponent(CandidateTaskComponent);
+        component = fixture.componentInstance;
+        component.selectedTask = options?.selectedTask ?? makeTaskAssignment();
+        component.candidate = { id: 1 } as any;
 
-    fixture.detectChanges();
-  }
+        fixture.detectChanges();
+    }
 
-  afterEach(() => TestBed.resetTestingModule());
+    afterEach(() => TestBed.resetTestingModule());
 
-  it('should create', async () => {
-    await configureAndCreate();
-    expect(component).toBeTruthy();
-  });
-
-  describe('template tc components', () => {
-    it('should render tc-button actions and comment field migration pieces', async () => {
-      await configureAndCreate();
-
-      const buttons = fixture.debugElement.queryAll(By.directive(TcButtonStubComponent));
-      const labels = fixture.debugElement.queryAll(By.directive(TcLabelStubComponent));
-      const textarea = fixture.debugElement.query(By.directive(TcTextareaStubComponent));
-
-      expect(buttons.length).toBe(2);
-      expect(buttons[0].componentInstance.size).toBe('sm');
-      expect(labels[1].componentInstance.for).toBe('comment');
-      expect(textarea.componentInstance.id).toBe('comment');
+    it('should create', async () => {
+        await configureAndCreate();
+        expect(component).toBeTruthy();
     });
 
-    it('should render the question task child for question tasks', async () => {
-      await configureAndCreate();
+    describe('template tc components', () => {
+        it('should render tc-button actions and comment field migration pieces', async () => {
+            await configureAndCreate();
 
-      expect(fixture.debugElement.query(By.directive(ViewQuestionTaskStubComponent))).toBeTruthy();
+            const buttons = fixture.debugElement.queryAll(By.directive(TcButtonStubComponent));
+            const labels = fixture.debugElement.queryAll(By.directive(TcLabelStubComponent));
+            const textarea = fixture.debugElement.query(By.directive(TcTextareaStubComponent));
+
+            expect(buttons.length).toBe(2);
+            expect(buttons[0].componentInstance.size).toBe('sm');
+            expect(labels[1].componentInstance.for).toBe('comment');
+            expect(textarea.componentInstance.id).toBe('comment');
+        });
+
+        it('should render the question task child for question tasks', async () => {
+            await configureAndCreate();
+
+            expect(fixture.debugElement.query(By.directive(ViewQuestionTaskStubComponent))).toBeTruthy();
+        });
+
+        it('should render the upload task child for upload tasks', async () => {
+            await configureAndCreate({
+                selectedTask: makeTaskAssignment({
+                    task: { ...makeTaskAssignment().task, taskType: TaskType.Upload } as any
+                })
+            });
+
+            expect(fixture.debugElement.query(By.directive(ViewUploadTaskStubComponent))).toBeTruthy();
+        });
     });
 
-    it('should render the upload task child for upload tasks', async () => {
-      await configureAndCreate({
-        selectedTask: makeTaskAssignment({
-          task: {...makeTaskAssignment().task, taskType: TaskType.Upload} as any
-        })
-      });
+    describe('behaviour', () => {
+        beforeEach(async () => configureAndCreate());
 
-      expect(fixture.debugElement.query(By.directive(ViewUploadTaskStubComponent))).toBeTruthy();
+        it('should emit back when goBack is called', () => {
+            const backSpy = vi.spyOn(component.back, 'emit').mockReturnValue(undefined);
+
+            component.goBack();
+
+            expect(component.selectedTask).toBeNull();
+            expect(backSpy).toHaveBeenCalled();
+        });
+
+        it('should disable submit when form is pristine', () => {
+            expect(component.isSubmitDisabled()).toBe(true);
+        });
+
+        it('should submit question tasks using tc-button flow', () => {
+            component.form.patchValue({ response: 'yes', comment: 'Done' });
+            component.form.markAsDirty();
+
+            component.submitTask();
+
+            expect(taskAssignmentServiceSpy.updateQuestionTask).toHaveBeenCalledWith(1, {
+                answer: 'yes',
+                abandoned: false,
+                candidateNotes: 'Done'
+            });
+        });
+
+        it('should set error when question-task submission fails', async () => {
+            const serverError = { status: 500 };
+            TestBed.resetTestingModule();
+            await configureAndCreate({ updateQuestionError: serverError });
+            component.form.patchValue({ response: 'yes', comment: 'Done' });
+            component.form.markAsDirty();
+
+            component.submitTask();
+
+            expect(component.error).toEqual(serverError);
+            expect(component.saving).toBe(false);
+        });
     });
-  });
-
-  describe('behaviour', () => {
-    beforeEach(async () => configureAndCreate());
-
-    it('should emit back when goBack is called', () => {
-      const backSpy = spyOn(component.back, 'emit');
-
-      component.goBack();
-
-      expect(component.selectedTask).toBeNull();
-      expect(backSpy).toHaveBeenCalled();
-    });
-
-    it('should disable submit when form is pristine', () => {
-      expect(component.isSubmitDisabled()).toBeTrue();
-    });
-
-    it('should submit question tasks using tc-button flow', () => {
-      component.form.patchValue({response: 'yes', comment: 'Done'});
-      component.form.markAsDirty();
-
-      component.submitTask();
-
-      expect(taskAssignmentServiceSpy.updateQuestionTask).toHaveBeenCalledWith(1, {
-        answer: 'yes',
-        abandoned: false,
-        candidateNotes: 'Done'
-      });
-    });
-
-    it('should set error when question-task submission fails', async () => {
-      const serverError = {status: 500};
-      TestBed.resetTestingModule();
-      await configureAndCreate({updateQuestionError: serverError});
-      component.form.patchValue({response: 'yes', comment: 'Done'});
-      component.form.markAsDirty();
-
-      component.submitTask();
-
-      expect(component.error).toEqual(serverError);
-      expect(component.saving).toBeFalse();
-    });
-  });
 });

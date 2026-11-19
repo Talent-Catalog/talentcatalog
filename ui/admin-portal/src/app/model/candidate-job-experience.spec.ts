@@ -16,6 +16,7 @@
 
 import {CandidateJobExperience} from './candidate-job-experience';
 import {Country} from './country';
+import {expect} from 'vitest';
 
 describe('CandidateJobExperience Interface', () => {
   it('should create a valid CandidateJobExperience object', () => {

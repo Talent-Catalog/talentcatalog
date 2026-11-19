@@ -17,14 +17,11 @@
 import {TestBed} from '@angular/core/testing';
 import {HttpTestingController, provideHttpClientTesting} from '@angular/common/http/testing';
 import {provideHttpClient, withInterceptorsFromDi, withXhr} from '@angular/common/http';
-import {
-  CandidateLanguageService,
-  CreateCandidateLanguageRequest,
-  UpdateCandidateLanguageRequest
-} from './candidate-language.service';
+import {CandidateLanguageService, CreateCandidateLanguageRequest, UpdateCandidateLanguageRequest} from './candidate-language.service';
 import {CandidateLanguage} from '../model/candidate-language';
 import {environment} from '../../environments/environment';
 import {MockCandidate} from "../MockData/MockCandidate";
+import {expect} from 'vitest';
 
 describe('CandidateLanguageService', () => {
   let service: CandidateLanguageService;

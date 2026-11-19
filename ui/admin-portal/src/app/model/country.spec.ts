@@ -14,6 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import {Country} from "./country";
+import {expect} from 'vitest';
 
 describe('Country interface', () => {
   it('should create a Country instance', () => {

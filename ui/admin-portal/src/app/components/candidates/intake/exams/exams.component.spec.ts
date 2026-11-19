@@ -24,71 +24,72 @@ import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/commo
 import {NgSelectModule} from "@ng-select/ng-select";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {AutosaveStatusComponent} from "../../../util/autosave-status/autosave-status.component";
+import {expect} from 'vitest';
 
 describe('ExamsComponent', () => {
-  let component: ExamsComponent;
-  let fixture: ComponentFixture<ExamsComponent>;
+    let component: ExamsComponent;
+    let fixture: ComponentFixture<ExamsComponent>;
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      imports: [NgSelectModule,FormsModule,ReactiveFormsModule],
-      declarations: [ExamsComponent,AutosaveStatusComponent],
-      providers: [
-        { provide: CandidateExamService, useValue: {} },
-        provideHttpClient(withXhr(), withInterceptorsFromDi()),
-        provideHttpClientTesting()
-      ],
-      schemas: [NO_ERRORS_SCHEMA]
-    })
-    .compileComponents();
-  });
+    beforeEach(async () => {
+        await TestBed.configureTestingModule({
+            imports: [NgSelectModule, FormsModule, ReactiveFormsModule],
+            declarations: [ExamsComponent, AutosaveStatusComponent],
+            providers: [
+                { provide: CandidateExamService, useValue: {} },
+                provideHttpClient(withXhr(), withInterceptorsFromDi()),
+                provideHttpClientTesting()
+            ],
+            schemas: [NO_ERRORS_SCHEMA]
+        })
+            .compileComponents();
+    });
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(ExamsComponent);
-    component = fixture.componentInstance;
+    beforeEach(() => {
+        fixture = TestBed.createComponent(ExamsComponent);
+        component = fixture.componentInstance;
 
-    component.candidate = new MockCandidate();
-    component.candidateIntakeData = {
-      candidateExams: []
-    } as CandidateIntakeData;
+        component.candidate = new MockCandidate();
+        component.candidateIntakeData = {
+            candidateExams: []
+        } as CandidateIntakeData;
 
-    fixture.detectChanges();
-  });
+        fixture.detectChanges();
+    });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
 
-  it('should display "No Exams Added" message when no exams are present', () => {
-    component.candidateIntakeData.candidateExams = [];
-    fixture.detectChanges();
+    it('should display "No Exams Added" message when no exams are present', () => {
+        component.candidateIntakeData.candidateExams = [];
+        fixture.detectChanges();
 
-    const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('p')?.textContent).toContain('No Exams Added');
-  });
+        const compiled = fixture.nativeElement as HTMLElement;
+        expect(compiled.querySelector('p')?.textContent).toContain('No Exams Added');
+    });
 
-  it('should display exams when exams are present', () => {
-    component.candidateIntakeData.candidateExams = [
-      { id: 1, exam: Exam.TOEFL, score: '90' },
-      { id: 2, exam: Exam.IELTSGen, score: '85' }
-    ];
-    fixture.detectChanges();
+    it('should display exams when exams are present', () => {
+        component.candidateIntakeData.candidateExams = [
+            { id: 1, exam: Exam.TOEFL, score: '90' },
+            { id: 2, exam: Exam.IELTSGen, score: '85' }
+        ];
+        fixture.detectChanges();
 
-    const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelectorAll('app-candidate-exam-card').length).toBe(2);
-  });
+        const compiled = fixture.nativeElement as HTMLElement;
+        expect(compiled.querySelectorAll('app-candidate-exam-card').length).toBe(2);
+    });
 
-  it('should delete an exam when deleteRecord is called', () => {
-    component.candidateIntakeData.candidateExams = [
-      { id: 1, exam: Exam.TOEFL, score: '90' },
-      { id: 2, exam: Exam.IELTSGen, score: '85' }
-    ];
-    fixture.detectChanges();
+    it('should delete an exam when deleteRecord is called', () => {
+        component.candidateIntakeData.candidateExams = [
+            { id: 1, exam: Exam.TOEFL, score: '90' },
+            { id: 2, exam: Exam.IELTSGen, score: '85' }
+        ];
+        fixture.detectChanges();
 
-    component.deleteRecord(0);
-    fixture.detectChanges();
+        component.deleteRecord(0);
+        fixture.detectChanges();
 
-    expect(component.candidateIntakeData.candidateExams.length).toBe(1);
-    expect(component.candidateIntakeData.candidateExams[0].exam).toBe(Exam.IELTSGen);
-  });
+        expect(component.candidateIntakeData.candidateExams.length).toBe(1);
+        expect(component.candidateIntakeData.candidateExams[0].exam).toBe(Exam.IELTSGen);
+    });
 });

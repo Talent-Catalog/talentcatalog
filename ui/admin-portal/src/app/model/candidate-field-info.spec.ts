@@ -17,6 +17,7 @@
 import {Candidate} from "./candidate";
 import {CandidateFieldInfo} from "./candidate-field-info";
 import {MockSavedList} from "../MockData/MockSavedList";
+import {expect} from 'vitest';
 
 describe('CandidateFieldInfo Class', () => {
   let candidate: Candidate;

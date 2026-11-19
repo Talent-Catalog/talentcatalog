@@ -13,6 +13,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
+
+import type {MockedObject} from "vitest";
 import {ListHomeComponent} from "./list-home.component";
 import {ComponentFixture, TestBed} from "@angular/core/testing";
 import {SavedSearchService, SavedSearchTypeInfo} from "../../../services/saved-search.service";
@@ -25,104 +27,118 @@ import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/commo
 import {MockPartner} from "../../../MockData/MockPartner";
 import {MockUser} from "../../../MockData/MockUser";
 import {SavedSearchSubtype, SavedSearchType} from "../../../model/saved-search";
-import {
-  BrowseCandidateSourcesComponent
-} from "../../candidates/show/browse/browse-candidate-sources.component";
+import {BrowseCandidateSourcesComponent} from "../../candidates/show/browse/browse-candidate-sources.component";
 import {ReactiveFormsModule, UntypedFormBuilder} from "@angular/forms";
-import {RouterLinkStubDirective} from "../../login/login.component.spec";
+import {RouterLinkStubDirective} from "../../../../test-helpers/router-link-stub.directive";
 import {RouterTestingModule} from "@angular/router/testing";
 import {DatePipe, TitleCasePipe} from "@angular/common";
 import {LocalStorageService} from "../../../services/local-storage.service";
+import {expect, vi} from 'vitest';
 
 describe('ListHomeComponent', () => {
-  let component: ListHomeComponent;
-  let fixture: ComponentFixture<ListHomeComponent>;
-  let savedSearchServiceSpy: jasmine.SpyObj<SavedSearchService>;
-  let localStorageServiceSpy: jasmine.SpyObj<LocalStorageService>;
-  let authorizationServiceSpy: jasmine.SpyObj<AuthorizationService>;
-  let authenticationServiceSpy: jasmine.SpyObj<AuthenticationService>;
-  let activeModalSpy: jasmine.SpyObj<NgbActiveModal>;
-  let salesforceServiceSpy: jasmine.SpyObj<SalesforceService>;
+    let component: ListHomeComponent;
+    let fixture: ComponentFixture<ListHomeComponent>;
+    let savedSearchServiceSpy: MockedObject<SavedSearchService>;
+    let localStorageServiceSpy: MockedObject<LocalStorageService>;
+    let authorizationServiceSpy: MockedObject<AuthorizationService>;
+    let authenticationServiceSpy: MockedObject<AuthenticationService>;
+    let activeModalSpy: MockedObject<NgbActiveModal>;
+    let salesforceServiceSpy: MockedObject<SalesforceService>;
 
-  beforeEach(async () => {
-    const savedSearchServiceSpyObj = jasmine.createSpyObj('SavedSearchService', ['getSavedSearchTypeInfos']);
-    const localStorageServiceSpyObj = jasmine.createSpyObj('LocalStorageService', ['get','set']);
-    const authorizationServiceSpyObj = jasmine.createSpyObj('AuthorizationService', ['isEmployerPartner', 'canSeeJobDetails']);
-    const authenticationServiceSpyObj = jasmine.createSpyObj('AuthenticationService', ['getLoggedInUser']);
-    const activeModalSpyObj = jasmine.createSpyObj('NgbActiveModal', ['close', 'dismiss']);
-    const salesforceServiceSpyObj = jasmine.createSpyObj('SalesforceService', ['fetchJob']);
+    beforeEach(async () => {
+        const savedSearchServiceSpyObj = {
+            getSavedSearchTypeInfos: vi.fn().mockName("SavedSearchService.getSavedSearchTypeInfos")
+        };
+        const localStorageServiceSpyObj = {
+            get: vi.fn().mockName("LocalStorageService.get"),
+            set: vi.fn().mockName("LocalStorageService.set")
+        };
+        const authorizationServiceSpyObj = {
+            isEmployerPartner: vi.fn().mockName("AuthorizationService.isEmployerPartner"),
+            canSeeJobDetails: vi.fn().mockName("AuthorizationService.canSeeJobDetails")
+        };
+        const authenticationServiceSpyObj = {
+            getLoggedInUser: vi.fn().mockName("AuthenticationService.getLoggedInUser")
+        };
+        const activeModalSpyObj = {
+            close: vi.fn().mockName("NgbActiveModal.close"),
+            dismiss: vi.fn().mockName("NgbActiveModal.dismiss")
+        };
+        const salesforceServiceSpyObj = {
+            fetchJob: vi.fn().mockName("SalesforceService.fetchJob")
+        };
 
-    authorizationServiceSpyObj.canSeeJobDetails.and.returnValue(true);
+        authorizationServiceSpyObj.canSeeJobDetails.mockReturnValue(true);
 
-    await TestBed.configureTestingModule({
-      declarations: [ListHomeComponent,BrowseCandidateSourcesComponent,RouterLinkStubDirective],
-      imports: [NgbNavModule,RouterTestingModule,NgbPaginationModule,ReactiveFormsModule],
-      providers: [
-        UntypedFormBuilder,
-        DatePipe,
-        TitleCasePipe,
-        { provide: SavedSearchService, useValue: savedSearchServiceSpyObj },
-        { provide: LocalStorageService, useValue: localStorageServiceSpyObj },
-        { provide: AuthorizationService, useValue: authorizationServiceSpyObj },
-        { provide: AuthenticationService, useValue: authenticationServiceSpyObj },
-        { provide: NgbActiveModal, useValue: activeModalSpyObj },
-        { provide: SalesforceService, useValue: salesforceServiceSpyObj },
-        provideHttpClient(withXhr(), withInterceptorsFromDi()),
-        provideHttpClientTesting()
-      ]
-    }).compileComponents();
+        await TestBed.configureTestingModule({
+            declarations: [ListHomeComponent, BrowseCandidateSourcesComponent, RouterLinkStubDirective],
+            imports: [NgbNavModule, RouterTestingModule, NgbPaginationModule, ReactiveFormsModule],
+            providers: [
+                UntypedFormBuilder,
+                DatePipe,
+                TitleCasePipe,
+                { provide: SavedSearchService, useValue: savedSearchServiceSpyObj },
+                { provide: LocalStorageService, useValue: localStorageServiceSpyObj },
+                { provide: AuthorizationService, useValue: authorizationServiceSpyObj },
+                { provide: AuthenticationService, useValue: authenticationServiceSpyObj },
+                { provide: NgbActiveModal, useValue: activeModalSpyObj },
+                { provide: SalesforceService, useValue: salesforceServiceSpyObj },
+                provideHttpClient(withXhr(), withInterceptorsFromDi()),
+                provideHttpClientTesting()
+            ]
+        }).compileComponents();
 
-    savedSearchServiceSpy = TestBed.inject(SavedSearchService) as jasmine.SpyObj<SavedSearchService>;
-    localStorageServiceSpy = TestBed.inject(LocalStorageService) as jasmine.SpyObj<LocalStorageService>;
-    authorizationServiceSpy = TestBed.inject(AuthorizationService) as jasmine.SpyObj<AuthorizationService>;
-    authenticationServiceSpy = TestBed.inject(AuthenticationService) as jasmine.SpyObj<AuthenticationService>;
-    activeModalSpy = TestBed.inject(NgbActiveModal) as jasmine.SpyObj<NgbActiveModal>;
-    salesforceServiceSpy = TestBed.inject(SalesforceService) as jasmine.SpyObj<SalesforceService>;
-  });
+        savedSearchServiceSpy = TestBed.inject(SavedSearchService) as MockedObject<SavedSearchService>;
+        localStorageServiceSpy = TestBed.inject(LocalStorageService) as MockedObject<LocalStorageService>;
+        authorizationServiceSpy = TestBed.inject(AuthorizationService) as MockedObject<AuthorizationService>;
+        authenticationServiceSpy = TestBed.inject(AuthenticationService) as MockedObject<AuthenticationService>;
+        activeModalSpy = TestBed.inject(NgbActiveModal) as MockedObject<NgbActiveModal>;
+        salesforceServiceSpy = TestBed.inject(SalesforceService) as MockedObject<SalesforceService>;
+    });
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(ListHomeComponent);
-    component = fixture.componentInstance;
-    component.activeTabId= "type:job";
-    component.loggedInPartner = new MockPartner();
-    const mockSavedSearchTypeInfo:SavedSearchTypeInfo = {
-      savedSearchType:SavedSearchType.job,
-      title:"SavedSearchTypeInfo",
-      categories: [{
-        savedSearchSubtype:SavedSearchSubtype.it,
-        title:"SavedSearchType"
-      }]
-    }
-    component.savedSearchTypeInfos = [mockSavedSearchTypeInfo];
+    beforeEach(() => {
+        fixture = TestBed.createComponent(ListHomeComponent);
+        component = fixture.componentInstance;
+        component.activeTabId = "type:job";
+        component.loggedInPartner = new MockPartner();
+        const mockSavedSearchTypeInfo: SavedSearchTypeInfo = {
+            savedSearchType: SavedSearchType.job,
+            title: "SavedSearchTypeInfo",
+            categories: [{
+                    savedSearchSubtype: SavedSearchSubtype.it,
+                    title: "SavedSearchType"
+                }]
+        };
+        component.savedSearchTypeInfos = [mockSavedSearchTypeInfo];
 
-    // savedSearchServiceSpy.getSavedSearchTypeInfos.and.returnValue([mockSavedSearchTypeInfo]);
-    authenticationServiceSpy.getLoggedInUser.and.returnValue(new MockUser());
-    fixture.detectChanges();
-  });
+        // savedSearchServiceSpy.getSavedSearchTypeInfos.and.returnValue([mockSavedSearchTypeInfo]);
+        authenticationServiceSpy.getLoggedInUser.mockReturnValue(new MockUser());
+        fixture.detectChanges();
+    });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
 
-  it('should set default tab ID to "MyLists"', () => {
-    expect(component['defaultTabId']).toBe('MyLists');
-  });
+    it('should set default tab ID to "MyLists"', () => {
+        expect(component['defaultTabId']).toBe('MyLists');
+    });
 
-  it('should see public lists for non-employer users', () => {
-    // Mocking isEmployerPartner to return false
-    authorizationServiceSpy.isEmployerPartner.and.returnValue(false);
-    expect(component.seesPublicLists()).toBeTrue();
-  });
+    it('should see public lists for non-employer users', () => {
+        // Mocking isEmployerPartner to return false
+        authorizationServiceSpy.isEmployerPartner.mockReturnValue(false);
+        expect(component.seesPublicLists()).toBe(true);
+    });
 
-  it('should not see public lists for employer users', () => {
-    // Mocking isEmployerPartner to return true
-    authorizationServiceSpy.isEmployerPartner.and.returnValue(true);
-    expect(component.seesPublicLists()).toBeFalse();
-  });
+    it('should not see public lists for employer users', () => {
+        // Mocking isEmployerPartner to return true
+        authorizationServiceSpy.isEmployerPartner.mockReturnValue(true);
+        expect(component.seesPublicLists()).toBe(false);
+    });
 
-  it('should not show public lists to partners who are not source, destination or employer', () => {
-    authorizationServiceSpy.canSeeJobDetails.and.returnValue(false);
-    expect(component.canSeeJobDetails()).toBeFalse();
-  });
+    it('should not show public lists to partners who are not source, destination or employer', () => {
+        authorizationServiceSpy.canSeeJobDetails.mockReturnValue(false);
+        expect(component.canSeeJobDetails()).toBe(false);
+    });
 
 });

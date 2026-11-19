@@ -18,37 +18,37 @@ import {TrimPipe} from './trim.pipe';
 
 describe('TrimPipe', () => {
 
-  let pipe: TrimPipe;
+    let pipe: TrimPipe;
 
-  beforeEach(() => {
-    pipe = new TrimPipe();
-  });
+    beforeEach(() => {
+        pipe = new TrimPipe();
+    });
 
-  it('should create an instance', () => {
-    expect(pipe).toBeTruthy();
-  });
+    it('should create an instance', () => {
+        expect(pipe).toBeTruthy();
+    });
 
-  it('should remove whitespace from the beginning and end', () => {
-    expect(pipe.transform('  Talent Catalog  '))
-    .toBe('Talent Catalog');
-  });
+    it('should remove whitespace from the beginning and end', () => {
+        expect(pipe.transform('  Talent Catalog  '))
+            .toBe('Talent Catalog');
+    });
 
-  it('should preserve whitespace inside the value', () => {
-    expect(pipe.transform('  Talent   Catalog  '))
-    .toBe('Talent   Catalog');
-  });
+    it('should preserve whitespace inside the value', () => {
+        expect(pipe.transform('  Talent   Catalog  '))
+            .toBe('Talent   Catalog');
+    });
 
-  it('should return the same value when no surrounding whitespace exists', () => {
-    expect(pipe.transform('Talent Catalog'))
-    .toBe('Talent Catalog');
-  });
+    it('should return the same value when no surrounding whitespace exists', () => {
+        expect(pipe.transform('Talent Catalog'))
+            .toBe('Talent Catalog');
+    });
 
-  it('should return an empty string when the value contains only whitespace', () => {
-    expect(pipe.transform('   ')).toBe('');
-  });
+    it('should return an empty string when the value contains only whitespace', () => {
+        expect(pipe.transform('   ')).toBe('');
+    });
 
-  it('should ignore additional pipe arguments', () => {
-    expect(pipe.transform('  Ehsan  ', 'unused', 123))
-    .toBe('Ehsan');
-  });
+    it('should ignore additional pipe arguments', () => {
+        expect(pipe.transform('  Ehsan  ', 'unused', 123))
+            .toBe('Ehsan');
+    });
 });

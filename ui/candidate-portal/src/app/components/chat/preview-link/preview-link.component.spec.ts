@@ -14,6 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
+import type {MockedObject} from "vitest";
 import {CommonModule} from '@angular/common';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
@@ -24,267 +25,233 @@ import {LinkPreviewService} from '../../../services/link-preview.service';
 import {PreviewLinkComponent} from './preview-link.component';
 
 describe('PreviewLinkComponent', () => {
-  let component: PreviewLinkComponent;
-  let fixture: ComponentFixture<PreviewLinkComponent>;
-  let linkPreviewServiceSpy: jasmine.SpyObj<LinkPreviewService>;
+    let component: PreviewLinkComponent;
+    let fixture: ComponentFixture<PreviewLinkComponent>;
+    let linkPreviewServiceSpy: MockedObject<LinkPreviewService>;
 
-  beforeEach(async () => {
-    linkPreviewServiceSpy =
-      jasmine.createSpyObj<LinkPreviewService>(
-        'LinkPreviewService',
-        ['delete']
-      );
+    beforeEach(async () => {
+        linkPreviewServiceSpy = {
+            delete: vi.fn().mockName("LinkPreviewService.delete")
+        } as unknown as MockedObject<LinkPreviewService>;
 
-    linkPreviewServiceSpy.delete.and.returnValue(of(true));
+        linkPreviewServiceSpy.delete.mockReturnValue(of(true));
 
-    await TestBed.configureTestingModule({
-      imports: [CommonModule],
-      declarations: [PreviewLinkComponent],
-      providers: [
-        {
-          provide: LinkPreviewService,
-          useValue: linkPreviewServiceSpy
-        }
-      ]
-    }).compileComponents();
+        await TestBed.configureTestingModule({
+            imports: [CommonModule],
+            declarations: [PreviewLinkComponent],
+            providers: [
+                {
+                    provide: LinkPreviewService,
+                    useValue: linkPreviewServiceSpy
+                }
+            ]
+        }).compileComponents();
 
-    fixture = TestBed.createComponent(PreviewLinkComponent);
-    component = fixture.componentInstance;
+        fixture = TestBed.createComponent(PreviewLinkComponent);
+        component = fixture.componentInstance;
 
-    component.linkPreview = createLinkPreview();
-    component.userIsPostAuthor = true;
+        component.linkPreview = createLinkPreview();
+        component.userIsPostAuthor = true;
 
-    fixture.detectChanges();
-  });
+        fixture.detectChanges();
+    });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
 
-  it('should initialise without changing the supplied preview', () => {
-    const preview = component.linkPreview;
+    it('should initialise without changing the supplied preview', () => {
+        const preview = component.linkPreview;
 
-    expect(() => component.ngOnInit()).not.toThrow();
-    expect(component.linkPreview).toBe(preview);
-  });
+        expect(() => component.ngOnInit()).not.toThrow();
+        expect(component.linkPreview).toBe(preview);
+    });
 
-  it('should render the link preview content', () => {
-    const anchor = fixture.debugElement.query(
-      By.css('a.link-wrapper')
-    );
+    it('should render the link preview content', () => {
+        const anchor = fixture.debugElement.query(By.css('a.link-wrapper'));
 
-    const domain = fixture.debugElement.query(
-      By.css('.domain')
-    );
+        const domain = fixture.debugElement.query(By.css('.domain'));
 
-    const title = fixture.debugElement.query(
-      By.css('.title')
-    );
+        const title = fixture.debugElement.query(By.css('.title'));
 
-    const description = fixture.debugElement.query(
-      By.css('.description')
-    );
+        const description = fixture.debugElement.query(By.css('.description'));
 
-    expect(anchor).toBeTruthy();
-    expect(anchor.nativeElement.getAttribute('href'))
-    .toBe('https://example.com/article');
+        expect(anchor).toBeTruthy();
+        expect(anchor.nativeElement.getAttribute('href'))
+            .toBe('https://example.com/article');
 
-    expect(anchor.nativeElement.getAttribute('target'))
-    .toBe('_blank');
+        expect(anchor.nativeElement.getAttribute('target'))
+            .toBe('_blank');
 
-    expect(domain.nativeElement.textContent.trim())
-    .toContain('example.com');
+        expect(domain.nativeElement.textContent.trim())
+            .toContain('example.com');
 
-    expect(title.nativeElement.textContent.trim())
-    .toBe('Example article');
+        expect(title.nativeElement.textContent.trim())
+            .toBe('Example article');
 
-    expect(description.nativeElement.textContent.trim())
-    .toBe('Example description');
-  });
+        expect(description.nativeElement.textContent.trim())
+            .toBe('Example description');
+    });
 
-  it('should not render anything when linkPreview is null', () => {
-    component.linkPreview = null as any;
+    it('should not render anything when linkPreview is null', () => {
+        component.linkPreview = null as any;
 
-    fixture.detectChanges();
+        fixture.detectChanges();
 
-    expect(
-      fixture.debugElement.query(By.css('a.link-wrapper'))
-    ).toBeNull();
-  });
+        expect(fixture.debugElement.query(By.css('a.link-wrapper'))).toBeNull();
+    });
 
-  it('should render the favicon when faviconUrl is available', () => {
-    component.linkPreview.faviconUrl =
-      'https://example.com/favicon.ico';
+    it('should render the favicon when faviconUrl is available', () => {
+        component.linkPreview.faviconUrl =
+            'https://example.com/favicon.ico';
 
-    fixture.detectChanges();
+        fixture.detectChanges();
 
-    const favicon = fixture.debugElement.query(
-      By.css('img.favicon')
-    );
+        const favicon = fixture.debugElement.query(By.css('img.favicon'));
 
-    const fallbackIcon = fixture.debugElement.query(
-      By.css('i.link-icon')
-    );
+        const fallbackIcon = fixture.debugElement.query(By.css('i.link-icon'));
 
-    expect(favicon).toBeTruthy();
-    expect(favicon.nativeElement.getAttribute('src'))
-    .toBe('https://example.com/favicon.ico');
+        expect(favicon).toBeTruthy();
+        expect(favicon.nativeElement.getAttribute('src'))
+            .toBe('https://example.com/favicon.ico');
 
-    expect(favicon.nativeElement.getAttribute('alt'))
-    .toBe('example.com favicon');
+        expect(favicon.nativeElement.getAttribute('alt'))
+            .toBe('example.com favicon');
 
-    expect(fallbackIcon).toBeNull();
-  });
+        expect(fallbackIcon).toBeNull();
+    });
 
-  it('should render the fallback icon when faviconUrl is unavailable', () => {
-    component.linkPreview.faviconUrl = null as any;
+    it('should render the fallback icon when faviconUrl is unavailable', () => {
+        component.linkPreview.faviconUrl = null as any;
 
-    fixture.detectChanges();
+        fixture.detectChanges();
 
-    expect(
-      fixture.debugElement.query(By.css('img.favicon'))
-    ).toBeNull();
+        expect(fixture.debugElement.query(By.css('img.favicon'))).toBeNull();
 
-    expect(
-      fixture.debugElement.query(By.css('i.link-icon'))
-    ).toBeTruthy();
-  });
+        expect(fixture.debugElement.query(By.css('i.link-icon'))).toBeTruthy();
+    });
 
-  it('should render the preview image when imageUrl is available', () => {
-    component.linkPreview.imageUrl =
-      'https://example.com/preview.png';
+    it('should render the preview image when imageUrl is available', () => {
+        component.linkPreview.imageUrl =
+            'https://example.com/preview.png';
 
-    fixture.detectChanges();
+        fixture.detectChanges();
 
-    const image = fixture.debugElement.query(
-      By.css('img.preview-img')
-    );
+        const image = fixture.debugElement.query(By.css('img.preview-img'));
 
-    expect(image).toBeTruthy();
-    expect(image.nativeElement.getAttribute('src'))
-    .toBe('https://example.com/preview.png');
+        expect(image).toBeTruthy();
+        expect(image.nativeElement.getAttribute('src'))
+            .toBe('https://example.com/preview.png');
 
-    expect(image.nativeElement.getAttribute('alt'))
-    .toBe('example.com preview image');
-  });
+        expect(image.nativeElement.getAttribute('alt'))
+            .toBe('example.com preview image');
+    });
 
-  it('should not render the preview image when imageUrl is unavailable', () => {
-    component.linkPreview.imageUrl = null as any;
+    it('should not render the preview image when imageUrl is unavailable', () => {
+        component.linkPreview.imageUrl = null as any;
 
-    fixture.detectChanges();
+        fixture.detectChanges();
 
-    expect(
-      fixture.debugElement.query(By.css('img.preview-img'))
-    ).toBeNull();
-  });
+        expect(fixture.debugElement.query(By.css('img.preview-img'))).toBeNull();
+    });
 
-  it('should show the block button when the user is the post author', () => {
-    component.userIsPostAuthor = true;
+    it('should show the block button when the user is the post author', () => {
+        component.userIsPostAuthor = true;
 
-    fixture.detectChanges();
+        fixture.detectChanges();
 
-    expect(
-      fixture.debugElement.query(By.css('.block-button'))
-    ).toBeTruthy();
-  });
+        expect(fixture.debugElement.query(By.css('.block-button'))).toBeTruthy();
+    });
 
-  it('should hide the block button when the user is not the post author', () => {
-    component.userIsPostAuthor = false;
+    it('should hide the block button when the user is not the post author', () => {
+        component.userIsPostAuthor = false;
 
-    fixture.detectChanges();
+        fixture.detectChanges();
 
-    expect(
-      fixture.debugElement.query(By.css('.block-button'))
-    ).toBeNull();
-  });
+        expect(fixture.debugElement.query(By.css('.block-button'))).toBeNull();
+    });
 
-  it('should block an unsaved preview without deleting it', () => {
-    component.linkPreview.id = null as any;
+    it('should block an unsaved preview without deleting it', () => {
+        component.linkPreview.id = null as any;
 
-    const event = jasmine.createSpyObj<Event>(
-      'Event',
-      ['stopPropagation', 'preventDefault']
-    );
+        const event = Object.assign(new Event('click', { cancelable: true }), {
+            stopPropagation: vi.fn().mockName("Event.stopPropagation"),
+            preventDefault: vi.fn().mockName("Event.preventDefault")
+        });
 
-    component.blockLinkPreview(event);
+        component.blockLinkPreview(event);
 
-    expect(event.stopPropagation).toHaveBeenCalledTimes(1);
-    expect(event.preventDefault).toHaveBeenCalledTimes(1);
-    expect(component.linkPreview.blocked).toBeTrue();
-    expect(linkPreviewServiceSpy.delete).not.toHaveBeenCalled();
-  });
+        expect(event.stopPropagation).toHaveBeenCalledTimes(1);
+        expect(event.preventDefault).toHaveBeenCalledTimes(1);
+        expect(component.linkPreview.blocked).toBe(true);
+        expect(linkPreviewServiceSpy.delete).not.toHaveBeenCalled();
+    });
 
-  it('should block and delete a saved preview', () => {
-    component.linkPreview.id = 42;
+    it('should block and delete a saved preview', () => {
+        component.linkPreview.id = 42;
 
-    const event = jasmine.createSpyObj<Event>(
-      'Event',
-      ['stopPropagation', 'preventDefault']
-    );
+        const event = Object.assign(new Event('click', { cancelable: true }), {
+            stopPropagation: vi.fn().mockName("Event.stopPropagation"),
+            preventDefault: vi.fn().mockName("Event.preventDefault")
+        });
 
-    component.blockLinkPreview(event);
+        component.blockLinkPreview(event);
 
-    expect(event.stopPropagation).toHaveBeenCalledTimes(1);
-    expect(event.preventDefault).toHaveBeenCalledTimes(1);
-    expect(component.linkPreview.blocked).toBeTrue();
+        expect(event.stopPropagation).toHaveBeenCalledTimes(1);
+        expect(event.preventDefault).toHaveBeenCalledTimes(1);
+        expect(component.linkPreview.blocked).toBe(true);
 
-    expect(linkPreviewServiceSpy.delete)
-    .toHaveBeenCalledOnceWith(42);
-  });
+        expect(linkPreviewServiceSpy.delete).toHaveBeenCalledTimes(1);
 
-  it('should block the preview when the block button is clicked', () => {
-    component.linkPreview.id = 99;
+        expect(linkPreviewServiceSpy.delete).toHaveBeenCalledWith(42);
+    });
 
-    fixture.detectChanges();
+    it('should block the preview when the block button is clicked', () => {
+        component.linkPreview.id = 99;
 
-    const event = jasmine.createSpyObj<Event>(
-      'Event',
-      ['stopPropagation', 'preventDefault']
-    );
+        fixture.detectChanges();
 
-    const blockButton = fixture.debugElement.query(
-      By.css('.block-button')
-    );
+        const event = Object.assign(new Event('click', { cancelable: true }), {
+            stopPropagation: vi.fn().mockName("Event.stopPropagation"),
+            preventDefault: vi.fn().mockName("Event.preventDefault")
+        });
 
-    blockButton.triggerEventHandler('click', event);
-    fixture.detectChanges();
+        const blockButton = fixture.debugElement.query(By.css('.block-button'));
 
-    expect(event.stopPropagation).toHaveBeenCalledTimes(1);
-    expect(event.preventDefault).toHaveBeenCalledTimes(1);
-    expect(component.linkPreview.blocked).toBeTrue();
+        blockButton.triggerEventHandler('click', event);
+        fixture.detectChanges();
 
-    expect(linkPreviewServiceSpy.delete)
-    .toHaveBeenCalledOnceWith(99);
+        expect(event.stopPropagation).toHaveBeenCalledTimes(1);
+        expect(event.preventDefault).toHaveBeenCalledTimes(1);
+        expect(component.linkPreview.blocked).toBe(true);
 
-    expect(
-      fixture.debugElement.query(By.css('.link-preview'))
-    ).toBeNull();
-  });
+        expect(linkPreviewServiceSpy.delete).toHaveBeenCalledTimes(1);
 
-  it('should not render an already blocked preview', () => {
-    component.linkPreview.blocked = true;
+        expect(linkPreviewServiceSpy.delete).toHaveBeenCalledWith(99);
 
-    fixture.detectChanges();
+        expect(fixture.debugElement.query(By.css('.link-preview'))).toBeNull();
+    });
 
-    expect(
-      fixture.debugElement.query(By.css('a.link-wrapper'))
-    ).toBeTruthy();
+    it('should not render an already blocked preview', () => {
+        component.linkPreview.blocked = true;
 
-    expect(
-      fixture.debugElement.query(By.css('.link-preview'))
-    ).toBeNull();
-  });
+        fixture.detectChanges();
+
+        expect(fixture.debugElement.query(By.css('a.link-wrapper'))).toBeTruthy();
+
+        expect(fixture.debugElement.query(By.css('.link-preview'))).toBeNull();
+    });
 });
 
 function createLinkPreview(): LinkPreview {
-  return {
-    id: 1,
-    url: 'https://example.com/article',
-    domain: 'example.com',
-    title: 'Example article',
-    description: 'Example description',
-    faviconUrl: 'https://example.com/favicon.ico',
-    imageUrl: 'https://example.com/preview.png',
-    blocked: false
-  } as LinkPreview;
+    return {
+        id: 1,
+        url: 'https://example.com/article',
+        domain: 'example.com',
+        title: 'Example article',
+        description: 'Example description',
+        faviconUrl: 'https://example.com/favicon.ico',
+        imageUrl: 'https://example.com/preview.png',
+        blocked: false
+    } as LinkPreview;
 }

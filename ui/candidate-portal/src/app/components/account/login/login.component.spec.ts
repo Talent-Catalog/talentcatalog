@@ -14,6 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
+import type {Mock, MockedObject} from "vitest";
 import {Component, forwardRef, Input, Pipe, PipeTransform, ChangeDetectionStrategy} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
@@ -32,570 +33,501 @@ import {ChangePasswordComponent} from '../change-password/change-password.compon
 import {LoginComponent} from './login.component';
 
 @Pipe({
-  name: 'translate',
-  standalone: false
+    name: 'translate',
+    standalone: false
 })
 class TranslatePipeStub implements PipeTransform {
-  transform(value: string): string {
-    return value;
-  }
+    transform(value: string): string {
+        return value;
+    }
 }
 
 @Component({
-  selector: 'app-error',
-  template: '',
-  changeDetection: ChangeDetectionStrategy.Eager,
-  standalone: false
+    selector: 'app-error',
+    template: '',
+    changeDetection: ChangeDetectionStrategy.Eager,
+    standalone: false
 })
 class AppErrorStubComponent {
-  @Input() error: any;
+    @Input()
+    error: any;
 }
 
 @Component({
-  selector: 'tc-field',
-  template: '<ng-content></ng-content>',
-  changeDetection: ChangeDetectionStrategy.Eager,
-  standalone: false
+    selector: 'tc-field',
+    template: '<ng-content></ng-content>',
+    changeDetection: ChangeDetectionStrategy.Eager,
+    standalone: false
 })
 class TcFieldStubComponent {
 }
 
 @Component({
-  selector: 'tc-label',
-  template: '<ng-content></ng-content>',
-  changeDetection: ChangeDetectionStrategy.Eager,
-  standalone: false
+    selector: 'tc-label',
+    template: '<ng-content></ng-content>',
+    changeDetection: ChangeDetectionStrategy.Eager,
+    standalone: false
 })
 class TcLabelStubComponent {
-  @Input() for: string;
+    @Input()
+    for: string;
 }
 
 @Component({
-  selector: 'tc-input',
-  template: '',
-  providers: [
-    {
-      provide: NG_VALUE_ACCESSOR,
-      useExisting: forwardRef(() => TcInputStubComponent),
-      multi: true
-    }
-  ],
-  changeDetection: ChangeDetectionStrategy.Eager,
-  standalone: false
+    selector: 'tc-input',
+    template: '',
+    providers: [
+        {
+            provide: NG_VALUE_ACCESSOR,
+            useExisting: forwardRef(() => TcInputStubComponent),
+            multi: true
+        }
+    ],
+    changeDetection: ChangeDetectionStrategy.Eager,
+    standalone: false
 })
 class TcInputStubComponent implements ControlValueAccessor {
-  @Input() id: string;
-  @Input() type: string;
-  @Input() invalid: boolean;
+    @Input()
+    id: string;
+    @Input()
+    type: string;
+    @Input()
+    invalid: boolean;
 
-  writeValue(): void {
-  }
+    writeValue(): void {
+    }
 
-  registerOnChange(): void {
-  }
+    registerOnChange(): void {
+    }
 
-  registerOnTouched(): void {
-  }
+    registerOnTouched(): void {
+    }
 
-  setDisabledState(): void {
-  }
+    setDisabledState(): void {
+    }
 }
 
 @Component({
-  selector: 'tc-button',
-  template: '<ng-content></ng-content>',
-  changeDetection: ChangeDetectionStrategy.Eager,
-  standalone: false
+    selector: 'tc-button',
+    template: '<ng-content></ng-content>',
+    changeDetection: ChangeDetectionStrategy.Eager,
+    standalone: false
 })
 class TcButtonStubComponent {
-  @Input() disabled: boolean;
+    @Input()
+    disabled: boolean;
 }
 
 describe('LoginComponent', () => {
-  let component: LoginComponent;
-  let fixture: ComponentFixture<LoginComponent>;
+    let component: LoginComponent;
+    let fixture: ComponentFixture<LoginComponent>;
 
-  let authenticationServiceSpy:
-    jasmine.SpyObj<AuthenticationService>;
-  let candidateServiceSpy:
-    jasmine.SpyObj<CandidateService>;
-  let termsInfoServiceSpy:
-    jasmine.SpyObj<TermsInfoService>;
-  let modalServiceSpy:
-    jasmine.SpyObj<NgbModal>;
-  let routerNavigateSpy: jasmine.Spy;
+    let authenticationServiceSpy: MockedObject<AuthenticationService>;
+    let candidateServiceSpy: MockedObject<CandidateService>;
+    let termsInfoServiceSpy: MockedObject<TermsInfoService>;
+    let modalServiceSpy: MockedObject<NgbModal>;
+    let routerNavigateSpy: Mock;
 
-  let queryParams$: BehaviorSubject<Record<string, string>>;
+    let queryParams$: BehaviorSubject<Record<string, string>>;
 
-  const defaultCandidate = createCandidate();
-  const defaultPolicy = createPolicy();
+    const defaultCandidate = createCandidate();
+    const defaultPolicy = createPolicy();
 
-  beforeEach(async () => {
-    queryParams$ = new BehaviorSubject<Record<string, string>>({});
+    beforeEach(async () => {
+        queryParams$ = new BehaviorSubject<Record<string, string>>({});
 
-    authenticationServiceSpy =
-      jasmine.createSpyObj<AuthenticationService>(
-        'AuthenticationService',
-        [
-          'login',
-          'setCandidateStatus'
-        ]
-      );
+        authenticationServiceSpy = {
+            login: vi.fn().mockName("AuthenticationService.login"),
+            setCandidateStatus: vi.fn().mockName("AuthenticationService.setCandidateStatus")
+        } as unknown as MockedObject<AuthenticationService>;
 
-    candidateServiceSpy =
-      jasmine.createSpyObj<CandidateService>(
-        'CandidateService',
-        [
-          'getCandidatePersonal',
-          'setCandNumberStorage'
-        ]
-      );
+        candidateServiceSpy = {
+            getCandidatePersonal: vi.fn().mockName("CandidateService.getCandidatePersonal"),
+            setCandNumberStorage: vi.fn().mockName("CandidateService.setCandNumberStorage")
+        } as unknown as MockedObject<CandidateService>;
 
-    termsInfoServiceSpy =
-      jasmine.createSpyObj<TermsInfoService>(
-        'TermsInfoService',
-        ['getCurrentCandidatePolicy']
-      );
+        termsInfoServiceSpy = {
+            getCurrentCandidatePolicy: vi.fn().mockName("TermsInfoService.getCurrentCandidatePolicy")
+        } as unknown as MockedObject<TermsInfoService>;
 
-    modalServiceSpy =
-      jasmine.createSpyObj<NgbModal>(
-        'NgbModal',
-        ['open']
-      );
+        modalServiceSpy = {
+            open: vi.fn().mockName("NgbModal.open")
+        } as unknown as MockedObject<NgbModal>;
 
-    authenticationServiceSpy.login.and.returnValue(
-      of(null)
-    );
+        authenticationServiceSpy.login.mockReturnValue(of(null));
 
-    candidateServiceSpy.getCandidatePersonal.and.returnValue(
-      of(defaultCandidate)
-    );
+        candidateServiceSpy.getCandidatePersonal.mockReturnValue(of(defaultCandidate));
 
-    termsInfoServiceSpy.getCurrentCandidatePolicy.and.returnValue(
-      of(defaultPolicy)
-    );
+        termsInfoServiceSpy.getCurrentCandidatePolicy.mockReturnValue(of(defaultPolicy));
 
-    await TestBed.configureTestingModule({
-      imports: [
-        ReactiveFormsModule,
-        RouterTestingModule
-      ],
-      declarations: [
-        LoginComponent,
-        TranslatePipeStub,
-        AppErrorStubComponent,
-        TcFieldStubComponent,
-        TcLabelStubComponent,
-        TcInputStubComponent,
-        TcButtonStubComponent
-      ],
-      providers: [
-        {
-          provide: AuthenticationService,
-          useValue: authenticationServiceSpy
-        },
-        {
-          provide: CandidateService,
-          useValue: candidateServiceSpy
-        },
-        {
-          provide: TermsInfoService,
-          useValue: termsInfoServiceSpy
-        },
-        {
-          provide: NgbModal,
-          useValue: modalServiceSpy
-        },
-        {
-          provide: ActivatedRoute,
-          useValue: {
-            queryParams: queryParams$.asObservable(),
-            snapshot: {
-              queryParams: {}
-            }
-          }
-        }
-      ]
-    }).compileComponents();
+        await TestBed.configureTestingModule({
+            imports: [
+                ReactiveFormsModule,
+                RouterTestingModule
+            ],
+            declarations: [
+                LoginComponent,
+                TranslatePipeStub,
+                AppErrorStubComponent,
+                TcFieldStubComponent,
+                TcLabelStubComponent,
+                TcInputStubComponent,
+                TcButtonStubComponent
+            ],
+            providers: [
+                {
+                    provide: AuthenticationService,
+                    useValue: authenticationServiceSpy
+                },
+                {
+                    provide: CandidateService,
+                    useValue: candidateServiceSpy
+                },
+                {
+                    provide: TermsInfoService,
+                    useValue: termsInfoServiceSpy
+                },
+                {
+                    provide: NgbModal,
+                    useValue: modalServiceSpy
+                },
+                {
+                    provide: ActivatedRoute,
+                    useValue: {
+                        queryParams: queryParams$.asObservable(),
+                        snapshot: {
+                            queryParams: {}
+                        }
+                    }
+                }
+            ]
+        }).compileComponents();
 
-    fixture = TestBed.createComponent(LoginComponent);
-    component = fixture.componentInstance;
+        fixture = TestBed.createComponent(LoginComponent);
+        component = fixture.componentInstance;
 
-    const router = TestBed.inject(Router);
+        const router = TestBed.inject(Router);
 
-    routerNavigateSpy = spyOn(
-      router,
-      'navigateByUrl'
-    ).and.returnValue(
-      Promise.resolve(true)
-    );
+        routerNavigateSpy = vi.spyOn(router, 'navigateByUrl').mockResolvedValue(true);
 
-    fixture.detectChanges();
-  });
-
-  // Existing test retained.
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
-
-  // Existing test retained.
-  it('should render the tc form fields and disable submit while the form is invalid', () => {
-    const fields = fixture.debugElement.queryAll(
-      By.directive(TcFieldStubComponent)
-    );
-
-    const button = fixture.debugElement.query(
-      By.directive(TcButtonStubComponent)
-    ).componentInstance as TcButtonStubComponent;
-
-    expect(fields.length).toBe(2);
-    expect(button.disabled).toBeTrue();
-  });
-
-  // Existing test retained.
-  it('should enable submit once both login fields are populated', () => {
-    component.loginForm.patchValue({
-      username: 'candidate@example.com',
-      password: 'password123'
+        fixture.detectChanges();
     });
 
-    fixture.detectChanges();
-
-    const button = fixture.debugElement.query(
-      By.directive(TcButtonStubComponent)
-    ).componentInstance as TcButtonStubComponent;
-
-    const inputs = fixture.debugElement.queryAll(
-      By.directive(TcInputStubComponent)
-    ).map(
-      debugElement =>
-        debugElement.componentInstance as TcInputStubComponent
-    );
-
-    expect(button.disabled).toBeFalse();
-    expect(inputs[0].invalid).toBeFalse();
-    expect(inputs[1].invalid).toBeFalse();
-  });
-
-  it('should initialize the login form', () => {
-    expect(component.loginForm).toBeTruthy();
-
-    expect(component.loginForm.controls.username.value)
-    .toBe('');
-
-    expect(component.loginForm.controls.password.value)
-    .toBe('');
-
-    expect(component.loginForm.invalid).toBeTrue();
-  });
-
-  it('should use home as the default return URL', () => {
-    expect(component.returnUrl).toBe('/home');
-  });
-
-  it('should use the returnUrl query parameter', () => {
-    queryParams$.next({
-      returnUrl: '/profile'
+    // Existing test retained.
+    it('should create', () => {
+        expect(component).toBeTruthy();
     });
 
-    expect(component.returnUrl).toBe('/profile');
-  });
+    // Existing test retained.
+    it('should render the tc form fields and disable submit while the form is invalid', () => {
+        const fields = fixture.debugElement.queryAll(By.directive(TcFieldStubComponent));
 
-  it('should return username and password through the getters', () => {
-    component.loginForm.patchValue({
-      username: 'candidate@example.com',
-      password: 'password123'
+        const button = fixture.debugElement.query(By.directive(TcButtonStubComponent)).componentInstance as TcButtonStubComponent;
+
+        expect(fields.length).toBe(2);
+        expect(button.disabled).toBe(true);
     });
 
-    expect(component.username)
-    .toBe('candidate@example.com');
+    // Existing test retained.
+    it('should enable submit once both login fields are populated', () => {
+        component.loginForm.patchValue({
+            username: 'candidate@example.com',
+            password: 'password123'
+        });
 
-    expect(component.password)
-    .toBe('password123');
-  });
+        fixture.detectChanges();
 
-  it('should clear the existing error before attempting login', () => {
-    component.error = 'Previous error';
+        const button = fixture.debugElement.query(By.directive(TcButtonStubComponent)).componentInstance as TcButtonStubComponent;
 
-    component.login();
+        const inputs = fixture.debugElement.queryAll(By.directive(TcInputStubComponent)).map(debugElement => debugElement.componentInstance as TcInputStubComponent);
 
-    expect(component.error).toBeNull();
-  });
-
-  it('should not authenticate when the form is invalid', () => {
-    component.login();
-
-    expect(authenticationServiceSpy.login)
-    .not.toHaveBeenCalled();
-
-    expect(component.loading).toBeFalsy();
-  });
-
-  it('should not submit another login while already loading', () => {
-    populateValidLoginForm();
-
-    component.loading = true;
-    component.login();
-
-    expect(authenticationServiceSpy.login)
-    .not.toHaveBeenCalled();
-
-    expect(component.loading).toBeTrue();
-  });
-
-  it('should send the username, password and null reCAPTCHA token', () => {
-    populateValidLoginForm();
-
-    component.login();
-
-    expect(authenticationServiceSpy.login)
-    .toHaveBeenCalledTimes(1);
-
-    const request =
-      authenticationServiceSpy.login.calls
-      .mostRecent().args[0];
-
-    expect(request.username)
-    .toBe('candidate@example.com');
-
-    expect(request.password)
-    .toBe('password123');
-
-    expect(request.reCaptchaV3Token)
-    .toBeNull();
-  });
-
-  it('should fetch candidate and policy after authentication', () => {
-    populateValidLoginForm();
-
-    component.login();
-
-    expect(
-      termsInfoServiceSpy.getCurrentCandidatePolicy
-    ).toHaveBeenCalledTimes(1);
-
-    expect(
-      candidateServiceSpy.getCandidatePersonal
-    ).toHaveBeenCalledTimes(1);
-
-    expect(component.loading).toBeFalse();
-  });
-
-  it('should configure candidate storage and status after login', () => {
-    populateValidLoginForm();
-
-    component.login();
-
-    expect(
-      candidateServiceSpy.setCandNumberStorage
-    ).toHaveBeenCalledOnceWith('123');
-
-    expect(
-      authenticationServiceSpy.setCandidateStatus
-    ).toHaveBeenCalledOnceWith(
-      CandidateStatus.active
-    );
-  });
-
-  it('should navigate to the requested return URL when policy is accepted', () => {
-    const candidate = createCandidate({
-      acceptedPrivacyPolicyId: 'policy-1'
+        expect(button.disabled).toBe(false);
+        expect(inputs[0].invalid).toBe(false);
+        expect(inputs[1].invalid).toBe(false);
     });
 
-    const policy = createPolicy({
-      id: 'policy-1',
-      content: 'Current privacy policy'
+    it('should initialize the login form', () => {
+        expect(component.loginForm).toBeTruthy();
+
+        expect(component.loginForm.controls.username.value)
+            .toBe('');
+
+        expect(component.loginForm.controls.password.value)
+            .toBe('');
+
+        expect(component.loginForm.invalid).toBe(true);
     });
 
-    candidateServiceSpy.getCandidatePersonal.and.returnValue(
-      of(candidate)
-    );
-
-    termsInfoServiceSpy.getCurrentCandidatePolicy.and.returnValue(
-      of(policy)
-    );
-
-    component.returnUrl = '/profile';
-    populateValidLoginForm();
-
-    component.login();
-
-    expect(routerNavigateSpy)
-    .toHaveBeenCalledOnceWith('/profile');
-
-    expect(modalServiceSpy.open)
-    .not.toHaveBeenCalled();
-  });
-
-  it('should navigate to home when the current policy has not been accepted', () => {
-    const candidate = createCandidate({
-      acceptedPrivacyPolicyId: 'old-policy',
-      changePassword: true
+    it('should use home as the default return URL', () => {
+        expect(component.returnUrl).toBe('/home');
     });
 
-    const policy = createPolicy({
-      id: 'new-policy',
-      content: 'New privacy policy'
+    it('should use the returnUrl query parameter', () => {
+        queryParams$.next({
+            returnUrl: '/profile'
+        });
+
+        expect(component.returnUrl).toBe('/profile');
     });
 
-    candidateServiceSpy.getCandidatePersonal.and.returnValue(
-      of(candidate)
-    );
+    it('should return username and password through the getters', () => {
+        component.loginForm.patchValue({
+            username: 'candidate@example.com',
+            password: 'password123'
+        });
 
-    termsInfoServiceSpy.getCurrentCandidatePolicy.and.returnValue(
-      of(policy)
-    );
+        expect(component.username)
+            .toBe('candidate@example.com');
 
-    component.returnUrl = '/profile';
-    populateValidLoginForm();
-
-    component.login();
-
-    expect(routerNavigateSpy)
-    .toHaveBeenCalledOnceWith('/home');
-
-    expect(modalServiceSpy.open)
-    .not.toHaveBeenCalled();
-  });
-
-  it('should use the return URL when no policy content exists', () => {
-    const policy = createPolicy({
-      id: 'different-policy',
-      content: ''
+        expect(component.password)
+            .toBe('password123');
     });
 
-    termsInfoServiceSpy.getCurrentCandidatePolicy.and.returnValue(
-      of(policy)
-    );
+    it('should clear the existing error before attempting login', () => {
+        component.error = 'Previous error';
 
-    component.returnUrl = '/profile';
-    populateValidLoginForm();
+        component.login();
 
-    component.login();
-
-    expect(routerNavigateSpy)
-    .toHaveBeenCalledOnceWith('/profile');
-  });
-
-  it('should open change-password modal when required', () => {
-    const candidate = createCandidate({
-      changePassword: true,
-      acceptedPrivacyPolicyId: 'policy-1'
+        expect(component.error).toBeNull();
     });
 
-    const policy = createPolicy({
-      id: 'policy-1',
-      content: 'Current privacy policy'
+    it('should not authenticate when the form is invalid', () => {
+        component.login();
+
+        expect(authenticationServiceSpy.login)
+            .not.toHaveBeenCalled();
+
+        expect(component.loading).toBeFalsy();
     });
 
-    candidateServiceSpy.getCandidatePersonal.and.returnValue(
-      of(candidate)
-    );
+    it('should not submit another login while already loading', () => {
+        populateValidLoginForm();
 
-    termsInfoServiceSpy.getCurrentCandidatePolicy.and.returnValue(
-      of(policy)
-    );
+        component.loading = true;
+        component.login();
 
-    populateValidLoginForm();
+        expect(authenticationServiceSpy.login)
+            .not.toHaveBeenCalled();
 
-    component.login();
-
-    expect(modalServiceSpy.open)
-    .toHaveBeenCalledOnceWith(
-      ChangePasswordComponent,
-      {
-        centered: true
-      }
-    );
-
-    expect(routerNavigateSpy)
-    .toHaveBeenCalledOnceWith('/home');
-  });
-
-  it('should handle authentication errors', () => {
-    const error = new Error('Invalid username or password');
-    const consoleSpy = spyOn(console, 'log');
-
-    authenticationServiceSpy.login.and.returnValue(
-      throwError(error)
-    );
-
-    populateValidLoginForm();
-
-    component.login();
-
-    expect(consoleSpy)
-    .toHaveBeenCalledOnceWith(error);
-
-    expect(component.error).toBe(error);
-    expect(component.loading).toBeFalse();
-
-    expect(
-      termsInfoServiceSpy.getCurrentCandidatePolicy
-    ).not.toHaveBeenCalled();
-
-    expect(
-      candidateServiceSpy.getCandidatePersonal
-    ).not.toHaveBeenCalled();
-
-    expect(routerNavigateSpy)
-    .not.toHaveBeenCalled();
-  });
-
-  it('should handle errors while fetching candidate and policy', () => {
-    const error = new Error(
-      'Unable to retrieve candidate details'
-    );
-
-    candidateServiceSpy.getCandidatePersonal.and.returnValue(
-      throwError(error)
-    );
-
-    populateValidLoginForm();
-
-    component.login();
-
-    expect(component.error).toBe(error);
-    expect(component.loading).toBeFalse();
-
-    expect(
-      candidateServiceSpy.setCandNumberStorage
-    ).not.toHaveBeenCalled();
-
-    expect(
-      authenticationServiceSpy.setCandidateStatus
-    ).not.toHaveBeenCalled();
-
-    expect(routerNavigateSpy)
-    .not.toHaveBeenCalled();
-  });
-
-  function populateValidLoginForm(): void {
-    component.loginForm.patchValue({
-      username: 'candidate@example.com',
-      password: 'password123'
+        expect(component.loading).toBe(true);
     });
-  }
+
+    it('should send the username, password and null reCAPTCHA token', () => {
+        populateValidLoginForm();
+
+        component.login();
+
+        expect(authenticationServiceSpy.login)
+            .toHaveBeenCalledTimes(1);
+
+        const request = vi.mocked(authenticationServiceSpy.login).mock.lastCall[0];
+
+        expect(request.username)
+            .toBe('candidate@example.com');
+
+        expect(request.password)
+            .toBe('password123');
+
+        expect(request.reCaptchaV3Token)
+            .toBeNull();
+    });
+
+    it('should fetch candidate and policy after authentication', () => {
+        populateValidLoginForm();
+
+        component.login();
+
+        expect(termsInfoServiceSpy.getCurrentCandidatePolicy).toHaveBeenCalledTimes(1);
+
+        expect(candidateServiceSpy.getCandidatePersonal).toHaveBeenCalledTimes(1);
+
+        expect(component.loading).toBe(false);
+    });
+
+    it('should configure candidate storage and status after login', () => {
+        populateValidLoginForm();
+
+        component.login();
+
+        expect(candidateServiceSpy.setCandNumberStorage).toHaveBeenCalledTimes(1);
+
+        expect(candidateServiceSpy.setCandNumberStorage).toHaveBeenCalledWith('123');
+
+        expect(authenticationServiceSpy.setCandidateStatus).toHaveBeenCalledTimes(1);
+
+        expect(authenticationServiceSpy.setCandidateStatus).toHaveBeenCalledWith(CandidateStatus.active);
+    });
+
+    it('should navigate to the requested return URL when policy is accepted', () => {
+        const candidate = createCandidate({
+            acceptedPrivacyPolicyId: 'policy-1'
+        });
+
+        const policy = createPolicy({
+            id: 'policy-1',
+            content: 'Current privacy policy'
+        });
+
+        candidateServiceSpy.getCandidatePersonal.mockReturnValue(of(candidate));
+
+        termsInfoServiceSpy.getCurrentCandidatePolicy.mockReturnValue(of(policy));
+
+        component.returnUrl = '/profile';
+        populateValidLoginForm();
+
+        component.login();
+
+        expect(routerNavigateSpy).toHaveBeenCalledTimes(1);
+
+        expect(routerNavigateSpy).toHaveBeenCalledWith('/profile');
+
+        expect(modalServiceSpy.open)
+            .not.toHaveBeenCalled();
+    });
+
+    it('should navigate to home when the current policy has not been accepted', () => {
+        const candidate = createCandidate({
+            acceptedPrivacyPolicyId: 'old-policy',
+            changePassword: true
+        });
+
+        const policy = createPolicy({
+            id: 'new-policy',
+            content: 'New privacy policy'
+        });
+
+        candidateServiceSpy.getCandidatePersonal.mockReturnValue(of(candidate));
+
+        termsInfoServiceSpy.getCurrentCandidatePolicy.mockReturnValue(of(policy));
+
+        component.returnUrl = '/profile';
+        populateValidLoginForm();
+
+        component.login();
+
+        expect(routerNavigateSpy).toHaveBeenCalledTimes(1);
+
+        expect(routerNavigateSpy).toHaveBeenCalledWith('/home');
+
+        expect(modalServiceSpy.open)
+            .not.toHaveBeenCalled();
+    });
+
+    it('should use the return URL when no policy content exists', () => {
+        const policy = createPolicy({
+            id: 'different-policy',
+            content: ''
+        });
+
+        termsInfoServiceSpy.getCurrentCandidatePolicy.mockReturnValue(of(policy));
+
+        component.returnUrl = '/profile';
+        populateValidLoginForm();
+
+        component.login();
+
+        expect(routerNavigateSpy).toHaveBeenCalledTimes(1);
+
+        expect(routerNavigateSpy).toHaveBeenCalledWith('/profile');
+    });
+
+    it('should open change-password modal when required', () => {
+        const candidate = createCandidate({
+            changePassword: true,
+            acceptedPrivacyPolicyId: 'policy-1'
+        });
+
+        const policy = createPolicy({
+            id: 'policy-1',
+            content: 'Current privacy policy'
+        });
+
+        candidateServiceSpy.getCandidatePersonal.mockReturnValue(of(candidate));
+
+        termsInfoServiceSpy.getCurrentCandidatePolicy.mockReturnValue(of(policy));
+
+        populateValidLoginForm();
+
+        component.login();
+
+        expect(modalServiceSpy.open).toHaveBeenCalledTimes(1);
+
+        expect(modalServiceSpy.open).toHaveBeenCalledWith(ChangePasswordComponent, {
+            centered: true
+        });
+
+        expect(routerNavigateSpy).toHaveBeenCalledTimes(1);
+
+        expect(routerNavigateSpy).toHaveBeenCalledWith('/home');
+    });
+
+    it('should handle authentication errors', () => {
+        const error = new Error('Invalid username or password');
+        const consoleSpy = vi.spyOn(console, 'log').mockReturnValue(undefined);
+
+        authenticationServiceSpy.login.mockReturnValue(throwError(error));
+
+        populateValidLoginForm();
+
+        component.login();
+
+        expect(consoleSpy).toHaveBeenCalledTimes(1);
+
+        expect(consoleSpy).toHaveBeenCalledWith(error);
+
+        expect(component.error).toBe(error);
+        expect(component.loading).toBe(false);
+
+        expect(termsInfoServiceSpy.getCurrentCandidatePolicy).not.toHaveBeenCalled();
+
+        expect(candidateServiceSpy.getCandidatePersonal).not.toHaveBeenCalled();
+
+        expect(routerNavigateSpy)
+            .not.toHaveBeenCalled();
+    });
+
+    it('should handle errors while fetching candidate and policy', () => {
+        const error = new Error('Unable to retrieve candidate details');
+
+        candidateServiceSpy.getCandidatePersonal.mockReturnValue(throwError(error));
+
+        populateValidLoginForm();
+
+        component.login();
+
+        expect(component.error).toBe(error);
+        expect(component.loading).toBe(false);
+
+        expect(candidateServiceSpy.setCandNumberStorage).not.toHaveBeenCalled();
+
+        expect(authenticationServiceSpy.setCandidateStatus).not.toHaveBeenCalled();
+
+        expect(routerNavigateSpy)
+            .not.toHaveBeenCalled();
+    });
+
+    function populateValidLoginForm(): void {
+        component.loginForm.patchValue({
+            username: 'candidate@example.com',
+            password: 'password123'
+        });
+    }
 });
 
-function createCandidate(
-  overrides: Partial<Candidate> = {}
-): Candidate {
-  return {
-    candidateNumber: '123',
-    status: CandidateStatus.active,
-    acceptedPrivacyPolicyId: 'policy-1',
-    changePassword: false,
-    ...overrides
-  } as Candidate;
+function createCandidate(overrides: Partial<Candidate> = {}): Candidate {
+    return {
+        candidateNumber: '123',
+        status: CandidateStatus.active,
+        acceptedPrivacyPolicyId: 'policy-1',
+        changePassword: false,
+        ...overrides
+    } as Candidate;
 }
 
-function createPolicy(
-  overrides: Partial<TermsInfoDto> = {}
-): TermsInfoDto {
-  return {
-    id: 'policy-1',
-    content: '',
-    ...overrides
-  };
+function createPolicy(overrides: Partial<TermsInfoDto> = {}): TermsInfoDto {
+    return {
+        id: 'policy-1',
+        content: '',
+        ...overrides
+    };
 }

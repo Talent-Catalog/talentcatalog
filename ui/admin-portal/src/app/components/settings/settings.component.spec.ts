@@ -13,6 +13,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
+
+import type {MockedObject} from "vitest";
 import {SettingsComponent} from "./settings.component";
 import {ComponentFixture, TestBed} from "@angular/core/testing";
 import {AuthorizationService} from "../../services/authorization.service";
@@ -25,72 +27,84 @@ import {provideHttpClientTesting} from "@angular/common/http/testing";
 import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {SearchUsersComponent} from "./users/search-users.component";
 import {LocalStorageService} from "../../services/local-storage.service";
+import {expect, vi} from 'vitest';
 
 describe('SettingsComponent', () => {
-  let component: SettingsComponent;
-  let fixture: ComponentFixture<SettingsComponent>;
-  let authService: jasmine.SpyObj<AuthorizationService>;
-  let authSpy: jasmine.SpyObj<AuthorizationService>;
-  let authenticationService: jasmine.SpyObj<AuthenticationService>;
-  let localStorageService: jasmine.SpyObj<LocalStorageService>;
+    let component: SettingsComponent;
+    let fixture: ComponentFixture<SettingsComponent>;
+    let authService: MockedObject<AuthorizationService>;
+    let authSpy: MockedObject<AuthorizationService>;
+    let authenticationService: MockedObject<AuthenticationService>;
+    let localStorageService: MockedObject<LocalStorageService>;
 
-  beforeEach(async () => {
-    authSpy = jasmine.createSpyObj('AuthorizationService', ['isSystemAdminOnly','isDefaultPartner','isAnAdmin', 'canManageCandidateTasks','getLoggedInRole']);
-    const authMock = jasmine.createSpyObj('AuthenticationService', ['getLoggedInUser']);
-    const localStorageMock = jasmine.createSpyObj('LocalStorageService', ['get', 'set']);
+    beforeEach(async () => {
+        authSpy = ({
+            isSystemAdminOnly: vi.fn().mockName("AuthorizationService.isSystemAdminOnly"),
+            isDefaultPartner: vi.fn().mockName("AuthorizationService.isDefaultPartner"),
+            isAnAdmin: vi.fn().mockName("AuthorizationService.isAnAdmin"),
+            canManageCandidateTasks: vi.fn().mockName("AuthorizationService.canManageCandidateTasks"),
+            getLoggedInRole: vi.fn().mockName("AuthorizationService.getLoggedInRole")
+        } as unknown as typeof authSpy);
+        const authMock = {
+            getLoggedInUser: vi.fn().mockName("AuthenticationService.getLoggedInUser")
+        };
+        const localStorageMock = {
+            get: vi.fn().mockName("LocalStorageService.get"),
+            set: vi.fn().mockName("LocalStorageService.set")
+        };
 
-    await TestBed.configureTestingModule({
-      imports: [
-        NgbModule,  // Make sure NgbModule is imported
-        FormsModule,
-        ReactiveFormsModule,
-        NgSelectModule,
-      ],
-      declarations: [SettingsComponent,SearchUsersComponent],
-      providers: [
+        await TestBed.configureTestingModule({
+            imports: [
+                NgbModule, // Make sure NgbModule is imported
+                FormsModule,
+                ReactiveFormsModule,
+                NgSelectModule,
+            ],
+            declarations: [SettingsComponent, SearchUsersComponent],
+            providers: [
 
-        { provide: AuthorizationService, useValue: authSpy },
-        { provide: AuthenticationService, useValue: authMock },
-        { provide: LocalStorageService, useValue: localStorageMock },
-        provideHttpClient(withXhr(), withInterceptorsFromDi()),
-        provideHttpClientTesting(),
+                { provide: AuthorizationService, useValue: authSpy },
+                { provide: AuthenticationService, useValue: authMock },
+                { provide: LocalStorageService, useValue: localStorageMock },
+                provideHttpClient(withXhr(), withInterceptorsFromDi()),
+                provideHttpClientTesting(),
 
-      ]
-    }).compileComponents();
+            ]
+        }).compileComponents();
 
-    authService = TestBed.inject(AuthorizationService) as jasmine.SpyObj<AuthorizationService>;
-    authenticationService = TestBed.inject(AuthenticationService) as jasmine.SpyObj<AuthenticationService>;
-    localStorageService = TestBed.inject(LocalStorageService) as jasmine.SpyObj<LocalStorageService>;
-  });
+        authService = TestBed.inject(AuthorizationService) as MockedObject<AuthorizationService>;
+        authenticationService = TestBed.inject(AuthenticationService) as MockedObject<AuthenticationService>;
+        localStorageService = TestBed.inject(LocalStorageService) as MockedObject<LocalStorageService>;
+    });
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(SettingsComponent);
-    component = fixture.componentInstance;
-    component.loggedInUser = new MockUser();
-    authenticationService.getLoggedInUser.and.returnValue(new MockUser());
-    fixture.detectChanges();
-  });
+    beforeEach(() => {
+        fixture = TestBed.createComponent(SettingsComponent);
+        component = fixture.componentInstance;
+        component.loggedInUser = new MockUser();
+        authenticationService.getLoggedInUser.mockReturnValue(new MockUser());
+        fixture.detectChanges();
+    });
 
-  it('should create the component', () => {
-    expect(component).toBeTruthy();
-  });
+    it('should create the component', () => {
+        expect(component).toBeTruthy();
+    });
 
-  it('should get the logged in user on init', () => {
-    expect(component.loggedInUser.username).toBe('mockuser');
-  });
+    it('should get the logged in user on init', () => {
+        expect(component.loggedInUser.username).toBe('mockuser');
+    });
 
-  it('should save the selected tab in local storage on tab change', () => {
-    component.onTabChanged( 'languages');
-    expect(localStorageService.set).toHaveBeenCalledWith('SettingsLastTab', 'languages');
-  });
+    it('should save the selected tab in local storage on tab change', () => {
+        component.onTabChanged('languages');
+        expect(localStorageService.set).toHaveBeenCalledWith('SettingsLastTab', 'languages');
+    });
 
-  it('should check if the user is system admin', () => {
-    authService.isSystemAdminOnly.and.returnValue(true);
-    expect(component.systemAdminOnly()).toBeTrue();
-  });
+    it('should check if the user is system admin', () => {
+        authService.isSystemAdminOnly.mockReturnValue(true);
+        expect(component.systemAdminOnly()).toBe(true);
+    });
 
-  it('should check if the user can see external links and tasks', () => {
-    authService.canManageCandidateTasks.and.returnValue(true);
-    expect(component.canSeeExternalLinksAndTasks()).toBeTrue();
-  });
+    it('should check if the user can see external links and tasks', () => {
+        authService.canManageCandidateTasks.mockReturnValue(true);
+        expect(component.canSeeExternalLinksAndTasks()).toBe(true);
+    });
 });

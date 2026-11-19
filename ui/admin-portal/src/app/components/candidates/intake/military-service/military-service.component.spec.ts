@@ -20,51 +20,52 @@ import {AutosaveStatusComponent} from "../../../util/autosave-status/autosave-st
 import {provideHttpClientTesting} from "@angular/common/http/testing";
 import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {NgSelectModule} from "@ng-select/ng-select";
+import {expect} from 'vitest';
 
 describe('MilitaryServiceComponent', () => {
-  let component: MilitaryServiceComponent;
-  let fixture: ComponentFixture<MilitaryServiceComponent>;
-  let fb: UntypedFormBuilder;
+    let component: MilitaryServiceComponent;
+    let fixture: ComponentFixture<MilitaryServiceComponent>;
+    let fb: UntypedFormBuilder;
 
-  beforeEach(waitForAsync(() => {
-    TestBed.configureTestingModule({
-      declarations: [ MilitaryServiceComponent,AutosaveStatusComponent ],
-      imports: [NgSelectModule, FormsModule, ReactiveFormsModule ],
-      providers: [provideHttpClient(withXhr(), withInterceptorsFromDi()), provideHttpClientTesting()],
-    })
-    .compileComponents();
-  }));
+    beforeEach(waitForAsync(() => {
+        TestBed.configureTestingModule({
+            declarations: [MilitaryServiceComponent, AutosaveStatusComponent],
+            imports: [NgSelectModule, FormsModule, ReactiveFormsModule],
+            providers: [provideHttpClient(withXhr(), withInterceptorsFromDi()), provideHttpClientTesting()],
+        })
+            .compileComponents();
+    }));
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(MilitaryServiceComponent);
-    component = fixture.componentInstance;
-    fb = TestBed.inject(UntypedFormBuilder);
-    component.editable = false;
-    fixture.detectChanges();
-  });
+    beforeEach(() => {
+        fixture = TestBed.createComponent(MilitaryServiceComponent);
+        component = fixture.componentInstance;
+        fb = TestBed.inject(UntypedFormBuilder);
+        component.editable = false;
+        fixture.detectChanges();
+    });
 
-  it('should create the component', () => {
-    expect(component).toBeTruthy();
-  });
+    it('should create the component', () => {
+        expect(component).toBeTruthy();
+    });
 
-  it('should initialize the form with correct default values and disable controls if not editable', () => {
-    component.form.get('militaryService').setValue(null);
-    component.form.get('militaryWanted').setValue(null);
-    component.form.get('militaryNotes').setValue(null);
-    component.form.get('militaryStart').setValue(null);
-    component.form.get('militaryEnd').setValue(null);
+    it('should initialize the form with correct default values and disable controls if not editable', () => {
+        component.form.get('militaryService').setValue(null);
+        component.form.get('militaryWanted').setValue(null);
+        component.form.get('militaryNotes').setValue(null);
+        component.form.get('militaryStart').setValue(null);
+        component.form.get('militaryEnd').setValue(null);
 
-    expect(component.form.get('militaryService').value).toBeNull(); // Verify default value
-    expect(component.form.get('militaryWanted').value).toBeNull();
-    expect(component.form.get('militaryNotes').value).toBeNull();
-    expect(component.form.get('militaryStart').value).toBeNull();
-    expect(component.form.get('militaryEnd').value).toBeNull();
-    expect(component.form.get('militaryService').disabled).toBeTrue(); // Check if control is disabled
-    expect(component.form.get('militaryWanted').disabled).toBeTrue();
-    expect(component.form.get('militaryNotes').disabled).toBeTrue();
-    expect(component.form.get('militaryStart').disabled).toBeTrue();
-    expect(component.form.get('militaryEnd').disabled).toBeTrue();
-  });
+        expect(component.form.get('militaryService').value).toBeNull(); // Verify default value
+        expect(component.form.get('militaryWanted').value).toBeNull();
+        expect(component.form.get('militaryNotes').value).toBeNull();
+        expect(component.form.get('militaryStart').value).toBeNull();
+        expect(component.form.get('militaryEnd').value).toBeNull();
+        expect(component.form.get('militaryService').disabled).toBe(true); // Check if control is disabled
+        expect(component.form.get('militaryWanted').disabled).toBe(true);
+        expect(component.form.get('militaryNotes').disabled).toBe(true);
+        expect(component.form.get('militaryStart').disabled).toBe(true);
+        expect(component.form.get('militaryEnd').disabled).toBe(true);
+    });
 
 });
 

@@ -13,6 +13,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
+
+import type {MockedObject} from "vitest";
 import {DefineSearchComponent} from "./define-search.component";
 import {SearchQueryService} from "../../../services/search-query.service";
 import {AuthenticationService} from "../../../services/authentication.service";
@@ -38,1449 +40,1479 @@ import {CandidateStatus, UnhcrStatus} from '../../../model/candidate';
 import {EmbeddingModelService} from "../../../services/embedding-model.service";
 import {JobMatchingInfo} from "../../../model/JobMatchingInfo";
 import {SkillsService} from "../../../services/skills.service";
+import {expect, vi} from 'vitest';
 
 describe('DefineSearchComponent', () => {
-  let component: DefineSearchComponent;
-  let fixture: ComponentFixture<DefineSearchComponent>;
-  let searchQueryServiceSpy: jasmine.SpyObj<SearchQueryService>;
-  let authorizationServiceSpy: jasmine.SpyObj<AuthorizationService>;
-  let countryService: jasmine.SpyObj<CountryService>;
-  let languageService: jasmine.SpyObj<LanguageService>;
-  let partnerService: jasmine.SpyObj<PartnerService>;
-  let savedSearchService: jasmine.SpyObj<SavedSearchService>;
-  let skillsService: jasmine.SpyObj<SkillsService>;
-  let educationLevelService: jasmine.SpyObj<EducationLevelService>;
-  let educationMajorService: jasmine.SpyObj<EducationMajorService>;
-  let embeddingModelService: jasmine.SpyObj<EmbeddingModelService>;
-  let candidateOccupationService: jasmine.SpyObj<CandidateOccupationService>;
-  let surveyTypeService: jasmine.SpyObj<SurveyTypeService>;
-  let jobService: jasmine.SpyObj<JobService>;
-  let languageLevelService: jasmine.SpyObj<LanguageLevelService>;
-  let modalService: jasmine.SpyObj<NgbModal>;
-  let authorizationService: jasmine.SpyObj<AuthorizationService>;
-  let authenticationService: jasmine.SpyObj<AuthenticationService>;
-  let searchQueryService: jasmine.SpyObj<SearchQueryService>;
-  let router: jasmine.SpyObj<Router>;
-  let currentSearchTerms$: BehaviorSubject<string[]>;
-  const english = {id: 1, name: 'English'} as any;
-  const dari = {id: 2, name: 'Dari'} as any;
-  const countryA = {id: 10, name: 'A'} as any;
-  const countryB = {id: 11, name: 'B'} as any;
-  const partnerA = {id: 20, name: 'Partner A'} as any;
-  const occupationA = {id: 30, name: 'Developer'} as any;
-  const majorA = {id: 40, name: 'Computer Science'} as any;
-  const surveyA = {id: 50, name: 'Survey A'} as any;
-  const loggedInUser = {id: 99} as any;
-
-  function modalRef(result: Promise<any> = Promise.resolve(undefined)): any {
-    return {
-      componentInstance: {},
-      result,
-      close: jasmine.createSpy('close')
-    };
-  }
-
-  function setPickerMocks(): void {
-    component.modifiedDatePicker = jasmine.createSpyObj(
-      'DateRangePickerComponent',
-      ['clearDates', 'selectDate']
-    );
-
-    component.englishLanguagePicker = jasmine.createSpyObj(
-      'LanguageLevelFormControlComponent',
-      ['clearProficiencies', 'patchModel']
-    );
-
-    component.otherLanguagePicker = {
-      patchModel: jasmine.createSpy('patchModel'),
-      form: jasmine.createSpyObj('FormGroup', ['reset'])
-    } as any;
-
-    component.formWrapper = new ElementRef({
-      click: jasmine.createSpy('click')
-    });
-  }
-
-  function setSuccessfulLookupResponses(): void {
-    countryService.listCountries.and.returnValue(of([countryA, countryB]));
-    countryService.listCountriesRestricted.and.returnValue(of([countryA]));
-    languageService.listLanguages.and.returnValue(of([english, dari]));
-    languageLevelService.listLanguageLevels.and.returnValue(of([{id: 1}] as any));
-    educationLevelService.listEducationLevels.and.returnValue(of([{level: 1, name: 'School'}] as any));
-    educationMajorService.listMajors.and.returnValue(of([majorA]));
-    partnerService.listSourcePartners.and.returnValue(of([partnerA]));
-    candidateOccupationService.listOccupations.and.returnValue(of([occupationA]));
-    embeddingModelService.loadReadyModels.and.returnValue(of([]));
-    surveyTypeService.listSurveyTypes.and.returnValue(of([surveyA]));
-  }
-
-  beforeEach(async () => {
-    currentSearchTerms$ = new BehaviorSubject<string[]>([]);
-
-    countryService = jasmine.createSpyObj('CountryService', ['listCountries', 'listCountriesRestricted']);
-    languageService = jasmine.createSpyObj('LanguageService', ['listLanguages']);
-    partnerService = jasmine.createSpyObj('PartnerService', ['listSourcePartners']);
-    savedSearchService = jasmine.createSpyObj('SavedSearchService', [
-      'load', 'clearSelection', 'getSavedSearchTypeInfos', 'delete', 'get', 'updateJob'
-    ]);
-    skillsService = jasmine.createSpyObj('SkillsService', ['extractSkills']);
-    educationLevelService = jasmine.createSpyObj('EducationLevelService', ['listEducationLevels']);
-    educationMajorService = jasmine.createSpyObj('EducationMajorService', ['listMajors']);
-    candidateOccupationService = jasmine.createSpyObj('CandidateOccupationService', ['listOccupations']);
-    embeddingModelService = jasmine.createSpyObj('EmbeddingModelService', ['loadReadyModels']);
-    surveyTypeService = jasmine.createSpyObj('SurveyTypeService', ['listSurveyTypes']);
-    jobService = jasmine.createSpyObj('JobService', ['getJobMatchingInfo']);
-    languageLevelService = jasmine.createSpyObj('LanguageLevelService', ['listLanguageLevels']);
-    modalService = jasmine.createSpyObj('NgbModal', ['open']);
-    router = jasmine.createSpyObj<Router>('Router', ['navigate']);
-    authorizationService = jasmine.createSpyObj('AuthorizationService', [
-      'isSourcePartner', 'isDefaultPartner', 'canViewCandidateName',
-      'isEmployerPartner', 'canEditCandidateSource'
-    ]);
-    authenticationService = jasmine.createSpyObj('AuthenticationService', ['getLoggedInUser']);
-    searchQueryService = jasmine.createSpyObj('SearchQueryService', ['changeSearchQuery'], {
-      currentSearchTerms$: currentSearchTerms$.asObservable()
-    });
-
-    authenticationService.getLoggedInUser.and.returnValue(loggedInUser);
-    authorizationService.isSourcePartner.and.returnValue(false);
-    authorizationService.isDefaultPartner.and.returnValue(false);
-    authorizationService.canViewCandidateName.and.returnValue(true);
-    authorizationService.isEmployerPartner.and.returnValue(false);
-    authorizationService.canEditCandidateSource.and.returnValue(true);
-    savedSearchService.getSavedSearchTypeInfos.and.returnValue([]);
-    // The 'requirements' control's debounced valueChanges subscription (real, non-fakeAsync
-    // timer) can fire well after a test completes - see the note by discardPeriodicTasks()
-    // below. Stub a harmless response so that doesn't crash if it lands during another test.
-    skillsService.extractSkills.and.returnValue(of([]));
-    setSuccessfulLookupResponses();
-
-    await TestBed.configureTestingModule({
-      declarations: [DefineSearchComponent],
-      imports: [ReactiveFormsModule],
-      providers: [
-        UntypedFormBuilder,
-        {provide: CountryService, useValue: countryService},
-        {provide: LanguageService, useValue: languageService},
-        {provide: PartnerService, useValue: partnerService},
-        {provide: SkillsService, useValue: skillsService},
-        {provide: SavedSearchService, useValue: savedSearchService},
-        {provide: EducationLevelService, useValue: educationLevelService},
-        {provide: EducationMajorService, useValue: educationMajorService},
-        {provide: CandidateOccupationService, useValue: candidateOccupationService},
-        {provide: EmbeddingModelService, useValue: embeddingModelService},
-        {provide: SurveyTypeService, useValue: surveyTypeService},
-        {provide: JobService, useValue: jobService},
-        {provide: LanguageLevelService, useValue: languageLevelService},
-        {provide: NgbModal, useValue: modalService},
-        {provide: Router, useValue: router},
-        {provide: ActivatedRoute, useValue: {snapshot: {}}},
-        {provide: AuthorizationService, useValue: authorizationService},
-        {provide: AuthenticationService, useValue: authenticationService},
-        {provide: SearchQueryService, useValue: searchQueryService}
-      ],
-      schemas: [NO_ERRORS_SCHEMA]
-    })
-    .overrideComponent(DefineSearchComponent, {set: {template: ''}})
-    .compileComponents();
-
-    fixture = TestBed.createComponent(DefineSearchComponent);
-    component = fixture.componentInstance;
-
-    component.pageNumber = 3;
-    component.pageSize = 50;
-    component.selectedCandidates = [];
-
-    setPickerMocks();
-
-    searchQueryServiceSpy = searchQueryService;
-    authorizationServiceSpy = authorizationService;
-  });
-
-
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
-
-  it('should initialize form with default values', () => {
-    expect(component.searchForm).toBeDefined();
-    expect(component.searchForm.get('savedSearchId').value).toBeNull();
-  });
-
-  it('should update SearchQueryService when applying search', () => {
-    component.searchForm
-    .get('simpleQueryString')
-    .patchValue('test query');
-
-    component.apply();
-
-    expect(
-      searchQueryServiceSpy.changeSearchQuery
-    ).toHaveBeenCalledWith('test query');
-  });
-
-  it('should clear the form on clearForm() method call', () => {
-    component.modifiedDatePicker = jasmine.createSpyObj('DateRangePickerComponent', ['clearDates']);
-    component.englishLanguagePicker = jasmine.createSpyObj('LanguageLevelFormControlComponent', ['clearProficiencies']);
-    component.otherLanguagePicker = {
-      form: jasmine.createSpyObj('FormGroup', ['reset'])
-    } as any;
-
-    // Set some initial values
-    component.searchForm.get('simpleQueryString').patchValue('test query');
-    component.searchForm.get('statuses').patchValue(['status1', 'status2']);
-
-    // Clear value
-    component.clearForm();
-
-    // Assert main fields are cleared
-    expect(component.searchForm.get('simpleQueryString').value).toBeNull();
-    expect(component.searchForm.get('statuses').value).toBeNull();
-
-    // Verify that picker methods were called
-    expect(component.modifiedDatePicker.clearDates).toHaveBeenCalled();
-    expect(component.englishLanguagePicker.clearProficiencies).toHaveBeenCalled();
-    expect(component.otherLanguagePicker.form.reset).toHaveBeenCalled();
-
-    // Verify the form has actually changed
-    expect(component.searchForm.dirty).toBeTruthy();
-  });
-
-  it('should call apply() method to initialize search request', () => {
-    const applySpy = spyOn(component, 'apply');
-    component.searchForm.get('simpleQueryString').patchValue('test query');
-    component.apply();
-    expect(applySpy).toHaveBeenCalled();
-  });
-
-  it('should delete saved search join on deleteBaseSearchJoin() method call', () => {
-    component.selectedBaseJoin = { id: '123', name: 'Base Search', searchType: 'and' };
-    component.deleteBaseSearchJoin();
-    expect(component.selectedBaseJoin).toBeNull();
-  });
-
-  it('should delegate isEmployerPartner to AuthorizationService', () => {
-    authorizationServiceSpy.isEmployerPartner.and.returnValue(true);
-
-    const result = component.isEmployerPartner();
-
-    expect(authorizationServiceSpy.isEmployerPartner).toHaveBeenCalled();
-    expect(result).toBeTrue();
-  });
-
-  it('should call isSourcePartner when building partner default message', () => {
-    authorizationServiceSpy.isSourcePartner.and.returnValue(true);
-    authorizationServiceSpy.isDefaultPartner.and.returnValue(false);
-
-    const result = component.getPartnerDefaultMessage();
-
-    expect(authorizationServiceSpy.isSourcePartner).toHaveBeenCalled();
-    expect(authorizationServiceSpy.isDefaultPartner).toHaveBeenCalled();
-    expect(result).toContain('your partner');
-  });
-
-  it('should return general partner message for non-source partners', () => {
-    authorizationServiceSpy.isSourcePartner.and.returnValue(false);
-
-    const result = component.getPartnerDefaultMessage();
-
-    expect(authorizationServiceSpy.isSourcePartner).toHaveBeenCalled();
-    expect(result).toContain('any partner');
-  });
-
-  it('should hide the UNHCR status filter if isEmployerPartner returns true', () => {
-    authorizationServiceSpy.isEmployerPartner.and.returnValue(true);
-    fixture.detectChanges();
-    const unhcrFilter = fixture.nativeElement.querySelector('#unhcrStatusFilter');
-    expect(unhcrFilter).toBeNull();
-  })
-
-  it('should return false when the user is not an employer partner', () => {
-    authorizationServiceSpy.isEmployerPartner.and.returnValue(false);
-
-    const result = component.isEmployerPartner();
-
-    expect(result).toBeFalse();
-    expect(authorizationServiceSpy.isEmployerPartner).toHaveBeenCalled();
-  });
-
-  it('should call isSourcePartner when building the partner default message', () => {
-    authorizationServiceSpy.isSourcePartner.and.returnValue(true);
-    authorizationServiceSpy.isDefaultPartner.and.returnValue(false);
-
-    const message = component.getPartnerDefaultMessage();
-
-    expect(authorizationServiceSpy.isSourcePartner).toHaveBeenCalled();
-    expect(authorizationServiceSpy.isDefaultPartner).toHaveBeenCalled();
-    expect(message).toContain('your partner');
-  });
-
-  it('should create with form defaults', () => {
-    expect(component).toBeTruthy();
-    expect(component.searchForm.get('savedSearchId').value).toBeNull();
-    expect(component.searchForm.get('candidateNumbers').value).toBe('');
-    expect(component.searchForm.get('countrySearchType').value).toBe('or');
-    expect(component.searchForm.get('includePendingTermsCandidates').value).toBeFalse();
-  });
-
-  it('should track elastic status from keyword status changes', () => {
-    const control = component.searchForm.get('simpleQueryString');
-    control.patchValue('developer');
-    control.markAsDirty();
-    control.updateValueAndValidity();
-    expect(component.searchIsElastic).toBeTrue();
-
-    control.patchValue('');
-    control.updateValueAndValidity();
-    expect(component.searchIsElastic).toBeFalse();
-  });
-
-  it('should initialize lookup data, models, user and form change output', fakeAsync(() => {
-    spyOn(component.onFormChange, 'emit');
-
-    component.ngOnInit();
-    component.searchForm.get('simpleQueryString').patchValue('initial');
-    tick();
-
-    expect(component.loggedInUser).toBe(loggedInUser);
-    expect(component.nationalities).toEqual([countryA, countryB]);
-    expect(component.countries).toEqual([countryA]);
-    expect(component.languages).toEqual([english, dari]);
-    expect(component.partners).toEqual([partnerA]);
-    expect(component.englishLanguageModel.languageId).toBe(english.id);
-    expect(component.loading).toBeFalse();
-    expect(searchQueryService.changeSearchQuery).toHaveBeenCalledWith('initial');
-    expect(component.onFormChange.emit).toHaveBeenCalled();
-  }));
-
-  it('should read current search terms from SearchQueryService', () => {
-    component.ngOnInit();
-    currentSearchTerms$.next(['one', 'two']);
-    expect(component.currentSearchTerms).toEqual(['one', 'two']);
-  });
-
-  it('should load an input saved search after lookup initialization', fakeAsync(() => {
-    component.savedSearch = {id: 8, defaultSearch: true} as any;
-    spyOn(component, 'loadSavedSearch');
-
-    component.ngOnInit();
-    tick();
-
-    expect(component.loadSavedSearch).toHaveBeenCalledWith(8);
-    expect(component.showSearchRequest).toBeTrue();
-  }));
-
-  it('should publish a loaded saved search\'s keyword text once its form values are populated', fakeAsync(() => {
-    component.savedSearch = {id: 8, defaultSearch: true} as any;
-    savedSearchService.load.and.returnValue(
-      of({searchJoinRequests: [], simpleQueryString: 'engineer'} as any)
-    );
-
-    component.ngOnInit();
-    tick();
-
-    expect(searchQueryService.changeSearchQuery).toHaveBeenCalledWith('engineer');
-
-    // Populating the form patches 'requirements' too, which schedules a debounced
-    // extractSkills() timer (see the note by discardPeriodicTasks() elsewhere in this
-    // file) - discard it rather than letting it fire after this test completes.
-    discardPeriodicTasks();
-  }));
-
-  it('should expose lookup initialization errors', fakeAsync(() => {
-    countryService.listCountries.and.returnValue(throwError('lookup failed'));
-
-    component.ngOnInit();
-    tick();
-
-    expect(component.error).toBe('lookup failed');
-    expect(component.loading).toBeFalse();
-  }));
-
-  it('should initialize and run a job-match search', () => {
-    spyOn(component, 'clearForm');
-    spyOn(component, 'onSubmit');
-
-    let mockInfo: JobMatchingInfo = {
-      description: '',
-      skillNames: [
-        {name: 'Java', lang: 'en'},
-        {name: 'Project Management', lang: 'en'}
-      ],
-      jobName: 'Test job'
-    };
-
-    (component as any).setUpJobMatch(mockInfo);
-
-    expect(component.clearForm).toHaveBeenCalled();
-    expect(component.extractedSkills)
-    .toBe('Java "Project Management"');
-    expect(component.searchForm.dirty).toBeTrue();
-    expect(component.onSubmit).toHaveBeenCalled();
-  });
-
-  it('should initialize and run a search with a list constraint', () => {
-    spyOn(component, 'clearForm');
-    spyOn(component, 'onSubmit');
-
-    (component as any).runSearchWithListConstraint(15);
-
-    expect(component.clearForm).toHaveBeenCalled();
-    expect(component.searchForm.get('listAnyIds').value).toEqual([15]);
-    expect(component.onSubmit).toHaveBeenCalled();
-  });
-
-  it('should ignore empty job skills', () => {
-    component.searchForm.markAsPristine();
-    (component as any).setExtractedSkills([]);
-    expect(component.searchForm.get('simpleQueryString').value).toBeNull();
-    expect(component.searchForm.pristine).toBeTrue();
-  });
-
-  it('should request skill extraction for the current requirements text and update extractedSkills', () => {
-    component.searchForm.controls.requirements.patchValue('Senior welder with diesel experience');
-    skillsService.extractSkills.and.returnValue(of([
-      {name: 'Welding', lang: 'en'},
-      {name: 'Diesel Mechanics', lang: 'en'}
-    ]));
-
-    component.extractSkills();
-
-    expect(skillsService.extractSkills).toHaveBeenCalledWith({
-      lang: 'en',
-      text: 'Senior welder with diesel experience'
-    });
-    expect(component.extractedSkills).toBe('Welding "Diesel Mechanics"');
-    expect(component.extractedSkillNames).toEqual(['Welding', 'Diesel Mechanics']);
-  });
-
-  it('should clear extractedSkills when a non-empty requirements text yields no skills', () => {
-    component.searchForm.controls.requirements.patchValue('some text');
-    component.extractedSkills = 'stale skills';
-    component.extractedSkillNames = ['stale skill'];
-    skillsService.extractSkills.and.returnValue(of([]));
-
-    component.extractSkills();
-
-    expect(skillsService.extractSkills).toHaveBeenCalledWith({lang: 'en', text: 'some text'});
-    expect(component.extractedSkills).toBe('');
-    expect(component.extractedSkillNames).toEqual([]);
-  });
-
-  it('should clear extractedSkills without calling the service when requirements is empty', () => {
-    component.searchForm.controls.requirements.patchValue('');
-    component.extractedSkills = 'stale skills';
-
-    component.extractSkills();
-
-    expect(skillsService.extractSkills).not.toHaveBeenCalled();
-    expect(component.extractedSkills).toBe('');
-  });
-
-  it('should clear extractedSkills without calling the service when requirements is only whitespace', () => {
-    component.searchForm.controls.requirements.patchValue('   ');
-    component.extractedSkills = 'stale skills';
-
-    component.extractSkills();
-
-    expect(skillsService.extractSkills).not.toHaveBeenCalled();
-    expect(component.extractedSkills).toBe('');
-  });
-
-  it('should report no requirements when the field is unset', () => {
-    expect(component.hasRequirements()).toBeFalse();
-  });
-
-  it('should report no requirements for whitespace-only text', () => {
-    component.searchForm.controls.requirements.patchValue('   ');
-    expect(component.hasRequirements()).toBeFalse();
-  });
-
-  it('should report no requirements for markup with no visible text', () => {
-    component.searchForm.controls.requirements.patchValue('<p><br></p>');
-    expect(component.hasRequirements()).toBeFalse();
-  });
-
-  it('should report no requirements for markup containing only a non-breaking space', () => {
-    component.searchForm.controls.requirements.patchValue('<p>&nbsp;</p>');
-    expect(component.hasRequirements()).toBeFalse();
-  });
-
-  it('should report requirements present for plain text', () => {
-    component.searchForm.controls.requirements.patchValue('Senior welder with diesel experience');
-    expect(component.hasRequirements()).toBeTrue();
-  });
-
-  it('should report requirements present for text wrapped in markup', () => {
-    component.searchForm.controls.requirements.patchValue('<p>Senior welder</p>');
-    expect(component.hasRequirements()).toBeTrue();
-  });
-
-  it('should publish simpleQueryString alone when there are no extracted skills', () => {
-    component.updateTextSearchQuery('developer', '');
-
-    expect(searchQueryService.changeSearchQuery).toHaveBeenCalledWith('developer');
-  });
-
-  it('should publish an empty query when neither simpleQueryString nor extracted skills are set', () => {
-    component.updateTextSearchQuery(null, '');
-
-    expect(searchQueryService.changeSearchQuery).toHaveBeenCalledWith('');
-  });
-
-  it('should publish extracted skills alone when simpleQueryString is empty', () => {
-    component.updateTextSearchQuery(null, 'Welding "Diesel Mechanics"');
-
-    expect(searchQueryService.changeSearchQuery).toHaveBeenCalledWith('Welding "Diesel Mechanics"');
-  });
-
-  it('should combine simpleQueryString and extracted skills separated by a space', () => {
-    component.updateTextSearchQuery('developer', 'Welding');
-
-    expect(searchQueryService.changeSearchQuery).toHaveBeenCalledWith('developer Welding');
-  });
-
-  it('should call extractSkills once requirements changes have settled for 3 seconds', fakeAsync(() => {
-    spyOn(component, 'extractSkills');
-
-    component.searchForm.controls.requirements.patchValue('Java developer needed');
-    tick(2999);
-    expect(component.extractSkills).not.toHaveBeenCalled();
-
-    tick(1);
-    expect(component.extractSkills).toHaveBeenCalledTimes(1);
-  }));
-
-  it('should restart the 3 second delay whenever requirements changes again before it settles', fakeAsync(() => {
-    spyOn(component, 'extractSkills');
-
-    component.searchForm.controls.requirements.patchValue('Java d');
-    tick(2999);
-    component.searchForm.controls.requirements.patchValue('Java developer needed');
-    tick(2999);
-    expect(component.extractSkills).not.toHaveBeenCalled();
-
-    tick(1);
-    expect(component.extractSkills).toHaveBeenCalledTimes(1);
-  }));
-
-  it('should prevent Enter defaults after view initialization', () => {
-    const input = document.createElement('input');
-    document.body.appendChild(input);
-    component.ngAfterViewInit();
-    const event = new KeyboardEvent('keydown', {key: 'Enter', cancelable: true});
-    input.dispatchEvent(event);
-    expect(event.defaultPrevented).toBeTrue();
-    input.remove();
-  });
-
-  it('should expose simpleQueryString and elastic state', () => {
-    component.searchForm.get('simpleQueryString').patchValue(null);
-    expect(component.simpleQueryString).toBeNull();
-    expect(component.elastic()).toBeFalse();
-    component.searchForm.get('simpleQueryString').patchValue('x');
-    expect(component.elastic()).toBeTrue();
-  });
-
-  it('should process savedSearch changes except the first change', () => {
-    component.savedSearch = {id: 7} as any;
-    spyOn(component, 'loadSavedSearch');
-
-    component.ngOnChanges({savedSearch: new SimpleChange({id: 1} as any, component.savedSearch, false)});
-
-    expect(component.savedSearchId).toBe(7);
-    expect(component.loadSavedSearch).toHaveBeenCalledWith(7);
-  });
-
-  it('should skip loading on first savedSearch change', () => {
-    component.savedSearch = {id: 7} as any;
-    spyOn(component, 'loadSavedSearch');
-    component.ngOnChanges({savedSearch: new SimpleChange(undefined, component.savedSearch, true)});
-    expect(component.loadSavedSearch).not.toHaveBeenCalled();
-  });
-
-  it('should validate duplicate base searches', () => {
-    const validator = component.validateDuplicateSearches('savedSearchId');
-    component.selectedBaseJoin = {savedSearchId: 10};
-    component.searchForm.get('savedSearchId').patchValue(10);
-    expect(validator(component.searchForm)).toEqual({
-      error: "Can't select same base search as saved search."
-    });
-
-    component.searchForm.get('savedSearchId').patchValue(11);
-    expect(validator(component.searchForm)).toEqual({});
-
-    component.selectedBaseJoin = null;
-    expect(validator(component.searchForm)).toBeUndefined();
-  });
-
-  it('should return component, form and empty errors correctly', () => {
-    component.error = 'component error';
-    expect(component.getError()).toBe('component error');
-    component.error = null;
-    component.searchForm.setErrors({error: 'form error'});
-    expect(component.getError()).toBe('form error');
-    component.searchForm.setErrors(null);
-    expect(component.getError()).toBeNull();
-  });
-
-  it('should submit directly with no selected candidates', () => {
-    spyOn(component, 'apply');
-    component.selectedCandidates = [];
-    component.onSubmit();
-    expect(component.apply).toHaveBeenCalled();
-  });
-
-  it('should ask for confirmation when candidates are selected', () => {
-    spyOn(component, 'confirmClearSelectionAndApply');
-    component.selectedCandidates = [{} as any];
-    component.onSubmit();
-    expect(component.confirmClearSelectionAndApply).toHaveBeenCalled();
-  });
-
-  it('should run keyword search on Enter', () => {
-    const event = jasmine.createSpyObj<KeyboardEvent>('KeyboardEvent', ['preventDefault']);
-    spyOn(component, 'apply');
-    component.runKeywordSearchOnEnter(event);
-    expect(event.preventDefault).toHaveBeenCalled();
-    expect(component.apply).toHaveBeenCalled();
-  });
-
-  it('should create a paged search request', () => {
-    component.searchForm.patchValue({simpleQueryString: 'developer', candidateNumbers: '1, 2'});
-    component.apply();
-    expect(component.searchRequest.candidateNumbers).toEqual(['1','2']);
-    expect(searchQueryService.changeSearchQuery).toHaveBeenCalledWith('developer');
-  });
-
-  it('should convert all multi-select objects to IDs', () => {
-    const request: any = {
-      candidateNumbers: '100, 200 300',
-      countries: [countryA],
-      partners: [partnerA],
-      nationalities: [countryB],
-      occupations: [occupationA],
-      educationMajors: [majorA],
-      statusesDisplay: [{key: 'active'}],
-      surveyTypes: [surveyA],
-      unhcrStatusesDisplay: [{key: 'registered'}]
-    };
-
-    const result: any = component.getIdsMultiSelect(request);
-
-    expect(result.candidateNumbers).toEqual(['100', '200', '300']);
-    expect(result.countryIds).toEqual([10]);
-    expect(result.partnerIds).toEqual([20]);
-    expect(result.nationalityIds).toEqual([11]);
-    expect(result.occupationIds).toEqual([30]);
-    expect(result.educationMajorIds).toEqual([40]);
-    expect(result.statuses).toEqual(['active']);
-    expect(result.surveyTypeIds).toEqual([50]);
-    expect(result.unhcrStatuses).toEqual(['registered']);
-    expect(result.countries).toBeUndefined();
-  });
-
-  it('should leave missing multi-select properties untouched', () => {
-    const result: any = component.getIdsMultiSelect({candidateNumbers: ''});
-    expect(result.countryIds).toBeUndefined();
-    expect(result.candidateNumbers).toEqual([]);
-  });
-
-  it('should clear form, joins and child controls', () => {
-    component.savedSearchId = 6;
-    component.searchJoinArray.push(new UntypedFormBuilder().group({name: 'join'}));
-    component.selectedBaseJoin = {id: 1};
-    component.storedBaseJoin = {id: 1};
-
-    component.clearForm();
-
-    expect(component.searchForm.get('savedSearchId').value).toBe(6);
-    expect(component.searchForm.get('candidateNumbers').value).toBe('');
-    expect(component.searchForm.get('countrySearchType').value).toBe('or');
-    expect(component.searchJoinArray.length).toBe(0);
-    expect(component.selectedBaseJoin).toBeNull();
-    expect(component.storedBaseJoin).toBeNull();
-    expect(component.modifiedDatePicker.clearDates).toHaveBeenCalled();
-    expect(component.englishLanguagePicker.clearProficiencies).toHaveBeenCalled();
-    expect(component.otherLanguagePicker.form.reset).toHaveBeenCalled();
-    expect(component.searchForm.dirty).toBeTrue();
-  });
-
-  describe('clearForm() does not touch job association (used internally by job/list auto-population)', () => {
-
-    beforeEach(() => {
-      setPickerMocks();
-    });
-
-    it('should NOT call the job API or touch the URL when clearForm() is called directly', () => {
-      component.savedSearch = {id: 7, defaultSearch: true, sfJobOpp: {id: 123}} as any;
-      component.jobId = 123;
-
-      component.clearForm();
-
-      expect(savedSearchService.updateJob).not.toHaveBeenCalled();
-      expect(router.navigate).not.toHaveBeenCalled();
-      expect(component.jobId).toBe(123);
-    });
-
-    it('should not clobber jobId/jobName when setUpJobMatch (which calls clearForm internally) runs', () => {
-      component.savedSearch = {id: 7, defaultSearch: true, sfJobOpp: null} as any;
-      component.jobId = 123;
-      spyOn(component, 'onSubmit');
-
-      (component as any).setUpJobMatch({
-        description: '',
-        skillNames: [],
-        jobName: 'Test job'
-      });
-
-      expect(savedSearchService.updateJob).not.toHaveBeenCalled();
-      expect(router.navigate).not.toHaveBeenCalled();
-      expect(component.jobId).toBe(123);
-      expect(component.jobName).toBe('Test job');
-      expect(component.displayJobNameAsSource()).toContain('123');
-    });
-  });
-
-  describe('onClearSearch() - user-triggered Clear Search button', () => {
-
-    beforeEach(() => {
-      setPickerMocks();
-    });
-
-    it('should clear the form fields (delegating to clearForm)', () => {
-      component.savedSearch = {id: 7, defaultSearch: true, sfJobOpp: null} as any;
-      component.searchForm.get('simpleQueryString').patchValue('test query');
-
-      component.onClearSearch();
-
-      expect(component.searchForm.get('simpleQueryString').value).toBeNull();
-    });
-
-    it('should clear the job association via the API when the default search has an existing job', () => {
-      component.savedSearch = {id: 7, defaultSearch: true, sfJobOpp: {id: 123}} as any;
-      component.jobId = 123;
-      const updated = {id: 7, defaultSearch: true, sfJobOpp: null} as any;
-      savedSearchService.updateJob.and.returnValue(of(updated));
-
-      component.onClearSearch();
-
-      expect(savedSearchService.updateJob).toHaveBeenCalledWith(7, null);
-      expect(component.savedSearch).toEqual(updated);
-    });
-
-    it('should remove the job query param from the URL while preserving unrelated params', () => {
-      component.savedSearch = {id: 7, defaultSearch: true, sfJobOpp: {id: 123}} as any;
-      component.jobId = 123;
-      savedSearchService.updateJob.and.returnValue(of({id: 7, defaultSearch: true, sfJobOpp: null} as any));
-
-      component.onClearSearch();
-
-      expect(component.jobId).toBeFalsy();
-      expect(router.navigate).toHaveBeenCalledWith([], jasmine.objectContaining({
-        queryParams: {job: null},
-        queryParamsHandling: 'merge'
-      }));
-    });
-
-    it('should surface an error without crashing if clearing the job association fails', () => {
-      component.savedSearch = {id: 7, defaultSearch: true, sfJobOpp: {id: 123}} as any;
-      component.jobId = 123;
-      savedSearchService.updateJob.and.returnValue(throwError('Failed to clear job'));
-
-      component.onClearSearch();
-
-      expect(component.error).toEqual('Failed to clear job');
-    });
-
-    it('should not call the job API when the default search has no existing job association', () => {
-      component.savedSearch = {id: 7, defaultSearch: true, sfJobOpp: null} as any;
-      component.jobId = 0;
-
-      component.onClearSearch();
-
-      expect(savedSearchService.updateJob).not.toHaveBeenCalled();
-      expect(router.navigate).not.toHaveBeenCalled();
-    });
-
-    it('should not clear the job association for a non-default (named) saved search', () => {
-      component.savedSearch = {id: 7, defaultSearch: false, sfJobOpp: {id: 123}} as any;
-      component.jobId = 123;
-
-      component.onClearSearch();
-
-      expect(savedSearchService.updateJob).not.toHaveBeenCalled();
-      expect(router.navigate).not.toHaveBeenCalled();
-    });
-
-    it('should do nothing when there is no current saved search', () => {
-      component.savedSearch = undefined;
-
-      expect(() => component.onClearSearch()).not.toThrow();
-      expect(savedSearchService.updateJob).not.toHaveBeenCalled();
-      expect(router.navigate).not.toHaveBeenCalled();
-    });
-  });
-
-  describe('onUnlinkJob() - user-triggered Unlink job icon', () => {
-
-    beforeEach(() => {
-      setPickerMocks();
-    });
-
-    it('should clear the job association and label but keep the search criteria', () => {
-      component.savedSearch = {id: 7, defaultSearch: true, sfJobOpp: {id: 123}} as any;
-      component.jobId = 123;
-      component.jobName = 'Test job';
-      component.jobNameSourceId = 123;
-      component.searchForm.get('simpleQueryString').patchValue('test query');
-      savedSearchService.updateJob.and.returnValue(of({id: 7, defaultSearch: true, sfJobOpp: null} as any));
-
-      component.onUnlinkJob();
-
-      expect(savedSearchService.updateJob).toHaveBeenCalledWith(7, null);
-      expect(component.jobName).toBeNull();
-      expect(component.displayJobNameAsSource()).toBe('');
-      expect(component.jobId).toBeFalsy();
-      expect(router.navigate).toHaveBeenCalledWith([], jasmine.objectContaining({
-        queryParams: {job: null}
-      }));
-      expect(component.searchForm.get('simpleQueryString').value).toBe('test query');
-    });
-  });
-
-  it('should navigate to a new search', () => {
-    router.navigate.calls.reset();
-
-    component.newSearch();
-
-    expect(router.navigate).toHaveBeenCalledWith(['search']);
-  });
-
-  it('should confirm and clear current selections', fakeAsync(() => {
-    modalService.open.and.returnValue(modalRef(Promise.resolve(true)));
-    spyOn(component, 'clearSelection');
-    component.confirmClearSelectionAndApply();
-    tick();
-    expect(component.clearSelection).toHaveBeenCalled();
-  }));
-
-  it('should not clear selections when confirmation is false or dismissed', fakeAsync(() => {
-    spyOn(component, 'clearSelection');
-    modalService.open.and.returnValue(modalRef(Promise.resolve(false)));
-    component.confirmClearSelectionAndApply();
-    tick();
-    expect(component.clearSelection).not.toHaveBeenCalled();
-
-    modalService.open.and.returnValue(modalRef(Promise.reject('dismissed')));
-    component.confirmClearSelectionAndApply();
-    tick();
-    expect(component.clearSelection).not.toHaveBeenCalled();
-  }));
-
-  it('should clear saved-search selection then apply', fakeAsync(() => {
-    component.savedSearch = {id: 7} as any;
-    component.loggedInUser = {id: 99} as any;
-    component.selectedCandidates = [{} as any];
-
-    savedSearchService.clearSelection.and.returnValue(of(null));
-    spyOn(component, 'apply');
-
-    component.clearSelection();
-    tick();
-
-    expect(savedSearchService.clearSelection).toHaveBeenCalledWith(
-      7,
-      {userId: 99}
-    );
-    expect(component.selectedCandidates).toEqual([]);
-    expect(component.apply).toHaveBeenCalled();
-  }));
-
-  it('should expose selection-clear errors', fakeAsync(() => {
-    component.savedSearch = {id: 7} as any;
-    component.loggedInUser = {id: 99} as any;
-
-    savedSearchService.clearSelection.and.returnValue(
-      throwError('clear failed')
-    );
-
-    component.clearSelection();
-    tick();
-
-    expect(savedSearchService.clearSelection).toHaveBeenCalledWith(
-      7,
-      {userId: 99}
-    );
-    expect(component.error).toBe('clear failed');
-  }));
-
-  it('should build breadcrumb from saved-search type infos', () => {
-    component.savedSearch = {id: 1, name: 'My Search'} as any;
-    savedSearchService.getSavedSearchTypeInfos.and.returnValue([]);
-    expect(component.getBreadcrumb()).toBeDefined();
-  });
-
-  it('should load a saved search successfully', fakeAsync(() => {
-    const request: any = {searchJoinRequests: []};
-    savedSearchService.load.and.returnValue(of(request));
-    spyOn(component, 'populateFormWithSavedSearch');
-
-    component.loadSavedSearch(4);
-    tick();
-
-    expect(component.searchForm.get('savedSearchId').value).toBe(4);
-    expect(component.populateFormWithSavedSearch).toHaveBeenCalledWith(request);
-    expect(component.loading).toBeFalse();
-  }));
-
-  it('should load set up the job matching after loading a job-based search', fakeAsync(() => {
-    component.jobId = 3;
-    savedSearchService.load.and.returnValue(of({searchJoinRequests: []} as any));
-
-    let mockInfo: JobMatchingInfo = {
-      description: '',
-      skillNames: [{name: 'Java', lang: 'en'}],
-      jobName: 'Test job'
+    let component: DefineSearchComponent;
+    let fixture: ComponentFixture<DefineSearchComponent>;
+    let searchQueryServiceSpy: MockedObject<SearchQueryService>;
+    let authorizationServiceSpy: MockedObject<AuthorizationService>;
+    let countryService: MockedObject<CountryService>;
+    let languageService: MockedObject<LanguageService>;
+    let partnerService: MockedObject<PartnerService>;
+    let savedSearchService: MockedObject<SavedSearchService>;
+    let skillsService: MockedObject<SkillsService>;
+    let educationLevelService: MockedObject<EducationLevelService>;
+    let educationMajorService: MockedObject<EducationMajorService>;
+    let embeddingModelService: MockedObject<EmbeddingModelService>;
+    let candidateOccupationService: MockedObject<CandidateOccupationService>;
+    let surveyTypeService: MockedObject<SurveyTypeService>;
+    let jobService: MockedObject<JobService>;
+    let languageLevelService: MockedObject<LanguageLevelService>;
+    let modalService: MockedObject<NgbModal>;
+    let authorizationService: MockedObject<AuthorizationService>;
+    let authenticationService: MockedObject<AuthenticationService>;
+    let searchQueryService: MockedObject<SearchQueryService>;
+    let router: MockedObject<Router>;
+    let currentSearchTerms$: BehaviorSubject<string[]>;
+    const english = { id: 1, name: 'English' } as any;
+    const dari = { id: 2, name: 'Dari' } as any;
+    const countryA = { id: 10, name: 'A' } as any;
+    const countryB = { id: 11, name: 'B' } as any;
+    const partnerA = { id: 20, name: 'Partner A' } as any;
+    const occupationA = { id: 30, name: 'Developer' } as any;
+    const majorA = { id: 40, name: 'Computer Science' } as any;
+    const surveyA = { id: 50, name: 'Survey A' } as any;
+    const loggedInUser = { id: 99 } as any;
+
+    function modalRef(result: Promise<any> = Promise.resolve(undefined)): any {
+        return {
+            componentInstance: {},
+            result,
+            close: vi.fn().mockName('close')
+        };
     }
-    jobService.getJobMatchingInfo.and.returnValue(of(mockInfo as any));
-    spyOn(component, 'populateFormWithSavedSearch');
-    spyOn<any>(component, 'setUpJobMatch');
 
-    component.loadSavedSearch(4);
-    tick();
+    function setPickerMocks(): void {
+        component.modifiedDatePicker = ({
+            clearDates: vi.fn().mockName("DateRangePickerComponent.clearDates"),
+            selectDate: vi.fn().mockName("DateRangePickerComponent.selectDate")
+        } as unknown as typeof component.modifiedDatePicker);
 
-    expect(jobService.getJobMatchingInfo).toHaveBeenCalledWith(3);
-    expect((component as any).setUpJobMatch).toHaveBeenCalledWith(mockInfo, null);
-  }));
+        component.englishLanguagePicker = ({
+            clearProficiencies: vi.fn().mockName("LanguageLevelFormControlComponent.clearProficiencies"),
+            patchModel: vi.fn().mockName("LanguageLevelFormControlComponent.patchModel")
+        } as unknown as typeof component.englishLanguagePicker);
 
-  describe('opening a search for a job (setUpJobMatch)', () => {
+        component.otherLanguagePicker = {
+            patchModel: vi.fn().mockName('patchModel'),
+            form: {
+                reset: vi.fn().mockName("FormGroup.reset")
+            }
+        } as any;
 
-    const jobInfo: JobMatchingInfo =
-      {description: '<p>Raw job text</p>', skillNames: [], jobName: 'Test job'};
+        component.formWrapper = new ElementRef({
+            click: vi.fn().mockName('click')
+        });
+    }
 
-    beforeEach(() => {
-      spyOn(component, 'clearForm');
-      spyOn(component, 'onSubmit');
+    function setSuccessfulLookupResponses(): void {
+        countryService.listCountries.mockReturnValue(of([countryA, countryB]));
+        countryService.listCountriesRestricted.mockReturnValue(of([countryA]));
+        languageService.listLanguages.mockReturnValue(of([english, dari]));
+        languageLevelService.listLanguageLevels.mockReturnValue(of([{ id: 1 }] as any));
+        educationLevelService.listEducationLevels.mockReturnValue(of([{ level: 1, name: 'School' }] as any));
+        educationMajorService.listMajors.mockReturnValue(of([majorA]));
+        partnerService.listSourcePartners.mockReturnValue(of([partnerA]));
+        candidateOccupationService.listOccupations.mockReturnValue(of([occupationA]));
+        embeddingModelService.loadReadyModels.mockReturnValue(of([]));
+        surveyTypeService.listSurveyTypes.mockReturnValue(of([surveyA]));
+    }
+
+    beforeEach(async () => {
+        currentSearchTerms$ = new BehaviorSubject<string[]>([]);
+
+        countryService = ({
+            listCountries: vi.fn().mockName("CountryService.listCountries"),
+            listCountriesRestricted: vi.fn().mockName("CountryService.listCountriesRestricted")
+        } as unknown as typeof countryService);
+        languageService = ({
+            listLanguages: vi.fn().mockName("LanguageService.listLanguages")
+        } as unknown as typeof languageService);
+        partnerService = ({
+            listSourcePartners: vi.fn().mockName("PartnerService.listSourcePartners")
+        } as unknown as typeof partnerService);
+        savedSearchService = ({
+            load: vi.fn().mockName("SavedSearchService.load"),
+            clearSelection: vi.fn().mockName("SavedSearchService.clearSelection"),
+            getSavedSearchTypeInfos: vi.fn().mockName("SavedSearchService.getSavedSearchTypeInfos"),
+            delete: vi.fn().mockName("SavedSearchService.delete"),
+            get: vi.fn().mockName("SavedSearchService.get"),
+            updateJob: vi.fn().mockName("SavedSearchService.updateJob")
+        } as unknown as typeof savedSearchService);
+        skillsService = ({
+            extractSkills: vi.fn().mockName("SkillsService.extractSkills")
+        } as unknown as typeof skillsService);
+        educationLevelService = ({
+            listEducationLevels: vi.fn().mockName("EducationLevelService.listEducationLevels")
+        } as unknown as typeof educationLevelService);
+        educationMajorService = ({
+            listMajors: vi.fn().mockName("EducationMajorService.listMajors")
+        } as unknown as typeof educationMajorService);
+        candidateOccupationService = ({
+            listOccupations: vi.fn().mockName("CandidateOccupationService.listOccupations")
+        } as unknown as typeof candidateOccupationService);
+        embeddingModelService = ({
+            loadReadyModels: vi.fn().mockName("EmbeddingModelService.loadReadyModels")
+        } as unknown as typeof embeddingModelService);
+        surveyTypeService = ({
+            listSurveyTypes: vi.fn().mockName("SurveyTypeService.listSurveyTypes")
+        } as unknown as typeof surveyTypeService);
+        jobService = ({
+            getJobMatchingInfo: vi.fn().mockName("JobService.getJobMatchingInfo")
+        } as unknown as typeof jobService);
+        languageLevelService = ({
+            listLanguageLevels: vi.fn().mockName("LanguageLevelService.listLanguageLevels")
+        } as unknown as typeof languageLevelService);
+        modalService = ({
+            open: vi.fn().mockName("NgbModal.open")
+        } as unknown as typeof modalService);
+        router = ({
+            navigate: vi.fn().mockName("Router.navigate")
+        } as unknown as typeof router);
+        authorizationService = ({
+            isSourcePartner: vi.fn().mockName("AuthorizationService.isSourcePartner"),
+            isDefaultPartner: vi.fn().mockName("AuthorizationService.isDefaultPartner"),
+            canViewCandidateName: vi.fn().mockName("AuthorizationService.canViewCandidateName"),
+            isEmployerPartner: vi.fn().mockName("AuthorizationService.isEmployerPartner"),
+            canEditCandidateSource: vi.fn().mockName("AuthorizationService.canEditCandidateSource")
+        } as unknown as typeof authorizationService);
+        authenticationService = ({
+            getLoggedInUser: vi.fn().mockName("AuthenticationService.getLoggedInUser")
+        } as unknown as typeof authenticationService);
+        searchQueryService = ({
+            changeSearchQuery: vi.fn().mockName("SearchQueryService.changeSearchQuery"),
+            currentSearchTerms$: currentSearchTerms$.asObservable()
+        } as unknown as typeof searchQueryService);
+
+        authenticationService.getLoggedInUser.mockReturnValue(loggedInUser);
+        authorizationService.isSourcePartner.mockReturnValue(false);
+        authorizationService.isDefaultPartner.mockReturnValue(false);
+        authorizationService.canViewCandidateName.mockReturnValue(true);
+        authorizationService.isEmployerPartner.mockReturnValue(false);
+        authorizationService.canEditCandidateSource.mockReturnValue(true);
+        savedSearchService.getSavedSearchTypeInfos.mockReturnValue([]);
+        // The 'requirements' control's debounced valueChanges subscription (real, non-fakeAsync
+        // timer) can fire well after a test completes - see the note by discardPeriodicTasks()
+        // below. Stub a harmless response so that doesn't crash if it lands during another test.
+        skillsService.extractSkills.mockReturnValue(of([]));
+        setSuccessfulLookupResponses();
+
+        await TestBed.configureTestingModule({
+            declarations: [DefineSearchComponent],
+            imports: [ReactiveFormsModule],
+            providers: [
+                UntypedFormBuilder,
+                { provide: CountryService, useValue: countryService },
+                { provide: LanguageService, useValue: languageService },
+                { provide: PartnerService, useValue: partnerService },
+                { provide: SkillsService, useValue: skillsService },
+                { provide: SavedSearchService, useValue: savedSearchService },
+                { provide: EducationLevelService, useValue: educationLevelService },
+                { provide: EducationMajorService, useValue: educationMajorService },
+                { provide: CandidateOccupationService, useValue: candidateOccupationService },
+                { provide: EmbeddingModelService, useValue: embeddingModelService },
+                { provide: SurveyTypeService, useValue: surveyTypeService },
+                { provide: JobService, useValue: jobService },
+                { provide: LanguageLevelService, useValue: languageLevelService },
+                { provide: NgbModal, useValue: modalService },
+                { provide: Router, useValue: router },
+                { provide: ActivatedRoute, useValue: { snapshot: {} } },
+                { provide: AuthorizationService, useValue: authorizationService },
+                { provide: AuthenticationService, useValue: authenticationService },
+                { provide: SearchQueryService, useValue: searchQueryService }
+            ],
+            schemas: [NO_ERRORS_SCHEMA]
+        })
+            .overrideComponent(DefineSearchComponent, { set: { template: '' } })
+            .compileComponents();
+
+        fixture = TestBed.createComponent(DefineSearchComponent);
+        component = fixture.componentInstance;
+
+        component.pageNumber = 3;
+        component.pageSize = 50;
+        component.selectedCandidates = [];
+
+        setPickerMocks();
+
+        searchQueryServiceSpy = searchQueryService;
+        authorizationServiceSpy = authorizationService;
     });
 
-    it('should pass the saved requirements when the search is already associated with the job', fakeAsync(() => {
-      component.jobId = 3;
-      component.savedSearch = {id: 4, defaultSearch: true, sfJobOpp: {id: 3}} as any;
-      savedSearchService.load.and.returnValue(
-        of({searchJoinRequests: [], requirements: '<p>Refined</p>'} as any));
-      jobService.getJobMatchingInfo.and.returnValue(of(jobInfo as any));
-      spyOn(component, 'populateFormWithSavedSearch');
-      spyOn<any>(component, 'setUpJobMatch');
 
-      component.loadSavedSearch(4);
-      tick();
-
-      expect((component as any).setUpJobMatch).toHaveBeenCalledWith(jobInfo, '<p>Refined</p>');
-    }));
-
-    it('should not pass the saved requirements when the search is associated with a different job', fakeAsync(() => {
-      component.jobId = 3;
-      component.savedSearch = {id: 4, defaultSearch: true, sfJobOpp: {id: 123}} as any;
-      savedSearchService.load.and.returnValue(
-        of({searchJoinRequests: [], requirements: '<p>Other job</p>'} as any));
-      jobService.getJobMatchingInfo.and.returnValue(of(jobInfo as any));
-      spyOn(component, 'populateFormWithSavedSearch');
-      spyOn<any>(component, 'setUpJobMatch');
-
-      component.loadSavedSearch(4);
-      tick();
-
-      expect((component as any).setUpJobMatch).toHaveBeenCalledWith(jobInfo, null);
-    }));
-
-    it('should use existing job requirements rather than the job text', () => {
-      (component as any).setUpJobMatch(jobInfo, '<p>Refined</p>');
-
-      expect(component.searchForm.get('requirements').value).toBe('<p>Refined</p>');
-      expect(component.onSubmit).toHaveBeenCalled();
+    it('should create', () => {
+        expect(component).toBeTruthy();
     });
 
-    it('should use the job text when there are no existing job requirements', () => {
-      (component as any).setUpJobMatch(jobInfo, null);
-
-      expect(component.searchForm.get('requirements').value).toBe('<p>Raw job text</p>');
+    it('should initialize form with default values', () => {
+        expect(component.searchForm).toBeDefined();
+        expect(component.searchForm.get('savedSearchId').value).toBeNull();
     });
 
-    it('should use the job text when the existing job requirements have no text content', () => {
-      (component as any).setUpJobMatch(jobInfo, '<p>&nbsp;</p>');
+    it('should update SearchQueryService when applying search', () => {
+        component.searchForm
+            .get('simpleQueryString')
+            .patchValue('test query');
 
-      expect(component.searchForm.get('requirements').value).toBe('<p>Raw job text</p>');
-    });
-  });
+        component.apply();
 
-  describe('displaying the job associated with a loaded saved search', () => {
-
-    const jobInfo = (jobName: string): JobMatchingInfo =>
-      ({description: 'Job description', skillNames: [], jobName});
-
-    beforeEach(() => {
-      savedSearchService.load.and.returnValue(of({searchJoinRequests: []} as any));
-      spyOn(component, 'populateFormWithSavedSearch');
+        expect(searchQueryServiceSpy.changeSearchQuery).toHaveBeenCalledWith('test query');
     });
 
-    it('should display the associated job like a job passed in via the query param', fakeAsync(() => {
-      component.jobId = undefined;
-      component.savedSearch = {id: 4, sfJobOpp: {id: 123}} as any;
-      jobService.getJobMatchingInfo.and.returnValue(of(jobInfo('Associated job') as any));
-
-      component.loadSavedSearch(4);
-      tick();
-
-      expect(jobService.getJobMatchingInfo).toHaveBeenCalledWith(123);
-      expect(component.jobName).toBe('Associated job');
-      expect(component.displayJobNameAsSource()).toBe('Linked to job 123: Associated job');
-    }));
-
-    it('should only display the job - not replace the saved search criteria or re-run the search', fakeAsync(() => {
-      component.jobId = undefined;
-      component.savedSearch = {id: 4, sfJobOpp: {id: 123}} as any;
-      jobService.getJobMatchingInfo.and.returnValue(of(jobInfo('Associated job') as any));
-      spyOn<any>(component, 'setUpJobMatch');
-      spyOn(component, 'onSubmit');
-      spyOn(component, 'clearForm');
-
-      component.loadSavedSearch(4);
-      tick();
-
-      expect(component.populateFormWithSavedSearch).toHaveBeenCalled();
-      expect((component as any).setUpJobMatch).not.toHaveBeenCalled();
-      expect(component.clearForm).not.toHaveBeenCalled();
-      expect(component.onSubmit).not.toHaveBeenCalled();
-      expect(component.searchForm.get('requirements').value).not.toBe('Job description');
-    }));
-
-    it('should display no job, and clear any previously displayed job, when the saved search has none', fakeAsync(() => {
-      component.jobId = undefined;
-      component.jobName = 'Previous job';
-      component.jobNameSourceId = 99;
-      component.savedSearch = {id: 4, sfJobOpp: null} as any;
-
-      component.loadSavedSearch(4);
-      tick();
-
-      expect(jobService.getJobMatchingInfo).not.toHaveBeenCalled();
-      expect(component.jobName).toBeNull();
-      expect(component.displayJobNameAsSource()).toBe('');
-    }));
-
-    it('should let a job passed in via the query param take precedence over the saved search job', fakeAsync(() => {
-      setPickerMocks();
-      spyOn(component, 'onSubmit');
-      component.jobId = 3;
-      component.savedSearch = {id: 4, defaultSearch: true, sfJobOpp: {id: 123}} as any;
-      jobService.getJobMatchingInfo.and.returnValue(of(jobInfo('Query param job') as any));
-
-      component.loadSavedSearch(4);
-      tick();
-
-      expect(jobService.getJobMatchingInfo).toHaveBeenCalledOnceWith(3);
-      expect(component.displayJobNameAsSource()).toBe('Linked to job 3: Query param job');
-      discardPeriodicTasks();
-    }));
-
-    it('should ignore a stale job name response after a different saved search is loaded', fakeAsync(() => {
-      component.jobId = undefined;
-      const slowJobInfo = new Subject<JobMatchingInfo>();
-      jobService.getJobMatchingInfo.and.returnValue(slowJobInfo as any);
-      component.savedSearch = {id: 4, sfJobOpp: {id: 123}} as any;
-      component.loadSavedSearch(4);
-      tick();
-
-      component.savedSearch = {id: 5, sfJobOpp: null} as any;
-      component.loadSavedSearch(5);
-      tick();
-      slowJobInfo.next(jobInfo('Stale job'));
-      tick();
-
-      expect(component.jobName).toBeNull();
-    }));
-
-    it('should show no job label, and no error, if the job name cannot be loaded', fakeAsync(() => {
-      component.jobId = undefined;
-      component.savedSearch = {id: 4, sfJobOpp: {id: 123}} as any;
-      jobService.getJobMatchingInfo.and.returnValue(throwError('job lookup failed'));
-
-      component.loadSavedSearch(4);
-      tick();
-
-      expect(component.jobName).toBeNull();
-      expect(component.error).toBeFalsy();
-      expect(component.loading).toBeFalse();
-    }));
-
-    it('should remove the job label when Clear Search clears the default search job association', fakeAsync(() => {
-      setPickerMocks();
-      component.jobId = undefined;
-      component.savedSearch = {id: 4, defaultSearch: true, sfJobOpp: {id: 123}} as any;
-      jobService.getJobMatchingInfo.and.returnValue(of(jobInfo('Associated job') as any));
-      component.loadSavedSearch(4);
-      tick();
-      savedSearchService.updateJob.and.returnValue(of({id: 4, defaultSearch: true, sfJobOpp: null} as any));
-
-      component.onClearSearch();
-
-      expect(component.jobName).toBeNull();
-      expect(component.displayJobNameAsSource()).toBe('');
-      discardPeriodicTasks();
-    }));
-  });
-
-  it('should run a list-constrained search after loading a list-based search', fakeAsync(() => {
-    component.listId = 15;
-    savedSearchService.load.and.returnValue(of({searchJoinRequests: []} as any));
-    spyOn(component, 'populateFormWithSavedSearch');
-    spyOn<any>(component, 'runSearchWithListConstraint');
-
-    component.loadSavedSearch(4);
-    tick();
-
-    expect((component as any).runSearchWithListConstraint).toHaveBeenCalledWith(15);
-  }));
-
-  it('should expose getJobMatchingInfo and saved-search load errors', fakeAsync(() => {
-    component.jobId = 3;
-    savedSearchService.load.and.returnValue(of({searchJoinRequests: []} as any));
-    jobService.getJobMatchingInfo.and.returnValue(throwError('job matching info failed'));
-    spyOn(component, 'populateFormWithSavedSearch');
-    component.loadSavedSearch(4);
-    tick();
-    expect(component.error).toBe('job matching info failed');
-
-    savedSearchService.load.and.returnValue(throwError('load failed'));
-    component.loadSavedSearch(4);
-    tick();
-    expect(component.error).toBe('load failed');
-    expect(component.loading).toBeFalse();
-  }));
-
-  it('should update exclusion, list-any and list-all controls', () => {
-    component.onExclusionListSelected({id: 8} as any);
-    expect(component.exclusionListId).toBe(8);
-    expect(component.exclusionListIdControl.dirty).toBeTrue();
-
-    component.onListAnySelected([{id: 1}, {id: 2}] as any);
-    expect(component.listAnyIds).toEqual([1, 2]);
-    expect(component.listAnyIdsControl.dirty).toBeTrue();
-
-    component.onListAllSelected([{id: 3}] as any);
-    expect(component.listAllIds).toEqual([3]);
-    expect(component.listAllIdsControl.dirty).toBeTrue();
-  });
-
-  it('should show and load a chosen saved search', fakeAsync(() => {
-    const saved = {id: 9, name: 'Chosen'} as any;
-    modalService.open.and.returnValue(modalRef(Promise.resolve(saved)));
-    spyOn(component, 'loadSavedSearch');
-    component.showSavedSearches();
-    tick();
-    expect(component.savedSearch).toBe(saved);
-    expect(component.loadSavedSearch).toHaveBeenCalledWith(9);
-  }));
-
-  it('should delegate create and update modal methods', () => {
-    spyOn(component, 'openSavedSearchModal');
-    component.createNewSavedSearchModal();
-    expect(component.openSavedSearchModal).toHaveBeenCalledWith(true);
-    component.updateSavedSearchModal();
-    expect(component.openSavedSearchModal).toHaveBeenCalledWith(false);
-  });
-
-  it('should open create saved-search modal, navigate and mark pristine', fakeAsync(() => {
-    router.navigate.calls.reset();
-
-    component.savedSearch = {id: 1, name: 'Current'} as any;
-
-    const created = {id: 2, name: 'Created'} as any;
-    const ref = modalRef(Promise.resolve(created));
-
-    modalService.open.and.returnValue(ref);
-    spyOn(component, 'populateFormWithSavedSearch');
-
-    component.searchForm.markAsDirty();
-
-    component.openSavedSearchModal(true);
-    tick();
-
-    expect(ref.componentInstance.savedSearch).toBe(component.savedSearch);
-    expect(ref.componentInstance.searchCandidateRequest).toBeDefined();
-    expect(ref.componentInstance.jobId).toBeUndefined();
-    expect(router.navigate).toHaveBeenCalled();
-    expect(component.populateFormWithSavedSearch).toHaveBeenCalled();
-    expect(component.searchForm.pristine).toBeTrue();
-  }));
-
-  it('should keep the search\'s job association when saving it as a named search', () => {
-    component.savedSearch = {id: 1, name: 'Default', defaultSearch: true, sfJobOpp: {id: 3}} as any;
-    const ref = modalRef(new Promise(() => {}));
-    modalService.open.and.returnValue(ref);
-
-    component.openSavedSearchModal(true);
-
-    expect(ref.componentInstance.jobId).toBe(3);
-  });
-
-  it('should update without navigating and tolerate modal dismissal', fakeAsync(() => {
-    router.navigate.calls.reset();
-
-    component.savedSearch = {id: 1, name: 'Current'} as any;
-
-    spyOn(component, 'populateFormWithSavedSearch');
-
-    modalService.open.and.returnValue(
-      modalRef(Promise.resolve(component.savedSearch))
-    );
-
-    component.openSavedSearchModal(false);
-    tick();
-
-    expect(router.navigate).not.toHaveBeenCalled();
-    expect(component.populateFormWithSavedSearch).toHaveBeenCalled();
-
-    modalService.open.and.returnValue(
-      modalRef(Promise.reject('dismissed'))
-    );
-
-    component.openSavedSearchModal(false);
-    tick();
-
-    expect(router.navigate).not.toHaveBeenCalled();
-  }));
-
-  it('should delete a saved search and navigate', fakeAsync(() => {
-    component.savedSearch = {id: 4, name: 'Delete Me'} as any;
-    const ref = modalRef(Promise.resolve(true));
-    modalService.open.and.returnValue(ref);
-    savedSearchService.delete.and.returnValue(of(null));
-    router.navigate.calls.reset();
-
-    component.deleteSavedSearchModal();
-    tick();
-
-    expect(ref.componentInstance.message).toContain('Delete Me');
-    expect(savedSearchService.delete).toHaveBeenCalledWith(4);
-    expect(router.navigate).toHaveBeenCalledWith(['search']);
-    expect(component.loading).toBeFalse();
-  }));
-
-  it('should expose delete failure and ignore false confirmation', fakeAsync(() => {
-    component.savedSearch = {id: 4, name: 'Delete Me'} as any;
-    modalService.open.and.returnValue(modalRef(Promise.resolve(true)));
-    savedSearchService.delete.and.returnValue(throwError('delete failed'));
-    component.deleteSavedSearchModal();
-    tick();
-    expect(component.error).toBe('delete failed');
-    expect(component.loading).toBeFalse();
-
-    savedSearchService.delete.calls.reset();
-    modalService.open.and.returnValue(modalRef(Promise.resolve(false)));
-    component.deleteSavedSearchModal();
-    tick();
-    expect(savedSearchService.delete).not.toHaveBeenCalled();
-  }));
-
-  it('should fully populate the form from a saved search', fakeAsync(() => {
-    component.candidateOccupations = [occupationA];
-    component.partners = [partnerA];
-    component.educationMajors = [majorA];
-    component.surveyTypes = [surveyA];
-    component.countries = [countryA];
-    component.nationalities = [countryB];
-    savedSearchService.get.and.returnValue(of({id: 77, name: 'Joined'} as any));
-    spyOn(component.onFormChange, 'emit');
-
-    const request: any = {
-      savedSearchId: 1,
-      countrySearchType: null,
-      nationalitySearchType: null,
-      listAllSearchType: null,
-      listAnySearchType: null,
-      statuses: [CandidateStatus.active],
-      englishMinWrittenLevel: 2,
-      englishMinSpokenLevel: 3,
-      occupationIds: [30],
-      lastModifiedFrom: '2026-01-02',
-      lastModifiedTo: '2026-02-03',
-      partnerIds: [20],
-      educationMajorIds: [40],
-      surveyTypeIds: [50],
-      otherLanguageId: 2,
-      otherMinWrittenLevel: 1,
-      otherMinSpokenLevel: 2,
-      countryIds: [10],
-      nationalityIds: [11],
-      unhcrStatuses: [UnhcrStatus.RegisteredAsylum],
-      searchJoinRequests: [{savedSearchId: 77, name: 'Joined', searchType: 'and'}]
-    };
-
-    component.populateFormWithSavedSearch(request);
-    tick();
-
-    expect(component.searchForm.get('countrySearchType').value).toBe('or');
-    expect(component.searchForm.get('nationalitySearchType').value).toBe('or');
-    expect(component.searchForm.get('listAllSearchType').value).toBe('and');
-    expect(component.searchForm.get('listAnySearchType').value).toBe('or');
-    expect(component.searchForm.get('occupations').value).toEqual([occupationA]);
-    expect(component.searchForm.get('partners').value).toEqual([partnerA]);
-    expect(component.searchForm.get('educationMajors').value).toEqual([majorA]);
-    expect(component.searchForm.get('surveyTypes').value).toEqual([surveyA]);
-    expect(component.searchForm.get('countries').value).toEqual([countryA]);
-    expect(component.searchForm.get('nationalities').value).toEqual([countryB]);
-    expect(component.englishLanguagePicker.patchModel).toHaveBeenCalled();
-    expect(component.otherLanguagePicker.patchModel).toHaveBeenCalled();
-    expect(component.modifiedDatePicker.selectDate).toHaveBeenCalledTimes(2);
-    expect(component.searchJoinArray.length).toBe(1);
-    expect(savedSearchService.get).toHaveBeenCalledTimes(1);
-    expect(savedSearchService.get.calls.mostRecent().args).toEqual([77]);
-    expect(component.selectedBaseJoin).toEqual({
-      id: 77,
-      name: 'Joined'
-    } as any);
-    expect(component.formWrapper.nativeElement.click).toHaveBeenCalled();
-    expect(component.searchForm.pristine).toBeTrue();
-    expect(component.onFormChange.emit).toHaveBeenCalledWith(false);
-
-    // Patching 'requirements' above (as part of the blanket patch of all form
-    // controls) triggers the debounced extractSkills() subscription, which
-    // schedules a pending timer via rxjs' debounceTime. Discard it rather than
-    // letting it fire, since we're not testing skill extraction here.
-    discardPeriodicTasks();
-  }));
-
-  it('should populate empty optional collections without failing', () => {
-    const request: any = {searchJoinRequests: []};
-    component.populateFormWithSavedSearch(request);
-    expect(component.searchForm.get('occupations').value).toEqual([]);
-    expect(component.searchForm.get('partners').value).toEqual([]);
-    expect(component.searchJoinArray.length).toBe(0);
-  });
-
-  it('should add and delete saved-search joins', fakeAsync(() => {
-    component.savedSearch = {id: 5} as any;
-    const join = {savedSearchId: 8, name: 'Join', searchType: 'and'};
-    const ref = modalRef(Promise.resolve(join));
-    modalService.open.and.returnValue(ref);
-    component.addSavedSearchJoin();
-    tick();
-    expect(ref.componentInstance.currentSavedSearchId).toBe(5);
-    expect(component.searchJoinArray.length).toBe(1);
-
-    component.deleteSavedSearchJoin(join);
-    expect(component.searchJoinArray.length).toBe(0);
-  }));
-
-  it('should handle selected dates and cleared dates', () => {
-    component.handleDateSelected({
-      fromDate: {year: 2026, month: 2, day: 3},
-      toDate: {year: 2026, month: 4, day: 5}
-    }, 'lastModified');
-    expect(component.searchForm.get('lastModifiedFrom').value).toBe('2026-02-03');
-    expect(component.searchForm.get('lastModifiedTo').value).toBe('2026-04-05');
-
-    component.handleDateSelected({fromDate: null, toDate: null}, 'lastModified');
-    expect(component.searchForm.get('lastModifiedFrom').value).toBeNull();
-    expect(component.searchForm.get('lastModifiedTo').value).toBeNull();
-  });
-
-  it('should update English and other language controls', () => {
-    component.handleLanguageLevelChange({languageId: 1, writtenLevel: 2, spokenLevel: 3}, 'english');
-    expect(component.searchForm.get('englishMinWrittenLevel').value).toBe(2);
-    expect(component.searchForm.get('englishMinSpokenLevel').value).toBe(3);
-
-    component.handleLanguageLevelChange({languageId: 2, writtenLevel: 1, spokenLevel: 2}, 'other');
-    expect(component.searchForm.get('otherLanguageId').value).toBe(2);
-    expect(component.searchForm.get('otherMinWrittenLevel').value).toBe(1);
-    expect(component.searchForm.get('otherMinSpokenLevel').value).toBe(2);
-  });
-
-  it('should change search operators', () => {
-    component.handleSearchTypeChange('countrySearchType', 'not');
-    expect(component.searchForm.get('countrySearchType').value).toBe('not');
-  });
-
-  it('should add and remove a base search join', () => {
-    spyOn(component.onFormChange, 'emit');
-    component.searchJoinArray.push(new UntypedFormBuilder().group({name: 'old'}));
-    component.addBaseSearchJoin({id: 12, name: 'Base'} as any);
-    expect(component.selectedBaseJoin).toEqual({
-      savedSearchId: 12,
-      name: 'Base',
-      searchType: 'and'
+    it('should clear the form on clearForm() method call', () => {
+        component.modifiedDatePicker = ({
+            clearDates: vi.fn().mockName("DateRangePickerComponent.clearDates")
+        } as unknown as typeof component.modifiedDatePicker);
+        component.englishLanguagePicker = ({
+            clearProficiencies: vi.fn().mockName("LanguageLevelFormControlComponent.clearProficiencies")
+        } as unknown as typeof component.englishLanguagePicker);
+        component.otherLanguagePicker = {
+            form: {
+                reset: vi.fn().mockName("FormGroup.reset")
+            }
+        } as any;
+
+        // Set some initial values
+        component.searchForm.get('simpleQueryString').patchValue('test query');
+        component.searchForm.get('statuses').patchValue(['status1', 'status2']);
+
+        // Clear value
+        component.clearForm();
+
+        // Assert main fields are cleared
+        expect(component.searchForm.get('simpleQueryString').value).toBeNull();
+        expect(component.searchForm.get('statuses').value).toBeNull();
+
+        // Verify that picker methods were called
+        expect(component.modifiedDatePicker.clearDates).toHaveBeenCalled();
+        expect(component.englishLanguagePicker.clearProficiencies).toHaveBeenCalled();
+        expect(component.otherLanguagePicker.form.reset).toHaveBeenCalled();
+
+        // Verify the form has actually changed
+        expect(component.searchForm.dirty).toBeTruthy();
     });
-    expect(component.searchJoinArray.length).toBe(1);
-    expect(component.searchForm.get('searchJoinRequests').dirty).toBeTrue();
-    expect(component.onFormChange.emit).toHaveBeenCalled();
 
-    component.storedBaseJoin = {id: 1};
-    component.deleteBaseSearchJoin();
-    expect(component.searchJoinArray.length).toBe(0);
-    expect(component.selectedBaseJoin).toBeNull();
-    expect(component.storedBaseJoin).toBeNull();
-  });
+    it('should call apply() method to initialize search request', () => {
+        const applySpy = vi.spyOn(component, 'apply').mockReturnValue(undefined);
+        component.searchForm.get('simpleQueryString').patchValue('test query');
+        component.apply();
+        expect(applySpy).toHaveBeenCalled();
+    });
 
-  it('should delegate search edit authorization', () => {
-    component.savedSearch = {id: 1} as any;
-    authorizationService.canEditCandidateSource.and.returnValue(false);
-    expect(component.canChangeSearchRequest()).toBeFalse();
-    expect(authorizationService.canEditCandidateSource).toHaveBeenCalledWith(component.savedSearch);
-  });
+    it('should delete saved search join on deleteBaseSearchJoin() method call', () => {
+        component.selectedBaseJoin = { id: '123', name: 'Base Search', searchType: 'and' };
+        component.deleteBaseSearchJoin();
+        expect(component.selectedBaseJoin).toBeNull();
+    });
 
-  it('should select and clear all options', () => {
-    const options = [{id: 1}, {id: 2}];
-    component.onSelectAll(options, 'partners');
-    expect(component.searchForm.get('partners').value).toBe(options);
-    expect(component.searchForm.get('partners').dirty).toBeTrue();
+    it('should delegate isEmployerPartner to AuthorizationService', () => {
+        authorizationServiceSpy.isEmployerPartner.mockReturnValue(true);
 
-    component.onClearAll('partners');
-    expect(component.searchForm.get('partners').value).toBeNull();
-  });
+        const result = component.isEmployerPartner();
 
-  it('should create enum and object tooltips', () => {
-    component.searchForm.get('statusesDisplay').patchValue([
-      {key: 'active', stringValue: 'Active'},
-      {key: 'draft', stringValue: 'Draft'}
-    ]);
-    expect(component.getTooltip('statusesDisplay')).toBe('Active, Draft');
+        expect(authorizationServiceSpy.isEmployerPartner).toHaveBeenCalled();
+        expect(result).toBe(true);
+    });
 
-    component.searchForm.get('partners').patchValue([
-      {name: 'One'}, {name: 'Two'}
-    ]);
-    expect(component.getTooltip('partners')).toBe('One, Two');
-  });
+    it('should call isSourcePartner when building partner default message', () => {
+        authorizationServiceSpy.isSourcePartner.mockReturnValue(true);
+        authorizationServiceSpy.isDefaultPartner.mockReturnValue(false);
 
-  it('should return partner default messages for source and non-source partners', () => {
-    authorizationService.isSourcePartner.and.returnValue(true);
-    authorizationService.isDefaultPartner.and.returnValue(false);
-    expect(component.getPartnerDefaultMessage()).toContain('your partner');
+        const result = component.getPartnerDefaultMessage();
 
-    authorizationService.isDefaultPartner.and.returnValue(true);
-    expect(component.getPartnerDefaultMessage()).toContain('any partner');
+        expect(authorizationServiceSpy.isSourcePartner).toHaveBeenCalled();
+        expect(authorizationServiceSpy.isDefaultPartner).toHaveBeenCalled();
+        expect(result).toContain('your partner');
+    });
 
-    authorizationService.isSourcePartner.and.returnValue(false);
-    expect(component.getPartnerDefaultMessage()).toContain('any partner');
-  });
+    it('should return general partner message for non-source partners', () => {
+        authorizationServiceSpy.isSourcePartner.mockReturnValue(false);
 
-  it('should delegate candidate-name and employer-partner checks', () => {
-    authorizationService.canViewCandidateName.and.returnValue(false);
-    authorizationService.isEmployerPartner.and.returnValue(true);
-    expect(component.canViewCandidateName()).toBeFalse();
-    expect(component.isEmployerPartner()).toBeTrue();
-  });
+        const result = component.getPartnerDefaultMessage();
 
-  it('should identify empty and non-empty search terms', () => {
-    component.currentSearchTerms = [];
-    expect(component.isEmptySearchTerms()).toBeTrue();
-    component.currentSearchTerms = ['term'];
-    expect(component.isEmptySearchTerms()).toBeFalse();
-    component.currentSearchTerms = null;
-    expect(component.isEmptySearchTerms()).toBeTrue();
-  });
+        expect(authorizationServiceSpy.isSourcePartner).toHaveBeenCalled();
+        expect(result).toContain('any partner');
+    });
+
+    it('should hide the UNHCR status filter if isEmployerPartner returns true', () => {
+        authorizationServiceSpy.isEmployerPartner.mockReturnValue(true);
+        fixture.detectChanges();
+        const unhcrFilter = fixture.nativeElement.querySelector('#unhcrStatusFilter');
+        expect(unhcrFilter).toBeNull();
+    });
+
+    it('should return false when the user is not an employer partner', () => {
+        authorizationServiceSpy.isEmployerPartner.mockReturnValue(false);
+
+        const result = component.isEmployerPartner();
+
+        expect(result).toBe(false);
+        expect(authorizationServiceSpy.isEmployerPartner).toHaveBeenCalled();
+    });
+
+    it('should call isSourcePartner when building the partner default message', () => {
+        authorizationServiceSpy.isSourcePartner.mockReturnValue(true);
+        authorizationServiceSpy.isDefaultPartner.mockReturnValue(false);
+
+        const message = component.getPartnerDefaultMessage();
+
+        expect(authorizationServiceSpy.isSourcePartner).toHaveBeenCalled();
+        expect(authorizationServiceSpy.isDefaultPartner).toHaveBeenCalled();
+        expect(message).toContain('your partner');
+    });
+
+    it('should create with form defaults', () => {
+        expect(component).toBeTruthy();
+        expect(component.searchForm.get('savedSearchId').value).toBeNull();
+        expect(component.searchForm.get('candidateNumbers').value).toBe('');
+        expect(component.searchForm.get('countrySearchType').value).toBe('or');
+        expect(component.searchForm.get('includePendingTermsCandidates').value).toBe(false);
+    });
+
+    it('should track elastic status from keyword status changes', () => {
+        const control = component.searchForm.get('simpleQueryString');
+        control.patchValue('developer');
+        control.markAsDirty();
+        control.updateValueAndValidity();
+        expect(component.searchIsElastic).toBe(true);
+
+        control.patchValue('');
+        control.updateValueAndValidity();
+        expect(component.searchIsElastic).toBe(false);
+    });
+
+    it('should initialize lookup data, models, user and form change output', fakeAsync(() => {
+        vi.spyOn(component.onFormChange, 'emit').mockReturnValue(undefined);
+
+        component.ngOnInit();
+        component.searchForm.get('simpleQueryString').patchValue('initial');
+        tick();
+
+        expect(component.loggedInUser).toBe(loggedInUser);
+        expect(component.nationalities).toEqual([countryA, countryB]);
+        expect(component.countries).toEqual([countryA]);
+        expect(component.languages).toEqual([english, dari]);
+        expect(component.partners).toEqual([partnerA]);
+        expect(component.englishLanguageModel.languageId).toBe(english.id);
+        expect(component.loading).toBe(false);
+        expect(searchQueryService.changeSearchQuery).toHaveBeenCalledWith('initial');
+        expect(component.onFormChange.emit).toHaveBeenCalled();
+    }));
+
+    it('should read current search terms from SearchQueryService', () => {
+        component.ngOnInit();
+        currentSearchTerms$.next(['one', 'two']);
+        expect(component.currentSearchTerms).toEqual(['one', 'two']);
+    });
+
+    it('should load an input saved search after lookup initialization', fakeAsync(() => {
+        component.savedSearch = { id: 8, defaultSearch: true } as any;
+        vi.spyOn(component, 'loadSavedSearch').mockReturnValue(undefined);
+
+        component.ngOnInit();
+        tick();
+
+        expect(component.loadSavedSearch).toHaveBeenCalledWith(8);
+        expect(component.showSearchRequest).toBe(true);
+    }));
+
+    it('should publish a loaded saved search\'s keyword text once its form values are populated', fakeAsync(() => {
+        component.savedSearch = { id: 8, defaultSearch: true } as any;
+        savedSearchService.load.mockReturnValue(of({ searchJoinRequests: [], simpleQueryString: 'engineer' } as any));
+
+        component.ngOnInit();
+        tick();
+
+        expect(searchQueryService.changeSearchQuery).toHaveBeenCalledWith('engineer');
+
+        // Populating the form patches 'requirements' too, which schedules a debounced
+        // extractSkills() timer (see the note by discardPeriodicTasks() elsewhere in this
+        // file) - discard it rather than letting it fire after this test completes.
+        discardPeriodicTasks();
+    }));
+
+    it('should expose lookup initialization errors', fakeAsync(() => {
+        countryService.listCountries.mockReturnValue(throwError('lookup failed'));
+
+        component.ngOnInit();
+        tick();
+
+        expect(component.error).toBe('lookup failed');
+        expect(component.loading).toBe(false);
+    }));
+
+    it('should initialize and run a job-match search', () => {
+        vi.spyOn(component, 'clearForm').mockReturnValue(undefined);
+        vi.spyOn(component, 'onSubmit').mockReturnValue(undefined);
+
+        let mockInfo: JobMatchingInfo = {
+            description: '',
+            skillNames: [
+                { name: 'Java', lang: 'en' },
+                { name: 'Project Management', lang: 'en' }
+            ],
+            jobName: 'Test job'
+        };
+
+        (component as any).setUpJobMatch(mockInfo);
+
+        expect(component.clearForm).toHaveBeenCalled();
+        expect(component.extractedSkills)
+            .toBe('Java "Project Management"');
+        expect(component.searchForm.dirty).toBe(true);
+        expect(component.onSubmit).toHaveBeenCalled();
+    });
+
+    it('should initialize and run a search with a list constraint', () => {
+        vi.spyOn(component, 'clearForm').mockReturnValue(undefined);
+        vi.spyOn(component, 'onSubmit').mockReturnValue(undefined);
+
+        (component as any).runSearchWithListConstraint(15);
+
+        expect(component.clearForm).toHaveBeenCalled();
+        expect(component.searchForm.get('listAnyIds').value).toEqual([15]);
+        expect(component.onSubmit).toHaveBeenCalled();
+    });
+
+    it('should ignore empty job skills', () => {
+        component.searchForm.markAsPristine();
+        (component as any).setExtractedSkills([]);
+        expect(component.searchForm.get('simpleQueryString').value).toBeNull();
+        expect(component.searchForm.pristine).toBe(true);
+    });
+
+    it('should request skill extraction for the current requirements text and update extractedSkills', () => {
+        component.searchForm.controls.requirements.patchValue('Senior welder with diesel experience');
+        skillsService.extractSkills.mockReturnValue(of([
+            { name: 'Welding', lang: 'en' },
+            { name: 'Diesel Mechanics', lang: 'en' }
+        ]));
+
+        component.extractSkills();
+
+        expect(skillsService.extractSkills).toHaveBeenCalledWith({
+            lang: 'en',
+            text: 'Senior welder with diesel experience'
+        });
+        expect(component.extractedSkills).toBe('Welding "Diesel Mechanics"');
+        expect(component.extractedSkillNames).toEqual(['Welding', 'Diesel Mechanics']);
+    });
+
+    it('should clear extractedSkills when a non-empty requirements text yields no skills', () => {
+        component.searchForm.controls.requirements.patchValue('some text');
+        component.extractedSkills = 'stale skills';
+        component.extractedSkillNames = ['stale skill'];
+        skillsService.extractSkills.mockReturnValue(of([]));
+
+        component.extractSkills();
+
+        expect(skillsService.extractSkills).toHaveBeenCalledWith({ lang: 'en', text: 'some text' });
+        expect(component.extractedSkills).toBe('');
+        expect(component.extractedSkillNames).toEqual([]);
+    });
+
+    it('should clear extractedSkills without calling the service when requirements is empty', () => {
+        component.searchForm.controls.requirements.patchValue('');
+        component.extractedSkills = 'stale skills';
+
+        component.extractSkills();
+
+        expect(skillsService.extractSkills).not.toHaveBeenCalled();
+        expect(component.extractedSkills).toBe('');
+    });
+
+    it('should clear extractedSkills without calling the service when requirements is only whitespace', () => {
+        component.searchForm.controls.requirements.patchValue('   ');
+        component.extractedSkills = 'stale skills';
+
+        component.extractSkills();
+
+        expect(skillsService.extractSkills).not.toHaveBeenCalled();
+        expect(component.extractedSkills).toBe('');
+    });
+
+    it('should report no requirements when the field is unset', () => {
+        expect(component.hasRequirements()).toBe(false);
+    });
+
+    it('should report no requirements for whitespace-only text', () => {
+        component.searchForm.controls.requirements.patchValue('   ');
+        expect(component.hasRequirements()).toBe(false);
+    });
+
+    it('should report no requirements for markup with no visible text', () => {
+        component.searchForm.controls.requirements.patchValue('<p><br></p>');
+        expect(component.hasRequirements()).toBe(false);
+    });
+
+    it('should report no requirements for markup containing only a non-breaking space', () => {
+        component.searchForm.controls.requirements.patchValue('<p>&nbsp;</p>');
+        expect(component.hasRequirements()).toBe(false);
+    });
+
+    it('should report requirements present for plain text', () => {
+        component.searchForm.controls.requirements.patchValue('Senior welder with diesel experience');
+        expect(component.hasRequirements()).toBe(true);
+    });
+
+    it('should report requirements present for text wrapped in markup', () => {
+        component.searchForm.controls.requirements.patchValue('<p>Senior welder</p>');
+        expect(component.hasRequirements()).toBe(true);
+    });
+
+    it('should publish simpleQueryString alone when there are no extracted skills', () => {
+        component.updateTextSearchQuery('developer', '');
+
+        expect(searchQueryService.changeSearchQuery).toHaveBeenCalledWith('developer');
+    });
+
+    it('should publish an empty query when neither simpleQueryString nor extracted skills are set', () => {
+        component.updateTextSearchQuery(null, '');
+
+        expect(searchQueryService.changeSearchQuery).toHaveBeenCalledWith('');
+    });
+
+    it('should publish extracted skills alone when simpleQueryString is empty', () => {
+        component.updateTextSearchQuery(null, 'Welding "Diesel Mechanics"');
+
+        expect(searchQueryService.changeSearchQuery).toHaveBeenCalledWith('Welding "Diesel Mechanics"');
+    });
+
+    it('should combine simpleQueryString and extracted skills separated by a space', () => {
+        component.updateTextSearchQuery('developer', 'Welding');
+
+        expect(searchQueryService.changeSearchQuery).toHaveBeenCalledWith('developer Welding');
+    });
+
+    it('should call extractSkills once requirements changes have settled for 3 seconds', fakeAsync(() => {
+        vi.spyOn(component, 'extractSkills').mockReturnValue(undefined);
+
+        component.searchForm.controls.requirements.patchValue('Java developer needed');
+        tick(2999);
+        expect(component.extractSkills).not.toHaveBeenCalled();
+
+        tick(1);
+        expect(component.extractSkills).toHaveBeenCalledTimes(1);
+    }));
+
+    it('should restart the 3 second delay whenever requirements changes again before it settles', fakeAsync(() => {
+        vi.spyOn(component, 'extractSkills').mockReturnValue(undefined);
+
+        component.searchForm.controls.requirements.patchValue('Java d');
+        tick(2999);
+        component.searchForm.controls.requirements.patchValue('Java developer needed');
+        tick(2999);
+        expect(component.extractSkills).not.toHaveBeenCalled();
+
+        tick(1);
+        expect(component.extractSkills).toHaveBeenCalledTimes(1);
+    }));
+
+    it('should prevent Enter defaults after view initialization', () => {
+        const input = document.createElement('input');
+        document.body.appendChild(input);
+        component.ngAfterViewInit();
+        const event = new KeyboardEvent('keydown', { key: 'Enter', cancelable: true });
+        input.dispatchEvent(event);
+        expect(event.defaultPrevented).toBe(true);
+        input.remove();
+    });
+
+    it('should expose simpleQueryString and elastic state', () => {
+        component.searchForm.get('simpleQueryString').patchValue(null);
+        expect(component.simpleQueryString).toBeNull();
+        expect(component.elastic()).toBe(false);
+        component.searchForm.get('simpleQueryString').patchValue('x');
+        expect(component.elastic()).toBe(true);
+    });
+
+    it('should process savedSearch changes except the first change', () => {
+        component.savedSearch = { id: 7 } as any;
+        vi.spyOn(component, 'loadSavedSearch').mockReturnValue(undefined);
+
+        component.ngOnChanges({ savedSearch: new SimpleChange({ id: 1 } as any, component.savedSearch, false) });
+
+        expect(component.savedSearchId).toBe(7);
+        expect(component.loadSavedSearch).toHaveBeenCalledWith(7);
+    });
+
+    it('should skip loading on first savedSearch change', () => {
+        component.savedSearch = { id: 7 } as any;
+        vi.spyOn(component, 'loadSavedSearch').mockReturnValue(undefined);
+        component.ngOnChanges({ savedSearch: new SimpleChange(undefined, component.savedSearch, true) });
+        expect(component.loadSavedSearch).not.toHaveBeenCalled();
+    });
+
+    it('should validate duplicate base searches', () => {
+        const validator = component.validateDuplicateSearches('savedSearchId');
+        component.selectedBaseJoin = { savedSearchId: 10 };
+        component.searchForm.get('savedSearchId').patchValue(10);
+        expect(validator(component.searchForm)).toEqual({
+            error: "Can't select same base search as saved search."
+        });
+
+        component.searchForm.get('savedSearchId').patchValue(11);
+        expect(validator(component.searchForm)).toEqual({});
+
+        component.selectedBaseJoin = null;
+        expect(validator(component.searchForm)).toBeUndefined();
+    });
+
+    it('should return component, form and empty errors correctly', () => {
+        component.error = 'component error';
+        expect(component.getError()).toBe('component error');
+        component.error = null;
+        component.searchForm.setErrors({ error: 'form error' });
+        expect(component.getError()).toBe('form error');
+        component.searchForm.setErrors(null);
+        expect(component.getError()).toBeNull();
+    });
+
+    it('should submit directly with no selected candidates', () => {
+        vi.spyOn(component, 'apply').mockReturnValue(undefined);
+        component.selectedCandidates = [];
+        component.onSubmit();
+        expect(component.apply).toHaveBeenCalled();
+    });
+
+    it('should ask for confirmation when candidates are selected', () => {
+        vi.spyOn(component, 'confirmClearSelectionAndApply').mockReturnValue(undefined);
+        component.selectedCandidates = [{} as any];
+        component.onSubmit();
+        expect(component.confirmClearSelectionAndApply).toHaveBeenCalled();
+    });
+
+    it('should run keyword search on Enter', () => {
+        const event = {
+            preventDefault: vi.fn().mockName("KeyboardEvent.preventDefault")
+        };
+        vi.spyOn(component, 'apply').mockReturnValue(undefined);
+        component.runKeywordSearchOnEnter((event as unknown as KeyboardEvent));
+        expect(event.preventDefault).toHaveBeenCalled();
+        expect(component.apply).toHaveBeenCalled();
+    });
+
+    it('should create a paged search request', () => {
+        component.searchForm.patchValue({ simpleQueryString: 'developer', candidateNumbers: '1, 2' });
+        component.apply();
+        expect(component.searchRequest.candidateNumbers).toEqual(['1', '2']);
+        expect(searchQueryService.changeSearchQuery).toHaveBeenCalledWith('developer');
+    });
+
+    it('should convert all multi-select objects to IDs', () => {
+        const request: any = {
+            candidateNumbers: '100, 200 300',
+            countries: [countryA],
+            partners: [partnerA],
+            nationalities: [countryB],
+            occupations: [occupationA],
+            educationMajors: [majorA],
+            statusesDisplay: [{ key: 'active' }],
+            surveyTypes: [surveyA],
+            unhcrStatusesDisplay: [{ key: 'registered' }]
+        };
+
+        const result: any = component.getIdsMultiSelect(request);
+
+        expect(result.candidateNumbers).toEqual(['100', '200', '300']);
+        expect(result.countryIds).toEqual([10]);
+        expect(result.partnerIds).toEqual([20]);
+        expect(result.nationalityIds).toEqual([11]);
+        expect(result.occupationIds).toEqual([30]);
+        expect(result.educationMajorIds).toEqual([40]);
+        expect(result.statuses).toEqual(['active']);
+        expect(result.surveyTypeIds).toEqual([50]);
+        expect(result.unhcrStatuses).toEqual(['registered']);
+        expect(result.countries).toBeUndefined();
+    });
+
+    it('should leave missing multi-select properties untouched', () => {
+        const result: any = component.getIdsMultiSelect({ candidateNumbers: '' });
+        expect(result.countryIds).toBeUndefined();
+        expect(result.candidateNumbers).toEqual([]);
+    });
+
+    it('should clear form, joins and child controls', () => {
+        component.savedSearchId = 6;
+        component.searchJoinArray.push(new UntypedFormBuilder().group({ name: 'join' }));
+        component.selectedBaseJoin = { id: 1 };
+        component.storedBaseJoin = { id: 1 };
+
+        component.clearForm();
+
+        expect(component.searchForm.get('savedSearchId').value).toBe(6);
+        expect(component.searchForm.get('candidateNumbers').value).toBe('');
+        expect(component.searchForm.get('countrySearchType').value).toBe('or');
+        expect(component.searchJoinArray.length).toBe(0);
+        expect(component.selectedBaseJoin).toBeNull();
+        expect(component.storedBaseJoin).toBeNull();
+        expect(component.modifiedDatePicker.clearDates).toHaveBeenCalled();
+        expect(component.englishLanguagePicker.clearProficiencies).toHaveBeenCalled();
+        expect(component.otherLanguagePicker.form.reset).toHaveBeenCalled();
+        expect(component.searchForm.dirty).toBe(true);
+    });
+
+    describe('clearForm() does not touch job association (used internally by job/list auto-population)', () => {
+
+        beforeEach(() => {
+            setPickerMocks();
+        });
+
+        it('should NOT call the job API or touch the URL when clearForm() is called directly', () => {
+            component.savedSearch = { id: 7, defaultSearch: true, sfJobOpp: { id: 123 } } as any;
+            component.jobId = 123;
+
+            component.clearForm();
+
+            expect(savedSearchService.updateJob).not.toHaveBeenCalled();
+            expect(router.navigate).not.toHaveBeenCalled();
+            expect(component.jobId).toBe(123);
+        });
+
+        it('should not clobber jobId/jobName when setUpJobMatch (which calls clearForm internally) runs', () => {
+            component.savedSearch = { id: 7, defaultSearch: true, sfJobOpp: null } as any;
+            component.jobId = 123;
+            vi.spyOn(component, 'onSubmit').mockReturnValue(undefined);
+
+            (component as any).setUpJobMatch({
+                description: '',
+                skillNames: [],
+                jobName: 'Test job'
+            });
+
+            expect(savedSearchService.updateJob).not.toHaveBeenCalled();
+            expect(router.navigate).not.toHaveBeenCalled();
+            expect(component.jobId).toBe(123);
+            expect(component.jobName).toBe('Test job');
+            expect(component.displayJobNameAsSource()).toContain('123');
+        });
+    });
+
+    describe('onClearSearch() - user-triggered Clear Search button', () => {
+
+        beforeEach(() => {
+            setPickerMocks();
+        });
+
+        it('should clear the form fields (delegating to clearForm)', () => {
+            component.savedSearch = { id: 7, defaultSearch: true, sfJobOpp: null } as any;
+            component.searchForm.get('simpleQueryString').patchValue('test query');
+
+            component.onClearSearch();
+
+            expect(component.searchForm.get('simpleQueryString').value).toBeNull();
+        });
+
+        it('should clear the job association via the API when the default search has an existing job', () => {
+            component.savedSearch = { id: 7, defaultSearch: true, sfJobOpp: { id: 123 } } as any;
+            component.jobId = 123;
+            const updated = { id: 7, defaultSearch: true, sfJobOpp: null } as any;
+            savedSearchService.updateJob.mockReturnValue(of(updated));
+
+            component.onClearSearch();
+
+            expect(savedSearchService.updateJob).toHaveBeenCalledWith(7, null);
+            expect(component.savedSearch).toEqual(updated);
+        });
+
+        it('should remove the job query param from the URL while preserving unrelated params', () => {
+            component.savedSearch = { id: 7, defaultSearch: true, sfJobOpp: { id: 123 } } as any;
+            component.jobId = 123;
+            savedSearchService.updateJob.mockReturnValue(of({ id: 7, defaultSearch: true, sfJobOpp: null } as any));
+
+            component.onClearSearch();
+
+            expect(component.jobId).toBeFalsy();
+            expect(router.navigate).toHaveBeenCalledWith([], expect.objectContaining({
+                queryParams: { job: null },
+                queryParamsHandling: 'merge'
+            }));
+        });
+
+        it('should surface an error without crashing if clearing the job association fails', () => {
+            component.savedSearch = { id: 7, defaultSearch: true, sfJobOpp: { id: 123 } } as any;
+            component.jobId = 123;
+            savedSearchService.updateJob.mockReturnValue(throwError('Failed to clear job'));
+
+            component.onClearSearch();
+
+            expect(component.error).toEqual('Failed to clear job');
+        });
+
+        it('should not call the job API when the default search has no existing job association', () => {
+            component.savedSearch = { id: 7, defaultSearch: true, sfJobOpp: null } as any;
+            component.jobId = 0;
+
+            component.onClearSearch();
+
+            expect(savedSearchService.updateJob).not.toHaveBeenCalled();
+            expect(router.navigate).not.toHaveBeenCalled();
+        });
+
+        it('should not clear the job association for a non-default (named) saved search', () => {
+            component.savedSearch = { id: 7, defaultSearch: false, sfJobOpp: { id: 123 } } as any;
+            component.jobId = 123;
+
+            component.onClearSearch();
+
+            expect(savedSearchService.updateJob).not.toHaveBeenCalled();
+            expect(router.navigate).not.toHaveBeenCalled();
+        });
+
+        it('should do nothing when there is no current saved search', () => {
+            component.savedSearch = undefined;
+
+            expect(() => component.onClearSearch()).not.toThrow();
+            expect(savedSearchService.updateJob).not.toHaveBeenCalled();
+            expect(router.navigate).not.toHaveBeenCalled();
+        });
+    });
+
+    describe('onUnlinkJob() - user-triggered Unlink job icon', () => {
+
+        beforeEach(() => {
+            setPickerMocks();
+        });
+
+        it('should clear the job association and label but keep the search criteria', () => {
+            component.savedSearch = { id: 7, defaultSearch: true, sfJobOpp: { id: 123 } } as any;
+            component.jobId = 123;
+            component.jobName = 'Test job';
+            component.jobNameSourceId = 123;
+            component.searchForm.get('simpleQueryString').patchValue('test query');
+            savedSearchService.updateJob.mockReturnValue(of({ id: 7, defaultSearch: true, sfJobOpp: null } as any));
+
+            component.onUnlinkJob();
+
+            expect(savedSearchService.updateJob).toHaveBeenCalledWith(7, null);
+            expect(component.jobName).toBeNull();
+            expect(component.displayJobNameAsSource()).toBe('');
+            expect(component.jobId).toBeFalsy();
+            expect(router.navigate).toHaveBeenCalledWith([], expect.objectContaining({
+                queryParams: { job: null }
+            }));
+            expect(component.searchForm.get('simpleQueryString').value).toBe('test query');
+        });
+    });
+
+    it('should navigate to a new search', () => {
+        router.navigate.mockClear();
+
+        component.newSearch();
+
+        expect(router.navigate).toHaveBeenCalledWith(['search']);
+    });
+
+    it('should confirm and clear current selections', fakeAsync(() => {
+        modalService.open.mockReturnValue(modalRef(Promise.resolve(true)));
+        vi.spyOn(component, 'clearSelection').mockReturnValue(undefined);
+        component.confirmClearSelectionAndApply();
+        tick();
+        expect(component.clearSelection).toHaveBeenCalled();
+    }));
+
+    it('should not clear selections when confirmation is false or dismissed', fakeAsync(() => {
+        vi.spyOn(component, 'clearSelection').mockReturnValue(undefined);
+        modalService.open.mockReturnValue(modalRef(Promise.resolve(false)));
+        component.confirmClearSelectionAndApply();
+        tick();
+        expect(component.clearSelection).not.toHaveBeenCalled();
+
+        modalService.open.mockReturnValue(modalRef(Promise.reject('dismissed')));
+        component.confirmClearSelectionAndApply();
+        tick();
+        expect(component.clearSelection).not.toHaveBeenCalled();
+    }));
+
+    it('should clear saved-search selection then apply', fakeAsync(() => {
+        component.savedSearch = { id: 7 } as any;
+        component.loggedInUser = { id: 99 } as any;
+        component.selectedCandidates = [{} as any];
+
+        savedSearchService.clearSelection.mockReturnValue(of(null));
+        vi.spyOn(component, 'apply').mockReturnValue(undefined);
+
+        component.clearSelection();
+        tick();
+
+        expect(savedSearchService.clearSelection).toHaveBeenCalledWith(7, { userId: 99 });
+        expect(component.selectedCandidates).toEqual([]);
+        expect(component.apply).toHaveBeenCalled();
+    }));
+
+    it('should expose selection-clear errors', fakeAsync(() => {
+        component.savedSearch = { id: 7 } as any;
+        component.loggedInUser = { id: 99 } as any;
+
+        savedSearchService.clearSelection.mockReturnValue(throwError('clear failed'));
+
+        component.clearSelection();
+        tick();
+
+        expect(savedSearchService.clearSelection).toHaveBeenCalledWith(7, { userId: 99 });
+        expect(component.error).toBe('clear failed');
+    }));
+
+    it('should build breadcrumb from saved-search type infos', () => {
+        component.savedSearch = { id: 1, name: 'My Search' } as any;
+        savedSearchService.getSavedSearchTypeInfos.mockReturnValue([]);
+        expect(component.getBreadcrumb()).toBeDefined();
+    });
+
+    it('should load a saved search successfully', fakeAsync(() => {
+        const request: any = { searchJoinRequests: [] };
+        savedSearchService.load.mockReturnValue(of(request));
+        vi.spyOn(component, 'populateFormWithSavedSearch').mockReturnValue(undefined);
+
+        component.loadSavedSearch(4);
+        tick();
+
+        expect(component.searchForm.get('savedSearchId').value).toBe(4);
+        expect(component.populateFormWithSavedSearch).toHaveBeenCalledWith(request);
+        expect(component.loading).toBe(false);
+    }));
+
+    it('should load set up the job matching after loading a job-based search', fakeAsync(() => {
+        component.jobId = 3;
+        savedSearchService.load.mockReturnValue(of({ searchJoinRequests: [] } as any));
+
+        let mockInfo: JobMatchingInfo = {
+            description: '',
+            skillNames: [{ name: 'Java', lang: 'en' }],
+            jobName: 'Test job'
+        };
+        jobService.getJobMatchingInfo.mockReturnValue(of(mockInfo as any));
+        vi.spyOn(component, 'populateFormWithSavedSearch').mockReturnValue(undefined);
+        vi.spyOn((component as any), 'setUpJobMatch').mockReturnValue(undefined);
+
+        component.loadSavedSearch(4);
+        tick();
+
+        expect(jobService.getJobMatchingInfo).toHaveBeenCalledWith(3);
+        expect((component as any).setUpJobMatch).toHaveBeenCalledWith(mockInfo, null);
+    }));
+
+    describe('opening a search for a job (setUpJobMatch)', () => {
+
+        const jobInfo: JobMatchingInfo = { description: '<p>Raw job text</p>', skillNames: [], jobName: 'Test job' };
+
+        beforeEach(() => {
+            vi.spyOn(component, 'clearForm').mockReturnValue(undefined);
+            vi.spyOn(component, 'onSubmit').mockReturnValue(undefined);
+        });
+
+        it('should pass the saved requirements when the search is already associated with the job', fakeAsync(() => {
+            component.jobId = 3;
+            component.savedSearch = { id: 4, defaultSearch: true, sfJobOpp: { id: 3 } } as any;
+            savedSearchService.load.mockReturnValue(of({ searchJoinRequests: [], requirements: '<p>Refined</p>' } as any));
+            jobService.getJobMatchingInfo.mockReturnValue(of(jobInfo as any));
+            vi.spyOn(component, 'populateFormWithSavedSearch').mockReturnValue(undefined);
+            vi.spyOn((component as any), 'setUpJobMatch').mockReturnValue(undefined);
+
+            component.loadSavedSearch(4);
+            tick();
+
+            expect((component as any).setUpJobMatch).toHaveBeenCalledWith(jobInfo, '<p>Refined</p>');
+        }));
+
+        it('should not pass the saved requirements when the search is associated with a different job', fakeAsync(() => {
+            component.jobId = 3;
+            component.savedSearch = { id: 4, defaultSearch: true, sfJobOpp: { id: 123 } } as any;
+            savedSearchService.load.mockReturnValue(of({ searchJoinRequests: [], requirements: '<p>Other job</p>' } as any));
+            jobService.getJobMatchingInfo.mockReturnValue(of(jobInfo as any));
+            vi.spyOn(component, 'populateFormWithSavedSearch').mockReturnValue(undefined);
+            vi.spyOn((component as any), 'setUpJobMatch').mockReturnValue(undefined);
+
+            component.loadSavedSearch(4);
+            tick();
+
+            expect((component as any).setUpJobMatch).toHaveBeenCalledWith(jobInfo, null);
+        }));
+
+        it('should use existing job requirements rather than the job text', () => {
+            (component as any).setUpJobMatch(jobInfo, '<p>Refined</p>');
+
+            expect(component.searchForm.get('requirements').value).toBe('<p>Refined</p>');
+            expect(component.onSubmit).toHaveBeenCalled();
+        });
+
+        it('should use the job text when there are no existing job requirements', () => {
+            (component as any).setUpJobMatch(jobInfo, null);
+
+            expect(component.searchForm.get('requirements').value).toBe('<p>Raw job text</p>');
+        });
+
+        it('should use the job text when the existing job requirements have no text content', () => {
+            (component as any).setUpJobMatch(jobInfo, '<p>&nbsp;</p>');
+
+            expect(component.searchForm.get('requirements').value).toBe('<p>Raw job text</p>');
+        });
+    });
+
+    describe('displaying the job associated with a loaded saved search', () => {
+
+        const jobInfo = (jobName: string): JobMatchingInfo => ({ description: 'Job description', skillNames: [], jobName });
+
+        beforeEach(() => {
+            savedSearchService.load.mockReturnValue(of({ searchJoinRequests: [] } as any));
+            vi.spyOn(component, 'populateFormWithSavedSearch').mockReturnValue(undefined);
+        });
+
+        it('should display the associated job like a job passed in via the query param', fakeAsync(() => {
+            component.jobId = undefined;
+            component.savedSearch = { id: 4, sfJobOpp: { id: 123 } } as any;
+            jobService.getJobMatchingInfo.mockReturnValue(of(jobInfo('Associated job') as any));
+
+            component.loadSavedSearch(4);
+            tick();
+
+            expect(jobService.getJobMatchingInfo).toHaveBeenCalledWith(123);
+            expect(component.jobName).toBe('Associated job');
+            expect(component.displayJobNameAsSource()).toBe('Linked to job 123: Associated job');
+        }));
+
+        it('should only display the job - not replace the saved search criteria or re-run the search', fakeAsync(() => {
+            component.jobId = undefined;
+            component.savedSearch = { id: 4, sfJobOpp: { id: 123 } } as any;
+            jobService.getJobMatchingInfo.mockReturnValue(of(jobInfo('Associated job') as any));
+            vi.spyOn((component as any), 'setUpJobMatch').mockReturnValue(undefined);
+            vi.spyOn(component, 'onSubmit').mockReturnValue(undefined);
+            vi.spyOn(component, 'clearForm').mockReturnValue(undefined);
+
+            component.loadSavedSearch(4);
+            tick();
+
+            expect(component.populateFormWithSavedSearch).toHaveBeenCalled();
+            expect((component as any).setUpJobMatch).not.toHaveBeenCalled();
+            expect(component.clearForm).not.toHaveBeenCalled();
+            expect(component.onSubmit).not.toHaveBeenCalled();
+            expect(component.searchForm.get('requirements').value).not.toBe('Job description');
+        }));
+
+        it('should display no job, and clear any previously displayed job, when the saved search has none', fakeAsync(() => {
+            component.jobId = undefined;
+            component.jobName = 'Previous job';
+            component.jobNameSourceId = 99;
+            component.savedSearch = { id: 4, sfJobOpp: null } as any;
+
+            component.loadSavedSearch(4);
+            tick();
+
+            expect(jobService.getJobMatchingInfo).not.toHaveBeenCalled();
+            expect(component.jobName).toBeNull();
+            expect(component.displayJobNameAsSource()).toBe('');
+        }));
+
+        it('should let a job passed in via the query param take precedence over the saved search job', fakeAsync(() => {
+            setPickerMocks();
+            vi.spyOn(component, 'onSubmit').mockReturnValue(undefined);
+            component.jobId = 3;
+            component.savedSearch = { id: 4, defaultSearch: true, sfJobOpp: { id: 123 } } as any;
+            jobService.getJobMatchingInfo.mockReturnValue(of(jobInfo('Query param job') as any));
+
+            component.loadSavedSearch(4);
+            tick();
+
+            expect(jobService.getJobMatchingInfo).toHaveBeenCalledTimes(1);
+
+            expect(jobService.getJobMatchingInfo).toHaveBeenCalledWith(3);
+            expect(component.displayJobNameAsSource()).toBe('Linked to job 3: Query param job');
+            discardPeriodicTasks();
+        }));
+
+        it('should ignore a stale job name response after a different saved search is loaded', fakeAsync(() => {
+            component.jobId = undefined;
+            const slowJobInfo = new Subject<JobMatchingInfo>();
+            jobService.getJobMatchingInfo.mockReturnValue(slowJobInfo as any);
+            component.savedSearch = { id: 4, sfJobOpp: { id: 123 } } as any;
+            component.loadSavedSearch(4);
+            tick();
+
+            component.savedSearch = { id: 5, sfJobOpp: null } as any;
+            component.loadSavedSearch(5);
+            tick();
+            slowJobInfo.next(jobInfo('Stale job'));
+            tick();
+
+            expect(component.jobName).toBeNull();
+        }));
+
+        it('should show no job label, and no error, if the job name cannot be loaded', fakeAsync(() => {
+            component.jobId = undefined;
+            component.savedSearch = { id: 4, sfJobOpp: { id: 123 } } as any;
+            jobService.getJobMatchingInfo.mockReturnValue(throwError('job lookup failed'));
+
+            component.loadSavedSearch(4);
+            tick();
+
+            expect(component.jobName).toBeNull();
+            expect(component.error).toBeFalsy();
+            expect(component.loading).toBe(false);
+        }));
+
+        it('should remove the job label when Clear Search clears the default search job association', fakeAsync(() => {
+            setPickerMocks();
+            component.jobId = undefined;
+            component.savedSearch = { id: 4, defaultSearch: true, sfJobOpp: { id: 123 } } as any;
+            jobService.getJobMatchingInfo.mockReturnValue(of(jobInfo('Associated job') as any));
+            component.loadSavedSearch(4);
+            tick();
+            savedSearchService.updateJob.mockReturnValue(of({ id: 4, defaultSearch: true, sfJobOpp: null } as any));
+
+            component.onClearSearch();
+
+            expect(component.jobName).toBeNull();
+            expect(component.displayJobNameAsSource()).toBe('');
+            discardPeriodicTasks();
+        }));
+    });
+
+    it('should run a list-constrained search after loading a list-based search', fakeAsync(() => {
+        component.listId = 15;
+        savedSearchService.load.mockReturnValue(of({ searchJoinRequests: [] } as any));
+        vi.spyOn(component, 'populateFormWithSavedSearch').mockReturnValue(undefined);
+        vi.spyOn((component as any), 'runSearchWithListConstraint').mockReturnValue(undefined);
+
+        component.loadSavedSearch(4);
+        tick();
+
+        expect((component as any).runSearchWithListConstraint).toHaveBeenCalledWith(15);
+    }));
+
+    it('should expose getJobMatchingInfo and saved-search load errors', fakeAsync(() => {
+        component.jobId = 3;
+        savedSearchService.load.mockReturnValue(of({ searchJoinRequests: [] } as any));
+        jobService.getJobMatchingInfo.mockReturnValue(throwError('job matching info failed'));
+        vi.spyOn(component, 'populateFormWithSavedSearch').mockReturnValue(undefined);
+        component.loadSavedSearch(4);
+        tick();
+        expect(component.error).toBe('job matching info failed');
+
+        savedSearchService.load.mockReturnValue(throwError('load failed'));
+        component.loadSavedSearch(4);
+        tick();
+        expect(component.error).toBe('load failed');
+        expect(component.loading).toBe(false);
+    }));
+
+    it('should update exclusion, list-any and list-all controls', () => {
+        component.onExclusionListSelected({ id: 8 } as any);
+        expect(component.exclusionListId).toBe(8);
+        expect(component.exclusionListIdControl.dirty).toBe(true);
+
+        component.onListAnySelected([{ id: 1 }, { id: 2 }] as any);
+        expect(component.listAnyIds).toEqual([1, 2]);
+        expect(component.listAnyIdsControl.dirty).toBe(true);
+
+        component.onListAllSelected([{ id: 3 }] as any);
+        expect(component.listAllIds).toEqual([3]);
+        expect(component.listAllIdsControl.dirty).toBe(true);
+    });
+
+    it('should show and load a chosen saved search', fakeAsync(() => {
+        const saved = { id: 9, name: 'Chosen' } as any;
+        modalService.open.mockReturnValue(modalRef(Promise.resolve(saved)));
+        vi.spyOn(component, 'loadSavedSearch').mockReturnValue(undefined);
+        component.showSavedSearches();
+        tick();
+        expect(component.savedSearch).toBe(saved);
+        expect(component.loadSavedSearch).toHaveBeenCalledWith(9);
+    }));
+
+    it('should delegate create and update modal methods', () => {
+        vi.spyOn(component, 'openSavedSearchModal').mockReturnValue(undefined);
+        component.createNewSavedSearchModal();
+        expect(component.openSavedSearchModal).toHaveBeenCalledWith(true);
+        component.updateSavedSearchModal();
+        expect(component.openSavedSearchModal).toHaveBeenCalledWith(false);
+    });
+
+    it('should open create saved-search modal, navigate and mark pristine', fakeAsync(() => {
+        router.navigate.mockClear();
+
+        component.savedSearch = { id: 1, name: 'Current' } as any;
+
+        const created = { id: 2, name: 'Created' } as any;
+        const ref = modalRef(Promise.resolve(created));
+
+        modalService.open.mockReturnValue(ref);
+        vi.spyOn(component, 'populateFormWithSavedSearch').mockReturnValue(undefined);
+
+        component.searchForm.markAsDirty();
+
+        component.openSavedSearchModal(true);
+        tick();
+
+        expect(ref.componentInstance.savedSearch).toBe(component.savedSearch);
+        expect(ref.componentInstance.searchCandidateRequest).toBeDefined();
+        expect(ref.componentInstance.jobId).toBeUndefined();
+        expect(router.navigate).toHaveBeenCalled();
+        expect(component.populateFormWithSavedSearch).toHaveBeenCalled();
+        expect(component.searchForm.pristine).toBe(true);
+    }));
+
+    it('should keep the search\'s job association when saving it as a named search', () => {
+        component.savedSearch = { id: 1, name: 'Default', defaultSearch: true, sfJobOpp: { id: 3 } } as any;
+        const ref = modalRef(new Promise(() => { }));
+        modalService.open.mockReturnValue(ref);
+
+        component.openSavedSearchModal(true);
+
+        expect(ref.componentInstance.jobId).toBe(3);
+    });
+
+    it('should update without navigating and tolerate modal dismissal', fakeAsync(() => {
+        router.navigate.mockClear();
+
+        component.savedSearch = { id: 1, name: 'Current' } as any;
+
+        vi.spyOn(component, 'populateFormWithSavedSearch').mockReturnValue(undefined);
+
+        modalService.open.mockReturnValue(modalRef(Promise.resolve(component.savedSearch)));
+
+        component.openSavedSearchModal(false);
+        tick();
+
+        expect(router.navigate).not.toHaveBeenCalled();
+        expect(component.populateFormWithSavedSearch).toHaveBeenCalled();
+
+        modalService.open.mockReturnValue(modalRef(Promise.reject('dismissed')));
+
+        component.openSavedSearchModal(false);
+        tick();
+
+        expect(router.navigate).not.toHaveBeenCalled();
+    }));
+
+    it('should delete a saved search and navigate', fakeAsync(() => {
+        component.savedSearch = { id: 4, name: 'Delete Me' } as any;
+        const ref = modalRef(Promise.resolve(true));
+        modalService.open.mockReturnValue(ref);
+        savedSearchService.delete.mockReturnValue(of(null));
+        router.navigate.mockClear();
+
+        component.deleteSavedSearchModal();
+        tick();
+
+        expect(ref.componentInstance.message).toContain('Delete Me');
+        expect(savedSearchService.delete).toHaveBeenCalledWith(4);
+        expect(router.navigate).toHaveBeenCalledWith(['search']);
+        expect(component.loading).toBe(false);
+    }));
+
+    it('should expose delete failure and ignore false confirmation', fakeAsync(() => {
+        component.savedSearch = { id: 4, name: 'Delete Me' } as any;
+        modalService.open.mockReturnValue(modalRef(Promise.resolve(true)));
+        savedSearchService.delete.mockReturnValue(throwError('delete failed'));
+        component.deleteSavedSearchModal();
+        tick();
+        expect(component.error).toBe('delete failed');
+        expect(component.loading).toBe(false);
+
+        savedSearchService.delete.mockClear();
+        modalService.open.mockReturnValue(modalRef(Promise.resolve(false)));
+        component.deleteSavedSearchModal();
+        tick();
+        expect(savedSearchService.delete).not.toHaveBeenCalled();
+    }));
+
+    it('should fully populate the form from a saved search', fakeAsync(() => {
+        component.candidateOccupations = [occupationA];
+        component.partners = [partnerA];
+        component.educationMajors = [majorA];
+        component.surveyTypes = [surveyA];
+        component.countries = [countryA];
+        component.nationalities = [countryB];
+        savedSearchService.get.mockReturnValue(of({ id: 77, name: 'Joined' } as any));
+        vi.spyOn(component.onFormChange, 'emit').mockReturnValue(undefined);
+
+        const request: any = {
+            savedSearchId: 1,
+            countrySearchType: null,
+            nationalitySearchType: null,
+            listAllSearchType: null,
+            listAnySearchType: null,
+            statuses: [CandidateStatus.active],
+            englishMinWrittenLevel: 2,
+            englishMinSpokenLevel: 3,
+            occupationIds: [30],
+            lastModifiedFrom: '2026-01-02',
+            lastModifiedTo: '2026-02-03',
+            partnerIds: [20],
+            educationMajorIds: [40],
+            surveyTypeIds: [50],
+            otherLanguageId: 2,
+            otherMinWrittenLevel: 1,
+            otherMinSpokenLevel: 2,
+            countryIds: [10],
+            nationalityIds: [11],
+            unhcrStatuses: [UnhcrStatus.RegisteredAsylum],
+            searchJoinRequests: [{ savedSearchId: 77, name: 'Joined', searchType: 'and' }]
+        };
+
+        component.populateFormWithSavedSearch(request);
+        tick();
+
+        expect(component.searchForm.get('countrySearchType').value).toBe('or');
+        expect(component.searchForm.get('nationalitySearchType').value).toBe('or');
+        expect(component.searchForm.get('listAllSearchType').value).toBe('and');
+        expect(component.searchForm.get('listAnySearchType').value).toBe('or');
+        expect(component.searchForm.get('occupations').value).toEqual([occupationA]);
+        expect(component.searchForm.get('partners').value).toEqual([partnerA]);
+        expect(component.searchForm.get('educationMajors').value).toEqual([majorA]);
+        expect(component.searchForm.get('surveyTypes').value).toEqual([surveyA]);
+        expect(component.searchForm.get('countries').value).toEqual([countryA]);
+        expect(component.searchForm.get('nationalities').value).toEqual([countryB]);
+        expect(component.englishLanguagePicker.patchModel).toHaveBeenCalled();
+        expect(component.otherLanguagePicker.patchModel).toHaveBeenCalled();
+        expect(component.modifiedDatePicker.selectDate).toHaveBeenCalledTimes(2);
+        expect(component.searchJoinArray.length).toBe(1);
+        expect(savedSearchService.get).toHaveBeenCalledTimes(1);
+        expect(vi.mocked(savedSearchService.get).mock.lastCall).toEqual([77]);
+        expect(component.selectedBaseJoin).toEqual({
+            id: 77,
+            name: 'Joined'
+        } as any);
+        expect(component.formWrapper.nativeElement.click).toHaveBeenCalled();
+        expect(component.searchForm.pristine).toBe(true);
+        expect(component.onFormChange.emit).toHaveBeenCalledWith(false);
+
+        // Patching 'requirements' above (as part of the blanket patch of all form
+        // controls) triggers the debounced extractSkills() subscription, which
+        // schedules a pending timer via rxjs' debounceTime. Discard it rather than
+        // letting it fire, since we're not testing skill extraction here.
+        discardPeriodicTasks();
+    }));
+
+    it('should populate empty optional collections without failing', () => {
+        const request: any = { searchJoinRequests: [] };
+        component.populateFormWithSavedSearch(request);
+        expect(component.searchForm.get('occupations').value).toEqual([]);
+        expect(component.searchForm.get('partners').value).toEqual([]);
+        expect(component.searchJoinArray.length).toBe(0);
+    });
+
+    it('should add and delete saved-search joins', fakeAsync(() => {
+        component.savedSearch = { id: 5 } as any;
+        const join = { savedSearchId: 8, name: 'Join', searchType: 'and' };
+        const ref = modalRef(Promise.resolve(join));
+        modalService.open.mockReturnValue(ref);
+        component.addSavedSearchJoin();
+        tick();
+        expect(ref.componentInstance.currentSavedSearchId).toBe(5);
+        expect(component.searchJoinArray.length).toBe(1);
+
+        component.deleteSavedSearchJoin(join);
+        expect(component.searchJoinArray.length).toBe(0);
+    }));
+
+    it('should handle selected dates and cleared dates', () => {
+        component.handleDateSelected({
+            fromDate: { year: 2026, month: 2, day: 3 },
+            toDate: { year: 2026, month: 4, day: 5 }
+        }, 'lastModified');
+        expect(component.searchForm.get('lastModifiedFrom').value).toBe('2026-02-03');
+        expect(component.searchForm.get('lastModifiedTo').value).toBe('2026-04-05');
+
+        component.handleDateSelected({ fromDate: null, toDate: null }, 'lastModified');
+        expect(component.searchForm.get('lastModifiedFrom').value).toBeNull();
+        expect(component.searchForm.get('lastModifiedTo').value).toBeNull();
+    });
+
+    it('should update English and other language controls', () => {
+        component.handleLanguageLevelChange({ languageId: 1, writtenLevel: 2, spokenLevel: 3 }, 'english');
+        expect(component.searchForm.get('englishMinWrittenLevel').value).toBe(2);
+        expect(component.searchForm.get('englishMinSpokenLevel').value).toBe(3);
+
+        component.handleLanguageLevelChange({ languageId: 2, writtenLevel: 1, spokenLevel: 2 }, 'other');
+        expect(component.searchForm.get('otherLanguageId').value).toBe(2);
+        expect(component.searchForm.get('otherMinWrittenLevel').value).toBe(1);
+        expect(component.searchForm.get('otherMinSpokenLevel').value).toBe(2);
+    });
+
+    it('should change search operators', () => {
+        component.handleSearchTypeChange('countrySearchType', 'not');
+        expect(component.searchForm.get('countrySearchType').value).toBe('not');
+    });
+
+    it('should add and remove a base search join', () => {
+        vi.spyOn(component.onFormChange, 'emit').mockReturnValue(undefined);
+        component.searchJoinArray.push(new UntypedFormBuilder().group({ name: 'old' }));
+        component.addBaseSearchJoin({ id: 12, name: 'Base' } as any);
+        expect(component.selectedBaseJoin).toEqual({
+            savedSearchId: 12,
+            name: 'Base',
+            searchType: 'and'
+        });
+        expect(component.searchJoinArray.length).toBe(1);
+        expect(component.searchForm.get('searchJoinRequests').dirty).toBe(true);
+        expect(component.onFormChange.emit).toHaveBeenCalled();
+
+        component.storedBaseJoin = { id: 1 };
+        component.deleteBaseSearchJoin();
+        expect(component.searchJoinArray.length).toBe(0);
+        expect(component.selectedBaseJoin).toBeNull();
+        expect(component.storedBaseJoin).toBeNull();
+    });
+
+    it('should delegate search edit authorization', () => {
+        component.savedSearch = { id: 1 } as any;
+        authorizationService.canEditCandidateSource.mockReturnValue(false);
+        expect(component.canChangeSearchRequest()).toBe(false);
+        expect(authorizationService.canEditCandidateSource).toHaveBeenCalledWith(component.savedSearch);
+    });
+
+    it('should select and clear all options', () => {
+        const options = [{ id: 1 }, { id: 2 }];
+        component.onSelectAll(options, 'partners');
+        expect(component.searchForm.get('partners').value).toBe(options);
+        expect(component.searchForm.get('partners').dirty).toBe(true);
+
+        component.onClearAll('partners');
+        expect(component.searchForm.get('partners').value).toBeNull();
+    });
+
+    it('should create enum and object tooltips', () => {
+        component.searchForm.get('statusesDisplay').patchValue([
+            { key: 'active', stringValue: 'Active' },
+            { key: 'draft', stringValue: 'Draft' }
+        ]);
+        expect(component.getTooltip('statusesDisplay')).toBe('Active, Draft');
+
+        component.searchForm.get('partners').patchValue([
+            { name: 'One' }, { name: 'Two' }
+        ]);
+        expect(component.getTooltip('partners')).toBe('One, Two');
+    });
+
+    it('should return partner default messages for source and non-source partners', () => {
+        authorizationService.isSourcePartner.mockReturnValue(true);
+        authorizationService.isDefaultPartner.mockReturnValue(false);
+        expect(component.getPartnerDefaultMessage()).toContain('your partner');
+
+        authorizationService.isDefaultPartner.mockReturnValue(true);
+        expect(component.getPartnerDefaultMessage()).toContain('any partner');
+
+        authorizationService.isSourcePartner.mockReturnValue(false);
+        expect(component.getPartnerDefaultMessage()).toContain('any partner');
+    });
+
+    it('should delegate candidate-name and employer-partner checks', () => {
+        authorizationService.canViewCandidateName.mockReturnValue(false);
+        authorizationService.isEmployerPartner.mockReturnValue(true);
+        expect(component.canViewCandidateName()).toBe(false);
+        expect(component.isEmployerPartner()).toBe(true);
+    });
+
+    it('should identify empty and non-empty search terms', () => {
+        component.currentSearchTerms = [];
+        expect(component.isEmptySearchTerms()).toBe(true);
+        component.currentSearchTerms = ['term'];
+        expect(component.isEmptySearchTerms()).toBe(false);
+        component.currentSearchTerms = null;
+        expect(component.isEmptySearchTerms()).toBe(true);
+    });
 
 
 });
-

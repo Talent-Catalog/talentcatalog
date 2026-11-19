@@ -19,6 +19,7 @@ import {SavedSearch} from "./saved-search";
 import {CandidateReviewStatusItem} from "./candidate-review-status-item";
 import {MockUser} from "../MockData/MockUser";
 import {MockSavedSearch} from "../MockData/MockSavedSearch";
+import {expect} from 'vitest';
 
 describe('CandidateReviewStatusItem Model', () => {
   let user: User;

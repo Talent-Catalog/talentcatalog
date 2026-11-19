@@ -20,6 +20,7 @@ import {UserPipe} from "../user.pipe";
 import {DatePipe} from "@angular/common";
 import {By} from "@angular/platform-browser";
 import {MockUser} from "../../../../MockData/MockUser";
+import {expect} from 'vitest';
 
 describe('UpdatedByComponent', () => {
   let component: UpdatedByComponent;

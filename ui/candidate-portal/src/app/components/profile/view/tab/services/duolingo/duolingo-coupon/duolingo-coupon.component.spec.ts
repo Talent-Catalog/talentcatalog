@@ -1,3 +1,4 @@
+import type {MockedObject} from "vitest";
 import {Component, EventEmitter, Input, Output, Pipe, PipeTransform, ChangeDetectionStrategy} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
@@ -6,125 +7,135 @@ import {DuolingoCouponComponent} from './duolingo-coupon.component';
 import {DuolingoCouponService} from '../../../../../../../services/duolingo-coupon.service';
 import {TaskAssignmentService} from '../../../../../../../services/task-assignment.service';
 
-@Pipe({name: 'translate', standalone: false})
+@Pipe({ name: 'translate', standalone: false })
 class TranslatePipeStub implements PipeTransform {
-  transform(value: string): string {
-    return value;
-  }
+    transform(value: string): string {
+        return value;
+    }
 }
 
-@Component({selector: 'app-error', template: '', changeDetection: ChangeDetectionStrategy.Eager, standalone: false})
+@Component({ selector: 'app-error', template: '', changeDetection: ChangeDetectionStrategy.Eager, standalone: false })
 class ErrorStubComponent {
-  @Input() error: unknown;
+    @Input()
+    error: unknown;
 }
 
-@Component({selector: 'tc-loading', template: '', changeDetection: ChangeDetectionStrategy.Eager, standalone: false})
+@Component({ selector: 'tc-loading', template: '', changeDetection: ChangeDetectionStrategy.Eager, standalone: false })
 class TcLoadingStubComponent {
-  @Input() loading = false;
+    @Input()
+    loading = false;
 }
 
-@Component({selector: 'tc-accordion', template: '<ng-content></ng-content>', changeDetection: ChangeDetectionStrategy.Eager, standalone: false})
+@Component({ selector: 'tc-accordion', template: '<ng-content></ng-content>', changeDetection: ChangeDetectionStrategy.Eager, standalone: false })
 class TcAccordionStubComponent {
-  @Input() showOpenCloseAll = true;
+    @Input()
+    showOpenCloseAll = true;
 }
 
-@Component({selector: 'tc-accordion-item', template: '<ng-content></ng-content>', changeDetection: ChangeDetectionStrategy.Eager, standalone: false})
+@Component({ selector: 'tc-accordion-item', template: '<ng-content></ng-content>', changeDetection: ChangeDetectionStrategy.Eager, standalone: false })
 class TcAccordionItemStubComponent {
-  @Input() header?: string;
+    @Input()
+    header?: string;
 }
 
 @Component({
-  selector: 'tc-button',
-  template: '<button (click)="onClick.emit()"><ng-content></ng-content></button>',
-  changeDetection: ChangeDetectionStrategy.Eager,
-  standalone: false
+    selector: 'tc-button',
+    template: '<button (click)="onClick.emit()"><ng-content></ng-content></button>',
+    changeDetection: ChangeDetectionStrategy.Eager,
+    standalone: false
 })
 class TcButtonStubComponent {
-  @Input() type?: string;
-  @Input() href?: string;
-  @Input() target?: string;
-  @Output() onClick = new EventEmitter<void>();
+    @Input()
+    type?: string;
+    @Input()
+    href?: string;
+    @Input()
+    target?: string;
+    @Output()
+    onClick = new EventEmitter<void>();
 }
 
 describe('DuolingoCouponComponent', () => {
-  let component: DuolingoCouponComponent;
-  let fixture: ComponentFixture<DuolingoCouponComponent>;
-  let taskAssignmentServiceSpy: jasmine.SpyObj<TaskAssignmentService>;
+    let component: DuolingoCouponComponent;
+    let fixture: ComponentFixture<DuolingoCouponComponent>;
+    let taskAssignmentServiceSpy: MockedObject<TaskAssignmentService>;
 
-  beforeEach(async () => {
-    taskAssignmentServiceSpy = jasmine.createSpyObj('TaskAssignmentService', ['updateTaskAssignment']);
-    taskAssignmentServiceSpy.updateTaskAssignment.and.returnValue(of({
-      id: 9,
-      task: {name: 'claimCouponButton'},
-    } as any));
+    beforeEach(async () => {
+        taskAssignmentServiceSpy = {
+            updateTaskAssignment: vi.fn().mockName("TaskAssignmentService.updateTaskAssignment")
+        } as unknown as MockedObject<TaskAssignmentService>;
+        taskAssignmentServiceSpy.updateTaskAssignment.mockReturnValue(of({
+            id: 9,
+            task: { name: 'claimCouponButton' },
+        } as any));
 
-    await TestBed.configureTestingModule({
-      declarations: [
-        DuolingoCouponComponent,
-        TranslatePipeStub,
-        ErrorStubComponent,
-        TcLoadingStubComponent,
-        TcAccordionStubComponent,
-        TcAccordionItemStubComponent,
-        TcButtonStubComponent,
-      ],
-      providers: [
-        {provide: DuolingoCouponService, useValue: {}},
-        {provide: TaskAssignmentService, useValue: taskAssignmentServiceSpy},
-      ],
-    }).compileComponents();
-  });
-
-  beforeEach(() => {
-    fixture = TestBed.createComponent(DuolingoCouponComponent);
-    component = fixture.componentInstance;
-    component.selectedCoupon = 'ABC123';
-    component.candidate = {
-      user: {firstName: 'Hiba', lastName: 'Machfej'},
-    } as any;
-    component.activeDuolingoTask = {
-      id: 9,
-      task: {name: 'claimCouponButton'},
-    } as any;
-    fixture.detectChanges();
-  });
-
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
-
-  it('should render tc-loading, tc-accordion sections and the CTA tc-button', () => {
-    const loading = fixture.debugElement.query(By.directive(TcLoadingStubComponent));
-    const accordion = fixture.debugElement.query(By.directive(TcAccordionStubComponent));
-    const items = fixture.debugElement.queryAll(By.directive(TcAccordionItemStubComponent));
-    const buttons = fixture.debugElement.queryAll(By.directive(TcButtonStubComponent));
-
-    expect(loading).toBeTruthy();
-    expect(accordion).toBeTruthy();
-    expect((accordion.componentInstance as TcAccordionStubComponent).showOpenCloseAll).toBeFalse();
-    expect(items.length).toBe(3);
-    expect(buttons.length).toBe(1);
-    expect((buttons[0].componentInstance as TcButtonStubComponent).href).toContain('ABC123');
-    expect((buttons[0].componentInstance as TcButtonStubComponent).target).toBe('_blank');
-  });
-
-  it('should complete the task and emit refresh when updateSimpleTask succeeds', () => {
-    spyOn(component.refresh, 'emit');
-
-    component.updateSimpleTask();
-
-    expect(taskAssignmentServiceSpy.updateTaskAssignment).toHaveBeenCalledWith(9, {
-      completed: true,
-      abandoned: false,
+        await TestBed.configureTestingModule({
+            declarations: [
+                DuolingoCouponComponent,
+                TranslatePipeStub,
+                ErrorStubComponent,
+                TcLoadingStubComponent,
+                TcAccordionStubComponent,
+                TcAccordionItemStubComponent,
+                TcButtonStubComponent,
+            ],
+            providers: [
+                { provide: DuolingoCouponService, useValue: {} },
+                { provide: TaskAssignmentService, useValue: taskAssignmentServiceSpy },
+            ],
+        }).compileComponents();
     });
-    expect(component.refresh.emit).toHaveBeenCalled();
-  });
 
-  it('should set error when updateSimpleTask fails', () => {
-    taskAssignmentServiceSpy.updateTaskAssignment.and.returnValue(throwError('task-error'));
+    beforeEach(() => {
+        fixture = TestBed.createComponent(DuolingoCouponComponent);
+        component = fixture.componentInstance;
+        component.selectedCoupon = 'ABC123';
+        component.candidate = {
+            user: { firstName: 'Hiba', lastName: 'Machfej' },
+        } as any;
+        component.activeDuolingoTask = {
+            id: 9,
+            task: { name: 'claimCouponButton' },
+        } as any;
+        fixture.detectChanges();
+    });
 
-    component.updateSimpleTask();
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
 
-    expect(component.error).toBe('task-error');
-  });
+    it('should render tc-loading, tc-accordion sections and the CTA tc-button', () => {
+        const loading = fixture.debugElement.query(By.directive(TcLoadingStubComponent));
+        const accordion = fixture.debugElement.query(By.directive(TcAccordionStubComponent));
+        const items = fixture.debugElement.queryAll(By.directive(TcAccordionItemStubComponent));
+        const buttons = fixture.debugElement.queryAll(By.directive(TcButtonStubComponent));
+
+        expect(loading).toBeTruthy();
+        expect(accordion).toBeTruthy();
+        expect((accordion.componentInstance as TcAccordionStubComponent).showOpenCloseAll).toBe(false);
+        expect(items.length).toBe(3);
+        expect(buttons.length).toBe(1);
+        expect((buttons[0].componentInstance as TcButtonStubComponent).href).toContain('ABC123');
+        expect((buttons[0].componentInstance as TcButtonStubComponent).target).toBe('_blank');
+    });
+
+    it('should complete the task and emit refresh when updateSimpleTask succeeds', () => {
+        vi.spyOn(component.refresh, 'emit').mockReturnValue(undefined);
+
+        component.updateSimpleTask();
+
+        expect(taskAssignmentServiceSpy.updateTaskAssignment).toHaveBeenCalledWith(9, {
+            completed: true,
+            abandoned: false,
+        });
+        expect(component.refresh.emit).toHaveBeenCalled();
+    });
+
+    it('should set error when updateSimpleTask fails', () => {
+        taskAssignmentServiceSpy.updateTaskAssignment.mockReturnValue(throwError('task-error'));
+
+        component.updateSimpleTask();
+
+        expect(component.error).toBe('task-error');
+    });
 });

@@ -22,6 +22,7 @@ import {Occupation} from '../model/occupation';
 import {CandidateOccupation} from '../model/candidate-occupation';
 import {environment} from '../../environments/environment';
 import {MockUser} from "../MockData/MockUser";
+import {expect} from 'vitest';
 
 describe('CandidateOccupationService', () => {
   let service: CandidateOccupationService;

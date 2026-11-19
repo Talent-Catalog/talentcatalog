@@ -14,6 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
+import type {MockedObject} from "vitest";
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {ReactiveFormsModule, UntypedFormBuilder} from '@angular/forms';
 import {of} from 'rxjs';
@@ -23,76 +24,81 @@ import {LanguageService} from '../../../../../services/language.service';
 import {Language} from '../../../../../model/language';
 import {NgSelectModule} from '@ng-select/ng-select';
 import {AutosaveStatusComponent} from "../../../../util/autosave-status/autosave-status.component";
+import {expect, vi} from 'vitest';
 
 describe('LanguageThresholdComponent', () => {
-  let component: LanguageThresholdComponent;
-  let fixture: ComponentFixture<LanguageThresholdComponent>;
-  let languageService: jasmine.SpyObj<LanguageService>;
-  let candidateVisaCheckService: jasmine.SpyObj<CandidateVisaCheckService>;
+    let component: LanguageThresholdComponent;
+    let fixture: ComponentFixture<LanguageThresholdComponent>;
+    let languageService: MockedObject<LanguageService>;
+    let candidateVisaCheckService: MockedObject<CandidateVisaCheckService>;
 
-  beforeEach(async () => {
-    const languageServiceSpy = jasmine.createSpyObj('LanguageService', ['listLanguages']);
-    const candidateVisaCheckServiceSpy = jasmine.createSpyObj('CandidateVisaCheckService', ['someMethod']);
+    beforeEach(async () => {
+        const languageServiceSpy = {
+            listLanguages: vi.fn().mockName("LanguageService.listLanguages")
+        };
+        const candidateVisaCheckServiceSpy = {
+            someMethod: vi.fn().mockName("CandidateVisaCheckService.someMethod")
+        };
 
-    await TestBed.configureTestingModule({
-      declarations: [LanguageThresholdComponent, AutosaveStatusComponent],
-      imports: [ReactiveFormsModule, NgSelectModule],
-      providers: [
-        UntypedFormBuilder,
-        { provide: LanguageService, useValue: languageServiceSpy },
-        { provide: CandidateVisaCheckService, useValue: candidateVisaCheckServiceSpy }
-      ]
-    }).compileComponents();
+        await TestBed.configureTestingModule({
+            declarations: [LanguageThresholdComponent, AutosaveStatusComponent],
+            imports: [ReactiveFormsModule, NgSelectModule],
+            providers: [
+                UntypedFormBuilder,
+                { provide: LanguageService, useValue: languageServiceSpy },
+                { provide: CandidateVisaCheckService, useValue: candidateVisaCheckServiceSpy }
+            ]
+        }).compileComponents();
 
-    languageService = TestBed.inject(LanguageService) as jasmine.SpyObj<LanguageService>;
-    candidateVisaCheckService = TestBed.inject(CandidateVisaCheckService) as jasmine.SpyObj<CandidateVisaCheckService>;
-  });
+        languageService = TestBed.inject(LanguageService) as MockedObject<LanguageService>;
+        candidateVisaCheckService = TestBed.inject(CandidateVisaCheckService) as MockedObject<CandidateVisaCheckService>;
+    });
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(LanguageThresholdComponent);
-    component = fixture.componentInstance;
-    languageService.listLanguages.and.returnValue(of([
-      { id: 1, name: 'English' } as Language,
-      { id: 2, name: 'Spanish' } as Language
-    ]));
-    fixture.detectChanges(); // ngOnInit() is called here
-  });
+    beforeEach(() => {
+        fixture = TestBed.createComponent(LanguageThresholdComponent);
+        component = fixture.componentInstance;
+        languageService.listLanguages.mockReturnValue(of([
+            { id: 1, name: 'English' } as Language,
+            { id: 2, name: 'Spanish' } as Language
+        ]));
+        fixture.detectChanges(); // ngOnInit() is called here
+    });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
 
-  it('should initialize languages with English first', () => {
-    expect(component.languages.length).toBe(2);
-    expect(component.languages[0].name).toBe('English');
-  });
+    it('should initialize languages with English first', () => {
+        expect(component.languages.length).toBe(2);
+        expect(component.languages[0].name).toBe('English');
+    });
 
-  it('should have a form with visaJobLanguagesRequired control', () => {
-    expect(component.form.contains('visaJobLanguagesRequired')).toBeTrue();
-  });
+    it('should have a form with visaJobLanguagesRequired control', () => {
+        expect(component.form.contains('visaJobLanguagesRequired')).toBe(true);
+    });
 
-  it('should return true for hasRequiredLanguages if languages are selected', () => {
-    component.form.patchValue({ visaJobLanguagesRequired: [1] });
-    expect(component.hasRequiredLanguages).toBeTrue();
-  });
+    it('should return true for hasRequiredLanguages if languages are selected', () => {
+        component.form.patchValue({ visaJobLanguagesRequired: [1] });
+        expect(component.hasRequiredLanguages).toBe(true);
+    });
 
-  it('should return false for hasRequiredLanguages if no languages are selected', () => {
-    component.form.patchValue({ visaJobLanguagesRequired: [] });
-    expect(component.hasRequiredLanguages).toBeFalse();
-  });
+    it('should return false for hasRequiredLanguages if no languages are selected', () => {
+        component.form.patchValue({ visaJobLanguagesRequired: [] });
+        expect(component.hasRequiredLanguages).toBe(false);
+    });
 
-  it('should return true for hasNotes if visaJobLanguagesThresholdMet is Yes', () => {
-    component.form.patchValue({ visaJobLanguagesThresholdMet: 'Yes' });
-    expect(component.hasNotes).toBeTrue();
-  });
+    it('should return true for hasNotes if visaJobLanguagesThresholdMet is Yes', () => {
+        component.form.patchValue({ visaJobLanguagesThresholdMet: 'Yes' });
+        expect(component.hasNotes).toBe(true);
+    });
 
-  it('should return true for hasNotes if visaJobLanguagesThresholdMet is No', () => {
-    component.form.patchValue({ visaJobLanguagesThresholdMet: 'No' });
-    expect(component.hasNotes).toBeTrue();
-  });
+    it('should return true for hasNotes if visaJobLanguagesThresholdMet is No', () => {
+        component.form.patchValue({ visaJobLanguagesThresholdMet: 'No' });
+        expect(component.hasNotes).toBe(true);
+    });
 
-  it('should return false for hasNotes if visaJobLanguagesThresholdMet is not set', () => {
-    component.form.patchValue({ visaJobLanguagesThresholdMet: null });
-    expect(component.hasNotes).toBeFalse();
-  });
+    it('should return false for hasNotes if visaJobLanguagesThresholdMet is not set', () => {
+        component.form.patchValue({ visaJobLanguagesThresholdMet: null });
+        expect(component.hasNotes).toBe(false);
+    });
 });

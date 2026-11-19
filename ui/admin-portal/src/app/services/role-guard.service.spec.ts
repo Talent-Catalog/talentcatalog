@@ -14,64 +14,70 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
+import type {MockedObject} from "vitest";
 import {TestBed} from '@angular/core/testing';
 import {ActivatedRouteSnapshot, Router} from '@angular/router';
 import {RoleGuardService} from './role-guard.service';
 import {AuthorizationService} from './authorization.service';
 import {Role} from "../model/user";
+import {expect, vi} from 'vitest';
 
 describe('RoleGuardService', () => {
-  let service: RoleGuardService;
-  let authService: jasmine.SpyObj<AuthorizationService>;
-  let router: jasmine.SpyObj<Router>;
+    let service: RoleGuardService;
+    let authService: MockedObject<AuthorizationService>;
+    let router: MockedObject<Router>;
 
-  beforeEach(() => {
-    const authServiceSpy = jasmine.createSpyObj('AuthorizationService', ['getLoggedInRole']);
-    const routerSpy = jasmine.createSpyObj('Router', ['navigate']);
+    beforeEach(() => {
+        const authServiceSpy = {
+            getLoggedInRole: vi.fn().mockName("AuthorizationService.getLoggedInRole")
+        };
+        const routerSpy = {
+            navigate: vi.fn().mockName("Router.navigate")
+        };
 
-    TestBed.configureTestingModule({
-      providers: [
-        RoleGuardService,
-        { provide: AuthorizationService, useValue: authServiceSpy },
-        { provide: Router, useValue: routerSpy }
-      ]
+        TestBed.configureTestingModule({
+            providers: [
+                RoleGuardService,
+                { provide: AuthorizationService, useValue: authServiceSpy },
+                { provide: Router, useValue: routerSpy }
+            ]
+        });
+
+        service = TestBed.inject(RoleGuardService);
+        authService = TestBed.inject(AuthorizationService) as MockedObject<AuthorizationService>;
+        router = TestBed.inject(Router) as MockedObject<Router>;
     });
 
-    service = TestBed.inject(RoleGuardService);
-    authService = TestBed.inject(AuthorizationService) as jasmine.SpyObj<AuthorizationService>;
-    router = TestBed.inject(Router) as jasmine.SpyObj<Router>;
-  });
-
-  it('should be created', () => {
-    expect(service).toBeTruthy();
-  });
-
-  describe('canActivate', () => {
-    it('should return true if the user role is included in expectedRoles', () => {
-      const mockRoute = new ActivatedRouteSnapshot();
-      mockRoute.data = { expectedRoles: [Role.systemadmin,Role.admin] };
-      authService.getLoggedInRole.and.returnValue(Role.admin);
-
-      expect(service.canActivate(mockRoute)).toBeTrue();
+    it('should be created', () => {
+        expect(service).toBeTruthy();
     });
 
-    it('should return false if the user role is not included in expectedRoles', () => {
-      const mockRoute = new ActivatedRouteSnapshot();
-      mockRoute.data = { expectedRoles: [Role.admin,Role.partneradmin] };
-      authService.getLoggedInRole.and.returnValue(Role.limited);
+    describe('canActivate', () => {
+        it('should return true if the user role is included in expectedRoles', () => {
+            const mockRoute = new ActivatedRouteSnapshot();
+            mockRoute.data = { expectedRoles: [Role.systemadmin, Role.admin] };
+            authService.getLoggedInRole.mockReturnValue(Role.admin);
 
-      expect(service.canActivate(mockRoute)).toBeFalse();
+            expect(service.canActivate(mockRoute)).toBe(true);
+        });
+
+        it('should return false if the user role is not included in expectedRoles', () => {
+            const mockRoute = new ActivatedRouteSnapshot();
+            mockRoute.data = { expectedRoles: [Role.admin, Role.partneradmin] };
+            authService.getLoggedInRole.mockReturnValue(Role.limited);
+
+            expect(service.canActivate(mockRoute)).toBe(false);
+        });
+
+        it('should not navigate if the user role is included in expectedRoles', () => {
+            const mockRoute = new ActivatedRouteSnapshot();
+            mockRoute.data = { expectedRoles: [Role.systemadmin, Role.admin] };
+            authService.getLoggedInRole.mockReturnValue(Role.partneradmin);
+
+            service.canActivate(mockRoute);
+
+            expect(router.navigate).not.toHaveBeenCalled();
+        });
+
     });
-
-    it('should not navigate if the user role is included in expectedRoles', () => {
-      const mockRoute = new ActivatedRouteSnapshot();
-      mockRoute.data = { expectedRoles: [Role.systemadmin,Role.admin] };
-      authService.getLoggedInRole.and.returnValue(Role.partneradmin);
-
-      service.canActivate(mockRoute);
-
-      expect(router.navigate).not.toHaveBeenCalled();
-    });
-
-  });
 });

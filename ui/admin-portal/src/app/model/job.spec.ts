@@ -15,6 +15,7 @@
  */
 import {isJob, Job, JobOpportunityStage, SearchJobRequest, UpdateJobRequest} from "./job";
 import {MockJob} from "../MockData/MockJob";
+import {expect} from 'vitest';
 
 describe('Job', () => {
   let job: Job;

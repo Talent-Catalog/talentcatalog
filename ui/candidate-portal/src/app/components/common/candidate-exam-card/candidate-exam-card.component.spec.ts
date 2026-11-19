@@ -21,103 +21,103 @@ import {CandidateExamCardComponent} from './candidate-exam-card.component';
 import {CandidateExam} from '../../../model/candidate';
 
 function makeExam(overrides: Partial<CandidateExam> = {}): CandidateExam {
-  return {
-    id: 1,
-    exam: 'IELTSGen' as any,
-    otherExam: null,
-    score: '7.5',
-    year: 2024,
-    notes: 'Strong result',
-    ...overrides
-  };
+    return {
+        id: 1,
+        exam: 'IELTSGen' as any,
+        otherExam: null,
+        score: '7.5',
+        year: 2024,
+        notes: 'Strong result',
+        ...overrides
+    };
 }
 
 describe('CandidateExamCardComponent', () => {
-  let component: CandidateExamCardComponent;
-  let fixture: ComponentFixture<CandidateExamCardComponent>;
+    let component: CandidateExamCardComponent;
+    let fixture: ComponentFixture<CandidateExamCardComponent>;
 
-  async function configureAndCreate(options?: {
-    preview?: boolean;
-    disabled?: boolean;
-    exam?: CandidateExam;
-  }) {
-    await TestBed.configureTestingModule({
-      declarations: [CandidateExamCardComponent],
-      schemas: [NO_ERRORS_SCHEMA]
-    }).compileComponents();
+    async function configureAndCreate(options?: {
+        preview?: boolean;
+        disabled?: boolean;
+        exam?: CandidateExam;
+    }) {
+        await TestBed.configureTestingModule({
+            declarations: [CandidateExamCardComponent],
+            schemas: [NO_ERRORS_SCHEMA]
+        }).compileComponents();
 
-    fixture = TestBed.createComponent(CandidateExamCardComponent);
-    component = fixture.componentInstance;
+        fixture = TestBed.createComponent(CandidateExamCardComponent);
+        component = fixture.componentInstance;
 
-    component.preview = options?.preview ?? false;
-    component.disabled = options?.disabled ?? false;
-    component.exam = options?.exam ?? makeExam();
+        component.preview = options?.preview ?? false;
+        component.disabled = options?.disabled ?? false;
+        component.exam = options?.exam ?? makeExam();
 
-    fixture.detectChanges();
-  }
+        fixture.detectChanges();
+    }
 
-  afterEach(() => TestBed.resetTestingModule());
+    afterEach(() => TestBed.resetTestingModule());
 
-  it('should create', async () => {
-    await configureAndCreate();
-    expect(component).toBeTruthy();
-  });
-
-  describe('template', () => {
-    it('should render tc-button actions when not in preview mode', async () => {
-      await configureAndCreate();
-      const buttons = (fixture.nativeElement as HTMLElement).querySelectorAll('tc-button');
-
-      expect(buttons.length).toBe(2);
+    it('should create', async () => {
+        await configureAndCreate();
+        expect(component).toBeTruthy();
     });
 
-    it('should not render tc-button actions in preview mode', async () => {
-      await configureAndCreate({preview: true});
-      const buttons = (fixture.nativeElement as HTMLElement).querySelectorAll('tc-button');
+    describe('template', () => {
+        it('should render tc-button actions when not in preview mode', async () => {
+            await configureAndCreate();
+            const buttons = (fixture.nativeElement as HTMLElement).querySelectorAll('tc-button');
 
-      expect(buttons.length).toBe(0);
+            expect(buttons.length).toBe(2);
+        });
+
+        it('should not render tc-button actions in preview mode', async () => {
+            await configureAndCreate({ preview: true });
+            const buttons = (fixture.nativeElement as HTMLElement).querySelectorAll('tc-button');
+
+            expect(buttons.length).toBe(0);
+        });
+
+        it('should render exam details', async () => {
+            await configureAndCreate();
+            const text = (fixture.nativeElement as HTMLElement).textContent || '';
+
+            expect(text).toContain('IELTS General');
+            expect(text).toContain('2024');
+            expect(text).toContain('7.5');
+            expect(text).toContain('Strong result');
+        });
     });
 
-    it('should render exam details', async () => {
-      await configureAndCreate();
-      const text = (fixture.nativeElement as HTMLElement).textContent || '';
+    describe('events', () => {
+        beforeEach(async () => configureAndCreate());
 
-      expect(text).toContain('IELTS General');
-      expect(text).toContain('2024');
-      expect(text).toContain('7.5');
-      expect(text).toContain('Strong result');
-    });
-  });
+        it('should emit onEdit with the current exam', () => {
+            const onEditSpy = vi.spyOn(component.onEdit, 'emit').mockReturnValue(undefined);
 
-  describe('events', () => {
-    beforeEach(async () => configureAndCreate());
+            component.editExam();
 
-    it('should emit onEdit with the current exam', () => {
-      const onEditSpy = spyOn(component.onEdit, 'emit');
+            expect(onEditSpy).toHaveBeenCalledWith(component.exam);
+        });
 
-      component.editExam();
+        it('should emit onDelete with the current exam', () => {
+            const onDeleteSpy = vi.spyOn(component.onDelete, 'emit').mockReturnValue(undefined);
 
-      expect(onEditSpy).toHaveBeenCalledWith(component.exam);
+            component.deleteExam();
+
+            expect(onDeleteSpy).toHaveBeenCalledWith(component.exam);
+        });
     });
 
-    it('should emit onDelete with the current exam', () => {
-      const onDeleteSpy = spyOn(component.onDelete, 'emit');
+    describe('helpers', () => {
+        beforeEach(async () => configureAndCreate());
 
-      component.deleteExam();
+        it('should return the matching exam label', () => {
+            expect(component.getExamName('IELTSGen')).toBe('IELTS General');
+        });
 
-      expect(onDeleteSpy).toHaveBeenCalledWith(component.exam);
+        it('should return Unknown when the exam is not found', () => {
+            expect(component.getExamName('MissingExam')).toBe('Unknown');
+        });
     });
-  });
-
-  describe('helpers', () => {
-    beforeEach(async () => configureAndCreate());
-
-    it('should return the matching exam label', () => {
-      expect(component.getExamName('IELTSGen')).toBe('IELTS General');
-    });
-
-    it('should return Unknown when the exam is not found', () => {
-      expect(component.getExamName('MissingExam')).toBe('Unknown');
-    });
-  });
 });

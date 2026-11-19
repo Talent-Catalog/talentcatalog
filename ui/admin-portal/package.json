@@ -7,7 +7,7 @@
     "start": "ng serve --host=127.0.0.1",
     "build": "ng build",
     "test": "ng test",
-    "test:coverage": "ng test admin-portal --watch=false --code-coverage=true --browsers=ChromeHeadless --source-map=true"
+    "test:coverage": "ng test admin-portal --watch=false --coverage"
   },
   "private": true,
   "engines": {
@@ -61,17 +61,13 @@
     "@angular/cli": "^22.2.3",
     "@angular/compiler-cli": "^22.2.3",
     "@angular/language-service": "^22.2.3",
-    "@types/jasmine": "^5.1.4",
     "@types/node": "^24.0.0",
+    "@vitest/coverage-istanbul": "^5.1.1",
     "istanbul-lib-instrument": "^6.0.3",
-    "jasmine-core": "~4.6.1",
-    "karma": "^6.4.3",
-    "karma-chrome-launcher": "^3.2.0",
-    "karma-coverage": "^2.2.1",
-    "karma-jasmine": "^5.1.0",
-    "karma-jasmine-html-reporter": "^2.1.0",
+    "jsdom": "^31.0.1",
     "sass": "^1.55.0",
     "tslib": "^2.4.0",
-    "typescript": "~6.0.3"
+    "typescript": "~6.0.3",
+    "vitest": "^5.1.1"
   }
 }

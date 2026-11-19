@@ -20,52 +20,53 @@ import {IeltsLevelComponent} from './ielts-level.component';
 import {provideHttpClientTesting} from "@angular/common/http/testing";
 import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {AutosaveStatusComponent} from "../../../../util/autosave-status/autosave-status.component";
+import {expect} from 'vitest';
 
 describe('IeltsLevelComponent', () => {
-  let component: IeltsLevelComponent;
-  let fixture: ComponentFixture<IeltsLevelComponent>;
-  let fb: UntypedFormBuilder;
+    let component: IeltsLevelComponent;
+    let fixture: ComponentFixture<IeltsLevelComponent>;
+    let fb: UntypedFormBuilder;
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      declarations: [IeltsLevelComponent,AutosaveStatusComponent],
-      imports: [ReactiveFormsModule],
-      providers: [UntypedFormBuilder, provideHttpClient(withXhr(), withInterceptorsFromDi()), provideHttpClientTesting()]
-    }).compileComponents();
-  });
+    beforeEach(async () => {
+        await TestBed.configureTestingModule({
+            declarations: [IeltsLevelComponent, AutosaveStatusComponent],
+            imports: [ReactiveFormsModule],
+            providers: [UntypedFormBuilder, provideHttpClient(withXhr(), withInterceptorsFromDi()), provideHttpClientTesting()]
+        }).compileComponents();
+    });
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(IeltsLevelComponent);
-    component = fixture.componentInstance;
-    fb = TestBed.inject(UntypedFormBuilder);
-    fixture.detectChanges();
-  });
+    beforeEach(() => {
+        fixture = TestBed.createComponent(IeltsLevelComponent);
+        component = fixture.componentInstance;
+        fb = TestBed.inject(UntypedFormBuilder);
+        fixture.detectChanges();
+    });
 
-  it('should create the component', () => {
-    expect(component).toBeTruthy();
-  });
+    it('should create the component', () => {
+        expect(component).toBeTruthy();
+    });
 
-  it('should have a form with ieltsLevel control', () => {
-    expect(component.form.contains('ieltsLevel')).toBeTrue();
-  });
+    it('should have a form with ieltsLevel control', () => {
+        expect(component.form.contains('ieltsLevel')).toBe(true);
+    });
 
-  it('should display error message for required field', () => {
-    const compiled = fixture.nativeElement;
-    const input = compiled.querySelector('input');
-    input.value = '';
-    input.dispatchEvent(new Event('input'));
-    fixture.detectChanges();
-    const errorMessage = compiled.querySelector('tc-description').textContent;
-    expect(errorMessage).toContain('Must be minimum 4.5 IELTS, average across all bands.');
-  });
+    it('should display error message for required field', () => {
+        const compiled = fixture.nativeElement;
+        const input = compiled.querySelector('input');
+        input.value = '';
+        input.dispatchEvent(new Event('input'));
+        fixture.detectChanges();
+        const errorMessage = compiled.querySelector('tc-description').textContent;
+        expect(errorMessage).toContain('Must be minimum 4.5 IELTS, average across all bands.');
+    });
 
-  it('should display error message for minimum value', () => {
-    const compiled = fixture.nativeElement;
-    const input = compiled.querySelector('input');
-    input.value = '4.0';
-    input.dispatchEvent(new Event('input'));
-    fixture.detectChanges();
-    const errorMessage = compiled.querySelector('tc-description').textContent;
-    expect(errorMessage).toContain('Must be minimum 4.5 IELTS, average across all bands.');
-  });
+    it('should display error message for minimum value', () => {
+        const compiled = fixture.nativeElement;
+        const input = compiled.querySelector('input');
+        input.value = '4.0';
+        input.dispatchEvent(new Event('input'));
+        fixture.detectChanges();
+        const errorMessage = compiled.querySelector('tc-description').textContent;
+        expect(errorMessage).toContain('Must be minimum 4.5 IELTS, average across all bands.');
+    });
 });

@@ -23,6 +23,7 @@ import {CandidateNote} from '../model/candidate-note';
 import {SearchResults} from '../model/search-results';
 import {environment} from '../../environments/environment';
 import {MockUser} from "../MockData/MockUser";
+import {expect} from 'vitest';
 
 describe('CandidateNoteService', () => {
   let service: CandidateNoteService;

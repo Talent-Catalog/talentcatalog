@@ -13,6 +13,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
+
+import type {MockedObject} from "vitest";
 import {provideHttpClientTesting} from "@angular/common/http/testing";
 import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {FormsModule, ReactiveFormsModule, UntypedFormBuilder} from "@angular/forms";
@@ -22,116 +24,123 @@ import {ComponentFixture, TestBed} from "@angular/core/testing";
 import {CountryService} from "../../../../../services/country.service";
 import {EducationMajorService} from "../../../../../services/education-major.service";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
-import {
-  CandidateEducationService,
-  CreateCandidateEducationRequest
-} from "../../../../../services/candidate-education.service";
+import {CandidateEducationService, CreateCandidateEducationRequest} from "../../../../../services/candidate-education.service";
 import {of, throwError} from "rxjs";
 import {MockCandidate} from "../../../../../MockData/MockCandidate";
+import {expect, vi} from 'vitest';
 
 describe('CreateCandidateEducationComponent', () => {
-  let component: CreateCandidateEducationComponent;
-  let fixture: ComponentFixture<CreateCandidateEducationComponent>;
-  let mockCandidateEducationService: jasmine.SpyObj<CandidateEducationService>;
-  let mockCountryService: jasmine.SpyObj<CountryService>;
-  let mockEducationMajorService: jasmine.SpyObj<EducationMajorService>;
-  let mockActiveModal: jasmine.SpyObj<NgbActiveModal>;
+    let component: CreateCandidateEducationComponent;
+    let fixture: ComponentFixture<CreateCandidateEducationComponent>;
+    let mockCandidateEducationService: MockedObject<CandidateEducationService>;
+    let mockCountryService: MockedObject<CountryService>;
+    let mockEducationMajorService: MockedObject<EducationMajorService>;
+    let mockActiveModal: MockedObject<NgbActiveModal>;
 
-  beforeEach(async () => {
-    const candidateEducationServiceSpy = jasmine.createSpyObj('CandidateEducationService', ['create']);
-    const countryServiceSpy = jasmine.createSpyObj('CountryService', ['listCountries']);
-    const educationMajorServiceSpy = jasmine.createSpyObj('EducationMajorService', ['listMajors']);
-    const activeModalSpy = jasmine.createSpyObj('NgbActiveModal', ['close', 'dismiss']);
+    beforeEach(async () => {
+        const candidateEducationServiceSpy = {
+            create: vi.fn().mockName("CandidateEducationService.create")
+        };
+        const countryServiceSpy = {
+            listCountries: vi.fn().mockName("CountryService.listCountries")
+        };
+        const educationMajorServiceSpy = {
+            listMajors: vi.fn().mockName("EducationMajorService.listMajors")
+        };
+        const activeModalSpy = {
+            close: vi.fn().mockName("NgbActiveModal.close"),
+            dismiss: vi.fn().mockName("NgbActiveModal.dismiss")
+        };
 
-    await TestBed.configureTestingModule({
-      declarations: [CreateCandidateEducationComponent],
-      imports: [FormsModule,ReactiveFormsModule, NgSelectModule],
-      providers: [
-        { provide: CandidateEducationService, useValue: candidateEducationServiceSpy },
-        { provide: CountryService, useValue: countryServiceSpy },
-        { provide: EducationMajorService, useValue: educationMajorServiceSpy },
-        { provide: NgbActiveModal, useValue: activeModalSpy },
-        UntypedFormBuilder,
-        provideHttpClient(withXhr(), withInterceptorsFromDi()),
-        provideHttpClientTesting()
-      ]
-    })
-    .compileComponents();
+        await TestBed.configureTestingModule({
+            declarations: [CreateCandidateEducationComponent],
+            imports: [FormsModule, ReactiveFormsModule, NgSelectModule],
+            providers: [
+                { provide: CandidateEducationService, useValue: candidateEducationServiceSpy },
+                { provide: CountryService, useValue: countryServiceSpy },
+                { provide: EducationMajorService, useValue: educationMajorServiceSpy },
+                { provide: NgbActiveModal, useValue: activeModalSpy },
+                UntypedFormBuilder,
+                provideHttpClient(withXhr(), withInterceptorsFromDi()),
+                provideHttpClientTesting()
+            ]
+        })
+            .compileComponents();
 
-    mockCandidateEducationService = TestBed.inject(CandidateEducationService) as jasmine.SpyObj<CandidateEducationService>;
-    mockCountryService = TestBed.inject(CountryService) as jasmine.SpyObj<CountryService>;
-    mockEducationMajorService = TestBed.inject(EducationMajorService) as jasmine.SpyObj<EducationMajorService>;
-    mockActiveModal = TestBed.inject(NgbActiveModal) as jasmine.SpyObj<NgbActiveModal>;
-  });
-
-  beforeEach(() => {
-    fixture = TestBed.createComponent(CreateCandidateEducationComponent);
-    component = fixture.componentInstance;
-    mockCountryService.listCountries.and.returnValue(of([]));
-    mockEducationMajorService.listMajors.and.returnValue(of([]));
-    component.candidateId = 1;
-    fixture.detectChanges();
-  });
-
-  it('should ', () => {
-    expect(component).toBeTruthy();
-  });
-
-  it('should save candidate education details', () => {
-    const mockEducation =  new MockCandidate().candidateEducations[0];
-
-
-    mockCandidateEducationService.create.and.returnValue(of(mockEducation));
-
-    component.candidateForm.setValue({
-      courseName: 'CS101',
-      institution: 'MIT',
-      countryId: 1,
-      educationMajorId: 1,
-      yearCompleted: 2010,
-      lengthOfCourseYears: 4,
-      educationType: 'Bachelor',
-      incomplete: false
+        mockCandidateEducationService = TestBed.inject(CandidateEducationService) as MockedObject<CandidateEducationService>;
+        mockCountryService = TestBed.inject(CountryService) as MockedObject<CountryService>;
+        mockEducationMajorService = TestBed.inject(EducationMajorService) as MockedObject<EducationMajorService>;
+        mockActiveModal = TestBed.inject(NgbActiveModal) as MockedObject<NgbActiveModal>;
     });
 
-    component.onSave();
-
-    expect(mockCandidateEducationService.create).toHaveBeenCalledWith(jasmine.objectContaining({
-      candidateId: component.candidateId,
-      courseName: 'CS101',
-      institution: 'MIT',
-      countryId: 1,
-      educationMajorId: 1,
-      yearCompleted: 2010,
-      lengthOfCourseYears: 4,
-      educationType: 'Bachelor',
-      incomplete: false
-    } as unknown as CreateCandidateEducationRequest));
-
-    expect(mockActiveModal.close).toHaveBeenCalledWith(mockEducation);
-    expect(component.saving).toBeFalse();
-  });
-
-  it('should handle error when saving candidate education details', () => {
-    const error = 'Failed to save education details';
-    mockCandidateEducationService.create.and.returnValue(throwError(error));
-
-    component.candidateForm.setValue({
-      courseName: 'CS101',
-      institution: 'MIT',
-      countryId: 1,
-      educationMajorId: 1,
-      yearCompleted: 2010,
-      lengthOfCourseYears: 4,
-      educationType: 'Bachelor',
-      incomplete: false
+    beforeEach(() => {
+        fixture = TestBed.createComponent(CreateCandidateEducationComponent);
+        component = fixture.componentInstance;
+        mockCountryService.listCountries.mockReturnValue(of([]));
+        mockEducationMajorService.listMajors.mockReturnValue(of([]));
+        component.candidateId = 1;
+        fixture.detectChanges();
     });
 
-    component.onSave();
+    it('should ', () => {
+        expect(component).toBeTruthy();
+    });
 
-    expect(mockCandidateEducationService.create).toHaveBeenCalled();
-    expect(mockActiveModal.close).not.toHaveBeenCalled();
-    expect(component.error).toBe(error);
-    expect(component.saving).toBeFalse();
-  });
+    it('should save candidate education details', () => {
+        const mockEducation = new MockCandidate().candidateEducations[0];
+
+
+        mockCandidateEducationService.create.mockReturnValue(of(mockEducation));
+
+        component.candidateForm.setValue({
+            courseName: 'CS101',
+            institution: 'MIT',
+            countryId: 1,
+            educationMajorId: 1,
+            yearCompleted: 2010,
+            lengthOfCourseYears: 4,
+            educationType: 'Bachelor',
+            incomplete: false
+        });
+
+        component.onSave();
+
+        expect(mockCandidateEducationService.create).toHaveBeenCalledWith(expect.objectContaining({
+            candidateId: component.candidateId,
+            courseName: 'CS101',
+            institution: 'MIT',
+            countryId: 1,
+            educationMajorId: 1,
+            yearCompleted: 2010,
+            lengthOfCourseYears: 4,
+            educationType: 'Bachelor',
+            incomplete: false
+        } as unknown as CreateCandidateEducationRequest));
+
+        expect(mockActiveModal.close).toHaveBeenCalledWith(mockEducation);
+        expect(component.saving).toBe(false);
+    });
+
+    it('should handle error when saving candidate education details', () => {
+        const error = 'Failed to save education details';
+        mockCandidateEducationService.create.mockReturnValue(throwError(error));
+
+        component.candidateForm.setValue({
+            courseName: 'CS101',
+            institution: 'MIT',
+            countryId: 1,
+            educationMajorId: 1,
+            yearCompleted: 2010,
+            lengthOfCourseYears: 4,
+            educationType: 'Bachelor',
+            incomplete: false
+        });
+
+        component.onSave();
+
+        expect(mockCandidateEducationService.create).toHaveBeenCalled();
+        expect(mockActiveModal.close).not.toHaveBeenCalled();
+        expect(component.error).toBe(error);
+        expect(component.saving).toBe(false);
+    });
 });

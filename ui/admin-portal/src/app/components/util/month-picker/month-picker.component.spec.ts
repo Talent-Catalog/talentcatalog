@@ -22,96 +22,97 @@ import {NgSelectModule} from "@ng-select/ng-select";
 import {provideHttpClientTesting} from "@angular/common/http/testing";
 import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {generateYearArray} from "../../../util/year-helper";
+import {expect} from 'vitest';
 
 describe('MonthPickerComponent', () => {
-  let component: MonthPickerComponent;
-  let fixture: ComponentFixture<MonthPickerComponent>;
-  let debugElement: DebugElement;
+    let component: MonthPickerComponent;
+    let fixture: ComponentFixture<MonthPickerComponent>;
+    let debugElement: DebugElement;
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      declarations: [MonthPickerComponent],
-      imports: [FormsModule, ReactiveFormsModule, NgSelectModule],
-      providers: [provideHttpClient(withXhr(), withInterceptorsFromDi()), provideHttpClientTesting()]
-    }).compileComponents();
-  });
+    beforeEach(async () => {
+        await TestBed.configureTestingModule({
+            declarations: [MonthPickerComponent],
+            imports: [FormsModule, ReactiveFormsModule, NgSelectModule],
+            providers: [provideHttpClient(withXhr(), withInterceptorsFromDi()), provideHttpClientTesting()]
+        }).compileComponents();
+    });
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(MonthPickerComponent);
-    component = fixture.componentInstance;
-    debugElement = fixture.debugElement;
-    component.control = new UntypedFormControl();
-    fixture.detectChanges();
-  });
+    beforeEach(() => {
+        fixture = TestBed.createComponent(MonthPickerComponent);
+        component = fixture.componentInstance;
+        debugElement = fixture.debugElement;
+        component.control = new UntypedFormControl();
+        fixture.detectChanges();
+    });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
 
-  it('should initialize years and months correctly', () => {
-    component.ngOnInit();
-    expect(component.years).toEqual(generateYearArray(1950, true));
-    expect(component.months).toEqual(['Jan', 'Feb', 'March', 'April', 'May', 'June', 'July', 'Aug', 'Sept', 'Oct', 'Nov', 'Dec']);
-  });
+    it('should initialize years and months correctly', () => {
+        component.ngOnInit();
+        expect(component.years).toEqual(generateYearArray(1950, true));
+        expect(component.months).toEqual(['Jan', 'Feb', 'March', 'April', 'May', 'June', 'July', 'Aug', 'Sept', 'Oct', 'Nov', 'Dec']);
+    });
 
-  it('should initialize with empty month and year when control has no value', () => {
-    component.ngOnInit();
-    expect(component.month).toBeNull();
-    expect(component.year).toBeNull();
-  });
+    it('should initialize with empty month and year when control has no value', () => {
+        component.ngOnInit();
+        expect(component.month).toBeNull();
+        expect(component.year).toBeNull();
+    });
 
-  it('should initialize with correct month and year when control has value', () => {
-    const date = new Date(2020, 5, 1);
-    component.control.setValue(date.toISOString());
-    component.ngOnInit();
-    expect(component.month).toBe('June');
-    expect(component.year).toBe(2020);
-  });
+    it('should initialize with correct month and year when control has value', () => {
+        const date = new Date(2020, 5, 1);
+        component.control.setValue(date.toISOString());
+        component.ngOnInit();
+        expect(component.month).toBe('June');
+        expect(component.year).toBe(2020);
+    });
 
-  it('should update month correctly', () => {
-    component.month = 'July';
-    component.updateMonth();
-    expect(component.control.value.getMonth()).toBe(6); // Months are 0-indexed in JS Date
-  });
+    it('should update month correctly', () => {
+        component.month = 'July';
+        component.updateMonth();
+        expect(component.control.value.getMonth()).toBe(6); // Months are 0-indexed in JS Date
+    });
 
-  it('should update year correctly', () => {
-    component.year = 2021;
-    component.updateYear();
-    expect(component.control.value.getFullYear()).toBe(2021);
-  });
+    it('should update year correctly', () => {
+        component.year = 2021;
+        component.updateYear();
+        expect(component.control.value.getFullYear()).toBe(2021);
+    });
 
-  it('should update control value when month is changed', () => {
-    component.month = 'Aug';
-    component.updateMonth();
-    fixture.detectChanges();
-    expect(component.control.value.getMonth()).toBe(7); // August is 7th month (0-indexed)
-  });
+    it('should update control value when month is changed', () => {
+        component.month = 'Aug';
+        component.updateMonth();
+        fixture.detectChanges();
+        expect(component.control.value.getMonth()).toBe(7); // August is 7th month (0-indexed)
+    });
 
-  it('should handle null month correctly', () => {
-    component.month = null;
-    component.updateMonth();
-    expect(component.control.value).toBeNull();
-  });
+    it('should handle null month correctly', () => {
+        component.month = null;
+        component.updateMonth();
+        expect(component.control.value).toBeNull();
+    });
 
-  it('should handle null year correctly', () => {
-    component.year = null;
-    component.updateYear();
-    expect(component.control.value).toBeNull();
-  });
+    it('should handle null year correctly', () => {
+        component.year = null;
+        component.updateYear();
+        expect(component.control.value).toBeNull();
+    });
 
-  it('should update year and patch control value', () => {
-    component.year = 2021;
-    component.updateYear();
-    expect(component.control.value).toBeTruthy();
-    const date = new Date(component.control.value);
-    expect(date.getDate()).toBe(1); // Check if the date is set to the 1st by default
-  });
+    it('should update year and patch control value', () => {
+        component.year = 2021;
+        component.updateYear();
+        expect(component.control.value).toBeTruthy();
+        const date = new Date(component.control.value);
+        expect(date.getDate()).toBe(1); // Check if the date is set to the 1st by default
+    });
 
-  it('should update month and patch control value', () => {
-    component.month = 'Aug';
-    component.updateMonth();
-    expect(component.control.value).toBeTruthy();
-    const date = new Date(component.control.value);
-    expect(date.getDate()).toBe(1); // Check if the date is set to the 1st by default
-  });
+    it('should update month and patch control value', () => {
+        component.month = 'Aug';
+        component.updateMonth();
+        expect(component.control.value).toBeTruthy();
+        const date = new Date(component.control.value);
+        expect(date.getDate()).toBe(1); // Check if the date is set to the 1st by default
+    });
 });

@@ -19,33 +19,35 @@ import {ComponentFixture, TestBed, waitForAsync} from '@angular/core/testing';
 import {FinalAgreementComponent} from './final-agreement.component';
 import {AuthenticationService} from "../../../../services/authentication.service";
 import {MockUser} from "../../../../MockData/MockUser";
+import {expect, vi} from 'vitest';
 
 describe('FinalAgreementComponent', () => {
-  let component: FinalAgreementComponent;
-  let fixture: ComponentFixture<FinalAgreementComponent>;
+    let component: FinalAgreementComponent;
+    let fixture: ComponentFixture<FinalAgreementComponent>;
 
-  const mockAuthenticationService =
-    jasmine.createSpyObj('AuthenticationService', ['getLoggedInUser']);
+    const mockAuthenticationService = {
+        getLoggedInUser: vi.fn().mockName("AuthenticationService.getLoggedInUser")
+    };
 
-  beforeEach(waitForAsync(() => {
-    TestBed.configureTestingModule({
-      declarations: [ FinalAgreementComponent ],
-      providers: [
-        {provide: AuthenticationService, useValue: mockAuthenticationService}
-      ],
-    })
-    .compileComponents();
-  }));
+    beforeEach(waitForAsync(() => {
+        TestBed.configureTestingModule({
+            declarations: [FinalAgreementComponent],
+            providers: [
+                { provide: AuthenticationService, useValue: mockAuthenticationService }
+            ],
+        })
+            .compileComponents();
+    }));
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(FinalAgreementComponent);
-    component = fixture.componentInstance;
-    mockAuthenticationService.getLoggedInUser.and.returnValue(new MockUser());
+    beforeEach(() => {
+        fixture = TestBed.createComponent(FinalAgreementComponent);
+        component = fixture.componentInstance;
+        mockAuthenticationService.getLoggedInUser.mockReturnValue(new MockUser());
 
-    fixture.detectChanges();
-  });
+        fixture.detectChanges();
+    });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
 });

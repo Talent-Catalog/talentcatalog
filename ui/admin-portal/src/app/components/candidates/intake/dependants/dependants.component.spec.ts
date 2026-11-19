@@ -24,59 +24,60 @@ import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {AutosaveStatusComponent} from "../../../util/autosave-status/autosave-status.component";
 import {CandidateDependantService} from "../../../../services/candidate-dependant.service";
 import {MockCandidate} from "../../../../MockData/MockCandidate";
+import {expect} from 'vitest';
 
 describe('DependantsComponent', () => {
-  let component: DependantsComponent;
-  let fixture: ComponentFixture<DependantsComponent>;
+    let component: DependantsComponent;
+    let fixture: ComponentFixture<DependantsComponent>;
 
-  const mockCandidateIntakeData: CandidateIntakeData = {
-    candidateDependants: [
-      // Mock dependants data
-    ]
-  };
+    const mockCandidateIntakeData: CandidateIntakeData = {
+        candidateDependants: [
+        // Mock dependants data
+        ]
+    };
 
-  const mockNationalities: Country[] = [
+    const mockNationalities: Country[] = [
     // Mock nationalities data
-  ];
+    ];
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      imports: [NgSelectModule,FormsModule,ReactiveFormsModule],
-      declarations: [DependantsComponent, AutosaveStatusComponent],
-      providers: [CandidateDependantService, provideHttpClient(withXhr(), withInterceptorsFromDi()), provideHttpClientTesting()],
-    }).compileComponents();
-  });
+    beforeEach(async () => {
+        await TestBed.configureTestingModule({
+            imports: [NgSelectModule, FormsModule, ReactiveFormsModule],
+            declarations: [DependantsComponent, AutosaveStatusComponent],
+            providers: [CandidateDependantService, provideHttpClient(withXhr(), withInterceptorsFromDi()), provideHttpClientTesting()],
+        }).compileComponents();
+    });
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(DependantsComponent);
-    component = fixture.componentInstance;
-    component.candidate = new MockCandidate();
-    component.candidateIntakeData = mockCandidateIntakeData;
-    component.nationalities = mockNationalities;
-    fixture.detectChanges();
-  });
+    beforeEach(() => {
+        fixture = TestBed.createComponent(DependantsComponent);
+        component = fixture.componentInstance;
+        component.candidate = new MockCandidate();
+        component.candidateIntakeData = mockCandidateIntakeData;
+        component.nationalities = mockNationalities;
+        fixture.detectChanges();
+    });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
 
-  it('should initialize with provided candidate data', () => {
-    expect(component.error).toBeFalsy();
-    expect(component.candidate).toEqual(new MockCandidate());
-    expect(component.candidateIntakeData).toEqual(mockCandidateIntakeData);
-  });
+    it('should initialize with provided candidate data', () => {
+        expect(component.error).toBeFalsy();
+        expect(component.candidate).toEqual(new MockCandidate());
+        expect(component.candidateIntakeData).toEqual(mockCandidateIntakeData);
+    });
 
-  it('should display no dependants message if candidateDependants array is empty', () => {
-    // Set candidateDependants array to empty
-    component.candidateIntakeData.candidateDependants = [];
-    fixture.detectChanges();
+    it('should display no dependants message if candidateDependants array is empty', () => {
+        // Set candidateDependants array to empty
+        component.candidateIntakeData.candidateDependants = [];
+        fixture.detectChanges();
 
-    const noDependantsMessage = fixture.nativeElement.querySelector('.mb-0');
-    expect(noDependantsMessage.textContent.trim()).toBe('No Dependants Added');
-  });
+        const noDependantsMessage = fixture.nativeElement.querySelector('.mb-0');
+        expect(noDependantsMessage.textContent.trim()).toBe('No Dependants Added');
+    });
 
-  it('should render dependant cards for each dependant in candidateDependants array', () => {
-    const dependantCards = fixture.nativeElement.querySelectorAll('.dependant-card');
-    expect(dependantCards.length).toBe(mockCandidateIntakeData.candidateDependants.length);
-  });
+    it('should render dependant cards for each dependant in candidateDependants array', () => {
+        const dependantCards = fixture.nativeElement.querySelectorAll('.dependant-card');
+        expect(dependantCards.length).toBe(mockCandidateIntakeData.candidateDependants.length);
+    });
 });

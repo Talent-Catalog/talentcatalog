@@ -21,6 +21,7 @@ import {IndustryService} from './industry.service';
 import {Industry} from '../model/industry';
 import {SearchResults} from '../model/search-results';
 import {environment} from "../../environments/environment";
+import {expect} from 'vitest';
 
 describe('IndustryService', () => {
   let service: IndustryService;

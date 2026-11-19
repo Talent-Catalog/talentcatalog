@@ -23,6 +23,7 @@ import {Task} from '../model/task';
 import {SearchResults} from '../model/search-results';
 import {SearchTaskRequest} from '../model/base';
 import {MockJob} from "../MockData/MockJob";
+import {expect} from 'vitest';
 
 describe('TaskService', () => {
   let service: TaskService;

@@ -14,16 +14,8 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {
-  Component,
-  EventEmitter,
-  Input,
-  Output,
-  Pipe,
-  PipeTransform,
-  SimpleChange,
-  ChangeDetectionStrategy
-} from '@angular/core';
+import type {MockedObject} from "vitest";
+import {Component, EventEmitter, Input, Output, Pipe, PipeTransform, SimpleChange, ChangeDetectionStrategy} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 import {of, Subject, throwError} from 'rxjs';
@@ -35,519 +27,452 @@ import {JobChat, JobChatType} from '../../../../../../model/chat';
 import {Candidate} from '../../../../../../model/candidate';
 import {CandidateOpportunity} from '../../../../../../model/candidate-opportunity';
 
-@Pipe({name: 'translate', standalone: false})
+@Pipe({ name: 'translate', standalone: false })
 class TranslatePipeStub implements PipeTransform {
-  transform(value: string): string {
-    return value;
-  }
+    transform(value: string): string {
+        return value;
+    }
 }
 
-@Pipe({name: 'truncate', standalone: false})
+@Pipe({ name: 'truncate', standalone: false })
 class TruncatePipeStub implements PipeTransform {
-  transform(value: string): string {
-    return value;
-  }
+    transform(value: string): string {
+        return value;
+    }
 }
 
-@Component({selector: 'app-error', template: '', changeDetection: ChangeDetectionStrategy.Eager, standalone: false})
+@Component({ selector: 'app-error', template: '', changeDetection: ChangeDetectionStrategy.Eager, standalone: false })
 class ErrorStubComponent {
-  @Input() error: unknown;
+    @Input()
+    error: unknown;
 }
 
-@Component({selector: 'tc-loading', template: '', changeDetection: ChangeDetectionStrategy.Eager, standalone: false})
+@Component({ selector: 'tc-loading', template: '', changeDetection: ChangeDetectionStrategy.Eager, standalone: false })
 class TcLoadingStubComponent {
-  @Input() loading = false;
+    @Input()
+    loading = false;
 }
 
-@Component({selector: 'app-candidate-opp', template: '', changeDetection: ChangeDetectionStrategy.Eager, standalone: false})
+@Component({ selector: 'app-candidate-opp', template: '', changeDetection: ChangeDetectionStrategy.Eager, standalone: false })
 class CandidateOppStubComponent {
-  @Input() selectedOpp: unknown;
-  @Input() candidate: unknown;
-  @Output() back = new EventEmitter<void>();
+    @Input()
+    selectedOpp: unknown;
+    @Input()
+    candidate: unknown;
+    @Output()
+    back = new EventEmitter<void>();
 }
 
 @Component({
-  selector: 'app-tab-header',
-  template: '<ng-content></ng-content>',
-  changeDetection: ChangeDetectionStrategy.Eager,
-  standalone: false
+    selector: 'app-tab-header',
+    template: '<ng-content></ng-content>',
+    changeDetection: ChangeDetectionStrategy.Eager,
+    standalone: false
 })
 class TabHeaderStubComponent {
 }
 
-@Component({selector: 'app-chat-read-status', template: '', changeDetection: ChangeDetectionStrategy.Eager, standalone: false})
+@Component({ selector: 'app-chat-read-status', template: '', changeDetection: ChangeDetectionStrategy.Eager, standalone: false })
 class ChatReadStatusStubComponent {
-  @Input() chats: unknown;
+    @Input()
+    chats: unknown;
 }
 
 @Component({
-  selector: 'tc-table',
-  template: '<ng-content></ng-content>',
-  changeDetection: ChangeDetectionStrategy.Eager,
-  standalone: false
+    selector: 'tc-table',
+    template: '<ng-content></ng-content>',
+    changeDetection: ChangeDetectionStrategy.Eager,
+    standalone: false
 })
 class TcTableStubComponent {
-  @Input() striped = false;
+    @Input()
+    striped = false;
 }
 
 describe('CandidateOppsComponent', () => {
-  let component: CandidateOppsComponent;
-  let fixture: ComponentFixture<CandidateOppsComponent>;
-  let authorizationServiceSpy: jasmine.SpyObj<AuthorizationService>;
-  let chatServiceSpy: jasmine.SpyObj<ChatService>;
+    let component: CandidateOppsComponent;
+    let fixture: ComponentFixture<CandidateOppsComponent>;
+    let authorizationServiceSpy: MockedObject<AuthorizationService>;
+    let chatServiceSpy: MockedObject<ChatService>;
 
-  const makeCandidate = (
-    opportunities: CandidateOpportunity[] = []
-  ): Candidate => ({
-    id: 7,
-    candidateOpportunities: opportunities
-  } as Candidate);
+    const makeCandidate = (opportunities: CandidateOpportunity[] = []): Candidate => ({
+        id: 7,
+        candidateOpportunities: opportunities
+    } as Candidate);
 
-  const makeOpp = (
-    id = 1,
-    name = 'Chef role'
-  ): CandidateOpportunity => ({
-    id,
-    jobOpp: {
-      id: id + 10,
-      name
-    }
-  } as CandidateOpportunity);
-
-  const makeChat = (
-    id: number,
-    type: JobChatType
-  ): JobChat => ({
-    id,
-    type
-  } as JobChat);
-
-  beforeEach(async () => {
-    authorizationServiceSpy = jasmine.createSpyObj<AuthorizationService>(
-      'AuthorizationService',
-      ['canViewChats']
-    );
-
-    chatServiceSpy = jasmine.createSpyObj<ChatService>(
-      'ChatService',
-      ['getOrCreate', 'removeDuplicateChats']
-    );
-
-    authorizationServiceSpy.canViewChats.and.returnValue(false);
-
-    chatServiceSpy.getOrCreate.and.returnValue(
-      of(makeChat(1, JobChatType.CandidateProspect))
-    );
-
-    chatServiceSpy.removeDuplicateChats.and.callFake(
-      (chats: JobChat[]) => chats
-    );
-
-    await TestBed.configureTestingModule({
-      declarations: [
-        CandidateOppsComponent,
-        TranslatePipeStub,
-        TruncatePipeStub,
-        ErrorStubComponent,
-        TcLoadingStubComponent,
-        CandidateOppStubComponent,
-        TabHeaderStubComponent,
-        ChatReadStatusStubComponent,
-        TcTableStubComponent
-      ],
-      providers: [
-        {
-          provide: AuthorizationService,
-          useValue: authorizationServiceSpy
-        },
-        {
-          provide: ChatService,
-          useValue: chatServiceSpy
+    const makeOpp = (id = 1, name = 'Chef role'): CandidateOpportunity => ({
+        id,
+        jobOpp: {
+            id: id + 10,
+            name
         }
-      ]
-    }).compileComponents();
-  });
+    } as CandidateOpportunity);
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(CandidateOppsComponent);
-    component = fixture.componentInstance;
-    component.candidate = makeCandidate();
-    component.filteredOpps = [makeOpp()];
-    fixture.detectChanges();
-  });
+    const makeChat = (id: number, type: JobChatType): JobChat => ({
+        id,
+        type
+    } as JobChat);
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+    beforeEach(async () => {
+        authorizationServiceSpy = {
+            canViewChats: vi.fn().mockName("AuthorizationService.canViewChats")
+        } as unknown as MockedObject<AuthorizationService>;
 
-  it('should render tc-loading and tc-table when showing the opp list', () => {
-    const loading = fixture.debugElement.query(
-      By.directive(TcLoadingStubComponent)
-    ).componentInstance as TcLoadingStubComponent;
+        chatServiceSpy = {
+            getOrCreate: vi.fn().mockName("ChatService.getOrCreate"),
+            removeDuplicateChats: vi.fn().mockName("ChatService.removeDuplicateChats")
+        } as unknown as MockedObject<ChatService>;
 
-    const table = fixture.debugElement.query(
-      By.directive(TcTableStubComponent)
-    ).componentInstance as TcTableStubComponent;
+        authorizationServiceSpy.canViewChats.mockReturnValue(false);
 
-    expect(loading.loading).toBeFalsy();
-    expect(table).toBeTruthy();
-    expect(table.striped).toBeTrue();
+        chatServiceSpy.getOrCreate.mockReturnValue(of(makeChat(1, JobChatType.CandidateProspect)));
 
-    const rows = fixture.nativeElement.querySelectorAll('tbody tr');
+        chatServiceSpy.removeDuplicateChats.mockImplementation((chats: JobChat[]) => chats);
 
-    expect(rows.length).toBe(1);
-    expect(rows[0].textContent).toContain('Chef role');
-  });
-
-  it('should render the selected opportunity child component after clicking a row', () => {
-    const opp = component.filteredOpps[0];
-
-    fixture.nativeElement.querySelector('tbody tr').click();
-    fixture.detectChanges();
-
-    const child = fixture.debugElement.query(
-      By.directive(CandidateOppStubComponent)
-    );
-
-    expect(component.selectedOpp).toBe(opp);
-    expect(child).toBeTruthy();
-
-    expect(
-      (child.componentInstance as CandidateOppStubComponent).selectedOpp
-    ).toBe(opp);
-
-    expect(
-      (child.componentInstance as CandidateOppStubComponent).candidate
-    ).toBe(component.candidate);
-  });
-
-  it('should emit refresh when unSelectOpp is called', () => {
-    spyOn(component.refresh, 'emit');
-    component.selectedOpp = component.filteredOpps[0];
-
-    component.unSelectOpp();
-
-    expect(component.selectedOpp).toBeNull();
-    expect(component.refresh.emit).toHaveBeenCalled();
-  });
-
-  it('should expose whether the user can view chats', () => {
-    authorizationServiceSpy.canViewChats.and.returnValue(true);
-
-    expect(component.canViewChats).toBeTrue();
-    expect(authorizationServiceSpy.canViewChats).toHaveBeenCalled();
-  });
-
-  it('should return false when the user cannot view chats', () => {
-    authorizationServiceSpy.canViewChats.and.returnValue(false);
-
-    expect(component.canViewChats).toBeFalse();
-  });
-
-  it('should select an opportunity', () => {
-    const opp = makeOpp(2, 'Developer role');
-
-    component.selectOpp(opp);
-
-    expect(component.selectedOpp).toBe(opp);
-  });
-
-  it('should clear the selected opportunity and emit refresh', () => {
-    const refreshSpy = spyOn(component.refresh, 'emit');
-    component.selectedOpp = makeOpp();
-
-    component.unSelectOpp();
-
-    expect(component.selectedOpp).toBeNull();
-    expect(refreshSpy).toHaveBeenCalledTimes(1);
-  });
-
-  it('should fetch chats when the candidate changes and chats are viewable', () => {
-    const firstOpp = makeOpp(1, 'Chef role');
-    const secondOpp = makeOpp(2, 'Developer role');
-
-    component.candidate = makeCandidate([firstOpp, secondOpp]);
-    authorizationServiceSpy.canViewChats.and.returnValue(true);
-
-    const fetchOppChatsSpy = spyOn(component, 'fetchOppChats');
-
-    component.ngOnChanges({
-      candidate: new SimpleChange(
-        undefined,
-        component.candidate,
-        true
-      )
+        await TestBed.configureTestingModule({
+            declarations: [
+                CandidateOppsComponent,
+                TranslatePipeStub,
+                TruncatePipeStub,
+                ErrorStubComponent,
+                TcLoadingStubComponent,
+                CandidateOppStubComponent,
+                TabHeaderStubComponent,
+                ChatReadStatusStubComponent,
+                TcTableStubComponent
+            ],
+            providers: [
+                {
+                    provide: AuthorizationService,
+                    useValue: authorizationServiceSpy
+                },
+                {
+                    provide: ChatService,
+                    useValue: chatServiceSpy
+                }
+            ]
+        }).compileComponents();
     });
 
-    expect(fetchOppChatsSpy).toHaveBeenCalledTimes(2);
-    expect(fetchOppChatsSpy).toHaveBeenCalledWith(firstOpp);
-    expect(fetchOppChatsSpy).toHaveBeenCalledWith(secondOpp);
-  });
-
-  it('should not fetch chats when the candidate changes but chats are not viewable', () => {
-    component.candidate = makeCandidate([makeOpp()]);
-    authorizationServiceSpy.canViewChats.and.returnValue(false);
-
-    const fetchOppChatsSpy = spyOn(component, 'fetchOppChats');
-
-    component.ngOnChanges({
-      candidate: new SimpleChange(
-        undefined,
-        component.candidate,
-        true
-      )
+    beforeEach(() => {
+        fixture = TestBed.createComponent(CandidateOppsComponent);
+        component = fixture.componentInstance;
+        component.candidate = makeCandidate();
+        component.filteredOpps = [makeOpp()];
+        fixture.detectChanges();
     });
 
-    expect(fetchOppChatsSpy).not.toHaveBeenCalled();
-  });
-
-  it('should not fetch chats when a different input changes', () => {
-    authorizationServiceSpy.canViewChats.and.returnValue(true);
-
-    const fetchOppChatsSpy = spyOn(component, 'fetchOppChats');
-
-    component.ngOnChanges({
-      filteredOpps: new SimpleChange(
-        undefined,
-        component.filteredOpps,
-        true
-      )
+    it('should create', () => {
+        expect(component).toBeTruthy();
     });
 
-    expect(fetchOppChatsSpy).not.toHaveBeenCalled();
-  });
+    it('should render tc-loading and tc-table when showing the opp list', () => {
+        const loading = fixture.debugElement.query(By.directive(TcLoadingStubComponent)).componentInstance as TcLoadingStubComponent;
 
-  it('should make all required chat requests for an opportunity', () => {
-    const opp = makeOpp(3, 'Nurse role');
+        const table = fixture.debugElement.query(By.directive(TcTableStubComponent)).componentInstance as TcTableStubComponent;
 
-    chatServiceSpy.getOrCreate.calls.reset();
+        expect(loading.loading).toBeFalsy();
+        expect(table).toBeTruthy();
+        expect(table.striped).toBe(true);
 
-    component.fetchOppChats(opp);
+        const rows = fixture.nativeElement.querySelectorAll('tbody tr');
 
-    expect(chatServiceSpy.getOrCreate).toHaveBeenCalledTimes(3);
-
-    expect(chatServiceSpy.getOrCreate).toHaveBeenCalledWith({
-      type: JobChatType.CandidateRecruiting,
-      candidateId: 7,
-      jobId: 13
+        expect(rows.length).toBe(1);
+        expect(rows[0].textContent).toContain('Chef role');
     });
 
-    expect(chatServiceSpy.getOrCreate).toHaveBeenCalledWith({
-      type: JobChatType.CandidateProspect,
-      candidateId: 7
+    it('should render the selected opportunity child component after clicking a row', () => {
+        const opp = component.filteredOpps[0];
+
+        fixture.nativeElement.querySelector('tbody tr').click();
+        fixture.detectChanges();
+
+        const child = fixture.debugElement.query(By.directive(CandidateOppStubComponent));
+
+        expect(component.selectedOpp).toBe(opp);
+        expect(child).toBeTruthy();
+
+        expect((child.componentInstance as CandidateOppStubComponent).selectedOpp).toBe(opp);
+
+        expect((child.componentInstance as CandidateOppStubComponent).candidate).toBe(component.candidate);
     });
 
-    expect(chatServiceSpy.getOrCreate).toHaveBeenCalledWith({
-      type: JobChatType.AllJobCandidates,
-      jobId: 13
+    it('should emit refresh when unSelectOpp is called', () => {
+        vi.spyOn(component.refresh, 'emit').mockReturnValue(undefined);
+        component.selectedOpp = component.filteredOpps[0];
+
+        component.unSelectOpp();
+
+        expect(component.selectedOpp).toBeNull();
+        expect(component.refresh.emit).toHaveBeenCalled();
     });
-  });
 
-  it('should remove duplicate chats and store them by opportunity ID', () => {
-    const opp = makeOpp(3, 'Nurse role');
+    it('should expose whether the user can view chats', () => {
+        authorizationServiceSpy.canViewChats.mockReturnValue(true);
 
-    const recruitingChat = makeChat(
-      1,
-      JobChatType.CandidateRecruiting
-    );
+        expect(component.canViewChats).toBe(true);
+        expect(authorizationServiceSpy.canViewChats).toHaveBeenCalled();
+    });
 
-    const prospectChat = makeChat(
-      2,
-      JobChatType.CandidateProspect
-    );
+    it('should return false when the user cannot view chats', () => {
+        authorizationServiceSpy.canViewChats.mockReturnValue(false);
 
-    const allCandidatesChat = makeChat(
-      3,
-      JobChatType.AllJobCandidates
-    );
+        expect(component.canViewChats).toBe(false);
+    });
 
-    const uniqueChats = [
-      recruitingChat,
-      prospectChat,
-      allCandidatesChat
-    ];
+    it('should select an opportunity', () => {
+        const opp = makeOpp(2, 'Developer role');
 
-    chatServiceSpy.getOrCreate.and.returnValues(
-      of(recruitingChat),
-      of(prospectChat),
-      of(allCandidatesChat)
-    );
+        component.selectOpp(opp);
 
-    chatServiceSpy.removeDuplicateChats.and.returnValue(uniqueChats);
+        expect(component.selectedOpp).toBe(opp);
+    });
 
-    component.fetchOppChats(opp);
+    it('should clear the selected opportunity and emit refresh', () => {
+        const refreshSpy = vi.spyOn(component.refresh, 'emit').mockReturnValue(undefined);
+        component.selectedOpp = makeOpp();
 
-    expect(chatServiceSpy.removeDuplicateChats)
-    .toHaveBeenCalledTimes(1);
+        component.unSelectOpp();
 
-    expect(chatServiceSpy.removeDuplicateChats)
-    .toHaveBeenCalledWith([
-      recruitingChat,
-      prospectChat,
-      allCandidatesChat
-    ]);
+        expect(component.selectedOpp).toBeNull();
+        expect(refreshSpy).toHaveBeenCalledTimes(1);
+    });
 
-    expect(component.getOppChats(opp)).toBe(uniqueChats);
-    expect(component.loading).toBeFalse();
-    expect(component.error).toBeNull();
-  });
+    it('should fetch chats when the candidate changes and chats are viewable', () => {
+        const firstOpp = makeOpp(1, 'Chef role');
+        const secondOpp = makeOpp(2, 'Developer role');
 
-  it('should return undefined when chats have not been fetched for an opportunity', () => {
-    const opp = makeOpp(99, 'Unknown role');
+        component.candidate = makeCandidate([firstOpp, secondOpp]);
+        authorizationServiceSpy.canViewChats.mockReturnValue(true);
 
-    expect(component.getOppChats(opp)).toBeUndefined();
-  });
+        const fetchOppChatsSpy = vi.spyOn(component, 'fetchOppChats').mockReturnValue(undefined);
 
-  it('should set loading while the chat requests are pending', () => {
-    const chatSubject = new Subject<JobChat>();
+        component.ngOnChanges({
+            candidate: new SimpleChange(undefined, component.candidate, true)
+        });
 
-    chatServiceSpy.getOrCreate.and.returnValue(
-      chatSubject.asObservable()
-    );
+        expect(fetchOppChatsSpy).toHaveBeenCalledTimes(2);
+        expect(fetchOppChatsSpy).toHaveBeenCalledWith(firstOpp);
+        expect(fetchOppChatsSpy).toHaveBeenCalledWith(secondOpp);
+    });
 
-    component.error = 'Previous error';
+    it('should not fetch chats when the candidate changes but chats are not viewable', () => {
+        component.candidate = makeCandidate([makeOpp()]);
+        authorizationServiceSpy.canViewChats.mockReturnValue(false);
 
-    component.fetchOppChats(makeOpp());
+        const fetchOppChatsSpy = vi.spyOn(component, 'fetchOppChats').mockReturnValue(undefined);
 
-    expect(component.loading).toBeTrue();
-    expect(component.error).toBeNull();
-  });
+        component.ngOnChanges({
+            candidate: new SimpleChange(undefined, component.candidate, true)
+        });
 
-  it('should clear a previous error before fetching chats', () => {
-    const chatSubject = new Subject<JobChat>();
+        expect(fetchOppChatsSpy).not.toHaveBeenCalled();
+    });
 
-    chatServiceSpy.getOrCreate.and.returnValue(
-      chatSubject.asObservable()
-    );
+    it('should not fetch chats when a different input changes', () => {
+        authorizationServiceSpy.canViewChats.mockReturnValue(true);
 
-    component.error = 'Previous error';
+        const fetchOppChatsSpy = vi.spyOn(component, 'fetchOppChats').mockReturnValue(undefined);
 
-    component.fetchOppChats(makeOpp());
+        component.ngOnChanges({
+            filteredOpps: new SimpleChange(undefined, component.filteredOpps, true)
+        });
 
-    expect(component.error).toBeNull();
-  });
+        expect(fetchOppChatsSpy).not.toHaveBeenCalled();
+    });
 
-  it('should store the error and stop loading when fetching chats fails', () => {
-    const serviceError = 'Unable to load opportunity chats';
+    it('should make all required chat requests for an opportunity', () => {
+        const opp = makeOpp(3, 'Nurse role');
 
-    chatServiceSpy.getOrCreate.and.returnValues(
-      of(makeChat(1, JobChatType.CandidateRecruiting)),
-      throwError(serviceError),
-      of(makeChat(3, JobChatType.AllJobCandidates))
-    );
+        chatServiceSpy.getOrCreate.mockClear();
 
-    component.fetchOppChats(makeOpp());
+        component.fetchOppChats(opp);
 
-    expect(component.error).toBe(serviceError);
-    expect(component.loading).toBeFalse();
-    expect(chatServiceSpy.removeDuplicateChats).not.toHaveBeenCalled();
-  });
+        expect(chatServiceSpy.getOrCreate).toHaveBeenCalledTimes(3);
 
-  it('should pass the error to the error component', () => {
-    component.error = 'Unable to load chats';
-    fixture.detectChanges();
+        expect(chatServiceSpy.getOrCreate).toHaveBeenCalledWith({
+            type: JobChatType.CandidateRecruiting,
+            candidateId: 7,
+            jobId: 13
+        });
 
-    const errorComponent = fixture.debugElement.query(
-      By.directive(ErrorStubComponent)
-    ).componentInstance as ErrorStubComponent;
+        expect(chatServiceSpy.getOrCreate).toHaveBeenCalledWith({
+            type: JobChatType.CandidateProspect,
+            candidateId: 7
+        });
 
-    expect(errorComponent.error).toBe('Unable to load chats');
-  });
+        expect(chatServiceSpy.getOrCreate).toHaveBeenCalledWith({
+            type: JobChatType.AllJobCandidates,
+            jobId: 13
+        });
+    });
 
-  it('should pass loading state to the loading component', () => {
-    component.loading = true;
-    fixture.detectChanges();
+    it('should remove duplicate chats and store them by opportunity ID', () => {
+        const opp = makeOpp(3, 'Nurse role');
 
-    const loadingComponent = fixture.debugElement.query(
-      By.directive(TcLoadingStubComponent)
-    ).componentInstance as TcLoadingStubComponent;
+        const recruitingChat = makeChat(1, JobChatType.CandidateRecruiting);
 
-    expect(loadingComponent.loading).toBeTrue();
-  });
+        const prospectChat = makeChat(2, JobChatType.CandidateProspect);
 
-  it('should hide the opportunity list while loading', () => {
-    component.loading = true;
-    fixture.detectChanges();
+        const allCandidatesChat = makeChat(3, JobChatType.AllJobCandidates);
 
-    const table = fixture.debugElement.query(
-      By.directive(TcTableStubComponent)
-    );
+        const uniqueChats = [
+            recruitingChat,
+            prospectChat,
+            allCandidatesChat
+        ];
 
-    const selectedOpp = fixture.debugElement.query(
-      By.directive(CandidateOppStubComponent)
-    );
+        chatServiceSpy.getOrCreate.mockReturnValueOnce(of(recruitingChat)).mockReturnValueOnce(of(prospectChat)).mockReturnValueOnce(of(allCandidatesChat));
 
-    expect(table).toBeNull();
-    expect(selectedOpp).toBeNull();
-  });
+        chatServiceSpy.removeDuplicateChats.mockReturnValue(uniqueChats);
 
-  it('should show the no-results message when there are no filtered opportunities', () => {
-    component.loading = false;
-    component.selectedOpp = null;
-    component.filteredOpps = [];
+        component.fetchOppChats(opp);
 
-    fixture.detectChanges();
+        expect(chatServiceSpy.removeDuplicateChats)
+            .toHaveBeenCalledTimes(1);
 
-    const noResultsElement = fixture.debugElement.query(
-      By.css('td.text-center')
-    );
+        expect(chatServiceSpy.removeDuplicateChats)
+            .toHaveBeenCalledWith([
+            recruitingChat,
+            prospectChat,
+            allCandidatesChat
+        ]);
 
-    expect(noResultsElement).not.toBeNull();
-    expect(noResultsElement.nativeElement.textContent)
-    .toContain('CANDIDATE-OPPS.TABLE.NONE');
-  });
+        expect(component.getOppChats(opp)).toBe(uniqueChats);
+        expect(component.loading).toBe(false);
+        expect(component.error).toBeNull();
+    });
 
-  it('should render chat read status when the user can view chats', () => {
-    const opp = component.filteredOpps[0];
-    const chats = [
-      makeChat(1, JobChatType.CandidateProspect)
-    ];
+    it('should return undefined when chats have not been fetched for an opportunity', () => {
+        const opp = makeOpp(99, 'Unknown role');
 
-    authorizationServiceSpy.canViewChats.and.returnValue(true);
+        expect(component.getOppChats(opp)).toBeUndefined();
+    });
 
-    chatServiceSpy.getOrCreate.and.returnValue(of(chats[0]));
-    chatServiceSpy.removeDuplicateChats.and.returnValue(chats);
+    it('should set loading while the chat requests are pending', () => {
+        const chatSubject = new Subject<JobChat>();
 
-    component.fetchOppChats(opp);
-    fixture.detectChanges();
+        chatServiceSpy.getOrCreate.mockReturnValue(chatSubject.asObservable());
 
-    const chatReadStatus = fixture.debugElement.query(
-      By.directive(ChatReadStatusStubComponent)
-    );
+        component.error = 'Previous error';
 
-    expect(chatReadStatus).not.toBeNull();
+        component.fetchOppChats(makeOpp());
 
-    expect(
-      (chatReadStatus.componentInstance as ChatReadStatusStubComponent).chats
-    ).toBe(chats);
-  });
+        expect(component.loading).toBe(true);
+        expect(component.error).toBeNull();
+    });
 
-  it('should hide chat read status when the user cannot view chats', () => {
-    authorizationServiceSpy.canViewChats.and.returnValue(false);
-    fixture.detectChanges();
+    it('should clear a previous error before fetching chats', () => {
+        const chatSubject = new Subject<JobChat>();
 
-    const chatReadStatus = fixture.debugElement.query(
-      By.directive(ChatReadStatusStubComponent)
-    );
+        chatServiceSpy.getOrCreate.mockReturnValue(chatSubject.asObservable());
 
-    expect(chatReadStatus).toBeNull();
-  });
+        component.error = 'Previous error';
 
-  it('should unselect the opportunity when the child emits back', () => {
-    const refreshSpy = spyOn(component.refresh, 'emit');
-    const opp = component.filteredOpps[0];
+        component.fetchOppChats(makeOpp());
 
-    component.selectedOpp = opp;
-    fixture.detectChanges();
+        expect(component.error).toBeNull();
+    });
 
-    const child = fixture.debugElement.query(
-      By.directive(CandidateOppStubComponent)
-    );
+    it('should store the error and stop loading when fetching chats fails', () => {
+        const serviceError = 'Unable to load opportunity chats';
 
-    (child.componentInstance as CandidateOppStubComponent).back.emit();
-    fixture.detectChanges();
+        chatServiceSpy.getOrCreate.mockReturnValueOnce(of(makeChat(1, JobChatType.CandidateRecruiting))).mockReturnValueOnce(throwError(serviceError)).mockReturnValueOnce(of(makeChat(3, JobChatType.AllJobCandidates)));
 
-    expect(component.selectedOpp).toBeNull();
-    expect(refreshSpy).toHaveBeenCalledTimes(1);
-  });
+        component.fetchOppChats(makeOpp());
+
+        expect(component.error).toBe(serviceError);
+        expect(component.loading).toBe(false);
+        expect(chatServiceSpy.removeDuplicateChats).not.toHaveBeenCalled();
+    });
+
+    it('should pass the error to the error component', () => {
+        component.error = 'Unable to load chats';
+        fixture.detectChanges();
+
+        const errorComponent = fixture.debugElement.query(By.directive(ErrorStubComponent)).componentInstance as ErrorStubComponent;
+
+        expect(errorComponent.error).toBe('Unable to load chats');
+    });
+
+    it('should pass loading state to the loading component', () => {
+        component.loading = true;
+        fixture.detectChanges();
+
+        const loadingComponent = fixture.debugElement.query(By.directive(TcLoadingStubComponent)).componentInstance as TcLoadingStubComponent;
+
+        expect(loadingComponent.loading).toBe(true);
+    });
+
+    it('should hide the opportunity list while loading', () => {
+        component.loading = true;
+        fixture.detectChanges();
+
+        const table = fixture.debugElement.query(By.directive(TcTableStubComponent));
+
+        const selectedOpp = fixture.debugElement.query(By.directive(CandidateOppStubComponent));
+
+        expect(table).toBeNull();
+        expect(selectedOpp).toBeNull();
+    });
+
+    it('should show the no-results message when there are no filtered opportunities', () => {
+        component.loading = false;
+        component.selectedOpp = null;
+        component.filteredOpps = [];
+
+        fixture.detectChanges();
+
+        const noResultsElement = fixture.debugElement.query(By.css('td.text-center'));
+
+        expect(noResultsElement).not.toBeNull();
+        expect(noResultsElement.nativeElement.textContent)
+            .toContain('CANDIDATE-OPPS.TABLE.NONE');
+    });
+
+    it('should render chat read status when the user can view chats', () => {
+        const opp = component.filteredOpps[0];
+        const chats = [
+            makeChat(1, JobChatType.CandidateProspect)
+        ];
+
+        authorizationServiceSpy.canViewChats.mockReturnValue(true);
+
+        chatServiceSpy.getOrCreate.mockReturnValue(of(chats[0]));
+        chatServiceSpy.removeDuplicateChats.mockReturnValue(chats);
+
+        component.fetchOppChats(opp);
+        fixture.detectChanges();
+
+        const chatReadStatus = fixture.debugElement.query(By.directive(ChatReadStatusStubComponent));
+
+        expect(chatReadStatus).not.toBeNull();
+
+        expect((chatReadStatus.componentInstance as ChatReadStatusStubComponent).chats).toBe(chats);
+    });
+
+    it('should hide chat read status when the user cannot view chats', () => {
+        authorizationServiceSpy.canViewChats.mockReturnValue(false);
+        fixture.detectChanges();
+
+        const chatReadStatus = fixture.debugElement.query(By.directive(ChatReadStatusStubComponent));
+
+        expect(chatReadStatus).toBeNull();
+    });
+
+    it('should unselect the opportunity when the child emits back', () => {
+        const refreshSpy = vi.spyOn(component.refresh, 'emit').mockReturnValue(undefined);
+        const opp = component.filteredOpps[0];
+
+        component.selectedOpp = opp;
+        fixture.detectChanges();
+
+        const child = fixture.debugElement.query(By.directive(CandidateOppStubComponent));
+
+        (child.componentInstance as CandidateOppStubComponent).back.emit();
+        fixture.detectChanges();
+
+        expect(component.selectedOpp).toBeNull();
+        expect(refreshSpy).toHaveBeenCalledTimes(1);
+    });
 });

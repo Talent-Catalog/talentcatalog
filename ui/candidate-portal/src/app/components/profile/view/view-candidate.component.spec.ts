@@ -14,6 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
+import type {MockedObject} from "vitest";
 import {CommonModule, Location} from '@angular/common';
 import {NO_ERRORS_SCHEMA, Pipe, PipeTransform} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
@@ -31,298 +32,287 @@ import {LocalStorageService} from '../../../services/local-storage.service';
 import {AuthenticationService} from '../../../services/authentication.service';
 import {environment} from '../../../../environments/environment';
 
-@Pipe({name: 'translate', standalone: false})
+@Pipe({ name: 'translate', standalone: false })
 class TranslatePipeStub implements PipeTransform {
-  transform(value: string): string {
-    return value;
-  }
+    transform(value: string): string {
+        return value;
+    }
 }
 
 describe('ViewCandidateComponent', () => {
-  let component: ViewCandidateComponent;
-  let fixture: ComponentFixture<ViewCandidateComponent>;
+    let component: ViewCandidateComponent;
+    let fixture: ComponentFixture<ViewCandidateComponent>;
 
-  let authorizationService: jasmine.SpyObj<AuthorizationService>;
-  let candidateService: jasmine.SpyObj<CandidateService>;
-  let chatService: jasmine.SpyObj<ChatService>;
-  let linkedinService: jasmine.SpyObj<LinkedinService>;
-  let casiPortalService: jasmine.SpyObj<CasiPortalService>;
-  let localStorageService: jasmine.SpyObj<LocalStorageService>;
-  let location: jasmine.SpyObj<Location>;
-  let authenticationService: jasmine.SpyObj<AuthenticationService>;
-  let originalEnvironmentName: string;
+    let authorizationService: MockedObject<AuthorizationService>;
+    let candidateService: MockedObject<CandidateService>;
+    let chatService: MockedObject<ChatService>;
+    let linkedinService: MockedObject<LinkedinService>;
+    let casiPortalService: MockedObject<CasiPortalService>;
+    let localStorageService: MockedObject<LocalStorageService>;
+    let location: MockedObject<Location>;
+    let authenticationService: MockedObject<AuthenticationService>;
+    let originalEnvironmentName: string;
 
-  const candidate = {
-    id: 1,
-    status: 'active',
-    surveyType: {
-      id: 1
-    },
-    taskAssignments: [],
-    candidateOpportunities: []
-  };
-
-  beforeEach(async () => {
-    originalEnvironmentName = environment.environmentName;
-    authorizationService = jasmine.createSpyObj<AuthorizationService>(
-      'AuthorizationService',
-      ['canViewChats']
-    );
-
-    candidateService = jasmine.createSpyObj<CandidateService>(
-      'CandidateService',
-      ['getProfile']
-    );
-
-    chatService = jasmine.createSpyObj<ChatService>(
-      'ChatService',
-      [
-        'getCandidateProspectChat',
-        'getJobChatUserInfo',
-        'getChatPosts$',
-        'getOrCreate',
-        'removeDuplicateChats',
-        'markChatAsRead'
-      ]
-    );
-
-    linkedinService = jasmine.createSpyObj<LinkedinService>(
-      'LinkedinService',
-      ['isEligible']
-    );
-
-    casiPortalService = jasmine.createSpyObj<CasiPortalService>(
-      'CasiPortalService',
-      ['checkEligibility']
-    );
-
-    localStorageService = jasmine.createSpyObj<LocalStorageService>(
-      'LocalStorageService',
-      ['get', 'set']
-    );
-
-    location = jasmine.createSpyObj<Location>(
-      'Location',
-      ['path', 'replaceState']
-    );
-
-    authenticationService = jasmine.createSpyObj<AuthenticationService>(
-      'AuthenticationService',
-      ['isGrnInstance']
-    );
-
-    authorizationService.canViewChats.and.returnValue(false);
-    candidateService.getProfile.and.returnValue(of(candidate as any));
-
-    linkedinService.isEligible.and.returnValue(of(false));
-    casiPortalService.checkEligibility.and.returnValue(of(false));
-
-    localStorageService.get.and.returnValue(null);
-
-    location.path.and.returnValue('/profile');
-
-    authenticationService.isGrnInstance.and.returnValue(false);
-
-    await TestBed.configureTestingModule({
-      imports: [
-        CommonModule,
-        NgbNavModule
-      ],
-      declarations: [
-        ViewCandidateComponent,
-        TranslatePipeStub
-      ],
-      providers: [
-        {
-          provide: AuthorizationService,
-          useValue: authorizationService
+    const candidate = {
+        id: 1,
+        status: 'active',
+        surveyType: {
+            id: 1
         },
-        {
-          provide: CandidateService,
-          useValue: candidateService
-        },
-        {
-          provide: ChatService,
-          useValue: chatService
-        },
-        {
-          provide: LinkedinService,
-          useValue: linkedinService
-        },
-        {
-          provide: CasiPortalService,
-          useValue: casiPortalService
-        },
-        {
-          provide: LocalStorageService,
-          useValue: localStorageService
-        },
-        {
-          provide: Location,
-          useValue: location
-        },
-        {
-          provide: ActivatedRoute,
-          useValue: {
-            queryParams: of({})
-          }
-        },
-        {
-          provide: AuthenticationService,
-          useValue: authenticationService
-        }
-      ],
-      schemas: [NO_ERRORS_SCHEMA]
-    }).compileComponents();
+        taskAssignments: [],
+        candidateOpportunities: []
+    };
 
-    fixture = TestBed.createComponent(ViewCandidateComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
+    beforeEach(async () => {
+        originalEnvironmentName = environment.environmentName;
+        authorizationService = {
+            canViewChats: vi.fn().mockName("AuthorizationService.canViewChats")
+        } as unknown as MockedObject<AuthorizationService>;
 
-  afterEach(() => {
-    environment.environmentName = originalEnvironmentName;
-  });
+        candidateService = {
+            getProfile: vi.fn().mockName("CandidateService.getProfile")
+        } as unknown as MockedObject<CandidateService>;
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+        chatService = {
+            getCandidateProspectChat: vi.fn().mockName("ChatService.getCandidateProspectChat"),
+            getJobChatUserInfo: vi.fn().mockName("ChatService.getJobChatUserInfo"),
+            getChatPosts$: vi.fn().mockName("ChatService.getChatPosts$"),
+            getOrCreate: vi.fn().mockName("ChatService.getOrCreate"),
+            removeDuplicateChats: vi.fn().mockName("ChatService.removeDuplicateChats"),
+            markChatAsRead: vi.fn().mockName("ChatService.markChatAsRead")
+        } as unknown as MockedObject<ChatService>;
 
-  it('should fetch the candidate profile', () => {
-    expect(candidateService.getProfile).toHaveBeenCalled();
-    expect(component.candidate).toEqual(candidate as any);
-    expect(component.loading).toBeFalse();
-  });
+        linkedinService = {
+            isEligible: vi.fn().mockName("LinkedinService.isEligible")
+        } as unknown as MockedObject<LinkedinService>;
 
-  it('should use the profile tab by default when there is no cached tab', () => {
-    expect(component.activeTabId).toBe('Profile');
-    expect(location.replaceState).toHaveBeenCalledWith('/profile?tab=Profile');
-  });
+        casiPortalService = {
+            checkEligibility: vi.fn().mockName("CasiPortalService.checkEligibility")
+        } as unknown as MockedObject<CasiPortalService>;
 
-  it('should update the active tab when the tab changes', () => {
-    const event = {
-      nextId: 'Tasks'
-    } as NgbNavChangeEvent;
+        localStorageService = {
+            get: vi.fn().mockName("LocalStorageService.get"),
+            set: vi.fn().mockName("LocalStorageService.set")
+        } as unknown as MockedObject<LocalStorageService>;
 
-    component.onTabChanged(event);
+        location = {
+            path: vi.fn().mockName("Location.path"),
+            replaceState: vi.fn().mockName("Location.replaceState")
+        } as unknown as MockedObject<Location>;
 
-    expect(component.activeTabId).toBe('Tasks');
-    expect(localStorageService.set).toHaveBeenCalledWith(
-      'CandidateLastTab',
-      'Tasks'
-    );
-    expect(location.replaceState).toHaveBeenCalledWith('/profile?tab=Tasks');
-  });
+        authenticationService = {
+            isGrnInstance: vi.fn().mockName("AuthenticationService.isGrnInstance")
+        } as unknown as MockedObject<AuthenticationService>;
 
-  it('should not show the jobs tab when there are no filtered opportunities', () => {
-    expect(component.canSeeJobTab).toBeFalse();
-  });
+        authorizationService.canViewChats.mockReturnValue(false);
+        candidateService.getProfile.mockReturnValue(of(candidate as any));
 
-  it('should not show the chat tab when the user cannot view chats', () => {
-    expect(component.canSeeChatTab).toBeFalse();
-  });
+        linkedinService.isEligible.mockReturnValue(of(false));
+        casiPortalService.checkEligibility.mockReturnValue(of(false));
 
-  it('should expose PiFi eligibility', (done) => {
-    component.pifiEligible$.subscribe(value => {
-      expect(value).toBeFalse();
-      done();
+        localStorageService.get.mockReturnValue(null);
+
+        location.path.mockReturnValue('/profile');
+
+        authenticationService.isGrnInstance.mockReturnValue(false);
+
+        await TestBed.configureTestingModule({
+            imports: [
+                CommonModule,
+                NgbNavModule
+            ],
+            declarations: [
+                ViewCandidateComponent,
+                TranslatePipeStub
+            ],
+            providers: [
+                {
+                    provide: AuthorizationService,
+                    useValue: authorizationService
+                },
+                {
+                    provide: CandidateService,
+                    useValue: candidateService
+                },
+                {
+                    provide: ChatService,
+                    useValue: chatService
+                },
+                {
+                    provide: LinkedinService,
+                    useValue: linkedinService
+                },
+                {
+                    provide: CasiPortalService,
+                    useValue: casiPortalService
+                },
+                {
+                    provide: LocalStorageService,
+                    useValue: localStorageService
+                },
+                {
+                    provide: Location,
+                    useValue: location
+                },
+                {
+                    provide: ActivatedRoute,
+                    useValue: {
+                        queryParams: of({})
+                    }
+                },
+                {
+                    provide: AuthenticationService,
+                    useValue: authenticationService
+                }
+            ],
+            schemas: [NO_ERRORS_SCHEMA]
+        }).compileComponents();
+
+        fixture = TestBed.createComponent(ViewCandidateComponent);
+        component = fixture.componentInstance;
+        fixture.detectChanges();
     });
-  });
 
-  it('should show the services tab when the candidate is eligible for PiFi', (done) => {
-    casiPortalService.checkEligibility.and.callFake((provider: string) => of(provider === 'PIFI'));
-    fixture = TestBed.createComponent(ViewCandidateComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-
-    component.pifiEligible$.subscribe(pifiEligible => {
-      expect(pifiEligible).toBeTrue();
-      component.showServicesTab$.subscribe(showServicesTab => {
-        expect(showServicesTab).toBeTrue();
-        done();
-      });
+    afterEach(() => {
+        environment.environmentName = originalEnvironmentName;
     });
-  });
 
-  it('should expose Verify+ eligibility for GRN local', (done) => {
-    environment.environmentName = 'local';
-    authenticationService.isGrnInstance.and.returnValue(true);
-    fixture = TestBed.createComponent(ViewCandidateComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-
-    component.verifyPlusEligible$.subscribe(verifyPlusEligible => {
-      expect(verifyPlusEligible).toBeTrue();
-      done();
+    it('should create', () => {
+        expect(component).toBeTruthy();
     });
-  });
 
-  it('should expose Verify+ eligibility for GRN staging', (done) => {
-    environment.environmentName = 'staging';
-    authenticationService.isGrnInstance.and.returnValue(true);
-    fixture = TestBed.createComponent(ViewCandidateComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-
-    component.verifyPlusEligible$.subscribe(verifyPlusEligible => {
-      expect(verifyPlusEligible).toBeTrue();
-      done();
+    it('should fetch the candidate profile', () => {
+        expect(candidateService.getProfile).toHaveBeenCalled();
+        expect(component.candidate).toEqual(candidate as any);
+        expect(component.loading).toBe(false);
     });
-  });
 
-  it('should hide Verify+ eligibility for GRN prod', (done) => {
-    environment.environmentName = 'prod';
-    authenticationService.isGrnInstance.and.returnValue(true);
-    fixture = TestBed.createComponent(ViewCandidateComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-
-    component.verifyPlusEligible$.subscribe(verifyPlusEligible => {
-      expect(verifyPlusEligible).toBeFalse();
-      done();
+    it('should use the profile tab by default when there is no cached tab', () => {
+        expect(component.activeTabId).toBe('Profile');
+        expect(location.replaceState).toHaveBeenCalledWith('/profile?tab=Profile');
     });
-  });
 
-  it('should hide Verify+ eligibility for TBB local', (done) => {
-    environment.environmentName = 'local';
-    authenticationService.isGrnInstance.and.returnValue(false);
-    fixture = TestBed.createComponent(ViewCandidateComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
+    it('should update the active tab when the tab changes', () => {
+        const event = {
+            nextId: 'Tasks'
+        } as NgbNavChangeEvent;
 
-    component.verifyPlusEligible$.subscribe(verifyPlusEligible => {
-      expect(verifyPlusEligible).toBeFalse();
-      done();
+        component.onTabChanged(event);
+
+        expect(component.activeTabId).toBe('Tasks');
+        expect(localStorageService.set).toHaveBeenCalledWith('CandidateLastTab', 'Tasks');
+        expect(location.replaceState).toHaveBeenCalledWith('/profile?tab=Tasks');
     });
-  });
 
-  it('should show the services tab when Verify+ is the only eligible service in staging GRN', (done) => {
-    environment.environmentName = 'staging';
-    authenticationService.isGrnInstance.and.returnValue(true);
-    linkedinService.isEligible.and.returnValue(of(false));
-    casiPortalService.checkEligibility.and.returnValue(of(false));
-    fixture = TestBed.createComponent(ViewCandidateComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-
-    component.showServicesTab$.subscribe(showServicesTab => {
-      expect(showServicesTab).toBeTrue();
-      done();
+    it('should not show the jobs tab when there are no filtered opportunities', () => {
+        expect(component.canSeeJobTab).toBe(false);
     });
-  });
 
-  it('should hide the services tab when Verify+ is the only GRN service in prod', (done) => {
-    environment.environmentName = 'prod';
-    authenticationService.isGrnInstance.and.returnValue(true);
-    linkedinService.isEligible.and.returnValue(of(false));
-    casiPortalService.checkEligibility.and.returnValue(of(false));
-    fixture = TestBed.createComponent(ViewCandidateComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-
-    component.showServicesTab$.subscribe(showServicesTab => {
-      expect(showServicesTab).toBeFalse();
-      done();
+    it('should not show the chat tab when the user cannot view chats', () => {
+        expect(component.canSeeChatTab).toBe(false);
     });
-  });
+
+    it('should expose PiFi eligibility', async () => {
+        component.pifiEligible$.subscribe(value => {
+            expect(value).toBe(false);
+            ;
+        });
+    });
+
+    it('should show the services tab when the candidate is eligible for PiFi', async () => {
+        casiPortalService.checkEligibility.mockImplementation((provider: string) => of(provider === 'PIFI'));
+        fixture = TestBed.createComponent(ViewCandidateComponent);
+        component = fixture.componentInstance;
+        fixture.detectChanges();
+
+        component.pifiEligible$.subscribe(pifiEligible => {
+            expect(pifiEligible).toBe(true);
+            component.showServicesTab$.subscribe(showServicesTab => {
+                expect(showServicesTab).toBe(true);
+                ;
+            });
+        });
+    });
+
+    it('should expose Verify+ eligibility for GRN local', async () => {
+        environment.environmentName = 'local';
+        authenticationService.isGrnInstance.mockReturnValue(true);
+        fixture = TestBed.createComponent(ViewCandidateComponent);
+        component = fixture.componentInstance;
+        fixture.detectChanges();
+
+        component.verifyPlusEligible$.subscribe(verifyPlusEligible => {
+            expect(verifyPlusEligible).toBe(true);
+            ;
+        });
+    });
+
+    it('should expose Verify+ eligibility for GRN staging', async () => {
+        environment.environmentName = 'staging';
+        authenticationService.isGrnInstance.mockReturnValue(true);
+        fixture = TestBed.createComponent(ViewCandidateComponent);
+        component = fixture.componentInstance;
+        fixture.detectChanges();
+
+        component.verifyPlusEligible$.subscribe(verifyPlusEligible => {
+            expect(verifyPlusEligible).toBe(true);
+            ;
+        });
+    });
+
+    it('should hide Verify+ eligibility for GRN prod', async () => {
+        environment.environmentName = 'prod';
+        authenticationService.isGrnInstance.mockReturnValue(true);
+        fixture = TestBed.createComponent(ViewCandidateComponent);
+        component = fixture.componentInstance;
+        fixture.detectChanges();
+
+        component.verifyPlusEligible$.subscribe(verifyPlusEligible => {
+            expect(verifyPlusEligible).toBe(false);
+            ;
+        });
+    });
+
+    it('should hide Verify+ eligibility for TBB local', async () => {
+        environment.environmentName = 'local';
+        authenticationService.isGrnInstance.mockReturnValue(false);
+        fixture = TestBed.createComponent(ViewCandidateComponent);
+        component = fixture.componentInstance;
+        fixture.detectChanges();
+
+        component.verifyPlusEligible$.subscribe(verifyPlusEligible => {
+            expect(verifyPlusEligible).toBe(false);
+            ;
+        });
+    });
+
+    it('should show the services tab when Verify+ is the only eligible service in staging GRN', async () => {
+        environment.environmentName = 'staging';
+        authenticationService.isGrnInstance.mockReturnValue(true);
+        linkedinService.isEligible.mockReturnValue(of(false));
+        casiPortalService.checkEligibility.mockReturnValue(of(false));
+        fixture = TestBed.createComponent(ViewCandidateComponent);
+        component = fixture.componentInstance;
+        fixture.detectChanges();
+
+        component.showServicesTab$.subscribe(showServicesTab => {
+            expect(showServicesTab).toBe(true);
+            ;
+        });
+    });
+
+    it('should hide the services tab when Verify+ is the only GRN service in prod', async () => {
+        environment.environmentName = 'prod';
+        authenticationService.isGrnInstance.mockReturnValue(true);
+        linkedinService.isEligible.mockReturnValue(of(false));
+        casiPortalService.checkEligibility.mockReturnValue(of(false));
+        fixture = TestBed.createComponent(ViewCandidateComponent);
+        component = fixture.componentInstance;
+        fixture.detectChanges();
+
+        component.showServicesTab$.subscribe(showServicesTab => {
+            expect(showServicesTab).toBe(false);
+            ;
+        });
+    });
 });

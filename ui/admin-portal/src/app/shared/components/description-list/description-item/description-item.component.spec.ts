@@ -1,6 +1,7 @@
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 
 import {DescriptionItemComponent} from './description-item.component';
+import {expect} from 'vitest';
 
 describe('DescriptionItemComponent', () => {
   let component: DescriptionItemComponent;

@@ -23,67 +23,68 @@ import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/commo
 import {CandidateService} from "../../../../services/candidate.service";
 import {YesNoUnsure} from "../../../../model/candidate";
 import {MockCandidate} from "../../../../MockData/MockCandidate";
+import {expect} from 'vitest';
 
 describe('ReturnedHomeComponent', () => {
-  let component: ReturnedHomeComponent;
-  let fixture: ComponentFixture<ReturnedHomeComponent>;
+    let component: ReturnedHomeComponent;
+    let fixture: ComponentFixture<ReturnedHomeComponent>;
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      declarations: [ ReturnedHomeComponent,AutosaveStatusComponent ],
-      imports: [ReactiveFormsModule, NgSelectModule ],
-      providers: [
-        { provide: CandidateService },
-        provideHttpClient(withXhr(), withInterceptorsFromDi()),
-        provideHttpClientTesting()
-      ]
-    })
-    .compileComponents();
-  });
+    beforeEach(async () => {
+        await TestBed.configureTestingModule({
+            declarations: [ReturnedHomeComponent, AutosaveStatusComponent],
+            imports: [ReactiveFormsModule, NgSelectModule],
+            providers: [
+                { provide: CandidateService },
+                provideHttpClient(withXhr(), withInterceptorsFromDi()),
+                provideHttpClientTesting()
+            ]
+        })
+            .compileComponents();
+    });
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(ReturnedHomeComponent);
-    component = fixture.componentInstance;
-    component.candidateIntakeData = {
-      returnedHome: YesNoUnsure.Yes,
-      returnedHomeReason: 'Family visit',
-      returnedHomeReasonNo: 'Security concerns'
-    };
-    component.entity = new MockCandidate();
-    fixture.detectChanges();
-  });
+    beforeEach(() => {
+        fixture = TestBed.createComponent(ReturnedHomeComponent);
+        component = fixture.componentInstance;
+        component.candidateIntakeData = {
+            returnedHome: YesNoUnsure.Yes,
+            returnedHomeReason: 'Family visit',
+            returnedHomeReasonNo: 'Security concerns'
+        };
+        component.entity = new MockCandidate();
+        fixture.detectChanges();
+    });
 
-  it('should initialize the form controls with the correct default values', () => {
-    expect(component.form.get('returnedHome').value).toBe(YesNoUnsure.Yes);
-    expect(component.form.get('returnedHomeReason').value).toBe('Family visit');
-    expect(component.form.get('returnedHomeReasonNo').value).toBe('Security concerns');
-  });
+    it('should initialize the form controls with the correct default values', () => {
+        expect(component.form.get('returnedHome').value).toBe(YesNoUnsure.Yes);
+        expect(component.form.get('returnedHomeReason').value).toBe('Family visit');
+        expect(component.form.get('returnedHomeReasonNo').value).toBe('Security concerns');
+    });
 
-  it('should display the returnedHomeReason textarea when returnedHome is Yes', () => {
-    component.form.get('returnedHome').setValue('Yes');
-    fixture.detectChanges();
-    const returnedHomeReasonTextarea = fixture.nativeElement.querySelector('#returnedHomeReason');
-    expect(returnedHomeReasonTextarea).toBeTruthy();
-  });
+    it('should display the returnedHomeReason textarea when returnedHome is Yes', () => {
+        component.form.get('returnedHome').setValue('Yes');
+        fixture.detectChanges();
+        const returnedHomeReasonTextarea = fixture.nativeElement.querySelector('#returnedHomeReason');
+        expect(returnedHomeReasonTextarea).toBeTruthy();
+    });
 
-  it('should display the returnedHomeReasonNo textarea when returnedHome is No', () => {
-    component.form.get('returnedHome').setValue('No');
-    fixture.detectChanges();
-    const returnedHomeReasonNoTextarea = fixture.nativeElement.querySelector('#returnedHomeReasonNo');
-    expect(returnedHomeReasonNoTextarea).toBeTruthy();
-  });
+    it('should display the returnedHomeReasonNo textarea when returnedHome is No', () => {
+        component.form.get('returnedHome').setValue('No');
+        fixture.detectChanges();
+        const returnedHomeReasonNoTextarea = fixture.nativeElement.querySelector('#returnedHomeReasonNo');
+        expect(returnedHomeReasonNoTextarea).toBeTruthy();
+    });
 
-  it('should not display the returnedHomeReason textarea when returnedHome is No', () => {
-    component.form.get('returnedHome').setValue('No');
-    fixture.detectChanges();
-    const returnedHomeReasonTextarea = fixture.nativeElement.querySelector('#returnedHomeReason');
-    expect(returnedHomeReasonTextarea).toBeFalsy();
-  });
+    it('should not display the returnedHomeReason textarea when returnedHome is No', () => {
+        component.form.get('returnedHome').setValue('No');
+        fixture.detectChanges();
+        const returnedHomeReasonTextarea = fixture.nativeElement.querySelector('#returnedHomeReason');
+        expect(returnedHomeReasonTextarea).toBeFalsy();
+    });
 
-  it('should not display the returnedHomeReasonNo textarea when returnedHome is Yes', () => {
-    component.form.get('returnedHome').setValue('Yes');
-    fixture.detectChanges();
-    const returnedHomeReasonNoTextarea = fixture.nativeElement.querySelector('#returnedHomeReasonNo');
-    expect(returnedHomeReasonNoTextarea).toBeFalsy();
-  });
+    it('should not display the returnedHomeReasonNo textarea when returnedHome is Yes', () => {
+        component.form.get('returnedHome').setValue('Yes');
+        fixture.detectChanges();
+        const returnedHomeReasonNoTextarea = fixture.nativeElement.querySelector('#returnedHomeReasonNo');
+        expect(returnedHomeReasonNoTextarea).toBeFalsy();
+    });
 });

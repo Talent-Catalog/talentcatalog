@@ -20,62 +20,61 @@ import {Job} from "../../../../../model/job";
 import {MockJob} from "../../../../../MockData/MockJob";
 import {By} from '@angular/platform-browser';
 import {JobPrepItem} from "../../../../../model/job-prep-item";
-import {
-  ViewJobSuggestedSearchesComponent
-} from "../../suggested-searches/view-job-suggested-searches/view-job-suggested-searches.component";
+import {ViewJobSuggestedSearchesComponent} from "../../suggested-searches/view-job-suggested-searches/view-job-suggested-searches.component";
 import {provideHttpClientTesting} from "@angular/common/http/testing";
 import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {MockJobPrepItem} from "../../../../../MockData/MockJobPrepItem";
-import {RouterLinkStubDirective} from "../../../../login/login.component.spec";
+import {RouterLinkStubDirective} from "../../../../../../test-helpers/router-link-stub.directive";
+import {expect, vi} from 'vitest';
 
 describe('JobSuggestedSearchesTabComponent', () => {
-  let component: JobSuggestedSearchesTabComponent;
-  let fixture: ComponentFixture<JobSuggestedSearchesTabComponent>;
-  // Define mock data
-  const mockJob: Job = MockJob;
-  const mockHighlightItem: JobPrepItem = new MockJobPrepItem("Mock Item Description", "Mock Tab", true);
+    let component: JobSuggestedSearchesTabComponent;
+    let fixture: ComponentFixture<JobSuggestedSearchesTabComponent>;
+    // Define mock data
+    const mockJob: Job = MockJob;
+    const mockHighlightItem: JobPrepItem = new MockJobPrepItem("Mock Item Description", "Mock Tab", true);
 
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      providers: [provideHttpClient(withXhr(), withInterceptorsFromDi()), provideHttpClientTesting()],
-      declarations: [ JobSuggestedSearchesTabComponent,ViewJobSuggestedSearchesComponent,RouterLinkStubDirective ]
-    })
-    .compileComponents();
-  });
+    beforeEach(async () => {
+        await TestBed.configureTestingModule({
+            providers: [provideHttpClient(withXhr(), withInterceptorsFromDi()), provideHttpClientTesting()],
+            declarations: [JobSuggestedSearchesTabComponent, ViewJobSuggestedSearchesComponent, RouterLinkStubDirective]
+        })
+            .compileComponents();
+    });
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(JobSuggestedSearchesTabComponent);
-    component = fixture.componentInstance;
-    component.job = MockJob;
-    fixture.detectChanges();
-  });
+    beforeEach(() => {
+        fixture = TestBed.createComponent(JobSuggestedSearchesTabComponent);
+        component = fixture.componentInstance;
+        component.job = MockJob;
+        fixture.detectChanges();
+    });
 
-  it('should emit jobUpdated event with updated job data', () => {
-    // Define mock job data
-    const updatedJob: Job = mockJob;
-    updatedJob.name = "NEW JOB";
-    // Spy on the jobUpdated EventEmitter
-    spyOn(component.jobUpdated, 'emit').and.callThrough();
-    // Simulate job update
+    it('should emit jobUpdated event with updated job data', () => {
+        // Define mock job data
+        const updatedJob: Job = mockJob;
+        updatedJob.name = "NEW JOB";
+        // Spy on the jobUpdated EventEmitter
+        vi.spyOn(component.jobUpdated, 'emit');
+        // Simulate job update
 
-    component.onJobUpdated(updatedJob);
-    // Expect the jobUpdated event to be emitted with the updated job data
-    expect(component.jobUpdated.emit).toHaveBeenCalledWith(updatedJob);
-  });
+        component.onJobUpdated(updatedJob);
+        // Expect the jobUpdated event to be emitted with the updated job data
+        expect(component.jobUpdated.emit).toHaveBeenCalledWith(updatedJob);
+    });
 
-  it('should highlight the correct item', () => {
-    component.highlightItem = mockHighlightItem;
+    it('should highlight the correct item', () => {
+        component.highlightItem = mockHighlightItem;
 
-    // Trigger change detection
-    fixture.detectChanges();
+        // Trigger change detection
+        fixture.detectChanges();
 
-    const viewJobSuggestedSearchesComponent = fixture.debugElement.query(By.directive(ViewJobSuggestedSearchesComponent)).componentInstance;
-    // Assert that the component instance is found
-    expect(viewJobSuggestedSearchesComponent).toBeTruthy();
+        const viewJobSuggestedSearchesComponent = fixture.debugElement.query(By.directive(ViewJobSuggestedSearchesComponent)).componentInstance;
+        // Assert that the component instance is found
+        expect(viewJobSuggestedSearchesComponent).toBeTruthy();
 
-    // Check the highlightItem property of the component instance
-    expect(viewJobSuggestedSearchesComponent.highlightItem).toEqual(mockHighlightItem);
+        // Check the highlightItem property of the component instance
+        expect(viewJobSuggestedSearchesComponent.highlightItem).toEqual(mockHighlightItem);
 
-  });
+    });
 });

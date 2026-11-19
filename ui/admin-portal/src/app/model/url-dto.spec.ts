@@ -15,6 +15,7 @@
  */
 
 import {UrlDto} from "./url-dto";
+import {expect} from 'vitest';
 
 describe('UrlDto Class', () => {
   it('should create an instance of UrlDto', () => {

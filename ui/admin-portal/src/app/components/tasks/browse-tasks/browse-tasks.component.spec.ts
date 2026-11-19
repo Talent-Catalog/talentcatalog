@@ -13,6 +13,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
+
+import type {MockedObject} from "vitest";
 import {BrowseTasksComponent} from "./browse-tasks.component";
 import {ComponentFixture, TestBed} from "@angular/core/testing";
 import {TaskService} from "../../../services/task.service";
@@ -30,93 +32,102 @@ import {ViewTaskDetailsComponent} from "../view-task-details/view-task-details.c
 import {NgbPaginationModule} from "@ng-bootstrap/ng-bootstrap";
 import {UpdatedByComponent} from "../../util/user/updated-by/updated-by.component";
 import {LocalStorageService} from "../../../services/local-storage.service";
+import {expect, vi} from 'vitest';
 
 describe('BrowseTasksComponent', () => {
-  let component: BrowseTasksComponent;
-  let fixture: ComponentFixture<BrowseTasksComponent>;
-  let taskServiceSpy: jasmine.SpyObj<TaskService>;
-  let localStorageServiceSpy: jasmine.SpyObj<LocalStorageService>;
-  let authenticationServiceSpy: jasmine.SpyObj<AuthenticationService>;
+    let component: BrowseTasksComponent;
+    let fixture: ComponentFixture<BrowseTasksComponent>;
+    let taskServiceSpy: MockedObject<TaskService>;
+    let localStorageServiceSpy: MockedObject<LocalStorageService>;
+    let authenticationServiceSpy: MockedObject<AuthenticationService>;
 
-  const mockCandidate = new MockCandidate();
-  const mockTasks = mockCandidate.taskAssignments.slice(0, 3).map(assignment => assignment.task);
-  const mockResults: SearchResults<Task> = {
-    first: false,
-    last: false,
-    number: 0,
-    size: 0,
-    totalPages: 0,
-    totalElements: 1,
-    content: mockTasks
-  };  beforeEach(async () => {
-    const taskService = jasmine.createSpyObj('TaskService', ['searchPaged']);
-    const localStorageService = jasmine.createSpyObj('LocalStorageService', ['get', 'set']);
-    const authenticationService = jasmine.createSpyObj('AuthenticationService', ['getLoggedInUser']);
+    const mockCandidate = new MockCandidate();
+    const mockTasks = mockCandidate.taskAssignments.slice(0, 3).map(assignment => assignment.task);
+    const mockResults: SearchResults<Task> = {
+        first: false,
+        last: false,
+        number: 0,
+        size: 0,
+        totalPages: 0,
+        totalElements: 1,
+        content: mockTasks
+    };
+    beforeEach(async () => {
+        const taskService = {
+            searchPaged: vi.fn().mockName("TaskService.searchPaged")
+        };
+        const localStorageService = {
+            get: vi.fn().mockName("LocalStorageService.get"),
+            set: vi.fn().mockName("LocalStorageService.set")
+        };
+        const authenticationService = {
+            getLoggedInUser: vi.fn().mockName("AuthenticationService.getLoggedInUser")
+        };
 
-    await TestBed.configureTestingModule({
-      declarations: [ BrowseTasksComponent, ViewTaskDetailsComponent, UpdatedByComponent ],
-      imports: [RouterTestingModule,NgbPaginationModule,FormsModule,ReactiveFormsModule,NgSelectModule],
-      providers: [
-        UntypedFormBuilder,
-        { provide: TaskService, useValue: taskService },
-        { provide: LocalStorageService, useValue: localStorageService },
-        { provide: AuthenticationService, useValue: authenticationService },
-        provideHttpClient(withXhr(), withInterceptorsFromDi()),
-        provideHttpClientTesting()
-      ]
-    })
-    .compileComponents();
+        await TestBed.configureTestingModule({
+            declarations: [BrowseTasksComponent, ViewTaskDetailsComponent, UpdatedByComponent],
+            imports: [RouterTestingModule, NgbPaginationModule, FormsModule, ReactiveFormsModule, NgSelectModule],
+            providers: [
+                UntypedFormBuilder,
+                { provide: TaskService, useValue: taskService },
+                { provide: LocalStorageService, useValue: localStorageService },
+                { provide: AuthenticationService, useValue: authenticationService },
+                provideHttpClient(withXhr(), withInterceptorsFromDi()),
+                provideHttpClientTesting()
+            ]
+        })
+            .compileComponents();
 
-    taskServiceSpy = TestBed.inject(TaskService) as jasmine.SpyObj<TaskService>;
-    localStorageServiceSpy = TestBed.inject(LocalStorageService) as jasmine.SpyObj<LocalStorageService>;
-    authenticationServiceSpy = TestBed.inject(AuthenticationService) as jasmine.SpyObj<AuthenticationService>;
+        taskServiceSpy = TestBed.inject(TaskService) as MockedObject<TaskService>;
+        localStorageServiceSpy = TestBed.inject(LocalStorageService) as MockedObject<LocalStorageService>;
+        authenticationServiceSpy = TestBed.inject(AuthenticationService) as MockedObject<AuthenticationService>;
 
-    taskServiceSpy.searchPaged.and.returnValue(of(mockResults));
-  });
+        taskServiceSpy.searchPaged.mockReturnValue(of(mockResults));
+    });
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(BrowseTasksComponent);
-    component = fixture.componentInstance;
-    taskServiceSpy.searchPaged.and.returnValue(of(mockResults));
-    fixture.detectChanges();
-  });
+    beforeEach(() => {
+        fixture = TestBed.createComponent(BrowseTasksComponent);
+        component = fixture.componentInstance;
+        taskServiceSpy.searchPaged.mockReturnValue(of(mockResults));
+        fixture.detectChanges();
+    });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
 
-  it('should load tasks on init', () => {
-    expect(taskServiceSpy.searchPaged).toHaveBeenCalled();
-    expect(component.results.content.length).toBe(3);
-  });
+    it('should load tasks on init', () => {
+        expect(taskServiceSpy.searchPaged).toHaveBeenCalled();
+        expect(component.results.content.length).toBe(3);
+    });
 
-  it('should handle error on task load', () => {
-    taskServiceSpy.searchPaged.and.returnValue(throwError('Error'));
-    component.search();
-    expect(component.error).toBe('Error');
-  });
+    it('should handle error on task load', () => {
+        taskServiceSpy.searchPaged.mockReturnValue(throwError('Error'));
+        component.search();
+        expect(component.error).toBe('Error');
+    });
 
-  it('should select a task', () => {
-    const task = mockTasks[0];
-    component.select(task);
-    expect(component.selectedTask).toBe(task);
-    expect(localStorageServiceSpy.set).toHaveBeenCalledWith('BrowseKeyTasks', task.id);
-  });
+    it('should select a task', () => {
+        const task = mockTasks[0];
+        component.select(task);
+        expect(component.selectedTask).toBe(task);
+        expect(localStorageServiceSpy.set).toHaveBeenCalledWith('BrowseKeyTasks', task.id);
+    });
 
-  it('should handle keyboard navigation', () => {
-    component.results = mockResults;
+    it('should handle keyboard navigation', () => {
+        component.results = mockResults;
 
-    const eventDown = new KeyboardEvent('keydown', { key: 'ArrowDown' });
-    const eventUp = new KeyboardEvent('keydown', { key: 'ArrowUp' });
+        const eventDown = new KeyboardEvent('keydown', { key: 'ArrowDown' });
+        const eventUp = new KeyboardEvent('keydown', { key: 'ArrowUp' });
 
-    component.keyDown(eventDown);
-    expect(component.selectedIndex).toBe(1);
-    expect(component.selectedTask).toBe(mockTasks[1]);
+        component.keyDown(eventDown);
+        expect(component.selectedIndex).toBe(1);
+        expect(component.selectedTask).toBe(mockTasks[1]);
 
-    component.keyDown(eventUp);
-    expect(component.selectedIndex).toBe(0);
-    expect(component.selectedTask).toBe(mockTasks[0]);
-  });
+        component.keyDown(eventUp);
+        expect(component.selectedIndex).toBe(0);
+        expect(component.selectedTask).toBe(mockTasks[0]);
+    });
 
 
 });

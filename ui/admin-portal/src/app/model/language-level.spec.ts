@@ -15,6 +15,7 @@
  */
 
 import {LanguageLevel} from "./language-level";
+import {expect} from 'vitest';
 
 describe('LanguageLevel Interface', () => {
   it('should create a valid LanguageLevel object', () => {

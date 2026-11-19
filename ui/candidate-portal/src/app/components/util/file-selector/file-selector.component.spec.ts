@@ -14,6 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
+import type {MockedObject} from "vitest";
 import {Component, EventEmitter, Input, Output, ChangeDetectionStrategy} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
@@ -21,155 +22,159 @@ import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
 import {FileSelectorComponent} from './file-selector.component';
 
 @Component({
-  selector: 'app-file-upload',
-  template: '',
-  changeDetection: ChangeDetectionStrategy.Eager,
-  standalone: false
+    selector: 'app-file-upload',
+    template: '',
+    changeDetection: ChangeDetectionStrategy.Eager,
+    standalone: false
 })
 class FileUploadStubComponent {
-  @Input() validExtensions: string[];
+    @Input()
+    validExtensions: string[];
 
-  @Output() uploadStarted = new EventEmitter<{files: File[]}>();
-  @Output() error = new EventEmitter<string>();
+    @Output()
+    uploadStarted = new EventEmitter<{
+        files: File[];
+    }>();
+    @Output()
+    error = new EventEmitter<string>();
 }
 
 describe('FileSelectorComponent', () => {
-  let component: FileSelectorComponent;
-  let fixture: ComponentFixture<FileSelectorComponent>;
-  let modalSpy: jasmine.SpyObj<NgbActiveModal>;
+    let component: FileSelectorComponent;
+    let fixture: ComponentFixture<FileSelectorComponent>;
+    let modalSpy: MockedObject<NgbActiveModal>;
 
-  beforeEach(async () => {
-    modalSpy = jasmine.createSpyObj<NgbActiveModal>(
-      'NgbActiveModal',
-      ['close']
-    );
+    beforeEach(async () => {
+        modalSpy = {
+            close: vi.fn().mockName("NgbActiveModal.close")
+        } as unknown as MockedObject<NgbActiveModal>;
 
-    await TestBed.configureTestingModule({
-      declarations: [
-        FileSelectorComponent,
-        FileUploadStubComponent
-      ],
-      providers: [
-        {
-          provide: NgbActiveModal,
-          useValue: modalSpy
-        }
-      ]
-    }).compileComponents();
-  });
+        await TestBed.configureTestingModule({
+            declarations: [
+                FileSelectorComponent,
+                FileUploadStubComponent
+            ],
+            providers: [
+                {
+                    provide: NgbActiveModal,
+                    useValue: modalSpy
+                }
+            ]
+        }).compileComponents();
+    });
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(FileSelectorComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
+    beforeEach(() => {
+        fixture = TestBed.createComponent(FileSelectorComponent);
+        component = fixture.componentInstance;
+        fixture.detectChanges();
+    });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
 
-  it('should have the expected default values', () => {
-    expect(component.title).toBe('Select files');
-    expect(component.closeButtonLabel).toBe('Close');
-    expect(component.maxFiles).toBe(0);
-    expect(component.selectedFiles).toEqual([]);
-    expect(component.validExtensions).toEqual([
-      'jpg',
-      'png',
-      'pdf',
-      'doc',
-      'docx',
-      'txt'
-    ]);
-  });
+    it('should have the expected default values', () => {
+        expect(component.title).toBe('Select files');
+        expect(component.closeButtonLabel).toBe('Close');
+        expect(component.maxFiles).toBe(0);
+        expect(component.selectedFiles).toEqual([]);
+        expect(component.validExtensions).toEqual([
+            'jpg',
+            'png',
+            'pdf',
+            'doc',
+            'docx',
+            'txt'
+        ]);
+    });
 
-  it('should add selected files', () => {
-    const files = [
-      new File(['content'], 'document.pdf', {
-        type: 'application/pdf'
-      })
-    ];
+    it('should add selected files', () => {
+        const files = [
+            new File(['content'], 'document.pdf', {
+                type: 'application/pdf'
+            })
+        ];
 
-    component.error = 'Previous error';
+        component.error = 'Previous error';
 
-    component.addFiles({files});
+        component.addFiles({ files });
 
-    expect(component.error).toBeNull();
-    expect(component.selectedFiles).toEqual(files);
-  });
+        expect(component.error).toBeNull();
+        expect(component.selectedFiles).toEqual(files);
+    });
 
-  it('should show an error when selected files exceed maxFiles', () => {
-    component.maxFiles = 1;
+    it('should show an error when selected files exceed maxFiles', () => {
+        component.maxFiles = 1;
 
-    const files = [
-      new File(['one'], 'one.pdf'),
-      new File(['two'], 'two.pdf')
-    ];
+        const files = [
+            new File(['one'], 'one.pdf'),
+            new File(['two'], 'two.pdf')
+        ];
 
-    component.addFiles({files});
+        component.addFiles({ files });
 
-    expect(component.error).toBe('Only 1 file(s) can be selected.');
-    expect(component.selectedFiles).toEqual([]);
-  });
+        expect(component.error).toBe('Only 1 file(s) can be selected.');
+        expect(component.selectedFiles).toEqual([]);
+    });
 
-  it('should allow any number of files when maxFiles is zero', () => {
-    component.maxFiles = 0;
+    it('should allow any number of files when maxFiles is zero', () => {
+        component.maxFiles = 0;
 
-    const files = [
-      new File(['one'], 'one.pdf'),
-      new File(['two'], 'two.pdf')
-    ];
+        const files = [
+            new File(['one'], 'one.pdf'),
+            new File(['two'], 'two.pdf')
+        ];
 
-    component.addFiles({files});
+        component.addFiles({ files });
 
-    expect(component.error).toBeNull();
-    expect(component.selectedFiles).toEqual(files);
-  });
+        expect(component.error).toBeNull();
+        expect(component.selectedFiles).toEqual(files);
+    });
 
-  it('should be valid when exactly one file is selected', () => {
-    component.selectedFiles = [
-      new File(['content'], 'document.pdf')
-    ];
+    it('should be valid when exactly one file is selected', () => {
+        component.selectedFiles = [
+            new File(['content'], 'document.pdf')
+        ];
 
-    expect(component.isValid()).toBeTrue();
-  });
+        expect(component.isValid()).toBe(true);
+    });
 
-  it('should be invalid when no files are selected', () => {
-    component.selectedFiles = [];
+    it('should be invalid when no files are selected', () => {
+        component.selectedFiles = [];
 
-    expect(component.isValid()).toBeFalse();
-  });
+        expect(component.isValid()).toBe(false);
+    });
 
-  it('should be invalid when more than one file is selected', () => {
-    component.selectedFiles = [
-      new File(['one'], 'one.pdf'),
-      new File(['two'], 'two.pdf')
-    ];
+    it('should be invalid when more than one file is selected', () => {
+        component.selectedFiles = [
+            new File(['one'], 'one.pdf'),
+            new File(['two'], 'two.pdf')
+        ];
 
-    expect(component.isValid()).toBeFalse();
-  });
+        expect(component.isValid()).toBe(false);
+    });
 
-  it('should set an upload error', () => {
-    component.onError('Invalid file type');
+    it('should set an upload error', () => {
+        component.onError('Invalid file type');
 
-    expect(component.error).toBe('Invalid file type');
-  });
+        expect(component.error).toBe('Invalid file type');
+    });
 
-  it('should close the modal without a result when cancelled', () => {
-    component.cancel();
+    it('should close the modal without a result when cancelled', () => {
+        component.cancel();
 
-    expect(modalSpy.close).toHaveBeenCalledWith();
-  });
+        expect(modalSpy.close).toHaveBeenCalledWith();
+    });
 
-  it('should close the modal with the selected files', () => {
-    const files = [
-      new File(['content'], 'document.pdf')
-    ];
+    it('should close the modal with the selected files', () => {
+        const files = [
+            new File(['content'], 'document.pdf')
+        ];
 
-    component.selectedFiles = files;
+        component.selectedFiles = files;
 
-    component.close();
+        component.close();
 
-    expect(modalSpy.close).toHaveBeenCalledWith(files);
-  });
+        expect(modalSpy.close).toHaveBeenCalledWith(files);
+    });
 });

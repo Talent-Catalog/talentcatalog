@@ -15,6 +15,7 @@
  */
 
 import {JobOppIntake} from "./job-opp-intake";
+import {expect} from 'vitest';
 
 describe('JobOppIntake', () => {
   let intake: JobOppIntake;

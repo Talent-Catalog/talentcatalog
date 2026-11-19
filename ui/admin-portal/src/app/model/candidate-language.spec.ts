@@ -19,6 +19,7 @@ import {Language} from './language';
 import {LanguageLevel} from './language-level';
 import {Candidate} from './candidate';
 import {MockCandidate} from "../MockData/MockCandidate";
+import {expect} from 'vitest';
 
 describe('CandidateLanguage Interface', () => {
   it('should create a valid CandidateLanguage object', () => {

@@ -20,43 +20,43 @@ import {By} from '@angular/platform-browser';
 import {AgreementContentComponent} from './agreement-content.component';
 
 describe('AgreementContentComponent', () => {
-  let component: AgreementContentComponent;
-  let fixture: ComponentFixture<AgreementContentComponent>;
+    let component: AgreementContentComponent;
+    let fixture: ComponentFixture<AgreementContentComponent>;
 
-  beforeEach(() => {
-    TestBed.configureTestingModule({
-      declarations: [AgreementContentComponent],
-      schemas: [NO_ERRORS_SCHEMA]
+    beforeEach(() => {
+        TestBed.configureTestingModule({
+            declarations: [AgreementContentComponent],
+            schemas: [NO_ERRORS_SCHEMA]
+        });
+
+        fixture = TestBed.createComponent(AgreementContentComponent);
+        component = fixture.componentInstance;
     });
 
-    fixture = TestBed.createComponent(AgreementContentComponent);
-    component = fixture.componentInstance;
-  });
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+    it('should render input values', () => {
+        component.content = '<h1>Test Agreement</h1>';
+        component.counterpartyName = 'OPC';
+        component.acceptedId = 'GrnCandidatePrivacyPolicyV2';
+        component.acceptedDate = '2026-05-20';
 
-  it('should render input values', () => {
-    component.content = '<h1>Test Agreement</h1>';
-    component.counterpartyName = 'OPC';
-    component.acceptedId = 'GrnCandidatePrivacyPolicyV2';
-    component.acceptedDate = '2026-05-20';
+        fixture.detectChanges();
 
-    fixture.detectChanges();
+        expect(fixture.nativeElement.textContent).toContain('GrnCandidatePrivacyPolicyV2');
+        expect(fixture.nativeElement.textContent).toContain('May 20, 2026');
+    });
 
-    expect(fixture.nativeElement.textContent).toContain('GrnCandidatePrivacyPolicyV2');
-    expect(fixture.nativeElement.textContent).toContain('May 20, 2026');
-  });
+    it('should emit back when back button is clicked', () => {
+        const backSpy = vi.spyOn(component.back, 'emit').mockReturnValue(undefined);
+        component.back.subscribe(() => { });
+        fixture.detectChanges();
 
-  it('should emit back when back button is clicked', () => {
-    const backSpy = spyOn(component.back, 'emit');
-    component.back.subscribe(() => {});
-    fixture.detectChanges();
+        const button = fixture.debugElement.query(By.css('tc-button'));
+        button.triggerEventHandler('onClick', null);
 
-    const button = fixture.debugElement.query(By.css('tc-button'));
-    button.triggerEventHandler('onClick', null);
-
-    expect(backSpy).toHaveBeenCalled();
-  });
+        expect(backSpy).toHaveBeenCalled();
+    });
 });

@@ -13,6 +13,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
+
+import type {MockedObject} from "vitest";
 import {EditLanguageComponent} from "./edit-language.component";
 import {ComponentFixture, fakeAsync, TestBed, tick} from "@angular/core/testing";
 import {LanguageService} from "../../../../services/language.service";
@@ -23,83 +25,90 @@ import {provideHttpClientTesting} from "@angular/common/http/testing";
 import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {Language} from "../../../../model/language";
 import {of, throwError} from "rxjs";
+import {expect, vi} from 'vitest';
 
 describe('EditLanguageComponent', () => {
-  let component: EditLanguageComponent;
-  let fixture: ComponentFixture<EditLanguageComponent>;
-  let languageServiceSpy: jasmine.SpyObj<LanguageService>;
-  let ngbActiveModalSpy: jasmine.SpyObj<NgbActiveModal>;
-  let formBuilder: UntypedFormBuilder;
-  const mockLanguage: Language = { id: 1, name: 'English', status: 'active' };
-  const updatedLanguage: Language = { id: 1, name: 'Updated Language', status: 'inactive' };
+    let component: EditLanguageComponent;
+    let fixture: ComponentFixture<EditLanguageComponent>;
+    let languageServiceSpy: MockedObject<LanguageService>;
+    let ngbActiveModalSpy: MockedObject<NgbActiveModal>;
+    let formBuilder: UntypedFormBuilder;
+    const mockLanguage: Language = { id: 1, name: 'English', status: 'active' };
+    const updatedLanguage: Language = { id: 1, name: 'Updated Language', status: 'inactive' };
 
-  beforeEach(async () => {
-    const languageServiceSpyObj = jasmine.createSpyObj('LanguageService', ['get', 'update']);
-    const ngbActiveModalSpyObj = jasmine.createSpyObj('NgbActiveModal', ['close', 'dismiss']);
+    beforeEach(async () => {
+        const languageServiceSpyObj = {
+            get: vi.fn().mockName("LanguageService.get"),
+            update: vi.fn().mockName("LanguageService.update")
+        };
+        const ngbActiveModalSpyObj = {
+            close: vi.fn().mockName("NgbActiveModal.close"),
+            dismiss: vi.fn().mockName("NgbActiveModal.dismiss")
+        };
 
-    await TestBed.configureTestingModule({
-      declarations: [EditLanguageComponent],
-      imports: [ReactiveFormsModule,NgSelectModule],
-      providers: [
-        { provide: LanguageService, useValue: languageServiceSpyObj },
-        { provide: NgbActiveModal, useValue: ngbActiveModalSpyObj },
-        provideHttpClient(withXhr(), withInterceptorsFromDi()),
-        provideHttpClientTesting()
-      ]
-    }).compileComponents();
+        await TestBed.configureTestingModule({
+            declarations: [EditLanguageComponent],
+            imports: [ReactiveFormsModule, NgSelectModule],
+            providers: [
+                { provide: LanguageService, useValue: languageServiceSpyObj },
+                { provide: NgbActiveModal, useValue: ngbActiveModalSpyObj },
+                provideHttpClient(withXhr(), withInterceptorsFromDi()),
+                provideHttpClientTesting()
+            ]
+        }).compileComponents();
 
-    languageServiceSpy = TestBed.inject(LanguageService) as jasmine.SpyObj<LanguageService>;
-    ngbActiveModalSpy = TestBed.inject(NgbActiveModal) as jasmine.SpyObj<NgbActiveModal>;
-    formBuilder = TestBed.inject(UntypedFormBuilder);
-  });
+        languageServiceSpy = TestBed.inject(LanguageService) as MockedObject<LanguageService>;
+        ngbActiveModalSpy = TestBed.inject(NgbActiveModal) as MockedObject<NgbActiveModal>;
+        formBuilder = TestBed.inject(UntypedFormBuilder);
+    });
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(EditLanguageComponent);
-    component = fixture.componentInstance;
-    component.languageId = 1; // Assuming languageId is set before ngOnInit
-    languageServiceSpy.get.and.returnValue(of(mockLanguage));
-    languageServiceSpy.update.and.returnValue(of(updatedLanguage));
-    fixture.detectChanges();
-  });
+    beforeEach(() => {
+        fixture = TestBed.createComponent(EditLanguageComponent);
+        component = fixture.componentInstance;
+        component.languageId = 1; // Assuming languageId is set before ngOnInit
+        languageServiceSpy.get.mockReturnValue(of(mockLanguage));
+        languageServiceSpy.update.mockReturnValue(of(updatedLanguage));
+        fixture.detectChanges();
+    });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
 
-  it('should load language data on initialization', fakeAsync(() => {
+    it('should load language data on initialization', fakeAsync(() => {
 
-    component.ngOnInit();
-    tick(); // Waiting for async operation to complete
+        component.ngOnInit();
+        tick(); // Waiting for async operation to complete
 
-    expect(component.languageForm.value).toEqual({ name: 'English', status: 'active' });
-    expect(component.loading).toBeFalse();
-  }));
+        expect(component.languageForm.value).toEqual({ name: 'English', status: 'active' });
+        expect(component.loading).toBe(false);
+    }));
 
-  it('should call onSave and close modal when language is successfully updated', fakeAsync(() => {
+    it('should call onSave and close modal when language is successfully updated', fakeAsync(() => {
 
-    component.languageForm.patchValue({ name: 'Updated Language', status: 'inactive' });
+        component.languageForm.patchValue({ name: 'Updated Language', status: 'inactive' });
 
-    component.onSave();
-    tick(); // Waiting for async operation to complete
+        component.onSave();
+        tick(); // Waiting for async operation to complete
 
-    expect(languageServiceSpy.update).toHaveBeenCalledWith(1, { name: 'Updated Language', status: 'inactive' });
-    expect(ngbActiveModalSpy.close).toHaveBeenCalledWith(updatedLanguage);
-    expect(component.saving).toBeFalse();
-  }));
+        expect(languageServiceSpy.update).toHaveBeenCalledWith(1, { name: 'Updated Language', status: 'inactive' });
+        expect(ngbActiveModalSpy.close).toHaveBeenCalledWith(updatedLanguage);
+        expect(component.saving).toBe(false);
+    }));
 
-  it('should handle error when updating language fails', fakeAsync(() => {
-    const errorResponse = { status: 500, message: 'Internal Server Error' };
-    languageServiceSpy.update.and.returnValue(throwError(errorResponse));
+    it('should handle error when updating language fails', fakeAsync(() => {
+        const errorResponse = { status: 500, message: 'Internal Server Error' };
+        languageServiceSpy.update.mockReturnValue(throwError(errorResponse));
 
-    component.onSave();
-    tick(); // Waiting for async operation to complete
+        component.onSave();
+        tick(); // Waiting for async operation to complete
 
-    expect(component.error).toEqual(errorResponse);
-    expect(component.saving).toBeFalse();
-  }));
+        expect(component.error).toEqual(errorResponse);
+        expect(component.saving).toBe(false);
+    }));
 
-  it('should dismiss modal when dismiss is called', () => {
-    component.dismiss();
-    expect(ngbActiveModalSpy.dismiss).toHaveBeenCalledWith(false);
-  });
+    it('should dismiss modal when dismiss is called', () => {
+        component.dismiss();
+        expect(ngbActiveModalSpy.dismiss).toHaveBeenCalledWith(false);
+    });
 });

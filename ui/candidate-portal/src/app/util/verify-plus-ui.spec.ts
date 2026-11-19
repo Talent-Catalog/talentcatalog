@@ -18,53 +18,53 @@ import {environment} from '../../environments/environment';
 import {isLocalOrStaging, isVerifyPlusUiEnabled} from './verify-plus-ui';
 
 describe('verify-plus-ui', () => {
-  let originalEnvironmentName: string;
+    let originalEnvironmentName: string;
 
-  beforeEach(() => {
-    originalEnvironmentName = environment.environmentName;
-  });
+    beforeEach(() => {
+        originalEnvironmentName = environment.environmentName;
+    });
 
-  afterEach(() => {
-    environment.environmentName = originalEnvironmentName;
-  });
+    afterEach(() => {
+        environment.environmentName = originalEnvironmentName;
+    });
 
-  it('should return true from isLocalOrStaging in local', () => {
-    environment.environmentName = 'local';
-    expect(isLocalOrStaging()).toBeTrue();
-  });
+    it('should return true from isLocalOrStaging in local', () => {
+        environment.environmentName = 'local';
+        expect(isLocalOrStaging()).toBe(true);
+    });
 
-  it('should return true from isLocalOrStaging in staging', () => {
-    environment.environmentName = 'staging';
-    expect(isLocalOrStaging()).toBeTrue();
-  });
+    it('should return true from isLocalOrStaging in staging', () => {
+        environment.environmentName = 'staging';
+        expect(isLocalOrStaging()).toBe(true);
+    });
 
-  it('should return false from isLocalOrStaging in prod', () => {
-    environment.environmentName = 'prod';
-    expect(isLocalOrStaging()).toBeFalse();
-  });
+    it('should return false from isLocalOrStaging in prod', () => {
+        environment.environmentName = 'prod';
+        expect(isLocalOrStaging()).toBe(false);
+    });
 
-  it('should enable Verify+ UI for GRN local', () => {
-    environment.environmentName = 'local';
-    expect(isVerifyPlusUiEnabled(true)).toBeTrue();
-  });
+    it('should enable Verify+ UI for GRN local', () => {
+        environment.environmentName = 'local';
+        expect(isVerifyPlusUiEnabled(true)).toBe(true);
+    });
 
-  it('should enable Verify+ UI for GRN staging', () => {
-    environment.environmentName = 'staging';
-    expect(isVerifyPlusUiEnabled(true)).toBeTrue();
-  });
+    it('should enable Verify+ UI for GRN staging', () => {
+        environment.environmentName = 'staging';
+        expect(isVerifyPlusUiEnabled(true)).toBe(true);
+    });
 
-  it('should disable Verify+ UI for GRN prod', () => {
-    environment.environmentName = 'prod';
-    expect(isVerifyPlusUiEnabled(true)).toBeFalse();
-  });
+    it('should disable Verify+ UI for GRN prod', () => {
+        environment.environmentName = 'prod';
+        expect(isVerifyPlusUiEnabled(true)).toBe(false);
+    });
 
-  it('should disable Verify+ UI for TBB local', () => {
-    environment.environmentName = 'local';
-    expect(isVerifyPlusUiEnabled(false)).toBeFalse();
-  });
+    it('should disable Verify+ UI for TBB local', () => {
+        environment.environmentName = 'local';
+        expect(isVerifyPlusUiEnabled(false)).toBe(false);
+    });
 
-  it('should disable Verify+ UI for TBB staging', () => {
-    environment.environmentName = 'staging';
-    expect(isVerifyPlusUiEnabled(false)).toBeFalse();
-  });
+    it('should disable Verify+ UI for TBB staging', () => {
+        environment.environmentName = 'staging';
+        expect(isVerifyPlusUiEnabled(false)).toBe(false);
+    });
 });

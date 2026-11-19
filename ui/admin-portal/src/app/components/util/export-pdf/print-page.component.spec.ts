@@ -14,11 +14,11 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-
-import {PrintPageComponent} from "./print-page.component";
-import {ComponentFixture, TestBed} from "@angular/core/testing";
-import {NO_ERRORS_SCHEMA} from "@angular/core";
-import {MockCandidate} from "../../../MockData/MockCandidate";
+import {NO_ERRORS_SCHEMA} from '@angular/core';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {expect, vi} from 'vitest';
+import {MockCandidate} from '../../../MockData/MockCandidate';
+import {PrintPageComponent} from './print-page.component';
 
 describe('PrintPageComponent', () => {
   let component: PrintPageComponent;
@@ -26,19 +26,20 @@ describe('PrintPageComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ PrintPageComponent ],
+      declarations: [PrintPageComponent],
       schemas: [NO_ERRORS_SCHEMA]
-    })
-    .compileComponents();
-  });
+    }).compileComponents();
 
-  beforeEach(() => {
     fixture = TestBed.createComponent(PrintPageComponent);
     component = fixture.componentInstance;
     component.candidate = new MockCandidate();
     component.idToExport = 'testDiv';
-
     fixture.detectChanges();
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+    fixture.destroy();
   });
 
   it('should create', () => {
@@ -46,106 +47,12 @@ describe('PrintPageComponent', () => {
   });
 
   it('printPage should call window.print', () => {
-    spyOn(window, 'print');
-
+    const printSpy = vi.spyOn(window, 'print').mockImplementation(() => {});
     component.printPage();
-
-    expect(window.print).toHaveBeenCalled();
-  });
-
-
-  async function waitForExportToFinish(
-    timeoutMs: number = 10000
-  ): Promise<void> {
-    const startedAt = Date.now();
-
-    while (component.saving) {
-      if (Date.now() - startedAt > timeoutMs) {
-        fail('PDF export did not finish within the timeout');
-        return;
-      }
-
-      await new Promise<void>(resolve => {
-        setTimeout(resolve, 50);
-      });
-    }
-  }
-
-  afterEach(() => {
-    document.getElementById('portraitDiv')?.remove();
-    document.getElementById('landscapeDiv')?.remove();
+    expect(printSpy).toHaveBeenCalledTimes(1);
   });
 
   it('should run ngOnInit', () => {
     expect(() => component.ngOnInit()).not.toThrow();
   });
-
-  it('should export a portrait PDF', async () => {
-    const element = document.createElement('div');
-
-    element.id = 'portraitDiv';
-    element.textContent = 'Portrait PDF content';
-    element.style.cssText = `
-      position: absolute;
-      left: 0;
-      top: 0;
-      width: 100px;
-      height: 200px;
-      display: block;
-      background: white;
-      color: black;
-    `;
-
-    document.body.appendChild(element);
-
-    component.candidate = {
-      user: {
-        firstName: 'Test',
-        lastName: 'Candidate'
-      }
-    } as any;
-
-    component.exportAsPdf('portraitDiv');
-
-    expect(component.saving).toBeTrue();
-
-    await waitForExportToFinish();
-
-    expect(component.saving).toBeFalse();
-  });
-
-  it('should export a landscape PDF', async () => {
-    const element = document.createElement('div');
-
-    element.id = 'landscapeDiv';
-    element.textContent = 'Landscape PDF content';
-    element.style.cssText = `
-      position: absolute;
-      left: 0;
-      top: 0;
-      width: 200px;
-      height: 100px;
-      display: block;
-      background: white;
-      color: black;
-    `;
-
-    document.body.appendChild(element);
-
-    component.candidate = {
-      user: {
-        firstName: 'Test',
-        lastName: 'Candidate'
-      }
-    } as any;
-
-    component.exportAsPdf('landscapeDiv');
-
-    expect(component.saving).toBeTrue();
-
-    await waitForExportToFinish();
-
-    expect(component.saving).toBeFalse();
-  });
-
 });

@@ -14,6 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
+import type {MockedObject} from "vitest";
 import {SearchEducationLevelsComponent} from "./search-education-levels.component";
 import {ComponentFixture, fakeAsync, TestBed, tick} from "@angular/core/testing";
 import {NgbModal, NgbModalRef, NgbModule} from "@ng-bootstrap/ng-bootstrap";
@@ -29,168 +30,179 @@ import {CreateEducationLevelComponent} from "./create/create-education-level.com
 import {EditEducationLevelComponent} from "./edit/edit-education-level.component";
 import {ConfirmationComponent} from "../../util/confirm/confirmation.component";
 import {FileSelectorComponent} from "../../util/file-selector/file-selector.component";
+import {expect, vi} from 'vitest';
 
 describe('SearchEducationLevelsComponent', () => {
-  let component: SearchEducationLevelsComponent;
-  let fixture: ComponentFixture<SearchEducationLevelsComponent>;
-  let modalService: NgbModal;
-  let educationLevelService: jasmine.SpyObj<EducationLevelService>;
-  let authService: jasmine.SpyObj<AuthorizationService>;
-  let activeModalSpy: jasmine.SpyObj<NgbModalRef>;
+    let component: SearchEducationLevelsComponent;
+    let fixture: ComponentFixture<SearchEducationLevelsComponent>;
+    let modalService: NgbModal;
+    let educationLevelService: MockedObject<EducationLevelService>;
+    let authService: MockedObject<AuthorizationService>;
+    let activeModalSpy: MockedObject<NgbModalRef>;
     const searchResults: SearchResults<EducationLevel> = {
-      first: false,
-      last: false,
-      number: 0,
-      size: 0,
-      totalPages: 0,
-      totalElements: 1, content: [{ id: 1, level: 1, name: 'Primary', status: 'active' }] };
-  beforeEach(async () => {
-    const educationLevelServiceSpy = jasmine.createSpyObj('EducationLevelService', ['search', 'delete', 'addSystemLanguageTranslations']);
-    const authServiceSpy = jasmine.createSpyObj('AuthorizationService', ['isAnAdmin']);
-
-    await TestBed.configureTestingModule({
-      imports: [FormsModule, ReactiveFormsModule, NgbModule,NgSelectModule],
-      declarations: [SearchEducationLevelsComponent],
-      providers: [
-        { provide: EducationLevelService, useValue: educationLevelServiceSpy },
-        { provide: AuthorizationService, useValue: authServiceSpy },
-        NgbModal
-      ]
-    }).compileComponents();
-
-    educationLevelService = TestBed.inject(EducationLevelService) as jasmine.SpyObj<EducationLevelService>;
-    authService = TestBed.inject(AuthorizationService) as jasmine.SpyObj<AuthorizationService>;
-    modalService = TestBed.inject(NgbModal);
-  });
-
-  beforeEach(() => {
-    fixture = TestBed.createComponent(SearchEducationLevelsComponent);
-    component = fixture.componentInstance;
-    activeModalSpy = jasmine.createSpyObj('NgbModalRef', ['close', 'dismiss']);
-    component.loggedInUser = new MockUser();
-    educationLevelService.search.and.returnValue(of(searchResults));
-
-    fixture.detectChanges();
-  });
-
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
-
-  it('should search for education levels on form changes', fakeAsync(() => {
-    component.searchForm.controls['keyword'].setValue('Primary');
-    tick(400);
-    expect(educationLevelService.search).toHaveBeenCalled();
-    expect(component.results).toEqual(searchResults);
-  }));
-
-  it('should open add education level modal and refresh list on success', fakeAsync(() => {
-    spyOn(modalService, 'open').and.returnValue(activeModalSpy);
-    activeModalSpy.result = Promise.resolve('added education level');
-
-    educationLevelService.search.and.returnValue(of(searchResults));
-
-    component.addEducationLevel();
-    tick();
-
-    expect(modalService.open).toHaveBeenCalledWith(CreateEducationLevelComponent, jasmine.any(Object));
-    expect(educationLevelService.search).toHaveBeenCalledTimes(2);
-  }));
-
-  it('should open edit education level modal and refresh list on success', fakeAsync(() => {
-    const mockEducationLevel: EducationLevel = { id: 1, level: 1, name: 'Primary', status: 'active' };
-    const mockModalRef: Partial<NgbModalRef> = {
-      componentInstance: { educationLevelId: undefined },
-      result: Promise.resolve(mockEducationLevel)
+        first: false,
+        last: false,
+        number: 0,
+        size: 0,
+        totalPages: 0,
+        totalElements: 1, content: [{ id: 1, level: 1, name: 'Primary', status: 'active' }]
     };
-    spyOn(modalService, 'open').and.returnValue(mockModalRef as NgbModalRef);
+    beforeEach(async () => {
+        const educationLevelServiceSpy = {
+            search: vi.fn().mockName("EducationLevelService.search"),
+            delete: vi.fn().mockName("EducationLevelService.delete"),
+            addSystemLanguageTranslations: vi.fn().mockName("EducationLevelService.addSystemLanguageTranslations")
+        };
+        const authServiceSpy = {
+            isAnAdmin: vi.fn().mockName("AuthorizationService.isAnAdmin")
+        };
 
-    component.editEducationLevel(mockEducationLevel);
-    tick();
+        await TestBed.configureTestingModule({
+            imports: [FormsModule, ReactiveFormsModule, NgbModule, NgSelectModule],
+            declarations: [SearchEducationLevelsComponent],
+            providers: [
+                { provide: EducationLevelService, useValue: educationLevelServiceSpy },
+                { provide: AuthorizationService, useValue: authServiceSpy },
+                NgbModal
+            ]
+        }).compileComponents();
 
-    expect(modalService.open).toHaveBeenCalledWith(EditEducationLevelComponent, jasmine.any(Object));
-    expect(mockModalRef.componentInstance.educationLevelId).toBe(mockEducationLevel.id);
-    expect(educationLevelService.search).toHaveBeenCalledTimes(2);
-  }));
+        educationLevelService = TestBed.inject(EducationLevelService) as MockedObject<EducationLevelService>;
+        authService = TestBed.inject(AuthorizationService) as MockedObject<AuthorizationService>;
+        modalService = TestBed.inject(NgbModal);
+    });
 
-  it('should open confirmation modal and delete education level on confirm', fakeAsync(() => {
-    const mockEducationLevel: EducationLevel = { id: 1, level: 1, name: 'Primary', status: 'active' };
-    const mockModalRef: Partial<NgbModalRef> = {
-      componentInstance: { message: "" },
-      result: Promise.resolve(true)
-    };
-    spyOn(modalService, 'open').and.returnValue(mockModalRef as NgbModalRef);
-    educationLevelService.delete.and.returnValue(of(true));
-    component.deleteEducationLevel(mockEducationLevel);
-    tick();
+    beforeEach(() => {
+        fixture = TestBed.createComponent(SearchEducationLevelsComponent);
+        component = fixture.componentInstance;
+        activeModalSpy = ({
+            close: vi.fn().mockName("NgbModalRef.close"),
+            dismiss: vi.fn().mockName("NgbModalRef.dismiss")
+        } as unknown as typeof activeModalSpy);
+        component.loggedInUser = new MockUser();
+        educationLevelService.search.mockReturnValue(of(searchResults));
 
-    expect(modalService.open).toHaveBeenCalledWith(ConfirmationComponent, jasmine.any(Object));
-    expect(educationLevelService.delete).toHaveBeenCalledWith(mockEducationLevel.id);
-    expect(educationLevelService.search).toHaveBeenCalledTimes(3);
-  }));
+        fixture.detectChanges();
+    });
 
-  it('should import translations and refresh list on success', fakeAsync(() => {
-    const mockFile = new File(["mock content"], "mockfile.txt", { type: "text/plain" });
-    const mockModalRef: Partial<NgbModalRef> = {
-      componentInstance: {
-        validExtensions: undefined,
-        maxFiles: undefined,
-        closeButtonLabel: undefined,
-        title: undefined,
-        instructions: undefined
-      },
-      result: Promise.resolve([mockFile])
-    };
-    spyOn(modalService, 'open').and.returnValue(mockModalRef as NgbModalRef);
-    educationLevelService.addSystemLanguageTranslations.and.returnValue(of());
-    component.importForm.controls['langCode'].setValue('en');
-    component.importTranslations();
-    tick();
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
 
-    expect(modalService.open).toHaveBeenCalledWith(FileSelectorComponent, jasmine.any(Object));
-    expect(educationLevelService.addSystemLanguageTranslations).toHaveBeenCalledWith('en', mockFile);
-    expect(educationLevelService.search).toHaveBeenCalledTimes(1);
-  }));
+    it('should search for education levels on form changes', fakeAsync(() => {
+        component.searchForm.controls['keyword'].setValue('Primary');
+        tick(400);
+        expect(educationLevelService.search).toHaveBeenCalled();
+        expect(component.results).toEqual(searchResults);
+    }));
 
-  it('should handle errors during translation import', fakeAsync(() => {
-    const mockFile = new File(["mock content"], "mockfile.txt", { type: "text/plain" });
-    const mockModalRef: Partial<NgbModalRef> = {
-      componentInstance: {
-        validExtensions: undefined,
-        maxFiles: undefined,
-        closeButtonLabel: undefined,
-        title: undefined,
-        instructions: undefined
-      },
-      result: Promise.resolve([mockFile])
-    };
-    spyOn(modalService, 'open').and.returnValue(mockModalRef as NgbModalRef);
-    educationLevelService.addSystemLanguageTranslations.and.returnValue(throwError('Error occurred'));
+    it('should open add education level modal and refresh list on success', fakeAsync(() => {
+        vi.spyOn(modalService, 'open').mockReturnValue(activeModalSpy);
+        activeModalSpy.result = Promise.resolve('added education level');
 
-    component.importForm.controls['langCode'].setValue('en');
-    component.importTranslations();
-    tick();
+        educationLevelService.search.mockReturnValue(of(searchResults));
 
-    expect(modalService.open).toHaveBeenCalledWith(FileSelectorComponent, jasmine.any(Object));
-    expect(educationLevelService.addSystemLanguageTranslations).toHaveBeenCalledWith('en', mockFile);
-    expect(component.error).toBe('Error occurred');
-  }));
+        component.addEducationLevel();
+        tick();
 
-  it('should handle errors during deletion', fakeAsync(() => {
-    const mockEducationLevel: EducationLevel = { id: 1, level: 1, name: 'Primary', status: 'active' };
-    const mockModalRef: Partial<NgbModalRef> = {
-      componentInstance: { message: "" },
-      result: Promise.resolve(true)
-    };
-    spyOn(modalService, 'open').and.returnValue(mockModalRef as NgbModalRef);
-    educationLevelService.delete.and.returnValue(throwError('Error occurred'));
+        expect(modalService.open).toHaveBeenCalledWith(CreateEducationLevelComponent, expect.any(Object));
+        expect(educationLevelService.search).toHaveBeenCalledTimes(2);
+    }));
 
-    component.deleteEducationLevel(mockEducationLevel);
-    tick();
+    it('should open edit education level modal and refresh list on success', fakeAsync(() => {
+        const mockEducationLevel: EducationLevel = { id: 1, level: 1, name: 'Primary', status: 'active' };
+        const mockModalRef: Partial<NgbModalRef> = {
+            componentInstance: { educationLevelId: undefined },
+            result: Promise.resolve(mockEducationLevel)
+        };
+        vi.spyOn(modalService, 'open').mockReturnValue(mockModalRef as NgbModalRef);
 
-    expect(modalService.open).toHaveBeenCalledWith(ConfirmationComponent, jasmine.any(Object));
-    expect(educationLevelService.delete).toHaveBeenCalledWith(mockEducationLevel.id);
-    expect(component.error).toBe('Error occurred');
-  }));
+        component.editEducationLevel(mockEducationLevel);
+        tick();
+
+        expect(modalService.open).toHaveBeenCalledWith(EditEducationLevelComponent, expect.any(Object));
+        expect(mockModalRef.componentInstance.educationLevelId).toBe(mockEducationLevel.id);
+        expect(educationLevelService.search).toHaveBeenCalledTimes(2);
+    }));
+
+    it('should open confirmation modal and delete education level on confirm', fakeAsync(() => {
+        const mockEducationLevel: EducationLevel = { id: 1, level: 1, name: 'Primary', status: 'active' };
+        const mockModalRef: Partial<NgbModalRef> = {
+            componentInstance: { message: "" },
+            result: Promise.resolve(true)
+        };
+        vi.spyOn(modalService, 'open').mockReturnValue(mockModalRef as NgbModalRef);
+        educationLevelService.delete.mockReturnValue(of(true));
+        component.deleteEducationLevel(mockEducationLevel);
+        tick();
+
+        expect(modalService.open).toHaveBeenCalledWith(ConfirmationComponent, expect.any(Object));
+        expect(educationLevelService.delete).toHaveBeenCalledWith(mockEducationLevel.id);
+        expect(educationLevelService.search).toHaveBeenCalledTimes(3);
+    }));
+
+    it('should import translations and refresh list on success', fakeAsync(() => {
+        const mockFile = new File(["mock content"], "mockfile.txt", { type: "text/plain" });
+        const mockModalRef: Partial<NgbModalRef> = {
+            componentInstance: {
+                validExtensions: undefined,
+                maxFiles: undefined,
+                closeButtonLabel: undefined,
+                title: undefined,
+                instructions: undefined
+            },
+            result: Promise.resolve([mockFile])
+        };
+        vi.spyOn(modalService, 'open').mockReturnValue(mockModalRef as NgbModalRef);
+        educationLevelService.addSystemLanguageTranslations.mockReturnValue(of());
+        component.importForm.controls['langCode'].setValue('en');
+        component.importTranslations();
+        tick();
+
+        expect(modalService.open).toHaveBeenCalledWith(FileSelectorComponent, expect.any(Object));
+        expect(educationLevelService.addSystemLanguageTranslations).toHaveBeenCalledWith('en', mockFile);
+        expect(educationLevelService.search).toHaveBeenCalledTimes(1);
+    }));
+
+    it('should handle errors during translation import', fakeAsync(() => {
+        const mockFile = new File(["mock content"], "mockfile.txt", { type: "text/plain" });
+        const mockModalRef: Partial<NgbModalRef> = {
+            componentInstance: {
+                validExtensions: undefined,
+                maxFiles: undefined,
+                closeButtonLabel: undefined,
+                title: undefined,
+                instructions: undefined
+            },
+            result: Promise.resolve([mockFile])
+        };
+        vi.spyOn(modalService, 'open').mockReturnValue(mockModalRef as NgbModalRef);
+        educationLevelService.addSystemLanguageTranslations.mockReturnValue(throwError('Error occurred'));
+
+        component.importForm.controls['langCode'].setValue('en');
+        component.importTranslations();
+        tick();
+
+        expect(modalService.open).toHaveBeenCalledWith(FileSelectorComponent, expect.any(Object));
+        expect(educationLevelService.addSystemLanguageTranslations).toHaveBeenCalledWith('en', mockFile);
+        expect(component.error).toBe('Error occurred');
+    }));
+
+    it('should handle errors during deletion', fakeAsync(() => {
+        const mockEducationLevel: EducationLevel = { id: 1, level: 1, name: 'Primary', status: 'active' };
+        const mockModalRef: Partial<NgbModalRef> = {
+            componentInstance: { message: "" },
+            result: Promise.resolve(true)
+        };
+        vi.spyOn(modalService, 'open').mockReturnValue(mockModalRef as NgbModalRef);
+        educationLevelService.delete.mockReturnValue(throwError('Error occurred'));
+
+        component.deleteEducationLevel(mockEducationLevel);
+        tick();
+
+        expect(modalService.open).toHaveBeenCalledWith(ConfirmationComponent, expect.any(Object));
+        expect(educationLevelService.delete).toHaveBeenCalledWith(mockEducationLevel.id);
+        expect(component.error).toBe('Error occurred');
+    }));
 
 });

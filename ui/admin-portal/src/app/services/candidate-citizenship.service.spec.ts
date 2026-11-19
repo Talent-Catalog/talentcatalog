@@ -17,67 +17,65 @@
 import {TestBed} from '@angular/core/testing';
 import {HttpTestingController, provideHttpClientTesting} from '@angular/common/http/testing';
 import {provideHttpClient, withInterceptorsFromDi, withXhr} from '@angular/common/http';
-import {
-  CandidateCitizenshipService,
-  CreateCandidateCitizenshipRequest
-} from './candidate-citizenship.service';
+import {CandidateCitizenshipService, CreateCandidateCitizenshipRequest} from './candidate-citizenship.service';
 import {environment} from '../../environments/environment';
 import {CandidateCitizenship, HasPassport} from '../model/candidate';
+import {expect} from 'vitest';
 
 describe('CandidateCitizenshipService', () => {
-  let service: CandidateCitizenshipService;
-  let httpMock: HttpTestingController;
-  const apiUrl = environment.apiUrl + '/candidate-citizenship';
+    let service: CandidateCitizenshipService;
+    let httpMock: HttpTestingController;
+    const apiUrl = environment.apiUrl + '/candidate-citizenship';
 
-  beforeEach(() => {
-    TestBed.configureTestingModule({
-      providers: [CandidateCitizenshipService, provideHttpClient(withXhr(), withInterceptorsFromDi()), provideHttpClientTesting()]
-    });
-    service = TestBed.inject(CandidateCitizenshipService);
-    httpMock = TestBed.inject(HttpTestingController);
-  });
-
-  afterEach(() => {
-    httpMock.verify();
-  });
-
-  it('should be created', () => {
-    expect(service).toBeTruthy();
-  });
-
-  it('should create a candidate citizenship', () => {
-    const candidateId = 1;
-    const request: CreateCandidateCitizenshipRequest = {
-      nationalityId: 2,
-      hasPassport: HasPassport.ValidPassport,
-      passportExp: '2025-12-31',
-      notes: 'Valid passport'
-    };
-    const mockResponse: CandidateCitizenship = {
-      id: 1,
-      hasPassport: HasPassport.ValidPassport,
-      passportExp: '2025-12-31',
-      notes: 'Valid passport'
-    };
-
-    service.create(candidateId, request).subscribe((citizenship) => {
-      expect(citizenship).toEqual(mockResponse);
+    beforeEach(() => {
+        TestBed.configureTestingModule({
+            providers: [CandidateCitizenshipService, provideHttpClient(withXhr(), withInterceptorsFromDi()), provideHttpClientTesting()]
+        });
+        service = TestBed.inject(CandidateCitizenshipService);
+        httpMock = TestBed.inject(HttpTestingController);
     });
 
-    const req = httpMock.expectOne(`${apiUrl}/${candidateId}`);
-    expect(req.request.method).toBe('POST');
-    req.flush(mockResponse);
-  });
-
-  it('should delete a candidate citizenship', () => {
-    const citizenshipId = 1;
-
-    service.delete(citizenshipId).subscribe((response) => {
-      expect(response).toBeTrue();
+    afterEach(() => {
+        httpMock.verify();
     });
 
-    const req = httpMock.expectOne(`${apiUrl}/${citizenshipId}`);
-    expect(req.request.method).toBe('DELETE');
-    req.flush(true);
-  });
+    it('should be created', () => {
+        expect(service).toBeTruthy();
+    });
+
+    it('should create a candidate citizenship', () => {
+        const candidateId = 1;
+        const request: CreateCandidateCitizenshipRequest = {
+            nationalityId: 2,
+            hasPassport: HasPassport.ValidPassport,
+            passportExp: '2025-12-31',
+            notes: 'Valid passport'
+        };
+        const mockResponse: CandidateCitizenship = {
+            id: 1,
+            hasPassport: HasPassport.ValidPassport,
+            passportExp: '2025-12-31',
+            notes: 'Valid passport'
+        };
+
+        service.create(candidateId, request).subscribe((citizenship) => {
+            expect(citizenship).toEqual(mockResponse);
+        });
+
+        const req = httpMock.expectOne(`${apiUrl}/${candidateId}`);
+        expect(req.request.method).toBe('POST');
+        req.flush(mockResponse);
+    });
+
+    it('should delete a candidate citizenship', () => {
+        const citizenshipId = 1;
+
+        service.delete(citizenshipId).subscribe((response) => {
+            expect(response).toBe(true);
+        });
+
+        const req = httpMock.expectOne(`${apiUrl}/${citizenshipId}`);
+        expect(req.request.method).toBe('DELETE');
+        req.flush(true);
+    });
 });

@@ -19,6 +19,7 @@ import {TestBed} from '@angular/core/testing';
 import {PublishedDocColumnService} from './published-doc-column.service';
 import {provideHttpClientTesting} from "@angular/common/http/testing";
 import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
+import {expect} from 'vitest';
 
 describe('PublishedDocColumnService', () => {
   let service: PublishedDocColumnService;

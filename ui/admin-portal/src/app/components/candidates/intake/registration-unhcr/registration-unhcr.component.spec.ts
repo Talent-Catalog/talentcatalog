@@ -22,71 +22,72 @@ import {UnhcrStatus, YesNo} from "../../../../model/candidate";
 import {provideHttpClientTesting} from "@angular/common/http/testing";
 import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {AutosaveStatusComponent} from "../../../util/autosave-status/autosave-status.component";
+import {expect} from 'vitest';
 
 describe('RegistrationUnhcrComponent', () => {
-  let component: RegistrationUnhcrComponent;
-  let fixture: ComponentFixture<RegistrationUnhcrComponent>;
+    let component: RegistrationUnhcrComponent;
+    let fixture: ComponentFixture<RegistrationUnhcrComponent>;
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      declarations: [ RegistrationUnhcrComponent,AutosaveStatusComponent ],
-      imports: [NgSelectModule, FormsModule, ReactiveFormsModule ],
-      providers: [
-        { provide: CandidateService },
-        provideHttpClient(withXhr(), withInterceptorsFromDi()),
-        provideHttpClientTesting()
-      ]
-    })
-    .compileComponents();
-  });
+    beforeEach(async () => {
+        await TestBed.configureTestingModule({
+            declarations: [RegistrationUnhcrComponent, AutosaveStatusComponent],
+            imports: [NgSelectModule, FormsModule, ReactiveFormsModule],
+            providers: [
+                { provide: CandidateService },
+                provideHttpClient(withXhr(), withInterceptorsFromDi()),
+                provideHttpClientTesting()
+            ]
+        })
+            .compileComponents();
+    });
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(RegistrationUnhcrComponent);
-    component = fixture.componentInstance;
-    component.candidateIntakeData = { unhcrStatus: UnhcrStatus.RegisteredAsylum, unhcrNumber: '12345', unhcrFile: 3, unhcrConsent: YesNo.Yes, unhcrNotes: 'Sample note' };
-    component.showAll = true;
-    fixture.detectChanges();
-  });
+    beforeEach(() => {
+        fixture = TestBed.createComponent(RegistrationUnhcrComponent);
+        component = fixture.componentInstance;
+        component.candidateIntakeData = { unhcrStatus: UnhcrStatus.RegisteredAsylum, unhcrNumber: '12345', unhcrFile: 3, unhcrConsent: YesNo.Yes, unhcrNotes: 'Sample note' };
+        component.showAll = true;
+        fixture.detectChanges();
+    });
 
-  it('should initialize the form control with the correct default values', () => {
-    expect(component.form.get('unhcrStatus').value).toBe(UnhcrStatus.RegisteredAsylum);
-    expect(component.form.get('unhcrNumber').value).toBe('12345');
-    expect(component.form.get('unhcrFile').value).toBe(3);
-    expect(component.form.get('unhcrConsent').value).toBe(YesNo.Yes);
-    expect(component.form.get('unhcrNotRegStatus').value).toBeNull();
-    expect(component.form.get('unhcrNotes').value).toBe('Sample note');
-  });
+    it('should initialize the form control with the correct default values', () => {
+        expect(component.form.get('unhcrStatus').value).toBe(UnhcrStatus.RegisteredAsylum);
+        expect(component.form.get('unhcrNumber').value).toBe('12345');
+        expect(component.form.get('unhcrFile').value).toBe(3);
+        expect(component.form.get('unhcrConsent').value).toBe(YesNo.Yes);
+        expect(component.form.get('unhcrNotRegStatus').value).toBeNull();
+        expect(component.form.get('unhcrNotes').value).toBe('Sample note');
+    });
 
-  it('should validate form controls for registered status', () => {
-    component.form.patchValue({ unhcrStatus: 'RegisteredAsylum' });
-    fixture.detectChanges();
-    expect(component.isRegistered).toBeTrue();
-    expect(component.form.get('unhcrNumber').valid).toBeTrue();
-    expect(component.form.get('unhcrFile').valid).toBeTrue();
-    expect(component.form.get('unhcrConsent').valid).toBeTrue();
-  });
+    it('should validate form controls for registered status', () => {
+        component.form.patchValue({ unhcrStatus: 'RegisteredAsylum' });
+        fixture.detectChanges();
+        expect(component.isRegistered).toBe(true);
+        expect(component.form.get('unhcrNumber').valid).toBe(true);
+        expect(component.form.get('unhcrFile').valid).toBe(true);
+        expect(component.form.get('unhcrConsent').valid).toBe(true);
+    });
 
-  it('should validate form controls for not registered status', () => {
-    component.form.patchValue({ unhcrStatus: 'NotRegistered' });
-    fixture.detectChanges();
-    expect(component.isNotRegistered).toBeTrue();
-    expect(component.form.get('unhcrNotRegStatus').valid).toBeTrue();
-  });
+    it('should validate form controls for not registered status', () => {
+        component.form.patchValue({ unhcrStatus: 'NotRegistered' });
+        fixture.detectChanges();
+        expect(component.isNotRegistered).toBe(true);
+        expect(component.form.get('unhcrNotRegStatus').valid).toBe(true);
+    });
 
-  it('should display additional notes when there is a status', () => {
-    component.form.patchValue({ unhcrStatus: 'RegisteredAsylum' });
-    fixture.detectChanges();
-    expect(component.hasNotes).toBeTrue();
-    expect(component.form.get('unhcrNotes').valid).toBeTrue();
-  });
+    it('should display additional notes when there is a status', () => {
+        component.form.patchValue({ unhcrStatus: 'RegisteredAsylum' });
+        fixture.detectChanges();
+        expect(component.hasNotes).toBe(true);
+        expect(component.form.get('unhcrNotes').valid).toBe(true);
+    });
 
-  it('should not display additional notes when status is null or NoResponse', () => {
-    component.form.patchValue({ unhcrStatus: null });
-    fixture.detectChanges();
-    expect(component.hasNotes).toBeFalse();
+    it('should not display additional notes when status is null or NoResponse', () => {
+        component.form.patchValue({ unhcrStatus: null });
+        fixture.detectChanges();
+        expect(component.hasNotes).toBe(false);
 
-    component.form.patchValue({ unhcrStatus: 'NoResponse' });
-    fixture.detectChanges();
-    expect(component.hasNotes).toBeFalse();
-  });
+        component.form.patchValue({ unhcrStatus: 'NoResponse' });
+        fixture.detectChanges();
+        expect(component.hasNotes).toBe(false);
+    });
 });

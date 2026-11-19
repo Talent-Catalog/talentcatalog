@@ -19,82 +19,83 @@ import {ComponentFixture, TestBed, waitForAsync} from "@angular/core/testing";
 import {FormsModule, NgControl} from "@angular/forms";
 import {LowercaseDirective} from "./lowercase.directive";
 import {By} from "@angular/platform-browser";
+import {expect, vi} from 'vitest';
 
 @Component({
-  template: `
+    template: `
     <input type="text" appLowercase [(ngModel)]="inputValue" />
   `,
-  changeDetection: ChangeDetectionStrategy.Eager,
-  standalone: false
+    changeDetection: ChangeDetectionStrategy.Eager,
+    standalone: false
 })
 class TestComponent {
-  inputValue = '';
+    inputValue = '';
 }
 
 describe('LowercaseDirective', () => {
-  let component: TestComponent;
-  let fixture: ComponentFixture<TestComponent>;
-  let inputEl: DebugElement;
-  let ngControl: NgControl;
+    let component: TestComponent;
+    let fixture: ComponentFixture<TestComponent>;
+    let inputEl: DebugElement;
+    let ngControl: NgControl;
 
-  beforeEach(waitForAsync(() => {
-    TestBed.configureTestingModule({
-      imports: [FormsModule],
-      declarations: [LowercaseDirective, TestComponent],
-      providers: [
-        {
-          provide: NgControl,
-          useValue: {}
-        }
-      ]
-    })
-    .compileComponents();
-  }));
+    beforeEach(waitForAsync(() => {
+        TestBed.configureTestingModule({
+            imports: [FormsModule],
+            declarations: [LowercaseDirective, TestComponent],
+            providers: [
+                {
+                    provide: NgControl,
+                    useValue: {}
+                }
+            ]
+        })
+            .compileComponents();
+    }));
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(TestComponent);
-    component = fixture.componentInstance;
-    inputEl = fixture.debugElement.query(By.css('input'));
-    ngControl = inputEl.injector.get(NgControl);
-    fixture.detectChanges();
-  });
+    beforeEach(() => {
+        fixture = TestBed.createComponent(TestComponent);
+        component = fixture.componentInstance;
+        inputEl = fixture.debugElement.query(By.css('input'));
+        ngControl = inputEl.injector.get(NgControl);
+        fixture.detectChanges();
+    });
 
-  it('should create an instance', () => {
-    const directive = new LowercaseDirective(null, null);
-    expect(directive).toBeTruthy();
-  });
+    it('should create an instance', () => {
+        const directive = new LowercaseDirective(null, null);
+        expect(directive).toBeTruthy();
+    });
 
-  it('should convert input value to lowercase on input event', () => {
-    const inputValue = 'HELLO';
-    spyOn(ngControl.control,'setValue');
+    it('should convert input value to lowercase on input event', () => {
+        const inputValue = 'HELLO';
+        vi.spyOn(ngControl.control, 'setValue').mockReturnValue(undefined);
 
-    inputEl.nativeElement.value = inputValue;
-    inputEl.triggerEventHandler('input', { target: inputEl.nativeElement });
+        inputEl.nativeElement.value = inputValue;
+        inputEl.triggerEventHandler('input', { target: inputEl.nativeElement });
 
-    fixture.detectChanges();
+        fixture.detectChanges();
 
-    expect(ngControl.control.setValue).toHaveBeenCalledWith(inputValue.toLowerCase());
-  });
+        expect(ngControl.control.setValue).toHaveBeenCalledWith(inputValue.toLowerCase());
+    });
 
-  it('should handle empty input correctly', () => {
-    const inputValue = '';
-    spyOn(ngControl.control,'setValue');
+    it('should handle empty input correctly', () => {
+        const inputValue = '';
+        vi.spyOn(ngControl.control, 'setValue').mockReturnValue(undefined);
 
-    inputEl.nativeElement.value = inputValue;
-    inputEl.triggerEventHandler('input', { target: inputEl.nativeElement });
+        inputEl.nativeElement.value = inputValue;
+        inputEl.triggerEventHandler('input', { target: inputEl.nativeElement });
 
-    fixture.detectChanges();
+        fixture.detectChanges();
 
-    expect(ngControl.control.setValue).toHaveBeenCalledWith('');
-  });
+        expect(ngControl.control.setValue).toHaveBeenCalledWith('');
+    });
 
-  it('should update model value with lowercase input', () => {
-    const inputValue = 'HeLLo';
-    inputEl.nativeElement.value = inputValue;
-    inputEl.triggerEventHandler('input', { target: inputEl.nativeElement });
+    it('should update model value with lowercase input', () => {
+        const inputValue = 'HeLLo';
+        inputEl.nativeElement.value = inputValue;
+        inputEl.triggerEventHandler('input', { target: inputEl.nativeElement });
 
-    fixture.detectChanges();
+        fixture.detectChanges();
 
-    expect(component.inputValue).toBe(inputValue.toLowerCase());
-  });
+        expect(component.inputValue).toBe(inputValue.toLowerCase());
+    });
 });

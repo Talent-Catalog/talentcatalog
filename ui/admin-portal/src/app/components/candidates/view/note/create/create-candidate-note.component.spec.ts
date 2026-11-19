@@ -24,76 +24,84 @@ import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
 import {CandidateNoteService} from "../../../../../services/candidate-note.service";
 import {CountryService} from "../../../../../services/country.service";
 import {of} from "rxjs";
+import {expect, vi} from 'vitest';
 
 describe('CreateCandidateNoteComponent', () => {
-  let component: CreateCandidateNoteComponent;
-  let fixture: ComponentFixture<CreateCandidateNoteComponent>;
-  let mockActiveModal: any;
-  let mockCandidateNoteService: any;
-  let mockCountryService: any;
+    let component: CreateCandidateNoteComponent;
+    let fixture: ComponentFixture<CreateCandidateNoteComponent>;
+    let mockActiveModal: any;
+    let mockCandidateNoteService: any;
+    let mockCountryService: any;
 
-  beforeEach(waitForAsync(() => {
-    mockActiveModal = jasmine.createSpyObj('NgbActiveModal', ['close', 'dismiss']);
-    mockCandidateNoteService = jasmine.createSpyObj('CandidateNoteService', ['create']);
-    mockCountryService = jasmine.createSpyObj('CountryService', ['listCountries']);
+    beforeEach(waitForAsync(() => {
+        mockActiveModal = {
+            close: vi.fn().mockName("NgbActiveModal.close"),
+            dismiss: vi.fn().mockName("NgbActiveModal.dismiss")
+        };
+        mockCandidateNoteService = {
+            create: vi.fn().mockName("CandidateNoteService.create")
+        };
+        mockCountryService = {
+            listCountries: vi.fn().mockName("CountryService.listCountries")
+        };
 
-    TestBed.configureTestingModule({
-      declarations: [ CreateCandidateNoteComponent ],
-      imports: [FormsModule,ReactiveFormsModule, NgSelectModule,NgxWigModule],
-      providers: [
-        UntypedFormBuilder,
-        { provide: NgbActiveModal, useValue: mockActiveModal },
-        { provide: CandidateNoteService, useValue: mockCandidateNoteService },
-        { provide: CountryService, useValue: mockCountryService },
-        provideHttpClient(withXhr(), withInterceptorsFromDi()),
-        provideHttpClientTesting()
-      ]
-    })
-    .compileComponents();
-  }));
+        TestBed.configureTestingModule({
+            declarations: [CreateCandidateNoteComponent],
+            imports: [FormsModule, ReactiveFormsModule, NgSelectModule, NgxWigModule],
+            providers: [
+                UntypedFormBuilder,
+                { provide: NgbActiveModal, useValue: mockActiveModal },
+                { provide: CandidateNoteService, useValue: mockCandidateNoteService },
+                { provide: CountryService, useValue: mockCountryService },
+                provideHttpClient(withXhr(), withInterceptorsFromDi()),
+                provideHttpClientTesting()
+            ]
+        })
+            .compileComponents();
+    }));
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(CreateCandidateNoteComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
-
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
-
-  it('should save candidate note successfully', () => {
-    const candidateNote = {
-      id: 1,
-      title: 'Test Note',
-      comment: 'This is a test note'
-    };
-
-    // Set up form values
-    component.candidateForm.setValue({
-      candidateId: 1,
-      title: 'Test Note',
-      comment: 'This is a test note'
+    beforeEach(() => {
+        fixture = TestBed.createComponent(CreateCandidateNoteComponent);
+        component = fixture.componentInstance;
+        fixture.detectChanges();
     });
 
-    // Simulate the response from the candidateNoteService
-    mockCandidateNoteService.create.and.returnValue(of(candidateNote));
-
-    // Call onSave method
-    component.onSave();
-
-    // Check if the candidateNoteService create method was called with correct parameters
-    expect(mockCandidateNoteService.create).toHaveBeenCalledWith({
-      candidateId: 1,
-      title: 'Test Note',
-      comment: 'This is a test note'
+    it('should create', () => {
+        expect(component).toBeTruthy();
     });
 
-    // Check if activeModal.close was called with the correct parameter
-    expect(mockActiveModal.close).toHaveBeenCalledWith(candidateNote);
+    it('should save candidate note successfully', () => {
+        const candidateNote = {
+            id: 1,
+            title: 'Test Note',
+            comment: 'This is a test note'
+        };
 
-    // Check if saving flag is set to false after saving
-    expect(component.saving).toBe(false);
-  });
+        // Set up form values
+        component.candidateForm.setValue({
+            candidateId: 1,
+            title: 'Test Note',
+            comment: 'This is a test note'
+        });
+
+        // Simulate the response from the candidateNoteService
+        mockCandidateNoteService.create.mockReturnValue(of(candidateNote));
+
+        // Call onSave method
+        component.onSave();
+
+        // Check if the candidateNoteService create method was called with correct parameters
+        expect(mockCandidateNoteService.create).toHaveBeenCalledWith({
+            candidateId: 1,
+            title: 'Test Note',
+            comment: 'This is a test note'
+        });
+
+        // Check if activeModal.close was called with the correct parameter
+        expect(mockActiveModal.close).toHaveBeenCalledWith(candidateNote);
+
+        // Check if saving flag is set to false after saving
+        expect(component.saving).toBe(false);
+    });
 
 });

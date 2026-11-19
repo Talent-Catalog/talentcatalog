@@ -13,6 +13,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
+
+import type {MockedObject} from "vitest";
 import {CreateOccupationComponent} from "./create-occupation.component";
 import {OccupationService} from "../../../../services/occupation.service";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
@@ -23,71 +25,77 @@ import {provideHttpClientTesting} from "@angular/common/http/testing";
 import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {Occupation} from "../../../../model/occupation";
 import {of, throwError} from "rxjs";
+import {expect, vi} from 'vitest';
 
 describe('CreateOccupationComponent', () => {
-  let component: CreateOccupationComponent;
-  let fixture: ComponentFixture<CreateOccupationComponent>;
-  let occupationServiceSpy: jasmine.SpyObj<OccupationService>;
-  let ngbActiveModalSpy: jasmine.SpyObj<NgbActiveModal>;
-  let formBuilder: UntypedFormBuilder;
-  // @ts-expect-error
-  const createdOccupation: Occupation = { id: 1, name: 'Engineer', status: 'active' };
+    let component: CreateOccupationComponent;
+    let fixture: ComponentFixture<CreateOccupationComponent>;
+    let occupationServiceSpy: MockedObject<OccupationService>;
+    let ngbActiveModalSpy: MockedObject<NgbActiveModal>;
+    let formBuilder: UntypedFormBuilder;
+    // @ts-expect-error
+    const createdOccupation: Occupation = { id: 1, name: 'Engineer', status: 'active' };
 
-  beforeEach(async () => {
-    const occupationServiceSpyObj = jasmine.createSpyObj('OccupationService', ['create']);
-    const ngbActiveModalSpyObj = jasmine.createSpyObj('NgbActiveModal', ['close', 'dismiss']);
+    beforeEach(async () => {
+        const occupationServiceSpyObj = {
+            create: vi.fn().mockName("OccupationService.create")
+        };
+        const ngbActiveModalSpyObj = {
+            close: vi.fn().mockName("NgbActiveModal.close"),
+            dismiss: vi.fn().mockName("NgbActiveModal.dismiss")
+        };
 
-    await TestBed.configureTestingModule({
-      declarations: [CreateOccupationComponent],
-      imports: [ReactiveFormsModule,NgSelectModule],
-      providers: [
-        { provide: OccupationService, useValue: occupationServiceSpyObj },
-        { provide: NgbActiveModal, useValue: ngbActiveModalSpyObj },
-        provideHttpClient(withXhr(), withInterceptorsFromDi()),
-        provideHttpClientTesting()
-      ]
-    }).compileComponents();
+        await TestBed.configureTestingModule({
+            declarations: [CreateOccupationComponent],
+            imports: [ReactiveFormsModule, NgSelectModule],
+            providers: [
+                { provide: OccupationService, useValue: occupationServiceSpyObj },
+                { provide: NgbActiveModal, useValue: ngbActiveModalSpyObj },
+                provideHttpClient(withXhr(), withInterceptorsFromDi()),
+                provideHttpClientTesting()
+            ]
+        }).compileComponents();
 
-    occupationServiceSpy = TestBed.inject(OccupationService) as jasmine.SpyObj<OccupationService>;
-    ngbActiveModalSpy = TestBed.inject(NgbActiveModal) as jasmine.SpyObj<NgbActiveModal>;
-    formBuilder = TestBed.inject(UntypedFormBuilder);
-  });
+        occupationServiceSpy = TestBed.inject(OccupationService) as MockedObject<OccupationService>;
+        ngbActiveModalSpy = TestBed.inject(NgbActiveModal) as MockedObject<NgbActiveModal>;
+        formBuilder = TestBed.inject(UntypedFormBuilder);
+    });
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(CreateOccupationComponent);
-    component = fixture.componentInstance;
-    occupationServiceSpy.create.and.returnValue(of(createdOccupation));
-    fixture.detectChanges();
-  });
+    beforeEach(() => {
+        fixture = TestBed.createComponent(CreateOccupationComponent);
+        component = fixture.componentInstance;
+        occupationServiceSpy.create.mockReturnValue(of(createdOccupation));
+        fixture.detectChanges();
+    });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
 
-  it('should call onSave and close modal when occupation is successfully created', fakeAsync(() => {
-    component.occupationForm.patchValue({ name: 'Engineer', status: 'active' });
+    it('should call onSave and close modal when occupation is successfully created', fakeAsync(() => {
+        component.occupationForm.patchValue({ name: 'Engineer', status: 'active' });
 
-    component.onSave();
-    tick(); // Waiting for async operation to complete
+        component.onSave();
+        tick(); // Waiting for async operation to complete
 
-    expect(occupationServiceSpy.create).toHaveBeenCalledWith({ name: 'Engineer', status: 'active' });
-    expect(ngbActiveModalSpy.close).toHaveBeenCalledWith(createdOccupation);
-    expect(component.saving).toBeFalse();
-  }));
+        expect(occupationServiceSpy.create).toHaveBeenCalledWith({ name: 'Engineer', status: 'active' });
+        expect(ngbActiveModalSpy.close).toHaveBeenCalledWith(createdOccupation);
+        expect(component.saving).toBe(false);
+    }));
 
-  it('should handle error when creating occupation fails', fakeAsync(() => {
-    const errorResponse = { status: 500, message: 'Internal Server Error' };
-    occupationServiceSpy.create.and.returnValue(throwError(errorResponse));
+    it('should handle error when creating occupation fails', fakeAsync(() => {
+        const errorResponse = { status: 500, message: 'Internal Server Error' };
+        occupationServiceSpy.create.mockReturnValue(throwError(errorResponse));
 
-    component.onSave();
-    tick(); // Waiting for async operation to complete
+        component.onSave();
+        tick(); // Waiting for async operation to complete
 
-    expect(component.error).toEqual(errorResponse);
-    expect(component.saving).toBeFalse();
-  }));
+        expect(component.error).toEqual(errorResponse);
+        expect(component.saving).toBe(false);
+    }));
 
-  it('should dismiss modal when dismiss is called', () => {
-    component.dismiss();
-    expect(ngbActiveModalSpy.dismiss).toHaveBeenCalledWith(false);
-  });
+    it('should dismiss modal when dismiss is called', () => {
+        component.dismiss();
+        expect(ngbActiveModalSpy.dismiss).toHaveBeenCalledWith(false);
+    });
 });

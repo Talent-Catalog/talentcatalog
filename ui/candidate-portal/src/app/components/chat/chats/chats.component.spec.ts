@@ -22,273 +22,240 @@ import {ChatsComponent} from './chats.component';
 import {JobChat} from '../../../model/chat';
 
 @Component({
-  selector: 'app-view-chat',
-  template: '',
-  changeDetection: ChangeDetectionStrategy.Eager,
-  standalone: false
+    selector: 'app-view-chat',
+    template: '',
+    changeDetection: ChangeDetectionStrategy.Eager,
+    standalone: false
 })
 class ViewChatStubComponent {
-  @Input() chat: JobChat;
+    @Input()
+    chat: JobChat;
 }
 
 describe('ChatsComponent', () => {
-  let component: ChatsComponent;
-  let fixture: ComponentFixture<ChatsComponent>;
+    let component: ChatsComponent;
+    let fixture: ComponentFixture<ChatsComponent>;
 
-  const firstChat = {
-    id: 1
-  } as JobChat;
+    const firstChat = {
+        id: 1
+    } as JobChat;
 
-  const secondChat = {
-    id: 2
-  } as JobChat;
+    const secondChat = {
+        id: 2
+    } as JobChat;
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      declarations: [
-        ChatsComponent,
-        ViewChatStubComponent
-      ]
-    }).compileComponents();
-  });
-
-  beforeEach(() => {
-    fixture = TestBed.createComponent(ChatsComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
-
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
-
-  it('should initialize without selecting a chat when chats are undefined', () => {
-    const selectCurrentSpy = spyOn(component, 'selectCurrent');
-
-    component.chats = undefined;
-
-    component.ngOnChanges({
-      chats: new SimpleChange(undefined, undefined, true)
+    beforeEach(async () => {
+        await TestBed.configureTestingModule({
+            declarations: [
+                ChatsComponent,
+                ViewChatStubComponent
+            ]
+        }).compileComponents();
     });
 
-    expect(selectCurrentSpy).not.toHaveBeenCalled();
-    expect(component.currentChat).toBeUndefined();
-  });
-
-  it('should not select a chat when the chats array is empty', () => {
-    const selectCurrentSpy = spyOn(component, 'selectCurrent');
-
-    component.chats = [];
-
-    component.ngOnChanges({
-      chats: new SimpleChange(undefined, [], true)
+    beforeEach(() => {
+        fixture = TestBed.createComponent(ChatsComponent);
+        component = fixture.componentInstance;
+        fixture.detectChanges();
     });
 
-    expect(selectCurrentSpy).not.toHaveBeenCalled();
-    expect(component.currentChat).toBeUndefined();
-  });
-
-  it('should select the first chat when chats change', () => {
-    const selectCurrentSpy = spyOn(component, 'selectCurrent');
-
-    component.chats = [firstChat, secondChat];
-
-    const changes: SimpleChanges = {
-      chats: new SimpleChange(
-        undefined,
-        component.chats,
-        true
-      )
-    };
-
-    component.ngOnChanges(changes);
-
-    expect(selectCurrentSpy).toHaveBeenCalledTimes(1);
-    expect(selectCurrentSpy).toHaveBeenCalledWith(firstChat);
-  });
-
-  it('should set the first chat as current when chats change', () => {
-    const emitSpy = spyOn(component.chatSelection, 'emit');
-
-    component.chats = [firstChat, secondChat];
-
-    component.ngOnChanges({
-      chats: new SimpleChange(
-        undefined,
-        component.chats,
-        true
-      )
+    it('should create', () => {
+        expect(component).toBeTruthy();
     });
 
-    expect(component.currentChat).toBe(firstChat);
-    expect(emitSpy).toHaveBeenCalledTimes(1);
-    expect(emitSpy).toHaveBeenCalledWith(firstChat);
-  });
+    it('should initialize without selecting a chat when chats are undefined', () => {
+        const selectCurrentSpy = vi.spyOn(component, 'selectCurrent').mockReturnValue(undefined);
 
-  it('should set the selected chat as the current chat', () => {
-    component.selectCurrent(secondChat);
+        component.chats = undefined;
 
-    expect(component.currentChat).toBe(secondChat);
-  });
+        component.ngOnChanges({
+            chats: new SimpleChange(undefined, undefined, true)
+        });
 
-  it('should emit the selected chat', () => {
-    const emitSpy = spyOn(component.chatSelection, 'emit');
+        expect(selectCurrentSpy).not.toHaveBeenCalled();
+        expect(component.currentChat).toBeUndefined();
+    });
 
-    component.selectCurrent(secondChat);
+    it('should not select a chat when the chats array is empty', () => {
+        const selectCurrentSpy = vi.spyOn(component, 'selectCurrent').mockReturnValue(undefined);
 
-    expect(emitSpy).toHaveBeenCalledTimes(1);
-    expect(emitSpy).toHaveBeenCalledWith(secondChat);
-  });
+        component.chats = [];
 
-  it('should replace the current chat when another chat is selected', () => {
-    component.selectCurrent(firstChat);
+        component.ngOnChanges({
+            chats: new SimpleChange(undefined, [], true)
+        });
 
-    expect(component.currentChat).toBe(firstChat);
+        expect(selectCurrentSpy).not.toHaveBeenCalled();
+        expect(component.currentChat).toBeUndefined();
+    });
 
-    component.selectCurrent(secondChat);
+    it('should select the first chat when chats change', () => {
+        const selectCurrentSpy = vi.spyOn(component, 'selectCurrent').mockReturnValue(undefined);
 
-    expect(component.currentChat).toBe(secondChat);
-  });
+        component.chats = [firstChat, secondChat];
 
-  it('should render one list item for each chat', () => {
-    component.chats = [firstChat, secondChat];
-    fixture.detectChanges();
+        const changes: SimpleChanges = {
+            chats: new SimpleChange(undefined, component.chats, true)
+        };
 
-    const chatItems = fixture.debugElement.queryAll(
-      By.css('li.list-group-item')
-    );
+        component.ngOnChanges(changes);
 
-    expect(chatItems.length).toBe(2);
-  });
+        expect(selectCurrentSpy).toHaveBeenCalledTimes(1);
+        expect(selectCurrentSpy).toHaveBeenCalledWith(firstChat);
+    });
 
-  it('should pass each chat to its view-chat component', () => {
-    component.chats = [firstChat, secondChat];
-    fixture.detectChanges();
+    it('should set the first chat as current when chats change', () => {
+        const emitSpy = vi.spyOn(component.chatSelection, 'emit').mockReturnValue(undefined);
 
-    const viewChatComponents = fixture.debugElement.queryAll(
-      By.directive(ViewChatStubComponent)
-    );
+        component.chats = [firstChat, secondChat];
 
-    expect(viewChatComponents.length).toBe(2);
+        component.ngOnChanges({
+            chats: new SimpleChange(undefined, component.chats, true)
+        });
 
-    expect(
-      (viewChatComponents[0].componentInstance as ViewChatStubComponent).chat
-    ).toBe(firstChat);
+        expect(component.currentChat).toBe(firstChat);
+        expect(emitSpy).toHaveBeenCalledTimes(1);
+        expect(emitSpy).toHaveBeenCalledWith(firstChat);
+    });
 
-    expect(
-      (viewChatComponents[1].componentInstance as ViewChatStubComponent).chat
-    ).toBe(secondChat);
-  });
+    it('should set the selected chat as the current chat', () => {
+        component.selectCurrent(secondChat);
 
-  it('should select and emit a chat when its list item is clicked', () => {
-    const emitSpy = spyOn(component.chatSelection, 'emit');
+        expect(component.currentChat).toBe(secondChat);
+    });
 
-    component.chats = [firstChat, secondChat];
-    fixture.detectChanges();
+    it('should emit the selected chat', () => {
+        const emitSpy = vi.spyOn(component.chatSelection, 'emit').mockReturnValue(undefined);
 
-    const chatItems = fixture.debugElement.queryAll(
-      By.css('li.list-group-item')
-    );
+        component.selectCurrent(secondChat);
 
-    chatItems[1].triggerEventHandler('click', null);
+        expect(emitSpy).toHaveBeenCalledTimes(1);
+        expect(emitSpy).toHaveBeenCalledWith(secondChat);
+    });
 
-    expect(component.currentChat).toBe(secondChat);
-    expect(emitSpy).toHaveBeenCalledTimes(1);
-    expect(emitSpy).toHaveBeenCalledWith(secondChat);
-  });
+    it('should replace the current chat when another chat is selected', () => {
+        component.selectCurrent(firstChat);
 
-  it('should add the active class to the current chat', () => {
-    component.chats = [firstChat, secondChat];
-    component.currentChat = secondChat;
-    fixture.detectChanges();
+        expect(component.currentChat).toBe(firstChat);
 
-    const chatItems = fixture.debugElement.queryAll(
-      By.css('li.list-group-item')
-    );
+        component.selectCurrent(secondChat);
 
-    expect(chatItems[0].classes['bg-active-custom']).toBeFalsy();
-    expect(chatItems[1].classes['bg-active-custom']).toBeTrue();
-  });
+        expect(component.currentChat).toBe(secondChat);
+    });
 
-  it('should update the active class when a different chat is clicked', () => {
-    component.chats = [firstChat, secondChat];
-    component.currentChat = firstChat;
-    fixture.detectChanges();
+    it('should render one list item for each chat', () => {
+        component.chats = [firstChat, secondChat];
+        fixture.detectChanges();
 
-    let chatItems = fixture.debugElement.queryAll(
-      By.css('li.list-group-item')
-    );
+        const chatItems = fixture.debugElement.queryAll(By.css('li.list-group-item'));
 
-    expect(chatItems[0].classes['bg-active-custom']).toBeTrue();
-    expect(chatItems[1].classes['bg-active-custom']).toBeFalsy();
+        expect(chatItems.length).toBe(2);
+    });
 
-    chatItems[1].triggerEventHandler('click', null);
-    fixture.detectChanges();
+    it('should pass each chat to its view-chat component', () => {
+        component.chats = [firstChat, secondChat];
+        fixture.detectChanges();
 
-    chatItems = fixture.debugElement.queryAll(
-      By.css('li.list-group-item')
-    );
+        const viewChatComponents = fixture.debugElement.queryAll(By.directive(ViewChatStubComponent));
 
-    expect(chatItems[0].classes['bg-active-custom']).toBeFalsy();
-    expect(chatItems[1].classes['bg-active-custom']).toBeTrue();
-  });
+        expect(viewChatComponents.length).toBe(2);
 
-  it('should display the loading indicator while loading', () => {
-    component.loading = true;
-    fixture.detectChanges();
+        expect((viewChatComponents[0].componentInstance as ViewChatStubComponent).chat).toBe(firstChat);
 
-    const loadingIndicator = fixture.debugElement.query(
-      By.css('.fa-spinner')
-    );
+        expect((viewChatComponents[1].componentInstance as ViewChatStubComponent).chat).toBe(secondChat);
+    });
 
-    expect(loadingIndicator).not.toBeNull();
-    expect(loadingIndicator.nativeElement.parentElement.textContent)
-    .toContain('loading...');
-  });
+    it('should select and emit a chat when its list item is clicked', () => {
+        const emitSpy = vi.spyOn(component.chatSelection, 'emit').mockReturnValue(undefined);
 
-  it('should hide the loading indicator when not loading', () => {
-    component.loading = false;
-    fixture.detectChanges();
+        component.chats = [firstChat, secondChat];
+        fixture.detectChanges();
 
-    const loadingIndicator = fixture.debugElement.query(
-      By.css('.fa-spinner')
-    );
+        const chatItems = fixture.debugElement.queryAll(By.css('li.list-group-item'));
 
-    expect(loadingIndicator).toBeNull();
-  });
+        chatItems[1].triggerEventHandler('click', null);
 
-  it('should display an error message when an error exists', () => {
-    component.error = 'Unable to load chats';
-    fixture.detectChanges();
+        expect(component.currentChat).toBe(secondChat);
+        expect(emitSpy).toHaveBeenCalledTimes(1);
+        expect(emitSpy).toHaveBeenCalledWith(secondChat);
+    });
 
-    const errorElement = fixture.debugElement.query(
-      By.css('.alert-danger')
-    );
+    it('should add the active class to the current chat', () => {
+        component.chats = [firstChat, secondChat];
+        component.currentChat = secondChat;
+        fixture.detectChanges();
 
-    expect(errorElement).not.toBeNull();
-    expect(errorElement.nativeElement.textContent)
-    .toContain('Unable to load chats');
-  });
+        const chatItems = fixture.debugElement.queryAll(By.css('li.list-group-item'));
 
-  it('should hide the error message when there is no error', () => {
-    component.error = null;
-    fixture.detectChanges();
+        expect(chatItems[0].classes['bg-active-custom']).toBeFalsy();
+        expect(chatItems[1].classes['bg-active-custom']).toBe(true);
+    });
 
-    const errorElement = fixture.debugElement.query(
-      By.css('.alert-danger')
-    );
+    it('should update the active class when a different chat is clicked', () => {
+        component.chats = [firstChat, secondChat];
+        component.currentChat = firstChat;
+        fixture.detectChanges();
 
-    expect(errorElement).toBeNull();
-  });
+        let chatItems = fixture.debugElement.queryAll(By.css('li.list-group-item'));
 
-  it('should render no chat items when the chats array is empty', () => {
-    component.chats = [];
-    fixture.detectChanges();
+        expect(chatItems[0].classes['bg-active-custom']).toBe(true);
+        expect(chatItems[1].classes['bg-active-custom']).toBeFalsy();
 
-    const chatItems = fixture.debugElement.queryAll(
-      By.css('li.list-group-item')
-    );
+        chatItems[1].triggerEventHandler('click', null);
+        fixture.detectChanges();
 
-    expect(chatItems.length).toBe(0);
-  });
+        chatItems = fixture.debugElement.queryAll(By.css('li.list-group-item'));
+
+        expect(chatItems[0].classes['bg-active-custom']).toBeFalsy();
+        expect(chatItems[1].classes['bg-active-custom']).toBe(true);
+    });
+
+    it('should display the loading indicator while loading', () => {
+        component.loading = true;
+        fixture.detectChanges();
+
+        const loadingIndicator = fixture.debugElement.query(By.css('.fa-spinner'));
+
+        expect(loadingIndicator).not.toBeNull();
+        expect(loadingIndicator.nativeElement.parentElement.textContent)
+            .toContain('loading...');
+    });
+
+    it('should hide the loading indicator when not loading', () => {
+        component.loading = false;
+        fixture.detectChanges();
+
+        const loadingIndicator = fixture.debugElement.query(By.css('.fa-spinner'));
+
+        expect(loadingIndicator).toBeNull();
+    });
+
+    it('should display an error message when an error exists', () => {
+        component.error = 'Unable to load chats';
+        fixture.detectChanges();
+
+        const errorElement = fixture.debugElement.query(By.css('.alert-danger'));
+
+        expect(errorElement).not.toBeNull();
+        expect(errorElement.nativeElement.textContent)
+            .toContain('Unable to load chats');
+    });
+
+    it('should hide the error message when there is no error', () => {
+        component.error = null;
+        fixture.detectChanges();
+
+        const errorElement = fixture.debugElement.query(By.css('.alert-danger'));
+
+        expect(errorElement).toBeNull();
+    });
+
+    it('should render no chat items when the chats array is empty', () => {
+        component.chats = [];
+        fixture.detectChanges();
+
+        const chatItems = fixture.debugElement.queryAll(By.css('li.list-group-item'));
+
+        expect(chatItems.length).toBe(0);
+    });
 });

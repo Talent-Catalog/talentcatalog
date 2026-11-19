@@ -1,6 +1,7 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { TcDropdownDividerComponent } from './tc-dropdown-divider.component';
+import {TcDropdownDividerComponent} from './tc-dropdown-divider.component';
+import {expect} from 'vitest';
 
 describe('TcDropdownDividerComponent', () => {
   let component: TcDropdownDividerComponent;

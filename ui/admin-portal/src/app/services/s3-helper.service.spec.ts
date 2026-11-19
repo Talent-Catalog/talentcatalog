@@ -20,6 +20,7 @@ import {provideHttpClient, withInterceptorsFromDi, withXhr} from '@angular/commo
 import {S3HelperService} from './s3-helper.service';
 import {S3UploadParams} from '../model/s3-upload-params';
 import {environment} from '../../environments/environment';
+import {expect} from 'vitest';
 
 describe('S3HelperService', () => {
   let service: S3HelperService;

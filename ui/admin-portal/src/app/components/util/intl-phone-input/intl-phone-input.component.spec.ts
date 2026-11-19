@@ -1,3 +1,4 @@
+import type {Mock, MockedObject} from "vitest";
 import {ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
 
 import {IntlPhoneInputComponent} from './intl-phone-input.component';
@@ -10,131 +11,134 @@ import {Country} from "../../../model/country";
 import {FormsModule, UntypedFormControl} from "@angular/forms";
 import {PhoneNumber} from 'libphonenumber-js';
 import {By} from "@angular/platform-browser";
+import {expect, vi} from 'vitest';
 
 describe('IntlPhoneInputComponent', () => {
-  let component: IntlPhoneInputComponent;
-  let fixture: ComponentFixture<IntlPhoneInputComponent>;
-  let countryServiceSpy: jasmine.SpyObj<CountryService>;
-  let mockCountries: Country[] = [
-    { id: 1, name: 'Canada', isoCode: 'CA', status: 'active', translatedName: null},
-    { id: 99, name: 'Stateless', isoCode: null, status: 'active', translatedName: null}
-  ];
+    let component: IntlPhoneInputComponent;
+    let fixture: ComponentFixture<IntlPhoneInputComponent>;
+    let countryServiceSpy: MockedObject<CountryService>;
+    let mockCountries: Country[] = [
+        { id: 1, name: 'Canada', isoCode: 'CA', status: 'active', translatedName: null },
+        { id: 99, name: 'Stateless', isoCode: null, status: 'active', translatedName: null }
+    ];
 
-  beforeEach(async () => {
-    const countrySpy = jasmine.createSpyObj('CountryService', ['listCountries']);
-    await TestBed.configureTestingModule({
-      declarations: [IntlPhoneInputComponent],
-      imports: [NgSelectModule, FormsModule],
-      providers: [
-        {provide: CountryService, useValue: countrySpy},
-        provideHttpClient(withXhr(), withInterceptorsFromDi()),
-        provideHttpClientTesting()
-      ],
-    }).compileComponents();
+    beforeEach(async () => {
+        const countrySpy = {
+            listCountries: vi.fn().mockName("CountryService.listCountries")
+        };
+        await TestBed.configureTestingModule({
+            declarations: [IntlPhoneInputComponent],
+            imports: [NgSelectModule, FormsModule],
+            providers: [
+                { provide: CountryService, useValue: countrySpy },
+                provideHttpClient(withXhr(), withInterceptorsFromDi()),
+                provideHttpClientTesting()
+            ],
+        }).compileComponents();
 
-    countryServiceSpy = TestBed.inject(CountryService) as jasmine.SpyObj<CountryService>;
-  });
+        countryServiceSpy = TestBed.inject(CountryService) as MockedObject<CountryService>;
+    });
 
-  beforeEach(() => {
-    countryServiceSpy.listCountries.and.returnValue(of(mockCountries));
+    beforeEach(() => {
+        countryServiceSpy.listCountries.mockReturnValue(of(mockCountries));
 
-    fixture = TestBed.createComponent(IntlPhoneInputComponent);
-    component = fixture.componentInstance;
+        fixture = TestBed.createComponent(IntlPhoneInputComponent);
+        component = fixture.componentInstance;
 
-    component.control = new UntypedFormControl('+61400123456');
-    spyOn(component, 'checkForValidity').and.callThrough();
+        component.control = new UntypedFormControl('+61400123456');
+        vi.spyOn(component, 'checkForValidity');
 
-    // Mock the lib-phonenumberjs functions called onInit
-    const mockPhoneNumber = { nationalNumber: '0400123456', country: 'AU'  } as PhoneNumber;
-    spyOn(component, 'getPhoneNumberFromString').and.returnValue(mockPhoneNumber);
-    spyOn(component, 'getPhoneNumberValidity').and.returnValue(true);
-    spyOn(component, 'getInternationalFormat').and.returnValue('+61 400 123 456');
+        // Mock the lib-phonenumberjs functions called onInit
+        const mockPhoneNumber = { nationalNumber: '0400123456', country: 'AU' } as PhoneNumber;
+        vi.spyOn(component, 'getPhoneNumberFromString').mockReturnValue(mockPhoneNumber);
+        vi.spyOn(component, 'getPhoneNumberValidity').mockReturnValue(true);
+        vi.spyOn(component, 'getInternationalFormat').mockReturnValue('+61 400 123 456');
 
-    fixture.detectChanges();
-  });
+        fixture.detectChanges();
+    });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
 
-  it('should load and filter countries without iso code on init', fakeAsync(() => {
-    tick();
-    // Expect Stateless country to be removed
-    expect(component.countries.length).toBe(1);
-    expect(component.countries[0].isoCode).toBe('CA');
-    expect(component.countries[0].countryCode).toBeTruthy();
-    expect(component.loading).toBeFalse();
-  }));
+    it('should load and filter countries without iso code on init', fakeAsync(() => {
+        tick();
+        // Expect Stateless country to be removed
+        expect(component.countries.length).toBe(1);
+        expect(component.countries[0].isoCode).toBe('CA');
+        expect(component.countries[0].countryCode).toBeTruthy();
+        expect(component.loading).toBe(false);
+    }));
 
-  it('should set the iso code and number from a phone number on init', () => {
-    expect(component.isoCode).toBe('AU');
-    expect(component.number).toBe('0400123456')
-  });
+    it('should set the iso code and number from a phone number on init', () => {
+        expect(component.isoCode).toBe('AU');
+        expect(component.number).toBe('0400123456');
+    });
 
-  it('should get country code from an iso code', () => {
-    component.getCountryCodeStringFromIso("CA");
-    expect(component.countries[0].countryCode).toBe('(+1)');
-  });
+    it('should get country code from an iso code', () => {
+        component.getCountryCodeStringFromIso("CA");
+        expect(component.countries[0].countryCode).toBe('(+1)');
+    });
 
-  it('display error message if country code required', () => {
-    component.isoCode = null;
-    component.number = '123456789';
-    fixture.detectChanges();
-    const codeRequiredMsg = fixture.nativeElement.querySelector('#codeRequired');
-    expect(codeRequiredMsg).toBeTruthy();
-  });
+    it('display error message if country code required', () => {
+        component.isoCode = null;
+        component.number = '123456789';
+        fixture.detectChanges();
+        const codeRequiredMsg = fixture.nativeElement.querySelector('#codeRequired');
+        expect(codeRequiredMsg).toBeTruthy();
+    });
 
-  it('display error message if number invalid', () => {
-    component.isValidNumber = false;
-    component.isoCode = 'CA';
-    fixture.detectChanges();
-    const invalidNumberMsg = fixture.nativeElement.querySelector('#invalidNumber');
-    expect(invalidNumberMsg).toBeTruthy();
-  });
+    it('display error message if number invalid', () => {
+        component.isValidNumber = false;
+        component.isoCode = 'CA';
+        fixture.detectChanges();
+        const invalidNumberMsg = fixture.nativeElement.querySelector('#invalidNumber');
+        expect(invalidNumberMsg).toBeTruthy();
+    });
 
-  it('should call checkForValidity on phone number input ngModelChange', () => {
-    // Find the input field
-    const inputDebugElement = fixture.debugElement.query(By.css('input'));
+    it('should call checkForValidity on phone number input ngModelChange', () => {
+        // Find the input field
+        const inputDebugElement = fixture.debugElement.query(By.css('input'));
 
-    // Simulate Angular's ngModelChange event with new value
-    inputDebugElement.triggerEventHandler('ngModelChange', '123456789');
+        // Simulate Angular's ngModelChange event with new value
+        inputDebugElement.triggerEventHandler('ngModelChange', '123456789');
 
-    fixture.detectChanges();
+        fixture.detectChanges();
 
-    expect(component.checkForValidity).toHaveBeenCalled();
-  });
+        expect(component.checkForValidity).toHaveBeenCalled();
+    });
 
-  it('should call validatePhoneNumber if number and isocode exists', () => {
-    component.number = '0420123456';
-    component.isoCode = 'AU';
-    spyOn(component, 'validatePhoneNumber');
+    it('should call validatePhoneNumber if number and isocode exists', () => {
+        component.number = '0420123456';
+        component.isoCode = 'AU';
+        vi.spyOn(component, 'validatePhoneNumber').mockReturnValue(undefined);
 
-    component.checkForValidity();
+        component.checkForValidity();
 
-    expect(component.validatePhoneNumber).toHaveBeenCalled();
-  });
+        expect(component.validatePhoneNumber).toHaveBeenCalled();
+    });
 
-  it('should update control value if valid number', () => {
-    component.number = '070 123 4567';
-    component.isoCode = 'AF';
+    it('should update control value if valid number', () => {
+        component.number = '070 123 4567';
+        component.isoCode = 'AF';
 
-    const mockPhoneNumber = { nationalNumber: '070 123 4567', country: 'AF'  } as PhoneNumber;
-    (component.getPhoneNumberFromString as jasmine.Spy).and.returnValue(mockPhoneNumber);
-    (component.getInternationalFormat as jasmine.Spy).and.returnValue('+93 70 123 4567');
+        const mockPhoneNumber = { nationalNumber: '070 123 4567', country: 'AF' } as PhoneNumber;
+        (component.getPhoneNumberFromString as Mock).mockReturnValue(mockPhoneNumber);
+        (component.getInternationalFormat as Mock).mockReturnValue('+93 70 123 4567');
 
-    component.validatePhoneNumber();
+        component.validatePhoneNumber();
 
-    expect(component.control.value).toBe('+93 70 123 4567');
-  });
+        expect(component.control.value).toBe('+93 70 123 4567');
+    });
 
-  it('should set error on control if invalid number', () => {
-    component.number = '070 123 4567';
-    component.isoCode = 'GB';
-    (component.getPhoneNumberValidity as jasmine.Spy).and.returnValue(false);
+    it('should set error on control if invalid number', () => {
+        component.number = '070 123 4567';
+        component.isoCode = 'GB';
+        (component.getPhoneNumberValidity as Mock).mockReturnValue(false);
 
-    component.validatePhoneNumber();
+        component.validatePhoneNumber();
 
-    expect(component.control.hasError('phoneInvalid')).toBeTrue();
-  });
+        expect(component.control.hasError('phoneInvalid')).toBe(true);
+    });
 
 });

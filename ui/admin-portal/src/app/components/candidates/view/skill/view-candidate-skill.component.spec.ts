@@ -18,28 +18,29 @@ import {ComponentFixture, TestBed} from "@angular/core/testing";
 import {MockCandidate} from "../../../../MockData/MockCandidate";
 import {provideHttpClientTesting} from "@angular/common/http/testing";
 import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
+import {expect} from 'vitest';
 
 describe('ViewCandidateSkillComponent', () => {
-  let component: ViewCandidateSkillComponent;
-  let fixture: ComponentFixture<ViewCandidateSkillComponent>;
-  const mockCandidate = new MockCandidate();
-  beforeEach(async () => {
+    let component: ViewCandidateSkillComponent;
+    let fixture: ComponentFixture<ViewCandidateSkillComponent>;
+    const mockCandidate = new MockCandidate();
+    beforeEach(async () => {
 
-    await TestBed.configureTestingModule({
-      declarations: [ViewCandidateSkillComponent],
-      providers: [provideHttpClient(withXhr(), withInterceptorsFromDi()), provideHttpClientTesting()]
-    }).compileComponents();
-  });
+        await TestBed.configureTestingModule({
+            declarations: [ViewCandidateSkillComponent],
+            providers: [provideHttpClient(withXhr(), withInterceptorsFromDi()), provideHttpClientTesting()]
+        }).compileComponents();
+    });
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(ViewCandidateSkillComponent);
-    component = fixture.componentInstance;
-    component.candidate = mockCandidate;
-    component.editable = true;
-    fixture.detectChanges();
-  });
+    beforeEach(() => {
+        fixture = TestBed.createComponent(ViewCandidateSkillComponent);
+        component = fixture.componentInstance;
+        component.candidate = mockCandidate;
+        component.editable = true;
+        fixture.detectChanges();
+    });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
 });

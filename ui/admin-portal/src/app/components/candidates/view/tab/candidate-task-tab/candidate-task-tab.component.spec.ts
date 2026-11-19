@@ -21,91 +21,94 @@ import {By} from '@angular/platform-browser';
 import {MockCandidate} from '../../../../../MockData/MockCandidate';
 import {Candidate} from '../../../../../model/candidate';
 import {CandidateTaskTabComponent} from './candidate-task-tab.component';
+import {expect} from 'vitest';
 
 @Component({
-  selector: 'app-view-candidate-tasks',
-  template: '',
-  changeDetection: ChangeDetectionStrategy.Eager,
-  standalone: false
+    selector: 'app-view-candidate-tasks',
+    template: '',
+    changeDetection: ChangeDetectionStrategy.Eager,
+    standalone: false
 })
 class MockViewCandidateTasksComponent {
-  @Input() candidate: Candidate;
-  @Input() editable: boolean;
+    @Input()
+    candidate: Candidate;
+    @Input()
+    editable: boolean;
 }
 
 describe('CandidateTaskTabComponent', () => {
-  let component: CandidateTaskTabComponent;
-  let fixture: ComponentFixture<CandidateTaskTabComponent>;
-  let mockCandidate: Candidate;
+    let component: CandidateTaskTabComponent;
+    let fixture: ComponentFixture<CandidateTaskTabComponent>;
+    let mockCandidate: Candidate;
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      declarations: [
-        CandidateTaskTabComponent,
-        MockViewCandidateTasksComponent
-      ]
-    }).compileComponents();
+    beforeEach(async () => {
+        await TestBed.configureTestingModule({
+            declarations: [
+                CandidateTaskTabComponent,
+                MockViewCandidateTasksComponent
+            ]
+        }).compileComponents();
 
-    fixture = TestBed.createComponent(CandidateTaskTabComponent);
-    component = fixture.componentInstance;
-    mockCandidate = new MockCandidate();
-  });
+        fixture = TestBed.createComponent(CandidateTaskTabComponent);
+        component = fixture.componentInstance;
+        mockCandidate = new MockCandidate();
+    });
 
-  it('should create', () => {
-    component.candidate = mockCandidate;
+    it('should create', () => {
+        component.candidate = mockCandidate;
 
-    fixture.detectChanges();
+        fixture.detectChanges();
 
-    expect(component).toBeTruthy();
-  });
+        expect(component).toBeTruthy();
+    });
 
-  it('should initialize without changing its inputs', () => {
-    component.candidate = mockCandidate;
-    component.editable = true;
+    it('should initialize without changing its inputs', () => {
+        component.candidate = mockCandidate;
+        component.editable = true;
 
-    component.ngOnInit();
+        component.ngOnInit();
 
-    expect(component.candidate).toBe(mockCandidate);
-    expect(component.editable).toBeTrue();
-  });
+        expect(component.candidate).toBe(mockCandidate);
+        expect(component.editable).toBe(true);
+    });
 
-  it('should pass the candidate and editable=true to the task view', () => {
-    component.candidate = mockCandidate;
-    component.editable = true;
+    it('should pass the candidate and editable=true to the task view', () => {
+        component.candidate = mockCandidate;
+        component.editable = true;
 
-    fixture.detectChanges();
+        fixture.detectChanges();
 
-    const taskView = getTaskView();
-    expect(taskView.candidate).toBe(mockCandidate);
-    expect(taskView.editable).toBeTrue();
-  });
+        const taskView = getTaskView();
+        expect(taskView.candidate).toBe(mockCandidate);
+        expect(taskView.editable).toBe(true);
+    });
 
-  it('should pass editable=false to the task view', () => {
-    component.candidate = mockCandidate;
-    component.editable = false;
+    it('should pass editable=false to the task view', () => {
+        component.candidate = mockCandidate;
+        component.editable = false;
 
-    fixture.detectChanges();
+        fixture.detectChanges();
 
-    const taskView = getTaskView();
-    expect(taskView.candidate).toBe(mockCandidate);
-    expect(taskView.editable).toBeFalse();
-  });
+        const taskView = getTaskView();
+        expect(taskView.candidate).toBe(mockCandidate);
+        expect(taskView.editable).toBe(false);
+    });
 
-  it('should display tasks correctly based on candidate data', () => {
-    const candidateData = mockCandidate;
-    component.candidate = candidateData;
-    component.editable = true;
-    fixture.detectChanges();
+    it('should display tasks correctly based on candidate data', () => {
+        const candidateData = mockCandidate;
+        component.candidate = candidateData;
+        component.editable = true;
+        fixture.detectChanges();
 
-    const mockViewCandidateTasksComponent = fixture.debugElement.children[0].componentInstance;
-    expect(mockViewCandidateTasksComponent.candidate).toBe(candidateData);
-    expect(mockViewCandidateTasksComponent.editable).toBeTrue();
-  });
+        const mockViewCandidateTasksComponent = fixture.debugElement.children[0].componentInstance;
+        expect(mockViewCandidateTasksComponent.candidate).toBe(candidateData);
+        expect(mockViewCandidateTasksComponent.editable).toBe(true);
+    });
 
 
-  function getTaskView(): MockViewCandidateTasksComponent {
-    return fixture.debugElement
-    .query(By.directive(MockViewCandidateTasksComponent))
-      .componentInstance;
-  }
+    function getTaskView(): MockViewCandidateTasksComponent {
+        return fixture.debugElement
+            .query(By.directive(MockViewCandidateTasksComponent))
+            .componentInstance;
+    }
 });

@@ -3,16 +3,18 @@
   "compilerOptions": {
     "outDir": "./out-tsc/spec",
     "types": [
-      "jasmine",
-      "node"
+      "node",
+      "vitest/globals"
     ]
   },
   "files": [
-    "src/test.ts",
-    "src/polyfills.ts"
+    "src/test-setup.ts"
   ],
   "include": [
     "src/**/*.spec.ts",
     "src/**/*.d.ts"
-  ]
+  ],
+  "angularCompilerOptions": {
+    "strictTemplates": false
+  }
 }

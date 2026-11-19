@@ -14,6 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
+import type {MockedObject} from "vitest";
 import {Component, EventEmitter, Input, Output, ChangeDetectionStrategy} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
@@ -24,159 +25,171 @@ import {RegistrationUploadFileComponent} from './registration-upload-file.compon
 import {RegistrationService} from '../../../services/registration.service';
 
 @Component({
-  selector: 'tc-accordion',
-  template: '<ng-content></ng-content>',
-  changeDetection: ChangeDetectionStrategy.Eager,
-  standalone: false
+    selector: 'tc-accordion',
+    template: '<ng-content></ng-content>',
+    changeDetection: ChangeDetectionStrategy.Eager,
+    standalone: false
 })
 class TcAccordionStubComponent {
-  @Input() activeIndexes?: number | null;
-  @Input() showOpenCloseAll?: boolean;
+    @Input()
+    activeIndexes?: number | null;
+    @Input()
+    showOpenCloseAll?: boolean;
 }
 
 @Component({
-  selector: 'tc-accordion-item',
-  template: '<ng-content></ng-content>',
-  changeDetection: ChangeDetectionStrategy.Eager,
-  standalone: false
+    selector: 'tc-accordion-item',
+    template: '<ng-content></ng-content>',
+    changeDetection: ChangeDetectionStrategy.Eager,
+    standalone: false
 })
-class TcAccordionItemStubComponent {}
+class TcAccordionItemStubComponent {
+}
 
 @Component({
-  selector: 'app-candidate-attachments',
-  template: '',
-  changeDetection: ChangeDetectionStrategy.Eager,
-  standalone: false
+    selector: 'app-candidate-attachments',
+    template: '',
+    changeDetection: ChangeDetectionStrategy.Eager,
+    standalone: false
 })
 class CandidateAttachmentsStubComponent {
-  @Input() cv?: boolean;
+    @Input()
+    cv?: boolean;
 }
 
 @Component({
-  selector: 'app-registration-footer',
-  template: '',
-  changeDetection: ChangeDetectionStrategy.Eager,
-  standalone: false
+    selector: 'app-registration-footer',
+    template: '',
+    changeDetection: ChangeDetectionStrategy.Eager,
+    standalone: false
 })
 class RegistrationFooterStubComponent {
-  @Input() type?: string;
-  @Output() backClicked = new EventEmitter<void>();
-  @Output() nextClicked = new EventEmitter<void>();
+    @Input()
+    type?: string;
+    @Output()
+    backClicked = new EventEmitter<void>();
+    @Output()
+    nextClicked = new EventEmitter<void>();
 }
 
 describe('RegistrationUploadFileComponent', () => {
-  let component: RegistrationUploadFileComponent;
-  let fixture: ComponentFixture<RegistrationUploadFileComponent>;
-  let registrationServiceSpy: jasmine.SpyObj<RegistrationService>;
+    let component: RegistrationUploadFileComponent;
+    let fixture: ComponentFixture<RegistrationUploadFileComponent>;
+    let registrationServiceSpy: MockedObject<RegistrationService>;
 
-  async function configureAndCreate(options?: {edit?: boolean}) {
-    registrationServiceSpy = jasmine.createSpyObj('RegistrationService', ['next', 'back']);
+    async function configureAndCreate(options?: {
+        edit?: boolean;
+    }) {
+        registrationServiceSpy = {
+            next: vi.fn().mockName("RegistrationService.next"),
+            back: vi.fn().mockName("RegistrationService.back")
+        } as unknown as MockedObject<RegistrationService>;
 
-    await TestBed.configureTestingModule({
-      declarations: [
-        RegistrationUploadFileComponent,
-        TcAccordionStubComponent,
-        TcAccordionItemStubComponent,
-        CandidateAttachmentsStubComponent,
-        RegistrationFooterStubComponent
-      ],
-      imports: [
-        NgbPopoverModule,
-        TranslateModule.forRoot()
-      ],
-      providers: [
-        {provide: RegistrationService, useValue: registrationServiceSpy},
-        TranslateService
-      ]
-    }).compileComponents();
+        await TestBed.configureTestingModule({
+            declarations: [
+                RegistrationUploadFileComponent,
+                TcAccordionStubComponent,
+                TcAccordionItemStubComponent,
+                CandidateAttachmentsStubComponent,
+                RegistrationFooterStubComponent
+            ],
+            imports: [
+                NgbPopoverModule,
+                TranslateModule.forRoot()
+            ],
+            providers: [
+                { provide: RegistrationService, useValue: registrationServiceSpy },
+                TranslateService
+            ]
+        }).compileComponents();
 
-    fixture = TestBed.createComponent(RegistrationUploadFileComponent);
-    component = fixture.componentInstance;
-    component.edit = options?.edit ?? false;
+        fixture = TestBed.createComponent(RegistrationUploadFileComponent);
+        component = fixture.componentInstance;
+        component.edit = options?.edit ?? false;
 
-    fixture.detectChanges();
-  }
+        fixture.detectChanges();
+    }
 
-  afterEach(() => TestBed.resetTestingModule());
+    afterEach(() => TestBed.resetTestingModule());
 
-  it('should create', async () => {
-    await configureAndCreate();
+    it('should create', async () => {
+        await configureAndCreate();
 
-    expect(component).toBeTruthy();
-  });
-
-  describe('ngOnInit', () => {
-    it('should initialize activeIndexes to 0 when edit is false', async () => {
-      await configureAndCreate({edit: false});
-
-      expect(component.activeIndexes).toBe(0);
+        expect(component).toBeTruthy();
     });
 
-    it('should initialize activeIndexes to null when edit is true', async () => {
-      await configureAndCreate({edit: true});
+    describe('ngOnInit', () => {
+        it('should initialize activeIndexes to 0 when edit is false', async () => {
+            await configureAndCreate({ edit: false });
 
-      expect(component.activeIndexes).toBeNull();
-    });
-  });
+            expect(component.activeIndexes).toBe(0);
+        });
 
-  describe('template', () => {
-    beforeEach(async () => configureAndCreate());
+        it('should initialize activeIndexes to null when edit is true', async () => {
+            await configureAndCreate({ edit: true });
 
-    it('should render two accordion sections with candidate attachment children', () => {
-      const accordions = fixture.debugElement.queryAll(By.directive(TcAccordionStubComponent));
-      const attachmentChildren = fixture.debugElement.queryAll(By.directive(CandidateAttachmentsStubComponent));
-
-      expect(accordions.length).toBe(2);
-      expect(attachmentChildren.length).toBe(2);
-      expect(attachmentChildren.map(debugEl => debugEl.componentInstance.cv)).toEqual([true, false]);
+            expect(component.activeIndexes).toBeNull();
+        });
     });
 
-    it('should render the registration footer with step mode by default', () => {
-      const footer = fixture.debugElement.query(By.directive(RegistrationFooterStubComponent));
+    describe('template', () => {
+        beforeEach(async () => configureAndCreate());
 
-      expect(footer).toBeTruthy();
-      expect(footer.componentInstance.type).toBe('step');
+        it('should render two accordion sections with candidate attachment children', () => {
+            const accordions = fixture.debugElement.queryAll(By.directive(TcAccordionStubComponent));
+            const attachmentChildren = fixture.debugElement.queryAll(By.directive(CandidateAttachmentsStubComponent));
+
+            expect(accordions.length).toBe(2);
+            expect(attachmentChildren.length).toBe(2);
+            expect(attachmentChildren.map(debugEl => debugEl.componentInstance.cv)).toEqual([true, false]);
+        });
+
+        it('should render the registration footer with step mode by default', () => {
+            const footer = fixture.debugElement.query(By.directive(RegistrationFooterStubComponent));
+
+            expect(footer).toBeTruthy();
+            expect(footer.componentInstance.type).toBe('step');
+        });
+
+        it('should render the registration footer with update mode when editing', async () => {
+            TestBed.resetTestingModule();
+            await configureAndCreate({ edit: true });
+
+            const footer = fixture.debugElement.query(By.directive(RegistrationFooterStubComponent));
+
+            expect(footer.componentInstance.type).toBe('update');
+        });
     });
 
-    it('should render the registration footer with update mode when editing', async () => {
-      TestBed.resetTestingModule();
-      await configureAndCreate({edit: true});
+    describe('navigation', () => {
+        beforeEach(async () => configureAndCreate());
 
-      const footer = fixture.debugElement.query(By.directive(RegistrationFooterStubComponent));
+        it('should call registrationService.next() on next()', () => {
+            component.next();
 
-      expect(footer.componentInstance.type).toBe('update');
+            expect(registrationServiceSpy.next).toHaveBeenCalled();
+        });
+
+        it('should call registrationService.back() on back()', () => {
+            component.back();
+
+            expect(registrationServiceSpy.back).toHaveBeenCalled();
+        });
+
+        it('should emit onSave on update()', () => {
+            const onSaveSpy = vi.spyOn(component.onSave, 'emit').mockReturnValue(undefined);
+
+            component.update();
+
+            expect(onSaveSpy).toHaveBeenCalled();
+        });
+
+        it('should emit onSave on cancel()', () => {
+            const onSaveSpy = vi.spyOn(component.onSave, 'emit').mockReturnValue(undefined);
+
+            component.cancel();
+
+            expect(onSaveSpy).toHaveBeenCalled();
+        });
     });
-  });
-
-  describe('navigation', () => {
-    beforeEach(async () => configureAndCreate());
-
-    it('should call registrationService.next() on next()', () => {
-      component.next();
-
-      expect(registrationServiceSpy.next).toHaveBeenCalled();
-    });
-
-    it('should call registrationService.back() on back()', () => {
-      component.back();
-
-      expect(registrationServiceSpy.back).toHaveBeenCalled();
-    });
-
-    it('should emit onSave on update()', () => {
-      const onSaveSpy = spyOn(component.onSave, 'emit');
-
-      component.update();
-
-      expect(onSaveSpy).toHaveBeenCalled();
-    });
-
-    it('should emit onSave on cancel()', () => {
-      const onSaveSpy = spyOn(component.onSave, 'emit');
-
-      component.cancel();
-
-      expect(onSaveSpy).toHaveBeenCalled();
-    });
-  });
 });

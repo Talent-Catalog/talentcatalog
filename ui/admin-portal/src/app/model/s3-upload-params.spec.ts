@@ -15,6 +15,7 @@
  */
 
 import {S3UploadParams} from "./s3-upload-params";
+import {expect} from 'vitest';
 
 describe('S3UploadParams Interface Tests', () => {
 

@@ -20,58 +20,57 @@ import {ComponentFixture, TestBed, waitForAsync} from '@angular/core/testing';
 import {Candidate} from '../../model/candidate';
 import {ExtendDatePipe} from '../../util/date-pipe';
 import {CvDisplayComponent} from './cv-display.component';
-
+import {expect, vi} from 'vitest';
 describe('CvDisplayComponent', () => {
-  let component: CvDisplayComponent;
-  let fixture: ComponentFixture<CvDisplayComponent>;
+    let component: CvDisplayComponent;
+    let fixture: ComponentFixture<CvDisplayComponent>;
 
-  const candidate = {
-    candidateNumber: '123456',
-    country: {name: 'Afghanistan'},
-    candidateJobExperiences: [],
-    candidateEducations: [],
-    candidateLanguages: [],
-    candidateCertifications: []
-  } as Candidate;
+    const candidate = {
+        candidateNumber: '123456',
+        country: { name: 'Afghanistan' },
+        candidateJobExperiences: [],
+        candidateEducations: [],
+        candidateLanguages: [],
+        candidateCertifications: []
+    } as Candidate;
 
-  beforeEach(waitForAsync(() => {
-    TestBed.configureTestingModule({
-      imports: [CommonModule],
-      declarations: [CvDisplayComponent, ExtendDatePipe]
-    }).compileComponents();
-  }));
+    beforeEach(waitForAsync(() => {
+        TestBed.configureTestingModule({
+            imports: [CommonModule],
+            declarations: [CvDisplayComponent, ExtendDatePipe]
+        }).compileComponents();
+    }));
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(CvDisplayComponent);
-    component = fixture.componentInstance;
-    component.candidate = candidate;
-    fixture.detectChanges();
-  });
+    beforeEach(() => {
+        fixture = TestBed.createComponent(CvDisplayComponent);
+        component = fixture.componentInstance;
+        component.candidate = candidate;
+        fixture.detectChanges();
+    });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
 
-  it('should display the candidate number and country', () => {
-    const heading: HTMLElement =
-      fixture.nativeElement.querySelector('.page-header h4');
+    it('should display the candidate number and country', () => {
+        const heading: HTMLElement = fixture.nativeElement.querySelector('.page-header h4');
 
-    expect(heading.textContent).toContain('#123456 - Afghanistan');
-  });
+        expect(heading.textContent).toContain('#123456 - Afghanistan');
+    });
 
-  it('should call window.print when print is requested', () => {
-    const printSpy = spyOn(window, 'print');
+    it('should call window.print when print is requested', () => {
+        const printSpy = vi.spyOn(window, 'print').mockReturnValue(undefined);
 
-    component.print();
+        component.print();
 
-    expect(printSpy).toHaveBeenCalled();
-  });
+        expect(printSpy).toHaveBeenCalled();
+    });
 
-  it('should identify text containing HTML', () => {
-    expect(component.isHtml('<p>Software developer</p>')).toBeTrue();
-  });
+    it('should identify text containing HTML', () => {
+        expect(component.isHtml('<p>Software developer</p>')).toBe(true);
+    });
 
-  it('should identify plain text as non-HTML', () => {
-    expect(component.isHtml('Software developer')).toBeFalse();
-  });
+    it('should identify plain text as non-HTML', () => {
+        expect(component.isHtml('Software developer')).toBe(false);
+    });
 });

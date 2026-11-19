@@ -7,6 +7,7 @@ import {CandidateAssistanceType, OfferToAssist} from "../model/offer-to-assist";
 import {HttpTestingController, provideHttpClientTesting} from "@angular/common/http/testing";
 import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {MockPartner} from "../MockData/MockPartner";
+import {expect} from 'vitest';
 
 describe('OfferToAssistService', () => {
   let service: OfferToAssistService;

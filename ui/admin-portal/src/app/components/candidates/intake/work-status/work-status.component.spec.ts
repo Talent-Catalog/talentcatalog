@@ -23,56 +23,57 @@ import {NgSelectModule} from "@ng-select/ng-select";
 import {AutosaveStatusComponent} from "../../../util/autosave-status/autosave-status.component";
 import {CandidateService} from "../../../../services/candidate.service";
 import {YesNoUnemployedOther} from "../../../../model/candidate";
+import {expect} from 'vitest';
 
 describe('WorkStatusComponent', () => {
-  let component: WorkStatusComponent;
-  let fixture: ComponentFixture<WorkStatusComponent>;
+    let component: WorkStatusComponent;
+    let fixture: ComponentFixture<WorkStatusComponent>;
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      declarations: [ WorkStatusComponent, AutosaveStatusComponent ],
-      imports: [ReactiveFormsModule, NgSelectModule ],
-      providers: [
-        { provide: CandidateService },
-        provideHttpClient(withXhr(), withInterceptorsFromDi()),
-        provideHttpClientTesting()
-      ]
-    })
-    .compileComponents();
-  });
+    beforeEach(async () => {
+        await TestBed.configureTestingModule({
+            declarations: [WorkStatusComponent, AutosaveStatusComponent],
+            imports: [ReactiveFormsModule, NgSelectModule],
+            providers: [
+                { provide: CandidateService },
+                provideHttpClient(withXhr(), withInterceptorsFromDi()),
+                provideHttpClientTesting()
+            ]
+        })
+            .compileComponents();
+    });
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(WorkStatusComponent);
-    component = fixture.componentInstance;
-    component.candidateIntakeData = {
-      workDesired: YesNoUnemployedOther.Yes,
-      workDesiredNotes: 'Sample notes'
-    };
-    fixture.detectChanges();
-  });
+    beforeEach(() => {
+        fixture = TestBed.createComponent(WorkStatusComponent);
+        component = fixture.componentInstance;
+        component.candidateIntakeData = {
+            workDesired: YesNoUnemployedOther.Yes,
+            workDesiredNotes: 'Sample notes'
+        };
+        fixture.detectChanges();
+    });
 
-  it('should initialize the form controls with the correct default values', () => {
-    expect(component.form.get('workDesired').value).toBe(YesNoUnemployedOther.Yes);
-    expect(component.form.get('workDesiredNotes').value).toBe('Sample notes');
-  });
+    it('should initialize the form controls with the correct default values', () => {
+        expect(component.form.get('workDesired').value).toBe(YesNoUnemployedOther.Yes);
+        expect(component.form.get('workDesiredNotes').value).toBe('Sample notes');
+    });
 
-  it('should update the form controls when candidateIntakeData changes', () => {
-    component.candidateIntakeData = {
-      workDesired: YesNoUnemployedOther.No,
-      workDesiredNotes: 'Updated notes'
-    };
-    component.ngOnInit();
-    fixture.detectChanges();
-    expect(component.form.get('workDesired').value).toBe(YesNoUnemployedOther.No);
-    expect(component.form.get('workDesiredNotes').value).toBe('Updated notes');
-  });
+    it('should update the form controls when candidateIntakeData changes', () => {
+        component.candidateIntakeData = {
+            workDesired: YesNoUnemployedOther.No,
+            workDesiredNotes: 'Updated notes'
+        };
+        component.ngOnInit();
+        fixture.detectChanges();
+        expect(component.form.get('workDesired').value).toBe(YesNoUnemployedOther.No);
+        expect(component.form.get('workDesiredNotes').value).toBe('Updated notes');
+    });
 
-  it('should initialize the form controls correctly when candidateIntakeData is null', () => {
-    component.candidateIntakeData = null;
-    component.ngOnInit();
-    fixture.detectChanges();
-    expect(component.form.get('workDesired').value).toBeUndefined();
-    expect(component.form.get('workDesiredNotes').value).toBeUndefined();
-  });
+    it('should initialize the form controls correctly when candidateIntakeData is null', () => {
+        component.candidateIntakeData = null;
+        component.ngOnInit();
+        fixture.detectChanges();
+        expect(component.form.get('workDesired').value).toBeUndefined();
+        expect(component.form.get('workDesiredNotes').value).toBeUndefined();
+    });
 });
 

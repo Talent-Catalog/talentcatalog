@@ -22,227 +22,204 @@ import {ResourceStatus, ServiceProviderTermsInfo} from '../model/services';
 import {CasiPortalService} from './casi-portal.service';
 
 describe('CasiPortalService', () => {
-  let service: CasiPortalService;
-  let httpMock: HttpTestingController;
+    let service: CasiPortalService;
+    let httpMock: HttpTestingController;
 
-  const provider = 'REFERENCE';
-  const serviceCode = 'VOUCHER';
-  const apiUrl =
-    `${environment.apiUrl}/services/${provider}/${serviceCode}`;
+    const provider = 'REFERENCE';
+    const serviceCode = 'VOUCHER';
+    const apiUrl = `${environment.apiUrl}/services/${provider}/${serviceCode}`;
 
-  beforeEach(() => {
-    TestBed.configureTestingModule({
-      providers: [CasiPortalService, provideHttpClient(withXhr(), withInterceptorsFromDi()), provideHttpClientTesting()]
+    beforeEach(() => {
+        TestBed.configureTestingModule({
+            providers: [CasiPortalService, provideHttpClient(withXhr(), withInterceptorsFromDi()), provideHttpClientTesting()]
+        });
+
+        service = TestBed.inject(CasiPortalService);
+        httpMock = TestBed.inject(HttpTestingController);
     });
 
-    service = TestBed.inject(CasiPortalService);
-    httpMock = TestBed.inject(HttpTestingController);
-  });
-
-  afterEach(() => {
-    httpMock.verify();
-  });
-
-  it('should be created', () => {
-    expect(service).toBeTruthy();
-  });
-
-  it('should check eligibility', () => {
-    service.checkEligibility(provider, serviceCode)
-    .subscribe((response) => {
-      expect(response).toBeTrue();
+    afterEach(() => {
+        httpMock.verify();
     });
 
-    const request = httpMock.expectOne(`${apiUrl}/eligibility`);
-
-    expect(request.request.method).toBe('GET');
-
-    request.flush(true);
-  });
-
-  it('should get the current assignment', () => {
-    const assignment = {
-      id: 1,
-      provider,
-      serviceCode
-    };
-
-    service.getAssignment(provider, serviceCode)
-    .subscribe((response) => {
-      expect(response).toEqual(assignment as any);
+    it('should be created', () => {
+        expect(service).toBeTruthy();
     });
 
-    const request = httpMock.expectOne(`${apiUrl}/assignment`);
+    it('should check eligibility', () => {
+        service.checkEligibility(provider, serviceCode)
+            .subscribe((response) => {
+            expect(response).toBe(true);
+        });
 
-    expect(request.request.method).toBe('GET');
+        const request = httpMock.expectOne(`${apiUrl}/eligibility`);
 
-    request.flush(assignment);
-  });
+        expect(request.request.method).toBe('GET');
 
-  it('should assign the service', () => {
-    const assignment = {
-      id: 1,
-      provider,
-      serviceCode
-    };
-
-    service.assign(provider, serviceCode).subscribe((response) => {
-      expect(response).toEqual(assignment as any);
+        request.flush(true);
     });
 
-    const request = httpMock.expectOne(`${apiUrl}/assign`);
+    it('should get the current assignment', () => {
+        const assignment = {
+            id: 1,
+            provider,
+            serviceCode
+        };
 
-    expect(request.request.method).toBe('POST');
-    expect(request.request.body).toBeNull();
+        service.getAssignment(provider, serviceCode)
+            .subscribe((response) => {
+            expect(response).toEqual(assignment as any);
+        });
 
-    request.flush(assignment);
-  });
+        const request = httpMock.expectOne(`${apiUrl}/assignment`);
 
-  it('should get provider terms', () => {
-    const terms: ServiceProviderTermsInfo = {
-      id: 'terms-1',
-      content: 'Provider terms and conditions'
-    };
+        expect(request.request.method).toBe('GET');
 
-    service.getProviderTerms(provider, serviceCode)
-    .subscribe((response) => {
-      expect(response).toEqual(terms);
+        request.flush(assignment);
     });
 
-    const request = httpMock.expectOne(
-      `${apiUrl}/agreement/terms`
-    );
+    it('should assign the service', () => {
+        const assignment = {
+            id: 1,
+            provider,
+            serviceCode
+        };
 
-    expect(request.request.method).toBe('GET');
+        service.assign(provider, serviceCode).subscribe((response) => {
+            expect(response).toEqual(assignment as any);
+        });
 
-    request.flush(terms);
-  });
+        const request = httpMock.expectOne(`${apiUrl}/assign`);
 
-  it('should return null when provider terms do not exist', () => {
-    service.getProviderTerms(provider, serviceCode)
-    .subscribe((response) => {
-      expect(response).toBeNull();
+        expect(request.request.method).toBe('POST');
+        expect(request.request.body).toBeNull();
+
+        request.flush(assignment);
     });
 
-    const request = httpMock.expectOne(
-      `${apiUrl}/agreement/terms`
-    );
+    it('should get provider terms', () => {
+        const terms: ServiceProviderTermsInfo = {
+            id: 'terms-1',
+            content: 'Provider terms and conditions'
+        };
 
-    expect(request.request.method).toBe('GET');
+        service.getProviderTerms(provider, serviceCode)
+            .subscribe((response) => {
+            expect(response).toEqual(terms);
+        });
 
-    request.flush(null);
-  });
+        const request = httpMock.expectOne(`${apiUrl}/agreement/terms`);
 
-  it('should check whether provider terms need acceptance', () => {
-    service.checkNeedsAgreement(provider, serviceCode)
-    .subscribe((response) => {
-      expect(response).toBeTrue();
+        expect(request.request.method).toBe('GET');
+
+        request.flush(terms);
     });
 
-    const request = httpMock.expectOne(
-      `${apiUrl}/agreement/needs-acceptance`
-    );
+    it('should return null when provider terms do not exist', () => {
+        service.getProviderTerms(provider, serviceCode)
+            .subscribe((response) => {
+            expect(response).toBeNull();
+        });
 
-    expect(request.request.method).toBe('GET');
+        const request = httpMock.expectOne(`${apiUrl}/agreement/terms`);
 
-    request.flush(true);
-  });
+        expect(request.request.method).toBe('GET');
 
-  it('should accept provider terms', () => {
-    service.acceptProviderTerms(provider, serviceCode).subscribe();
-
-    const request = httpMock.expectOne(
-      `${apiUrl}/agreement/accept`
-    );
-
-    expect(request.request.method).toBe('POST');
-    expect(request.request.body).toBeNull();
-
-    request.flush(null);
-  });
-
-  it('should get OPC DPA terms', () => {
-    const terms: ServiceProviderTermsInfo = {
-      id: 'opc-dpa-1',
-      content: 'OPC data processing agreement'
-    };
-
-    service.getOpcDpaTerms(provider, serviceCode)
-    .subscribe((response) => {
-      expect(response).toEqual(terms);
+        request.flush(null);
     });
 
-    const request = httpMock.expectOne(
-      `${apiUrl}/agreement/opc-dpa/terms`
-    );
+    it('should check whether provider terms need acceptance', () => {
+        service.checkNeedsAgreement(provider, serviceCode)
+            .subscribe((response) => {
+            expect(response).toBe(true);
+        });
 
-    expect(request.request.method).toBe('GET');
+        const request = httpMock.expectOne(`${apiUrl}/agreement/needs-acceptance`);
 
-    request.flush(terms);
-  });
+        expect(request.request.method).toBe('GET');
 
-  it('should return null when OPC DPA terms do not exist', () => {
-    service.getOpcDpaTerms(provider, serviceCode)
-    .subscribe((response) => {
-      expect(response).toBeNull();
+        request.flush(true);
     });
 
-    const request = httpMock.expectOne(
-      `${apiUrl}/agreement/opc-dpa/terms`
-    );
+    it('should accept provider terms', () => {
+        service.acceptProviderTerms(provider, serviceCode).subscribe();
 
-    expect(request.request.method).toBe('GET');
+        const request = httpMock.expectOne(`${apiUrl}/agreement/accept`);
 
-    request.flush(null);
-  });
+        expect(request.request.method).toBe('POST');
+        expect(request.request.body).toBeNull();
 
-  it('should check whether OPC DPA terms need acceptance', () => {
-    service.checkNeedsOpcDpa(provider, serviceCode)
-    .subscribe((response) => {
-      expect(response).toBeFalse();
+        request.flush(null);
     });
 
-    const request = httpMock.expectOne(
-      `${apiUrl}/agreement/opc-dpa/needs-acceptance`
-    );
+    it('should get OPC DPA terms', () => {
+        const terms: ServiceProviderTermsInfo = {
+            id: 'opc-dpa-1',
+            content: 'OPC data processing agreement'
+        };
 
-    expect(request.request.method).toBe('GET');
+        service.getOpcDpaTerms(provider, serviceCode)
+            .subscribe((response) => {
+            expect(response).toEqual(terms);
+        });
 
-    request.flush(false);
-  });
+        const request = httpMock.expectOne(`${apiUrl}/agreement/opc-dpa/terms`);
 
-  it('should accept OPC DPA terms', () => {
-    service.acceptOpcDpa(provider, serviceCode).subscribe();
+        expect(request.request.method).toBe('GET');
 
-    const request = httpMock.expectOne(
-      `${apiUrl}/agreement/opc-dpa/accept`
-    );
+        request.flush(terms);
+    });
 
-    expect(request.request.method).toBe('POST');
-    expect(request.request.body).toBeNull();
+    it('should return null when OPC DPA terms do not exist', () => {
+        service.getOpcDpaTerms(provider, serviceCode)
+            .subscribe((response) => {
+            expect(response).toBeNull();
+        });
 
-    request.flush(null);
-  });
+        const request = httpMock.expectOne(`${apiUrl}/agreement/opc-dpa/terms`);
 
-  it('should update the resource status', () => {
-    const updateRequest = {
-      resourceCode: 'REF-001',
-      status: ResourceStatus.REDEEMED
-    };
+        expect(request.request.method).toBe('GET');
 
-    service.updateResourceStatus(
-      provider,
-      serviceCode,
-      updateRequest
-    ).subscribe();
+        request.flush(null);
+    });
 
-    const request = httpMock.expectOne(
-      `${apiUrl}/resources/status`
-    );
+    it('should check whether OPC DPA terms need acceptance', () => {
+        service.checkNeedsOpcDpa(provider, serviceCode)
+            .subscribe((response) => {
+            expect(response).toBe(false);
+        });
 
-    expect(request.request.method).toBe('PUT');
-    expect(request.request.body).toEqual(updateRequest);
+        const request = httpMock.expectOne(`${apiUrl}/agreement/opc-dpa/needs-acceptance`);
 
-    request.flush(null);
-  });
+        expect(request.request.method).toBe('GET');
+
+        request.flush(false);
+    });
+
+    it('should accept OPC DPA terms', () => {
+        service.acceptOpcDpa(provider, serviceCode).subscribe();
+
+        const request = httpMock.expectOne(`${apiUrl}/agreement/opc-dpa/accept`);
+
+        expect(request.request.method).toBe('POST');
+        expect(request.request.body).toBeNull();
+
+        request.flush(null);
+    });
+
+    it('should update the resource status', () => {
+        const updateRequest = {
+            resourceCode: 'REF-001',
+            status: ResourceStatus.REDEEMED
+        };
+
+        service.updateResourceStatus(provider, serviceCode, updateRequest).subscribe();
+
+        const request = httpMock.expectOne(`${apiUrl}/resources/status`);
+
+        expect(request.request.method).toBe('PUT');
+        expect(request.request.body).toEqual(updateRequest);
+
+        request.flush(null);
+    });
 });

@@ -14,6 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
+import type {MockedObject} from "vitest";
 import {SearchLanguagesComponent} from "./search-languages.component";
 import {ComponentFixture, TestBed} from "@angular/core/testing";
 import {LanguageService} from "../../../services/language.service";
@@ -24,70 +25,77 @@ import {NgSelectModule} from "@ng-select/ng-select";
 import {of} from "rxjs";
 import {CreateLanguageComponent} from "./create/create-language.component";
 import {MockUser} from "../../../MockData/MockUser";
+import {expect, vi} from 'vitest';
 
 describe('SearchLanguagesComponent', () => {
-  let component: SearchLanguagesComponent;
-  let fixture: ComponentFixture<SearchLanguagesComponent>;
-  let languageServiceSpy: jasmine.SpyObj<LanguageService>;
-  let modalServiceSpy: jasmine.SpyObj<NgbModal>;
-  let authServiceSpy: jasmine.SpyObj<AuthorizationService>;
-  const mockResults = [];
+    let component: SearchLanguagesComponent;
+    let fixture: ComponentFixture<SearchLanguagesComponent>;
+    let languageServiceSpy: MockedObject<LanguageService>;
+    let modalServiceSpy: MockedObject<NgbModal>;
+    let authServiceSpy: MockedObject<AuthorizationService>;
+    const mockResults = [];
 
-  beforeEach(async () => {
-    const languageSpy = jasmine.createSpyObj('LanguageService', ['listSystemLanguages']);
-    const modalSpy = jasmine.createSpyObj('NgbModal', ['open']);
-    const authSpy = jasmine.createSpyObj('AuthorizationService', ['isAnAdmin']);
+    beforeEach(async () => {
+        const languageSpy = {
+            listSystemLanguages: vi.fn().mockName("LanguageService.listSystemLanguages")
+        };
+        const modalSpy = {
+            open: vi.fn().mockName("NgbModal.open")
+        };
+        const authSpy = {
+            isAnAdmin: vi.fn().mockName("AuthorizationService.isAnAdmin")
+        };
 
-    await TestBed.configureTestingModule({
-      declarations: [SearchLanguagesComponent],
-      imports: [FormsModule, ReactiveFormsModule, NgbModule, NgSelectModule],
-      providers: [
-        { provide: LanguageService, useValue: languageSpy },
-        { provide: NgbModal, useValue: modalSpy },
-        { provide: AuthorizationService, useValue: authSpy },
-      ]
-    }).compileComponents();
+        await TestBed.configureTestingModule({
+            declarations: [SearchLanguagesComponent],
+            imports: [FormsModule, ReactiveFormsModule, NgbModule, NgSelectModule],
+            providers: [
+                { provide: LanguageService, useValue: languageSpy },
+                { provide: NgbModal, useValue: modalSpy },
+                { provide: AuthorizationService, useValue: authSpy },
+            ]
+        }).compileComponents();
 
-    fixture = TestBed.createComponent(SearchLanguagesComponent);
-    component = fixture.componentInstance;
-    languageServiceSpy = TestBed.inject(LanguageService) as jasmine.SpyObj<LanguageService>;
-    modalServiceSpy = TestBed.inject(NgbModal) as jasmine.SpyObj<NgbModal>;
-    authServiceSpy = TestBed.inject(AuthorizationService) as jasmine.SpyObj<AuthorizationService>;
-  });
+        fixture = TestBed.createComponent(SearchLanguagesComponent);
+        component = fixture.componentInstance;
+        languageServiceSpy = TestBed.inject(LanguageService) as MockedObject<LanguageService>;
+        modalServiceSpy = TestBed.inject(NgbModal) as MockedObject<NgbModal>;
+        authServiceSpy = TestBed.inject(AuthorizationService) as MockedObject<AuthorizationService>;
+    });
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(SearchLanguagesComponent);
-    component = fixture.componentInstance;
-    languageServiceSpy.listSystemLanguages.and.returnValue(of(mockResults));
-    component.loggedInUser = new MockUser();
-    fixture.detectChanges();
-  });
+    beforeEach(() => {
+        fixture = TestBed.createComponent(SearchLanguagesComponent);
+        component = fixture.componentInstance;
+        languageServiceSpy.listSystemLanguages.mockReturnValue(of(mockResults));
+        component.loggedInUser = new MockUser();
+        fixture.detectChanges();
+    });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
 
 
-  it('should search languages', () => {
+    it('should search languages', () => {
 
-    component.search();
+        component.search();
 
-    expect(languageServiceSpy.listSystemLanguages).toHaveBeenCalled();
-    expect(component.results).toEqual(mockResults);
-    expect(component.loading).toBeFalse();
-  });
+        expect(languageServiceSpy.listSystemLanguages).toHaveBeenCalled();
+        expect(component.results).toEqual(mockResults);
+        expect(component.loading).toBe(false);
+    });
 
-  it('should add language', () => {
-    const modalRefMock = { result: Promise.resolve(true) } as any;
-    modalServiceSpy.open.and.returnValue(modalRefMock);
+    it('should add language', () => {
+        const modalRefMock = { result: Promise.resolve(true) } as any;
+        modalServiceSpy.open.mockReturnValue(modalRefMock);
 
-    component.addLanguage();
+        component.addLanguage();
 
-    expect(modalServiceSpy.open).toHaveBeenCalledWith(CreateLanguageComponent, { centered: true, backdrop: 'static' });
-  });
+        expect(modalServiceSpy.open).toHaveBeenCalledWith(CreateLanguageComponent, { centered: true, backdrop: 'static' });
+    });
 
-  it('should check if user is admin', () => {
-    authServiceSpy.isAnAdmin.and.returnValue(true);
-    expect(component.isAnAdmin()).toBeTrue();
-  });
+    it('should check if user is admin', () => {
+        authServiceSpy.isAnAdmin.mockReturnValue(true);
+        expect(component.isAnAdmin()).toBe(true);
+    });
 });

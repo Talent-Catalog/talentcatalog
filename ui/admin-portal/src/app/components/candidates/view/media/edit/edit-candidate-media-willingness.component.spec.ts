@@ -13,6 +13,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
+
+import type {MockedObject} from "vitest";
 import {EditCandidateMediaWillingnessComponent} from "./edit-candidate-media-willingness.component";
 import {ComponentFixture, TestBed} from "@angular/core/testing";
 import {NgbActiveModal} from "@ng-bootstrap/ng-bootstrap";
@@ -23,90 +25,97 @@ import {provideHttpClientTesting} from "@angular/common/http/testing";
 import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {FormsModule, ReactiveFormsModule, UntypedFormBuilder} from "@angular/forms";
 import {NgSelectModule} from "@ng-select/ng-select";
+import {expect, vi} from 'vitest';
 
 describe('EditCandidateMediaWillingnessComponent', () => {
-  let component: EditCandidateMediaWillingnessComponent;
-  let fixture: ComponentFixture<EditCandidateMediaWillingnessComponent>;
-  let mockActiveModal: jasmine.SpyObj<NgbActiveModal>;
-  let mockCandidateService: jasmine.SpyObj<CandidateService>;
-  let fb : UntypedFormBuilder;
-  const mockCandidate = new MockCandidate();
-  beforeEach(async () => {
-    const candidateServiceSpy = jasmine.createSpyObj('CandidateService', ['get', 'updateMedia']);
-    const activeModalSpy = jasmine.createSpyObj('NgbActiveModal', ['close', 'dismiss']);
+    let component: EditCandidateMediaWillingnessComponent;
+    let fixture: ComponentFixture<EditCandidateMediaWillingnessComponent>;
+    let mockActiveModal: MockedObject<NgbActiveModal>;
+    let mockCandidateService: MockedObject<CandidateService>;
+    let fb: UntypedFormBuilder;
+    const mockCandidate = new MockCandidate();
+    beforeEach(async () => {
+        const candidateServiceSpy = {
+            get: vi.fn().mockName("CandidateService.get"),
+            updateMedia: vi.fn().mockName("CandidateService.updateMedia")
+        };
+        const activeModalSpy = {
+            close: vi.fn().mockName("NgbActiveModal.close"),
+            dismiss: vi.fn().mockName("NgbActiveModal.dismiss")
+        };
 
-    await TestBed.configureTestingModule({
-      declarations: [EditCandidateMediaWillingnessComponent],
-      imports: [FormsModule,ReactiveFormsModule, NgSelectModule],
-      providers: [
-        UntypedFormBuilder,
-        { provide: NgbActiveModal, useValue: activeModalSpy },
-        { provide: CandidateService, useValue: candidateServiceSpy },
-        provideHttpClient(withXhr(), withInterceptorsFromDi()),
-        provideHttpClientTesting()
-      ]
-    })
-    .compileComponents();
+        await TestBed.configureTestingModule({
+            declarations: [EditCandidateMediaWillingnessComponent],
+            imports: [FormsModule, ReactiveFormsModule, NgSelectModule],
+            providers: [
+                UntypedFormBuilder,
+                { provide: NgbActiveModal, useValue: activeModalSpy },
+                { provide: CandidateService, useValue: candidateServiceSpy },
+                provideHttpClient(withXhr(), withInterceptorsFromDi()),
+                provideHttpClientTesting()
+            ]
+        })
+            .compileComponents();
 
-    fb = TestBed.inject(UntypedFormBuilder) as jasmine.SpyObj<UntypedFormBuilder>;
-    mockActiveModal = TestBed.inject(NgbActiveModal) as jasmine.SpyObj<NgbActiveModal>;
-    mockCandidateService = TestBed.inject(CandidateService) as jasmine.SpyObj<CandidateService>;
-  });
+        fb = TestBed.inject(UntypedFormBuilder) as MockedObject<UntypedFormBuilder>;
+        mockActiveModal = TestBed.inject(NgbActiveModal) as MockedObject<NgbActiveModal>;
+        mockCandidateService = TestBed.inject(CandidateService) as MockedObject<CandidateService>;
+    });
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(EditCandidateMediaWillingnessComponent);
-    component = fixture.componentInstance;
+    beforeEach(() => {
+        fixture = TestBed.createComponent(EditCandidateMediaWillingnessComponent);
+        component = fixture.componentInstance;
 
-    mockCandidateService.get.and.returnValue(of(mockCandidate));
-    component.candidateId = 1;
-    fixture.detectChanges();
-  });
+        mockCandidateService.get.mockReturnValue(of(mockCandidate));
+        component.candidateId = 1;
+        fixture.detectChanges();
+    });
 
-  it('should create', () => {
-    mockCandidateService.get.and.returnValue(of(mockCandidate));
-    fixture.detectChanges();
-    expect(component).toBeTruthy();
-  });
+    it('should create', () => {
+        mockCandidateService.get.mockReturnValue(of(mockCandidate));
+        fixture.detectChanges();
+        expect(component).toBeTruthy();
+    });
 
-  it('should initialize form with candidate media willingness', () => {
-    mockCandidateService.get.and.returnValue(of(mockCandidate));
+    it('should initialize form with candidate media willingness', () => {
+        mockCandidateService.get.mockReturnValue(of(mockCandidate));
 
-    fixture.detectChanges();
+        fixture.detectChanges();
 
-    expect(component.candidateForm).toBeDefined();
-    expect(component.candidateForm.get('mediaWillingness').value).toEqual('Yes, open to media');
-  });
+        expect(component.candidateForm).toBeDefined();
+        expect(component.candidateForm.get('mediaWillingness').value).toEqual('Yes, open to media');
+    });
 
-  it('should call updateMedia on save and close the modal with updated candidate', () => {
-    mockCandidateService.get.and.returnValue(of(mockCandidate));
-    mockCandidateService.updateMedia.and.returnValue(of(mockCandidate));
+    it('should call updateMedia on save and close the modal with updated candidate', () => {
+        mockCandidateService.get.mockReturnValue(of(mockCandidate));
+        mockCandidateService.updateMedia.mockReturnValue(of(mockCandidate));
 
-    fixture.detectChanges();
+        fixture.detectChanges();
 
-    component.candidateForm.get('mediaWillingness').setValue('No');
-    component.onSave();
+        component.candidateForm.get('mediaWillingness').setValue('No');
+        component.onSave();
 
-    expect(mockCandidateService.updateMedia).toHaveBeenCalledWith(mockCandidate.id, { mediaWillingness: 'No' });
-    expect(mockActiveModal.close).toHaveBeenCalledWith(mockCandidate);
-  });
+        expect(mockCandidateService.updateMedia).toHaveBeenCalledWith(mockCandidate.id, { mediaWillingness: 'No' });
+        expect(mockActiveModal.close).toHaveBeenCalledWith(mockCandidate);
+    });
 
-  it('should handle errors on save', () => {
-    const errorResponse = { error: 'error message' };
-    mockCandidateService.get.and.returnValue(of(mockCandidate));
-    mockCandidateService.updateMedia.and.returnValue(throwError(errorResponse));
+    it('should handle errors on save', () => {
+        const errorResponse = { error: 'error message' };
+        mockCandidateService.get.mockReturnValue(of(mockCandidate));
+        mockCandidateService.updateMedia.mockReturnValue(throwError(errorResponse));
 
-    fixture.detectChanges();
+        fixture.detectChanges();
 
-    component.candidateForm.get('mediaWillingness').setValue('No');
-    component.onSave();
+        component.candidateForm.get('mediaWillingness').setValue('No');
+        component.onSave();
 
-    expect(mockCandidateService.updateMedia).toHaveBeenCalledWith(1, { mediaWillingness: 'No' });
-    expect(component.error).toEqual(errorResponse);
-    expect(mockActiveModal.close).not.toHaveBeenCalled();
-  });
+        expect(mockCandidateService.updateMedia).toHaveBeenCalledWith(1, { mediaWillingness: 'No' });
+        expect(component.error).toEqual(errorResponse);
+        expect(mockActiveModal.close).not.toHaveBeenCalled();
+    });
 
-  it('should dismiss the modal', () => {
-    component.dismiss();
-    expect(mockActiveModal.dismiss).toHaveBeenCalledWith(false);
-  });
+    it('should dismiss the modal', () => {
+        component.dismiss();
+        expect(mockActiveModal.dismiss).toHaveBeenCalledWith(false);
+    });
 });

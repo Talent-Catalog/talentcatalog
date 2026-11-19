@@ -14,6 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
+import type {MockedObject} from "vitest";
 import {TestBed} from '@angular/core/testing';
 import {HttpTestingController, provideHttpClientTesting} from '@angular/common/http/testing';
 import {AuthenticationService} from './authentication.service';
@@ -27,135 +28,137 @@ import {config_test} from "../../config-test";
 import {EncodedQrImage} from "../util/qr";
 import {LocalStorageService} from "./local-storage.service";
 import {TcInstanceType} from "../model/tc-instance-type";
+import {expect, vi} from 'vitest';
 
 describe('AuthenticationService', () => {
-  let service: AuthenticationService;
-  let httpMock: HttpTestingController;
-  let localStorageService: jasmine.SpyObj<LocalStorageService>;
+    let service: AuthenticationService;
+    let httpMock: HttpTestingController;
+    let localStorageService: MockedObject<LocalStorageService>;
 
-  beforeEach(() => {
-    const localStorageSpy = jasmine.createSpyObj('LocalStorageService', ['get', 'set', 'remove']);
+    beforeEach(() => {
+        const localStorageSpy = {
+            get: vi.fn().mockName("LocalStorageService.get"),
+            set: vi.fn().mockName("LocalStorageService.set"),
+            remove: vi.fn().mockName("LocalStorageService.remove")
+        };
 
-    TestBed.configureTestingModule({
-      providers: [
-        AuthenticationService,
-        { provide: LocalStorageService, useValue: localStorageSpy },
-        provideHttpClient(withXhr(), withInterceptorsFromDi()),
-        provideHttpClientTesting()
-      ]
+        TestBed.configureTestingModule({
+            providers: [
+                AuthenticationService,
+                { provide: LocalStorageService, useValue: localStorageSpy },
+                provideHttpClient(withXhr(), withInterceptorsFromDi()),
+                provideHttpClientTesting()
+            ]
+        });
+
+        service = TestBed.inject(AuthenticationService);
+        httpMock = TestBed.inject(HttpTestingController);
+        localStorageService = TestBed.inject(LocalStorageService) as MockedObject<LocalStorageService>;
     });
 
-    service = TestBed.inject(AuthenticationService);
-    httpMock = TestBed.inject(HttpTestingController);
-    localStorageService = TestBed.inject(LocalStorageService) as jasmine.SpyObj<LocalStorageService>;
-  });
-
-  afterEach(() => {
-    httpMock.verify();
-  });
-
-  it('should be created', () => {
-    expect(service).toBeTruthy();
-  });
-
-  it('should set logged in user and update local storage', () => {
-    const user: User = { id: 1, name: 'Test User', role: 'user', readOnly: false } as User;
-    service.setLoggedInUser(user);
-
-    expect(service['loggedInUser']).toEqual(user);
-    expect(localStorageService.set).toHaveBeenCalledWith('user', user);
-  });
-
-  it('should log in and store credentials', () => {
-    const credentials: LoginRequest = { username: config_test.credentials.username, password: config_test.credentials.password,totpToken:config_test.credentials.totpToken,reCaptchaV3Token:'' };
-    const jwtResponse: JwtAuthenticationResponse = {
-      accessToken: 'test-token',
-      tcInstanceType: TcInstanceType.TBB,
-      tokenType: 'Bearer',
-      user: { id: 1, name: 'Test User', role: 'user', readOnly: false } as User,
-      canViewChats: true
-    };
-
-    service.login(credentials).subscribe(response => {
-      expect(service['loggedInUser']).toEqual(jwtResponse.user);
-      expect(localStorageService.set).toHaveBeenCalledWith('access-token', jwtResponse.accessToken);
-      expect(localStorageService.set).toHaveBeenCalledWith('user', jwtResponse.user);
+    afterEach(() => {
+        httpMock.verify();
     });
 
-    const req = httpMock.expectOne(`${environment.apiUrl}/auth/login`);
-    expect(req.request.method).toBe('POST');
-    req.flush(jwtResponse);
-  });
-
-  it('should handle login error', () => {
-    const credentials: LoginRequest = { username: config_test.credentials.username, password: config_test.credentials.password,totpToken:config_test.credentials.totpToken,reCaptchaV3Token:'' };
-    const errorResponse = { status: 401, statusText: 'Unauthorized' };
-
-    service.login(credentials).subscribe(
-      () => fail('expected an error, not credentials'),
-      error => {
-        expect(error.status).toBe(401);
-      }
-    );
-
-    const req = httpMock.expectOne(`${environment.apiUrl}/auth/login`);
-    expect(req.request.method).toBe('POST');
-    req.flush(null, errorResponse);
-  });
-
-  it('should log out and clear credentials', () => {
-    const httpClient = TestBed.inject(HttpClient);
-    const postSpy = httpClient.post = jasmine.createSpy().and.returnValue(of(null));
-
-    service.logout();
-
-    expect(postSpy).toHaveBeenCalledWith(`${environment.apiUrl}/auth/logout`, null);
-    expect(localStorageService.remove).toHaveBeenCalledWith('user');
-    expect(localStorageService.remove).toHaveBeenCalledWith('access-token');
-    expect(service['loggedInUser']).toBeNull();
-  });
-
-  it('should get logged in user from local storage', () => {
-    const user: User = { id: 1, name: 'Test User', role: 'user', readOnly: false } as User;
-    localStorageService.get.and.returnValue(user);
-
-    const loggedInUser = service.getLoggedInUser();
-    expect(loggedInUser).toEqual(user);
-    expect(localStorageService.get).toHaveBeenCalledWith('user');
-  });
-
-  it('should handle invalid user info in local storage', () => {
-    localStorageService.get.and.returnValue({});
-
-    spyOn(service, 'logout');
-    const loggedInUser = service.getLoggedInUser();
-    expect(loggedInUser).toBeNull();
-    expect(service.logout).toHaveBeenCalled();
-  });
-
-  it('should set null logged in user if local storage is cleared', () => {
-    localStorageService.get.and.returnValue(null);
-
-    const loggedInUser = service.getLoggedInUser();
-    expect(loggedInUser).toBeNull();
-    expect(localStorageService.get).toHaveBeenCalledWith('user');
-  });
-
-  it('should complete loggedInUser$ subject on destroy', () => {
-    spyOn(service['loggedInUser$'], 'complete');
-    service.ngOnDestroy();
-    expect(service['loggedInUser$'].complete).toHaveBeenCalled();
-  });
-
-  it('should set up MFA and return encoded QR image', () => {
-    const encodedQrImage:EncodedQrImage = { base64Encoding: 'test-image' };
-
-    service.mfaSetup().subscribe(response => {
-      return expect(response).toEqual(encodedQrImage);
+    it('should be created', () => {
+        expect(service).toBeTruthy();
     });
 
-    const req = httpMock.expectOne(`${environment.apiUrl}/auth/mfa-setup`);
-    expect(req.request.method).toBe('POST');
-    req.flush(encodedQrImage);
-  });
+    it('should set logged in user and update local storage', () => {
+        const user: User = { id: 1, name: 'Test User', role: 'user', readOnly: false } as User;
+        service.setLoggedInUser(user);
+
+        expect(service['loggedInUser']).toEqual(user);
+        expect(localStorageService.set).toHaveBeenCalledWith('user', user);
+    });
+
+    it('should log in and store credentials', () => {
+        const credentials: LoginRequest = { username: config_test.credentials.username, password: config_test.credentials.password, totpToken: config_test.credentials.totpToken, reCaptchaV3Token: '' };
+        const jwtResponse: JwtAuthenticationResponse = {
+            accessToken: 'test-token',
+            tcInstanceType: TcInstanceType.TBB,
+            tokenType: 'Bearer',
+            user: { id: 1, name: 'Test User', role: 'user', readOnly: false } as User,
+            canViewChats: true
+        };
+
+        service.login(credentials).subscribe(response => {
+            expect(service['loggedInUser']).toEqual(jwtResponse.user);
+            expect(localStorageService.set).toHaveBeenCalledWith('access-token', jwtResponse.accessToken);
+            expect(localStorageService.set).toHaveBeenCalledWith('user', jwtResponse.user);
+        });
+
+        const req = httpMock.expectOne(`${environment.apiUrl}/auth/login`);
+        expect(req.request.method).toBe('POST');
+        req.flush(jwtResponse);
+    });
+
+    it('should handle login error', () => {
+        const credentials: LoginRequest = { username: config_test.credentials.username, password: config_test.credentials.password, totpToken: config_test.credentials.totpToken, reCaptchaV3Token: '' };
+        const errorResponse = { status: 401, statusText: 'Unauthorized' };
+
+        service.login(credentials).subscribe(() => expect.fail('expected an error, not credentials'), error => {
+            expect(error.status).toBe(401);
+        });
+
+        const req = httpMock.expectOne(`${environment.apiUrl}/auth/login`);
+        expect(req.request.method).toBe('POST');
+        req.flush(null, errorResponse);
+    });
+
+    it('should log out and clear credentials', () => {
+        const httpClient = TestBed.inject(HttpClient);
+        const postSpy = httpClient.post = vi.fn().mockReturnValue(of(null));
+
+        service.logout();
+
+        expect(postSpy).toHaveBeenCalledWith(`${environment.apiUrl}/auth/logout`, null);
+        expect(localStorageService.remove).toHaveBeenCalledWith('user');
+        expect(localStorageService.remove).toHaveBeenCalledWith('access-token');
+        expect(service['loggedInUser']).toBeNull();
+    });
+
+    it('should get logged in user from local storage', () => {
+        const user: User = { id: 1, name: 'Test User', role: 'user', readOnly: false } as User;
+        localStorageService.get.mockReturnValue(user);
+
+        const loggedInUser = service.getLoggedInUser();
+        expect(loggedInUser).toEqual(user);
+        expect(localStorageService.get).toHaveBeenCalledWith('user');
+    });
+
+    it('should handle invalid user info in local storage', () => {
+        localStorageService.get.mockReturnValue({});
+
+        vi.spyOn(service, 'logout').mockReturnValue(undefined);
+        const loggedInUser = service.getLoggedInUser();
+        expect(loggedInUser).toBeNull();
+        expect(service.logout).toHaveBeenCalled();
+    });
+
+    it('should set null logged in user if local storage is cleared', () => {
+        localStorageService.get.mockReturnValue(null);
+
+        const loggedInUser = service.getLoggedInUser();
+        expect(loggedInUser).toBeNull();
+        expect(localStorageService.get).toHaveBeenCalledWith('user');
+    });
+
+    it('should complete loggedInUser$ subject on destroy', () => {
+        vi.spyOn(service['loggedInUser$'], 'complete').mockReturnValue(undefined);
+        service.ngOnDestroy();
+        expect(service['loggedInUser$'].complete).toHaveBeenCalled();
+    });
+
+    it('should set up MFA and return encoded QR image', () => {
+        const encodedQrImage: EncodedQrImage = { base64Encoding: 'test-image' };
+
+        service.mfaSetup().subscribe(response => {
+            return expect(response).toEqual(encodedQrImage);
+        });
+
+        const req = httpMock.expectOne(`${environment.apiUrl}/auth/mfa-setup`);
+        expect(req.request.method).toBe('POST');
+        req.flush(encodedQrImage);
+    });
 });

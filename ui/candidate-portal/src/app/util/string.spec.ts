@@ -18,27 +18,27 @@
 import {isHtml, truncate} from './string';
 
 describe('string utilities', () => {
-  describe('truncate', () => {
-    it('truncates a string longer than the maximum length', () => {
-      expect(truncate('Talent Catalog', 6)).toBe('Talent...');
+    describe('truncate', () => {
+        it('truncates a string longer than the maximum length', () => {
+            expect(truncate('Talent Catalog', 6)).toBe('Talent...');
+        });
+
+        it('returns a string unchanged when it is not longer than the maximum', () => {
+            expect(truncate('Talent', 6)).toBe('Talent');
+        });
+
+        it('returns an empty string unchanged', () => {
+            expect(truncate('', 6)).toBe('');
+        });
     });
 
-    it('returns a string unchanged when it is not longer than the maximum', () => {
-      expect(truncate('Talent', 6)).toBe('Talent');
-    });
+    describe('isHtml', () => {
+        it('returns true when the text contains an HTML tag', () => {
+            expect(isHtml('<strong>Talent</strong>')).toBe(true);
+        });
 
-    it('returns an empty string unchanged', () => {
-      expect(truncate('', 6)).toBe('');
+        it('returns false for plain text', () => {
+            expect(isHtml('Talent Catalog')).toBe(false);
+        });
     });
-  });
-
-  describe('isHtml', () => {
-    it('returns true when the text contains an HTML tag', () => {
-      expect(isHtml('<strong>Talent</strong>')).toBeTrue();
-    });
-
-    it('returns false for plain text', () => {
-      expect(isHtml('Talent Catalog')).toBeFalse();
-    });
-  });
 });

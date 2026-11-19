@@ -14,12 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 import {ComponentFixture, TestBed} from '@angular/core/testing';
-import {
-  FormsModule,
-  ReactiveFormsModule,
-  UntypedFormBuilder,
-  UntypedFormControl
-} from '@angular/forms';
+import {FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormControl} from '@angular/forms';
 import {ArrestImprisonComponent} from './arrest-imprison.component';
 import {CandidateService} from '../../../../services/candidate.service';
 import {YesNoUnsure} from '../../../../model/candidate';
@@ -27,47 +22,48 @@ import {AutosaveStatusComponent} from "../../../util/autosave-status/autosave-st
 import {NgSelectModule} from "@ng-select/ng-select";
 import {provideHttpClientTesting} from "@angular/common/http/testing";
 import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
+import {expect} from 'vitest';
 
 describe('ArrestImprisonComponent', () => {
-  let component: ArrestImprisonComponent;
-  let fixture: ComponentFixture<ArrestImprisonComponent>;
-  let fb: UntypedFormBuilder;
+    let component: ArrestImprisonComponent;
+    let fixture: ComponentFixture<ArrestImprisonComponent>;
+    let fb: UntypedFormBuilder;
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      declarations: [ArrestImprisonComponent,AutosaveStatusComponent],
-      imports: [NgSelectModule,FormsModule,ReactiveFormsModule],
-      providers: [
-        UntypedFormControl,
-        UntypedFormBuilder,
-        { provide: CandidateService },
-        provideHttpClient(withXhr(), withInterceptorsFromDi()),
-        provideHttpClientTesting()
-      ]
-    }).compileComponents();
+    beforeEach(async () => {
+        await TestBed.configureTestingModule({
+            declarations: [ArrestImprisonComponent, AutosaveStatusComponent],
+            imports: [NgSelectModule, FormsModule, ReactiveFormsModule],
+            providers: [
+                UntypedFormControl,
+                UntypedFormBuilder,
+                { provide: CandidateService },
+                provideHttpClient(withXhr(), withInterceptorsFromDi()),
+                provideHttpClientTesting()
+            ]
+        }).compileComponents();
 
-    fb = TestBed.inject(UntypedFormBuilder);
-  });
+        fb = TestBed.inject(UntypedFormBuilder);
+    });
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(ArrestImprisonComponent);
-    component = fixture.componentInstance;
-    component.candidateIntakeData = {
-      arrestImprison: YesNoUnsure.Yes,
-      arrestImprisonNotes: 'Some notes about the arrest'
-    };
-    component.editable = true; // Assuming editable is true for this test
-    fixture.detectChanges(); // Trigger initial data binding
-  });
+    beforeEach(() => {
+        fixture = TestBed.createComponent(ArrestImprisonComponent);
+        component = fixture.componentInstance;
+        component.candidateIntakeData = {
+            arrestImprison: YesNoUnsure.Yes,
+            arrestImprisonNotes: 'Some notes about the arrest'
+        };
+        component.editable = true; // Assuming editable is true for this test
+        fixture.detectChanges(); // Trigger initial data binding
+    });
 
-  it('should initialize the form correctly with the provided candidate intake data', () => {
-    expect(component.form).toBeTruthy();
-    const arrestImprisonControl = component.form.get('arrestImprison');
-    const arrestImprisonNotesControl = component.form.get('arrestImprisonNotes');
+    it('should initialize the form correctly with the provided candidate intake data', () => {
+        expect(component.form).toBeTruthy();
+        const arrestImprisonControl = component.form.get('arrestImprison');
+        const arrestImprisonNotesControl = component.form.get('arrestImprisonNotes');
 
-    expect(arrestImprisonControl.value).toBe('Yes');
-    expect(arrestImprisonControl.disabled).toBeFalse();
-    expect(arrestImprisonNotesControl.value).toBe('Some notes about the arrest');
-    expect(arrestImprisonNotesControl.disabled).toBeFalse();
-  });
+        expect(arrestImprisonControl.value).toBe('Yes');
+        expect(arrestImprisonControl.disabled).toBe(false);
+        expect(arrestImprisonNotesControl.value).toBe('Some notes about the arrest');
+        expect(arrestImprisonNotesControl.disabled).toBe(false);
+    });
 });

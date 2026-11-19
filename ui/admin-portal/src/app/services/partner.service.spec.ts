@@ -25,6 +25,7 @@ import {SearchPartnerRequest, Status} from '../model/base';
 import {MockPartner} from "../MockData/MockPartner";
 import {Job} from "../model/job";
 import {MockJob} from "../MockData/MockJob";
+import {expect} from 'vitest';
 
 describe('PartnerService', () => {
   let service: PartnerService;

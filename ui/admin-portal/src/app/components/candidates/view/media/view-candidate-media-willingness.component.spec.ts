@@ -13,6 +13,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
+
+import type {MockedObject} from "vitest";
 import {ViewCandidateMediaWillingnessComponent} from "./view-candidate-media-willingness.component";
 import {ComponentFixture, TestBed} from "@angular/core/testing";
 import {NgbActiveModal, NgbModal, NgbModalModule, NgbNavModule} from "@ng-bootstrap/ng-bootstrap";
@@ -22,78 +24,83 @@ import {CandidateService} from "../../../../services/candidate.service";
 import {provideHttpClientTesting} from "@angular/common/http/testing";
 import {provideHttpClient, withInterceptorsFromDi, withXhr} from "@angular/common/http";
 import {CUSTOM_ELEMENTS_SCHEMA} from "@angular/core";
+import {expect, vi} from 'vitest';
 
 describe('ViewCandidateMediaWillingnessComponent', () => {
-  let component: ViewCandidateMediaWillingnessComponent;
-  let fixture: ComponentFixture<ViewCandidateMediaWillingnessComponent>;
-  let mockModalService: jasmine.SpyObj<NgbModal>;
-  let mockCandidateService: jasmine.SpyObj<CandidateService>;
-  beforeEach(async () => {
-    mockModalService = jasmine.createSpyObj('NgbModal', ['open']);
-    mockCandidateService = jasmine.createSpyObj('CandidateService', ['updateCandidate']);
+    let component: ViewCandidateMediaWillingnessComponent;
+    let fixture: ComponentFixture<ViewCandidateMediaWillingnessComponent>;
+    let mockModalService: MockedObject<NgbModal>;
+    let mockCandidateService: MockedObject<CandidateService>;
+    beforeEach(async () => {
+        mockModalService = ({
+            open: vi.fn().mockName("NgbModal.open")
+        } as unknown as typeof mockModalService);
+        mockCandidateService = ({
+            updateCandidate: vi.fn().mockName("CandidateService.updateCandidate")
+        } as unknown as typeof mockCandidateService);
 
-    await TestBed.configureTestingModule({
-      declarations: [ViewCandidateMediaWillingnessComponent],
-      imports: [NgbNavModule, NgbModalModule],
-      providers: [
-        { provide: CandidateService, userValue: mockCandidateService },
-        { provide: NgbModal, useValue: mockModalService },
-        NgbActiveModal,
-        provideHttpClient(withXhr(), withInterceptorsFromDi()),
-        provideHttpClientTesting(),
-      ],
-      schemas: [CUSTOM_ELEMENTS_SCHEMA],
-    })
-    .compileComponents();
-  });
+        await TestBed.configureTestingModule({
+            declarations: [ViewCandidateMediaWillingnessComponent],
+            imports: [NgbNavModule, NgbModalModule],
+            providers: [
+                { provide: CandidateService, userValue: mockCandidateService },
+                { provide: NgbModal, useValue: mockModalService },
+                NgbActiveModal,
+                provideHttpClient(withXhr(), withInterceptorsFromDi()),
+                provideHttpClientTesting(),
+            ],
+            schemas: [CUSTOM_ELEMENTS_SCHEMA],
+        })
+            .compileComponents();
+    });
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(ViewCandidateMediaWillingnessComponent);
-    component = fixture.componentInstance;
-    component.candidate = new MockCandidate();
-    component.editable = true;
-    fixture.detectChanges();
-  });
+    beforeEach(() => {
+        fixture = TestBed.createComponent(ViewCandidateMediaWillingnessComponent);
+        component = fixture.componentInstance;
+        component.candidate = new MockCandidate();
+        component.editable = true;
+        fixture.detectChanges();
+    });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
 
-  it('should show edit button when editable is true', () => {
-    component.editable = true;
-    fixture.detectChanges();
-    const editButton = fixture.nativeElement.querySelector('tc-card-header tc-button');
-    expect(editButton).toBeTruthy();
-  });
+    it('should show edit button when editable is true', () => {
+        component.editable = true;
+        fixture.detectChanges();
+        const editButton = fixture.nativeElement.querySelector('tc-card-header tc-button');
+        expect(editButton).toBeTruthy();
+    });
 
-  it('should not show edit button when editable is false', () => {
-    component.editable = false;
-    fixture.detectChanges();
-    const editButton = fixture.debugElement.query(By.css('.btn-secondary'));
-    expect(editButton).toBeFalsy();
-  });
+    it('should not show edit button when editable is false', () => {
+        component.editable = false;
+        fixture.detectChanges();
+        const editButton = fixture.debugElement.query(By.css('.btn-secondary'));
+        expect(editButton).toBeFalsy();
+    });
 
-  // it('should open modal on edit button click and update candidate data', async () => {
-  //   const mockModalRef = {
-  //     componentInstance: {
-  //       candidateId: null
-  //     },
-  //     result: Promise.resolve() // Simulate successful modal close with updated candidate
-  //   };
-  //
-  //   mockModalService.open.and.returnValue(mockModalRef as any);
-  //
-  //   component.editMediaWillingness();
-  //   expect(mockModalRef.componentInstance.candidateId).toBe(1);
-  //   expect(mockModalService.open).toHaveBeenCalledWith(EditCandidateMediaWillingnessComponent, {
-  //     centered: true,
-  //     backdrop: 'static'
-  //   });
-  //
-  //   await mockModalRef.result; // Wait for the promise to resolve
-  //
-  //   // todo - unsure why this part of the test fails, it's the same as in other place (see view-candidate-exam spec) but here it fails.
-  //   expect(mockCandidateService.updateCandidate).toHaveBeenCalled();
-  //
-  // });
+    // it('should open modal on edit button click and update candidate data', async () => {
+    //   const mockModalRef = {
+    //     componentInstance: {
+    //       candidateId: null
+    //     },
+    //     result: Promise.resolve() // Simulate successful modal close with updated candidate
+    //   };
+    //
+    //   mockModalService.open.and.returnValue(mockModalRef as any);
+    //
+    //   component.editMediaWillingness();
+    //   expect(mockModalRef.componentInstance.candidateId).toBe(1);
+    //   expect(mockModalService.open).toHaveBeenCalledWith(EditCandidateMediaWillingnessComponent, {
+    //     centered: true,
+    //     backdrop: 'static'
+    //   });
+    //
+    //   await mockModalRef.result; // Wait for the promise to resolve
+    //
+    //   // todo - unsure why this part of the test fails, it's the same as in other place (see view-candidate-exam spec) but here it fails.
+    //   expect(mockCandidateService.updateCandidate).toHaveBeenCalled();
+    //
+    // });
 });

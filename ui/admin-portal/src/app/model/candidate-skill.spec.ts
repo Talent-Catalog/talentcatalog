@@ -15,6 +15,7 @@
  */
 
 import {CandidateSkill} from "./candidate-skill";
+import {expect} from 'vitest';
 
 describe('CandidateSkill Interface', () => {
   it('should create an instance with correct properties', () => {

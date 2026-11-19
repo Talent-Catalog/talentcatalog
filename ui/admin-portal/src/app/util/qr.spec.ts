@@ -15,6 +15,7 @@
  */
 
 import {EncodedQrImage} from "./qr";
+import {expect} from 'vitest';
 
 export class QrImage implements EncodedQrImage {
   base64Encoding: string;

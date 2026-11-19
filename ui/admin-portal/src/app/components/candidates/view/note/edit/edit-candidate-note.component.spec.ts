@@ -27,66 +27,74 @@ import {MockUser} from "../../../../../MockData/MockUser";
 import {CandidateNote} from "../../../../../model/candidate-note";
 import {of} from "rxjs";
 import {NgxWigModule} from "ngx-wig";
+import {expect, vi} from 'vitest';
 
 describe('EditCandidateNoteComponent', () => {
-  let component: EditCandidateNoteComponent;
-  let fixture: ComponentFixture<EditCandidateNoteComponent>;
-  let mockActiveModal: any;
-  let mockCandidateNoteService: any;
-  let mockCountryService: any;
+    let component: EditCandidateNoteComponent;
+    let fixture: ComponentFixture<EditCandidateNoteComponent>;
+    let mockActiveModal: any;
+    let mockCandidateNoteService: any;
+    let mockCountryService: any;
 
-  const mockUser = new MockUser();
-  const mockCandidateNotes: CandidateNote[] = [{
-    id: 1,
-    title: 'Note 1',
-    comment: 'Comment',
-    noteType: 'Test',
-    createdBy: mockUser,
-    createdDate: 2012,
-    updatedBy: mockUser,
-    updatedDate: 2013,
-  }] as CandidateNote[];
+    const mockUser = new MockUser();
+    const mockCandidateNotes: CandidateNote[] = [{
+            id: 1,
+            title: 'Note 1',
+            comment: 'Comment',
+            noteType: 'Test',
+            createdBy: mockUser,
+            createdDate: 2012,
+            updatedBy: mockUser,
+            updatedDate: 2013,
+        }] as CandidateNote[];
 
-  beforeEach(waitForAsync(() => {
-    mockActiveModal = jasmine.createSpyObj('NgbActiveModal', ['close', 'dismiss']);
-    mockCandidateNoteService = jasmine.createSpyObj('CandidateNoteService', ['update']);
-    mockCountryService = jasmine.createSpyObj('CountryService', ['listCountries']);
+    beforeEach(waitForAsync(() => {
+        mockActiveModal = {
+            close: vi.fn().mockName("NgbActiveModal.close"),
+            dismiss: vi.fn().mockName("NgbActiveModal.dismiss")
+        };
+        mockCandidateNoteService = {
+            update: vi.fn().mockName("CandidateNoteService.update")
+        };
+        mockCountryService = {
+            listCountries: vi.fn().mockName("CountryService.listCountries")
+        };
 
-    TestBed.configureTestingModule({
-      declarations: [ EditCandidateNoteComponent ],
-      imports: [FormsModule,ReactiveFormsModule, NgSelectModule,NgxWigModule],
-      providers: [
-        UntypedFormBuilder,
-        { provide: NgbActiveModal, useValue: mockActiveModal },
-        { provide: CandidateNoteService, useValue: mockCandidateNoteService },
-        { provide: CountryService, useValue: mockCountryService },
-        provideHttpClient(withXhr(), withInterceptorsFromDi()),
-        provideHttpClientTesting()
-      ]
-    })
-    .compileComponents();
-  }));
+        TestBed.configureTestingModule({
+            declarations: [EditCandidateNoteComponent],
+            imports: [FormsModule, ReactiveFormsModule, NgSelectModule, NgxWigModule],
+            providers: [
+                UntypedFormBuilder,
+                { provide: NgbActiveModal, useValue: mockActiveModal },
+                { provide: CandidateNoteService, useValue: mockCandidateNoteService },
+                { provide: CountryService, useValue: mockCountryService },
+                provideHttpClient(withXhr(), withInterceptorsFromDi()),
+                provideHttpClientTesting()
+            ]
+        })
+            .compileComponents();
+    }));
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(EditCandidateNoteComponent);
-    component = fixture.componentInstance;
-    component.candidateNote = mockCandidateNotes[0];
-    fixture.detectChanges();
-  });
+    beforeEach(() => {
+        fixture = TestBed.createComponent(EditCandidateNoteComponent);
+        component = fixture.componentInstance;
+        component.candidateNote = mockCandidateNotes[0];
+        fixture.detectChanges();
+    });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
 
-  it('should initialize component with provided candidate note data', () => {
-    // Simulate the response from the countryService
-    const countries = ['Country1', 'Country2']; // Sample countries data
-    mockCountryService.listCountries.and.returnValue(of(countries));
+    it('should initialize component with provided candidate note data', () => {
+        // Simulate the response from the countryService
+        const countries = ['Country1', 'Country2']; // Sample countries data
+        mockCountryService.listCountries.mockReturnValue(of(countries));
 
-    component.ngOnInit();
+        component.ngOnInit();
 
-    expect(component.loading).toBe(false);
-    expect(component.candidateForm.get('title').value).toBe(mockCandidateNotes[0].title);
-    expect(component.candidateForm.get('comment').value).toBe(mockCandidateNotes[0].comment);
-  });
+        expect(component.loading).toBe(false);
+        expect(component.candidateForm.get('title').value).toBe(mockCandidateNotes[0].title);
+        expect(component.candidateForm.get('comment').value).toBe(mockCandidateNotes[0].comment);
+    });
 });

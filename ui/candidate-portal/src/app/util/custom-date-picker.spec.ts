@@ -14,49 +14,50 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
+import type {MockedObject} from "vitest";
 import {LanguageService} from '../services/language.service';
 import {CustomDatepickerI18n} from './custom-date-picker';
 
 describe('CustomDatepickerI18n', () => {
-  let languageService: jasmine.SpyObj<LanguageService>;
-  let service: CustomDatepickerI18n;
+    let languageService: MockedObject<LanguageService>;
+    let service: CustomDatepickerI18n;
 
-  beforeEach(() => {
-    languageService = jasmine.createSpyObj<LanguageService>(
-      'LanguageService',
-      ['getDatePickerMonthName', 'getDatePickerWeekdayName']
-    );
-    service = new CustomDatepickerI18n(languageService);
-  });
+    beforeEach(() => {
+        languageService = {
+            getDatePickerMonthName: vi.fn().mockName("LanguageService.getDatePickerMonthName"),
+            getDatePickerWeekdayName: vi.fn().mockName("LanguageService.getDatePickerWeekdayName")
+        } as unknown as MockedObject<LanguageService>;
+        service = new CustomDatepickerI18n(languageService);
+    });
 
-  it('returns the translated short month name', () => {
-    languageService.getDatePickerMonthName.and.returnValue('Jan');
+    it('returns the translated short month name', () => {
+        languageService.getDatePickerMonthName.mockReturnValue('Jan');
 
-    expect(service.getMonthShortName(1)).toBe('Jan');
-    expect(languageService.getDatePickerMonthName).toHaveBeenCalledWith(1);
-  });
+        expect(service.getMonthShortName(1)).toBe('Jan');
+        expect(languageService.getDatePickerMonthName).toHaveBeenCalledWith(1);
+    });
 
-  it('falls back to the month number when no translation is available', () => {
-    languageService.getDatePickerMonthName.and.returnValue('');
+    it('falls back to the month number when no translation is available', () => {
+        languageService.getDatePickerMonthName.mockReturnValue('');
 
-    expect(service.getMonthShortName(7)).toBe('7');
-  });
+        expect(service.getMonthShortName(7)).toBe('7');
+    });
 
-  it('uses the short month name as the full month name', () => {
-    languageService.getDatePickerMonthName.and.returnValue('February');
+    it('uses the short month name as the full month name', () => {
+        languageService.getDatePickerMonthName.mockReturnValue('February');
 
-    expect(service.getMonthFullName(2)).toBe('February');
-  });
+        expect(service.getMonthFullName(2)).toBe('February');
+    });
 
-  it('builds the day aria label from the date parts', () => {
-    expect(service.getDayAriaLabel({year: 2026, month: 7, day: 27}))
-    .toBe('27-7-2026');
-  });
+    it('builds the day aria label from the date parts', () => {
+        expect(service.getDayAriaLabel({ year: 2026, month: 7, day: 27 }))
+            .toBe('27-7-2026');
+    });
 
-  it('returns the translated weekday label', () => {
-    languageService.getDatePickerWeekdayName.and.returnValue('Mon');
+    it('returns the translated weekday label', () => {
+        languageService.getDatePickerWeekdayName.mockReturnValue('Mon');
 
-    expect(service.getWeekdayLabel(1, 'short')).toBe('Mon');
-    expect(languageService.getDatePickerWeekdayName).toHaveBeenCalledWith(1);
-  });
+        expect(service.getWeekdayLabel(1, 'short')).toBe('Mon');
+        expect(languageService.getDatePickerWeekdayName).toHaveBeenCalledWith(1);
+    });
 });

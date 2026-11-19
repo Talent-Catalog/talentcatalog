@@ -13,6 +13,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
+
+import type {MockedObject} from "vitest";
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {PreviewLinkComponent} from './preview-link.component';
 import {provideHttpClientTesting} from '@angular/common/http/testing';
@@ -20,197 +22,184 @@ import {provideHttpClient, withInterceptorsFromDi, withXhr} from '@angular/commo
 import {LinkPreviewService} from '../../../services/link-preview.service';
 import {of} from 'rxjs';
 import {LinkPreview} from '../../../model/link-preview';
+import {expect, vi} from 'vitest';
 
 describe('PreviewLinkComponent', () => {
-  let component: PreviewLinkComponent;
-  let fixture: ComponentFixture<PreviewLinkComponent>;
-  let linkPreviewService: jasmine.SpyObj<LinkPreviewService>;
+    let component: PreviewLinkComponent;
+    let fixture: ComponentFixture<PreviewLinkComponent>;
+    let linkPreviewService: MockedObject<LinkPreviewService>;
 
-  // Mock LinkPreview data
-  const mockLinkPreview: LinkPreview = {
-    id: 1,
-    url: 'https://example.com',
-    blocked: false,
-    domain: 'example.com',
-    title: 'Example Title',
-    description: 'Example description',
-    imageUrl: 'https://example.com/image.jpg',
-    faviconUrl: 'https://example.com/favicon.ico',
-  };
-
-  beforeEach(async () => {
-    linkPreviewService = jasmine.createSpyObj<LinkPreviewService>(
-      'LinkPreviewService',
-      ['delete']
-    );
-    linkPreviewService.delete.and.returnValue(of(void 0));
-
-    await TestBed.configureTestingModule({
-      declarations: [PreviewLinkComponent],
-      providers: [
-        {
-          provide: LinkPreviewService,
-          useValue: linkPreviewService
-        },
-        provideHttpClient(withXhr(), withInterceptorsFromDi()),
-        provideHttpClientTesting()
-      ]
-    }).compileComponents();
-  });
-
-  beforeEach(() => {
-    fixture = TestBed.createComponent(PreviewLinkComponent);
-    component = fixture.componentInstance;
-
-    // Assign the mock link preview to the component before running change detection
-    component.linkPreview = mockLinkPreview;
-    component.userIsPostAuthor = true;  // Mock that the user is the post author
-
-    fixture.detectChanges();  // Run change detection after assigning values
-  });
-
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
-
-  it('should display the link preview', () => {
-    const compiled = fixture.nativeElement;
-    const link = compiled.querySelector('.link-wrapper');
-    expect(link).toBeTruthy();
-    expect(link.href).toContain('https://example.com');
-  });
-
-  it('should display the block button if user is post author', () => {
-    const compiled = fixture.nativeElement;
-    const blockButton = compiled.querySelector('.block-button');
-    expect(blockButton).toBeTruthy();
-  });
-
-  it('should not display block button if user is not post author', () => {
-    component.userIsPostAuthor = false;  // Change user role in the test
-    fixture.detectChanges();  // Trigger change detection
-
-    const compiled = fixture.nativeElement;
-    const blockButton = compiled.querySelector('.block-button');
-    expect(blockButton).toBeNull();  // Block button should not be present
-  });
-
-  it('should run ngOnInit', () => {
-    expect(() => component.ngOnInit()).not.toThrow();
-  });
-
-  it('should render link preview details', () => {
-    const compiled: HTMLElement = fixture.nativeElement;
-
-    expect(compiled.textContent).toContain(mockLinkPreview.domain);
-    expect(compiled.textContent).toContain(mockLinkPreview.title);
-    expect(compiled.textContent).toContain(mockLinkPreview.description);
-
-    const favicon = compiled.querySelector(
-      '.favicon'
-    ) as HTMLImageElement;
-
-    const previewImage = compiled.querySelector(
-      '.preview-img'
-    ) as HTMLImageElement;
-
-    expect(favicon).toBeTruthy();
-    expect(favicon.src).toContain(mockLinkPreview.faviconUrl);
-    expect(previewImage).toBeTruthy();
-    expect(previewImage.src).toContain(mockLinkPreview.imageUrl);
-  });
-
-  it('should render fallback link icon when favicon is missing', () => {
-    component.linkPreview = {
-      ...mockLinkPreview,
-      faviconUrl: null
+    // Mock LinkPreview data
+    const mockLinkPreview: LinkPreview = {
+        id: 1,
+        url: 'https://example.com',
+        blocked: false,
+        domain: 'example.com',
+        title: 'Example Title',
+        description: 'Example description',
+        imageUrl: 'https://example.com/image.jpg',
+        faviconUrl: 'https://example.com/favicon.ico',
     };
 
-    fixture.detectChanges();
+    beforeEach(async () => {
+        linkPreviewService = ({
+            delete: vi.fn().mockName("LinkPreviewService.delete")
+        } as unknown as typeof linkPreviewService);
+        linkPreviewService.delete.mockReturnValue(of(void 0));
 
-    expect(
-      fixture.nativeElement.querySelector('.favicon')
-    ).toBeNull();
+        await TestBed.configureTestingModule({
+            declarations: [PreviewLinkComponent],
+            providers: [
+                {
+                    provide: LinkPreviewService,
+                    useValue: linkPreviewService
+                },
+                provideHttpClient(withXhr(), withInterceptorsFromDi()),
+                provideHttpClientTesting()
+            ]
+        }).compileComponents();
+    });
 
-    expect(
-      fixture.nativeElement.querySelector('.link-icon')
-    ).toBeTruthy();
-  });
+    beforeEach(() => {
+        fixture = TestBed.createComponent(PreviewLinkComponent);
+        component = fixture.componentInstance;
 
-  it('should not render preview image when image URL is missing', () => {
-    component.linkPreview = {
-      ...mockLinkPreview,
-      imageUrl: null
-    };
+        // Assign the mock link preview to the component before running change detection
+        component.linkPreview = mockLinkPreview;
+        component.userIsPostAuthor = true; // Mock that the user is the post author
 
-    fixture.detectChanges();
+        fixture.detectChanges(); // Run change detection after assigning values
+    });
 
-    expect(
-      fixture.nativeElement.querySelector('.preview-img')
-    ).toBeNull();
-  });
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
 
-  it('should not render preview content when preview is blocked', () => {
-    component.linkPreview = {
-      ...mockLinkPreview,
-      blocked: true
-    };
+    it('should display the link preview', () => {
+        const compiled = fixture.nativeElement;
+        const link = compiled.querySelector('.link-wrapper');
+        expect(link).toBeTruthy();
+        expect(link.href).toContain('https://example.com');
+    });
 
-    fixture.detectChanges();
+    it('should display the block button if user is post author', () => {
+        const compiled = fixture.nativeElement;
+        const blockButton = compiled.querySelector('.block-button');
+        expect(blockButton).toBeTruthy();
+    });
 
-    expect(
-      fixture.nativeElement.querySelector('.link-preview')
-    ).toBeNull();
-  });
+    it('should not display block button if user is not post author', () => {
+        component.userIsPostAuthor = false; // Change user role in the test
+        fixture.detectChanges(); // Trigger change detection
 
-  it('should not render anything when linkPreview is absent', () => {
-    component.linkPreview = null;
+        const compiled = fixture.nativeElement;
+        const blockButton = compiled.querySelector('.block-button');
+        expect(blockButton).toBeNull(); // Block button should not be present
+    });
 
-    fixture.detectChanges();
+    it('should run ngOnInit', () => {
+        expect(() => component.ngOnInit()).not.toThrow();
+    });
 
-    expect(
-      fixture.nativeElement.querySelector('.link-wrapper')
-    ).toBeNull();
-  });
+    it('should render link preview details', () => {
+        const compiled: HTMLElement = fixture.nativeElement;
 
-  it('should block preview, stop browser navigation and delete persisted preview', () => {
-    const event = jasmine.createSpyObj<Event>(
-      'Event',
-      ['stopPropagation', 'preventDefault']
-    );
+        expect(compiled.textContent).toContain(mockLinkPreview.domain);
+        expect(compiled.textContent).toContain(mockLinkPreview.title);
+        expect(compiled.textContent).toContain(mockLinkPreview.description);
 
-    component.linkPreview = {
-      ...mockLinkPreview,
-      id: 5,
-      blocked: false
-    };
+        const favicon = compiled.querySelector('.favicon') as HTMLImageElement;
 
-    component.blockLinkPreview(event);
+        const previewImage = compiled.querySelector('.preview-img') as HTMLImageElement;
 
-    expect(event.stopPropagation).toHaveBeenCalledTimes(1);
-    expect(event.preventDefault).toHaveBeenCalledTimes(1);
-    expect(component.linkPreview.blocked).toBeTrue();
-    expect(linkPreviewService.delete).toHaveBeenCalledOnceWith(5);
-  });
+        expect(favicon).toBeTruthy();
+        expect(favicon.src).toContain(mockLinkPreview.faviconUrl);
+        expect(previewImage).toBeTruthy();
+        expect(previewImage.src).toContain(mockLinkPreview.imageUrl);
+    });
 
-  it('should block a new preview without calling delete', () => {
-    const event = jasmine.createSpyObj<Event>(
-      'Event',
-      ['stopPropagation', 'preventDefault']
-    );
+    it('should render fallback link icon when favicon is missing', () => {
+        component.linkPreview = {
+            ...mockLinkPreview,
+            faviconUrl: null
+        };
 
-    component.linkPreview = {
-      ...mockLinkPreview,
-      id: null,
-      blocked: false
-    };
+        fixture.detectChanges();
 
-    component.blockLinkPreview(event);
+        expect(fixture.nativeElement.querySelector('.favicon')).toBeNull();
 
-    expect(event.stopPropagation).toHaveBeenCalledTimes(1);
-    expect(event.preventDefault).toHaveBeenCalledTimes(1);
-    expect(component.linkPreview.blocked).toBeTrue();
-    expect(linkPreviewService.delete).not.toHaveBeenCalled();
-  });
+        expect(fixture.nativeElement.querySelector('.link-icon')).toBeTruthy();
+    });
+
+    it('should not render preview image when image URL is missing', () => {
+        component.linkPreview = {
+            ...mockLinkPreview,
+            imageUrl: null
+        };
+
+        fixture.detectChanges();
+
+        expect(fixture.nativeElement.querySelector('.preview-img')).toBeNull();
+    });
+
+    it('should not render preview content when preview is blocked', () => {
+        component.linkPreview = {
+            ...mockLinkPreview,
+            blocked: true
+        };
+
+        fixture.detectChanges();
+
+        expect(fixture.nativeElement.querySelector('.link-preview')).toBeNull();
+    });
+
+    it('should not render anything when linkPreview is absent', () => {
+        component.linkPreview = null;
+
+        fixture.detectChanges();
+
+        expect(fixture.nativeElement.querySelector('.link-wrapper')).toBeNull();
+    });
+
+    it('should block preview, stop browser navigation and delete persisted preview', () => {
+        const event = {
+            stopPropagation: vi.fn().mockName("Event.stopPropagation"),
+            preventDefault: vi.fn().mockName("Event.preventDefault")
+        };
+
+        component.linkPreview = {
+            ...mockLinkPreview,
+            id: 5,
+            blocked: false
+        };
+
+        component.blockLinkPreview((event as unknown as Event));
+
+        expect(event.stopPropagation).toHaveBeenCalledTimes(1);
+        expect(event.preventDefault).toHaveBeenCalledTimes(1);
+        expect(component.linkPreview.blocked).toBe(true);
+        expect(linkPreviewService.delete).toHaveBeenCalledTimes(1);
+        expect(linkPreviewService.delete).toHaveBeenCalledWith(5);
+    });
+
+    it('should block a new preview without calling delete', () => {
+        const event = {
+            stopPropagation: vi.fn().mockName("Event.stopPropagation"),
+            preventDefault: vi.fn().mockName("Event.preventDefault")
+        };
+
+        component.linkPreview = {
+            ...mockLinkPreview,
+            id: null,
+            blocked: false
+        };
+
+        component.blockLinkPreview((event as unknown as Event));
+
+        expect(event.stopPropagation).toHaveBeenCalledTimes(1);
+        expect(event.preventDefault).toHaveBeenCalledTimes(1);
+        expect(component.linkPreview.blocked).toBe(true);
+        expect(linkPreviewService.delete).not.toHaveBeenCalled();
+    });
 
 });

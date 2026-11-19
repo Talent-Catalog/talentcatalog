@@ -14,6 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
+import type {Mock, MockedObject} from "vitest";
 import {Component, EventEmitter, Input, Output, ChangeDetectionStrategy} from '@angular/core';
 import {ComponentFixture, TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
@@ -24,103 +25,113 @@ import {DownloadCvComponent} from './download-cv.component';
 import {CandidateService} from '../../../services/candidate.service';
 
 @Component({
-  selector: 'tc-button',
-  template: '<ng-content></ng-content>',
-  changeDetection: ChangeDetectionStrategy.Eager,
-  standalone: false
+    selector: 'tc-button',
+    template: '<ng-content></ng-content>',
+    changeDetection: ChangeDetectionStrategy.Eager,
+    standalone: false
 })
 class TcButtonStubComponent {
-  @Input() size?: string;
-  @Input() color?: string;
-  @Input() disabled?: boolean;
-  @Output() onClick = new EventEmitter<void>();
+    @Input()
+    size?: string;
+    @Input()
+    color?: string;
+    @Input()
+    disabled?: boolean;
+    @Output()
+    onClick = new EventEmitter<void>();
 }
 
 describe('DownloadCvComponent', () => {
-  let component: DownloadCvComponent;
-  let fixture: ComponentFixture<DownloadCvComponent>;
-  let candidateServiceSpy: jasmine.SpyObj<CandidateService>;
-  let windowOpenSpy: jasmine.Spy;
-  let createObjectUrlSpy: jasmine.Spy;
-  let fakeTab: {location: {href: string}};
+    let component: DownloadCvComponent;
+    let fixture: ComponentFixture<DownloadCvComponent>;
+    let candidateServiceSpy: MockedObject<CandidateService>;
+    let windowOpenSpy: Mock;
+    let createObjectUrlSpy: Mock;
+    let fakeTab: {
+        location: {
+            href: string;
+        };
+    };
 
-  async function configureAndCreate(options?: {downloadError?: unknown}) {
-    candidateServiceSpy = jasmine.createSpyObj('CandidateService', ['downloadCv']);
-    candidateServiceSpy.downloadCv.and.returnValue(
-      options?.downloadError ? throwError(options.downloadError) : of(new Blob(['cv']))
-    );
+    async function configureAndCreate(options?: {
+        downloadError?: unknown;
+    }) {
+        candidateServiceSpy = {
+            downloadCv: vi.fn().mockName("CandidateService.downloadCv")
+        } as unknown as MockedObject<CandidateService>;
+        candidateServiceSpy.downloadCv.mockReturnValue(options?.downloadError ? throwError(options.downloadError) : of(new Blob(['cv'])));
 
-    await TestBed.configureTestingModule({
-      declarations: [
-        DownloadCvComponent,
-        TcButtonStubComponent
-      ],
-      imports: [TranslateModule.forRoot()],
-      providers: [
-        {provide: CandidateService, useValue: candidateServiceSpy}
-      ]
-    }).compileComponents();
+        await TestBed.configureTestingModule({
+            declarations: [
+                DownloadCvComponent,
+                TcButtonStubComponent
+            ],
+            imports: [TranslateModule.forRoot()],
+            providers: [
+                { provide: CandidateService, useValue: candidateServiceSpy }
+            ]
+        }).compileComponents();
 
-    fixture = TestBed.createComponent(DownloadCvComponent);
-    component = fixture.componentInstance;
-    fakeTab = {location: {href: ''}};
-    windowOpenSpy = spyOn(window, 'open').and.returnValue(fakeTab as any);
-    createObjectUrlSpy = spyOn(URL, 'createObjectURL').and.returnValue('blob:test');
+        fixture = TestBed.createComponent(DownloadCvComponent);
+        component = fixture.componentInstance;
+        fakeTab = { location: { href: '' } };
+        windowOpenSpy = vi.spyOn(window, 'open').mockReturnValue(fakeTab as any);
+        createObjectUrlSpy = vi.spyOn(URL, 'createObjectURL').mockReturnValue('blob:test');
 
-    fixture.detectChanges();
-  }
+        fixture.detectChanges();
+    }
 
-  afterEach(() => TestBed.resetTestingModule());
+    afterEach(() => TestBed.resetTestingModule());
 
-  it('should create', async () => {
-    await configureAndCreate();
+    it('should create', async () => {
+        await configureAndCreate();
 
-    expect(component).toBeTruthy();
-  });
-
-  describe('template tc components', () => {
-    it('should render the download button as a white small tc-button', async () => {
-      await configureAndCreate();
-      const button = fixture.debugElement.query(By.directive(TcButtonStubComponent));
-
-      expect(button).toBeTruthy();
-      expect(button.componentInstance.size).toBe('sm');
-      expect(button.componentInstance.color).toBe('white');
+        expect(component).toBeTruthy();
     });
 
-    it('should show the loading text when loading is true', async () => {
-      await configureAndCreate();
-      component.loading = true;
-      fixture.detectChanges();
+    describe('template tc components', () => {
+        it('should render the download button as a white small tc-button', async () => {
+            await configureAndCreate();
+            const button = fixture.debugElement.query(By.directive(TcButtonStubComponent));
 
-      const text = (fixture.nativeElement as HTMLElement).textContent || '';
+            expect(button).toBeTruthy();
+            expect(button.componentInstance.size).toBe('sm');
+            expect(button.componentInstance.color).toBe('white');
+        });
 
-      expect(text).toContain('LOADING');
-    });
-  });
+        it('should show the loading text when loading is true', async () => {
+            await configureAndCreate();
+            component.loading = true;
+            fixture.detectChanges();
 
-  describe('downloadCV', () => {
-    beforeEach(async () => configureAndCreate());
+            const text = (fixture.nativeElement as HTMLElement).textContent || '';
 
-    it('should download the CV and clear loading on success', () => {
-      component.downloadCV();
-
-      expect(candidateServiceSpy.downloadCv).toHaveBeenCalled();
-      expect(windowOpenSpy).toHaveBeenCalled();
-      expect(createObjectUrlSpy).toHaveBeenCalledWith(jasmine.any(Blob));
-      expect(fakeTab.location.href).toBe('blob:test');
-      expect(component.loading).toBeFalse();
-      expect(component.error).toBeUndefined();
+            expect(text).toContain('LOADING');
+        });
     });
 
-    it('should set error and clear loading on failure', () => {
-      const serverError = {status: 500};
-      candidateServiceSpy.downloadCv.and.returnValue(throwError(serverError));
+    describe('downloadCV', () => {
+        beforeEach(async () => configureAndCreate());
 
-      component.downloadCV();
+        it('should download the CV and clear loading on success', () => {
+            component.downloadCV();
 
-      expect(component.error).toEqual(serverError);
-      expect(component.loading).toBeFalse();
+            expect(candidateServiceSpy.downloadCv).toHaveBeenCalled();
+            expect(windowOpenSpy).toHaveBeenCalled();
+            expect(createObjectUrlSpy).toHaveBeenCalledWith(expect.any(Blob));
+            expect(fakeTab.location.href).toBe('blob:test');
+            expect(component.loading).toBe(false);
+            expect(component.error).toBeUndefined();
+        });
+
+        it('should set error and clear loading on failure', () => {
+            const serverError = { status: 500 };
+            candidateServiceSpy.downloadCv.mockReturnValue(throwError(serverError));
+
+            component.downloadCV();
+
+            expect(component.error).toEqual(serverError);
+            expect(component.loading).toBe(false);
+        });
     });
-  });
 });

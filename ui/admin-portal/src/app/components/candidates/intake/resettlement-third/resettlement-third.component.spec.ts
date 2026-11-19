@@ -22,50 +22,51 @@ import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {AutosaveStatusComponent} from "../../../util/autosave-status/autosave-status.component";
 import {CandidateService} from "../../../../services/candidate.service";
 import {YesNo} from "../../../../model/candidate";
+import {expect} from 'vitest';
 
 describe('ResettlementThirdComponent', () => {
-  let component: ResettlementThirdComponent;
-  let fixture: ComponentFixture<ResettlementThirdComponent>;
+    let component: ResettlementThirdComponent;
+    let fixture: ComponentFixture<ResettlementThirdComponent>;
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      declarations: [ ResettlementThirdComponent,AutosaveStatusComponent ],
-      imports: [NgSelectModule, FormsModule, ReactiveFormsModule ],
-      providers: [
-        { provide: CandidateService },
-        provideHttpClient(withXhr(), withInterceptorsFromDi()),
-        provideHttpClientTesting()
-      ]
-    })
-    .compileComponents();
-  });
+    beforeEach(async () => {
+        await TestBed.configureTestingModule({
+            declarations: [ResettlementThirdComponent, AutosaveStatusComponent],
+            imports: [NgSelectModule, FormsModule, ReactiveFormsModule],
+            providers: [
+                { provide: CandidateService },
+                provideHttpClient(withXhr(), withInterceptorsFromDi()),
+                provideHttpClientTesting()
+            ]
+        })
+            .compileComponents();
+    });
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(ResettlementThirdComponent);
-    component = fixture.componentInstance;
-    component.candidateIntakeData = {
-      resettleThird: YesNo.Yes,
-      resettleThirdStatus: 'Application in process'
-    };
-    fixture.detectChanges();
-  });
+    beforeEach(() => {
+        fixture = TestBed.createComponent(ResettlementThirdComponent);
+        component = fixture.componentInstance;
+        component.candidateIntakeData = {
+            resettleThird: YesNo.Yes,
+            resettleThirdStatus: 'Application in process'
+        };
+        fixture.detectChanges();
+    });
 
-  it('should initialize the form controls with the correct default values', () => {
-    expect(component.form.get('resettleThird').value).toBe(YesNo.Yes);
-    expect(component.form.get('resettleThirdStatus').value).toBe('Application in process');
-  });
+    it('should initialize the form controls with the correct default values', () => {
+        expect(component.form.get('resettleThird').value).toBe(YesNo.Yes);
+        expect(component.form.get('resettleThirdStatus').value).toBe('Application in process');
+    });
 
-  it('should display the status textarea when resettleThird is Yes', () => {
-    component.form.patchValue({ resettleThird: 'Yes' });
-    fixture.detectChanges();
-    const statusTextarea = fixture.nativeElement.querySelector('#resettleThirdStatus');
-    expect(statusTextarea).toBeTruthy();
-  });
+    it('should display the status textarea when resettleThird is Yes', () => {
+        component.form.patchValue({ resettleThird: 'Yes' });
+        fixture.detectChanges();
+        const statusTextarea = fixture.nativeElement.querySelector('#resettleThirdStatus');
+        expect(statusTextarea).toBeTruthy();
+    });
 
-  it('should not display the status textarea when resettleThird is No', () => {
-    component.form.patchValue({ resettleThird: 'No' });
-    fixture.detectChanges();
-    const statusTextarea = fixture.nativeElement.querySelector('#resettleThirdStatus');
-    expect(statusTextarea).toBeFalsy();
-  });
+    it('should not display the status textarea when resettleThird is No', () => {
+        component.form.patchValue({ resettleThird: 'No' });
+        fixture.detectChanges();
+        const statusTextarea = fixture.nativeElement.querySelector('#resettleThirdStatus');
+        expect(statusTextarea).toBeFalsy();
+    });
 });
