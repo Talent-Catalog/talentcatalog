@@ -66,7 +66,7 @@ describe('HomeComponent', () => {
         authenticationService = TestBed.inject(AuthenticationService);
         // Set up mock behavior for LocalStorageService
         localStorageService.get.mockImplementation(<T>(key: string): T => {
-            if (key === 'HomeLastTab') {
+            if (key === lastTabKey) {
                 return 'defaultTabId' as unknown as T; // Providing a default value
             }
             return null;

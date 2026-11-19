@@ -28,7 +28,6 @@ import {CandidateNote} from "../../../../model/candidate-note";
 import {CreateCandidateNoteComponent} from "./create/create-candidate-note.component";
 import {EditCandidateNoteComponent} from "./edit/edit-candidate-note.component";
 import {MockUser} from "../../../../MockData/MockUser";
-import {SearchResults} from "../../../../model/search-results";
 import {UpdatedByComponent} from "../../../util/user/updated-by/updated-by.component";
 import {UserPipe} from "../../../util/user/user.pipe";
 import {expect, vi} from 'vitest';
@@ -51,17 +50,6 @@ describe('ViewCandidateNoteComponent', () => {
             updatedBy: mockUser,
             updatedDate: 2013,
         }] as CandidateNote[];
-
-    const mockSearchResults: SearchResults<CandidateNote> = {
-        number: 0,
-        size: 10,
-        totalElements: 1,
-        totalPages: 1,
-        first: true,
-        last: true,
-        content: mockCandidateNotes,
-    };
-
 
     beforeEach(async () => {
         const modalServiceSpy = {
