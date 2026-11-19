@@ -564,6 +564,17 @@ public class SavedListServiceImpl implements SavedListService {
     }
 
     @Override
+    public long countCandidates(long savedListId) {
+        return candidateSavedListRepository.countBySavedList_Id(savedListId);
+    }
+
+    @Override
+    public List<Long> getCandidateIdsAfter(long savedListId, long afterCandidateId, int batchSize) {
+        return candidateSavedListRepository.findCandidateIdsBySavedListId(
+                savedListId, afterCandidateId, PageRequest.of(0, batchSize));
+    }
+
+    @Override
     @NonNull
     public SavedList getByPublicId(@NonNull String publicId) throws NoSuchObjectException {
         return savedListRepository.findByPublicId(publicId)

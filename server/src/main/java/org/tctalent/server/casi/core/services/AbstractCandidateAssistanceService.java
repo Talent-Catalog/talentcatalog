@@ -61,6 +61,9 @@ import org.tctalent.server.service.db.SavedListService;
 @RequiredArgsConstructor
 public abstract class AbstractCandidateAssistanceService implements CandidateAssistanceService {
 
+  // Number of candidate IDs read per batch when assigning to a whole saved list
+  public static final int ASSIGN_TO_LIST_BATCH_SIZE = 100;
+
   // Terminal statuses represent permanent, irreversible end-states.
   // A resource that has been REDEEMED (used by the candidate) or EXPIRED (time elapsed)
   // must never be re-activated or re-assigned; preventing transitions out of these states
@@ -127,16 +130,18 @@ public abstract class AbstractCandidateAssistanceService implements CandidateAss
   // Fail if not enough resources to assign to all candidates
   // Continue processing remaining candidates if individual assignments fail
   // Return list of successful assignments
-  // SM -- TODO -- add pagination for large lists
+  //
+  // Not @Transactional on purpose: each assignment runs in its own transaction (see
+  // AssignmentEngine.assign), so one failed candidate doesn't roll back the others. Candidate
+  // IDs are read in batches so large lists are not loaded into memory at once.
   @Override
-  @Transactional
   public List<ServiceAssignment> assignToList(Long listId, User user) {
-    var savedList = savedListService.get(listId);
-    var candidates = savedList.getCandidates();
+    savedListService.get(listId); // throws NoSuchObjectException if there is no such list
+    long candidateCount = savedListService.countCandidates(listId);
 
     long availableCount = countAvailableForProviderAndService();
 
-    if (availableCount == 0 || candidates.size() > availableCount) {
+    if (availableCount == 0 || candidateCount > availableCount) {
       throw new NoSuchObjectException(
           "There are not enough available " + serviceCode() + " resources to assign to all candidates "
               + "in the list. Please import more from the settings page.");
@@ -144,26 +149,38 @@ public abstract class AbstractCandidateAssistanceService implements CandidateAss
 
     List<ServiceAssignment> done = new ArrayList<>();
     int failureCount = 0;
-    
-    for (Candidate candidate : candidates) {
-      boolean hasSentCoupon = assignmentRepository
-          .findByCandidateAndProviderAndService(candidate.getId(), provider(), serviceCode())
-          .stream()
-          .anyMatch(assignment -> assignment.getStatus() == AssignmentStatus.ASSIGNED);
 
-      if (!hasSentCoupon) {
-        try {
-          done.add(assignToCandidate(candidate.getId(), user));
-        } catch (Exception e) {
-          failureCount++;
-          LogBuilder.builder(log)
-              .action("assignToList")
-              .message("Failed to assign " + serviceCode() + " to candidate " 
-                  + candidate.getId() + " (" + candidate.getCandidateNumber() + "): " + e.getMessage())
-              .logError(e);
+    long lastCandidateId = 0;
+    List<Long> candidateIds;
+
+    do {
+      candidateIds = savedListService.getCandidateIdsAfter(
+          listId, lastCandidateId, ASSIGN_TO_LIST_BATCH_SIZE);
+
+      for (Long candidateId : candidateIds) {
+        boolean hasSentCoupon = assignmentRepository
+            .findByCandidateAndProviderAndService(candidateId, provider(), serviceCode())
+            .stream()
+            .anyMatch(assignment -> assignment.getStatus() == AssignmentStatus.ASSIGNED);
+
+        if (!hasSentCoupon) {
+          try {
+            done.add(assignToCandidate(candidateId, user));
+          } catch (Exception e) {
+            failureCount++;
+            LogBuilder.builder(log)
+                .action("assignToList")
+                .message("Failed to assign " + serviceCode() + " to candidate "
+                    + candidateId + ": " + e.getMessage())
+                .logError(e);
+          }
         }
       }
-    }
+
+      if (!candidateIds.isEmpty()) {
+        lastCandidateId = candidateIds.get(candidateIds.size() - 1);
+      }
+    } while (candidateIds.size() == ASSIGN_TO_LIST_BATCH_SIZE);
     
     if (failureCount > 0 && done.isEmpty()) {
       // If all assignments failed, throw an exception
