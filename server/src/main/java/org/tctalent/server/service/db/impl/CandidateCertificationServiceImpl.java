@@ -24,6 +24,7 @@ import org.tctalent.server.exception.InvalidSessionException;
 import org.tctalent.server.exception.NoSuchObjectException;
 import org.tctalent.server.model.db.Candidate;
 import org.tctalent.server.model.db.CandidateCertification;
+import org.tctalent.server.model.db.User;
 import org.tctalent.server.repository.db.CandidateCertificationRepository;
 import org.tctalent.server.repository.db.CandidateRepository;
 import org.tctalent.server.request.candidate.certification.CreateCandidateCertificationRequest;
@@ -104,7 +105,7 @@ public class CandidateCertificationServiceImpl implements CandidateCertification
 
     @Override
     public void deleteCandidateCertification(Long id) {
-        authService.getLoggedInUser()
+        User user = authService.getLoggedInUser()
             .orElseThrow(() -> new InvalidSessionException("Not logged in"));
 
         CandidateCertification candidateCertification = candidateCertificationRepository.findByIdLoadCandidate(id)
@@ -112,9 +113,18 @@ public class CandidateCertificationServiceImpl implements CandidateCertification
 
         Candidate candidate = candidateCertification.getCandidate();
 
-        // Check that the user is deleting their own candidate certification
-        if (!candidate.getId().equals(candidateCertification.getCandidate().getId())) {
-            throw new InvalidCredentialsException("You do not have permission to perform that action");
+        // Admin portal users may delete any candidate's certification. Requests coming from the
+        // candidate portal may only delete the logged in candidate's own certification.
+        if (!authService.hasAdminPrivileges(user.getRole())) {
+            Candidate loggedInCandidate = authService.getLoggedInCandidate();
+            if (loggedInCandidate == null) {
+                throw new InvalidSessionException("Not logged in");
+            }
+            // Check that the user is deleting their own candidate certification
+            if (!loggedInCandidate.getId().equals(candidate.getId())) {
+                throw new InvalidCredentialsException(
+                    "You do not have permission to perform that action");
+            }
         }
 
         candidateCertificationRepository.delete(candidateCertification);
