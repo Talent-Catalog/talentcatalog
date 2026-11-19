@@ -93,7 +93,6 @@ CandidateRepository.countLinkedInByCreatedDateOrderByCount(List,LocalDate,LocalD
 CandidateRepository.findByCandidateNumber(String) -> OK
 CandidateRepository.findByCountryId(Long) -> OK
 CandidateRepository.findByIdIn(Collection,Pageable) -> OK
-CandidateRepository.findByIdIn(String,Pageable) -> ERROR InvalidDataAccessResourceUsageException (PSQLException)
 CandidateRepository.findByIdLoadCandidateExams(Long) -> OK
 CandidateRepository.findByIdLoadCandidateLanguages(Long) -> OK
 CandidateRepository.findByIdLoadCandidateOccupations(Long) -> OK
