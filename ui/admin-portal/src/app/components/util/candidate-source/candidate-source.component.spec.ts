@@ -260,11 +260,13 @@ describe('CandidateSourceComponent', () => {
         expect(router.navigate).not.toHaveBeenCalled();
     });
 
-    it('should run stats', () => {
-        router.navigate;
-        component.doRunStats();
-        expect(router.navigate).toHaveBeenCalled();
-    });
+      it('should run stats', () => {
+          router.navigate.mockClear();
+
+          component.doRunStats();
+
+          expect(router.navigate).toHaveBeenCalledOnce();
+      });
 
     it('should show list folder', () => {
         vi.spyOn(window, 'open').mockReturnValue(undefined); // Spy on window.open

@@ -78,10 +78,17 @@ describe('DuplicatesDetailComponent', () => {
     });
 
     it('should call fetchPotentialDuplicates when refresh button clicked', () => {
-        vi.spyOn(component, 'refresh').mockReturnValue(undefined);
-        const refreshButton = fixture.debugElement.nativeElement.querySelector('.modal-footer .btn-primary');
-        refreshButton.click;
-        expect(candidateServiceSpy.fetchPotentialDuplicates).toHaveBeenCalled();
+        candidateServiceSpy.fetchPotentialDuplicates.mockClear();
+
+        const refreshButton = fixture.nativeElement.querySelector('.modal-footer .btn-primary');
+        expect(refreshButton).not.toBeNull();
+
+        refreshButton.click();
+
+        expect(candidateServiceSpy.fetchPotentialDuplicates)
+            .toHaveBeenCalledOnce();
+        expect(candidateServiceSpy.fetchPotentialDuplicates)
+            .toHaveBeenCalledWith(mockCandidate.id);
     });
 
     it('should display different text when no duplicates are returned', () => {

@@ -18,8 +18,6 @@ import type {MockedObject} from "vitest";
 import {Router, UrlTree} from '@angular/router';
 import {Location} from '@angular/common';
 import {getExternalHref} from "./url";
-import {Environment} from "../services/env.service";
-import {environment} from "../../environments/environment";
 import {expect, vi} from 'vitest';
 
 describe('getExternalHref', () => {
@@ -40,20 +38,12 @@ describe('getExternalHref', () => {
         const navigation = ['list', 1000];
         const urlTreeMock = {} as UrlTree;
         const serializedUrl = '/admin-portal/list/1000';
-        let externalUrl = 'https://tctalent.org/admin-portal'; // Default base URL
-
-        if (environment.production) {
-            externalUrl = 'https://tctalent.org/admin-portal/list/1000';
-        }
-        else {
-            externalUrl = 'http://localhost:9876/admin-portal/list/1000'; // Local development URL
-        }
         routerMock.createUrlTree.mockReturnValue(urlTreeMock);
         routerMock.serializeUrl.mockReturnValue(serializedUrl);
         locationMock.prepareExternalUrl.mockReturnValue(serializedUrl);
 
         const result = getExternalHref(routerMock, locationMock, navigation);
-        console.log(Environment.Prod);
+        expect(result).toBe(`${document.location.origin}${serializedUrl}`);
         expect(routerMock.createUrlTree).toHaveBeenCalledWith(navigation);
         expect(routerMock.serializeUrl).toHaveBeenCalledWith(urlTreeMock);
         expect(locationMock.prepareExternalUrl).toHaveBeenCalledWith(serializedUrl);
