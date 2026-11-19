@@ -15,7 +15,7 @@
  */
 
 import type {MockedObject} from "vitest";
-import {ComponentFixture, TestBed} from '@angular/core/testing';
+import {ComponentFixture, TestBed, fakeAsync, tick} from '@angular/core/testing';
 import {ReactiveFormsModule} from '@angular/forms';
 import {of} from 'rxjs';
 import {SearchSavedSearchesComponent} from './search-saved-searches.component';
@@ -85,15 +85,21 @@ describe('SearchSavedSearchesComponent', () => {
         expect(savedSearchServiceSpy.searchPaged).toHaveBeenCalled();
     });
 
-    it('should perform search when form value changes', async () => {
+    it('should perform search when form value changes', fakeAsync(() => {
         fixture.detectChanges();
+        savedSearchServiceSpy.searchPaged.mockClear();
+
         component.searchForm.controls['keyword'].setValue('Test');
 
-        setTimeout(() => {
-            expect(savedSearchServiceSpy.searchPaged).toHaveBeenCalled();
-            ;
-        }, 500);
-    });
+        tick(399);
+        expect(savedSearchServiceSpy.searchPaged).not.toHaveBeenCalled();
+
+        tick(1);
+        expect(savedSearchServiceSpy.searchPaged).toHaveBeenCalledTimes(1);
+        expect(savedSearchServiceSpy.searchPaged).toHaveBeenCalledWith(
+            expect.objectContaining({keyword: 'Test'})
+        );
+    }));
 
     it('should not display loading indicator when search is done', () => {
         fixture.detectChanges();

@@ -61,8 +61,6 @@ describe('ViewCandidateOppComponent', () => {
             getOrCreate: vi.fn().mockName("ChatService.getOrCreate"),
             getChatIsRead$: vi.fn().mockName("ChatService.getChatIsRead$")
         } as unknown as typeof chatService);
-        chatService.getOrCreate;
-        mockCandidateOpportunityService.uploadOffer;
 
         await TestBed.configureTestingModule({
             declarations: [ViewCandidateOppComponent, ChatReadStatusComponent, RouterLinkStubDirective, OpportunityStageNextStepComponent],

@@ -107,7 +107,6 @@ describe('CreateCandidateLanguageComponent', () => {
     });
 
     it('should dismiss modal on cancel', () => {
-        mockActiveModal.dismiss;
         component.dismiss();
         expect(mockActiveModal.dismiss).toHaveBeenCalledTimes(1);
         expect(mockActiveModal.dismiss).toHaveBeenCalledWith(false);

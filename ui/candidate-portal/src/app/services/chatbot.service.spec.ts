@@ -278,7 +278,7 @@ describe('ChatbotService', () => {
     });
 
     describe('Observable State', () => {
-        it('should emit loading state when sending message', async () => {
+        it('should emit loading state when sending message', () => {
             // Welcome message already flushed in main beforeEach
             let loadingStates: boolean[] = [];
 
@@ -298,11 +298,8 @@ describe('ChatbotService', () => {
             const req = httpMock.expectOne(`${apiUrl}/send`);
             req.flush(mockBotResponse);
 
-            setTimeout(() => {
-                expect(loadingStates).toContain(true);
-                expect(loadingStates).toContain(false);
-                ;
-            }, 100);
+            expect(loadingStates).toContain(true);
+            expect(loadingStates).toContain(false);
         });
 
         it('should return current messages via getter', () => {

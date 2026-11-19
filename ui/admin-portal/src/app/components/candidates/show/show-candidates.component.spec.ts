@@ -57,6 +57,7 @@ import {expect, vi} from 'vitest';
 describe('ShowCandidatesComponent', () => {
     let component: ShowCandidatesComponent;
     let fixture: ComponentFixture<ShowCandidatesComponent>;
+    let delayedDetectChangesTimer: ReturnType<typeof setTimeout> | undefined;
     let formBuilder: UntypedFormBuilder;
 
     // Mock services
@@ -225,12 +226,13 @@ describe('ShowCandidatesComponent', () => {
         mockSavedListService.resolveMatching.mockReturnValue(of(null));
 
         // Detect changes after a short delay to ensure template binding
-        setTimeout(() => {
+        delayedDetectChangesTimer = setTimeout(() => {
             fixture.detectChanges();
         }, 500);
     });
 
     afterEach(() => {
+        clearTimeout(delayedDetectChangesTimer);
         fixture.destroy();
     });
 

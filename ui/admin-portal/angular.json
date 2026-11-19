@@ -149,10 +149,6 @@
                 "src/polyfills.ts",
                 "zone.js/testing",
                 "zone.js/plugins/vitest-patch"
-              ],
-              "externalDependencies": [
-                "html2canvas",
-                "jspdf"
               ]
             }
           },
@@ -191,8 +187,7 @@
               "text-summary",
               "html",
               "lcov"
-            ],
-            "runnerConfig": "vitest-base.config.mts"
+            ]
           }
         }
       }

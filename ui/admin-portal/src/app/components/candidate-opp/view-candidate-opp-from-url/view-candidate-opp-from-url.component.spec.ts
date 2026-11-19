@@ -49,7 +49,6 @@ describe('ViewCandidateOppFromUrlComponent', () => {
             canViewChats: vi.fn().mockName("AuthenticationService.canViewChats"),
             loggedInUser$: new Subject<any>()
         };
-        spyOpportunityService.get;
 
         TestBed.configureTestingModule({
             declarations: [ViewCandidateOppFromUrlComponent, OpportunityStageNextStepComponent, RouterLinkStubDirective, ViewCandidateOppComponent],
