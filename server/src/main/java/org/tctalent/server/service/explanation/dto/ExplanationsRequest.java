@@ -26,7 +26,6 @@ public class ExplanationsRequest {
     String opportunityDescription;
 
     @NotNull
-    @Valid
     @Size(min = 1)
-    List<ExplanationCandidateInput> candidates;
+    List<@Valid ExplanationCandidateInput> candidates;
 }

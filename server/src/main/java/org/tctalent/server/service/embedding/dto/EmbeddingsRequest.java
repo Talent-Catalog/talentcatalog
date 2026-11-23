@@ -35,9 +35,8 @@ public class EmbeddingsRequest {
 
     @NotNull
     @Size(min = 1, max = 500)
-    @Valid
     @Singular
-    List<EmbeddingInput> inputs;
+    List<@Valid EmbeddingInput> inputs;
 
     /**
      * Rejects duplicate IDs because each result must map unambiguously back to

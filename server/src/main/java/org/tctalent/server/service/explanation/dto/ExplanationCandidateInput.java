@@ -22,6 +22,5 @@ public class ExplanationCandidateInput {
     String candidateId;
 
     @NotNull
-    @Valid
-    List<ExplanationExperienceInput> experiences;
+    List<@Valid ExplanationExperienceInput> experiences;
 }

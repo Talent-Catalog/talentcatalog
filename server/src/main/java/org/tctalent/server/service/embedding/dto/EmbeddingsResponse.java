@@ -33,8 +33,7 @@ public class EmbeddingsResponse {
     int failed;
 
     @NotNull
-    @Valid
-    List<EmbeddingResult> results;
+    List<@Valid EmbeddingResult> results;
 
     /** Ensures that the summary counts agree with the item-level results. */
     @AssertTrue(message = "Embedding response counts do not match the results")
