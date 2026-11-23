@@ -29,6 +29,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;
 import java.io.IOException;
@@ -821,6 +822,58 @@ class SalesforceServiceImplTest {
           () -> assertEquals("PATCH", server.method()),
           () -> assertTrue(server.decodedRequestUri().contains(
               "/services/data/v58.0/sobjects/Contact/TBBid__c/123"))
+      );
+    }
+  }
+
+  @Test
+  void jsonRequestsSendJsonContentType() throws Exception {
+    when(salesforceTbbAccountsConfig.getJordanAccount()).thenReturn("jordan-account");
+
+    String body = """
+        {"id": "003CONTACT", "success": true, "created": false, "errors": []}
+        """;
+
+    try (TestSalesforceServer server = salesforceServer(200, body)) {
+      SalesforceServiceImpl httpService = httpBackedService(server);
+
+      httpService.createOrUpdateContact(candidateForContact("123", "Jordan"));
+
+      assertAll(
+          () -> assertTrue(MediaType.APPLICATION_JSON.isCompatibleWith(
+              MediaType.parseMediaType(server.requestHeader("Content-Type")))),
+          () -> assertNull(server.requestHeader("Content_Type")),
+          () -> assertTrue(server.requestBody().startsWith("{"))
+      );
+    }
+  }
+
+  @Test
+  void requestAccessTokenSendsJwtBearerGrantAsFormBody() throws Exception {
+    String bearerTokenResponse = """
+        {"access_token":"new-token","token_type":"Bearer"}
+        """;
+
+    try (TestSalesforceServer server = salesforceServer(200, bearerTokenResponse)) {
+      when(salesforceConfig.getBaseLoginUrl()).thenReturn(server.baseUrl());
+      when(salesforceConfig.getPrivatekey()).thenReturn(validPrivateKeyPem());
+      when(salesforceConfig.getConsumerKey()).thenReturn("consumer-key");
+      when(salesforceConfig.getUser()).thenReturn("salesforce-user");
+      service.afterPropertiesSet();
+
+      String token = ReflectionTestUtils.invokeMethod(service, "requestAccessToken");
+
+      String formBody = URLDecoder.decode(server.requestBody(), StandardCharsets.UTF_8);
+      assertAll(
+          () -> assertEquals("new-token", token),
+          () -> assertEquals("POST", server.method()),
+          () -> assertEquals("/services/oauth2/token", server.decodedRequestUri()),
+          () -> assertTrue(MediaType.APPLICATION_FORM_URLENCODED.isCompatibleWith(
+              MediaType.parseMediaType(server.requestHeader("Content-Type")))),
+          () -> assertNull(server.requestHeader("Content_Type")),
+          () -> assertTrue(formBody.contains(
+              "grant_type=urn:ietf:params:oauth:grant-type:jwt-bearer")),
+          () -> assertTrue(formBody.contains("assertion="))
       );
     }
   }
@@ -1947,6 +2000,7 @@ class SalesforceServiceImplTest {
     private final AtomicReference<String> requestUri = new AtomicReference<>();
     private final AtomicReference<String> method = new AtomicReference<>();
     private final AtomicReference<String> requestBody = new AtomicReference<>("");
+    private final AtomicReference<Headers> requestHeaders = new AtomicReference<>();
     private final AtomicInteger requestCount = new AtomicInteger();
     private HttpServer server;
 
@@ -1974,6 +2028,7 @@ class SalesforceServiceImplTest {
       String body = bodies.get(responseIndex);
       method.set(exchange.getRequestMethod());
       requestUri.set(exchange.getRequestURI().toString());
+      requestHeaders.set(exchange.getRequestHeaders());
       requestBody.set(new String(exchange.getRequestBody().readAllBytes(), StandardCharsets.UTF_8));
 
       if (status == CONNECTION_FAILURE) {
@@ -2007,6 +2062,10 @@ class SalesforceServiceImplTest {
 
     private String requestBody() {
       return requestBody.get();
+    }
+
+    private String requestHeader(String name) {
+      return requestHeaders.get().getFirst(name);
     }
 
     private int requestCount() {
