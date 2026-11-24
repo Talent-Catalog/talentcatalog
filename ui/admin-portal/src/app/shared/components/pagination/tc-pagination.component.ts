@@ -63,7 +63,14 @@ export class TcPaginationComponent {
 
   // See NGB Pagination doc for this custom example: https://ng-bootstrap.github.io/#/components/pagination/examples#customization
   selectPage(page: string) {
-    this.onPageChange(parseInt(page, 10) || 1);
+    const newPageNumber = parseInt(page, 10) || 1;
+
+    // Do not trigger another search for the current page.
+    if (newPageNumber === this.pageNumber) {
+      return;
+    }
+
+    this.onPageChange(newPageNumber);
   }
 
   formatInput(input: HTMLInputElement) {
