@@ -48,47 +48,6 @@ test('Saved Search performance journey', async ({page}, testInfo) => {
     const filtersPath = `${metadataPath}/load`;
     const resultsPath =
         `/api/admin/saved-search-candidate/${savedSearchId}/search-paged`;
-
-    // Temporary diagnostics for intermittent Saved Search failures.
-    page.on('request', request => {
-      if (
-          request.method() === 'GET' &&
-          pathOf(request.url()) === filtersPath
-      ) {
-        console.log('[perf-saved-search] Filters GET started');
-      }
-    });
-
-    page.on('response', response => {
-      const path = pathOf(response.url());
-
-      if (path.startsWith('/api/') && response.status() >= 400) {
-        console.error(
-            '[perf-saved-search] API error:',
-            response.status(),
-            response.request().method(),
-            path.replace(/\/\d+(?=\/|$)/g, '/:id')
-        );
-      }
-    });
-
-    page.on('requestfailed', request => {
-      const path = pathOf(request.url());
-
-      if (path.startsWith('/api/')) {
-        console.error(
-            '[perf-saved-search] Network failure:',
-            request.method(),
-            path.replace(/\/\d+(?=\/|$)/g, '/:id'),
-            request.failure()?.errorText
-        );
-      }
-    });
-
-    page.on('pageerror', error => {
-      console.error('[perf-saved-search] Browser error:', error.message);
-    });
-
     for (let repetition = 1; repetition <= REPEATS; repetition++) {
       // Full route navigation on every repetition; reset is not timed.
       await page.goto('about:blank');

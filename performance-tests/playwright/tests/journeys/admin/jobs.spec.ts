@@ -506,11 +506,6 @@ async function measureJobsJourney(
 
     void detailResponsePromise.catch(() => {});
 
-    console.log(
-        '[perf-jobs] Clicking:',
-        await jobLink.getAttribute('href')
-    );
-
     // Register the navigation wait before clicking.
     await Promise.all([
       page.waitForURL(expectedUrl, {timeout: WAIT_MS}),
