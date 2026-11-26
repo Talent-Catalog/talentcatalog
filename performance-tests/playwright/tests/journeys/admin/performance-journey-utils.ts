@@ -51,6 +51,27 @@ export type MeasuredRun = {
 
 export type RequiredApi = {method: string; path: string};
 
+/** Start the timeout when the current stage begins, not at page navigation. */
+export async function waitForStage<T>(
+    promise: Promise<T>, timeoutMs: number, description: string
+): Promise<T> {
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  try {
+    return await Promise.race([
+      promise,
+      new Promise<never>((_, reject) => {
+        timer = setTimeout(() => reject(new Error(
+            `${description} (timed out after ${timeoutMs}ms)`
+        )), timeoutMs);
+      }),
+    ]);
+  } finally {
+    if (timer !== undefined) {
+      clearTimeout(timer);
+    }
+  }
+}
+
 export function pathOf(url: string): string {
   return new URL(url).pathname;
 }
@@ -235,9 +256,13 @@ export class JourneyApiCapture {
   }
 
   assertSuccessful(required: ReadonlyArray<RequiredApi>): void {
-    const criticalFailures = this.run.httpFailures.filter(
-        failure => this.isImportant(failure.path)
-    );
+    // Optional/background API failures stay in JSON but do not fail a journey.
+    const requiredRoutes = new Set(required.map(item =>
+        `${item.method} ${redactApiPath(item.path)}`
+    ));
+    const isRequired = (item: {method: string; path: string}): boolean =>
+        requiredRoutes.has(`${item.method} ${item.path}`);
+    const criticalFailures = this.run.httpFailures.filter(isRequired);
     if (criticalFailures.length > 0) {
       throw new Error(
           'Critical performance API failures: ' +
@@ -248,10 +273,11 @@ export class JourneyApiCapture {
       );
     }
 
-    if (this.run.incompleteApiTimings.length > 0) {
+    const incompleteRequired = this.run.incompleteApiTimings.filter(isRequired);
+    if (incompleteRequired.length > 0) {
       throw new Error(
-          'Incomplete performance API timings: ' +
-          this.run.incompleteApiTimings.map(item =>
+          'Incomplete required performance API timings: ' +
+          incompleteRequired.map(item =>
               `${item.method} ${item.path} (${item.reason})`
           ).join('; ')
       );

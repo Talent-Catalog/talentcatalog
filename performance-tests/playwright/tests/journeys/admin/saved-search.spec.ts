@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {expect, test} from '@playwright/test';
+import {expect, test, type Response} from '@playwright/test';
 import {performance} from 'node:perf_hooks';
 import {resolve} from 'node:path';
 import {isSavedSearchApi, readSavedSearchFixture} from './saved-search-metrics';
@@ -27,6 +27,7 @@ import {
   REPEATS,
   roundMs,
   WAIT_MS,
+  waitForStage,
 } from './performance-journey-utils';
 import type {MeasuredRun} from './performance-journey-utils';
 
@@ -41,6 +42,7 @@ test('Saved Search performance journey', async ({page}, testInfo) => {
   const runs: MeasuredRun[] = [];
   let firstRequest: string | undefined;
   let firstFilters: string | undefined;
+  let firstTotalElements: number | undefined;
 
   try {
     const savedSearchId = readSavedSearchFixture(process.env);
@@ -55,21 +57,32 @@ test('Saved Search performance journey', async ({page}, testInfo) => {
       runs.push(run);
       const capture = new JourneyApiCapture(page, run, isSavedSearchApi);
 
-      // Register all response listeners *before* triggering navigation.
+      // Register listeners before navigation so early responses cannot be missed.
+      // Disable the early filter/results clocks; enforce staged deadlines below.
       const metadataPromise = page.waitForResponse(response =>
           response.request().method() === 'GET' &&
           pathOf(response.url()) === metadataPath,
       {timeout: WAIT_MS});
+      const filtersStartedPromise = page.waitForRequest(request =>
+          request.method() === 'GET' &&
+          pathOf(request.url()) === filtersPath,
+      {timeout: 0});
       const filtersPromise = page.waitForResponse(response =>
           response.request().method() === 'GET' &&
           pathOf(response.url()) === filtersPath,
-      {timeout: WAIT_MS});
+      {timeout: 0});
+      const resultsStartedPromise = page.waitForRequest(request =>
+          request.method() === 'POST' &&
+          pathOf(request.url()) === resultsPath,
+      {timeout: 0});
       const resultsPromise = page.waitForResponse(response =>
           response.request().method() === 'POST' &&
           pathOf(response.url()) === resultsPath,
-      {timeout: WAIT_MS});
+      {timeout: 0});
       void metadataPromise.catch(() => {});
+      void filtersStartedPromise.catch(() => {});
       void filtersPromise.catch(() => {});
+      void resultsStartedPromise.catch(() => {});
       void resultsPromise.catch(() => {});
 
       let elapsedMs: number | null = null;
@@ -101,7 +114,16 @@ test('Saved Search performance journey', async ({page}, testInfo) => {
           );
         }
 
-        const filtersResponse = await filtersPromise;
+        // Angular finishes reference-data initialization before loading filters.
+        // Give that initialization its own deadline, then time the API response.
+        await waitForStage(
+            filtersStartedPromise, WAIT_MS * 2,
+            '[perf-saved-search] Filters GET never started; inspect reference-data APIs'
+        );
+        const filtersResponse = await waitForStage<Response>(
+            filtersPromise, WAIT_MS,
+            '[perf-saved-search] Filters GET started but had no response'
+        );
         await ensureOk(filtersResponse);
         const filters = JSON.stringify(await filtersResponse.json());
         if (firstFilters === undefined) {
@@ -113,7 +135,14 @@ test('Saved Search performance journey', async ({page}, testInfo) => {
           );
         }
 
-        const resultsResponse = await resultsPromise;
+        await waitForStage(
+            resultsStartedPromise, WAIT_MS * 2,
+            '[perf-saved-search] Results POST never started after filters loaded'
+        );
+        const resultsResponse = await waitForStage<Response>(
+            resultsPromise, WAIT_MS,
+            '[perf-saved-search] Results POST started but had no response'
+        );
         await ensureOk(resultsResponse);
         const request = JSON.stringify(
             resultsResponse.request().postDataJSON()
@@ -141,6 +170,15 @@ test('Saved Search performance journey', async ({page}, testInfo) => {
           );
         }
 
+        // A stable staging fixture must return a comparable result size.
+        if (firstTotalElements === undefined) {
+          firstTotalElements = results.totalElements;
+        } else if (results.totalElements !== firstTotalElements) {
+          throw new Error(
+              '[perf-saved-search] Candidate result count changed between repetitions'
+          );
+        }
+
         await expect(page).toHaveURL(
             new RegExp(`/admin-portal/search/${savedSearchId}(?:[?#]|$)`),
             {timeout: WAIT_MS}
@@ -150,7 +188,7 @@ test('Saved Search performance journey', async ({page}, testInfo) => {
         ).toBeVisible({timeout: WAIT_MS});
         await expect(
             page.locator('app-define-search app-show-candidates .results-area')
-                .getByText(/^\d+\s+candidates returned$/)
+                .getByText(`${results.totalElements} candidates returned`, {exact: true})
         ).toBeVisible({timeout: WAIT_MS});
 
         // Page and results are usable. Do not time capture cleanup or JSON export.

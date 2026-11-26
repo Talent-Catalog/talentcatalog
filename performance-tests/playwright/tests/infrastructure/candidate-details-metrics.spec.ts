@@ -14,7 +14,7 @@
  * along with this program. If not, see https://www.gnu.org/licenses/.
  */
 
-import {expect, test} from '@playwright/test';
+import {expect, test, type Page} from '@playwright/test';
 import {
   isCandidateDetailsApi,
   readCandidateFixture,
@@ -24,10 +24,12 @@ import {
   readSavedSearchFixture,
 } from '../journeys/admin/saved-search-metrics';
 import {
+  JourneyApiCapture,
   newRun,
   redactApiPath,
   REPEATS,
   roundMs,
+  waitForStage,
 } from '../journeys/admin/performance-journey-utils';
 import {median} from '../journeys/admin/candidate-search-metrics';
 
@@ -89,4 +91,34 @@ test('Both new journeys use three repetitions and a median', () => {
     httpFailures: [],
     incompleteApiTimings: [],
   });
+});
+
+// Optional requests remain visible in output without invalidating the journey.
+test('Only required API failures and incomplete requests are blocking', () => {
+  const run = newRun(1);
+  run.httpFailures.push({
+    method: 'GET', path: '/api/admin/saved-search/:id/background', status: 503,
+  });
+  run.incompleteApiTimings.push({
+    method: 'GET', path: '/api/admin/saved-search/:id/background',
+    reason: 'still-pending',
+  });
+  const capture = new JourneyApiCapture({} as Page, run, () => true);
+  expect(() => capture.assertSuccessful([])).not.toThrow();
+  expect(() => capture.assertSuccessful([
+    {method: 'GET', path: '/api/admin/saved-search/123/background'},
+  ])).toThrow('Critical performance API failures');
+
+  run.httpFailures.length = 0;
+  expect(() => capture.assertSuccessful([
+    {method: 'GET', path: '/api/admin/saved-search/123/background'},
+  ])).toThrow('Incomplete required performance API timings');
+});
+
+test('Saved Search stage deadlines identify stalled APIs', async () => {
+  await expect(waitForStage(Promise.resolve('ok'), 100, 'ready'))
+      .resolves.toBe('ok');
+  await expect(waitForStage(
+      new Promise<never>(() => {}), 10, 'Filters GET not started'
+  )).rejects.toThrow('Filters GET not started');
 });
