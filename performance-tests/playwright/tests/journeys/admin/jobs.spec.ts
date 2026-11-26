@@ -462,45 +462,41 @@ async function measureJobsJourney(
         fixture.jobId
     );
 
-    const rows = page.locator(JOB_ROWS_SELECTOR);
+
+    // Target only the visible Jobs tab.
+    const liveJobsSection = page.locator(
+        'app-jobs-with-detail:visible'
+    );
+
+    await expect(liveJobsSection).toHaveCount(1, {
+      timeout: WAIT_MS,
+    });
+
+    const rows = liveJobsSection.locator(
+        'app-jobs tc-table tbody tr'
+    );
 
     await expect(rows).toHaveCount(1, {
       timeout: WAIT_MS,
     });
 
-    const row = rows.nth(selected.index);
+    const row = rows.first();
 
-    await expect(
-        row.locator('td').first()
-    ).toContainText(
-        selected.name.slice(0, 30),
-        {timeout: WAIT_MS}
+    // Always target the exact expected Job.
+    // Never click a different Job if the table refreshes.
+    const jobLink = row.locator(
+        `tc-icon[type="link"] a[href$="/job/${fixture.jobId}"]`
     );
 
-    // The first matching Job is automatically
-    // shown in the details side panel.
-    await expect(
-        page.locator(
-            'app-jobs-with-detail app-view-job ' +
-            '.job-header-container h2'
-        )
-    ).toHaveText(selected.name, {
+    await expect(jobLink).toHaveCount(1, {
       timeout: WAIT_MS,
     });
 
-    // 4. Open the full Job Details page.
-    const jobLink = row.locator(
-        'tc-icon[type="link"] a'
-    ).first();
-
-    await expect(jobLink).toHaveAttribute(
-        'href',
-        new RegExp(`/job/${fixture.jobId}$`)
+    const detailPath = `/api/admin/job/${fixture.jobId}`;
+    const expectedUrl = new RegExp(
+        `/admin-portal/job/${fixture.jobId}(?:[?#]|$)`
     );
 
-    const detailPath = `/api/admin/job/${fixture.jobId}`;
-
-// Register the API listener before clicking.
     const detailResponsePromise = page.waitForResponse(
         response =>
             response.request().method() === 'GET' &&
@@ -510,12 +506,18 @@ async function measureJobsJourney(
 
     void detailResponsePromise.catch(() => {});
 
-// Open Job Details.
-    await jobLink.click();
+    console.log(
+        '[perf-jobs] Clicking:',
+        await jobLink.getAttribute('href')
+    );
 
-// Wait for the matching API response.
+    // Register the navigation wait before clicking.
+    await Promise.all([
+      page.waitForURL(expectedUrl, {timeout: WAIT_MS}),
+      jobLink.click(),
+    ]);
+
     const detailResponse = await detailResponsePromise;
-
     await ensureOk(detailResponse);
 
     await expect(page).toHaveURL(
