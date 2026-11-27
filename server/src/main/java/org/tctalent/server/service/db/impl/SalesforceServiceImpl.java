@@ -54,6 +54,7 @@ import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.ClientResponse;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientException;
@@ -241,7 +242,6 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
             WebClient.builder()
                 .baseUrl(
                     salesforceConfig.getBaseClassicUrl() + "services/data/" + apiVersion)
-                .defaultHeader("Content_Type", "application/json")
                 .defaultHeader("Accept", "application/json");
 
         webClient = builder.build();
@@ -1351,10 +1351,10 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
             "urn:ietf:params:oauth:grant-type:jwt-bearer");
         params.add("assertion", jwtBearerToken);
 
+        //Send the parameters as a form body, as documented for the Salesforce JWT bearer flow.
+        //The form inserter also sets Content-Type: application/x-www-form-urlencoded
         BearerTokenResponse response = client.post()
-            .uri(uriBuilder -> uriBuilder.queryParams(params).build())
-            .header("Content_Type",
-                "application/x-www-form-urlencoded")
+            .body(BodyInserters.fromFormData(params))
             .retrieve()
             .bodyToMono(BearerTokenResponse.class)
             .block();
@@ -1373,10 +1373,11 @@ public class SalesforceServiceImpl implements SalesforceService, InitializingBea
      * associated with the tbbtalent "Connected App" in TBB's Salesforce.
      * <p/>
      * This can be used to get a new access token from Salesforce using the following HTTP request
-     * to SF: POST https://login.salesforce.com/services/oauth2/token ?grant_type=urn:ietf:params:oauth:grant-type:jwt-bearer&assertion=[bearer
-     * token]
+     * to SF: POST https://login.salesforce.com/services/oauth2/token
      * <p>
-     * Content-Type: application/x-www-form-urlencoded"
+     * Content-Type: application/x-www-form-urlencoded
+     * <p>
+     * with form body: grant_type=urn:ietf:params:oauth:grant-type:jwt-bearer&assertion=[bearer token]
      * <p/>
      * If all goes well it will return a Bearer access token in a response like this: {
      * "access_token": "00D1N000002EPj7!AR0AQIaT.sdLMZlsU0Jlm7EPrrWghps9K025kno0nGwg6nf3KmQ9maLukiy20hvnqI1VUw9CY7GhoLIdgN8QsdYOoAk91azE",
