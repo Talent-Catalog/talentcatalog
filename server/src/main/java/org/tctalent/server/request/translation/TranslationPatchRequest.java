@@ -41,7 +41,6 @@ public class TranslationPatchRequest {
     private List<String> languages;
 
     @NotNull
-    @Valid
-    private List<TranslationPatchEntry> entries;
+    private List<@Valid TranslationPatchEntry> entries;
 
 }

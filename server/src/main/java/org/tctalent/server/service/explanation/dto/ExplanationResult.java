@@ -40,8 +40,7 @@ public class ExplanationResult {
     String summary;
 
     @Nullable
-    @Valid
-    List<ExperienceExplanationItem> experienceExplanations;
+    List<@Valid ExperienceExplanationItem> experienceExplanations;
 
     @Nullable
     List<String> limitations;

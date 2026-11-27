@@ -27,6 +27,5 @@ public class ExplanationsResponse {
     int failed;
 
     @NotNull
-    @Valid
-    List<ExplanationResult> results;
+    List<@Valid ExplanationResult> results;
 }
