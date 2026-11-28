@@ -50,10 +50,14 @@ describe('TcPaginationComponent', () => {
         expect(component.onPageChange).toHaveBeenCalledWith(3);
     });
 
-    it('selectPage should default to 1 if parsing fails', () => {
-        vi.spyOn(component, 'onPageChange').mockReturnValue(undefined);
-        component.selectPage('abc');
-        expect(component.onPageChange).toHaveBeenCalledWith(1);
+    it('should default to page 1 when parsing fails and current page differs', () => {
+      component.pageNumber = 2;
+
+      const pageChangeSpy = vi.spyOn(component, 'onPageChange');
+
+      component.selectPage('abc');
+
+      expect(pageChangeSpy).toHaveBeenCalledWith(1);
     });
 
     it('formatInput should strip non-numeric chars', () => {
@@ -79,5 +83,40 @@ describe('TcPaginationComponent', () => {
         input.value = '4';
         input.dispatchEvent(new Event('blur'));
         expect(component.selectPage).toHaveBeenCalledWith('4');
+    });
+
+
+    it('should not search when the current page is selected again', () => {
+      const emitSpy = vi.spyOn(component.pageChange, 'emit');
+
+      component.selectPage('1');
+
+      expect(emitSpy).not.toHaveBeenCalled();
+    });
+
+    it('should emit when a different page is selected', () => {
+      const emitSpy = vi.spyOn(component.pageChange, 'emit');
+
+      component.selectPage('2');
+
+      expect(emitSpy).toHaveBeenCalledExactlyOnceWith(2);
+    });
+
+    it('should not emit when the page input loses focus unchanged', () => {
+      const emitSpy = vi.spyOn(component.pageChange, 'emit');
+      const input = fixture.nativeElement.querySelector('#paginationInput');
+
+      input.value = '1';
+      input.dispatchEvent(new Event('blur'));
+
+      expect(emitSpy).not.toHaveBeenCalled();
+    });
+
+    it('should not emit a page change when selecting the current page', () => {
+      const emitSpy = vi.spyOn(component.pageChange, 'emit');
+
+      component.selectPage('1');
+
+      expect(emitSpy).not.toHaveBeenCalled();
     });
 });
