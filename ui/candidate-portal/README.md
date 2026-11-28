@@ -16,8 +16,24 @@ Run `ng build` to build the project. The build artifacts will be stored in the `
 
 ## Running unit tests
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+This portal uses [Vitest](https://vitest.dev/) through Angular's
+unit-test builder.
 
+From this directory, install dependencies and run the tests:
+
+```bash
+npm ci
+npm test -- --watch=false
+```
+
+To generate coverage reports, run:
+
+```bash
+npm run test:coverage
+```
+
+See the [Testing wiki](https://github.com/Talent-Catalog/talentcatalog/wiki/Testing)
+for detailed instructions and troubleshooting.
 ## Running end-to-end tests
 
 The Candidate Portal uses [Playwright](https://playwright.dev/) for end-to-end testing.

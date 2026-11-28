@@ -530,6 +530,13 @@ into the server and serve through Apache Tomcat._
 - Details about this user can be found in
   `org/talentcatalog/server/configuration/SystemAdminConfiguration.java`
 
+## Testing ##
+
+See the Testing page on the
+[GitHub wiki](https://github.com/Talent-Catalog/talentcatalog/wiki/Testing)
+for information on running and writing tests, generating coverage reports,
+and troubleshooting test failures.
+
 ## Upgrades ##
 
 ### Angular ###
